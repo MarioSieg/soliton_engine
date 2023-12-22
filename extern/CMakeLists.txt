@@ -16,3 +16,5 @@ target_link_libraries(lunam glfw)
 add_subdirectory(extern/boxer)
 include_directories(extern/boxer/include)
 target_link_libraries(lunam Boxer)
+
+include_directories(extern/stb)

@@ -1,5 +1,6 @@
 // Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
+#include <filesystem>
 #include <memory>
 #include <span>
 #include <vector>
@@ -9,6 +10,8 @@
 #include <GLFW/glfw3.h>
 #include <mimalloc.h>
 #include <infoware/infoware.hpp>
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 #include <spdlog/spdlog.h>
 #include <spdlog/async.h>
@@ -82,7 +85,7 @@ private:
     return result;
 }
 
-static constexpr auto KernelVariantName(const iware::system::kernel_t variant) noexcept -> std::string_view {
+static constexpr auto KernelVariantName(iware::system::kernel_t variant) noexcept -> std::string_view {
     switch (variant) {
     case iware::system::kernel_t::windows_nt:
         return "Windows NT";
@@ -95,7 +98,7 @@ static constexpr auto KernelVariantName(const iware::system::kernel_t variant) n
     }
 }
 
-static constexpr auto CacheTypeName(const iware::cpu::cache_type_t cache_type) noexcept -> std::string_view {
+static constexpr auto CacheTypeName(iware::cpu::cache_type_t cache_type) noexcept -> std::string_view {
     switch (cache_type) {
     case iware::cpu::cache_type_t::unified:
         return "unified";
@@ -110,7 +113,7 @@ static constexpr auto CacheTypeName(const iware::cpu::cache_type_t cache_type) n
     }
 }
 
-static constexpr auto ArchitectureName(const iware::cpu::architecture_t architecture) noexcept -> std::string_view {
+static constexpr auto ArchitectureName(iware::cpu::architecture_t architecture) noexcept -> std::string_view {
     switch (architecture) {
     case iware::cpu::architecture_t::x64:
         return "x64";
@@ -263,11 +266,32 @@ static constinit GLFWwindow* s_Window = nullptr;
 static auto InitPlatformBackend() -> void {
     LU_LOG_INFO("Initializing platform backend");
     LU_Assert(!s_Initialized.load(std::memory_order_seq_cst));
+    // check that media directory exists
+    LU_Assert(std::filesystem::exists("media"));
+
+    // init glfw
     LU_Assert(glfwInit() == GLFW_TRUE);
+
+    // create window
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // window is hidden by default
     s_Window = glfwCreateWindow(1280, 720, "LunamEngine", nullptr, nullptr);
+    LU_Assert(s_Window != nullptr);
+
+    // set window icon
+    int w, h;
+    stbi_uc *pixels = stbi_load("media/icons/logo.png", &w, &h, nullptr, STBI_rgb_alpha);
+    LU_Assert(pixels != nullptr);
+    GLFWimage icon {
+        .width = w,
+        .height = h,
+        .pixels = pixels
+    };
+    glfwSetWindowIcon(s_Window, 1, &icon);
+    stbi_image_free(pixels);
+
+    // done
     s_Initialized.store(true, std::memory_order_seq_cst);
 }
 
