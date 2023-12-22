@@ -17,10 +17,10 @@ template <typename... Ts>
     return fmt::format(formatString, std::forward<Ts>(args)...);
 }
 
-#define LU_LOG_INFO(...) SPDLOG_INFO(__VA_ARGS__)
-#define LU_LOG_WARN(...) SPDLOG_WARN(__VA_ARGS__)
-#define LU_LOG_ERROR(...) SPDLOG_ERROR(__VA_ARGS__)
-#define LU_LOG_CRITICAL(...) SPDLOG_CRITICAL(__VA_ARGS__)
+#define LOG_INFO(...) SPDLOG_INFO(__VA_ARGS__)
+#define LOG_WARN(...) SPDLOG_WARN(__VA_ARGS__)
+#define LOG_ERROR(...) SPDLOG_ERROR(__VA_ARGS__)
+#define LOG_CRITICAL(...) SPDLOG_CRITICAL(__VA_ARGS__)
 
 class NoCopy {
 public:
@@ -49,7 +49,7 @@ template <typename... Args>
     PanicImpl(Format(message, std::forward<Args>(args)...));
 }
 
-#define LU_Assert(expr) \
+#define Assert(expr) \
 	do { \
 		if (!(expr)) [[unlikely]] { \
 			Panic("Assertion failed: {} in {}:{}", #expr, __FILE__, __LINE__); \

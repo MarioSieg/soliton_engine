@@ -9,6 +9,7 @@
 
 #include <GLFW/glfw3.h>
 #include <mimalloc.h>
+#include <mimalloc-new-delete.h>
 #include <infoware/infoware.hpp>
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -21,10 +22,11 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
-#if LU_PLATFORM_WINDOWS
+#if PLATFORM_WINDOWS
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <cstdlib>
+#include <Lmcons.h>
 #include <fcntl.h>
 #include <io.h>
 #include <psapi.h>
@@ -139,7 +141,7 @@ static constexpr auto EndiannessName(const iware::cpu::endianness_t endianness) 
     }
 }
 
-#if LU_CPU_X86
+#if CPU_X86
 static constexpr std::array<std::string_view, 38> kAMD64Extensions = {
     "3DNow",
     "3DNow Extended",
@@ -185,7 +187,13 @@ static_assert(kAMD64Extensions.size() == static_cast<std::size_t>(iware::cpu::in
 
 auto DumpOSInfo() -> void {
     const auto osInfo = iware::system::OS_info();
-    LU_LOG_INFO("OS: {}, v.{}.{}.{}.{}", osInfo.name, osInfo.major, osInfo.minor, osInfo.patch, osInfo.build_number);
+    LOG_INFO("OS: {}, v.{}.{}.{}.{}", osInfo.full_name, osInfo.major, osInfo.minor, osInfo.patch, osInfo.build_number);
+#if PLATFORM_WINDOWS
+    TCHAR username[UNLEN+1];
+    DWORD username_len = UNLEN+1;
+    GetUserName(username, &username_len);
+    LOG_INFO("Username: {}", username);
+#endif
 }
 
 auto DumpCPUInfo() -> void {
@@ -200,24 +208,24 @@ auto DumpCPUInfo() -> void {
     iware::cpu::cache_t l2Cache = iware::cpu::cache(2);
     iware::cpu::cache_t l3Cache = iware::cpu::cache(3);
 
-    LU_LOG_INFO("CPU(s): {} X {}", packages, name);
-    LU_LOG_INFO("CPU Architecture: {}", arch);
-    LU_LOG_INFO("CPU Base frequency: {:.02F} ghz", baseFrequencyGHz);
-    LU_LOG_INFO("CPU Endianness: {}",  endianness);
-    LU_LOG_INFO("CPU Logical cores: {}", logical);
-    LU_LOG_INFO("CPU Physical cores: {}", physical);
-    LU_LOG_INFO("CPU Sockets: {}", packages);
-    LU_LOG_INFO("CPU Vendor: {}", vendor);
-    LU_LOG_INFO("CPU Vendor ID: {}", vendorId);
+    LOG_INFO("CPU(s): {} X {}", packages, name);
+    LOG_INFO("CPU Architecture: {}", arch);
+    LOG_INFO("CPU Base frequency: {:.02F} ghz", baseFrequencyGHz);
+    LOG_INFO("CPU Endianness: {}",  endianness);
+    LOG_INFO("CPU Logical cores: {}", logical);
+    LOG_INFO("CPU Physical cores: {}", physical);
+    LOG_INFO("CPU Sockets: {}", packages);
+    LOG_INFO("CPU Vendor: {}", vendor);
+    LOG_INFO("CPU Vendor ID: {}", vendorId);
     std::size_t hwc = std::thread::hardware_concurrency();
-    LU_LOG_INFO("Hardware concurrency: {}, status: {}", hwc, hwc >= 8 ? "GOOD" : "BAD");
+    LOG_INFO("Hardware concurrency: {}, status: {}", hwc, hwc >= 8 ? "GOOD" : "BAD");
 
     static constexpr auto dumpCache = [](unsigned level, const iware::cpu::cache_t& cache) {
         const auto [size, line_size, associativity, type] {cache};
-        LU_LOG_INFO("L{} Cache size: {} KiB", level, static_cast<double>(size) / 1024.0);
-        LU_LOG_INFO("L{} Cache line size: {} B", level, line_size);
-        LU_LOG_INFO("L{} Cache associativity: {}", level, associativity);
-        LU_LOG_INFO("L{} Cache type: {}", level, CacheTypeName(type));
+        LOG_INFO("L{} Cache size: {} KiB", level, static_cast<double>(size) / 1024.0);
+        LOG_INFO("L{} Cache line size: {} B", level, line_size);
+        LOG_INFO("L{} Cache associativity: {}", level, associativity);
+        LOG_INFO("L{} Cache type: {}", level, CacheTypeName(type));
     };
 
     dumpCache(1, l1Cache);
@@ -226,35 +234,35 @@ auto DumpCPUInfo() -> void {
 
     for (std::size_t i = 0; i < kAMD64Extensions.size(); ++i) {
         bool supported = instruction_set_supported(static_cast<iware::cpu::instruction_set_t>(i));
-        LU_LOG_INFO("{: <16} [{}]", kAMD64Extensions[i], supported ? 'X' : ' ');
+        LOG_INFO("{: <16} [{}]", kAMD64Extensions[i], supported ? 'X' : ' ');
     }
 }
 
 auto DumpMemoryInfo() -> void {
     const double kGiB = std::pow(1024.0, 3.0);
     const auto mem = iware::system::memory();
-    LU_LOG_INFO("RAM physical total: {:.04F} GiB", static_cast<double>(mem.physical_total) / kGiB);
-    LU_LOG_INFO("RAM physical available: {:.04F} GiB", static_cast<double>(mem.physical_available) / kGiB);
-    LU_LOG_INFO("RAM virtual total: {:.04F} GiB", static_cast<double>(mem.virtual_total) / kGiB);
-    LU_LOG_INFO("RAM virtual available: {:.04F} GiB", static_cast<double>(mem.virtual_available) / kGiB);
+    LOG_INFO("RAM physical total: {:.04F} GiB", static_cast<double>(mem.physical_total) / kGiB);
+    LOG_INFO("RAM physical available: {:.04F} GiB", static_cast<double>(mem.physical_available) / kGiB);
+    LOG_INFO("RAM virtual total: {:.04F} GiB", static_cast<double>(mem.virtual_total) / kGiB);
+    LOG_INFO("RAM virtual available: {:.04F} GiB", static_cast<double>(mem.virtual_available) / kGiB);
 }
 
 auto DumpLoadedDylibs() -> void {
-#if LU_PLATFORM_WINDOWS
+#if PLATFORM_WINDOWS
     std::array<HMODULE, 8192 << 2> hMods {};
     HANDLE hProcess = GetCurrentProcess();
     DWORD cbNeeded;
-    if (EnumProcessModules(hProcess, hMods.data(), sizeof hMods, &cbNeeded)) {
+    if (EnumProcessModules(hProcess, hMods.data(), sizeof(hMods), &cbNeeded)) {
         for (UINT i = 0; i < cbNeeded / sizeof(HMODULE); ++i) {
             std::array<TCHAR, MAX_PATH> szModName {};
             if (GetModuleFileNameEx(hProcess, hMods[i], szModName.data(), sizeof(szModName) / sizeof(TCHAR))) {
-                LU_LOG_INFO("{}", szModName.data());
+                LOG_INFO("{}", szModName.data());
             }
         }
     }
 #else
     dl_iterate_phdr(+[](const dl_phdr_info* info, std::size_t, void*) -> int {
-        LU_LOG_INFO("{}", info->dlpi_name);
+        LOG_INFO("{}", info->dlpi_name);
         return 0;
     }, nullptr);
 #endif
@@ -262,27 +270,60 @@ auto DumpLoadedDylibs() -> void {
 
 static constinit std::atomic_bool s_Initialized = false;
 static constinit GLFWwindow* s_Window = nullptr;
+static constinit GLFWmonitor* s_Monitor = nullptr;
 
 static auto InitPlatformBackend() -> void {
-    LU_LOG_INFO("Initializing platform backend");
-    LU_Assert(!s_Initialized.load(std::memory_order_seq_cst));
+    LOG_INFO("Initializing platform backend");
+    Assert(!s_Initialized.load(std::memory_order_seq_cst));
     // check that media directory exists
-    LU_Assert(std::filesystem::exists("media"));
+    Assert(std::filesystem::exists("media"));
 
     // init glfw
-    LU_Assert(glfwInit() == GLFW_TRUE);
+    Assert(glfwInit() == GLFW_TRUE);
 
     // create window
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // window is hidden by default
     s_Window = glfwCreateWindow(1280, 720, "LunamEngine", nullptr, nullptr);
-    LU_Assert(s_Window != nullptr);
+    Assert(s_Window != nullptr);
+
+    // query monitor and print some info
+    auto printMonitorInfo = [](GLFWmonitor* mon) {
+        if (const char* name = glfwGetMonitorName(mon); name) {
+            LOG_INFO("Monitor name: {}", name);
+        }
+        if (const GLFWvidmode* mode = glfwGetVideoMode(mon); mode) {
+            LOG_INFO("Monitor: {}x{}@{}Hz", mode->width, mode->height, mode->refreshRate);
+        }
+        int n;
+        if (const GLFWvidmode* modes = glfwGetVideoModes(mon, &n); modes) {
+            LOG_INFO("Available modes:");
+            for (int i = 0; i < n; ++i) {
+                const GLFWvidmode& mode = modes[i];
+                LOG_INFO("    {}x{}@{}Hz", mode.width, mode.height, mode.refreshRate);
+            }
+        }
+    };
+    s_Monitor = glfwGetPrimaryMonitor();
+    if (s_Monitor != nullptr) [[likely]] {
+        printMonitorInfo(s_Monitor);
+    } else {
+        LOG_WARN("No primary monitor found");
+    }
+    int n;
+    if (GLFWmonitor** mons = glfwGetMonitors(&n); mons) {
+        for (int i = 0; i < n; ++i) {
+            if (mons[i] != s_Monitor) {
+                printMonitorInfo(mons[i]);
+            }
+        }
+    }
 
     // set window icon
     int w, h;
     stbi_uc *pixels = stbi_load("media/icons/logo.png", &w, &h, nullptr, STBI_rgb_alpha);
-    LU_Assert(pixels != nullptr);
+    Assert(pixels != nullptr);
     GLFWimage icon {
         .width = w,
         .height = h,
@@ -296,13 +337,13 @@ static auto InitPlatformBackend() -> void {
 }
 
 static auto ShutdownPlatformBackend() -> void {
-    LU_Assert(s_Initialized.load(std::memory_order_seq_cst));
+    Assert(s_Initialized.load(std::memory_order_seq_cst));
     glfwDestroyWindow(s_Window);
     glfwTerminate();
 }
 
 static auto IsSimRunning() -> bool {
-    LU_Assert(s_Initialized.load(std::memory_order_seq_cst));
+    Assert(s_Initialized.load(std::memory_order_seq_cst));
     return !glfwWindowShouldClose(s_Window);
 }
 
@@ -311,7 +352,7 @@ static auto TickSim() -> void {
 }
 
 static auto EnterSimLoop() -> void {
-    LU_Assert(s_Initialized.load(std::memory_order_seq_cst));
+    Assert(s_Initialized.load(std::memory_order_seq_cst));
     glfwShowWindow(s_Window); // show the window
     while (IsSimRunning()) [[likely]] {
         TickSim();
@@ -319,21 +360,21 @@ static auto EnterSimLoop() -> void {
 }
 
 static auto PrintSep() -> void {
-    LU_LOG_INFO("------------------------------------------------------------");
+    LOG_INFO("------------------------------------------------------------");
 }
 
 static auto LunamMain() -> void {
     const auto clock = std::chrono::system_clock::now();
     std::ostream::sync_with_stdio(false);
     spdlog::init_thread_pool(kLogQueueSize, kLogThreads);
-    auto engineLogger = CreateLogger("LunamEngine", "%H:%M:%S:%e %s:%# %^[%l]%$ T:%t %v");
-    auto scriptLogger = CreateLogger("Lua", "%H:%M:%S:%e %v");
-    set_default_logger(engineLogger);
-    LU_LOG_INFO("LunamEngine v0.0.1");
-    LU_LOG_INFO("Booting Engine Kernel...");
-    LU_LOG_INFO("Build date: {}", __DATE__);
-    LU_LOG_INFO("Build time: {}", __TIME__);
-    LU_LOG_INFO("MIMAL version: {:#X}", mi_version());
+    std::shared_ptr<spdlog::logger> engineLogger = CreateLogger("LunamEngine", "%H:%M:%S:%e %s:%# %^[%l]%$ T:%t %v");
+    std::shared_ptr<spdlog::logger> scriptLogger = CreateLogger("Lua", "%H:%M:%S:%e %v");
+    spdlog::set_default_logger(engineLogger);
+    LOG_INFO("LunamEngine v0.0.1");
+    LOG_INFO("Booting Engine Kernel...");
+    LOG_INFO("Build date: {}", __DATE__);
+    LOG_INFO("Build time: {}", __TIME__);
+    LOG_INFO("MIMAL version: {:#X}", mi_version());
     PrintSep();
     DumpOSInfo();
     PrintSep();
@@ -344,15 +385,15 @@ static auto LunamMain() -> void {
     DumpLoadedDylibs();
     PrintSep();
     InitPlatformBackend();
-    LU_LOG_INFO("Engine online in {} ms", std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - clock).count());
-    LU_LOG_INFO("Entering simulation");
+    LOG_INFO("Engine online in {} ms", std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - clock).count());
+    LOG_INFO("Entering simulation");
     EnterSimLoop();
-    LU_LOG_INFO("Shutting down...");
+    LOG_INFO("Shutting down...");
     ShutdownPlatformBackend();
-    LU_LOG_INFO("System offline");
+    LOG_INFO("System offline");
 }
 
-#if LU_PLATFORM_WINDOWS
+#if PLATFORM_WINDOWS
 static auto RedirectIoToConsole() -> void {
     if (!AttachConsole(ATTACH_PARENT_PROCESS))
         return;
