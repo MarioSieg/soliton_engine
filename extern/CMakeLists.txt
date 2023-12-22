@@ -18,3 +18,7 @@ include_directories(extern/boxer/include)
 target_link_libraries(lunam Boxer)
 
 include_directories(extern/stb)
+
+add_subdirectory(extern/bgfx.cmake)
+include_directories(extern/bgfx.cmake/bgfx/include)
+target_link_libraries(lunam bgfx bx bimg)

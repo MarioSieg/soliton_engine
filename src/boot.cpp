@@ -6,8 +6,13 @@
 #include <vector>
 
 #include "core.hpp"
+#include "graphics.hpp"
 
 #include <GLFW/glfw3.h>
+#if PLATFORM_WINDOWS // TODO: OSX, Linux
+#define GLFW_EXPOSE_NATIVE_WIN32
+#endif
+#include <GLFW/glfw3native.h>
 #include <mimalloc.h>
 #include <mimalloc-new-delete.h>
 #include <infoware/infoware.hpp>
@@ -25,8 +30,9 @@
 #if PLATFORM_WINDOWS
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
-#include <cstdlib>
 #include <Lmcons.h>
+#include <processthreadsapi.h>
+#include <cstdlib>
 #include <fcntl.h>
 #include <io.h>
 #include <psapi.h>
@@ -141,7 +147,7 @@ static constexpr auto EndiannessName(const iware::cpu::endianness_t endianness) 
     }
 }
 
-#if CPU_X86
+#if CPU_X86 // TODO: AArch64
 static constexpr std::array<std::string_view, 38> kAMD64Extensions = {
     "3DNow",
     "3DNow Extended",
@@ -232,10 +238,12 @@ auto DumpCPUInfo() -> void {
     dumpCache(2, l2Cache);
     dumpCache(3, l3Cache);
 
-    for (std::size_t i = 0; i < kAMD64Extensions.size(); ++i) {
+#if CPU_X86 // TODO: AArch64
+    for (std::size_t i = 0; i < kAMD64Extensions.size(); ++i) { // TODO: AArch64
         bool supported = instruction_set_supported(static_cast<iware::cpu::instruction_set_t>(i));
         LOG_INFO("{: <16} [{}]", kAMD64Extensions[i], supported ? 'X' : ' ');
     }
+#endif
 }
 
 auto DumpMemoryInfo() -> void {
@@ -268,9 +276,10 @@ auto DumpLoadedDylibs() -> void {
 #endif
 }
 
-static constinit std::atomic_bool s_Initialized = false;
-static constinit GLFWwindow* s_Window = nullptr;
-static constinit GLFWmonitor* s_Monitor = nullptr;
+static constinit std::atomic_bool s_Initialized;
+static constinit GLFWwindow* s_Window;
+static constinit void* s_NativeWindow; // HWND on Windows, NSWindow on macOS etc..
+static constinit GLFWmonitor* s_Monitor;
 
 static auto InitPlatformBackend() -> void {
     LOG_INFO("Initializing platform backend");
@@ -287,6 +296,10 @@ static auto InitPlatformBackend() -> void {
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // window is hidden by default
     s_Window = glfwCreateWindow(1280, 720, "LunamEngine", nullptr, nullptr);
     Assert(s_Window != nullptr);
+#if PLATFORM_WINDOWS
+    s_NativeWindow = reinterpret_cast<void*>(glfwGetWin32Window(s_Window));
+#endif // TODO: OSX, Linux
+    Assert(s_NativeWindow != nullptr);
 
     // query monitor and print some info
     auto printMonitorInfo = [](GLFWmonitor* mon) {
@@ -340,6 +353,7 @@ static auto ShutdownPlatformBackend() -> void {
     Assert(s_Initialized.load(std::memory_order_seq_cst));
     glfwDestroyWindow(s_Window);
     glfwTerminate();
+    s_Initialized.store(false, std::memory_order_seq_cst);
 }
 
 static auto IsSimRunning() -> bool {
@@ -349,6 +363,8 @@ static auto IsSimRunning() -> bool {
 
 static auto TickSim() -> void {
     glfwPollEvents();
+    BeginFrame();
+    EndFrame();
 }
 
 static auto EnterSimLoop() -> void {
@@ -385,10 +401,12 @@ static auto LunamMain() -> void {
     DumpLoadedDylibs();
     PrintSep();
     InitPlatformBackend();
+    InitGraphics(s_Window, s_NativeWindow);
     LOG_INFO("Engine online in {} ms", std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - clock).count());
     LOG_INFO("Entering simulation");
     EnterSimLoop();
     LOG_INFO("Shutting down...");
+    ShutdownGraphics();
     ShutdownPlatformBackend();
     LOG_INFO("System offline");
 }
@@ -421,6 +439,7 @@ static auto RedirectIoToConsole() -> void {
 }
 auto __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int) -> int {
     RedirectIoToConsole();
+    SetPriorityClass(GetCurrentProcess(), ABOVE_NORMAL_PRIORITY_CLASS); // Is this smart?
 #else
 auto main(int, const char**) -> int {
 #endif
