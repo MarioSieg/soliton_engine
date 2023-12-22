@@ -61,7 +61,7 @@ static FontRangeMerge s_fontRangeMerge[] =
 static void* memAlloc(size_t _size, void* _userData);
 static void memFree(void* _ptr, void* _userData);
 
-struct OcornutImguiContext
+struct ImguiContext
 {
 	void render(ImDrawData* _drawData)
 	{
@@ -504,45 +504,45 @@ struct OcornutImguiContext
 #endif // USE_ENTRY
 };
 
-static OcornutImguiContext s_ctx;
+static ImguiContext s_ImguiContext;
 
 static void* memAlloc(size_t _size, void* _userData)
 {
 	BX_UNUSED(_userData);
-	return bx::alloc(s_ctx.m_allocator, _size);
+	return bx::alloc(s_ImguiContext.m_allocator, _size);
 }
 
 static void memFree(void* _ptr, void* _userData)
 {
 	BX_UNUSED(_userData);
-	bx::free(s_ctx.m_allocator, _ptr);
+	bx::free(s_ImguiContext.m_allocator, _ptr);
 }
 
 void imguiCreate(float _fontSize, bx::AllocatorI* _allocator)
 {
-	s_ctx.create(_fontSize, _allocator);
+	s_ImguiContext.create(_fontSize, _allocator);
 }
 
 void imguiDestroy()
 {
-	s_ctx.destroy();
+	s_ImguiContext.destroy();
 }
 
 void imguiBeginFrame(int32_t _mx, int32_t _my, uint8_t _button, int32_t _scroll, uint16_t _width, uint16_t _height, int _inputChar, bgfx::ViewId _viewId)
 {
-	s_ctx.beginFrame(_mx, _my, _button, _scroll, _width, _height, _inputChar, _viewId);
+	s_ImguiContext.beginFrame(_mx, _my, _button, _scroll, _width, _height, _inputChar, _viewId);
 }
 
 void imguiEndFrame()
 {
-	s_ctx.endFrame();
+	s_ImguiContext.endFrame();
 }
 
 namespace ImGui
 {
 	void PushFont(Font::Enum _font)
 	{
-		PushFont(s_ctx.m_font[_font]);
+		PushFont(s_ImguiContext.m_font[_font]);
 	}
 
 	void PushEnabled(bool _enabled)

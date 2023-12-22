@@ -22,3 +22,7 @@ include_directories(extern/stb)
 add_subdirectory(extern/bgfx.cmake)
 include_directories(extern/bgfx.cmake/bgfx/include)
 target_link_libraries(lunam bgfx bx bimg)
+
+add_subdirectory(extern/imgui)
+include_directories(extern/imgui)
+target_link_libraries(lunam imgui)

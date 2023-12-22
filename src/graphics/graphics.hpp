@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "core.hpp"
+#include "../core/core.hpp"
 
 #include <GLFW/glfw3.h>
 

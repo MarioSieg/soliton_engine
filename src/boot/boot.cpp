@@ -5,8 +5,8 @@
 #include <span>
 #include <vector>
 
-#include "core.hpp"
-#include "graphics.hpp"
+#include "../core/core.hpp"
+#include "../graphics/graphics.hpp"
 
 #include <GLFW/glfw3.h>
 #if PLATFORM_WINDOWS // TODO: OSX, Linux
@@ -390,10 +390,11 @@ static auto LunamMain() -> void {
     const auto clock = std::chrono::system_clock::now();
     std::ostream::sync_with_stdio(false);
     spdlog::init_thread_pool(kLogQueueSize, kLogThreads);
-    std::shared_ptr<spdlog::logger> engineLogger = CreateLogger("LunamEngine", "%H:%M:%S:%e %s:%# %^[%l]%$ T:%t %v");
-    std::shared_ptr<spdlog::logger> scriptLogger = CreateLogger("Lua", "%H:%M:%S:%e %v");
+    std::shared_ptr<spdlog::logger> engineLogger = CreateLogger("Engine", "%H:%M:%S:%e %s:%# %^[%l]%$ T:%t %v");
+    std::shared_ptr<spdlog::logger> scriptLogger = CreateLogger("App", "%H:%M:%S:%e %v");
     spdlog::set_default_logger(engineLogger);
     LOG_INFO("LunamEngine v0.0.1");
+    LOG_INFO("Copyright (c) 2022-2023 Mario \"Neo\" Sieg. All Rights Reserved.");
     LOG_INFO("Booting Engine Kernel...");
     LOG_INFO("Build date: {}", __DATE__);
     LOG_INFO("Build time: {}", __TIME__);

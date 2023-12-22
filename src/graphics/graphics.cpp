@@ -4,10 +4,12 @@
 
 #include <atomic>
 #include <bgfx/bgfx.h>
+#include <imgui.h>
+#include "imgui/imgui_renderer.hpp"
 
 static constinit std::atomic_bool s_Initialized;
 static constinit GLFWwindow* s_Window;
-static constinit std::uint32_t s_ResetFlags = BGFX_RESET_SRGB_BACKBUFFER;
+static constinit std::uint32_t s_ResetFlags = 0;
 
 auto Graphics::InitGraphics(GLFWwindow* window, void* nativeWindow) -> void {
     Assert(!s_Initialized.load(std::memory_order_seq_cst));
@@ -27,6 +29,8 @@ auto Graphics::InitGraphics(GLFWwindow* window, void* nativeWindow) -> void {
 
     Assert(bgfx::init(init));
 
+    imguiCreate(window);
+
     s_Initialized.store(true, std::memory_order_seq_cst);
 }
 
@@ -37,10 +41,13 @@ auto Graphics::BeginFrame() -> void {
     bgfx::setViewRect(0, 0, 0, w, h);
     bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, ~0u, 1.0f, 0);
     bgfx::touch(0);
+    imguiBeginFrame(w, h, 0xff);
+    ImGui::ShowDemoWindow();
 }
 
 auto Graphics::EndFrame() -> void {
     Assert(s_Initialized.load(std::memory_order_seq_cst));
+    imguiEndFrame();
     bgfx::frame();
 }
 
@@ -52,6 +59,7 @@ auto Graphics::OnResize() -> void {
 
 auto Graphics::ShutdownGraphics() -> void {
     Assert(s_Initialized.load(std::memory_order_seq_cst));
+    imguiDestroy();
     bgfx::shutdown();
     s_Initialized.store(false, std::memory_order_seq_cst);
 }
