@@ -7,14 +7,16 @@
 
 static constinit std::atomic_bool s_Initialized;
 static constinit GLFWwindow* s_Window;
+static constinit std::uint32_t s_ResetFlags = BGFX_RESET_SRGB_BACKBUFFER;
 
-auto InitGraphics(GLFWwindow* window, void* nativeWindow) -> void {
+auto Graphics::InitGraphics(GLFWwindow* window, void* nativeWindow) -> void {
     Assert(!s_Initialized.load(std::memory_order_seq_cst));
     Assert(window != nullptr && nativeWindow != nullptr);
     s_Window = window;
 
     bgfx::Init init {};
     init.platformData.nwh = nativeWindow;
+    init.resolution.reset = s_ResetFlags;
 #if PLATFORM_WINDOWS
     init.type = bgfx::RendererType::Direct3D11;
 #elif PLATFORM_LINUX
@@ -28,7 +30,7 @@ auto InitGraphics(GLFWwindow* window, void* nativeWindow) -> void {
     s_Initialized.store(true, std::memory_order_seq_cst);
 }
 
-auto BeginFrame() -> void {
+auto Graphics::BeginFrame() -> void {
     Assert(s_Initialized.load(std::memory_order_seq_cst));
     int w, h;
     glfwGetFramebufferSize(s_Window, &w, &h);
@@ -37,12 +39,18 @@ auto BeginFrame() -> void {
     bgfx::touch(0);
 }
 
-auto EndFrame() -> void {
+auto Graphics::EndFrame() -> void {
     Assert(s_Initialized.load(std::memory_order_seq_cst));
     bgfx::frame();
 }
 
-auto ShutdownGraphics() -> void {
+auto Graphics::OnResize() -> void {
+    int w, h;
+    glfwGetFramebufferSize(s_Window, &w, &h);
+    bgfx::reset(w, h, s_ResetFlags);
+}
+
+auto Graphics::ShutdownGraphics() -> void {
     Assert(s_Initialized.load(std::memory_order_seq_cst));
     bgfx::shutdown();
     s_Initialized.store(false, std::memory_order_seq_cst);

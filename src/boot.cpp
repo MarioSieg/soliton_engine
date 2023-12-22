@@ -281,6 +281,11 @@ static constinit GLFWwindow* s_Window;
 static constinit void* s_NativeWindow; // HWND on Windows, NSWindow on macOS etc..
 static constinit GLFWmonitor* s_Monitor;
 
+static auto OnResizeHook(int w, int h) -> void {
+    LOG_INFO("Resizing window to {}x{}", w, h);
+    Graphics::OnResize();
+}
+
 static auto InitPlatformBackend() -> void {
     LOG_INFO("Initializing platform backend");
     Assert(!s_Initialized.load(std::memory_order_seq_cst));
@@ -300,6 +305,8 @@ static auto InitPlatformBackend() -> void {
     s_NativeWindow = reinterpret_cast<void*>(glfwGetWin32Window(s_Window));
 #endif // TODO: OSX, Linux
     Assert(s_NativeWindow != nullptr);
+    // setup hooks
+    glfwSetFramebufferSizeCallback(s_Window, +[](GLFWwindow*, int w, int h) -> void { OnResizeHook(w, h); });
 
     // query monitor and print some info
     auto printMonitorInfo = [](GLFWmonitor* mon) {
@@ -363,8 +370,8 @@ static auto IsSimRunning() -> bool {
 
 static auto TickSim() -> void {
     glfwPollEvents();
-    BeginFrame();
-    EndFrame();
+    Graphics::BeginFrame();
+    Graphics::EndFrame();
 }
 
 static auto EnterSimLoop() -> void {
@@ -401,12 +408,12 @@ static auto LunamMain() -> void {
     DumpLoadedDylibs();
     PrintSep();
     InitPlatformBackend();
-    InitGraphics(s_Window, s_NativeWindow);
+    Graphics::InitGraphics(s_Window, s_NativeWindow);
     LOG_INFO("Engine online in {} ms", std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - clock).count());
     LOG_INFO("Entering simulation");
     EnterSimLoop();
     LOG_INFO("Shutting down...");
-    ShutdownGraphics();
+    Graphics::ShutdownGraphics();
     ShutdownPlatformBackend();
     LOG_INFO("System offline");
 }
