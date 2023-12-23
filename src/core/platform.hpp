@@ -470,17 +470,3 @@
 #else
 #   define API_EXPORT
 #endif
-
-#if COMPILER_MSVC
-#   define FLATTEN __forceinline
-#   define FORCEINLINE __forceinline
-#   define NOINLINE __declspec(noinline)
-#   define HOT
-#   define COLD
-#else
-#   define FLATTEN __attribute__((flatten))
-#   define FORCEINLINE __attribute__((always_inline))
-#   define NOINLINE __attribute__((noinline))
-#   define HOT __attribute__((hot))
-#   define COLD __attribute__((cold))
-#endif
