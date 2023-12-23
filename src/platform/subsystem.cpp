@@ -222,7 +222,7 @@ auto dump_loaded_dylibs() -> void {
         log_info("Resizing window to {}x{}", w, h);
     }
 
-    platform_subsystem::platform_subsystem() : subsystem{"platform"} {
+    platform_subsystem::platform_subsystem() : subsystem{"Platform"} {
         passert(s_window == nullptr);
 
         log_info("Initializing platform backend");

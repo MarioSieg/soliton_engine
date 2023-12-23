@@ -4,11 +4,13 @@
 
 #include "../platform/subsystem.hpp"
 #include "../graphics/subsystem.hpp"
+#include "../scripting/subsystem.hpp"
 
 static auto lunam_entry() -> void {
     kernel kernel {};
     kernel.install<platform::platform_subsystem>();
     kernel.install<graphics::graphics_subsystem>();
+    kernel.install<scripting::scripting_subsystem>();
     kernel.run();
 }
 

@@ -10,7 +10,8 @@
 using platform::platform_subsystem;
 
 namespace graphics {
-    graphics_subsystem::graphics_subsystem() : subsystem{"graphics"} {
+    graphics_subsystem::graphics_subsystem() : subsystem{"Graphics"} {
+        log_info("Initializing graphics subsystem");
         void* wnd = platform_subsystem::get_native_window();
         passert(wnd != nullptr);
         bgfx::Init init {};
