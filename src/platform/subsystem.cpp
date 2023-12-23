@@ -254,6 +254,7 @@ auto dump_loaded_dylibs() -> void {
     #endif // TODO: OSX, Linux
         passert(s_native_window != nullptr);
         glfwSetWindowUserPointer(s_window, this);
+        glfwSetWindowSizeLimits(s_window, 800, 600, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
         // setup hooks
         glfwSetFramebufferSizeCallback(s_window, &proxy_resize_hook);
