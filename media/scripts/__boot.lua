@@ -6,6 +6,22 @@
 
 local ffi = require 'ffi'
 
+-- Init protocol logger
+protocol = {}
+local print_proxy = _G.print
+function _G.print(...)
+    local args = {...}
+    local str = string.format('[%s] ', os.date('%H:%M:%S'))
+    for i, arg in ipairs(args) do
+        if i > 1 then
+            str = str..' '
+        end
+        str = str..tostring(arg)
+    end
+    print_proxy(str)
+    table.insert(protocol, str)
+end
+
 -- We load panic manually because it's not in the package path yet
 ffi.cdef [[
     void __lu_panic(const char* msg);
@@ -30,7 +46,6 @@ local REQUIRED_DIRS = { -- TODO: Maybe autogenerate filelist from real directory
 
 -- Let's check if our working directory is correct
 local wkdir = lfs.currentdir()
-print('Working dir: '..wkdir)
 for _, dir in ipairs(REQUIRED_DIRS) do
     local directory = wkdir..'/'..dir
     if lfs.attributes(directory) == nil then
@@ -44,17 +59,21 @@ local INCLUDE_DIRS = {
 
 -- add all other directories to package paths
 for _, path in ipairs(INCLUDE_DIRS) do
-    print('Additional Lua library dirs: ' .. path)
     package.path = string.format('%s;%s/?.lua', package.path, path)
 end
 
 -- print JIT info
 local jit = require 'jit'
-print(jit.version)
-print(jit.os)
-print(jit.arch)
 local inspect = require 'lu.inspect'
-print('JIT active: '..inspect({jit.status()}))
+print(string.format('%s %s %s', jit.version, jit.os, jit.arch))
+local status = tostring(jit.status())
+print('JIT active: '..status)
+
+-- print package paths
+print('Working dir: '..wkdir)
+for _, path in ipairs(INCLUDE_DIRS) do
+    print('Additional script dir: ' .. path)
+end
 
 -- Init random seed
 math.randomseed(os.time())
@@ -82,12 +101,11 @@ function __on_prepare__()
     end
     table.sort(files)
     for _, file in ipairs(files) do
-        print('Loading script: '..file)
+        print('Executing hook script: '..file)
         local chunk, err = loadfile(file)
         if chunk == nil then
             panic('Failed to load script: '..file..'\n'..err)
         end
-        print('Executing script: '..file)
         local mod = chunk() -- execute the script
         local hook = mod._tick_
         if hook ~= nil then

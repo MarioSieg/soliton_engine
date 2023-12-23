@@ -13,7 +13,9 @@ time = {
     time_scale = 1.0, -- 1.0 = realtime, 0.0 = paused
     frame = 0, -- frame counter
     fps = 0.0, -- frames per second
-    avg_fps = 0.0, -- average frames per second over N samples
+    fps_avg = 0.0, -- average frames per second over N samples
+    fps_min = 0.0, -- minimum frames per second
+    fps_max = 0.0, -- maximum frames per second
     fps_histogram = {}, -- frames per second histogram
 }
 
@@ -39,7 +41,9 @@ function time._tick_()
             sum_fps = sum_fps + time.fps_histogram[i]
         end
     end
-    time.avg_fps = sum_fps / buffer_size
+    time.fps_avg = sum_fps / buffer_size
+    time.fps_min = math.min(time.fps_min, time.fps)
+    time.fps_max = math.max(time.fps_max, time.fps)
     idx = idx + 1
     idx = ((idx - 1) % buffer_size) + 1
 end
