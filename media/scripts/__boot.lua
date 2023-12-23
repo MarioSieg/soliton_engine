@@ -25,3 +25,10 @@ math.randomseed(os.time())
 -- Uncomment to enable JIT assembly dump (useful for optimizing):
 
 -- require('jit.dump').on('m')
+
+collectgarbage('stop') -- stop the GC, we run it manually every frame
+
+-- Invoked from native code
+function __on_update()
+    collectgarbage('collect') -- manually execute GC cycle every frame
+end
