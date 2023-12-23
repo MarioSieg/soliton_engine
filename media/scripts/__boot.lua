@@ -19,6 +19,9 @@ print(jit.arch)
 local inspect = require 'inspect'
 print('JIT active: '..inspect({jit.status()}))
 
+-- Init random seed
+math.randomseed(os.time())
+
 -- Uncomment to enable JIT assembly dump (useful for optimizing):
 
 -- require('jit.dump').on('m')
