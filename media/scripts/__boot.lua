@@ -19,5 +19,6 @@ print(jit.arch)
 local inspect = require 'inspect'
 print('JIT active: '..inspect({jit.status()}))
 
--- Uncomment to enable JIT assembly dump (useful for optimizing)
+-- Uncomment to enable JIT assembly dump (useful for optimizing):
+
 -- require('jit.dump').on('m')
