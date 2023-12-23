@@ -56,7 +56,7 @@ print('JIT active: '..inspect({jit.status()}))
 math.randomseed(os.time())
 
 -- Uncomment to enable JIT assembly dump (useful for optimizing):
-require('jit.dump').on('m')
+-- require('jit.dump').on('m')
 
 -- Ok so now we can load the rest of the engine script files
 
