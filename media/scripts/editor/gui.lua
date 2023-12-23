@@ -6033,7 +6033,6 @@ M.ImFontAtlasBuildPackCustomRects = lib.igImFontAtlasBuildPackCustomRects
 M.ImFontAtlasBuildRender32bppRectFromString = lib.igImFontAtlasBuildRender32bppRectFromString
 M.ImFontAtlasBuildRender8bppRectFromString = lib.igImFontAtlasBuildRender8bppRectFromString
 M.ImFontAtlasBuildSetupFont = lib.igImFontAtlasBuildSetupFont
-M.ImFontAtlasGetBuilderForStbTruetype = lib.igImFontAtlasGetBuilderForStbTruetype
 M.ImFontAtlasUpdateConfigDataPointers = lib.igImFontAtlasUpdateConfigDataPointers
 M.ImFormatString = lib.igImFormatString
 M.ImFormatStringToTempBuffer = lib.igImFormatStringToTempBuffer

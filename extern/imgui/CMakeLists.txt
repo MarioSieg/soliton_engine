@@ -11,6 +11,7 @@ add_library (
     imstb_rectpack.h
     imstb_textedit.h
     imstb_truetype.h
+    misc/freetype/imgui_freetype.cpp
 )
 
 target_include_directories(imgui PRIVATE ./)

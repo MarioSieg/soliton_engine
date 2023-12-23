@@ -12,9 +12,6 @@
 #endif
 #endif
 #include <imgui.h>
-#ifdef IMGUI_ENABLE_FREETYPE
-#include "./imgui/misc/freetype/imgui_freetype.h"
-#endif
 #include <imgui_internal.h>
 #include "editor.gui.lua.hpp"
 
@@ -5491,10 +5488,6 @@ CIMGUI_API void igDebugRenderKeyboardPreview(ImDrawList* draw_list)
 CIMGUI_API void igDebugRenderViewportThumbnail(ImDrawList* draw_list,ImGuiViewportP* viewport,const ImRect bb)
 {
     return ImGui::DebugRenderViewportThumbnail(draw_list,viewport,bb);
-}
-CIMGUI_API const ImFontBuilderIO* igImFontAtlasGetBuilderForStbTruetype()
-{
-    return ImFontAtlasGetBuilderForStbTruetype();
 }
 CIMGUI_API void igImFontAtlasUpdateConfigDataPointers(ImFontAtlas* atlas)
 {
