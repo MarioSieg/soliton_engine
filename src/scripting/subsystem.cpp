@@ -2,6 +2,8 @@
 
 #include "subsystem.hpp"
 
+#include <lfs.c>
+
 namespace scripting {
     template <typename... Ts>
     static auto lua_log_info(const fmt::format_string<Ts...> fmt, Ts&&... args) -> void {
@@ -22,6 +24,7 @@ namespace scripting {
         m_L = luaL_newstate();
         passert(m_L != nullptr);
         luaL_openlibs(m_L);
+        passert(luaopen_lfs(m_L) == 1);
 
         static constexpr auto print_proxy = [](lua_State* l) -> int {
             for (int i  = 1; i <= lua_gettop(l); ++i) {
@@ -47,12 +50,34 @@ namespace scripting {
 
         // run boot script
         passert(exec_file("media/scripts/__boot.lua"));
+
+        // setup hooks
+        m_on_prepare = luabridge::getGlobal(m_L, "__on_prepare__");
+        m_on_tick = luabridge::getGlobal(m_L, "__on_tick__");
+        passert(m_on_prepare && m_on_prepare->isFunction());
+        passert(m_on_tick && m_on_tick->isFunction());
     }
 
     scripting_subsystem::~scripting_subsystem() {
+        m_on_tick.reset();
+        m_on_prepare.reset();
         spdlog::get("App")->flush();
         lua_close(m_L);
         m_L = nullptr;
+    }
+
+    void scripting_subsystem::on_prepare() {
+        luabridge::LuaResult r = (*m_on_prepare)();
+        if (r.hasFailed()) [[unlikely]] {
+            lua_log_error("Error in __boot.lua in __on_prepare__: {}", r.errorMessage());
+        }
+    }
+
+    void scripting_subsystem::on_post_tick() {
+        luabridge::LuaResult r = (*m_on_tick)();
+        if (r.hasFailed()) [[unlikely]] {
+            lua_log_error("Error in __boot.lua in __on_tick__: {}", r.errorMessage());
+        }
     }
 
     auto scripting_subsystem::exec_file(const char* file) -> bool {
