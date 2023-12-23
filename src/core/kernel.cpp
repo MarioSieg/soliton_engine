@@ -138,6 +138,10 @@ auto kernel::run() -> void {
                 running = false;
         });
 
+        std::for_each(m_subsystems.cbegin(), m_subsystems.cend(), [](const std::shared_ptr<subsystem>& sys) {
+            sys->on_tick();
+        });
+
         std::for_each(m_subsystems.crbegin(), m_subsystems.crend(), [](const std::shared_ptr<subsystem>& sys) {
            sys->on_post_tick();
         });

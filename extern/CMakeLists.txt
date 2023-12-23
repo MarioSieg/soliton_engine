@@ -27,6 +27,10 @@ add_subdirectory(extern/imgui)
 include_directories(extern/imgui)
 target_link_libraries(lunam imgui)
 
+add_subdirectory(extern/implot)
+include_directories(extern/implot)
+target_link_libraries(lunam implot)
+
 include_directories(extern/LuaJIT/src)
 target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/extern/__bin/win_amd64/lua51.lib)
 

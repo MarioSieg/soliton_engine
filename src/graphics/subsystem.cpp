@@ -43,7 +43,6 @@ namespace graphics {
         bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, ~0u, 1.0f, 0);
         bgfx::touch(0);
         ImGuiEx::BeginFrame(w, h, 0xff);
-        ImGui::ShowDemoWindow();
         return true;
     }
 
