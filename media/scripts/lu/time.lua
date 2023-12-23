@@ -6,7 +6,7 @@ ffi.cdef [[
     double __lu_get_delta_time(void);
 ]]
 
-local m = {
+time = {
     delta_time = 0.0, -- in seconds
     time = 0.0, -- in seconds
     frame_time = 0.0, -- in milliseconds
@@ -17,31 +17,31 @@ local m = {
     fps_histogram = {}, -- frames per second histogram
 }
 
-local samples = 1024 
+local samples = 256 
 local prev = 0.0
 local buffer_size = samples
 local idx = 1
 
-function m._tick_()
-    m.delta_time = ffi.C.__lu_get_delta_time()
-    m.time = m.time + m.delta_time
-    m.frame_time = m.delta_time * 1000.0
-    m.frame = m.frame + 1
-    m.fps = 1000.0 / m.frame_time
+function time._tick_()
+    time.delta_time = ffi.C.__lu_get_delta_time()
+    time.time = time.time + time.delta_time
+    time.frame_time = time.delta_time * 1000.0
+    time.frame = time.frame + 1
+    time.fps = 1000.0 / time.frame_time
 
     -- Update circular buffer with the current fps
-    m.fps_histogram[idx] = m.fps
+    time.fps_histogram[idx] = time.fps
 
     -- Calculate the average fps over N samples
     local sum_fps = 0.0
     for i = 1, buffer_size do
-        if m.fps_histogram[i] then
-            sum_fps = sum_fps + m.fps_histogram[i]
+        if time.fps_histogram[i] then
+            sum_fps = sum_fps + time.fps_histogram[i]
         end
     end
-    m.avg_fps = sum_fps / buffer_size
+    time.avg_fps = sum_fps / buffer_size
     idx = idx + 1
     idx = ((idx - 1) % buffer_size) + 1
 end
 
-return m
+return time

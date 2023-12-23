@@ -1,4 +1,8 @@
 -- Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+-- This file is very important, it's the first script that gets executed by the engine.
+-- It's responsible for loading all other scripts and setting up the environment.
+-- It also contains the main tick loop.
+-- Only modify this file if you know what you're doing.
 
 local ffi = require 'ffi'
 
@@ -60,13 +64,16 @@ math.randomseed(os.time())
 
 -- Ok so now we can load the rest of the engine script files
 
--- Load all scripts in the given directory
-local function load_scripts(dir)
+-- Load all exported scripts
+local hooks = {} -- Global variable that holds all tick hooks
+local HOOK_DIR = 'media/scripts/lu'
+
+-- DO NOT Rename - Invoked from native code
+function __on_prepare__()
     local files = {}
-    local hooks = {}
-    for file in lfs.dir(dir) do
+    for file in lfs.dir(HOOK_DIR) do
         if file ~= '.' and file ~= '..' then
-            local path = dir..'/'..file
+            local path = HOOK_DIR..'/'..file
             local attr = lfs.attributes(path)
             if attr.mode == 'file' then
                 table.insert(files, path)
@@ -81,21 +88,12 @@ local function load_scripts(dir)
             panic('Failed to load script: '..file..'\n'..err)
         end
         print('Executing script: '..file)
-        chunk = chunk() -- execute the script
-        local hook = chunk._tick_ -- check if the script has a tick hook
+        local mod = chunk() -- execute the script
+        local hook = mod._tick_
         if hook ~= nil then
             table.insert(hooks, hook)
-            print('Found tick hook: '..file)
         end
     end
-    return hooks
-end
-
-local hooks = {} -- tick hooks
-
--- DO NOT Rename - Invoked from native code
-function __on_prepare__()
-    hooks = load_scripts('media/scripts/lu') -- load all scripts in the lu directory
     print('Loaded '..#hooks..' tick hooks')
     collectgarbage('stop') -- stop the GC, we run it manually every frame
 end
