@@ -255,21 +255,23 @@ struct ImguiContext final {
 
 static ImguiContext s_ImguiContext;
 
-void imguiCreate(GLFWwindow* window) {
-    s_ImguiContext.create();
-    ImGui_ImplGlfw_InitForOther(window, true);
-}
+namespace ImGuiEx {
+    void Create(GLFWwindow* window) {
+        s_ImguiContext.create();
+        ImGui_ImplGlfw_InitForOther(window, true);
+    }
 
-void imguiDestroy() {
-    ImGui_ImplGlfw_Shutdown();
-    s_ImguiContext.destroy();
-}
+    void Destroy() {
+        ImGui_ImplGlfw_Shutdown();
+        s_ImguiContext.destroy();
+    }
 
-void imguiBeginFrame(uint16_t _width, uint16_t _height, bgfx::ViewId _viewId) {
-    ImGui_ImplGlfw_NewFrame();
-    s_ImguiContext.beginFrame(_width, _height, _viewId);
-}
+    void BeginFrame(uint16_t _width, uint16_t _height, bgfx::ViewId _viewId) {
+        ImGui_ImplGlfw_NewFrame();
+        s_ImguiContext.beginFrame(_width, _height, _viewId);
+    }
 
-void imguiEndFrame() {
-    s_ImguiContext.endFrame();
+    void EndFrame() {
+        s_ImguiContext.endFrame();
+    }
 }

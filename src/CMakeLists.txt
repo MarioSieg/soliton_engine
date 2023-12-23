@@ -1,7 +1,12 @@
-file(GLOB_RECURSE SOURCES "src/*.cpp")
+file(GLOB_RECURSE SOURCES
+    src/*.cpp
+    src/*.hpp
+)
 if (WIN32)
     set(APP_ICON_RESOURCE_WINDOWS "WinRes.rc")
 else()
-    set(APP_ICON_RESOURCE_WINDOWS "")
+    set(APP_ICON_RESOURCE_WINDOWS ""
+            platform/subsystem.cpp
+            platform/subsystem.hpp)
 endif()
 add_executable(lunam WIN32 ${SOURCES} ${APP_ICON_RESOURCE_WINDOWS})

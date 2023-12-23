@@ -6,52 +6,49 @@
 
 #include <array>
 #include <string>
+#include <span>
 #include <vector>
 
 #define FMT_CONSTEVAL constexpr
 
 #include <spdlog/spdlog.h>
 
-template <typename... Ts>
-[[nodiscard]] inline auto Format(const fmt::format_string<Ts...>& formatString, Ts&&... args) -> std::string {
-    return fmt::format(formatString, std::forward<Ts>(args)...);
-}
+#define log_info SPDLOG_INFO
+#define log_warn SPDLOG_WARN
+#define log_error SPDLOG_ERROR
+#define log_critical SPDLOG_CRITICAL
+#define print_sep() log_info("------------------------------------------------------------")
 
-#define LOG_INFO(...) SPDLOG_INFO(__VA_ARGS__)
-#define LOG_WARN(...) SPDLOG_WARN(__VA_ARGS__)
-#define LOG_ERROR(...) SPDLOG_ERROR(__VA_ARGS__)
-#define LOG_CRITICAL(...) SPDLOG_CRITICAL(__VA_ARGS__)
-
-class NoCopy {
+class no_copy {
 public:
-    constexpr NoCopy() = default;
-    constexpr NoCopy(const NoCopy&) = delete;
-    constexpr auto operator = (const NoCopy&) -> NoCopy& = delete;
-    constexpr NoCopy(NoCopy&&) = default;
-    constexpr auto operator = (NoCopy&&) -> NoCopy& = default;
-    ~NoCopy() = default;
+    constexpr no_copy() = default;
+    constexpr no_copy(const no_copy&) = delete;
+    constexpr auto operator = (const no_copy&) -> no_copy& = delete;
+    constexpr no_copy(no_copy&&) = default;
+    constexpr auto operator = (no_copy&&) -> no_copy& = default;
+    ~no_copy() = default;
 };
 
-class NoMove {
+class no_move {
 public:
-    constexpr NoMove() = default;
-    constexpr NoMove(NoMove&&) = delete;
-    constexpr auto operator = (NoMove&&) -> NoMove& = delete;
-    constexpr NoMove(const NoMove&) = default;
-    constexpr auto operator = (const NoMove&) -> NoMove& = default;
-    ~NoMove() = default;
+    constexpr no_move() = default;
+    constexpr no_move(no_move&&) = delete;
+    constexpr auto operator = (no_move&&) -> no_move& = delete;
+    constexpr no_move(const no_move&) = default;
+    constexpr auto operator = (const no_move&) -> no_move& = default;
+    ~no_move() = default;
 };
 
-[[noreturn]] extern auto PanicImpl(std::string&& message) -> void;
+[[noreturn]] extern auto panic_impl(std::string&& message) -> void;
 
 template <typename... Args>
-[[noreturn]] auto Panic(std::string_view message, Args&&... args) -> void {
-    PanicImpl(Format(message, std::forward<Args>(args)...));
+[[noreturn]] auto panic(std::string_view message, Args&&... args) -> void {
+    panic_impl(fmt::format(message, std::forward<Args>(args)...));
 }
 
-#define Assert(expr) \
+#define passert(expr) \
 	do { \
 		if (!(expr)) [[unlikely]] { \
-			Panic("Assertion failed: {} in {}:{}", #expr, __FILE__, __LINE__); \
+			panic("Assertion failed: {} in {}:{}", #expr, __FILE__, __LINE__); \
 		} \
 	} while (false)

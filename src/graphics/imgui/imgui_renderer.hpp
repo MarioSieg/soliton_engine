@@ -2,7 +2,9 @@
 
 #pragma once
 
-extern auto imguiCreate(GLFWwindow* window) -> void;
-extern auto imguiDestroy() -> void;
-extern auto imguiBeginFrame(uint16_t _width, uint16_t _height, bgfx::ViewId _viewId) -> void;
-extern auto imguiEndFrame() -> void;
+namespace ImGuiEx {
+    extern auto Create(GLFWwindow* window) -> void;
+    extern auto Destroy() -> void;
+    extern auto BeginFrame(uint16_t _width, uint16_t _height, bgfx::ViewId _viewId) -> void;
+    extern auto EndFrame() -> void;
+}

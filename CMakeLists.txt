@@ -12,3 +12,5 @@ endif()
 
 include(src/CMakeLists.txt)
 include(extern/CMakeLists.txt)
+
+target_compile_options(lunam PRIVATE /W3)
