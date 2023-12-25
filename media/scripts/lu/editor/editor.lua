@@ -76,7 +76,7 @@ local function main_menu()
             end
             gui.Separator()
             if gui.MenuItem('Exit', 'Alt+F4') then
-                m.show_editor[0] = false
+                editor.show_editor[0] = false
             end
             gui.EndMenu()
         end
