@@ -89,7 +89,6 @@ editor.tools = {
 function editor:main_menu()
     if gui.BeginMainMenuBar() then
         if gui.BeginMenu('File') then
-            gui.Separator()
             if gui.MenuItem('Exit', 'Alt+F4') then
                 self.show_editor[0] = false
             end
@@ -105,6 +104,9 @@ function editor:main_menu()
         end
         gui.Separator()
         gui.Text(string.format('FPS: %d', time.fps_avg))
+        local time = os.date('*t')
+        gui.Separator()
+        gui.Text(string.format('%02d:%02d', time.hour, time.min))
         gui.EndMainMenuBar()
     end
 end
