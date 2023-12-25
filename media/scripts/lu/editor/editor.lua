@@ -109,7 +109,7 @@ local function main_menu()
         end
         if gui.BeginMenu('Tools') then
             for _, tool in ipairs(editor.tools) do
-                if gui.MenuItem(tool.name, nil) then
+                if gui.MenuItem(tool.name, nil, tool.is_visible[0]) then
                     tool.is_visible[0] = not tool.is_visible[0]
                 end
             end
