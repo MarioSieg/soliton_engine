@@ -7,8 +7,10 @@ if JIT_ASM_DUMP then
     require('jit.dump').on('m')
 end
 
--- Init protocol logger
+-- Init protocol logger.
 protocol = {}
+
+-- Forward print and error to the protocol logger
 local print_proxy = _G.print
 function _G.print(...)
     local args = {...}
@@ -20,6 +22,21 @@ function _G.print(...)
         str = str..tostring(arg)
     end
     print_proxy(str)
+    table.insert(protocol, str)
+end
+
+-- Forward print and error to the protocol logger
+local error_proxy = _G.error
+function _G.error(...)
+    local args = {...}
+    local str = string.format('[%s] ', os.date('%H:%M:%S'))
+    for i, arg in ipairs(args) do
+        if i > 1 then
+            str = str..' '
+        end
+        str = str..tostring(arg)
+    end
+    error_proxy(str)
     table.insert(protocol, str)
 end
 
@@ -52,7 +69,7 @@ for _, path in ipairs(REQUIRED_FILES) do
     fs_check(path)
 end
 print('Filesystem OK, '..numchecks..' entries checked.')
-dofile 'media/scripts/system/fsregistry_gen.lua' -- regenerate the fsregistry file
+dofile('media/scripts/tools/fsregistry_gen.lua') -- regenerate the fsregistry file
 
 -- Init random seed
 math.randomseed(os.time())

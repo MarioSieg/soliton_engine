@@ -33,10 +33,11 @@ local REQUIRED_FILES = {
 	'media/scripts/lu/time.lua',
 	'media/scripts/README.md',
 	'media/scripts/system/fsregistry.lua',
-	'media/scripts/system/fsregistry_gen.lua',
 	'media/scripts/system/hookmgr.lua',
 	'media/scripts/system/setup.lua',
 	'media/scripts/system/__boot__.lua',
+	'media/scripts/tools/fsregistry_gen.lua',
+	'media/scripts/tools/shadercompiler.lua',
 }
 
 return REQUIRED_FILES
