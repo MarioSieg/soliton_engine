@@ -11,7 +11,7 @@ end
 protocol = {}
 
 -- Forward print and error to the protocol logger
-local print_proxy = _G.print
+local printProxy = _G.print
 function _G.print(...)
     local args = {...}
     local str = string.format('[%s] ', os.date('%H:%M:%S'))
@@ -21,12 +21,12 @@ function _G.print(...)
         end
         str = str..tostring(arg)
     end
-    print_proxy(str)
+    printProxy(str)
     table.insert(protocol, str)
 end
 
 -- Forward print and error to the protocol logger
-local error_proxy = _G.error
+local errorProxy = _G.error
 function _G.error(...)
     local args = {...}
     local str = string.format('[%s] ', os.date('%H:%M:%S'))
@@ -36,7 +36,7 @@ function _G.error(...)
         end
         str = str..tostring(arg)
     end
-    error_proxy(str)
+    errorProxy(str)
     table.insert(protocol, str)
 end
 
@@ -56,17 +56,17 @@ end
 -- verify filesystem
 print('Verifying filesystem...')
 local numchecks = 0
-local function fs_check(path)
+local function checkFsEntry(path)
     numchecks = numchecks + 1
     if not lfs.attributes(path) then
         panic('Broken installation! Required file or directory not found: '..path)
     end
 end
-fs_check('media')
-fs_check('media/scripts/system/fsregistry.lua') -- this file is required to check the other files
+checkFsEntry('media')
+checkFsEntry('media/scripts/system/fsregistry.lua') -- this file is required to check the other files
 local REQUIRED_FILES = require 'system.fsregistry' -- load the list of required files
 for _, path in ipairs(REQUIRED_FILES) do
-    fs_check(path)
+    checkFsEntry(path)
 end
 print('Filesystem OK, '..numchecks..' entries checked.')
 dofile('media/scripts/tools/fsregistry_gen.lua') -- regenerate the fsregistry file

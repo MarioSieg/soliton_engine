@@ -27,30 +27,30 @@ app = {
     company = '',
     type = 'Game',
     window = {
-        is_maximized = false,
-        is_fullscreen = false,
-        is_visible = true,
+        isMaximized = false,
+        isFullscreen = false,
+        isVisible = true,
     }
 }
 
 function app.window.maximize()
     ffi.C.__lu_window_maximize()
-    app.window.is_maximized = true
+    app.window.isMaximized = true
 end
 
 function app.window.minimize()
     ffi.C.__lu_window_minimize()
-    app.window.is_maximized = false
+    app.window.isMaximized = false
 end
 
 function app.window.enter_fullscreen()
     ffi.C.__lu_window_enter_fullscreen()
-    app.window.is_fullscreen = true
+    app.window.isFullscreen = true
 end
 
 function app.window.leave_fullscreen()
     ffi.C.__lu_window_leave_fullscreen()
-    app.window.is_fullscreen = false
+    app.window.isFullscreen = false
 end
 
 function app.window.set_title(title)
@@ -72,12 +72,12 @@ end
 
 function app.window.show()
     ffi.C.__lu_window_show()
-    app.window.is_visible = true
+    app.window.isVisible = true
 end
 
 function app.window.hide()
     ffi.C.__lu_window_hide()
-    app.window.is_visible = false
+    app.window.isVisible = false
 end
 
 function app.window.allow_resize(allow)
