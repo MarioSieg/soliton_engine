@@ -44,7 +44,7 @@ private:
                                        bool enroll = true) -> std::shared_ptr<spdlog::logger> {
     const auto time = fmt::localtime(std::time(nullptr));
     std::vector<std::shared_ptr<spdlog::sinks::sink>> sinks = {
-        std::make_shared<buf_sink>(k_log_queue_size),
+        //std::make_shared<buf_sink>(k_log_queue_size),
         std::make_shared<spdlog::sinks::basic_file_sink_mt>(
             fmt::format("log/session {:%d-%m-%Y  %H-%M-%S}/{}.log", time, name)),
     };

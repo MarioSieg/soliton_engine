@@ -5,9 +5,11 @@
 local ffi = require 'ffi'
 local gui = require 'imgui.gui'
 
+local WINDOW_SIZE = gui.ImVec2(800+200, 600+200)
+
 local terminal = {
     name = 'Terminal',
-    visible = ffi.new('bool[1]', true),
+    is_visible = ffi.new('bool[1]', true),
     command_buf_len = 512,
     command_buf = ffi.new('char[?]', 512),
     scroll_to_bottom = false,
@@ -15,10 +17,10 @@ local terminal = {
 }
 
 function terminal:render()
-    gui.SetNextWindowSize(ffi.new('ImVec2', 800+200, 600+200), ffi.C.ImGuiCond_FirstUseEver)
-    if gui.Begin('Terminal', self.visible, ffi.C.ImGuiWindowFlags_NoScrollbar) then
-        if gui.BeginChild('ScrollingRegion', ffi.new('ImVec2', 0, -gui.GetFrameHeightWithSpacing()), false, ffi.C.ImGuiWindowFlags_HorizontalScrollbar) then
-            gui.PushStyleVar(ffi.C.ImGuiStyleVar_ItemSpacing, ffi.new('ImVec2', 4, 1))
+    gui.SetNextWindowSize(WINDOW_SIZE, ffi.C.ImGuiCond_FirstUseEver)
+    if gui.Begin('Terminal', self.is_visible, ffi.C.ImGuiWindowFlags_NoScrollbar) then
+        if gui.BeginChild('ScrollingRegion', gui.ImVec2(0, -gui.GetFrameHeightWithSpacing()), false, ffi.C.ImGuiWindowFlags_HorizontalScrollbar) then
+            gui.PushStyleVar(ffi.C.ImGuiStyleVar_ItemSpacing, gui.ImVec2(4.0, 1.0))
             for _, record in ipairs(protocol) do
                 gui.TextUnformatted(record)
             end
@@ -53,10 +55,35 @@ function terminal:render()
     gui.End()
 end
 
+local profiler = {
+    name = 'Profiler',
+    is_visible = ffi.new('bool[1]', true),
+    frame_times = ffi.new('float[?]', time.fps_histogram_samples),
+}
+
+function profiler:render()
+    if gui.Begin('Profiler', self.is_visible) then
+        for i = 1, time.fps_histogram_samples do -- copy fps histogram to frame times
+            self.frame_times[i-1] = time.fps_histogram[i] or 0.0
+        end
+        local plot_size = gui.ImVec2(WINDOW_SIZE.x, 200.0)
+        gui.PlotHistogram_FloatPtr('Frame times', self.frame_times, time.fps_histogram_samples, 0, nil, 0.0, time.fps_avg * 2.0, plot_size)
+        gui.Text(string.format('FPS: %d', time.fps_avg))
+        gui.Text(string.format('FPS avg: %d', time.fps_avg))
+        gui.Text(string.format('FPS min: %d', time.fps_min))
+        gui.Text(string.format('FPS max: %d', time.fps_max))
+        gui.Text(string.format('Time: %.3f s', time.time))
+        gui.Text(string.format('Delta time: %.3f s', time.delta_time))
+        gui.Text(string.format('Frame time: %.3f ms', time.frame_time))
+    end
+    gui.End()
+end
+
 editor = {}
 editor.show_editor = ffi.new('bool[1]', true)
 editor.tools = {
-    terminal
+    terminal,
+    profiler
 }
 
 local function main_menu()
@@ -80,6 +107,14 @@ local function main_menu()
             end
             gui.EndMenu()
         end
+        if gui.BeginMenu('Tools') then
+            for _, tool in ipairs(editor.tools) do
+                if gui.MenuItem(tool.name, nil) then
+                    tool.is_visible[0] = not tool.is_visible[0]
+                end
+            end
+            gui.EndMenu()
+        end
         gui.Separator()
         gui.Text(string.format('FPS: %d', time.fps_avg))
         gui.EndMainMenuBar()
@@ -90,7 +125,9 @@ function editor._on_tick_()
     if editor.show_editor[0] then
         main_menu()
         for _, tool in ipairs(editor.tools) do
-            tool:render()
+            if tool.is_visible[0] then
+                tool:render()
+            end
         end
     end
 end
