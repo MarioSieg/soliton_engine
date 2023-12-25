@@ -11,7 +11,7 @@ local terminal = {
     command_buf_len = 512,
     command_buf = ffi.new('char[?]', 512),
     scroll_to_bottom = false,
-    commands = require 'editor.commands'
+    commands = require 'lu.editor.commands'
 }
 
 function terminal:render()
