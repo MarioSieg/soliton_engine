@@ -39,6 +39,9 @@ function editor:renderMainMenu()
             end
             gui.EndMenu()
         end
+        if gui.BeginMenu('Help') then
+            gui.EndMenu()
+        end
         gui.Separator()
         gui.Text(string.format('FPS: %d', time.fpsAvg))
         local time = os.date('*t')

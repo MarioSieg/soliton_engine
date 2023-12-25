@@ -53,8 +53,8 @@ namespace scripting {
 
         // setup hooks
         m_on_prepare = luabridge::getGlobal(m_L, "__on_prepare__");
-        m_on_tick = luabridge::getGlobal(m_L, "__on_tick__");
         passert(m_on_prepare && m_on_prepare->isFunction());
+        m_on_tick = luabridge::getGlobal(m_L, "__on_tick__");
         passert(m_on_tick && m_on_tick->isFunction());
     }
 
