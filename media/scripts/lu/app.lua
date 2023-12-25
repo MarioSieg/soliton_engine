@@ -4,7 +4,6 @@ local ffi = require 'ffi'
 
 ffi.cdef [[
     typedef struct { int v[2]; } __lu_ivec2;
-    void __lu_panic(const char* msg);
     void __lu_window_maximize(void);
     void __lu_window_minimize(void);
     void __lu_window_enter_fullscreen(void);
@@ -33,11 +32,6 @@ app = {
         is_visible = true,
     }
 }
-
-function app.panic(msg)
-    assert(type(msg) == 'string')
-    ffi.C.__lu_panic(msg)
-end
 
 function app.window.maximize()
     ffi.C.__lu_window_maximize()

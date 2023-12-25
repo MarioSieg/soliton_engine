@@ -86,7 +86,7 @@ local function main_menu()
     end
 end
 
-function editor._tick_()
+function editor._on_tick_()
     if editor.show_editor[0] then
         main_menu()
         for _, tool in ipairs(editor.tools) do

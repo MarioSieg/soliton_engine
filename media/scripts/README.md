@@ -1,0 +1,1 @@
+Only scripts inside the lu/* folder are hooked

@@ -49,7 +49,7 @@ namespace scripting {
         lua_pop(m_L, 1);
 
         // run boot script
-        passert(exec_file("media/scripts/__boot.lua"));
+        passert(exec_file(k_boot_script));
 
         // setup hooks
         m_on_prepare = luabridge::getGlobal(m_L, "__on_prepare__");

@@ -22,9 +22,9 @@ time = {
 local samples = 256 
 local prev = 0.0
 local buffer_size = samples
-local idx = 1
+local idx = 1 -- ring buffer index
 
-function time._tick_()
+function time._on_tick_()
     time.delta_time = ffi.C.__lu_get_delta_time()
     time.time = time.time + time.delta_time
     time.frame_time = time.delta_time * 1000.0
