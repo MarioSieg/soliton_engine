@@ -52,6 +52,7 @@ for _, path in ipairs(REQUIRED_FILES) do
     fs_check(path)
 end
 print('Filesystem OK, '..numchecks..' entries checked.')
+dofile 'media/scripts/system/fsregistry_gen.lua' -- regenerate the fsregistry file
 
 -- Init random seed
 math.randomseed(os.time())

@@ -3,7 +3,7 @@
 -- The ImGui LuaJIT bindings are useable but somewhat dirty, which makes this file a bit messy - but hey it works!
 
 local ffi = require 'ffi'
-local gui = require 'editor.gui'
+local gui = require 'imgui.gui'
 
 local terminal = {
     name = 'Terminal',
