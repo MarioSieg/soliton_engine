@@ -2,18 +2,18 @@
 -- This file implements the editor GUI.
 -- The ImGui LuaJIT bindings are useable but somewhat dirty, which makes this file a bit messy - but hey it works!
 
-local ffi = require 'ffi'
-local gui = require 'imgui.gui'
+local FFI = require 'ffi'
+local GUI = require 'imgui.gui'
 require 'lu.editor.style'
 
-WINDOW_SIZE = gui.ImVec2(800+200, 600+200)
+WINDOW_SIZE = GUI.ImVec2(800+200, 600+200)
 
-editor = {}
-editor.isVisible = ffi.new('bool[1]', true)
+local editor = {}
+editor.isVisible = FFI.new('bool[1]', true)
 
 local terminal = require 'lu.editor.terminal'
 local profiler = require 'lu.editor.profiler'
-local scriptEditor = require 'lu.editor.script_editor'
+local scriptEditor = require 'lu.editor.scripteditor'
 
 editor.tools = {
     terminal,
@@ -24,38 +24,38 @@ editor.tools = {
 setupDarkStyle()
 
 function editor:renderMainMenu()
-    if gui.BeginMainMenuBar() then
-        if gui.BeginMenu('File') then
-            if gui.MenuItem('Exit', 'Alt+F4') then
-                self.isVisible[0] = false
+    if GUI.BeginMainMenuBar() then
+        if GUI.BeginMenu('File') then
+            if GUI.MenuItem('Exit', 'Alt+F4') then
+                editor.isVisible[0] = false
             end
-            gui.EndMenu()
+            GUI.EndMenu()
         end
-        if gui.BeginMenu('Tools') then
-            for _, tool in ipairs(self.tools) do
-                if gui.MenuItem(tool.name, nil, tool.isVisible[0]) then
+        if GUI.BeginMenu('Tools') then
+            for _, tool in ipairs(editor.tools) do
+                if GUI.MenuItem(tool.name, nil, tool.isVisible[0]) then
                     tool.isVisible[0] = not tool.isVisible[0]
                 end
             end
-            gui.EndMenu()
+            GUI.EndMenu()
         end
-        if gui.BeginMenu('Help') then
-            gui.EndMenu()
+        if GUI.BeginMenu('Help') then
+            GUI.EndMenu()
         end
-        gui.Separator()
-        gui.Text(string.format('FPS: %d', time.fpsAvg))
+        GUI.Separator()
+        GUI.Text(string.format('FPS: %d', Time.fpsAvg))
         local time = os.date('*t')
-        gui.Separator()
-        gui.Text(string.format('%02d:%02d', time.hour, time.min))
-        gui.EndMainMenuBar()
+        GUI.Separator()
+        GUI.Text(string.format('%02d:%02d', time.hour, time.min))
+        GUI.EndMainMenuBar()
     end
 end
 
 function editor:__onTick()
-    if self.isVisible[0] then
-        self:renderMainMenu()
-        gui.DockSpaceOverViewport(gui.GetMainViewport(), ffi.C.ImGuiDockNodeFlags_PassthruCentralNode)
-        for _, tool in ipairs(self.tools) do
+    if editor.isVisible[0] then
+        editor:renderMainMenu()
+        GUI.DockSpaceOverViewport(GUI.GetMainViewport(), FFI.C.ImGuiDockNodeFlags_PassthruCentralNode)
+        for _, tool in ipairs(editor.tools) do
             if tool.isVisible[0] then
                 tool:render()
             end

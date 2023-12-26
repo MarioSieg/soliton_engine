@@ -77,12 +77,14 @@ for i = 1, math.random() * 10 do -- warm up the random generator
     math.random()
 end
 
-local M = {
+local m = {
     hooks = require 'system.hookmgr'
 }
 
-function M:tick()
-    self.hooks:tick()
+print('Lua mem: '..(collectgarbage('count')/1024.0)..' MiB')
+
+function m:tick()
+    m.hooks:tick()
 end
 
-return M
+return m

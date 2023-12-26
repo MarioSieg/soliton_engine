@@ -8,8 +8,7 @@ local M = {
     isVisible = ffi.new('bool[1]', true),
     cmdBufLen = 512,
     cmdBuf = ffi.new('char[?]', 512),
-    autoScroll = false,
-    COMMANDS = require 'lu.editor.commands'
+    autoScroll = false
 }
 
 function M:render()
@@ -36,8 +35,8 @@ function M:render()
                         table.insert(args, word)
                     end
                     local cmd = args[1] -- get first word
-                    if self.COMMANDS[cmd] then -- check if command exists
-                        self.COMMANDS[cmd].execute(args) -- execute command
+                    if TERMINAL_COMMANDS[cmd] then -- check if command exists
+                        TERMINAL_COMMANDS[cmd].execute(args) -- execute command
                     else -- command not found
                         print('Unknown command: '..cmd)
                     end

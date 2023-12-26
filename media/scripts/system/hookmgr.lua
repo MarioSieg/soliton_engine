@@ -62,16 +62,16 @@ local function initCoreHooks(searchDir)
     return hooks
 end
 
-local M = {
+local m = {
     HOOK_DIR = 'media/scripts/lu',
     hooks = {}
 }
 
-M.hooks = initCoreHooks(M.HOOK_DIR)
-print('Loaded '..#M.hooks..' hooks')
+m.hooks = initCoreHooks(m.HOOK_DIR)
+print('Loaded '..#m.hooks..' hooks')
 
-function M:tick()
-    for _, hook in ipairs(self.hooks) do
+function m:tick()
+    for _, hook in ipairs(m.hooks) do
         local routine = hook[ON_TICK_HOOK]
         if routine ~= nil then -- check if the hook has a tick function
             routine(hook) -- execute tick hook
@@ -79,4 +79,4 @@ function M:tick()
     end
 end
 
-return M
+return m

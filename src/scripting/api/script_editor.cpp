@@ -15,9 +15,7 @@ static std::string g_editor_text;
 
 LUA_INTEROP_API void __lu_script_editor_render(const char* title) {
     title = title ? title : "Script Editor";
-    if (getEditor().GetTotalLines() > 0) {
-        getEditor().Render(title);
-    }
+    getEditor().Render(title, {}, true);
 }
 
 LUA_INTEROP_API void __lu_script_editor_set_text(const char* text) {
@@ -49,4 +47,8 @@ LUA_INTEROP_API void __lu_script_editor_undo() {
 
 LUA_INTEROP_API void __lu_script_editor_set_readonly(bool readonly) {
     getEditor().SetReadOnly(readonly);
+}
+
+LUA_INTEROP_API bool __lu_script_editor_has_text_changed(void) {
+    return getEditor().IsTextChanged();
 }

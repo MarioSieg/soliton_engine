@@ -18,7 +18,7 @@ ffi.cdef [[
     __lu_ivec2 __lu_window_get_pos(void);
 ]]
 
-app = {
+App = {
     name = 'Untitled App',
     version = '0.0.1',
     author = 'Anonymous',
@@ -33,68 +33,68 @@ app = {
     }
 }
 
-function app.window.maximize()
+function App.window.maximize()
     ffi.C.__lu_window_maximize()
-    app.window.isMaximized = true
+    App.window.isMaximized = true
 end
 
-function app.window.minimize()
+function App.window.minimize()
     ffi.C.__lu_window_minimize()
-    app.window.isMaximized = false
+    App.window.isMaximized = false
 end
 
-function app.window.enter_fullscreen()
+function App.window.enter_fullscreen()
     ffi.C.__lu_window_enter_fullscreen()
-    app.window.isFullscreen = true
+    App.window.isFullscreen = true
 end
 
-function app.window.leave_fullscreen()
+function App.window.leave_fullscreen()
     ffi.C.__lu_window_leave_fullscreen()
-    app.window.isFullscreen = false
+    App.window.isFullscreen = false
 end
 
-function app.window.set_title(title)
+function App.window.set_title(title)
     assert(type(title) == 'string')
     ffi.C.__lu_window_set_title(title)
 end
 
-function app.window.set_size(width, height)
+function App.window.set_size(width, height)
     assert(type(width) == 'number')
     assert(type(height) == 'number')
     ffi.C.__lu_window_set_size(width, height)
 end
 
-function app.window.set_pos(x, y)
+function App.window.set_pos(x, y)
     assert(type(x) == 'number')
     assert(type(y) == 'number')
     ffi.C.__lu_window_set_pos(x, y)
 end
 
-function app.window.show()
+function App.window.show()
     ffi.C.__lu_window_show()
-    app.window.isVisible = true
+    App.window.isVisible = true
 end
 
-function app.window.hide()
+function App.window.hide()
     ffi.C.__lu_window_hide()
-    app.window.isVisible = false
+    App.window.isVisible = false
 end
 
-function app.window.allow_resize(allow)
+function App.window.allow_resize(allow)
     assert(type(allow) == 'boolean')
     ffi.C.__lu_window_allow_resize(allow)
 end
 
-function app.window.get_size()
+function App.window.get_size()
     local v = ffi.C.__lu_window_get_size()
     return v.v[0], v.v[1]
 end
 
-function app.window.get_pos()
+function App.window.get_pos()
     local v = ffi.C.__lu_window_get_pos()
     return v.v[0], v.v[1]
 end
 
-app.window.maximize()
+App.window.maximize()
 
-return app
+return App
