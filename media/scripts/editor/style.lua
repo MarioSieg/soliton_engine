@@ -1,7 +1,9 @@
 local ffi = require 'ffi'
-local gui = require 'imgui.gui'
+local gui = require 'editor.imgui'
 
-function setupDarkStyle()
+local m = {}
+
+function m.setupDarkStyle()
     local style = gui.GetStyle()
     style.WindowPadding     = gui.ImVec2(8.00, 8.00)
     style.FramePadding      = gui.ImVec2(5.00, 2.00)
@@ -82,3 +84,5 @@ function setupDarkStyle()
     colors[ffi.C.ImGuiCol_NavWindowingDimBg]      = gui.ImVec4(1.00, 0.00, 0.00, 0.20)
     colors[ffi.C.ImGuiCol_ModalWindowDimBg]       = gui.ImVec4(1.00, 0.00, 0.00, 0.35)
 end
+
+return m

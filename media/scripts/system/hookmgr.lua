@@ -31,6 +31,7 @@ local function searchHookTargetsFromDirRecursive(searchDir)
             end
         end
     end
+
     -- sort tables based on directory tree depth, so that scripts in subdirectories are loaded last
     table.sort(targets, function(a, b)
         local aDepth = 0
@@ -46,12 +47,20 @@ end
 
 local ON_START_HOOK = '__onStart'
 local ON_TICK_HOOK = '__onTick'
+local MANUAL_HOOK_FILES = {}
+
+if SYSTEM_CFG.editor_enable then -- load editor hook
+    table.insert(MANUAL_HOOK_FILES, 'media/scripts/editor/editor.lua')
+end
 
 -- Load all hook scripts in a directory
 local function initCoreHooks(searchDir)
     assert(searchDir ~= nil and type(searchDir) == 'string')
     print('Loading hook scripts in: '..searchDir)
     local candicates = searchHookTargetsFromDirRecursive(searchDir)
+    for _, file in ipairs(MANUAL_HOOK_FILES) do
+        table.insert(candicates, file)
+    end
     local hooks = {}
     for _, file in ipairs(candicates) do
         local target = loadHookScriptInstance(file)

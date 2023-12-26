@@ -1,5 +1,5 @@
 local ffi = require "ffi"
-local cdecl = require "imgui.cdefs"
+local cdecl = require "editor.cdefs"
 
 local ffi_cdef = function(code)
     local ret,err = pcall(ffi.cdef,code)

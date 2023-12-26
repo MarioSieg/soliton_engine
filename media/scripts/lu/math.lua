@@ -5,72 +5,72 @@ local FFI = require 'ffi'
 local pow, sin, cos, pi, sqrt, abs, asin = math.pow, math.sin, math.cos, math.pi, math.sqrt, math.abs, math.asin
 local band, bor, bxor, lshift, rshift, arshift = bit.band, bit.bor, bit.bxor, bit.lshift, bit.rshift, bit.arshift
 
-Math = {}
+M = {}
 
-Math.E = 2.7182818284590452354 -- e
-Math.LOG2E = 1.4426950408889634074 -- log_2 e
-Math.LOG10E = 0.43429448190325182765 -- log_10 e
-Math.LN2 = 0.69314718055994530942-- log_e 2
-Math.LN10 = 2.30258509299404568402 -- log_e 10
-Math.TAU = 6.28318530717958647692 -- pi * 2
-Math.PI = 3.14159265358979323846 -- pi
-Math.PI_DIV2 = 1.57079632679489661923 -- pi/2
-Math.PI_DIV4 = 0.78539816339744830962 -- pi/4
-Math.ONE_DIV_PI = 0.31830988618379067154 -- 1/pi
-Math.TWO_DIV_PI = 0.63661977236758134308 -- 2/pi
-Math.TWO_SQRTPI = 1.12837916709551257390 -- 2/sqrt(pi)
-Math.SQRT2 = 1.41421356237309504880 -- sqrt(2)
-Math.SQRT1_2 = 0.70710678118654752440 -- 1/sqrt(2)
-Math.INFINITY = math.huge
+M.E = 2.7182818284590452354 -- e
+M.LOG2E = 1.4426950408889634074 -- log_2 e
+M.LOG10E = 0.43429448190325182765 -- log_10 e
+M.LN2 = 0.69314718055994530942-- log_e 2
+M.LN10 = 2.30258509299404568402 -- log_e 10
+M.TAU = 6.28318530717958647692 -- pi * 2
+M.PI = 3.14159265358979323846 -- pi
+M.PI_DIV2 = 1.57079632679489661923 -- pi/2
+M.PI_DIV4 = 0.78539816339744830962 -- pi/4
+M.ONE_DIV_PI = 0.31830988618379067154 -- 1/pi
+M.TWO_DIV_PI = 0.63661977236758134308 -- 2/pi
+M.TWO_SQRTPI = 1.12837916709551257390 -- 2/sqrt(pi)
+M.SQRT2 = 1.41421356237309504880 -- sqrt(2)
+M.SQRT1_2 = 0.70710678118654752440 -- 1/sqrt(2)
+M.INFINITY = M.huge
 
-function Math.abs(x) return math.abs(x) end
-function Math.acos(x) return math.acos(x) end
-function Math.asin(x) return math.asin(x) end
-function Math.atan(y, x) return math.atan(y, x) end
-function Math.atan2(y, x) return math.atan2(y, x) end
-function Math.ceil(x) return math.ceil(x) end
-function Math.cos(x) return math.cos(x) end
-function Math.cosh(x) return math.cosh(x) end
-function Math.deg(x) return math.deg() end
-function Math.expEst(x) return math.exp(x) end
-function Math.floor(x) return math.floor(x) end
-function Math.fmod(x, y) return math.fmod(x, y) end
-function Math.frexp(x) return math.frexp(x) end
-function Math.ldexp(m, e) return math.ldexp(m, e) end
-function Math.log(x, base) return math.log(x, base) end
-function Math.max(x, y) return math.max(x, y) end
-function Math.min(x, y) return math.min(x, y) end
-function Math.modf(x) return math.modf(x) end
-function Math.pow(x, y) return x ^ y end
-function Math.rad(x) return math.rad(x) end
-function Math.random(m, n) return math.random(m, n) end
-function Math.randomSeed(x, y) return math.randomseed(x, y) end
-function Math.sin(x) return math.sin(x) end
-function Math.sinh(x) return math.sinh(x) end
-function Math.sqrt(x) return math.sqrt(x) end
-function Math.tan(x) return math.tan(x) end
-function Math.tanh(x) return math.tanh(x) end
-function Math.tointeger(x) return math.tointeger(x) end
-function Math.type(x) return math.type(x) end
-function Math.ult(m, n) return math.ult(m, n) end
+function M.abs(x) return M.abs(x) end
+function M.acos(x) return M.acos(x) end
+function M.asin(x) return M.asin(x) end
+function M.atan(y, x) return M.atan(y, x) end
+function M.atan2(y, x) return M.atan2(y, x) end
+function M.ceil(x) return M.ceil(x) end
+function M.cos(x) return M.cos(x) end
+function M.cosh(x) return M.cosh(x) end
+function M.deg(x) return M.deg() end
+function M.expEst(x) return M.exp(x) end
+function M.floor(x) return M.floor(x) end
+function M.fmod(x, y) return M.fmod(x, y) end
+function M.frexp(x) return M.frexp(x) end
+function M.ldexp(m, e) return M.ldexp(m, e) end
+function M.log(x, base) return M.log(x, base) end
+function M.max(x, y) return M.max(x, y) end
+function M.min(x, y) return M.min(x, y) end
+function M.modf(x) return M.modf(x) end
+function M.pow(x, y) return x ^ y end
+function M.rad(x) return M.rad(x) end
+function M.random(m, n) return M.random(m, n) end
+function M.randomSeed(x, y) return M.randomseed(x, y) end
+function M.sin(x) return M.sin(x) end
+function M.sinh(x) return M.sinh(x) end
+function M.sqrt(x) return M.sqrt(x) end
+function M.tan(x) return M.tan(x) end
+function M.tanh(x) return M.tanh(x) end
+function M.tointeger(x) return M.tointeger(x) end
+function M.type(x) return M.type(x) end
+function M.ult(m, n) return M.ult(m, n) end
 
-function Math.clamp(x, lower, upper)
-    return Math.max(lower, Math.min(upper, x))
+function M.clamp(x, lower, upper)
+    return M.max(lower, M.min(upper, x))
 end
 
-function Math.isPowerOfTwo(x)
+function M.isPowerOfTwo(x)
     return band(x, x - 1) == 0 and x ~= 0
 end
 
-function Math.ceilPowerOfTwo(x)
-return Math.pow(2, Math.ceil(Math.log(x) / Math.LN2))
+function M.ceilPowerOfTwo(x)
+return M.pow(2, M.ceil(M.log(x) / M.LN2))
 end
 
-function Math.floorPowerOfTwo(x)
-    return Math.pow(2, Math.floor(Math.log(x) / Math.LN2))
+function M.floorPowerOfTwo(x)
+    return M.pow(2, M.floor(M.log(x) / M.LN2))
 end
 
-function Math.lerp(x, y, t)
+function M.lerp(x, y, t)
     return (1 - t) * x + t * y
 end
 
@@ -90,7 +90,7 @@ local LOG_LUT = { -- log(1+2^-i)
     0.00012206286252567737, 0.00006103329368063853, 0.00003051711247318638
 }
 
-function Math.intPow(x, n)
+function M.intPow(x, n)
     if n == 0 then
         return 1
     elseif n < 0 then
@@ -110,17 +110,17 @@ function Math.intPow(x, n)
     return x * y
 end
 
-function Math.expEst(x)
-    local xint, xfract = Math.modf(x)
-    local exint = Math.intPow(Math.E, xint)
+function M.expEst(x)
+    local xint, xfract = M.modf(x)
+    local exint = M.intPow(M.E, xint)
     local exfract = 1 + xfract + (xfract * xfract / 2) + (xfract * xfract * xfract / 6) + (xfract * xfract * xfract * xfract / 24)
     return exint * exfract
 end
 
-function Math.logEst(x)
-    local xmant, xexp = Math.frexp(x)
+function M.logEst(x)
+    local xmant, xexp = M.frexp(x)
     if xmant == 0.5 then
-        return Math.LN2 * (xexp-1)
+        return M.LN2 * (xexp-1)
     end
     local arg = xmant * 2
     local prod = 1
@@ -132,80 +132,80 @@ function Math.logEst(x)
             sum = sum + LOG_LUT[i]
         end
     end
-    return sum + Math.LN2 * (xexp - 1)
+    return sum + M.LN2 * (xexp - 1)
 end
 	
-function Math.powEst(x, y)
-    local yint, yfract = Math.modf(y)
-    local xyint = Math.intPow(x, yint)
-    local xyfract = Math.expEst(Math.logEst(x) * yfract)
+function M.powEst(x, y)
+    local yint, yfract = M.modf(y)
+    local xyint = M.intPow(x, yint)
+    local xyfract = M.expEst(M.logEst(x) * yfract)
     return xyint * xyfract -- x ^ (yint + yfract)
 end
 
-function Math.sinEst(x)
-    local over = Math.floor(x / (Math.TAU / 2)) % 2 == 0 
-    x = Math.TAU / 4 - x % (Math.TAU / 2)
-    local abs = 1 - (20 * x * x) / (4 * x * x + Math.TAU * Math.TAU)
+function M.sinEst(x)
+    local over = M.floor(x / (M.TAU / 2)) % 2 == 0 
+    x = M.TAU / 4 - x % (M.TAU / 2)
+    local abs = 1 - (20 * x * x) / (4 * x * x + M.TAU * M.TAU)
     return over and abs or -abs
 end
 
-function Math.cosEst(x)
-    local over = Math.floor((Math.TAU / 4 - x) / (Math.TAU / 2)) % 2 == 0
-    x = Math.TAU / 4 - (Math.TAU / 4 - x) % (Math.TAU/  2)
-    local abs = 1 - (20 * x * x) / (4 * x * x + Math.TAU * Math.TAU)
+function M.cosEst(x)
+    local over = M.floor((M.TAU / 4 - x) / (M.TAU / 2)) % 2 == 0
+    x = M.TAU / 4 - (M.TAU / 4 - x) % (M.TAU/  2)
+    local abs = 1 - (20 * x * x) / (4 * x * x + M.TAU * M.TAU)
     return over and abs or -abs
 end
 
-function Math.tanEst(x)
-    return Math.sinEst(x) / Math.cosEst(x)
+function M.tanEst(x)
+    return M.sinEst(x) / M.cosEst(x)
 end
 
-function Math.asinEst(x)
-    local positiveX, x = x > 0, Math.abs(x)
-    local resultForAbsoluteX = Math.TAU / 4 - Math.sqrt(Math.TAU / Math.TAU * (1 - x)) / (2 * Math.sqrt(x + 4))
+function M.asinEst(x)
+    local positiveX, x = x > 0, M.abs(x)
+    local resultForAbsoluteX = M.TAU / 4 - M.sqrt(M.TAU / M.TAU * (1 - x)) / (2 * M.sqrt(x + 4))
     return positiveX and resultForAbsoluteX or -resultForAbsoluteX
 end
 
-function Math.acosEst(x)
-    local positiveX, x = x > 0, Math.abs(x)
-    local resultForAbsoluteX = Math.sqrt(Math.TAU * Math.TAU * (1 - x)) / (2 * Math.sqrt(x + 4))
-    return positiveX and resultForAbsoluteX or -resultForAbsoluteX + Math.TAU / 2
+function M.acosEst(x)
+    local positiveX, x = x > 0, M.abs(x)
+    local resultForAbsoluteX = M.sqrt(M.TAU * M.TAU * (1 - x)) / (2 * M.sqrt(x + 4))
+    return positiveX and resultForAbsoluteX or -resultForAbsoluteX + M.TAU / 2
 end
 
-function Math.atanEst(x)
-    x = x / Math.sqrt(1 + x*x)
-    local positiveX, x = x > 0, Math.abs(x)
-    local resultForAbsoluteX = Math.TAU / 4 - Math.sqrt(Math.TAU * Math.TAU * (1 - x)) / (2 * Math.sqrt(x + 4))
+function M.atanEst(x)
+    x = x / M.sqrt(1 + x*x)
+    local positiveX, x = x > 0, M.abs(x)
+    local resultForAbsoluteX = M.TAU / 4 - M.sqrt(M.TAU * M.TAU * (1 - x)) / (2 * M.sqrt(x + 4))
     return positiveX and resultForAbsoluteX or -resultForAbsoluteX
 end
 
-function Math.atan2Est(y, x)
+function M.atan2Est(y, x)
     if x == 0 and y == 0 then
         return 0
     end
-    local theta = Math.atan(y/x)
-    theta = x == 0 and Math.TAU / 4 * y / Math.abs(y) or x < 0 and theta + Math.TAU / 2 or theta
-    theta = theta > Math.TAU / 2 and theta - Math.TAU or theta
+    local theta = M.atan(y/x)
+    theta = x == 0 and M.TAU / 4 * y / M.abs(y) or x < 0 and theta + M.TAU / 2 or theta
+    theta = theta > M.TAU / 2 and theta - M.TAU or theta
     return theta
 end
 
-function Math.sinhEst(x)
-    local ex = Math.expEst(x)
+function M.sinhEst(x)
+    local ex = M.expEst(x)
     return (ex - 1 / ex) / 2
 end
 
-function Math.coshEst(x)
-    local ex = Math.expEst(x)
+function M.coshEst(x)
+    local ex = M.expEst(x)
     return (ex + 1 / ex) / 2
 end
 
-function Math.tanhEst(x)
-    local ex = Math.expEst(x)
+function M.tanhEst(x)
+    local ex = M.expEst(x)
     return (ex - 1 / ex) / (ex + 1 / ex)
 end
 
 -- https://www.gamedev.net/tutorials/programming/general-and-gameplay-programming/inverse-lerp-a-super-useful-yet-often-overlooked-function-r5230/
-function Math.inverseLerp(x, y, value)
+function M.inverseLerp(x, y, value)
     if x ~= y then
         return (value - x ) / (y - x)
     end
@@ -213,12 +213,12 @@ function Math.inverseLerp(x, y, value)
 end
 
 -- http://www.rorydriscoll.com/2016/03/07/frame-rate-independent-damping-using-lerp/
-function Math.damp(x, y, lambda, dt)
-    return Math.lerp(x, y, 1 - Math.expEst(-lambda * dt))
+function M.damp(x, y, lambda, dt)
+    return M.lerp(x, y, 1 - M.expEst(-lambda * dt))
 end
 
 -- http://en.wikipedia.org/wiki/Smoothstep
-function Math.smoothstep(x, min, max)
+function M.smoothstep(x, min, max)
     if x <= min then return 0 end
     if x >= max then return 1 end
     x = (x - min) / (max - min)
@@ -226,29 +226,29 @@ function Math.smoothstep(x, min, max)
 end
 
 -- http://en.wikipedia.org/wiki/Smoothstep
-function Math.smootherstep(x, min, max)
+function M.smootherstep(x, min, max)
     if x <= min then return 0 end
     if x >= max then return 1 end
     x = (x - min) / (max - min)
     return x * x * x * (x * (x * 6 - 15) + 10)
 end
 
-function Math.saturate(x)
-    return Math.max(0, Math.min(1, x))
+function M.saturate(x)
+    return M.max(0, M.min(1, x))
 end
 
-function Math.cameraLinearize(depth, znear, zfar)
+function M.cameraLinearize(depth, znear, zfar)
     return - zfar * znear / (depth * (zfar - znear) - zfar)
 end
 
-function Math.cameraSmoothstep(znear, zfar, depth)
-    local x = Math.saturate((depth - znear) / (zfar - znear))
+function M.cameraSmoothstep(znear, zfar, depth)
+    local x = M.saturate((depth - znear) / (zfar - znear))
     return (x ^ 2) * (3 - 2 * x)
 end
 
 local seed = 0x12D687 -- Deterministic pseudo-random float in the interval [ 0, 1 ] (Mulberry32 generator)
 
-function Math.seededRandom(s)
+function M.seededRandom(s)
     seed = seed or s
     seed = seed + 0x6D2B79F5
     local t = seed
@@ -257,39 +257,39 @@ function Math.seededRandom(s)
     return arshift(bxor(t, t), 14) / 4294967296
 end
 
-function Math.loop(t, magnitude)
-    return Math.clamp(t - Math.floor(t / magnitude) * magnitude, 0.0, magnitude)
+function M.loop(t, magnitude)
+    return M.clamp(t - M.floor(t / magnitude) * magnitude, 0.0, magnitude)
 end
 
-function Math.pingPong(t, magnitude)
-    t = Math.loop(t, magnitude * 2.0)
-    return magnitude - Math.abs(t - magnitude)
+function M.pingPong(t, magnitude)
+    t = M.loop(t, magnitude * 2.0)
+    return magnitude - M.abs(t - magnitude)
 end
 
-function Math.deltaAngle(current, target, delay)
-    local delta = Math.loop(target - current, 360.0)
+function M.deltaAngle(current, target, delay)
+    local delta = M.loop(target - current, 360.0)
     if delay > 180.0 then delta = delta - 360.0 end
     return delta
 end
 
-function Math.randomRange(lower, greater)
-    return lower + Math.random() * (greater - lower);
+function M.randomRange(lower, greater)
+    return lower + M.random() * (greater - lower);
 end
 
-function Math.linear(t, b, c, d)
+function M.linear(t, b, c, d)
     return c * t / d + b
 end
 
-function Math.inQuad(t, b, c, d)
+function M.inQuad(t, b, c, d)
     return c * pow(t / d, 2) + b
 end
 
-function Math.outQuad(t, b, c, d)
+function M.outQuad(t, b, c, d)
     t = t / d
     return -c * t * (t - 2) + b
 end
 
-function Math.inOutQuad(t, b, c, d)
+function M.inOutQuad(t, b, c, d)
     t = t / d * 2
     if t < 1 then
         return c / 2 * pow(t, 2) + b
@@ -297,22 +297,22 @@ function Math.inOutQuad(t, b, c, d)
     return -c / 2 * ((t - 1) * (t - 3) - 1) + b
 end
 
-function Math.outInQuad(t, b, c, d)
+function M.outInQuad(t, b, c, d)
     if t < d / 2 then
-        return Math.outQuad(t * 2, b, c / 2, d)
+        return M.outQuad(t * 2, b, c / 2, d)
     end
-    return Math.inQuad((t * 2) - d, b + c / 2, c / 2, d)
+    return M.inQuad((t * 2) - d, b + c / 2, c / 2, d)
 end
 
-function Math.inCubic (t, b, c, d)
+function M.inCubic (t, b, c, d)
     return c * pow(t / d, 3) + b
 end
 
-function Math.outCubic(t, b, c, d)
+function M.outCubic(t, b, c, d)
     return c * (pow(t / d - 1, 3) + 1) + b
 end
 
-function Math.inOutCubic(t, b, c, d)
+function M.inOutCubic(t, b, c, d)
     t = t / d * 2
     if t < 1 then
         return c / 2 * t * t * t + b
@@ -321,22 +321,22 @@ function Math.inOutCubic(t, b, c, d)
     return c / 2 * (t * t * t + 2) + b
 end
 
-function Math.outInCubic(t, b, c, d)
+function M.outInCubic(t, b, c, d)
     if t < d / 2 then
-        return Math.outCubic(t * 2, b, c / 2, d)
+        return M.outCubic(t * 2, b, c / 2, d)
     end
-    return Math.inCubic((t * 2) - d, b + c / 2, c / 2, d)
+    return M.inCubic((t * 2) - d, b + c / 2, c / 2, d)
 end
 
-function Math.inQuart(t, b, c, d)
+function M.inQuart(t, b, c, d)
     return c * pow(t / d, 4) + b
 end
 
-function Math.outQuart(t, b, c, d)
+function M.outQuart(t, b, c, d)
     return -c * (pow(t / d - 1, 4) - 1) + b
 end
 
-function Math.inOutQuart(t, b, c, d)
+function M.inOutQuart(t, b, c, d)
     t = t / d * 2
     if t < 1 then
         return c / 2 * pow(t, 4) + b
@@ -344,22 +344,22 @@ function Math.inOutQuart(t, b, c, d)
     return -c / 2 * (pow(t - 2, 4) - 2) + b
 end
 
-function Math.outInQuart(t, b, c, d)
+function M.outInQuart(t, b, c, d)
     if t < d / 2 then
-        return Math.outQuart(t * 2, b, c / 2, d)
+        return M.outQuart(t * 2, b, c / 2, d)
     end
-    return Math.inQuart((t * 2) - d, b + c / 2, c / 2, d)
+    return M.inQuart((t * 2) - d, b + c / 2, c / 2, d)
 end
 
-function Math.inQuint(t, b, c, d)
+function M.inQuint(t, b, c, d)
     return c * pow(t / d, 5) + b
 end
 
-function Math.outQuint(t, b, c, d)
+function M.outQuint(t, b, c, d)
     return c * (pow(t / d - 1, 5) + 1) + b
 end
 
-function Math.inOutQuint(t, b, c, d)
+function M.inOutQuint(t, b, c, d)
     t = t / d * 2
     if t < 1 then
         return c / 2 * pow(t, 5) + b
@@ -367,43 +367,43 @@ function Math.inOutQuint(t, b, c, d)
     return c / 2 * (pow(t - 2, 5) + 2) + b
 end
 
-function Math.outInQuint(t, b, c, d)
+function M.outInQuint(t, b, c, d)
     if t < d / 2 then
-        return Math.outQuint(t * 2, b, c / 2, d)
+        return M.outQuint(t * 2, b, c / 2, d)
     end
-    return Math.inQuint((t * 2) - d, b + c / 2, c / 2, d)
+    return M.inQuint((t * 2) - d, b + c / 2, c / 2, d)
 end
 
-function Math.inSine(t, b, c, d)
+function M.inSine(t, b, c, d)
     return -c * cos(t / d * (pi / 2)) + c + b
 end
 
-function Math.outSine(t, b, c, d)
+function M.outSine(t, b, c, d)
     return c * sin(t / d * (pi / 2)) + b
 end
 
-function Math.inOutSine(t, b, c, d)
+function M.inOutSine(t, b, c, d)
     return -c / 2 * (cos(pi * t / d) - 1) + b
 end
 
-function Math.outInSine(t, b, c, d)
+function M.outInSine(t, b, c, d)
     if t < d / 2 then
-        return Math.outSine(t * 2, b, c / 2, d)
+        return M.outSine(t * 2, b, c / 2, d)
     end
-    return Math.inSine((t * 2) -d, b + c / 2, c / 2, d)
+    return M.inSine((t * 2) -d, b + c / 2, c / 2, d)
 end
 
-function Math.inExpo(t, b, c, d)
+function M.inExpo(t, b, c, d)
     if t == 0 then return b end
     return c * pow(2, 10 * (t / d - 1)) + b - c * 0.001
 end
 
-function Math.outExpo(t, b, c, d)
+function M.outExpo(t, b, c, d)
     if t == d then return b + c end
     return c * 1.001 * (-pow(2, -10 * t / d) + 1) + b
 end
 
-function Math.inOutExpo(t, b, c, d)
+function M.inOutExpo(t, b, c, d)
     if t == 0 then return b end
     if t == d then return b + c end
     t = t / d * 2
@@ -412,23 +412,23 @@ function Math.inOutExpo(t, b, c, d)
     return c / 2 * 1.0005 * (-pow(2, -10 * (t - 1)) + 2) + b
 end
 
-function Math.outInExpo(t, b, c, d)
+function M.outInExpo(t, b, c, d)
     if t < d / 2 then
-        return Math.outExpo(t * 2, b, c / 2, d)
+        return M.outExpo(t * 2, b, c / 2, d)
     end
-    return Math.inExpo((t * 2) - d, b + c / 2, c / 2, d)
+    return M.inExpo((t * 2) - d, b + c / 2, c / 2, d)
 end
 
 
-function Math.inCirc(t, b, c, d)
+function M.inCirc(t, b, c, d)
     return -c * (sqrt(1 - pow(t / d, 2)) - 1) + b
 end
 
-function Math.outCirc(t, b, c, d)
+function M.outCirc(t, b, c, d)
     return c * sqrt(1 - pow(t / d - 1, 2)) + b
 end
 
-function Math.inOutCirc(t, b, c, d)
+function M.inOutCirc(t, b, c, d)
     t = t / d * 2
     if t < 1 then
         return -c / 2 * (sqrt(1 - t * t) - 1) + b
@@ -437,14 +437,14 @@ function Math.inOutCirc(t, b, c, d)
     return c / 2 * (sqrt(1 - t * t) + 1) + b
 end
 
-function Math.outInCirc(t, b, c, d)
+function M.outInCirc(t, b, c, d)
     if t < d / 2 then
-        return Math.outCirc(t * 2, b, c / 2, d)
+        return M.outCirc(t * 2, b, c / 2, d)
     end
-    return Math.inCirc((t * 2) - d, b + c / 2, c / 2, d)
+    return M.inCirc((t * 2) - d, b + c / 2, c / 2, d)
 end
 
-function Math.computePas(p,a,c,d)
+function M.computePas(p,a,c,d)
     p, a = p or d * 0.3, a or 0
     if a < abs(c) then
         return p, c, p / 4
@@ -452,54 +452,54 @@ function Math.computePas(p,a,c,d)
     return p, a, p / (2 * pi) * asin(c/a) 
 end
 
-function Math.inElastic(t, b, c, d, a, p)
+function M.inElastic(t, b, c, d, a, p)
     local s
     if t == 0 then return b end
     t = t / d
     if t == 1  then return b + c end
-    p,a,s = Math.computePas(p,a,c,d)
+    p,a,s = M.computePas(p,a,c,d)
     t = t - 1
     return -(a * pow(2, 10 * t) * sin((t * d - s) * (2 * pi) / p)) + b
 end
 
-function Math.outElastic(t, b, c, d, a, p)
+function M.outElastic(t, b, c, d, a, p)
     local s
     if t == 0 then return b end
     t = t / d
     if t == 1 then return b + c end
-    p,a,s = Math.computePas(p,a,c,d)
+    p,a,s = M.computePas(p,a,c,d)
     return a * pow(2, -10 * t) * sin((t * d - s) * (2 * pi) / p) + c + b
 end
 
-function Math.inOutElastic(t, b, c, d, a, p)
+function M.inOutElastic(t, b, c, d, a, p)
     local s
     if t == 0 then return b end
     t = t / d * 2
     if t == 2 then return b + c end
-    p,a,s = Math.computePas(p,a,c,d)
+    p,a,s = M.computePas(p,a,c,d)
     t = t - 1
     if t < 0 then return -0.5 * (a * pow(2, 10 * t) * sin((t * d - s) * (2 * pi) / p)) + b end
     return a * pow(2, -10 * t) * sin((t * d - s) * (2 * pi) / p ) * 0.5 + c + b
 end
 
-function Math.outInElastic(t, b, c, d, a, p)
-    if t < d / 2 then return Math.outElastic(t * 2, b, c / 2, d, a, p) end
-    return Math.inElastic((t * 2) - d, b + c / 2, c / 2, d, a, p)
+function M.outInElastic(t, b, c, d, a, p)
+    if t < d / 2 then return M.outElastic(t * 2, b, c / 2, d, a, p) end
+    return M.inElastic((t * 2) - d, b + c / 2, c / 2, d, a, p)
 end
 
-function Math.inBack(t, b, c, d, s)
+function M.inBack(t, b, c, d, s)
     s = s or 1.70158
     t = t / d
     return c * t * t * ((s + 1) * t - s) + b
 end
 
-function Math.outBack(t, b, c, d, s)
+function M.outBack(t, b, c, d, s)
     s = s or 1.70158
     t = t / d - 1
     return c * (t * t * ((s + 1) * t + s) + 1) + b
 end
 
-function Math.inOutBack(t, b, c, d, s)
+function M.inOutBack(t, b, c, d, s)
     s = (s or 1.70158) * 1.525
     t = t / d * 2
     if t < 1 then return c / 2 * (t * t * ((s + 1) * t - s)) + b end
@@ -507,12 +507,12 @@ function Math.inOutBack(t, b, c, d, s)
     return c / 2 * (t * t * ((s + 1) * t + s) + 2) + b
 end
 
-function Math.outInBack(t, b, c, d, s)
-    if t < d / 2 then return Math.outBack(t * 2, b, c / 2, d, s) end
-    return Math.inBack((t * 2) - d, b + c / 2, c / 2, d, s)
+function M.outInBack(t, b, c, d, s)
+    if t < d / 2 then return M.outBack(t * 2, b, c / 2, d, s) end
+    return M.inBack((t * 2) - d, b + c / 2, c / 2, d, s)
 end
 
-function Math.outBounce(t, b, c, d)
+function M.outBounce(t, b, c, d)
     t = t / d
     if t < 1 / 2.75 then return c * (7.5625 * t * t) + b end
     if t < 2 / 2.75 then
@@ -526,16 +526,16 @@ function Math.outBounce(t, b, c, d)
     return c * (7.5625 * t * t + 0.984375) + b
 end
 
-function Math.inBounce(t, b, c, d) return c - Math.outBounce(d - t, 0, c, d) + b end
+function M.inBounce(t, b, c, d) return c - M.outBounce(d - t, 0, c, d) + b end
 
-function Math.inOutBounce(t, b, c, d)
-  if t < d / 2 then return Math.inBounce(t * 2, 0, c, d) * 0.5 + b end
-  return Math.outBounce(t * 2 - d, 0, c, d) * 0.5 + c * .5 + b
+function M.inOutBounce(t, b, c, d)
+  if t < d / 2 then return M.inBounce(t * 2, 0, c, d) * 0.5 + b end
+  return M.outBounce(t * 2 - d, 0, c, d) * 0.5 + c * .5 + b
 end
 
-function Math.outInBounce(t, b, c, d)
-  if t < d / 2 then return Math.outBounce(t * 2, b, c / 2, d) end
-  return Math.inBounce((t * 2) - d, b + c / 2, c / 2, d)
+function M.outInBounce(t, b, c, d)
+  if t < d / 2 then return M.outBounce(t * 2, b, c / 2, d) end
+  return M.inBounce((t * 2) - d, b + c / 2, c / 2, d)
 end
 
 -- 2 dimensional vector
@@ -556,8 +556,8 @@ do
         return rawnew(x, y)
     end
 
-    local sqrt, sin, cos, atan2 = Math.sqrt, Math.sin, Math.cos, Math.atan2
-    local estSin, estCos, estAtan2 = Math.sinEst, Math.cosEst, Math.atan2Est
+    local sqrt, sin, cos, atan2 = M.sqrt, M.sin, M.cos, M.atan2
+    local estSin, estCos, estAtan2 = M.sinEst, M.cosEst, M.atan2Est
 
     local function magnitude(v)
         local x, y = v.x, v.y
@@ -643,8 +643,8 @@ do
 
     local function clamp(x, min, max)
         local r = clone(x)
-        r.x = Math.clamp(r.x, min, max)
-        r.y = Math.clamp(r.y, min, max)
+        r.x = M.clamp(r.x, min, max)
+        r.y = M.clamp(r.y, min, max)
         return r
     end
 
@@ -712,7 +712,7 @@ do
         end
     })
 
-    Math.Vector2 = setmetatable({
+    M.Vector2 = setmetatable({
         new = new,
         magnitude = magnitude,
         length2 = length2,
@@ -761,8 +761,8 @@ do
         return rawnew(x, y, z)
     end
 
-    local sqrt, sin, cos, atan2 = Math.sqrt, Math.sin, Math.cos, Math.atan2
-    local estSin, estCos, estAtan2 = Math.sinEst, Math.cosEst, Math.atan2Est
+    local sqrt, sin, cos, atan2 = M.sqrt, M.sin, M.cos, M.atan2
+    local estSin, estCos, estAtan2 = M.sinEst, M.cosEst, M.atan2Est
 
     local function magnitude(v)
         local x, y, z = v.x, v.y, v.z
@@ -840,7 +840,7 @@ do
     local function smoothDamp(current, target, velocity, smoothTime, maxSpeed, deltaTime)
         -- Based on Game Programming Gems 4 Chapter 1.10
         local out_x, out_y, out_z = 0, 0, 0
-        smoothTime = Math.max(0.0001, smoothTime)
+        smoothTime = M.max(0.0001, smoothTime)
         local omega = 2 / smoothTime
         local x = omega * deltaTime
         local exp = 1 / (1 + x + 0.48 * x * x + 0.235 * x * x * x)
@@ -901,9 +901,9 @@ do
 
     local function clamp(x, min, max)
         local r = clone(x)
-        r.x = Math.clamp(r.x, min, max)
-        r.y = Math.clamp(r.y, min, max)
-        r.z = Math.clamp(r.z, min, max)
+        r.x = M.clamp(r.x, min, max)
+        r.y = M.clamp(r.y, min, max)
+        r.z = M.clamp(r.z, min, max)
         return r
     end
 
@@ -987,7 +987,7 @@ do
         end
     })
 
-    Math.Vector3 = setmetatable({
+    M.Vector3 = setmetatable({
         new = new,
         magnitude = magnitude,
         length2 = length2,
@@ -1047,8 +1047,8 @@ do
         end
     end
 
-    local sqrt, sin, cos, atan2 = Math.sqrt, Math.sin, Math.cos, Math.atan2
-    local estSin, estCos, estAtan2 = Math.sinEst, Math.cosEst, Math.atan2Est
+    local sqrt, sin, cos, atan2 = M.sqrt, M.sin, M.cos, M.atan2
+    local estSin, estCos, estAtan2 = M.sinEst, M.cosEst, M.atan2Est
 
     local function magnitude(q)
         local x, y, z, w = q.x, q.y, q.z, q.w
@@ -1106,36 +1106,36 @@ do
 
     local function fromRollPitchYaw(pitch, yaw, roll)
         local hp = pitch * 0.5
-        local cp = Math.cos(hp)
-        local sp = Math.sin(hp)
+        local cp = M.cos(hp)
+        local sp = M.sin(hp)
         local hy = yaw * 0.5
-        local cy = Math.cos(hy)
-        local sy = Math.sin(hy)
+        local cy = M.cos(hy)
+        local sy = M.sin(hy)
         local hr = roll * 0.5
-        local cr = Math.cos(hr)
-        local sr = Math.sin(hr)
+        local cr = M.cos(hr)
+        local sr = M.sin(hr)
         local x = cr * sp * cy + sr * cp * sy
         local y = cr * cp * sy - sr * sp * cy
         local z = sr * cp * cy - cr * sp * sy
         local w = cr * cp * cy + sr * sp * sy
-        return Math.Quaternion(x, y, z, w)
+        return M.Quaternion(x, y, z, w)
     end
 
     local function estFromRollPitchYaw(pitch, yaw, roll)
         local hp = pitch * 0.5
-        local cp = Math.cosEst(hp)
-        local sp = Math.sinEst(hp)
+        local cp = M.cosEst(hp)
+        local sp = M.sinEst(hp)
         local hy = yaw * 0.5
-        local cy = Math.cosEst(hy)
-        local sy = Math.sinEst(hy)
+        local cy = M.cosEst(hy)
+        local sy = M.sinEst(hy)
         local hr = roll * 0.5
-        local cr = Math.cosEst(hr)
-        local sr = Math.sinEst(hr)
+        local cr = M.cosEst(hr)
+        local sr = M.sinEst(hr)
         local x = cr * sp * cy + sr * cp * sy
         local y = cr * cp * sy - sr * sp * cy
         local z = sr * cp * cy - cr * sp * sy
         local w = cr * cp * cy + sr * sp * sy
-        return Math.Quaternion(x, y, z, w)
+        return M.Quaternion(x, y, z, w)
     end
 
     local function unpack(q)
@@ -1178,7 +1178,7 @@ do
         end
     })
 
-    Math.Quaternion = setmetatable({
+    M.Quaternion = setmetatable({
         new = new,
         magnitude = magnitude,
         normalize = normalize,
@@ -1201,13 +1201,13 @@ do
     })
 end
 
-function Math.randomPointWithinUnitSphere(radius)
-    local theta = Math.TAU * Math.random()
-    local phi = Math.acos(Math.random() * 2 - 1)
-    local x = radius * Math.sin(phi) * Math.cos(theta)
-    local y = radius * Math.sin(phi) * Math.sin(theta)
-    local z = radius * Math.cos(phi)
-    return Math.Vector3(x, y, z)
+function M.randomPointWithinUnitSphere(radius)
+    local theta = M.TAU * M.random()
+    local phi = M.acos(M.random() * 2 - 1)
+    local x = radius * M.sin(phi) * M.cos(theta)
+    local y = radius * M.sin(phi) * M.sin(theta)
+    local z = radius * M.cos(phi)
+    return M.Vector3(x, y, z)
 end
 
-return Math
+return M

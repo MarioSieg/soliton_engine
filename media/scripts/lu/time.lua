@@ -6,7 +6,7 @@ ffi.cdef [[
     double __lu_get_delta_time(void);
 ]]
 
-Time = {
+time = {
     deltaTime = 0.0, -- in seconds
     time = 0.0, -- in seconds
     frameTime = 0.0, -- in milliseconds
@@ -25,7 +25,7 @@ Time = {
 local prev = 0.0
 local idx = 1 -- ring buffer index
 
-function Time:__onTick()
+function time:__onTick()
     self.deltaTime = ffi.C.__lu_get_delta_time()
     self.time = self.time + self.deltaTime
     self.frameTime = self.deltaTime * 1000.0
@@ -51,4 +51,4 @@ function Time:__onTick()
     idx = ((idx - 1) % self.fpsHistogramSamples) + 1
 end
 
-return Time
+return time

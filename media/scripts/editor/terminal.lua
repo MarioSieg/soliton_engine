@@ -1,9 +1,9 @@
 -- Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 local ffi = require 'ffi'
-local gui = require 'imgui.gui'
+local gui = require 'editor.imgui'
 
-local M = {
+local m = {
     name = 'Terminal',
     isVisible = ffi.new('bool[1]', true),
     cmdBufLen = 512,
@@ -11,24 +11,24 @@ local M = {
     autoScroll = false
 }
 
-function M:render()
+function m:render()
     gui.SetNextWindowSize(WINDOW_SIZE, ffi.C.ImGuiCond_FirstUseEver)
-    if gui.Begin(self.name, self.isVisible, ffi.C.ImGuiWindowFlags_NoScrollbar) then
+    if gui.Begin(m.name, m.isVisible, ffi.C.ImGuiWindowFlags_NoScrollbar) then
         if gui.BeginChild('ScrollingRegion', gui.ImVec2(0, -gui.GetFrameHeightWithSpacing()), false, ffi.C.ImGuiWindowFlags_HorizontalScrollbar) then
             gui.PushStyleVar(ffi.C.ImGuiStyleVar_ItemSpacing, gui.ImVec2(4.0, 1.0))
             for _, record in ipairs(protocol) do
                 gui.TextUnformatted(record)
             end
             gui.PopStyleVar()
-            if self.autoScroll then
+            if m.autoScroll then
                 gui.SetScrollHereY(1.0)
-                self.autoScroll = false
+                m.autoScroll = false
             end
             gui.EndChild()
             gui.Separator()
-            if gui.InputText('Input', self.cmdBuf, self.cmdBufLen, ffi.C.ImGuiInputTextFlags_EnterReturnsTrue) then
-                if self.cmdBuf[0] ~= 0 then
-                    local command = ffi.string(M.cmdBuf)
+            if gui.InputText('Input', m.cmdBuf, m.cmdBufLen, ffi.C.ImGuiInputTextFlags_EnterReturnsTrue) then
+                if m.cmdBuf[0] ~= 0 then
+                    local command = ffi.string(m.cmdBuf)
                     -- split by spaces get first word:
                     local args = {}
                     for word in command:gmatch("%w+") do -- split by spaces
@@ -40,8 +40,8 @@ function M:render()
                     else -- command not found
                         print('Unknown command: '..cmd)
                     end
-                    self.cmdBuf[0] = 0 -- Clear buffer by terminating string
-                    self.autoScroll = true
+                    m.cmdBuf[0] = 0 -- Clear buffer by terminating string
+                    m.autoScroll = true
                     gui.SetKeyboardFocusHere(-1) -- Focus on command line
                 end
             end
@@ -50,4 +50,4 @@ function M:render()
     gui.End()
 end
 
-return M
+return m

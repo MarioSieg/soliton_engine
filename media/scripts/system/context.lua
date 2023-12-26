@@ -1,9 +1,9 @@
 -- Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 -- Core engine setup which runs after boot but before the hook scripts are loaded.
 
--- Set to true to enable JIT assembly dump (useful for optimizing):
-JIT_ASM_DUMP = false
-if JIT_ASM_DUMP then
+SYSTEM_CFG = require 'system.config'
+
+if SYSTEM_CFG.jit_asm_dump then
     require('jit.dump').on('m')
 end
 

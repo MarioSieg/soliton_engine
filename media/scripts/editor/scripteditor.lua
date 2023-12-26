@@ -1,7 +1,7 @@
 -- Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 local ffi = require 'ffi'
-local gui = require 'imgui.gui'
+local gui = require 'editor.imgui'
 
 ffi.cdef [[
     void __lu_script_editor_render(const char* title);
@@ -105,7 +105,7 @@ function newScript(str, name)
     return script
 end
 
-local M = {
+local m = {
     name = 'Script Editor',
     isVisible = ffi.new('bool[1]', true),
     scripts = {
@@ -124,9 +124,9 @@ local M = {
     activeScriptName = 'New',
 }
 
-function M:render()
+function m:render()
     gui.SetNextWindowSize(WINDOW_SIZE, ffi.C.ImGuiCond_FirstUseEver)
-    if gui.Begin(M.name, M.isVisible, ffi.C.ImGuiWindowFlags_MenuBar) then
+    if gui.Begin(m.name, m.isVisible, ffi.C.ImGuiWindowFlags_MenuBar) then
         if gui.BeginMenuBar() then
             if gui.BeginMenu('File') then
                 gui.EndMenu()
@@ -142,7 +142,7 @@ function M:render()
             end
             gui.Separator()
             if gui.Button('Run') then
-                local script = M.scripts[M.activeScriptName]
+                local script = m.scripts[m.activeScriptName]
                 assert(script)
                 script:exec()
             end
@@ -156,7 +156,7 @@ function M:render()
         end
         gui.Separator()
         if gui.BeginTabBar('##ScriptEditorTabs') then
-            for name, script in pairs(M.scripts) do
+            for name, script in pairs(m.scripts) do
                 if gui.BeginTabItem(name) then
                     native_editor.render(name)
                     gui.EndTabItem()
@@ -168,4 +168,4 @@ function M:render()
     gui.End()
 end
 
-return M
+return m
