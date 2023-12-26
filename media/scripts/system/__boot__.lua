@@ -39,7 +39,7 @@ local engineContext = nil
 -- It's responsible for loading all tick hooks of global engine components.
 -- Note: Scripts which are loaded per-world are loaded in the world-setup script.
 function __on_prepare__()
-    engineContext = require 'system.context' -- Lazy load the setup script
+    engineContext = require 'system.setup' -- Lazy load the setup script
     collectgarbage('stop') -- stop the GC, we run it manually every frame
 end
 

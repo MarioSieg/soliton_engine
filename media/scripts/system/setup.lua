@@ -1,16 +1,18 @@
 -- Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 -- Core engine setup which runs after boot but before the hook scripts are loaded.
 
-SYSTEM_CFG = require 'system.config'
+-- Init stack trace plus and redirect debug.traceback to it
+local stp = require 'ext.stack_trace_plus'
+debug.traceback = stp.stacktrace
 
-if SYSTEM_CFG.jit_asm_dump then
+SYSTEM_CFG = require 'system.config' -- Load config
+if SYSTEM_CFG.jit_asm_dump then -- Enable JIT ASM dump if requested
     require('jit.dump').on('m')
 end
 
 -- Init protocol logger.
 protocol = {}
 
--- Forward print and error to the protocol logger
 local printProxy = _G.print
 function _G.print(...)
     local args = {...}
@@ -25,7 +27,6 @@ function _G.print(...)
     table.insert(protocol, str)
 end
 
--- Forward print and error to the protocol logger
 local errorProxy = _G.error
 function _G.error(...)
     local args = {...}
