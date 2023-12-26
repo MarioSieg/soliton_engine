@@ -88,17 +88,16 @@ function newScript(str, name)
     
     function script:exec()
         self:syncFromEditor()
-        local chunk, err = loadstring(ffi.string(self.textBuf))
+        local chunk, loadErr = loadstring(ffi.string(self.textBuf))
         if chunk then
-            local ok, err2 = pcall(chunk)
+            local ok, err = pcall(chunk)
             if not ok then
-                err = err2
-                goto error
+                print('Error when executing script: '..self.name)
+                print(err)
             end
-        ::error::
         else
-            print('Error in script: '..self.name)
-            print(err)
+            print('Error when loading script: '..self.name)
+            print(loadErr)
         end
     end
 

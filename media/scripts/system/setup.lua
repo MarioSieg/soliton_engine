@@ -82,7 +82,7 @@ local m = {
     hooks = require 'system.hookmgr'
 }
 
-print('Lua mem: '..(collectgarbage('count')/1024.0)..' MiB')
+print('Lua mem: '..string.format("%.3f", collectgarbage('count')/1024.0)..' MiB')
 
 function m:tick()
     m.hooks:tick()
