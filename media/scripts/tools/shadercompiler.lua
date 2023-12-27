@@ -175,9 +175,9 @@ for _, files in ipairs(shaderFiles) do
         panic('Varying definition file not found: '..varying)
     end
     for _, file in ipairs(files.sources) do
-        print('Compiling '..file)
         local fName = getFileName(file)
         if not fName:find('^def') then -- ignore varying definition file
+            print('Compiling '..file..'... for '..(#PLATFORM_TARGETS[jit.os])..' target(s)')
             local stype = nil
             for prefix, type in pairs(SHADER_TYPE_PREFIX) do
                 if  fName:find('^'..prefix) then
