@@ -41,20 +41,24 @@ function _G.error(...)
     table.insert(protocol, str)
 end
 
--- print JIT info
+function printsep()
+    print('------------------------------------------------------------')
+end
+
+-- Print JIT info
 local jit = require 'jit'
 local inspect = require 'ext.inspect'
 print(string.format('%s %s %s', jit.version, jit.os, jit.arch))
 local status = tostring(jit.status())
 print('JIT active: '..status)
 
--- print package paths
+-- Print package paths
 print('Working dir: '..lfs.currentdir())
 for _, path in ipairs(INCLUDE_DIRS) do
     print('Additional script dir: ' .. path)
 end
 
--- verify filesystem
+-- Verify filesystem
 print('Verifying filesystem...')
 local numchecks = 0
 local function checkFsEntry(path)
@@ -64,13 +68,25 @@ local function checkFsEntry(path)
     end
 end
 checkFsEntry('media')
-checkFsEntry('media/scripts/system/fsregistry.lua') -- this file is required to check the other files
-local REQUIRED_FILES = require 'system.fsregistry' -- load the list of required files
-for _, path in ipairs(REQUIRED_FILES) do
-    checkFsEntry(path)
+if lfs.attributes('media/scripts/system/fsregistry.lua') then -- check if the fsregistry file exists
+    local REQUIRED_FILES = require 'system.fsregistry' -- load the list of required files
+    if type(REQUIRED_FILES) == 'table' then
+        for _, path in ipairs(REQUIRED_FILES) do
+            checkFsEntry(path)
+        end
+    end
+    print('Filesystem OK, '..numchecks..' entries checked.')
+    dofile('media/scripts/tools/fsregistry_gen.lua') -- regenerate the fsregistry file
 end
-print('Filesystem OK, '..numchecks..' entries checked.')
-dofile('media/scripts/tools/fsregistry_gen.lua') -- regenerate the fsregistry file
+
+-- Compile shaders
+local SHADERC = 'media/scripts/tools/shadercompiler.lua'
+if lfs.attributes(SHADERC) then
+    dofile(SHADERC)
+else
+    print('Warning: Shader compiler not found, assuming production build')
+    -- TODO check shaders
+end
 
 -- Init random seed
 math.randomseed(os.time())

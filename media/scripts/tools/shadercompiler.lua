@@ -1,6 +1,200 @@
 -- Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
-local EXECUTABLE = 'tools/shaderc'
-if jit.os == 'Windows' then
-    EXECUTABLE = EXECUTABLE..'.exe'
+local now = os.clock()
+
+local EXECUTABLE = 'tools/shaderc_'
+local OUT_DIR = 'media/shaders/'
+
+printsep()
+
+if jit.os == 'Windows' and jit.arch == 'x64' then
+    EXECUTABLE = EXECUTABLE..'win_amd64.exe'
+else
+    panic('Unsupported platform. Supported platforms are Windows x64.')
 end
+
+if not lfs.attributes(EXECUTABLE) then
+    panic('Shader compiler executable not found: '..EXECUTABLE)
+end
+
+print('Shader compiler executable: '..EXECUTABLE)
+
+if jit.os == 'Windows' then -- Windows needs to execute the compiler in the current directory
+    EXECUTABLE = string.format('cmd.exe /c \"%s/%s\"', lfs.currentdir(), EXECUTABLE)
+end
+
+local SHADER_TYPE = {
+    VERTEX = 0,
+    FRAGMENT = 1,
+    COMPUTE = 2
+}
+
+local SHADER_TYPE_NAMES = {
+    [SHADER_TYPE.VERTEX] = 'vertex',
+    [SHADER_TYPE.FRAGMENT] = 'fragment',
+    [SHADER_TYPE.COMPUTE] = 'compute'
+}
+
+local SHADER_TYPE_PREFIX = {
+    ['vs'] = SHADER_TYPE.VERTEX,
+    ['fs'] = SHADER_TYPE.FRAGMENT,
+    ['cs'] = SHADER_TYPE.COMPUTE
+}
+
+local SHADER_TARGET = {
+    DX11 = 0,
+    DX12 = 1,
+    VULKAN = 2,
+    METAL = 3,
+    GLSL = 4
+}
+
+local SHADER_TARGET_NAMES = {
+    [SHADER_TARGET.DX11] = 'dx11',
+    [SHADER_TARGET.DX12] = 'dx12',
+    [SHADER_TARGET.VULKAN] = 'vulkan',
+    [SHADER_TARGET.METAL] = 'metal',
+    [SHADER_TARGET.GLSL] = 'glsl'
+}
+
+local SHADER_TARGET_PROFILES = {
+    [SHADER_TARGET.DX11] = 's_5_0',
+    [SHADER_TARGET.DX12] = 's_5_0',
+    [SHADER_TARGET.VULKAN] = 'spirv',
+    [SHADER_TARGET.METAL] = 'metal',
+    [SHADER_TARGET.GLSL] = '400'
+}
+
+local PLATFORM_TARGETS = {
+    ['Windows'] = {SHADER_TARGET.DX11, SHADER_TARGET.DX12, SHADER_TARGET.VULKAN},
+    ['Linux'] = {SHADER_TARGET.VULKAN, SHADER_TARGET.GLSL},
+    ['OSX'] = {SHADER_TARGET.METAL}
+}
+
+local VARYING_DEF = 'def.sc'
+local STDLIB_INCLUDE = 'shaders/lib'
+
+-- delete output directory if it exists:
+if lfs.attributes(OUT_DIR) then
+    print('Deleting output directory '..OUT_DIR)
+    for file in lfs.dir(OUT_DIR) do
+        if file ~= '.' and file ~= '..' then
+            local path = OUT_DIR..'/'..file
+            if lfs.attributes(path).mode == 'file' then
+                os.remove(path)
+            end
+        end
+    end
+    lfs.rmdir(OUT_DIR)
+end
+
+-- create output directory:
+lfs.mkdir(OUT_DIR)
+OUT_DIR = OUT_DIR..(jit.os:lower())..'/' -- append platform name
+lfs.mkdir(OUT_DIR)
+print('Output directory: '..OUT_DIR)
+
+-- Following shaders must be compiled:
+-- Windows: DX11, Vulkan - DX12 uses the same shaders
+-- Linux: Vulkan, OpenGL
+-- macOS: Metal
+
+-- first we search for all subdirs in the shaders/folder:
+local shaderDirs = {}
+print('Searching for shader modules...')
+for dir in lfs.dir('shaders') do
+    if dir ~= '.' and dir ~= '..' then
+        local path = 'shaders/'..dir
+        if lfs.attributes(path).mode == 'directory' then
+            table.insert(shaderDirs, path)
+        end
+    end
+end
+
+local function getFileName(file)
+    assert(type(file) == 'string')
+    local name = file:match("[^/]*.sc$")
+    return name:sub(0, #name-3)
+end
+
+-- now we search for all shader files in the subdirs:
+local shaderFiles = {}
+for _, dir in ipairs(shaderDirs) do
+    local files = {
+        dir = dir,
+        sources = {}
+    }
+    for file in lfs.dir(dir) do
+        if file ~= '.' and file ~= '..' then
+            local path = dir..'/'..file
+            if string.sub(path, -3) == '.sc' and lfs.attributes(path).mode == 'file' then
+                table.insert(files.sources, path)
+            else
+                print('Warning: Ignoring file '..path)
+            end
+        end
+    end
+    if #files.sources > 0 then
+        table.insert(shaderFiles, files)
+    end
+end
+
+-- now we compile all shaders:
+print('Compiling '..#shaderFiles..' shader module(s)...')
+
+local WKDIR = lfs.currentdir()..'/'
+
+local function compileShader(file, varying, stype, target)
+    assert(type(file) == 'string')
+    assert(type(varying) == 'string')
+    assert(type(stype) == 'number')
+    assert(type(target) == 'number')
+    local apiDir = string.format('%s%s', OUT_DIR, SHADER_TARGET_NAMES[target])
+    -- crate api dir if it doesn't exist:
+    if not lfs.attributes(apiDir) then
+        lfs.mkdir(apiDir)
+    end
+    local type = SHADER_TYPE_NAMES[stype]
+    local profile = SHADER_TARGET_PROFILES[target]
+    file = WKDIR..file
+    local out = WKDIR..string.format('%s/%s.bin', apiDir, getFileName(file))
+    local cmd = string.format('%s -f %s -o %s --platform %s --type %s --profile %s --varyingdef %s -i %s --verbose', EXECUTABLE, file, out, jit.os:lower(), type, profile,  WKDIR..varying,  WKDIR..STDLIB_INCLUDE)
+    if target == SHADER_TARGET.DX11 or target == SHADER_TARGET.DX12 then -- DX11 and DX12 should be compiled with optimization level 3
+        cmd = cmd..' -O3'
+    end
+    print(cmd)
+    local ok, msg, code = os.execute(cmd)
+    if not ok or (code and code ~= 0) or not lfs.attributes(out) then
+        panic('Shader compilation failed. Code: '..tostring(code)..' Command: '..cmd)
+    end
+end
+
+for _, files in ipairs(shaderFiles) do
+    local varying = files.dir..'/'..VARYING_DEF
+    if not lfs.attributes(varying) then
+        panic('Varying definition file not found: '..varying)
+    end
+    for _, file in ipairs(files.sources) do
+        print('Compiling '..file)
+        local fName = getFileName(file)
+        if not fName:find('^def') then -- ignore varying definition file
+            local stype = nil
+            for prefix, type in pairs(SHADER_TYPE_PREFIX) do
+                if  fName:find('^'..prefix) then
+                    stype = type
+                    break
+                end
+            end
+            if not stype then
+                panic('Unknown shader type: '..file..' (must start with vs, fs or cs)')
+            end
+            for _, target in ipairs(PLATFORM_TARGETS[jit.os]) do
+                compileShader(file, varying, stype, target)
+            end
+        end
+    end
+end
+
+print('Shader compilation finished. Time: '..(os.clock()-now)..'s')
+
+printsep()
