@@ -1,9 +1,81 @@
 -- Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
+local FORCE_SHADER_RECOMPILATION = false -- set to true to force shader recompilation
+local VERBOSE = false -- set to true to enable verbose shader compilation
+local PARALLEL = true -- set to true to enable parallel shader compilation
+
 local now = os.clock()
+local json = require 'ext.json'
 
 local EXECUTABLE = 'tools/shaderc_'
 local OUT_DIR = 'media/shaders/'
+local REGISTRY = OUT_DIR..'registry.json'
+
+print('Shader compiler script started.')
+print('Checking for modified shader files...')
+
+-- Detect if there are new shaders to compile and compile them if necessary.
+
+-- Recursive function to get the modification time of each file in a directory and its subdirectories
+local function getFileModificationTimes(directory, times)
+    times = times or {}
+    for file in lfs.dir(directory) do
+        if file ~= "." and file ~= ".." then
+            local path = directory .. '/' .. file
+            local attr = lfs.attributes(path)
+            if attr.mode == "file" then
+                times[path] = attr.modification
+            elseif attr.mode == "directory" then
+                getFileModificationTimes(path, times) -- Recursive call for subdirectories
+            end
+        end
+    end
+    return times
+end
+
+-- Check if any file has changed
+local function checkForChanges(oldTimes, newTimes)
+    for file, time in pairs(newTimes) do
+        if not oldTimes[file] or oldTimes[file] ~= time then
+            return true, file
+        end
+    end
+    return false
+end
+
+-- So if the registry exists, we check if any file has changed
+if lfs.attributes(REGISTRY) then
+    local oldTimes = json.decode(io.open(REGISTRY, 'r'):read('*a'))
+    local newTimes = getFileModificationTimes('shaders')
+    local changed, file = checkForChanges(oldTimes, newTimes)
+    if changed then
+        print('Shader file '..file..' has changed. Recompiling shaders...')
+        FORCE_SHADER_RECOMPILATION = true
+    end
+end
+
+-- Now we update the registry
+local newTimes = getFileModificationTimes('shaders')
+local file = io.open(REGISTRY, 'w')
+file:write(json.encode(newTimes))
+file:close()
+
+if lfs.attributes(OUT_DIR) and not FORCE_SHADER_RECOMPILATION then
+    print('Shader compilation skipped, already compiled and no force recompilation flag set.')
+    return
+end
+
+-- delete output directory:
+print('Deleting output directory '..OUT_DIR)
+for file in lfs.dir(OUT_DIR) do
+    if file ~= '.' and file ~= '..' then
+        local path = OUT_DIR..'/'..file
+        if lfs.attributes(path).mode == 'file' then
+            os.remove(path)
+        end
+    end
+end
+lfs.rmdir(OUT_DIR)
 
 printsep()
 
@@ -73,20 +145,6 @@ local PLATFORM_TARGETS = {
 
 local VARYING_DEF = 'def.sc'
 local STDLIB_INCLUDE = 'shaders/lib'
-
--- delete output directory if it exists:
-if lfs.attributes(OUT_DIR) then
-    print('Deleting output directory '..OUT_DIR)
-    for file in lfs.dir(OUT_DIR) do
-        if file ~= '.' and file ~= '..' then
-            local path = OUT_DIR..'/'..file
-            if lfs.attributes(path).mode == 'file' then
-                os.remove(path)
-            end
-        end
-    end
-    lfs.rmdir(OUT_DIR)
-end
 
 -- create output directory:
 lfs.mkdir(OUT_DIR)
@@ -158,7 +216,18 @@ local function compileShader(file, varying, stype, target)
     local profile = SHADER_TARGET_PROFILES[target]
     file = WKDIR..file
     local out = WKDIR..string.format('%s/%s.bin', apiDir, getFileName(file))
-    local cmd = string.format('%s -f %s -o %s --platform %s --type %s --profile %s --varyingdef %s -i %s --verbose', EXECUTABLE, file, out, jit.os:lower(), type, profile,  WKDIR..varying,  WKDIR..STDLIB_INCLUDE)
+    local exec = EXECUTABLE
+    local cmd = string.format('%s -f %s -o %s --platform %s --type %s --profile %s --varyingdef %s -i %s', exec, file, out, jit.os:lower(), type, profile,  WKDIR..varying,  WKDIR..STDLIB_INCLUDE)
+    if PARALLEL then
+        if jit.os == 'Windows' then
+            cmd = 'start /b '..cmd -- start in new window
+        else
+            cmd = cmd..' &' -- run in background
+        end
+    end
+    if VERBOSE then
+        cmd = cmd..' --verbose'
+    end
     if target == SHADER_TARGET.DX11 or target == SHADER_TARGET.DX12 then -- DX11 and DX12 should be compiled with optimization level 3
         cmd = cmd..' -O3'
     end
