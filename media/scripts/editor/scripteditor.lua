@@ -51,17 +51,20 @@ function native_editor.hasTextChanged()
 end
 
 local SCRIPT_TEMPLATE = [[
-local M = {}
+local function _onSetup()
+    print('Setting up scene...')
+    return {}
+end
 
-function M:__onStart() -- This function is called when the world is loaded.
+local function _onStart(scene)
+    print('Starting scene...')
+end
+
+local function _onTick(scene)
 
 end
 
-function M:__onTick() -- This function is called every frame.
-
-end
-
-return M
+scene.new('Untitled', _onSetup, _onStart, _onTick)
 
 ]]
 

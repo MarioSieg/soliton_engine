@@ -40,3 +40,10 @@ target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/extern/__bin/win_amd64/l
 
 include_directories(extern/luafilesystem/src)
 include_directories(extern/LuaBridge3/Source)
+
+add_subdirectory(extern/flecs)
+include_directories(extern/flecs/include)
+target_link_libraries(lunam flecs_static)
+
+add_subdirectory(extern/DirectXMath)
+include_directories(extern/DirectXMath/Inc)

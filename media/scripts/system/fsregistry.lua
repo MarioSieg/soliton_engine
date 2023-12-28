@@ -39,6 +39,7 @@ local REQUIRED_FILES = {
 	'media/scripts/lu/math.lua',
 	'media/scripts/lu/math_old.lua',
 	'media/scripts/lu/quat.lua',
+	'media/scripts/lu/scene.lua',
 	'media/scripts/lu/time.lua',
 	'media/scripts/lu/vec2.lua',
 	'media/scripts/lu/vec3.lua',

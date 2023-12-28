@@ -79,13 +79,29 @@ local m = {
 m.hooks = initCoreHooks(m.HOOK_DIR)
 print('Loaded '..#m.hooks..' hooks')
 
-function m:tick()
+if not scene then -- check if the scene module is loaded
+    panic('scene is not defined')
+end
+
+local function tickEngineSystems()
     for _, hook in ipairs(m.hooks) do
         local routine = hook[ON_TICK_HOOK]
         if routine ~= nil then -- check if the hook has a tick function
             routine(hook) -- execute tick hook
         end
     end
+end
+
+local function tickScene()
+    if scene.active then
+        scene.active:__onTick()
+    end
+
+end
+
+function m:tick()
+    tickEngineSystems()
+    tickScene()
 end
 
 return m

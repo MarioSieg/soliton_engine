@@ -26,6 +26,8 @@ namespace scripting {
         luaL_openlibs(m_L);
         passert(luaopen_lfs(m_L) == 1);
 
+        luabridge::register_main_thread(m_L);
+
         static constexpr auto print_proxy = [](lua_State* l) -> int {
             for (int i  = 1; i <= lua_gettop(l); ++i) {
                 switch (lua_type(l, i)) {
@@ -52,9 +54,9 @@ namespace scripting {
         passert(exec_file(k_boot_script));
 
         // setup hooks
-        m_on_prepare = luabridge::getGlobal(m_L, "__on_prepare__");
+        m_on_prepare = luabridge::getGlobal(m_L, k_prepare_hook);
         passert(m_on_prepare && m_on_prepare->isFunction());
-        m_on_tick = luabridge::getGlobal(m_L, "__on_tick__");
+        m_on_tick = luabridge::getGlobal(m_L, k_tick_hook);
         passert(m_on_tick && m_on_tick->isFunction());
     }
 

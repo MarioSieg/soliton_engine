@@ -22,6 +22,8 @@ namespace scripting {
 
     private:
         static constexpr const char* k_boot_script = "media/scripts/system/__boot__.lua";
+        static constexpr const char* k_prepare_hook = "__on_prepare__";
+        static constexpr const char* k_tick_hook = "__on_tick__";
         static inline constinit lua_State* m_L = nullptr;
         std::optional<luabridge::LuaRef> m_on_prepare = {}; // Reference to __boot__.lua's on_prepare function
         std::optional<luabridge::LuaRef> m_on_tick = {}; // Reference to __boot__.lua's on_tick function
