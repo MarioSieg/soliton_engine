@@ -4,7 +4,12 @@
 -- It also contains the main tick loop.
 -- Only modify this file if you know what you're doing.
 
+local jit = require 'jit'
 local ffi = require 'ffi'
+
+-- Dont't waste traces, machine-code and other memory jitting any boot code, it's only run once but stays in memory forever.
+-- We turn the JIT back on before entering the main tick loop below.
+jit.off()
 
 -- We load panic manually because it's not in the package path yet
 ffi.cdef [[
@@ -40,6 +45,14 @@ local engineContext = nil
 -- Note: Scripts which are loaded per-world are loaded in the world-setup script.
 function __on_prepare__()
     engineContext = require 'system.setup' -- Lazy load the setup script
+    jit.on() -- Enable JIT
+
+    -- Print some debug info
+    local inspect = require 'ext.inspect'
+    print(string.format('%s %s %s', jit.version, jit.os, jit.arch))
+    local status = tostring(jit.status())
+    print('JIT active: '..status)
+
     collectgarbage('stop') -- stop the GC, we run it manually every frame
 end
 

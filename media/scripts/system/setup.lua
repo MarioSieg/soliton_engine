@@ -45,13 +45,6 @@ function printsep()
     print('------------------------------------------------------------')
 end
 
--- Print JIT info
-local jit = require 'jit'
-local inspect = require 'ext.inspect'
-print(string.format('%s %s %s', jit.version, jit.os, jit.arch))
-local status = tostring(jit.status())
-print('JIT active: '..status)
-
 -- Print package paths
 print('Working dir: '..lfs.currentdir())
 for _, path in ipairs(INCLUDE_DIRS) do
