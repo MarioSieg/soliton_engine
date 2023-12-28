@@ -46,12 +46,12 @@ local engineContext = nil
 function __on_prepare__()
     engineContext = require 'system.setup' -- Lazy load the setup script
     jit.on() -- Enable JIT
+    jit.opt.start('+fma') -- enable FMA for better performance
 
     -- Print some debug info
     local inspect = require 'ext.inspect'
     print(string.format('%s %s %s', jit.version, jit.os, jit.arch))
-    local status = tostring(jit.status())
-    print('JIT active: '..status)
+    print('JIT active: '..inspect.inspect({jit.status()}))
 
     collectgarbage('stop') -- stop the GC, we run it manually every frame
 end

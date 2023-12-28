@@ -35,6 +35,7 @@ local REQUIRED_FILES = {
 	'media/scripts/jit/vmdef.lua',
 	'media/scripts/jit/zone.lua',
 	'media/scripts/lu/app.lua',
+	'media/scripts/lu/color.lua',
 	'media/scripts/lu/math.lua',
 	'media/scripts/lu/math_old.lua',
 	'media/scripts/lu/quat.lua',
