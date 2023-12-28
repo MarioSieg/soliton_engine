@@ -20,12 +20,11 @@ function scene.new(name, setupFunc, startFunc, tickFunc)
     assert(type(startFunc) == 'function', 'start_callback must be a function')
     assert(type(tickFunc) == 'function', 'tick_callback must be a function')
 
-    local data = setupFunc()
+    local data = setupFunc() -- call setup callback to get scene-specific data
     assert(type(data) == 'table', 'setup_callback must return a table')
 
     name = (name and type(name) == 'string') or 'untitled'
     local id = ffi.C.__lu_scene_new() -- create native scene
-    setupFunc() -- call setup callback to initialize scene
 
     local newScene = {
         name = name,
