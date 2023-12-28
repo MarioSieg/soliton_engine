@@ -19,12 +19,15 @@ local UNIT_X = rawnew(1.0, 0.0)
 local UNIT_Y = rawnew(0.0, 1.0)
 
 local function new(x, y)
+    assert(type(x) == 'number')
+    assert(type(y) == 'number' or y == nil)
     x = x or 0.0
     y = y or x
     return rawnew(x, y)
 end
 
 local function fromAngle(theta)
+    assert(type(theta) == 'number')
     return rawnew(cos(theta), sin(theta))
 end
 
@@ -168,6 +171,9 @@ ffi.metatype('vec2', {
         end
         error('Invalid operands for vec2 modulo.')
     end,
+    __unm = function(v)
+        return rawnew(-v.x, -v.y)
+    end,
     __len = function(self)
         return mag(self)
     end,
@@ -176,7 +182,7 @@ ffi.metatype('vec2', {
         return is_vec2 and x.x == y.x and x.y == y.y
     end,
     __tostring = function(self)
-        return string.format('(%f, %f)', self.x, self.y)
+        return string.format('vec2(%f, %f)', self.x, self.y)
     end,
 })
 

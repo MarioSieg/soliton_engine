@@ -27,6 +27,9 @@ local FORWARD = rawnew(0.0, 0.0, -1.0)
 local BACKWARD = rawnew(0.0, 0.0, 1.0)
 
 local function new(x, y, z)
+    assert(type(x) == 'number')
+    assert(type(y) == 'number' or y == nil)
+    assert(type(z) == 'number' or z == nil)
     x = x or 0.0
     y = y or x
     z = z or x
@@ -267,6 +270,9 @@ ffi.metatype('vec3', {
         end
         error('Invalid operands for vec3 modulo.')
     end,
+    __unm = function(v)
+        return new(-v.x, -v.y, -v.z)
+    end,
     __len = function(self)
         return mag(self)
     end,
@@ -275,7 +281,7 @@ ffi.metatype('vec3', {
         return is_vec3 and x.x == y.x and x.y == y.y and x.z == y.z
     end,
     __tostring = function(self)
-        return string.format('(%.3f, %.3f, %.3f)', self.x, self.y, self.z)
+        return string.format('vec3(%.3f, %.3f, %.3f)', self.x, self.y, self.z)
     end,
 })
 
