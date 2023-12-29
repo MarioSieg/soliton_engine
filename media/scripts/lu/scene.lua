@@ -16,14 +16,14 @@ function scene.new(name, setupFunc, startFunc, tickFunc)
     startFunc = startFunc or function() end
     tickFunc = tickFunc or function() end
 
-    assert(type(setupFunc) == 'function', 'setup_callback must be a function')
-    assert(type(startFunc) == 'function', 'start_callback must be a function')
-    assert(type(tickFunc) == 'function', 'tick_callback must be a function')
+    assert(type(setupFunc) == 'function', 'setupFunc must be a function')
+    assert(type(startFunc) == 'function', 'startFunc must be a function')
+    assert(type(tickFunc) == 'function', 'tickFunc must be a function')
 
     local data = setupFunc() -- call setup callback to get scene-specific data
-    assert(type(data) == 'table', 'setup_callback must return a table')
+    assert(type(data) == 'table', 'setupFunc must return a table')
 
-    name = (name and type(name) == 'string') or 'untitled'
+    name = name or 'untitled'
     local id = ffi.C.__lu_scene_new() -- create native scene
 
     local newScene = {
@@ -48,7 +48,7 @@ function scene.new(name, setupFunc, startFunc, tickFunc)
     collectgarbage() -- collect garbage before starting new scene
 
     newScene:__onStart() -- call start callback to start playing
-    
     scene.active = newScene
     print(string.format('Created new scene: %s, id: %x', name, id))
+    app.window.setTitle(string.format('Lunam Engine v.%s - %s %s - %s.scene', app.engineVersion, jit.os, jit.arch, name))
 end

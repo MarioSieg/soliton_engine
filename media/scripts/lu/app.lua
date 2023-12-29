@@ -20,7 +20,8 @@ ffi.cdef [[
 
 app = {
     name = 'Untitled App',
-    version = '0.0.1',
+    appVersion = '0.1',
+    engineVersion = '0.1',
     author = 'Anonymous',
     copyright = '',
     website = '',
@@ -43,28 +44,28 @@ function app.window.minimize()
     app.window.isMaximized = false
 end
 
-function app.window.enter_fullscreen()
+function app.window.enterFullscreen()
     ffi.C.__lu_window_enter_fullscreen()
     app.window.isFullscreen = true
 end
 
-function app.window.leave_fullscreen()
+function app.window.leaveFullscreen()
     ffi.C.__lu_window_leave_fullscreen()
     app.window.isFullscreen = false
 end
 
-function app.window.set_title(title)
+function app.window.setTitle(title)
     assert(type(title) == 'string')
     ffi.C.__lu_window_set_title(title)
 end
 
-function app.window.set_size(width, height)
+function app.window.setSize(width, height)
     assert(type(width) == 'number')
     assert(type(height) == 'number')
     ffi.C.__lu_window_set_size(width, height)
 end
 
-function app.window.set_pos(x, y)
+function app.window.setPos(x, y)
     assert(type(x) == 'number')
     assert(type(y) == 'number')
     ffi.C.__lu_window_set_pos(x, y)
@@ -80,21 +81,21 @@ function app.window.hide()
     app.window.isVisible = false
 end
 
-function app.window.allow_resize(allow)
+function app.window.allowResize(allow)
     assert(type(allow) == 'boolean')
     ffi.C.__lu_window_allow_resize(allow)
 end
 
-function app.window.get_size()
+function app.window.getSize()
     local v = ffi.C.__lu_window_get_size()
     return v.v[0], v.v[1]
 end
 
-function app.window.get_pos()
+function app.window.getPos()
     local v = ffi.C.__lu_window_get_pos()
     return v.v[0], v.v[1]
 end
 
-app.window.maximize()
+app.window.setTitle(string.format('Lunam Engine v.%s - %s %s', app.engineVersion, jit.os, jit.arch))
 
 return app

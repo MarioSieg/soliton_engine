@@ -3,18 +3,28 @@
 #include "subsystem.hpp"
 #include "../platform/subsystem.hpp"
 
-#include <bgfx/bgfx.h>
 #include <imgui.h>
+#include <mimalloc.h>
+#include <bgfx/bgfx.h>
+#include <bx/allocator.h>
+
 #include "imgui/imgui_renderer.hpp"
 
 using platform::platform_subsystem;
 
 namespace graphics {
+    class allocator final : public bx::AllocatorI {
+    public:
+        auto realloc(void* p, size_t size, size_t align, const char* _filePath, uint32_t _line) -> void* override;
+    };
+
     graphics_subsystem::graphics_subsystem() : subsystem{"Graphics"} {
         log_info("Initializing graphics subsystem");
         void* wnd = platform_subsystem::get_native_window();
         passert(wnd != nullptr);
+        static allocator g_bgfx_alloc;
         bgfx::Init init {};
+        init.allocator = &g_bgfx_alloc;
         init.platformData.nwh = wnd;
         init.platformData.ndt = platform_subsystem::get_native_display();
         init.resolution.reset = m_reset_flags;
@@ -55,5 +65,30 @@ namespace graphics {
         int w, h;
         glfwGetFramebufferSize(platform_subsystem::get_glfw_window(), &w, &h);
         bgfx::reset(w, h, m_reset_flags);
+    }
+
+    static constexpr std::size_t k_natural_align = 8;
+
+    auto allocator::realloc(void* p, std::size_t size, std::size_t align, const char*, std::uint32_t) -> void* {
+        if (0 == size) {
+            if (nullptr != p) {
+                if (k_natural_align >= align) {
+                    mi_free(p);
+                    return nullptr;
+                }
+                mi_free_aligned(p, align);
+            }
+            return nullptr;
+        }
+        if (nullptr == p) {
+            if (k_natural_align >= align) {
+                return mi_malloc(size);
+            }
+            return mi_malloc_aligned(size, align);
+        }
+        if (k_natural_align >= align) {
+            return mi_realloc(p, size);
+        }
+        return mi_realloc_aligned(p, size, align);
     }
 }

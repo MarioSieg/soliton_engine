@@ -24,6 +24,7 @@
 #include <infoware/infoware.hpp>
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+#include <DirectXMath.h>
 
 namespace platform {
 static constexpr auto kernel_variant_name(iware::system::kernel_t variant) noexcept -> std::string_view {
@@ -135,6 +136,67 @@ auto dump_os_info() -> void {
 #endif
 }
 
+#if CPU_X86
+[[nodiscard]] inline auto is_avx_supported() noexcept -> bool {
+    // Should return true for AMD Bulldozer, Intel "Sandy Bridge", and Intel "Ivy Bridge" or later processors
+    // with OS support for AVX (Windows 7 Service Pack 1, Windows Server 2008 R2 Service Pack 1, Windows 8, Windows Server 2012)
+
+    // See http://msdn.microsoft.com/en-us/library/hskdteyh.aspx
+    int CPUInfo[4] = {-1};
+#if (defined(__clang__) || defined(__GNUC__)) && defined(__cpuid)
+    __cpuid(0, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
+#else
+    __cpuid( CPUInfo, 0 );
+#endif
+
+    if ( CPUInfo[0] < 1  )
+        return false;
+
+#if (defined(__clang__) || defined(__GNUC__)) && defined(__cpuid)
+    __cpuid(1, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
+#else
+    __cpuid(CPUInfo, 1 );
+#endif
+
+    // We check for AVX, OSXSAVE, SSSE4.1, and SSE3
+    return (CPUInfo[2] & 0x18080001) == 0x18080001;
+}
+
+[[nodiscard]] inline auto is_avx2_supported() noexcept -> bool {
+    // Should return true for AMD "Excavator", Intel "Haswell" or later processors
+    // with OS support for AVX (Windows 7 Service Pack 1, Windows Server 2008 R2 Service Pack 1, Windows 8, Windows Server 2012)
+
+    // See http://msdn.microsoft.com/en-us/library/hskdteyh.aspx
+    int CPUInfo[4] = {-1};
+#if (defined(__clang__) || defined(__GNUC__)) && defined(__cpuid)
+    __cpuid(0, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
+#else
+    __cpuid(CPUInfo, 0);
+#endif
+
+    if (CPUInfo[0] < 7)
+        return false;
+
+#if (defined(__clang__) || defined(__GNUC__)) && defined(__cpuid)
+    __cpuid(1, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
+#else
+    __cpuid(CPUInfo, 1);
+#endif
+
+    // We check for F16C, FMA3, AVX, OSXSAVE, SSSE4.1, and SSE3
+    if ((CPUInfo[2] & 0x38081001) != 0x38081001)
+        return false;
+
+#if defined(__clang__) || defined(__GNUC__)
+    __cpuid_count(7, 0, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
+#else
+    __cpuidex(CPUInfo, 7, 0);
+#endif
+
+    return (CPUInfo[1] & 0x20) == 0x20;
+}
+#endif
+
 auto dump_cpu_info() -> void {
     std::string name = iware::cpu::model_name();
     std::string vendor = iware::cpu::vendor();
@@ -171,9 +233,18 @@ auto dump_cpu_info() -> void {
     dumpCache(2, l2Cache);
     dumpCache(3, l3Cache);
 
+
 #if CPU_X86 // TODO: AArch64
     for (std::size_t i = 0; i < k_amd64_extensions.size(); ++i) { // TODO: AArch64
         bool supported = instruction_set_supported(static_cast<iware::cpu::instruction_set_t>(i));
+        // infoware detects AVX on some CPUs which do not actually support it
+        // probably a bug in the windows detection code
+        // so AVX and AVX2 also also validated with cpuid manually to provide correct results
+        if (i == static_cast<std::size_t>(iware::cpu::instruction_set_t::avx)) {
+            supported &= is_avx_supported();
+        } else if (i == static_cast<std::size_t>(iware::cpu::instruction_set_t::avx2)) {
+            supported &= is_avx2_supported();
+        }
         log_info("{: <16} [{}]", k_amd64_extensions[i], supported ? 'X' : ' ');
     }
 #endif

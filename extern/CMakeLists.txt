@@ -47,3 +47,4 @@ target_link_libraries(lunam flecs_static)
 
 add_subdirectory(extern/DirectXMath)
 include_directories(extern/DirectXMath/Inc)
+include_directories(extern/DirectXMath/Extensions)

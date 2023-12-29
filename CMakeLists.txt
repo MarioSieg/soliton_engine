@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_compile_options(-msse2 -msse3 -mssse3 -msse4.1 -msse4.2 -Xclang -fvisibility=hidden)
+add_compile_options(-Wno-defaulted-function-deleted)
 
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
     add_link_options("-Wl,--thinlto-cache-dir=${PROJECT_BINARY_DIR}/LTO.cache")
