@@ -4,7 +4,7 @@
 
 #include "../core/subsystem.hpp"
 
-#include <bgfx/bgfx.h>
+#include "prelude.hpp"
 
 namespace graphics {
     class graphics_subsystem final : public subsystem {
@@ -17,9 +17,11 @@ namespace graphics {
         auto on_resize() -> void override;
 
     private:
-        handle<bgfx::ProgramHandle> m_program = {};
-        handle<bgfx::VertexBufferHandle> m_vb = {};
-        handle<bgfx::IndexBufferHandle> m_ib = {};
+        static constexpr bgfx::ViewId k_scene_view = 0;
+        static constexpr bgfx::ViewId k_imgui_view = 0xff;
+        handle<bgfx::ProgramHandle> m_program {};
+        handle<bgfx::VertexBufferHandle> m_vb {};
+        handle<bgfx::IndexBufferHandle> m_ib {};
         std::uint32_t m_reset_flags = 0;
     };
 }

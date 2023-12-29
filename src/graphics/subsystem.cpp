@@ -49,10 +49,10 @@ namespace graphics {
     auto graphics_subsystem::on_pre_tick() -> bool {
         int w, h;
         glfwGetFramebufferSize(platform_subsystem::get_glfw_window(), &w, &h);
-        bgfx::setViewRect(0, 0, 0, w, h);
-        bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, ~0u, 1.0f, 0);
-        bgfx::touch(0);
-        ImGuiEx::BeginFrame(w, h, 0xff);
+        bgfx::setViewRect(k_scene_view, 0, 0, w, h);
+        bgfx::setViewClear(k_scene_view, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, ~0u, 1.0f, 0);
+        bgfx::touch(k_scene_view);
+        ImGuiEx::BeginFrame(w, h, k_imgui_view);
         return true;
     }
 

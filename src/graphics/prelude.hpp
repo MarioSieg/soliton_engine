@@ -1,9 +1,13 @@
+// Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+
 #pragma once
+
+#include "../core/core.hpp"
 
 #include <bgfx/bgfx.h>
 
 namespace graphics {
-    template <typename T> requires sizeof(T) == sizeof(std::uint16_t)
+    template <typename T> requires (sizeof(T) == sizeof(std::uint16_t))
     struct handle final { // Destroys BGFX when out of scope
         T value = BGFX_INVALID_HANDLE;
 
@@ -26,4 +30,6 @@ namespace graphics {
             }
         }
     };
+
+    [[nodiscard]] extern auto load_shader_program(const std::string& path) -> handle<bgfx::ProgramHandle>;
 }
