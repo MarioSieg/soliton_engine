@@ -3,7 +3,7 @@
 local ffi = require 'ffi'
 
 ffi.cdef[[
-    uint64_t __lu_scene_new(void);
+    uint32_t __lu_scene_new(void);
     void __lu_scene_tick(void);
     void __lu_scene_start(void);
 ]]
@@ -25,6 +25,7 @@ function scene.new(name, setupFunc, startFunc, tickFunc)
 
     name = name or 'untitled'
     local id = ffi.C.__lu_scene_new() -- create native scene
+    assert(type(id) == 'number' and id ~= 0, 'failed to create scene')
 
     local newScene = {
         name = name,

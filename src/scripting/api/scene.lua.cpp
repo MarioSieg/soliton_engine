@@ -3,18 +3,18 @@
 #include "../api_prelude.hpp"
 #include "../../core/scene/scene.hpp"
 
-LUA_INTEROP_API uint64_t __lu_scene_new(void) {
+LUA_INTEROP_API auto __lu_scene_new() -> std::uint32_t {
     scene::new_active();
     return scene::get_active()->id;
 }
 
-LUA_INTEROP_API void __lu_scene_tick(void) {
+LUA_INTEROP_API auto __lu_scene_tick() -> void {
     if (scene::get_active() != nullptr) [[likely]] {
         scene::get_active()->on_tick();
     }
 }
 
-LUA_INTEROP_API void __lu_scene_start(void) {
+LUA_INTEROP_API auto __lu_scene_start() -> void {
     if (scene::get_active() != nullptr) [[likely]] {
         scene::get_active()->on_start();
     }

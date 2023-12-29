@@ -8,7 +8,7 @@
 
 class scene : public flecs::world, public no_copy, public no_move {
 public:
-    const std::uint64_t id;
+    const std::uint32_t id;
     std::string name = {};
     virtual ~scene() = default;
 
