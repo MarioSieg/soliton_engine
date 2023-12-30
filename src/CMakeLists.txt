@@ -1,5 +1,6 @@
 file(GLOB_RECURSE SOURCES
     src/*.cpp
+    src/*.c
     src/*.hpp
 )
 if (WIN32)

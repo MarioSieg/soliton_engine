@@ -4,8 +4,8 @@
 
 #include "../core/subsystem.hpp"
 
-#include <lua.hpp>
-#include <LuaBridge/LuaBridge.h>
+#include "jit/lua.hpp"
+#include "bridge/LuaBridge.h"
 
 namespace scripting {
     class scripting_subsystem final : public subsystem {

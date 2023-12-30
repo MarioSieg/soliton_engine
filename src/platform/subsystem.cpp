@@ -24,9 +24,8 @@
 #include <GLFW/glfw3native.h>
 #include <mimalloc.h>
 #include <infoware/infoware.hpp>
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
-#include <DirectXMath.h>
+#include "../stb/stb_image.h"
+#include "../math/DirectXMath.h"
 
 namespace platform {
 static constexpr auto kernel_variant_name(iware::system::kernel_t variant) noexcept -> std::string_view {

@@ -2,7 +2,7 @@
 
 #include "subsystem.hpp"
 
-#include <lfs.c>
+#include "lfs/lfs.h"
 
 namespace scripting {
     template <typename... Ts>

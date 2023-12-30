@@ -1,7 +1,7 @@
 // Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "../api_prelude.hpp"
-#include "../../core/scene/scene.hpp"
+#include "../../scene/scene.hpp"
 
 LUA_INTEROP_API auto __lu_scene_new() -> std::uint32_t {
     scene::new_active();

@@ -6,7 +6,7 @@
 
 #include "../core/core.hpp"
 
-#include <unordered_dense.h>
+#include "../dense/unordered_dense.h"
 #include <bgfx/bgfx.h>
 
 namespace graphics {
