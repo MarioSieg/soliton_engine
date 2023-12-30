@@ -2,8 +2,11 @@
 
 #pragma once
 
+#include <filesystem>
+
 #include "../core/core.hpp"
 
+#include <unordered_dense.h>
 #include <bgfx/bgfx.h>
 
 namespace graphics {
@@ -31,5 +34,9 @@ namespace graphics {
         }
     };
 
-    [[nodiscard]] extern auto load_shader_program(const std::string& path) -> handle<bgfx::ProgramHandle>;
+    [[nodiscard]] extern auto load_shader(const std::string& path) -> handle<bgfx::ShaderHandle>;
+    extern auto load_shader_registry(
+        std::filesystem::path&& root,
+        ankerl::unordered_dense<std::string, handle<bgfx::ProgramHandle>>& registry
+    ) -> void;
 }

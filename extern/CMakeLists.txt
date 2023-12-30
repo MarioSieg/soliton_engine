@@ -48,3 +48,7 @@ target_link_libraries(lunam flecs_static)
 add_subdirectory(extern/DirectXMath)
 include_directories(extern/DirectXMath/Inc)
 include_directories(extern/DirectXMath/Extensions)
+
+add_subdirectory(extern/unordered_dense)
+include_directories(extern/unordered_dense/include/ankerl)
+target_link_directories(lunam PRIVATE unordered_dense)

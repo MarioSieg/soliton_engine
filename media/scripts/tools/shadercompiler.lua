@@ -126,7 +126,7 @@ local SHADER_TARGET_NAMES = {
     [SHADER_TARGET.DX12] = 'dx12',
     [SHADER_TARGET.VULKAN] = 'vulkan',
     [SHADER_TARGET.METAL] = 'metal',
-    [SHADER_TARGET.GLSL] = 'glsl'
+    [SHADER_TARGET.GLSL] = 'gl'
 }
 
 local SHADER_TARGET_PROFILES = {
