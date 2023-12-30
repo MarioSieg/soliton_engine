@@ -54,16 +54,22 @@ if lfs.attributes(REGISTRY) then
     end
 end
 
--- Now we update the registry
-local newTimes = getFileModificationTimes('shaders')
-local file = io.open(REGISTRY, 'w')
-file:write(json.encode(newTimes))
-file:close()
-
 if lfs.attributes(OUT_DIR) and not FORCE_SHADER_RECOMPILATION then
     print('Shader compilation skipped, already compiled and no force recompilation flag set.')
     return
 end
+
+-- Now we update the registry
+local newTimes = getFileModificationTimes('shaders')
+if not lfs.attributes(OUT_DIR) then
+    lfs.mkdir(OUT_DIR)
+end
+if not lfs.attributes(REGISTRY) then
+    lfs.touch(REGISTRY)
+end
+local file = io.open(REGISTRY, 'w')
+file:write(json.encode(newTimes))
+file:close()
 
 -- delete output directory:
 print('Deleting output directory '..OUT_DIR)
@@ -79,10 +85,13 @@ lfs.rmdir(OUT_DIR)
 
 printsep()
 
-if jit.os == 'Windows' and jit.arch == 'x64' then
-    EXECUTABLE = EXECUTABLE..'win_amd64.exe'
-else
-    panic('Unsupported platform. Supported platforms are Windows x64.')
+if jit.arch ~= 'x64' then
+    panic('Unsupported architecture. Supported architectures are AMD64.')
+end
+
+EXECUTABLE = EXECUTABLE..(jit.os:lower())..'_amd64'
+if jit.os == 'Windows' then
+    EXECUTABLE = EXECUTABLE..'.exe'
 end
 
 if not lfs.attributes(EXECUTABLE) then
@@ -134,7 +143,7 @@ local SHADER_TARGET_PROFILES = {
     [SHADER_TARGET.DX12] = 's_5_0',
     [SHADER_TARGET.VULKAN] = 'spirv',
     [SHADER_TARGET.METAL] = 'metal',
-    [SHADER_TARGET.GLSL] = '400'
+    [SHADER_TARGET.GLSL] = '150'
 }
 
 local PLATFORM_TARGETS = {
@@ -232,8 +241,8 @@ local function compileShader(file, varying, stype, target)
         cmd = cmd..' -O3'
     end
     print(cmd)
-    local ok, msg, code = os.execute(cmd)
-    if not ok or (code and code ~= 0) or not lfs.attributes(out) then
+    local ok = os.execute(cmd)
+    if ok ~= 0 then
         panic('Shader compilation failed. Code: '..tostring(code)..' Command: '..cmd)
     end
 end

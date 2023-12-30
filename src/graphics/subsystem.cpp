@@ -3,7 +3,6 @@
 #include "subsystem.hpp"
 #include "../platform/subsystem.hpp"
 
-#include <imgui.h>
 #include <mimalloc.h>
 #include <bgfx/bgfx.h>
 #include <bx/allocator.h>
@@ -31,7 +30,7 @@ namespace graphics {
 #if PLATFORM_WINDOWS
         init.type = bgfx::RendererType::Direct3D11;
 #elif PLATFORM_LINUX
-        init.type = bgfx::RendererType::OpenGL;
+        init.type = bgfx::RendererType::Vulkan;
 #elif PLATFORM_MACOS
         init.type = bgfx::RendererType::Metal;
 #endif

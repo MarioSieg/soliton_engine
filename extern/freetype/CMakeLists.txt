@@ -112,6 +112,8 @@
 # CMake >= 3 is requested.
 cmake_minimum_required(VERSION 3.0)
 
+set(BUILD_SHARED_LIBS OFF)
+
 if (NOT CMAKE_VERSION VERSION_LESS 3.3)
   # Allow symbol visibility settings also on static libraries. CMake < 3.3
   # only sets the property on a shared library build.

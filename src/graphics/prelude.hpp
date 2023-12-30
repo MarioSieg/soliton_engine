@@ -37,6 +37,6 @@ namespace graphics {
     [[nodiscard]] extern auto load_shader(const std::string& path) -> handle<bgfx::ShaderHandle>;
     extern auto load_shader_registry(
         std::filesystem::path&& root,
-        ankerl::unordered_dense<std::string, handle<bgfx::ProgramHandle>>& registry
+        ankerl::unordered_dense::map<std::string, handle<bgfx::ProgramHandle>>& registry
     ) -> void;
 }

@@ -9,6 +9,10 @@
 
 #pragma once
 
+#ifndef _Analysis_assume_
+#define _Analysis_assume_(exp)
+#endif
+
 #if defined(_XM_NO_INTRINSICS_)
 #define XMISNAN(x)  isnan(x)
 #define XMISINF(x)  isinf(x)

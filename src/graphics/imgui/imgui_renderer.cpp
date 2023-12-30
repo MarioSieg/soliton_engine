@@ -9,7 +9,7 @@
 #include <bgfx/embedded_shader.h>
 #include <bx/allocator.h>
 #include <bx/math.h>
-#include <imgui.h>
+#include "imgui.h"
 #include <mimalloc.h>
 #include "imgui_impl_glfw.h"
 

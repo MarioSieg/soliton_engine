@@ -26,7 +26,7 @@ namespace graphics {
 
     auto load_shader_registry(
         path&& root,
-        ankerl::unordered_dense<std::string, handle<bgfx::ProgramHandle>>& registry
+        ankerl::unordered_dense::map<std::string, handle<bgfx::ProgramHandle>>& registry
     ) -> void {
         root = current_path() / root;
         passert(exists(root));

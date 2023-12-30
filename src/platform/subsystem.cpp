@@ -5,7 +5,7 @@
 #include <iostream>
 #include <filesystem>
 
-#include "..\graphics\subsystem.hpp"
+#include "../graphics/subsystem.hpp"
 
 #include <GLFW/glfw3.h>
 #if PLATFORM_WINDOWS // TODO: OSX, Linux
@@ -17,10 +17,12 @@
 #include <fcntl.h>
 #include <io.h>
 #include <psapi.h>
+#else
+#define GLFW_EXPOSE_NATIVE_X11
+#include <link.h>
 #endif
 #include <GLFW/glfw3native.h>
 #include <mimalloc.h>
-#include <mimalloc-new-delete.h>
 #include <infoware/infoware.hpp>
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -273,8 +275,8 @@ auto dump_loaded_dylibs() -> void {
         }
     }
 #else
-    dl_iterate_phdr(+[](const dl_phdr_info* info, std::size_t, void*) -> int {
-        LOG_INFO("{}", info->dlpi_name);
+    dl_iterate_phdr(+[](dl_phdr_info* info, std::size_t, void*) -> int {
+        log_info("{}", info->dlpi_name);
         return 0;
     }, nullptr);
 #endif
@@ -320,9 +322,14 @@ auto dump_loaded_dylibs() -> void {
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // window is hidden by default
         s_window = glfwCreateWindow(1280, 720, "LunamEngine", nullptr, nullptr);
         passert(s_window != nullptr);
-    #if PLATFORM_WINDOWS
-        s_native_window = reinterpret_cast<void*>(glfwGetWin32Window(s_window));
-    #endif // TODO: OSX, Linux
+        #if PLATFORM_WINDOWS
+            s_native_window = reinterpret_cast<void*>(glfwGetWin32Window(s_window));
+        #elif PLATFORM_LINUX
+            s_native_window = reinterpret_cast<void*>(glfwGetX11Window(s_window));
+            s_native_display = reinterpret_cast<void*>(glfwGetX11Display());
+        #else
+            #error "Unsupported platform"
+        #endif
         passert(s_native_window != nullptr);
         glfwSetWindowUserPointer(s_window, this);
         glfwSetWindowSizeLimits(s_window, 800, 600, GLFW_DONT_CARE, GLFW_DONT_CARE);

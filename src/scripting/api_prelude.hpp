@@ -5,7 +5,7 @@
 #include "../core/core.hpp"
 
 #if PLATFORM_WINDOWS
-#define LUA_INTEROP_API __cdecl __declspec(dllexport) extern "C"
+#define LUA_INTEROP_API extern "C" __cdecl __declspec(dllexport)
 #else
-#define LUA_INTEROP_API __attribute__((visibility("default"))) extern "C"
+#define LUA_INTEROP_API extern "C" __attribute__((visibility("default")))
 #endif
