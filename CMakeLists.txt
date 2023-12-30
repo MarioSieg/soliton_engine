@@ -21,4 +21,3 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
 endif()
 
 include(src/CMakeLists.txt)
-include(extern/CMakeLists.txt)
