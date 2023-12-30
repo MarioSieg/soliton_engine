@@ -42,12 +42,50 @@ file(GLOB_RECURSE SOURCES
     src/stb/*.cpp
     src/stb/*.c
     src/stb/*.hpp
+
+    src/log/*.cpp
+    src/log/*.c
+    src/log/*.hpp
 )
+
+add_compile_definitions(SPDLOG_COMPILED_LIB)
+
+include_directories(src/log/include)
 
 if (WIN32)
     set(APP_ICON_RESOURCE_WINDOWS "WinRes.rc")
 else()
     set(APP_ICON_RESOURCE_WINDOWS "")
 endif()
+
 add_executable(lunam WIN32 ${SOURCES} ${APP_ICON_RESOURCE_WINDOWS})
-include(src/extern/CMakeLists.txt)
+
+add_subdirectory(src/msgbox)
+include_directories(src/msgbox/include)
+target_link_libraries(lunam Boxer)
+
+add_subdirectory(src/glfw)
+include_directories(src/glfw/include)
+target_link_libraries(lunam glfw)
+
+add_subdirectory(src/freetype)
+include_directories(src/freetype/include)
+target_link_libraries(lunam freetype)
+
+add_subdirectory(src/allocator)
+include_directories(src/allocator/include)
+target_link_libraries(lunam mimalloc-static)
+
+add_subdirectory(src/machineinfo)
+include_directories(src/machineinfo/include)
+target_link_libraries(lunam infoware)
+
+add_subdirectory(src/rendercore)
+include_directories(src/rendercore/bgfx/include)
+target_link_libraries(lunam bgfx bx bimg)
+
+if (WIN32)
+    target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/win_amd64/lua51.lib)
+else()
+    target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/linux_amd64/lua51.a)
+endif()
