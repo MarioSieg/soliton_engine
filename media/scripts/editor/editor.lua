@@ -18,8 +18,24 @@ local m = {
         terminal,
         profiler,
         scriptEditor
+    },
+    gizmos = {
+        gridSize = 25,
+        showGrid = true,
+        showCenterAxis = true
     }
 }
+
+function m.gizmos:drawGizmos()
+    dd.start()
+    if self.showGrid then
+        dd.drawGrid(dd.AXIS.Y, vec3.ZERO, self.gridSize, 1)
+    end
+    if self.showCenterAxis then
+        dd.drawAxis(vec3.ZERO, 1, dd.AXIS.Y, 0.02)
+    end
+    dd.finish()
+end
 
 for _, tool in ipairs(m.tools) do -- hide all tools by default
     tool.isVisible[0] = false
@@ -31,15 +47,24 @@ function m:renderMainMenu()
     if gui.BeginMainMenuBar() then
         if gui.BeginMenu('File') then
             if gui.MenuItem('Exit', 'Alt+F4') then
-                m.isVisible[0] = false
+                self.isVisible[0] = false
             end
             gui.EndMenu()
         end
         if gui.BeginMenu('Tools') then
-            for _, tool in ipairs(m.tools) do
+            for _, tool in ipairs(self.tools) do
                 if gui.MenuItem(tool.name, nil, tool.isVisible[0]) then
                     tool.isVisible[0] = not tool.isVisible[0]
                 end
+            end
+            gui.EndMenu()
+        end
+        if gui.BeginMenu('View') then
+            if gui.MenuItem('Show Grid', nil, self.gizmos.showGrid) then
+                self.gizmos.showGrid = not self.gizmos.showGrid
+            end
+            if gui.MenuItem('Show Center Axis', nil, self.gizmos.showCenterAxis) then
+                self.gizmos.showCenterAxis = not self.gizmos.showCenterAxis
             end
             gui.EndMenu()
         end
@@ -64,34 +89,7 @@ function m:drawTools()
     end
 end
 
-m.gizmos = {
-    GRID_POS = vec3(0, 0, 0),
-    showGrid = true,
-    showCenterAxis = true
-}
-
-function m.gizmos:drawGizmos()
-    dd.start()
-    if self.showGrid then
-        dd.drawGrid(dd.AXIS.Y, self.GRID_POS, 20, 1)
-    end
-    if self.showCenterAxis then
         dd.drawAxis(vec3.ZERO, 1, dd.AXIS.Y, 0.02)
-    end
-    dd.setWireframe(true)
-    dd.setColor(vec3(0, 0, 1))
-    dd.drawAABB(vec3(0, 0, 0), vec3(2, 2, 2))
-    dd.setColor(vec3(1, 0, 0))
-    local dim = 10
-    for i = -dim, dim do
-        for j = -dim, dim do
-            local pos = vec3(i, 0, j)
-            dd.drawSphere(pos, 0.5)
-        end
-    end
-    dd.finish()
-end
-
 function m:__onTick()
     if not self.isVisible[0] then return end
     self.gizmos:drawGizmos()
