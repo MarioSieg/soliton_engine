@@ -11,7 +11,7 @@
 
 #define FMT_CONSTEVAL constexpr
 
-#include <spdlog/spdlog.h>
+#include "../log/include/spdlog/spdlog.h"
 
 #define log_info SPDLOG_INFO
 #define log_warn SPDLOG_WARN

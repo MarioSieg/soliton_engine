@@ -12,7 +12,7 @@ public:
     std::string name = {};
     virtual ~scene() = default;
 
-    [[nodiscard]] static auto new_active(std::string&& name = {}) -> void;
+    static auto new_active(std::string&& name = {}) -> void;
     [[nodiscard]] static auto get_active() noexcept -> const std::unique_ptr<scene>& { return m_active; }
 
     virtual auto on_tick() -> void;

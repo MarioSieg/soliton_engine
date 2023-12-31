@@ -66,8 +66,10 @@ private:
 }
 
 #if PLATFORM_WINDOWS
+#define WIN32_LEAN_AND_MEAN
 #include <fcntl.h>
-#include <processthreadsapi.h>
+#include <corecrt_io.h>
+#include <Windows.h>
 static auto redirect_io() -> void {
     if (!AttachConsole(ATTACH_PARENT_PROCESS))
         return;
