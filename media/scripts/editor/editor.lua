@@ -8,8 +8,9 @@ local terminal = require 'editor.terminal'
 local profiler = require 'editor.profiler'
 local scriptEditor = require 'editor.scripteditor'
 local style = require 'editor.style'
+local dd = debugdraw
 
-WINDOW_SIZE = gui.ImVec2(800+200, 600+200)
+WINDOW_SIZE = gui.ImVec2(800, 600)
 
 local m = {
     isVisible = ffi.new('bool[1]', true),
@@ -19,6 +20,10 @@ local m = {
         scriptEditor
     }
 }
+
+for _, tool in ipairs(m.tools) do -- hide all tools by default
+    tool.isVisible[0] = false
+end
 
 style.setupDarkStyle()
 
@@ -50,16 +55,48 @@ function m:renderMainMenu()
     end
 end
 
-function m:__onTick()
-    if m.isVisible[0] then
-        m:renderMainMenu()
-        gui.DockSpaceOverViewport(gui.GetMainViewport(), ffi.C.ImGuiDockNodeFlags_PassthruCentralNode)
-        for _, tool in ipairs(m.tools) do
-            if tool.isVisible[0] then
-                tool:render()
-            end
+function m:drawTools()
+    gui.DockSpaceOverViewport(gui.GetMainViewport(), ffi.C.ImGuiDockNodeFlags_PassthruCentralNode)
+    for _, tool in ipairs(self.tools) do
+        if tool.isVisible[0] then
+            tool:render()
         end
     end
+end
+
+m.gizmos = {
+    GRID_POS = vec3(0, 0, 0),
+    showGrid = true,
+    showCenterAxis = true
+}
+
+function m.gizmos:drawGizmos()
+    dd.start()
+    if self.showGrid then
+        dd.drawGrid(dd.AXIS.Y, self.GRID_POS, 20, 1)
+    end
+    if self.showCenterAxis then
+        dd.drawAxis(vec3.ZERO, 1, dd.AXIS.Y, 0.02)
+    end
+    dd.setWireframe(true)
+    dd.setColor(vec3(0, 0, 1))
+    dd.drawAABB(vec3(0, 0, 0), vec3(2, 2, 2))
+    dd.setColor(vec3(1, 0, 0))
+    local dim = 10
+    for i = -dim, dim do
+        for j = -dim, dim do
+            local pos = vec3(i, 0, j)
+            dd.drawSphere(pos, 0.5)
+        end
+    end
+    dd.finish()
+end
+
+function m:__onTick()
+    if not self.isVisible[0] then return end
+    self.gizmos:drawGizmos()
+    self:drawTools()
+    self:renderMainMenu()
 end
 
 return m

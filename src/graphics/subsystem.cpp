@@ -8,6 +8,7 @@
 #include <bx/allocator.h>
 
 #include "imgui/imgui_renderer.hpp"
+#include "debugdraw/debugdraw.h"
 
 using platform::platform_subsystem;
 
@@ -41,6 +42,9 @@ namespace graphics {
     }
 
     graphics_subsystem::~graphics_subsystem() {
+        if (s_is_dd_init) {
+            ddShutdown();
+        }
         ImGuiEx::Destroy();
         bgfx::shutdown();
     }
@@ -48,14 +52,29 @@ namespace graphics {
     auto graphics_subsystem::on_pre_tick() -> bool {
         int w, h;
         glfwGetFramebufferSize(platform_subsystem::get_glfw_window(), &w, &h);
+        m_width = static_cast<float>(w);
+        m_height = static_cast<float>(h);
         bgfx::setViewRect(k_scene_view, 0, 0, w, h);
-        bgfx::setViewClear(k_scene_view, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, ~0u, 1.0f, 0);
+        bgfx::setViewClear(k_scene_view, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0, 1.0f, 0);
         bgfx::touch(k_scene_view);
         ImGuiEx::BeginFrame(w, h, k_imgui_view);
+        s_is_draw_phase = true;
         return true;
     }
 
     auto graphics_subsystem::on_post_tick() -> void {
+
+        const bx::Vec3 at  = { 0.0f, 0.0f,   0.0f };
+        const bx::Vec3 eye = { 0.0f, 2.0f, -5.0f };
+
+        float view[16];
+        bx::mtxLookAt(view, eye, at);
+
+        float proj[16];
+        bx::mtxProj(proj, 60.0f, m_width / m_height, 0.1f, 100.0f, bgfx::getCaps()->homogeneousDepth);
+        bgfx::setViewTransform(k_scene_view, view, proj);
+
+        s_is_draw_phase = false;
         ImGuiEx::EndFrame();
         bgfx::frame();
     }
@@ -64,6 +83,13 @@ namespace graphics {
         int w, h;
         glfwGetFramebufferSize(platform_subsystem::get_glfw_window(), &w, &h);
         bgfx::reset(w, h, m_reset_flags);
+    }
+
+    auto graphics_subsystem::init_debug_draw_lazy() -> void {
+        if (!s_is_dd_init) [[unlikely]] {
+            ddInit();
+            s_is_dd_init = true;
+        }
     }
 
     static constexpr std::size_t k_natural_align = 8;
