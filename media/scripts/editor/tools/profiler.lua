@@ -4,7 +4,7 @@ local ffi = require 'ffi'
 local gui = require 'editor.imgui'
 
 local m = {
-    name = 'Profiler',
+    name = ICONS.CLOCK..' Profiler',
     isVisible = ffi.new('bool[1]', true),
     frameTimes = ffi.new('float[?]', time.fpsHistogramSamples),
 }

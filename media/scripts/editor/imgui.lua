@@ -1,5 +1,6 @@
 local ffi = require "ffi"
 local cdecl = require "editor.cdefs"
+require "editor.icons"
 
 local ffi_cdef = function(code)
     local ret,err = pcall(ffi.cdef,code)

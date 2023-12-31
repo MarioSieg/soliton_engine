@@ -108,7 +108,7 @@ function newScript(str, name)
 end
 
 local m = {
-    name = 'Script Editor',
+    name = ICONS.CODE..' Script Editor',
     isVisible = ffi.new('bool[1]', true),
     scripts = {
         ['New'] = (
@@ -139,19 +139,13 @@ function m:render()
             if gui.BeginMenu('View') then
                 gui.EndMenu()
             end
-            if gui.BeginMenu('Help') then
-                gui.EndMenu()
-            end
             gui.Separator()
-            if gui.Button('Run') then
+            if gui.Button(ICONS.PLAY_CIRCLE..' Run') then
                 local script = m.scripts[m.activeScriptName]
                 assert(script)
                 script:exec()
             end
-            if gui.Button('Run Selected') then
-                
-            end
-            if gui.Button('Hot-Reload') then
+            if gui.Button(ICONS.FLAME..' Reload') then
                 
             end
             gui.EndMenuBar()

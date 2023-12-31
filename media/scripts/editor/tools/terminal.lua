@@ -4,7 +4,7 @@ local ffi = require 'ffi'
 local gui = require 'editor.imgui'
 
 local m = {
-    name = 'Terminal',
+    name = ICONS.LINE_COLUMNS..' Terminal',
     isVisible = ffi.new('bool[1]', true),
     cmdBufLen = 512,
     cmdBuf = ffi.new('char[?]', 512),

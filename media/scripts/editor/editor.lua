@@ -4,12 +4,12 @@
 
 local ffi = require 'ffi'
 local gui = require 'editor.imgui'
-local terminal = require 'editor.terminal'
-local profiler = require 'editor.profiler'
-local scriptEditor = require 'editor.scripteditor'
 local style = require 'editor.style'
-local icons = require 'editor.icons'
 local dd = debugdraw
+
+local terminal = require 'editor.tools.terminal'
+local profiler = require 'editor.tools.profiler'
+local scriptEditor = require 'editor.tools.scripteditor'
 
 WINDOW_SIZE = gui.ImVec2(800, 600)
 
@@ -47,7 +47,7 @@ end
 function m:renderMainMenu()
     if gui.BeginMainMenuBar() then
         if gui.BeginMenu('File') then
-            if gui.MenuItem('Exit', 'Alt+F4') then
+            if gui.MenuItem(ICONS.PORTAL_EXIT..' Exit', 'Alt+F4') then
                 self.isVisible[0] = false
             end
             gui.EndMenu()
@@ -61,10 +61,10 @@ function m:renderMainMenu()
             gui.EndMenu()
         end
         if gui.BeginMenu('View') then
-            if gui.MenuItem(icons.GRIP_LINES..' Show Grid', nil, self.gizmos.showGrid) then
+            if gui.MenuItem(ICONS.RULER_TRIANGLE..' Show Grid', nil, self.gizmos.showGrid) then
                 self.gizmos.showGrid = not self.gizmos.showGrid
             end
-            if gui.MenuItem('Show Center Axis', nil, self.gizmos.showCenterAxis) then
+            if gui.MenuItem(ICONS.ARROW_UP..' Show Center Axis', nil, self.gizmos.showCenterAxis) then
                 self.gizmos.showCenterAxis = not self.gizmos.showCenterAxis
             end
             gui.EndMenu()

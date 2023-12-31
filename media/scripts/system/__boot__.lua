@@ -49,11 +49,12 @@ function __on_prepare__()
     jit.opt.start('+fma') -- enable FMA for better performance
 
     -- Print some debug info
-    local inspect = require 'ext.inspect'
     print(string.format('%s %s %s', jit.version, jit.os, jit.arch))
-    print('JIT active: '..inspect.inspect({jit.status()}))
+    print('JIT active ->')
+    print(jit.status())
 
     collectgarbage('stop') -- stop the GC, we run it manually every frame
+    collectgarbage('collect') -- manually execute GC cycle last time
 end
 
 -- DO NOT Rename - Invoked from native code
