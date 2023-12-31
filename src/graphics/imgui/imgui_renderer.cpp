@@ -9,8 +9,9 @@
 #include <bgfx/embedded_shader.h>
 #include <bx/allocator.h>
 #include <bx/math.h>
-#include "imgui.h"
 #include <mimalloc.h>
+#include "imgui.h"
+#include "font_awesome_pro_5.hpp"
 #include "imgui_impl_glfw.h"
 
 #include "vs_ocornut_imgui.bin.inl"
@@ -34,6 +35,12 @@ inline bool checkAvailTransientBuffers(uint32_t _numVertices, const bgfx::Vertex
     return _numVertices == bgfx::getAvailTransientVertexBuffer(_numVertices, _layout)
         && (0 == _numIndices || _numIndices == bgfx::getAvailTransientIndexBuffer(_numIndices));
 }
+
+#include <array>
+#include <span>
+
+#include "jetbrains_mono.ttf.inl"
+#include "font_awesome.ttf.inl"
 
 struct ImguiContext final {
     void render(ImDrawData* _drawData) {
@@ -148,15 +155,13 @@ struct ImguiContext final {
                         encoder->setVertexBuffer(0, &tvb, cmd->VtxOffset, numVertices);
                         encoder->setIndexBuffer(&tib, cmd->IdxOffset, cmd->ElemCount);
                         encoder->submit(m_viewId, program);
-                    }
+                        }
                 }
-            }
+                 }
 
             bgfx::end(encoder);
         }
     }
-
-#include "jetbrains_mono.ttf.inl"
 
     void create() {
         IMGUI_CHECKVERSION();
@@ -204,17 +209,38 @@ struct ImguiContext final {
 
         s_tex = bgfx::createUniform("s_tex", bgfx::UniformType::Sampler);
 
+        constexpr float fontSize = 18.0f;
+
+        // add primary text font:
         ImFontConfig config { };
         config.FontDataOwnedByAtlas = false;
         config.MergeMode = false;
-         io.Fonts->AddFontFromMemoryTTF
-            (
-                const_cast<void*>(static_cast<const void*>(k_ttf_jet_brains_mono)),
-                sizeof(k_ttf_jet_brains_mono) / sizeof(*k_ttf_jet_brains_mono),
-                18.0f, // font size
-                &config,
-                io.Fonts->GetGlyphRangesDefault()
-            );
+        ImFont* primaryFont = io.Fonts->AddFontFromMemoryTTF(
+            const_cast<void*>(static_cast<const void*>(k_ttf_jet_brains_mono)),
+            sizeof(k_ttf_jet_brains_mono) / sizeof(*k_ttf_jet_brains_mono),
+            fontSize, // font size
+            &config,
+            io.Fonts->GetGlyphRangesDefault()
+        );
+
+        // now add font awesome icons:
+        config.MergeMode = true;
+        config.DstFont = primaryFont;
+        struct font_range final {
+            std::span<const std::uint8_t> data {};
+            std::array<char16_t, 3> ranges {};
+        };
+        static constexpr font_range range = { k_font_awesome_ttf, { ICON_MIN_FA, ICON_MAX_FA, 0 } };
+        ImGui::GetIO().Fonts->AddFontFromMemoryTTF(
+            const_cast<void*>(static_cast<const void*>(range.data.data())),
+            static_cast<int>(range.data.size()),
+            fontSize,
+            &config,
+            reinterpret_cast<const ImWchar*>(range.ranges.data())
+        );
+        static_assert(sizeof(ImWchar) == sizeof(char16_t));
+
+        // create font atlas now:
 
         uint8_t* data;
         int32_t width;

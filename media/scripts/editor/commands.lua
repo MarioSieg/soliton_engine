@@ -1,3 +1,5 @@
+-- Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+
 TERMINAL_COMMANDS = {}
 
 TERMINAL_COMMANDS['panic'] = {

@@ -8,6 +8,7 @@ local terminal = require 'editor.terminal'
 local profiler = require 'editor.profiler'
 local scriptEditor = require 'editor.scripteditor'
 local style = require 'editor.style'
+local icons = require 'editor.icons'
 local dd = debugdraw
 
 WINDOW_SIZE = gui.ImVec2(800, 600)
@@ -60,7 +61,7 @@ function m:renderMainMenu()
             gui.EndMenu()
         end
         if gui.BeginMenu('View') then
-            if gui.MenuItem('Show Grid', nil, self.gizmos.showGrid) then
+            if gui.MenuItem(icons.GRIP_LINES..' Show Grid', nil, self.gizmos.showGrid) then
                 self.gizmos.showGrid = not self.gizmos.showGrid
             end
             if gui.MenuItem('Show Center Axis', nil, self.gizmos.showCenterAxis) then
