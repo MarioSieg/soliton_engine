@@ -26,6 +26,12 @@ local m = {
     }
 }
 
+for _, tool in ipairs(m.tools) do -- hide all tools by default
+    tool.isVisible[0] = false
+end
+
+style.setupDarkStyle()
+
 function m.gizmos:drawGizmos()
     dd.start()
     if self.showGrid then
@@ -36,12 +42,6 @@ function m.gizmos:drawGizmos()
     end
     dd.finish()
 end
-
-for _, tool in ipairs(m.tools) do -- hide all tools by default
-    tool.isVisible[0] = false
-end
-
-style.setupDarkStyle()
 
 function m:renderMainMenu()
     if gui.BeginMainMenuBar() then
