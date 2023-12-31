@@ -89,7 +89,6 @@ function m:drawTools()
     end
 end
 
-        dd.drawAxis(vec3.ZERO, 1, dd.AXIS.Y, 0.02)
 function m:__onTick()
     if not self.isVisible[0] then return end
     self.gizmos:drawGizmos()
