@@ -62,7 +62,7 @@ LUA_INTEROP_API auto __lu_window_get_size() -> __lu_ivec2 {
     return __lu_ivec2 { .v = { width, height } };
 }
 
-LUA_INTEROP_API __lu_ivec2 __lu_window_get_pos(void) {
+LUA_INTEROP_API auto __lu_window_get_pos() -> __lu_ivec2 {
     int x, y;
     glfwGetWindowPos(platform_subsystem::get_glfw_window(), &x, &y);
     return __lu_ivec2 { .v = { x, y } };

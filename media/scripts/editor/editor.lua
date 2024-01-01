@@ -77,6 +77,16 @@ function m:renderMainMenu()
         local time = os.date('*t')
         gui.Separator()
         gui.Text(string.format('%02d:%02d', time.hour, time.min))
+        if profiler.isProfilerRunning then
+            gui.Separator()
+            gui.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff0000ff)
+            gui.TextUnformatted(ICONS.CLOCK)
+            gui.PopStyleColor()
+            if gui.IsItemHovered() and gui.BeginTooltip() then
+                gui.TextUnformatted('Profiler is running')
+                gui.EndTooltip()
+            end
+        end
         gui.EndMainMenuBar()
     end
 end

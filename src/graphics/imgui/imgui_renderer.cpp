@@ -293,11 +293,11 @@ struct ImguiContext final {
     bgfx::ViewId m_viewId;
 };
 
-static ImguiContext s_ImguiContext;
+static ImguiContext s_imgui_ctx {};
 
 namespace ImGuiEx {
     void Create(GLFWwindow* window) {
-        s_ImguiContext.create();
+        s_imgui_ctx.create();
         ImGui_ImplGlfw_InitForOther(window, true);
         auto& io = ImGui::GetIO();
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
@@ -305,15 +305,15 @@ namespace ImGuiEx {
 
     void Destroy() {
         ImGui_ImplGlfw_Shutdown();
-        s_ImguiContext.destroy();
+        s_imgui_ctx.destroy();
     }
 
     void BeginFrame(uint16_t _width, uint16_t _height, bgfx::ViewId _viewId) {
         ImGui_ImplGlfw_NewFrame();
-        s_ImguiContext.beginFrame(_width, _height, _viewId);
+        s_imgui_ctx.beginFrame(_width, _height, _viewId);
     }
 
     void EndFrame() {
-        s_ImguiContext.endFrame();
+        s_imgui_ctx.endFrame();
     }
 }

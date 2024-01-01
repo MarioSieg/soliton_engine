@@ -107,7 +107,7 @@ function newScript(str, name)
     return script
 end
 
-local m = {
+local scriptEditor = {
     name = ICONS.CODE..' Script Editor',
     isVisible = ffi.new('bool[1]', true),
     scripts = {
@@ -126,9 +126,9 @@ local m = {
     activeScriptName = 'New',
 }
 
-function m:render()
+function scriptEditor:render()
     gui.SetNextWindowSize(WINDOW_SIZE, ffi.C.ImGuiCond_FirstUseEver)
-    if gui.Begin(m.name, m.isVisible, ffi.C.ImGuiWindowFlags_MenuBar) then
+    if gui.Begin(self.name, self.isVisible, ffi.C.ImGuiWindowFlags_MenuBar) then
         if gui.BeginMenuBar() then
             if gui.BeginMenu('File') then
                 gui.EndMenu()
@@ -141,7 +141,7 @@ function m:render()
             end
             gui.Separator()
             if gui.Button(ICONS.PLAY_CIRCLE..' Run') then
-                local script = m.scripts[m.activeScriptName]
+                local script = self.scripts[self.activeScriptName]
                 assert(script)
                 script:exec()
             end
@@ -152,7 +152,7 @@ function m:render()
         end
         gui.Separator()
         if gui.BeginTabBar('##ScriptEditorTabs') then
-            for name, script in pairs(m.scripts) do
+            for name, script in pairs(self.scripts) do
                 if gui.BeginTabItem(name) then
                     native_editor.render(name)
                     gui.EndTabItem()
@@ -164,4 +164,4 @@ function m:render()
     gui.End()
 end
 
-return m
+return scriptEditor
