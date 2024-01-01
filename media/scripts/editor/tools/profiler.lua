@@ -80,7 +80,9 @@ function profiler:render()
                 gui.SameLine()
                 gui.ProgressBar(startTime / timeLimit)
                 gui.Separator()
-                if #profileDataRoutines ~= 0 then
+                if #profileDataRoutines == 0 then
+                    gui.TextUnformatted('No data recorded')
+                else
                     if gui.BeginChild('##profiler_callstack') then
                         for _, routine in ipairs(profileDataRoutines) do
                             gui.TextUnformatted(routine)
