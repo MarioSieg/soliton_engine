@@ -49,7 +49,7 @@ namespace graphics {
         bgfx::shutdown();
     }
 
-    auto graphics_subsystem::on_pre_tick() -> bool {
+    HOTPROC auto graphics_subsystem::on_pre_tick() -> bool {
         int w, h;
         glfwGetFramebufferSize(platform_subsystem::get_glfw_window(), &w, &h);
         m_width = static_cast<float>(w);
@@ -62,7 +62,7 @@ namespace graphics {
         return true;
     }
 
-    auto graphics_subsystem::on_post_tick() -> void {
+    HOTPROC auto graphics_subsystem::on_post_tick() -> void {
 
         const bx::Vec3 at  = { 0.0f, 0.0f,   0.0f };
         const bx::Vec3 eye = { 0.0f, 2.0f, -5.0f };

@@ -9,7 +9,7 @@ ffi.cdef [[
 time = {
     deltaTime = 0.0, -- in seconds
     time = 0.0, -- in seconds
-    frameTime = 0.0, -- in milliseconds
+    frameTime = 16.0, -- in milliseconds
     timeScale = 1.0, -- 1.0 = realtime, 0.0 = paused
     frame = 0, -- frame counter
     fps = 0.0, -- frames per second

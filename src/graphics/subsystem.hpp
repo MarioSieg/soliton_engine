@@ -12,8 +12,8 @@ namespace graphics {
         graphics_subsystem();
         ~graphics_subsystem() override;
 
-        auto on_pre_tick() -> bool override;
-        auto on_post_tick() -> void override;
+        HOTPROC auto on_pre_tick() -> bool override;
+        HOTPROC auto on_post_tick() -> void override;
         auto on_resize() -> void override;
 
         [[nodiscard]] static auto is_draw_phase() noexcept -> bool { return s_is_draw_phase; } // is draw phase?

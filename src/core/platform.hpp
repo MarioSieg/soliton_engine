@@ -460,13 +460,8 @@
 #   error "neither debug or release set"
 #endif
 
-#define SHARED
-#ifdef SHARED
-#   if COMPILER_MSVC
-#       define API_EXPORT __declspec(dllexport)
-#   else
-#       define API_EXPORT __attribute__((visibility("default")))
-#   endif
+#if COMPILER_MSVC
+#define HOTPROC
 #else
-#   define API_EXPORT
+#define HOTPROC __attribute__((hot))
 #endif

@@ -16,6 +16,7 @@ ffi.cdef [[
     void __lu_window_allow_resize(bool allow);
     __lu_ivec2 __lu_window_get_size(void);
     __lu_ivec2 __lu_window_get_pos(void);
+    void __lu_app_exit(void);
 ]]
 
 app = {
@@ -94,6 +95,10 @@ end
 function app.window.getPos()
     local v = ffi.C.__lu_window_get_pos()
     return v.v[0], v.v[1]
+end
+
+function app.exit()
+    ffi.C.__lu_app_exit()
 end
 
 app.window.setTitle(string.format('Lunam Engine v.%s - %s %s', app.engineVersion, jit.os, jit.arch))

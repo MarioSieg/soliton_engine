@@ -14,7 +14,7 @@ namespace scripting {
         ~scripting_subsystem() override;
 
         auto on_prepare() -> void override;
-        auto on_tick() -> void override;
+        HOTPROC auto on_tick() -> void override;
 
         [[nodiscard]] static auto get_lua_state() noexcept -> lua_State* { return m_L; }
 

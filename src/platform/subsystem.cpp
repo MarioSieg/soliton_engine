@@ -395,7 +395,7 @@ auto dump_loaded_dylibs() -> void {
         glfwFocusWindow(s_window);
     }
 
-    bool platform_subsystem::on_pre_tick() {
+    HOTPROC auto platform_subsystem::on_pre_tick() -> bool {
         glfwPollEvents();
         return glfwWindowShouldClose(s_window) == GLFW_FALSE;
     }

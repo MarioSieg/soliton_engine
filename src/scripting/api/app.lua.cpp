@@ -1,6 +1,7 @@
 // Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "../api_prelude.hpp"
+#include "../../core/kernel.hpp"
 #include "../../platform/subsystem.hpp"
 
 using platform::platform_subsystem;
@@ -65,4 +66,8 @@ LUA_INTEROP_API __lu_ivec2 __lu_window_get_pos(void) {
     int x, y;
     glfwGetWindowPos(platform_subsystem::get_glfw_window(), &x, &y);
     return __lu_ivec2 { .v = { x, y } };
+}
+
+LUA_INTEROP_API auto __lu_app_exit() -> void {
+    kernel::request_exit();
 }

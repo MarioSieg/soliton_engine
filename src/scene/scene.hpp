@@ -21,6 +21,5 @@ public:
 private:
     friend struct proxy;
     static inline constinit std::unique_ptr<scene> m_active {};
-    [[nodiscard]] static auto get_delta_time() noexcept -> double;
     scene();
 };

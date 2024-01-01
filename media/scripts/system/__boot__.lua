@@ -53,8 +53,8 @@ function __on_prepare__()
     print('JIT active ->')
     print(jit.status())
 
-    collectgarbage('stop') -- stop the GC, we run it manually every frame
     collectgarbage('collect') -- manually execute GC cycle last time
+    collectgarbage('stop') -- stop the GC, we run it manually every frame
 end
 
 -- DO NOT Rename - Invoked from native code
@@ -63,5 +63,5 @@ function __on_tick__()
         panic('Setup script not loaded!')
     end
     engineContext:tick()
-    collectgarbage('collect') -- manually execute GC cycle every frame
+    collectgarbage('collect') -- manually execute GC cycle every frame TODO: use step function
 end

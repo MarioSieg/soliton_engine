@@ -12,7 +12,7 @@ namespace platform {
         ~platform_subsystem() override;
 
         auto on_prepare() -> void override;
-        auto on_pre_tick() -> bool override;
+        HOTPROC auto on_pre_tick() -> bool override;
 
         [[nodiscard]] static auto get_glfw_window() -> GLFWwindow*;
         [[nodiscard]] static auto get_native_window() -> void*;

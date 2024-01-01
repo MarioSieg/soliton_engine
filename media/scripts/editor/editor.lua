@@ -48,7 +48,7 @@ function m:renderMainMenu()
     if gui.BeginMainMenuBar() then
         if gui.BeginMenu('File') then
             if gui.MenuItem(ICONS.PORTAL_EXIT..' Exit', 'Alt+F4') then
-                self.isVisible[0] = false
+                app.exit()
             end
             gui.EndMenu()
         end

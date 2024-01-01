@@ -17,13 +17,13 @@ struct lua_vec2 {
     double x;
     double y;
 
-    [[nodiscard]] __forceinline auto to_vec2() const noexcept -> DirectX::XMFLOAT2 {
+    [[nodiscard]] auto to_vec2() const noexcept -> DirectX::XMFLOAT2 {
         return {
             static_cast<float>(x),
             static_cast<float>(y)
         };
     }
-    [[nodiscard]] __forceinline auto to_xmvec() const noexcept -> DirectX::XMVECTOR {
+    [[nodiscard]] auto to_xmvec() const noexcept -> DirectX::XMVECTOR {
         const DirectX::XMFLOAT2 tmp = to_vec2();
         return DirectX::XMLoadFloat2(&tmp);
     }
@@ -35,18 +35,18 @@ struct lua_vec3 {
     double y;
     double z;
 
-    [[nodiscard]] __forceinline auto to_vec3() const noexcept -> DirectX::XMFLOAT3 {
+    [[nodiscard]] auto to_vec3() const noexcept -> DirectX::XMFLOAT3 {
         return {
             static_cast<float>(x),
             static_cast<float>(y),
             static_cast<float>(z)
         };
     }
-    [[nodiscard]] __forceinline auto to_xmvec() const noexcept -> DirectX::XMVECTOR {
+    [[nodiscard]] auto to_xmvec() const noexcept -> DirectX::XMVECTOR {
         const DirectX::XMFLOAT3 tmp = to_vec3();
         return DirectX::XMLoadFloat3(&tmp);
     }
-    [[nodiscard]] __forceinline auto to_bxvec() const noexcept -> bx::Vec3 {
+    [[nodiscard]] auto to_bxvec() const noexcept -> bx::Vec3 {
         return {
             static_cast<float>(x),
             static_cast<float>(y),
@@ -62,7 +62,7 @@ struct lua_vec4 {
     double z;
     double w;
 
-    [[nodiscard]] __forceinline auto to_vec4() const noexcept -> DirectX::XMFLOAT4 {
+    [[nodiscard]] auto to_vec4() const noexcept -> DirectX::XMFLOAT4 {
         return {
             static_cast<float>(x),
             static_cast<float>(y),
@@ -70,7 +70,7 @@ struct lua_vec4 {
             static_cast<float>(w)
         };
     }
-    [[nodiscard]] __forceinline auto to_xmvec() const noexcept -> DirectX::XMVECTOR {
+    [[nodiscard]] auto to_xmvec() const noexcept -> DirectX::XMVECTOR {
         const DirectX::XMFLOAT4 tmp = to_vec4();
         return DirectX::XMLoadFloat4(&tmp);
     }

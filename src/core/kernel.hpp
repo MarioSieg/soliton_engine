@@ -21,13 +21,17 @@ public:
         return subsystem;
     }
 
-    auto run() -> void;
+    [[nodiscard]] static auto get_delta_time() noexcept -> double;
+    static auto request_exit() noexcept -> void;
+
+    HOTPROC auto run() -> void;
     auto resize() -> void;
 
     [[nodiscard]] auto get_subsystems() const noexcept -> std::span<const std::shared_ptr<subsystem>> { return m_subsystems; }
     [[nodiscard]] auto get_boot_stamp() const noexcept -> std::chrono::high_resolution_clock::time_point { return boot_stamp; }
 
 private:
+    [[nodiscard]] HOTPROC auto tick() const -> bool;
     const std::chrono::high_resolution_clock::time_point boot_stamp = std::chrono::high_resolution_clock::now();
     std::vector<std::shared_ptr<subsystem>> m_subsystems {};
 };

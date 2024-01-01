@@ -100,7 +100,7 @@ static auto redirect_io() -> void {
 kernel::kernel() {
 #if PLATFORM_WINDOWS
     redirect_io();
-    SetPriorityClass(GetCurrentProcess(), ABOVE_NORMAL_PRIORITY_CLASS); // Is this smart?
+    SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS); // Is this smart?
 #endif
     std::ostream::sync_with_stdio(false);
     spdlog::init_thread_pool(k_log_queue_size, k_log_threads);
@@ -123,7 +123,25 @@ kernel::~kernel() {
     std::fflush(stdout);
 }
 
-auto kernel::run() -> void {
+static constinit double delta_time;
+static auto compute_delta_time() noexcept {
+    static auto prev = std::chrono::high_resolution_clock::now();
+    auto now = std::chrono::high_resolution_clock::now();
+    auto delta = std::chrono::duration_cast<std::chrono::high_resolution_clock::duration>(now - prev);
+    delta_time = std::chrono::duration_cast<std::chrono::duration<double>>(delta).count();
+    prev = now;
+}
+
+auto kernel::get_delta_time() noexcept -> double {
+    return delta_time;
+}
+
+static constinit bool g_kernel_online = true;
+auto kernel::request_exit() noexcept -> void {
+    g_kernel_online = false;
+}
+
+HOTPROC auto kernel::run() -> void {
     std::ranges::for_each(m_subsystems, [](const std::shared_ptr<subsystem>& sys) {
         sys->on_prepare();
     });
@@ -131,23 +149,24 @@ auto kernel::run() -> void {
     const auto now = std::chrono::high_resolution_clock::now();
     log_info("Boot time: {}ms", std::chrono::duration_cast<std::chrono::milliseconds>(now - boot_stamp).count());
 
-    volatile bool running = true;
-
     // simulation loop
-    do {
-        std::for_each(m_subsystems.cbegin(), m_subsystems.cend(), [&running](const std::shared_ptr<subsystem>& sys) {
-            if (!sys->on_pre_tick()) [[unlikely]]
-                running = false;
-        });
+    while(tick()) [[likely]] {}
+}
 
-        std::for_each(m_subsystems.cbegin(), m_subsystems.cend(), [](const std::shared_ptr<subsystem>& sys) {
-            sys->on_tick();
-        });
-
-        std::for_each(m_subsystems.crbegin(), m_subsystems.crend(), [](const std::shared_ptr<subsystem>& sys) {
-           sys->on_post_tick();
-        });
-    } while(running);
+HOTPROC auto kernel::tick() const -> bool {
+    bool flag = g_kernel_online;
+    compute_delta_time();
+    std::for_each(m_subsystems.cbegin(), m_subsystems.cend(), [&flag](const std::shared_ptr<subsystem>& sys) {
+        if (!sys->on_pre_tick()) [[unlikely]]
+            flag = false;
+    });
+    std::for_each(m_subsystems.cbegin(), m_subsystems.cend(), [](const std::shared_ptr<subsystem>& sys) {
+        sys->on_tick();
+    });
+    std::for_each(m_subsystems.crbegin(), m_subsystems.crend(), [](const std::shared_ptr<subsystem>& sys) {
+       sys->on_post_tick();
+    });
+    return flag;
 }
 
 auto kernel::resize() -> void {

@@ -75,7 +75,7 @@ namespace scripting {
         }
     }
 
-    void scripting_subsystem::on_tick() {
+    HOTPROC void scripting_subsystem::on_tick() {
         luabridge::LuaResult r = (*m_on_tick)();
         if (r.hasFailed()) [[unlikely]] {
             lua_log_error("Error in __boot.lua in __on_tick__: {}", r.errorMessage());
