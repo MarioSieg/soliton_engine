@@ -63,5 +63,6 @@ function __on_tick__()
         panic('Setup script not loaded!')
     end
     engineContext:tick()
-    collectgarbage('collect') -- manually execute GC cycle every frame TODO: use step function
+    collectgarbage('step') -- manually execute GC cycle every frame TODO: use step function
+    collectgarbage('stop') -- stop the GC, we run it manually every frame
 end

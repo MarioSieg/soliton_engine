@@ -6,6 +6,8 @@ ffi.cdef [[
     double __lu_get_delta_time(void);
 ]]
 
+local SAMPLES = 256
+
 time = {
     deltaTime = 0.0, -- in seconds
     time = 0.0, -- in seconds
@@ -18,8 +20,8 @@ time = {
     fpsAvg = 0.0, -- average frames per second over N samples
     fpsAvgMin = 10.0^5, -- minimum avg frames per second
     fpsAvgMax = -10.0^5, -- maximum avg frames per second
-    fpsHistogram = {}, -- frames per second histogram
-    fpsHistogramSamples = 256
+    fpsHistogram = ffi.new('float[?]', SAMPLES), -- frames per second histogram
+    HISTOGRAM_SAMPLES = SAMPLES
 }
 
 local prev = 0.0
@@ -37,18 +39,18 @@ function time:__onTick()
     self.fpsAvgMax = math.max(self.fpsAvgMax, self.fpsAvg)
 
     -- Update circular buffer with the current fps
-    self.fpsHistogram[idx] = self.fps
+    self.fpsHistogram[idx-1] = self.fps
 
     -- Calculate the average fps over N samples
     local sum = 0.0
-    for i = 1, self.fpsHistogramSamples do
+    for i = 1, SAMPLES do
         if self.fpsHistogram[i] then
             sum = sum + self.fpsHistogram[i]
         end
     end
-    self.fpsAvg = sum / self.fpsHistogramSamples
+    self.fpsAvg = sum / self.HISTOGRAM_SAMPLES
     idx = idx + 1
-    idx = ((idx - 1) % self.fpsHistogramSamples) + 1
+    idx = ((idx - 1) % self.HISTOGRAM_SAMPLES) + 1
 end
 
 return time

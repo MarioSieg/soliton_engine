@@ -7,7 +7,6 @@ local gui = require 'editor.imgui'
 local m = {
     name = ICONS.CLOCK..' Profiler',
     isVisible = ffi.new('bool[1]', true),
-    frameTimes = ffi.new('float[?]', time.fpsHistogramSamples),
 }
 
 local isProfilerRunning = false
@@ -25,11 +24,8 @@ function m:render()
         if gui.BeginTabBar('##profiler_tabs') then
             if gui.BeginTabItem(ICONS.ALARM_CLOCK..' General') then
                 if gui.CollapsingHeader(ICONS.CHART_AREA..' Histogram', ffi.C.ImGuiTreeNodeFlags_DefaultOpen) then
-                    for i = 1, time.fpsHistogramSamples do -- copy fps histogram to frame times
-                        m.frameTimes[i-1] = time.fpsHistogram[i] or 0.0
-                    end
                     local plot_size = gui.ImVec2(WINDOW_SIZE.x, 200.0)
-                    gui.PlotHistogram_FloatPtr('Frame times', m.frameTimes, time.fpsHistogramSamples, 0, nil, 0.0, time.fpsAvg * 2.0, plot_size)
+                    gui.PlotHistogram_FloatPtr('Frame times', time.fpsHistogram, time.HISTOGRAM_SAMPLES, 0, nil, 0.0, time.fpsAvg * 2.0, plot_size)
                 end
                 if gui.CollapsingHeader(ICONS.INFO..' Stats', ffi.C.ImGuiTreeNodeFlags_DefaultOpen) then
                     gui.Text(string.format('FPS: %d', time.fpsAvg))
