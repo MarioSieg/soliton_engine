@@ -80,7 +80,7 @@ function m:renderMainMenu()
         if profiler.isProfilerRunning then
             gui.Separator()
             gui.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff0000ff)
-            gui.TextUnformatted(ICONS.CLOCK)
+            gui.TextUnformatted(ICONS.STOPWATCH)
             gui.PopStyleColor()
             if gui.IsItemHovered() and gui.BeginTooltip() then
                 gui.TextUnformatted('Profiler is running')

@@ -11,7 +11,17 @@ local profiler = {
 }
 
 local profileDataRoutines = {}
-local MAX_TIME = 60.0 * 5.0 -- 5 minutes
+local MAX_TIME = 60^2 -- 1 hour
+local TIMINGS = {
+    [15]    = '15 Seconds',
+    [30]    = '30 Seconds',
+    [60]    = '1 Minute',
+    [60*5]  = '5 Minute',
+    [60*10] = '10 Minute',
+    [60^2]  = '1 Hour'
+}
+local MAX_WIDTH = #TIMINGS[30] * 12.0
+
 local timeLimit = 30
 local startTime = 0.0
 local startTimePtr = ffi.new('double[1]', 0.0)
@@ -68,15 +78,19 @@ function profiler:render()
                 end
                 gui.PopStyleColor()
                 gui.SameLine()
-                gui.Text(string.format('Recorded: %.1f s', startTime))
+                gui.Text(string.format(ICONS.STOPWATCH..' %d s', startTime))
                 gui.SameLine()
-                if gui.RadioButton('30 s', timeLimit ==30) then timeLimit = 30 end
-                gui.SameLine()
-                if gui.RadioButton('1 m', timeLimit == 60) then timeLimit = 60 end
-                gui.SameLine()
-                if gui.RadioButton('5 m', timeLimit == 60*5) then timeLimit = 60*5 end
-                gui.SameLine()
-                if gui.RadioButton('10 m', timeLimit == 60*10) then timeLimit = 60*10 end
+                gui.PushItemWidth(MAX_WIDTH)
+                if gui.BeginCombo('##profiler_time_limit', TIMINGS[timeLimit] or '?', ffi.C.ImGuiComboFlags_HeightSmall) then
+                    if gui.Selectable('15 Seconds', timeLimit == 15) then timeLimit = 15 end
+                    if gui.Selectable('30 Seconds', timeLimit == 30) then timeLimit = 30 end
+                    if gui.Selectable('1 Minute', timeLimit == 60) then timeLimit = 60 end
+                    if gui.Selectable('5 Minute', timeLimit == 60*5) then timeLimit = 60*5 end
+                    if gui.Selectable('10 Minute', timeLimit == 60*10) then timeLimit = 60*10 end
+                    if gui.Selectable('1 Hour', timeLimit == 60^2) then timeLimit = 60^2 end
+                    gui.EndCombo()
+                end
+                gui.PopItemWidth()
                 gui.SameLine()
                 gui.ProgressBar(startTime / timeLimit)
                 gui.Separator()
