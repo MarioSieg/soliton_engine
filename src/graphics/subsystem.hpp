@@ -32,6 +32,7 @@ namespace graphics {
         static constinit inline bool s_is_dd_init = false; // is debug draw initialized?
         float m_width = 0.0f;
         float m_height = 0.0f;
+        ankerl::unordered_dense::map<std::string, handle<bgfx::ProgramHandle>> m_programs {};
         handle<bgfx::ProgramHandle> m_program {};
         handle<bgfx::VertexBufferHandle> m_vb {};
         handle<bgfx::IndexBufferHandle> m_ib {};

@@ -9,6 +9,7 @@
 
 #include "imgui/imgui_renderer.hpp"
 #include "debugdraw/debugdraw.h"
+#include "prelude.hpp"
 
 using platform::platform_subsystem;
 
@@ -39,9 +40,17 @@ namespace graphics {
         passert(bgfx::init(init));
 
         ImGuiEx::Create(platform_subsystem::get_glfw_window());
+
+        // load all shaders
+        load_shader_registry("media/shaders", m_programs);
+        passert(!m_programs.empty() && "No shaders found");
+        for (auto&& [name, _] : m_programs) {
+            log_info("Registered shader program '{}'", name);
+        }
     }
 
     graphics_subsystem::~graphics_subsystem() {
+        m_programs.clear();
         if (s_is_dd_init) {
             ddShutdown();
         }

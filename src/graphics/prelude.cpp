@@ -8,7 +8,10 @@ using namespace std::filesystem;
 
 namespace graphics {
     auto load_shader_program(const std::string& path) -> handle<bgfx::ShaderHandle> {
-        passert(exists(path));
+        if (!exists(path)) {
+            return handle<bgfx::ShaderHandle>{};
+        }
+        log_info("Loading shader {}", path);
         std::ifstream file {path, std::ios::binary};
         passert(file.is_open() && file.good());
         file.unsetf(std::ios::skipws);
@@ -28,8 +31,7 @@ namespace graphics {
         path&& root,
         ankerl::unordered_dense::map<std::string, handle<bgfx::ProgramHandle>>& registry
     ) -> void {
-        root = current_path() / root;
-        passert(exists(root));
+        passert(exists(root) && "Shader root dir not found");
         const path platform = [] {
 #if PLATFORM_WINDOWS // win32
             return "windows";
@@ -54,7 +56,23 @@ namespace graphics {
             }
         }();
         root = root / platform / api;
-        // TODO
-        panic("fuck you");
+        log_info("Loading shaders from {}", root.string());
+        for (auto&& dir : directory_iterator{root}) {
+            if (dir.exists() && dir.is_directory()) {
+                const auto load_file = [root = dir.path()](path&& name) -> handle<bgfx::ShaderHandle> {
+                    return load_shader_program((root / name).string());
+                };
+                handle<bgfx::ShaderHandle> vs = load_file("vs.bin");
+                handle<bgfx::ShaderHandle> fs = load_file("fs.bin");
+                handle<bgfx::ShaderHandle> cs = load_file("cs.bin");
+                if (vs && fs) {
+                    registry.emplace(dir.path().filename().string(), handle {bgfx::createProgram(vs, fs, true)});
+                } else if (cs) {
+                    registry.emplace(dir.path().filename().string(), handle {bgfx::createProgram(cs, true)});
+                } else {
+                    panic("No shaders found in {}", dir.path().string());
+                }
+            }
+        }
     }
 }

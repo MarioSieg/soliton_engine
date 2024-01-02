@@ -28,6 +28,7 @@
 #include "../math/DirectXMath.h"
 
 namespace platform {
+[[maybe_unused]]
 static constexpr auto kernel_variant_name(iware::system::kernel_t variant) noexcept -> std::string_view {
     switch (variant) {
     case iware::system::kernel_t::windows_nt:

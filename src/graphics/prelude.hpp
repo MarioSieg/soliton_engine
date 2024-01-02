@@ -26,6 +26,7 @@ namespace graphics {
         }
         [[nodiscard]] constexpr auto operator * () const noexcept -> T { return value; }
         operator bool() const noexcept { return bgfx::isValid(value); }
+        constexpr operator T() const noexcept { return value; }
 
         ~handle() noexcept {
             if (bgfx::isValid(value)) {

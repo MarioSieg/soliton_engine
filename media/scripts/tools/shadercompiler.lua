@@ -211,16 +211,16 @@ print('Compiling '..#shaderFiles..' shader module(s)...')
 
 local WKDIR = lfs.currentdir()..'/'
 
-local function compileShader(file, varying, stype, target)
+local function compileShader(base, file, varying, stype, target)
+    assert(type(base) == 'string')
     assert(type(file) == 'string')
     assert(type(varying) == 'string')
     assert(type(stype) == 'number')
     assert(type(target) == 'number')
-    local apiDir = string.format('%s%s', OUT_DIR, SHADER_TARGET_NAMES[target])
-    -- crate api dir if it doesn't exist:
-    if not lfs.attributes(apiDir) then
-        lfs.mkdir(apiDir)
-    end
+    local apiDir = string.format('%s%s/', OUT_DIR, SHADER_TARGET_NAMES[target])
+    lfs.mkdir(apiDir)
+    apiDir = apiDir..base
+    lfs.mkdir(apiDir)
     local type = SHADER_TYPE_NAMES[stype]
     local profile = SHADER_TARGET_PROFILES[target]
     file = WKDIR..file
@@ -247,11 +247,16 @@ local function compileShader(file, varying, stype, target)
     end
 end
 
+local function getParentPath(path)
+    return path:match("([^/]+)/?$")
+end
+
 for _, files in ipairs(shaderFiles) do
     local varying = files.dir..'/'..VARYING_DEF
     if not lfs.attributes(varying) then
         panic('Varying definition file not found: '..varying)
     end
+    local base = getParentPath(files.dir)
     for _, file in ipairs(files.sources) do
         local fName = getFileName(file)
         if not fName:find('^def') then -- ignore varying definition file
@@ -267,7 +272,7 @@ for _, files in ipairs(shaderFiles) do
                 panic('Unknown shader type: '..file..' (must start with vs, fs or cs)')
             end
             for _, target in ipairs(PLATFORM_TARGETS[jit.os]) do
-                compileShader(file, varying, stype, target)
+                compileShader(base, file, varying, stype, target)
             end
         end
     end

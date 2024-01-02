@@ -87,14 +87,18 @@ for i = 1, math.random() * 10 do -- warm up the random generator
     math.random()
 end
 
-local m = {
-    hooks = require 'system.hookmgr'
+local EngineContext = {
+    hooks = nil
 }
 
 print('Lua mem: '..string.format("%.3f", collectgarbage('count')/1024.0)..' MiB')
 
-function m:tick()
-    m.hooks:tick()
+function EngineContext:hookModules()
+    EngineContext.hooks = require 'system.hookmgr'
 end
 
-return m
+function EngineContext:tick()
+    EngineContext.hooks:tick()
+end
+
+return EngineContext

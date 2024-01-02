@@ -37,14 +37,15 @@ for _, path in ipairs(INCLUDE_DIRS) do
     package.path = string.format('%s;%s/?.lua', package.path, path)
 end
 
-local engineContext = nil
+local EngineContext = require 'system.setup' -- Lazy load the setup script
 
 -- DO NOT Rename - Invoked from native code
 -- This function is called before the main tick loop starts.
 -- It's responsible for loading all tick hooks of global engine components.
 -- Note: Scripts which are loaded per-world are loaded in the world-setup script.
 function __on_prepare__()
-    engineContext = require 'system.setup' -- Lazy load the setup script
+    EngineContext.hookModules() -- Load all start/tick hooks
+
     jit.on() -- Enable JIT
     jit.opt.start('+fma') -- enable FMA for better performance
 
@@ -59,10 +60,10 @@ end
 
 -- DO NOT Rename - Invoked from native code
 function __on_tick__()
-    if not engineContext then
+    if not EngineContext then
         panic('Setup script not loaded!')
     end
-    engineContext:tick()
+    EngineContext:tick()
     collectgarbage('step') -- manually execute GC cycle every frame TODO: use step function
     collectgarbage('stop') -- stop the GC, we run it manually every frame
 end
