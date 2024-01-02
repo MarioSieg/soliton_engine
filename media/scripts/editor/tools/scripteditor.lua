@@ -14,17 +14,17 @@ ffi.cdef [[
     bool __lu_script_editor_has_text_changed(void);
 ]]
 
-local native_editor = {}
+local NativeEditor = {}
 
-function native_editor.render(title)
+function NativeEditor.render(title)
     ffi.C.__lu_script_editor_render(title)
 end
 
-function native_editor.setText(text)
+function NativeEditor.setText(text)
     ffi.C.__lu_script_editor_set_text(text)
 end
 
-function native_editor.getText()
+function NativeEditor.getText()
     local len = ffi.C.__lu_script_editor_get_text_len()
     local str = ffi.string(ffi.C.__lu_script_editor_get_text(), len)
     assert(str ~= nil)
@@ -33,20 +33,20 @@ function native_editor.getText()
     return str
 end
 
-function native_editor.redo()
+function NativeEditor.redo()
     ffi.C.__lu_script_editor_redo()
 end
 
-function native_editor.undo()
+function NativeEditor.undo()
     ffi.C.__lu_script_editor_undo()
 end
 
-function native_editor.setReadOnly(read_only)
+function NativeEditor.setReadOnly(read_only)
     assert(type(read_only) == 'boolean')
     ffi.C.__lu_script_editor_set_read_only(read_only)
 end
 
-function native_editor.hasTextChanged()
+function NativeEditor.hasTextChanged()
     return ffi.C.__lu_script_editor_has_text_changed()
 end
 
@@ -80,11 +80,11 @@ function newScript(str, name)
     ffi.copy(script.textBuf, str)
 
     function script:syncToEditor()
-        native_editor.setText(self.textBuf)
+        NativeEditor.setText(self.textBuf)
     end
     
     function script:syncFromEditor()
-        local text = native_editor.getText()
+        local text = NativeEditor.getText()
         self.textBuf = ffi.new('char[?]', #text+1)
         ffi.copy(self.textBuf, text)
     end
@@ -107,7 +107,7 @@ function newScript(str, name)
     return script
 end
 
-local scriptEditor = {
+local ScriptEditor = {
     name = ICONS.CODE..' Script Editor',
     isVisible = ffi.new('bool[1]', true),
     scripts = {
@@ -126,9 +126,9 @@ local scriptEditor = {
     activeScriptName = 'New',
 }
 
-function scriptEditor:render()
+function ScriptEditor:render()
     gui.SetNextWindowSize(WINDOW_SIZE, ffi.C.ImGuiCond_FirstUseEver)
-    if gui.Begin(self.name, self.isVisible, ffi.C.ImGuiWindowFlags_MenuBar) then
+    if gui.Begin(ScriptEditor.name, ScriptEditor.isVisible, ffi.C.ImGuiWindowFlags_MenuBar) then
         if gui.BeginMenuBar() then
             if gui.BeginMenu('File') then
                 gui.EndMenu()
@@ -141,7 +141,7 @@ function scriptEditor:render()
             end
             gui.Separator()
             if gui.Button(ICONS.PLAY_CIRCLE..' Run') then
-                local script = self.scripts[self.activeScriptName]
+                local script = ScriptEditor.scripts[ScriptEditor.activeScriptName]
                 assert(script)
                 script:exec()
             end
@@ -152,9 +152,9 @@ function scriptEditor:render()
         end
         gui.Separator()
         if gui.BeginTabBar('##ScriptEditorTabs') then
-            for name, script in pairs(self.scripts) do
+            for name, script in pairs(ScriptEditor.scripts) do
                 if gui.BeginTabItem(name) then
-                    native_editor.render(name)
+                    NativeEditor.render(name)
                     gui.EndTabItem()
                 end
             end
@@ -164,4 +164,4 @@ function scriptEditor:render()
     gui.End()
 end
 
-return scriptEditor
+return ScriptEditor

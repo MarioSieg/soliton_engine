@@ -5,20 +5,19 @@
 local ffi = require 'ffi'
 local gui = require 'editor.imgui'
 local style = require 'editor.style'
-local dd = debugdraw
 
-local terminal = require 'editor.tools.terminal'
-local profiler = require 'editor.tools.profiler'
-local scriptEditor = require 'editor.tools.scripteditor'
+local Terminal = require 'editor.tools.terminal'
+local Profiler = require 'editor.tools.profiler'
+local ScriptEditor = require 'editor.tools.scripteditor'
 
 WINDOW_SIZE = gui.ImVec2(800, 600)
 
-local m = {
+local Editor = {
     isVisible = ffi.new('bool[1]', true),
     tools = {
-        terminal,
-        profiler,
-        scriptEditor
+        Terminal,
+        Profiler,
+        ScriptEditor
     },
     gizmos = {
         gridSize = 25,
@@ -27,28 +26,28 @@ local m = {
     }
 }
 
-for _, tool in ipairs(m.tools) do -- hide all tools by default
+for _, tool in ipairs(Editor.tools) do -- hide all tools by default
     tool.isVisible[0] = false
 end
 
 style.setupDarkStyle()
 
-function m.gizmos:drawGizmos()
-    dd.start()
+function Editor.gizmos:drawGizmos()
+    Debug.start()
     if self.showGrid then
-        dd.drawGrid(dd.AXIS.Y, vec3.ZERO, self.gridSize, 1)
+        Debug.drawGrid(Debug.AXIS.Y, Vec3.ZERO, self.gridSize, 1)
     end
     if self.showCenterAxis then
-        dd.drawAxis(vec3.ZERO, 1, dd.AXIS.Y, 0.02)
+        Debug.drawAxis(Vec3.ZERO, 1, Debug.AXIS.Y, 0.02)
     end
-    dd.finish()
+    Debug.finish()
 end
 
-function m:renderMainMenu()
+function Editor:renderMainMenu()
     if gui.BeginMainMenuBar() then
         if gui.BeginMenu('File') then
             if gui.MenuItem(ICONS.PORTAL_EXIT..' Exit', 'Alt+F4') then
-                app.exit()
+                App.exit()
             end
             gui.EndMenu()
         end
@@ -73,11 +72,11 @@ function m:renderMainMenu()
             gui.EndMenu()
         end
         gui.Separator()
-        gui.Text(string.format('FPS: %d', time.fpsAvg))
+        gui.Text(string.format('FPS: %d', Time.fpsAvg))
         local time = os.date('*t')
         gui.Separator()
         gui.Text(string.format('%02d:%02d', time.hour, time.min))
-        if profiler.isProfilerRunning then
+        if Profiler.isProfilerRunning then
             gui.Separator()
             gui.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff0000ff)
             gui.TextUnformatted(ICONS.STOPWATCH)
@@ -91,7 +90,7 @@ function m:renderMainMenu()
     end
 end
 
-function m:drawTools()
+function Editor:drawTools()
     gui.DockSpaceOverViewport(gui.GetMainViewport(), ffi.C.ImGuiDockNodeFlags_PassthruCentralNode)
     for _, tool in ipairs(self.tools) do
         if tool.isVisible[0] then
@@ -100,11 +99,11 @@ function m:drawTools()
     end
 end
 
-function m:__onTick()
-    if not self.isVisible[0] then return end
+function Editor:__onTick()
+    if not Editor.isVisible[0] then return end
     self.gizmos:drawGizmos()
     self:drawTools()
     self:renderMainMenu()
 end
 
-return m
+return Editor

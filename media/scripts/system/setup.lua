@@ -94,11 +94,17 @@ local EngineContext = {
 print('Lua mem: '..string.format("%.3f", collectgarbage('count')/1024.0)..' MiB')
 
 function EngineContext:hookModules()
-    EngineContext.hooks = require 'system.hookmgr'
+    self.hooks = require 'system.hookmgr'
+    if not self.hooks then
+        panic('Failed to load hookmgr, internal error!')
+    end
 end
 
 function EngineContext:tick()
-    EngineContext.hooks:tick()
+    if not self.hooks then
+        panic('Failed to load hookmgr, internal error!')
+    end
+    self.hooks:tick()
 end
 
 return EngineContext

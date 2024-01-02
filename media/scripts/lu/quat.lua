@@ -9,11 +9,11 @@ ffi.cdef [[
         double y;
         double z;
         double w;
-    } quat;
+    } Quat;
 ]]
 
 local istype = ffi.istype
-local rawnew = ffi.typeof('quat')
+local rawnew = ffi.typeof('Quat')
 local sqrt, cos, sin, atan2, min, max, acos, abs = math.sqrt, math.cos, math.sin, math.atan2, math.min, math.max, math.acos, math.abs
 
 local ZERO = rawnew(0.0, 0.0, 0.0, 0.0)
@@ -48,7 +48,7 @@ local function norm(q)
 end
 
 local function fromAxisAngle(vec)
-    assert(istype('vec3', vec))
+    assert(istype('Vec3', vec))
     local angle = #vec
     if angle == 0.0 then
         return IDENTITY
@@ -79,15 +79,15 @@ local function fromRollPitchYaw(pitch, yaw, roll)
 end
 
 local function dot(q, other)
-    assert(istype('quat', other))
+    assert(istype('Quat', other))
     local x, y, z, w = q.x, q.y, q.z, q.w
     local ox, oy, oz, ow = other.x, other.y, other.z, other.w
     return x*ox + y*oy + z*oz + w*ow
 end
 
 local function slerp(x, y, i)
-    assert(istype('quat', x))
-    assert(istype('quat', y))
+    assert(istype('Quat', x))
+    assert(istype('Quat', y))
     assert(type(i) == 'number')
     if x == y then return x end
     local cosHalfTheta = dot(x, y)
@@ -113,9 +113,9 @@ local function axis(q)
     local len = q.x*q.x + q.y*q.y + q.z*q.z
     if len > 0.0 then
         local inv = 1.0 / sqrt(len)
-        return vec3.new(q.x * inv, q.y * inv, q.z * inv)
+        return Vec3.new(q.x * inv, q.y * inv, q.z * inv)
     else
-        return vec3.UNIT_X
+        return Vec3.UNIT_X
     end
 end
 
@@ -141,17 +141,17 @@ local function clone(q)
     return rawnew(q.x, q.y, q.z, q.w)
 end
 
-ffi.metatype('quat', {
+ffi.metatype('Quat', {
     _add = function(x, y)
-        assert(istype('quat', y))
+        assert(istype('Quat', y))
         return rawnew(x.x + y.x, x.y + y.y, x.z + y.z, x.w + y.w)
     end,
     _sub = function(x, y)
-        assert(istype('quat', y))
+        assert(istype('Quat', y))
         return rawnew(x.x - y.x, x.y - y.y, x.z - y.z, x.w - y.w)
     end,
     _mul = function(x, y)
-        if type(y) == 'cdata' and istype('quat', y) then
+        if type(y) == 'cdata' and istype('Quat', y) then
             local x = x.x*y.w + x.w*y.x + x.y*y.z - x.z*y.y
             local y = x.y*y.w + x.w*y.y + x.z*y.x - x.x*y.z
             local z = x.z*y.w + x.w*y.z + x.x*y.y - x.y*y.x
@@ -168,15 +168,15 @@ ffi.metatype('quat', {
         return mag(self)
     end,
     __eq = function(x, y)
-        local is_vec3 = type(y) == 'cdata' and istype('quat', y)
+        local is_vec3 = type(y) == 'cdata' and istype('Quat', y)
         return is_vec3 and x.x == y.x and x.y == y.y and x.z == y.z and x.w == y.w
     end,
     __tostring = function(self)
-        return string.format('quat(%f, %f, %f, %f)', self.x, self.y, self.z, self.w)
+        return string.format('Quat(%f, %f, %f, %f)', self.x, self.y, self.z, self.w)
     end,
 })
 
-quat = setmetatable({
+Quat = setmetatable({
     new = new,
     norm = norm,
     fromAxisAngle = fromAxisAngle,

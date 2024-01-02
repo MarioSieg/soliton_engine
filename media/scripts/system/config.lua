@@ -2,9 +2,9 @@
 
 -- Set to true to enable JIT assembly dump (useful for optimizing):
 
-local m = {
+local EngineConfig = {
     jit_asm_dump = false,
     editor_enable = true,
 }
 
-return m
+return EngineConfig

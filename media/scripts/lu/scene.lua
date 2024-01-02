@@ -8,11 +8,11 @@ ffi.cdef[[
     void __lu_scene_start(void);
 ]]
 
-scene = {
+Scene = {
     active = nil
 }
 
-function scene.new(name, setupFunc, startFunc, tickFunc)
+function Scene.new(name, setupFunc, startFunc, tickFunc)
     startFunc = startFunc or function() end
     tickFunc = tickFunc or function() end
 
@@ -45,11 +45,11 @@ function scene.new(name, setupFunc, startFunc, tickFunc)
         ffi.C.__lu_scene_tick()
     end
 
-    scene.active = nil -- clear active scene
-    collectgarbage() -- collect garbage before starting new scene
+    Scene.active = nil -- clear active scene
+    collectgarbage('collect') -- collect garbage before starting new scene
 
     newScene:__onStart() -- call start callback to start playing
-    scene.active = newScene
+    Scene.active = newScene
     print(string.format('Created new scene: %s, id: %x', name, id))
-    app.window.setTitle(string.format('Lunam Engine v.%s - %s %s - %s.scene', app.engineVersion, jit.os, jit.arch, name))
+    App.Window.setTitle(string.format('Lunam Engine v.%s - %s %s - %s.scene', App.engineVersion, jit.os, jit.arch, name))
 end

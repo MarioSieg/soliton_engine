@@ -71,20 +71,20 @@ local function initCoreHooks(searchDir)
     return hooks
 end
 
-local m = {
+local HookManager = {
     HOOK_DIR = 'media/scripts/lu',
     hooks = {}
 }
 
-m.hooks = initCoreHooks(m.HOOK_DIR)
-print('Loaded '..#m.hooks..' hooks')
+HookManager.hooks = initCoreHooks(HookManager.HOOK_DIR)
+print('Loaded '..#HookManager.hooks..' hooks')
 
-if not scene then -- check if the scene module is loaded
+if not Scene then -- check if the scene module is loaded
     panic('scene is not defined')
 end
 
 local function tickEngineSystems()
-    for _, hook in ipairs(m.hooks) do
+    for _, hook in ipairs(HookManager.hooks) do
         local routine = hook[ON_TICK_HOOK]
         if routine ~= nil then -- check if the hook has a tick function
             routine(hook) -- execute tick hook
@@ -93,15 +93,14 @@ local function tickEngineSystems()
 end
 
 local function tickScene()
-    if scene.active then
-        scene.active:__onTick()
+    if Scene.active then
+        Scene.active:__onTick()
     end
-
 end
 
-function m:tick()
+function HookManager:tick()
     tickEngineSystems()
     tickScene()
 end
 
-return m
+return HookManager

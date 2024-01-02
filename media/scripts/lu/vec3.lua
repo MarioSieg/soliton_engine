@@ -7,11 +7,11 @@ ffi.cdef [[
         double x;
         double y;
         double z;
-    } vec3;
+    } Vec3;
 ]]
 
 local istype = ffi.istype
-local rawnew = ffi.typeof('vec3')
+local rawnew = ffi.typeof('Vec3')
 local sqrt, cos, sin, atan2, min, max = math.sqrt, math.cos, math.sin, math.atan2, math.min, math.max
 
 local ZERO = rawnew(0.0, 0.0, 0.0)
@@ -54,26 +54,26 @@ local function magSqr(v)
 end
 
 local function dist(v, other)
-    assert(istype('vec3', other))
+    assert(istype('Vec3', other))
     local x, y, z = other.x - v.x, other.y - v.y, other.z - v.z
     return sqrt(x*x + y*y + z*z)
 end
 
 local function distSqr(v, other)
-    assert(istype('vec3', other))
+    assert(istype('Vec3', other))
     local x, y, z = other.x - v.x, other.y - v.y, other.z - v.z
     return x*x + y*y + z*z
 end
 
 local function dot(v, other)
-    assert(istype('vec3', other))
+    assert(istype('Vec3', other))
     local xx, yy, zz = v.x, v.y, v.z
     local ox, oy, oz = other.x, other.y, other.z
     return xx*ox + yy*oy + zz*oz
 end
 
 local function cross(v, other)
-    assert(istype('vec3', other))
+    assert(istype('Vec3', other))
     local xx, yy, zz = v.x, v.y, v.z
     local ox, oy, oz = other.x, other.y, other.z
     return rawnew(yy*oz - zz*oy, zz*ox - xx*oz, xx*oy - yy*ox)
@@ -84,7 +84,7 @@ local function norm(v)
 end
 
 local function reflect(v, normal)
-    assert(istype('vec3', normal))
+    assert(istype('Vec3', normal))
     return v - 2.0*dot(v, normal) * normal
 end
 
@@ -95,7 +95,7 @@ end
 local function rotate(v, theta)
     assert(type(theta) == 'number')
     local c, s = cos(theta), sin(theta)
-    return vec3.new(
+    return Vec3.new(
         c*v.x - s*v.y,
         s*v.x + c*v.y,
         v.z
@@ -103,8 +103,8 @@ local function rotate(v, theta)
 end
 
 local function clamp(v, lower, upper)
-    assert(istype('vec3', lower))
-    assert(istype('vec3', upper))
+    assert(istype('Vec3', lower))
+    assert(istype('Vec3', upper))
     return new(
         max(lower.x, min(upper.x, v.x)),
         max(lower.y, min(upper.y, v.y)),
@@ -117,7 +117,7 @@ local function unpack(v)
 end
 
 local function tovec2(v)
-    return vec2.new(v.x, v.y)
+    return Vec2.new(v.x, v.y)
 end
 
 local function clone(v)
@@ -125,9 +125,9 @@ local function clone(v)
 end
 
 local function smoothDamp(current, target, velocity, smoothTime, maxSpeed, deltaTime)
-    assert(istype('vec3', current))
-    assert(istype('vec3', target))
-    assert(istype('vec3', velocity))
+    assert(istype('Vec3', current))
+    assert(istype('Vec3', target))
+    assert(istype('Vec3', velocity))
     assert(type(smoothTime) == 'number')
     assert(type(maxSpeed) == 'number')
     assert(type(deltaTime) == 'number')
@@ -190,15 +190,15 @@ local function smoothDamp(current, target, velocity, smoothTime, maxSpeed, delta
     return rawnew(out_x, out_y, out_z), velocity
 end
 
-ffi.metatype('vec3', {
+ffi.metatype('Vec3', {
     __add = function(x, y)
-        if istype('vec3', x) then
-            if istype('vec3', y) then
+        if istype('Vec3', x) then
+            if istype('Vec3', y) then
                 return new(x.x + y.x, x.y + y.y, x.z + y.z)
             elseif type(y) == 'number' then
                 return new(x.x + y, x.y + y, x.z + y)
             end
-        elseif istype('vec3', y) then
+        elseif istype('Vec3', y) then
             if type(x) == 'number' then
                 return new(x + y.x, x + y.y, x + y.z)
             end
@@ -206,13 +206,13 @@ ffi.metatype('vec3', {
         error('Invalid operands for vec3 addition.')
     end,
     __sub = function(x, y)
-        if istype('vec3', x) then
-            if istype('vec3', y) then
+        if istype('Vec3', x) then
+            if istype('Vec3', y) then
                 return new(x.x - y.x, x.y - y.y, x.z - y.z)
             elseif type(y) == 'number' then
                 return new(x.x - y, x.y - y, x.z - y)
             end
-        elseif istype('vec3', y) then
+        elseif istype('Vec3', y) then
             if type(x) == 'number' then
                 return new(x - y.x, x - y.y, x - y.z)
             end
@@ -220,10 +220,10 @@ ffi.metatype('vec3', {
         error('Invalid operands for vec3 subtraction.')
     end,
     __mul = function(x, y)
-        if istype('vec3', x) then
-            if istype('vec3', y) then
+        if istype('Vec3', x) then
+            if istype('Vec3', y) then
                 return new(x.x * y.x, x.y * y.y, x.z * y.z)
-            elseif istype('quat', y) then -- quaternion rotation
+            elseif istype('Quat', y) then -- quaternion rotation
                 local ix =  y.w*y.x + y.y*x.z - y.z*x.y
                 local iy =  y.w*y.y + y.z*x.x - y.x*x.z
                 local iz =  y.w*y.z + y.x*x.y - y.y*x.x
@@ -235,7 +235,7 @@ ffi.metatype('vec3', {
             elseif type(y) == 'number' then
                 return new(x.x * y, x.y * y, x.z * y)
             end
-        elseif istype('vec3', y) then
+        elseif istype('Vec3', y) then
             if type(x) == 'number' then
                 return new(x * y.x, x * y.y, x * y.z)
             end
@@ -243,13 +243,13 @@ ffi.metatype('vec3', {
         error('Invalid operands for vec3 multiplication.')
     end,
     __div = function(x, y)
-        if istype('vec3', x) then
-            if istype('vec3', y) then
+        if istype('Vec3', x) then
+            if istype('Vec3', y) then
                 return new(x.x / y.x, x.y / y.y, x.z / y.z)
             elseif type(y) == 'number' then
                 return new(x.x / y, x.y / y, x.z / y)
             end
-        elseif istype('vec3', y) then
+        elseif istype('Vec3', y) then
             if type(x) == 'number' then
                 return new(x / y.x, x / y.y, x / y.z)
             end
@@ -257,13 +257,13 @@ ffi.metatype('vec3', {
         error('Invalid operands for vec3 division.')
     end,
     __mod = function(x, y)
-        if istype('vec3', x) then
-            if istype('vec3', y) then
+        if istype('Vec3', x) then
+            if istype('Vec3', y) then
                 return new(x.x % y.x, x.y % y.y, x.z % y.z)
             elseif type(y) == 'number' then
                 return new(x.x % y, x.y % y, x.z % y)
             end
-        elseif istype('vec3', y) then
+        elseif istype('Vec3', y) then
             if type(x) == 'number' then
                 return new(x % y.x, x % y.y, x % y.z)
             end
@@ -277,15 +277,15 @@ ffi.metatype('vec3', {
         return mag(self)
     end,
     __eq = function(x, y)
-        local is_vec3 = type(y) == 'cdata' and istype('vec3', y)
+        local is_vec3 = type(y) == 'cdata' and istype('Vec3', y)
         return is_vec3 and x.x == y.x and x.y == y.y and x.z == y.z
     end,
     __tostring = function(self)
-        return string.format('vec3(%.3f, %.3f, %.3f)', self.x, self.y, self.z)
+        return string.format('Vec3(%.3f, %.3f, %.3f)', self.x, self.y, self.z)
     end,
 })
 
-vec3 = setmetatable({
+Vec3 = setmetatable({
     new = new,
     fromAngles = fromAngles,
     mag = mag,

@@ -6,11 +6,11 @@ ffi.cdef [[
     typedef struct {
         double x;
         double y;
-    } vec2;
+    } Vec2;
 ]]
 
 local istype = ffi.istype
-local rawnew = ffi.typeof('vec2')
+local rawnew = ffi.typeof('Vec2')
 local sqrt, cos, sin, atan2, min, max = math.sqrt, math.cos, math.sin, math.atan2, math.min, math.max
 
 local ZERO = rawnew(0.0, 0.0)
@@ -42,19 +42,19 @@ local function magSqr(v)
 end
 
 local function dist(v, other)
-    assert(istype('vec2', other))
+    assert(istype('Vec2', other))
     local x, y = other.x - v.x, other.y - v.y
     return sqrt(x*x + y*y)
 end
 
 local function distSqr(v, other)
-    assert(istype('vec2', other))
+    assert(istype('Vec2', other))
     local x, y = other.x - v.x, other.y - v.y
     return x*x + y*y
 end
 
 local function dot(v, other)
-    assert(istype('vec2', other))
+    assert(istype('Vec2', other))
     local xx, yy = v.x, v.y
     local ox, oy = other.x, other.y
     return xx*ox + yy*oy
@@ -65,7 +65,7 @@ local function norm(v)
 end
 
 local function reflect(v, normal)
-    assert(istype('vec2', normal))
+    assert(istype('Vec2', normal))
     return v - 2.0*dot(v, normal) * normal
 end
 
@@ -76,15 +76,15 @@ end
 local function rotate(v, theta)
     assert(type(theta) == 'number')
     local c, s = cos(theta), sin(theta)
-    return vec2.new(
+    return Vec2.new(
         c*v.x - s*v.y,
         s*v.x + c*v.y
     )
 end
 
 local function clamp(v, lower, upper)
-    assert(istype('vec2', lower))
-    assert(istype('vec2', upper))
+    assert(istype('Vec2', lower))
+    assert(istype('Vec2', upper))
     return new(
         max(lower.x, min(upper.x, v.x)),
         max(lower.y, min(upper.y, v.y))
@@ -100,15 +100,15 @@ local function clone(v)
 end
 
 
-ffi.metatype('vec2', {
+ffi.metatype('Vec2', {
     __add = function(x, y)
-        if istype('vec2', x) then
-            if istype('vec2', y) then
+        if istype('Vec2', x) then
+            if istype('Vec2', y) then
                 return rawnew(x.x + y.x, x.y + y.y)
             elseif type(y) == 'number' then
                 return rawnew(x.x + y, x.y + y)
             end
-        elseif istype('vec2', y) then
+        elseif istype('Vec2', y) then
             if type(x) == 'number' then
                 return rawnew(x + y.x, x + y.y)
             end
@@ -116,13 +116,13 @@ ffi.metatype('vec2', {
         error('Invalid operands for vec2 addition.')
     end,
     __sub = function(x, y)
-        if istype('vec2', x) then
-            if istype('vec2', y) then
+        if istype('Vec2', x) then
+            if istype('Vec2', y) then
                 return rawnew(x.x - y.x, x.y - y.y)
             elseif type(y) == 'number' then
                 return rawnew(x.x - y, x.y - y)
             end
-        elseif istype('vec2', y) then
+        elseif istype('Vec2', y) then
             if type(x) == 'number' then
                 return rawnew(x - y.x, x - y.y)
             end
@@ -130,13 +130,13 @@ ffi.metatype('vec2', {
         error('Invalid operands for vec2 subtraction.')
     end,
     __mul = function(x, y)
-        if istype('vec2', x) then
-            if istype('vec2', y) then
+        if istype('Vec2', x) then
+            if istype('Vec2', y) then
                 return rawnew(x.x * y.x, x.y * y.y)
             elseif type(y) == 'number' then
                 return rawnew(x.x * y, x.y * y)
             end
-        elseif istype('vec2', y) then
+        elseif istype('Vec2', y) then
             if type(x) == 'number' then
                 return rawnew(x * y.x, x * y.y)
             end
@@ -144,13 +144,13 @@ ffi.metatype('vec2', {
         error('Invalid operands for vec2 multiplication.')
     end,
     __div = function(x, y)
-        if istype('vec2', x) then
-            if istype('vec2', y) then
+        if istype('Vec2', x) then
+            if istype('Vec2', y) then
                 return rawnew(x.x / y.x, x.y / y.y)
             elseif type(y) == 'number' then
                 return rawnew(x.x / y, x.y / y)
             end
-        elseif istype('vec2', y) then
+        elseif istype('Vec2', y) then
             if type(x) == 'number' then
                 return rawnew(x / y.x, x / y.y)
             end
@@ -158,13 +158,13 @@ ffi.metatype('vec2', {
         error('Invalid operands for vec2 division.')
     end,
     __mod = function(x, y)
-        if istype('vec2', x) then
-            if istype('vec2', y) then
+        if istype('Vec2', x) then
+            if istype('Vec2', y) then
                 return rawnew(x.x % y.x, x.y % y.y)
             elseif type(y) == 'number' then
                 return rawnew(x.x % y, x.y % y)
             end
-        elseif istype('vec2', y) then
+        elseif istype('Vec2', y) then
             if type(x) == 'number' then
                 return rawnew(x % y.x, x % y.y)
             end
@@ -178,15 +178,15 @@ ffi.metatype('vec2', {
         return mag(self)
     end,
     __eq = function(x, y)
-        local is_vec2 = type(y) == 'cdata' and istype('vec2', y)
+        local is_vec2 = type(y) == 'cdata' and istype('Vec2', y)
         return is_vec2 and x.x == y.x and x.y == y.y
     end,
     __tostring = function(self)
-        return string.format('vec2(%f, %f)', self.x, self.y)
+        return string.format('Vec2(%f, %f)', self.x, self.y)
     end,
 })
 
-vec2 = setmetatable({
+Vec2 = setmetatable({
     new = new,
     fromAngle = fromAngle,
     mag = mag,

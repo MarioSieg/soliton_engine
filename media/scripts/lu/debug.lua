@@ -9,18 +9,18 @@ ffi.cdef[[
         double x;
         double y;
         double z;
-    } vec3;
+    } Vec3;
     void __lu_dd_begin(void);
     void __lu_dd_set_wireframe(bool wireframe);
     void __lu_dd_set_color(uint32_t abgr);
-    void __lu_dd_grid(int axis, vec3 pos, uint32_t size, float step);
-    void __lu_dd_axis(vec3 pos, float len, int axis_highlight, float thickness);
-    void __lu_dd_aabb(vec3 min, vec3 max);
-    void __lu_dd_sphere(vec3 center, float radius);
+    void __lu_dd_grid(int axis, Vec3 pos, uint32_t size, float step);
+    void __lu_dd_axis(Vec3 pos, float len, int axis_highlight, float thickness);
+    void __lu_dd_aabb(Vec3 min, Vec3 max);
+    void __lu_dd_sphere(Vec3 center, float radius);
     void __lu_dd_end(void);
 ]]
 
-debugdraw = {
+Debug = {
     AXIS = {
         X = 0,
         Y = 1,
@@ -28,17 +28,17 @@ debugdraw = {
     }
 }
 
-function debugdraw.start()
+function Debug.start()
     ffi.C.__lu_dd_begin()
 end
 
-function debugdraw.setWireframe(isWireframe)
+function Debug.setWireframe(isWireframe)
     assert(type(isWireframe) == 'boolean')
     ffi.C.__lu_dd_set_wireframe(isWireframe)
 end
 
-function debugdraw.setColor(rgb)
-    assert(ffi.istype('vec3', rgb))
+function Debug.setColor(rgb)
+    assert(ffi.istype('Vec3', rgb))
     local r = bit.band(rgb.x*255.0, 0xff) -- normalized [0,1] to u8[0,0xff]
     local g = bit.band(rgb.y*255.0, 0xff)
     local b = bit.band(rgb.z*255.0, 0xff)
@@ -50,36 +50,36 @@ function debugdraw.setColor(rgb)
     ffi.C.__lu_dd_set_color(abgr)
 end
 
-function debugdraw.drawGrid(axis, pos, size, step)
+function Debug.drawGrid(axis, pos, size, step)
     assert(type(axis) == 'number')
-    assert(ffi.istype('vec3', pos))
+    assert(ffi.istype('Vec3', pos))
     assert(type(size) == 'number')
     assert(type(step) == 'number')
     ffi.C.__lu_dd_grid(axis, pos, size, step)
 end
 
-function debugdraw.drawAxis(pos, len, axis_highlight, thickness)
-    assert(ffi.istype('vec3', pos))
+function Debug.drawAxis(pos, len, axis_highlight, thickness)
+    assert(ffi.istype('Vec3', pos))
     assert(type(len) == 'number')
     assert(type(axis_highlight) == 'number')
     assert(type(thickness) == 'number')
     ffi.C.__lu_dd_axis(pos, len, axis_highlight, thickness)
 end
 
-function debugdraw.drawAABB(min, max)
-    assert(ffi.istype('vec3', min))
-    assert(ffi.istype('vec3', max))
+function Debug.drawAABB(min, max)
+    assert(ffi.istype('Vec3', min))
+    assert(ffi.istype('Vec3', max))
     ffi.C.__lu_dd_aabb(min, max)
 end
 
-function debugdraw.drawSphere(center, radius)
-    assert(ffi.istype('vec3', center))
+function Debug.drawSphere(center, radius)
+    assert(ffi.istype('Vec3', center))
     assert(type(radius) == 'number')
     ffi.C.__lu_dd_sphere(center, radius)
 end
 
-function debugdraw.finish()
+function Debug.finish()
     ffi.C.__lu_dd_end()
 end
 
-return debugdraw
+return Debug

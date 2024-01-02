@@ -44,7 +44,7 @@ local EngineContext = require 'system.setup' -- Lazy load the setup script
 -- It's responsible for loading all tick hooks of global engine components.
 -- Note: Scripts which are loaded per-world are loaded in the world-setup script.
 function __on_prepare__()
-    EngineContext.hookModules() -- Load all start/tick hooks
+    EngineContext:hookModules() -- Load all start/tick hooks
 
     jit.on() -- Enable JIT
     jit.opt.start('+fma') -- enable FMA for better performance

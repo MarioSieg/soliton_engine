@@ -19,7 +19,7 @@ ffi.cdef [[
     void __lu_app_exit(void);
 ]]
 
-app = {
+App = {
     name = 'Untitled App',
     appVersion = '0.1',
     engineVersion = '0.1',
@@ -28,79 +28,79 @@ app = {
     website = '',
     company = '',
     type = 'Game',
-    window = {
+    Window = {
         isMaximized = false,
         isFullscreen = false,
         isVisible = true,
     }
 }
 
-function app.window.maximize()
+function App.Window.maximize()
     ffi.C.__lu_window_maximize()
-    app.window.isMaximized = true
+    App.Window.isMaximized = true
 end
 
-function app.window.minimize()
+function App.Window.minimize()
     ffi.C.__lu_window_minimize()
-    app.window.isMaximized = false
+    App.Window.isMaximized = false
 end
 
-function app.window.enterFullscreen()
+function App.Window.enterFullscreen()
     ffi.C.__lu_window_enter_fullscreen()
-    app.window.isFullscreen = true
+    App.Window.isFullscreen = true
 end
 
-function app.window.leaveFullscreen()
+function App.Window.leaveFullscreen()
     ffi.C.__lu_window_leave_fullscreen()
-    app.window.isFullscreen = false
+    App.Window.isFullscreen = false
 end
 
-function app.window.setTitle(title)
+function App.Window.setTitle(title)
     assert(type(title) == 'string')
     ffi.C.__lu_window_set_title(title)
 end
 
-function app.window.setSize(width, height)
+function App.Window.setSize(width, height)
     assert(type(width) == 'number')
     assert(type(height) == 'number')
     ffi.C.__lu_window_set_size(width, height)
 end
 
-function app.window.setPos(x, y)
+function App.Window.setPos(x, y)
     assert(type(x) == 'number')
     assert(type(y) == 'number')
     ffi.C.__lu_window_set_pos(x, y)
 end
 
-function app.window.show()
+function App.Window.show()
     ffi.C.__lu_window_show()
-    app.window.isVisible = true
+    App.Window.isVisible = true
 end
 
-function app.window.hide()
+function App.Window.hide()
     ffi.C.__lu_window_hide()
-    app.window.isVisible = false
+    App.Window.isVisible = false
 end
 
-function app.window.allowResize(allow)
+function App.Window.allowResize(allow)
     assert(type(allow) == 'boolean')
     ffi.C.__lu_window_allow_resize(allow)
 end
 
-function app.window.getSize()
+function App.Window.getSize()
     local v = ffi.C.__lu_window_get_size()
     return v.v[0], v.v[1]
 end
 
-function app.window.getPos()
+function App.Window.getPos()
     local v = ffi.C.__lu_window_get_pos()
     return v.v[0], v.v[1]
 end
 
-function app.exit()
+function App.exit()
     ffi.C.__lu_app_exit()
 end
 
-app.window.setTitle(string.format('Lunam Engine v.%s - %s %s', app.engineVersion, jit.os, jit.arch))
+App.Window.setTitle(string.format('Lunam Engine v.%s - %s %s', App.engineVersion, jit.os, jit.arch))
 
-return app
+return App
