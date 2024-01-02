@@ -73,7 +73,7 @@ static const InputBinding s_camBindings[] =
 	INPUT_BINDING_END
 };
 
-struct Camera
+struct c_camera
 {
 	struct MouseCoords
 	{
@@ -82,7 +82,7 @@ struct Camera
 		int32_t m_mz;
 	};
 
-	Camera()
+	c_camera()
 	{
 		reset();
 		entry::MouseState mouseState;
@@ -92,7 +92,7 @@ struct Camera
 		inputAddBindings("camBindings", s_camBindings);
 	}
 
-	~Camera()
+	~c_camera()
 	{
 		cmdRemove("move");
 		inputRemoveBindings("camBindings");
@@ -279,7 +279,7 @@ struct Camera
 	bool m_mouseDown;
 };
 
-static Camera* s_camera = NULL;
+static c_camera* s_camera = NULL;
 
 void cameraCreate()
 {

@@ -5,6 +5,11 @@
 #include "../core/subsystem.hpp"
 
 #include "jit/lua.hpp"
+
+#ifndef OPENRESTY_LUAJIT
+#   error "OpenResty's LuaJIT branch is required"
+#endif
+
 #include "bridge/LuaBridge.h"
 
 namespace scripting {

@@ -13,7 +13,6 @@ local sin = math.sin
 local rad = math.rad
 local abs = math.abs
 
--- Helper function to mimic the LOVE API, allows you to pass a table or four arguments
 local function getColorArgs(first, ...)
   if type(first) == "table" then
     return unpack(first)

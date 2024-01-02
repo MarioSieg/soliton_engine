@@ -3,6 +3,7 @@
 #pragma once
 
 #include "../core/subsystem.hpp"
+#include "../scene/scene.hpp"
 
 #include "prelude.hpp"
 
@@ -15,6 +16,7 @@ namespace graphics {
         HOTPROC auto on_pre_tick() -> bool override;
         HOTPROC auto on_post_tick() -> void override;
         auto on_resize() -> void override;
+        auto on_start(scene& scene) -> void override;
 
         [[nodiscard]] static auto is_draw_phase() noexcept -> bool { return s_is_draw_phase; } // is draw phase?
         [[nodiscard]] static auto is_dd_init() noexcept -> bool { return s_is_dd_init; } // is debug draw initialized?

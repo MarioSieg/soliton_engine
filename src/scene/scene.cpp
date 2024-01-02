@@ -23,9 +23,9 @@ auto scene::new_active(std::string&& name) -> void {
 }
 
 auto scene::on_tick() -> void {
-    progress(static_cast<float>(kernel::get_delta_time()));
+    progress(static_cast<float>(kernel::get().get_delta_time()));
 }
 
 auto scene::on_start() -> void {
-
+    kernel::get().on_new_scene_start(*this);
 }

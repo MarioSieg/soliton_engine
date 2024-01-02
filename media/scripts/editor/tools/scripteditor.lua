@@ -66,7 +66,7 @@ local function _onTick(scene)
 
 end
 
-scene.new('Untitled', _onSetup, _onStart, _onTick)
+Scene.new('Untitled', _onSetup, _onStart, _onTick)
 
 ]]
 

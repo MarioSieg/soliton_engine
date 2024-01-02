@@ -165,9 +165,9 @@ static const char* s_filter = ""
 	"Bgfx geometry (bin) | *.bin\n"
 	;
 
-struct Camera
+struct c_camera
 {
-	Camera()
+	c_camera()
 	{
 		init(bx::InitZero, 2.0f, 0.01f, 100.0f);
 	}
@@ -570,7 +570,7 @@ struct View
 	bool     m_files;
 	bool 	 m_axes;
 
-	Camera	m_camera;
+	c_camera	m_camera;
 	Mouse   m_mouse;
 	bx::Vec3 m_meshCenter;
 	float	 m_meshRadius;

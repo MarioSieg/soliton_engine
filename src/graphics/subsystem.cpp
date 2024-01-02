@@ -1,6 +1,7 @@
 // Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "subsystem.hpp"
+
 #include "../platform/subsystem.hpp"
 
 #include <mimalloc.h>
@@ -58,40 +59,75 @@ namespace graphics {
         bgfx::shutdown();
     }
 
-    HOTPROC auto graphics_subsystem::on_pre_tick() -> bool {
+    [[nodiscard]] static auto get_main_camera() -> entity {
+        const auto& scene = scene::get_active();
+        if (scene) [[likely]] {
+            auto query = scene->filter<const c_transform, c_camera>();
+            if (query.count() > 0) {
+                return query.first();
+            }
+        }
+        return entity::null();
+    }
+
+    static auto clear_main_render_target(float& width, float& height) -> void {
         int w, h;
         glfwGetFramebufferSize(platform_subsystem::get_glfw_window(), &w, &h);
-        m_width = static_cast<float>(w);
-        m_height = static_cast<float>(h);
-        bgfx::setViewRect(k_scene_view, 0, 0, w, h);
-        bgfx::setViewClear(k_scene_view, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0, 1.0f, 0);
-        bgfx::touch(k_scene_view);
-        ImGuiEx::BeginFrame(w, h, k_imgui_view);
+        width = static_cast<float>(w);
+        height = static_cast<float>(h);
+        bgfx::setViewRect(graphics_subsystem::k_scene_view, 0, 0, w, h);
+        bgfx::setViewClear(graphics_subsystem::k_scene_view, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0, 1.0f, 0);
+        bgfx::touch(graphics_subsystem::k_scene_view);
+    }
+
+    static XMMATRIX m_mtx_view;
+    static XMMATRIX m_mtx_proj;
+    static XMMATRIX m_mtx_view_proj;
+
+    static auto update_main_camera(float width, float height) -> void {
+        entity main_cam = get_main_camera();
+        if (!main_cam.is_valid() || !main_cam.is_alive()) [[unlikely]] {
+            log_warn("No camera found in scene");
+            return;
+        }
+        c_camera::active_camera = main_cam;
+        const c_transform& transform = *main_cam.get<c_transform>();
+        c_camera& cam = *main_cam.get_mut<c_camera>();
+        if (cam.auto_viewport) {
+            cam.viewport.x = width;
+            cam.viewport.y = height;
+        }
+        m_mtx_view = cam.compute_view(transform);
+        m_mtx_proj = cam.compute_projection();
+        m_mtx_view_proj = XMMatrixMultiply(m_mtx_view, m_mtx_proj);
+        bgfx::setViewTransform(graphics_subsystem::k_scene_view, &m_mtx_view, &m_mtx_proj);
+    }
+
+    HOTPROC auto graphics_subsystem::on_pre_tick() -> bool {
+        clear_main_render_target(m_width, m_height);
+        update_main_camera(m_width, m_height);
+        ImGuiEx::BeginFrame(m_width, m_height, k_imgui_view);
         s_is_draw_phase = true;
         return true;
     }
 
     HOTPROC auto graphics_subsystem::on_post_tick() -> void {
-
-        const bx::Vec3 at  = { 0.0f, 0.0f,   0.0f };
-        const bx::Vec3 eye = { 0.0f, 2.0f, -5.0f };
-
-        float view[16];
-        bx::mtxLookAt(view, eye, at);
-
-        float proj[16];
-        bx::mtxProj(proj, 60.0f, m_width / m_height, 0.1f, 100.0f, bgfx::getCaps()->homogeneousDepth);
-        bgfx::setViewTransform(k_scene_view, view, proj);
-
         s_is_draw_phase = false;
         ImGuiEx::EndFrame();
         bgfx::frame();
+        c_camera::active_camera = entity::null();
     }
 
     auto graphics_subsystem::on_resize() -> void {
         int w, h;
         glfwGetFramebufferSize(platform_subsystem::get_glfw_window(), &w, &h);
         bgfx::reset(w, h, m_reset_flags);
+    }
+
+    void graphics_subsystem::on_start(scene& scene) {
+        entity camera = scene.entity();
+        camera.add<c_transform>();
+        camera.add<c_camera>();
     }
 
     auto graphics_subsystem::init_debug_draw_lazy() -> void {

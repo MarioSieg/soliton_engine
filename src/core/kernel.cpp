@@ -97,7 +97,11 @@ static auto redirect_io() -> void {
 }
 #endif
 
+static constinit kernel* g_kernel = nullptr;
+
 kernel::kernel() {
+    passert(g_kernel == nullptr);
+    g_kernel = this;
 #if PLATFORM_WINDOWS
     redirect_io();
     SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS); // Is this smart?
@@ -121,6 +125,7 @@ kernel::~kernel() {
     log_info("System offline");
     std::cout.flush();
     std::fflush(stdout);
+    g_kernel = nullptr;
 }
 
 static constinit double delta_time;
@@ -132,6 +137,11 @@ static auto compute_delta_time() noexcept {
     prev = now;
 }
 
+auto kernel::get() noexcept -> kernel& {
+    passert(g_kernel != nullptr);
+    return *g_kernel;
+}
+
 auto kernel::get_delta_time() noexcept -> double {
     return delta_time;
 }
@@ -139,6 +149,12 @@ auto kernel::get_delta_time() noexcept -> double {
 static constinit bool g_kernel_online = true;
 auto kernel::request_exit() noexcept -> void {
     g_kernel_online = false;
+}
+
+auto kernel::on_new_scene_start(scene& scene) -> void {
+    std::ranges::for_each(m_subsystems, [&scene](const std::shared_ptr<subsystem>& sys) {
+       sys->on_start(scene);
+   });
 }
 
 HOTPROC auto kernel::run() -> void {

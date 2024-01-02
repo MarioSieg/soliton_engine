@@ -9,6 +9,7 @@ local MODULES = {
     ['Quat'] = 'lu/quat',
     ['Scene'] = 'lu/scene',
     ['Time'] = 'lu/time',
+    ['Tween'] = 'lu/tween',
     ['Vec2'] = 'lu/vec2',
     ['Vec3'] = 'lu/vec3',
 }

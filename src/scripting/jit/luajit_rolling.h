@@ -30,6 +30,8 @@
 
 #include "lua.h"
 
+#define OPENRESTY_LUAJIT
+
 #define LUAJIT_VERSION		"LuaJIT 2.1.ROLLING"
 #define LUAJIT_VERSION_NUM	20199  /* Deprecated. */
 #define LUAJIT_VERSION_SYM	luaJIT_version_2_1_ROLLING

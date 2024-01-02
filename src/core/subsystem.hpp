@@ -6,6 +6,7 @@
 
 #include "core.hpp"
 
+class scene;
 class subsystem : public no_copy, public no_move {
 private:
     friend class kernel;
@@ -21,6 +22,7 @@ protected:
 
     virtual auto on_prepare() -> void {} // called before the simulation loop is entered
     virtual auto on_resize() -> void {} // called on resize
+    virtual auto on_start(scene& scene) -> void {} // called on scene start
     virtual auto on_pre_tick() -> bool { return true; } // called each frame
     virtual auto on_tick() -> void {} // called each frame
     virtual auto on_post_tick() -> void {} // called each frame in reverse

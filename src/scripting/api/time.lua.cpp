@@ -4,5 +4,5 @@
 #include "../../core/kernel.hpp"
 
 LUA_INTEROP_API auto __lu_get_delta_time() -> double {
-    return kernel::get_delta_time();
+    return kernel::get().get_delta_time();
 }

@@ -2,11 +2,10 @@
 
 #pragma once
 
-#include "../core/core.hpp"
+#include "base.hpp"
+#include "components.hpp"
 
-#include "../ecs/flecs.h"
-
-class scene : public flecs::world, public no_copy, public no_move {
+class scene : public world, public no_copy, public no_move {
 public:
     const std::uint32_t id;
     std::string name = {};

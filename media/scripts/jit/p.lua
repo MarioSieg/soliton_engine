@@ -294,9 +294,12 @@ end
 ------------------------------------------------------------------------------
 
 local function start(mode, outfile)
-  -- !! LUNAM Changed some stuff here !!
-  if not outfile then outfile = stdout end
-  out = outfile
+  if not outfile then outfile = os.getenv("LUAJIT_PROFILEFILE") end
+  if outfile then
+    out = outfile == "-" and stdout or assert(io.open(outfile, "w"))
+  else
+    out = stdout
+  end
   prof_start(mode or "f")
 end
 

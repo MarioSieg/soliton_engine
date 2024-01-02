@@ -21,8 +21,11 @@ public:
         return subsystem;
     }
 
-    [[nodiscard]] static auto get_delta_time() noexcept -> double;
-    static auto request_exit() noexcept -> void;
+    [[nodiscard]] static auto get() noexcept -> kernel&;
+
+    [[nodiscard]] auto get_delta_time() noexcept -> double;
+    auto request_exit() noexcept -> void;
+    auto on_new_scene_start(scene& scene) -> void;
 
     HOTPROC auto run() -> void;
     auto resize() -> void;

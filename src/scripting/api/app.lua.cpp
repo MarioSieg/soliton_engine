@@ -69,5 +69,5 @@ LUA_INTEROP_API auto __lu_window_get_pos() -> __lu_ivec2 {
 }
 
 LUA_INTEROP_API auto __lu_app_exit() -> void {
-    kernel::request_exit();
+    kernel::get().request_exit();
 }

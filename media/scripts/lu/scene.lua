@@ -6,6 +6,7 @@ ffi.cdef[[
     uint32_t __lu_scene_new(void);
     void __lu_scene_tick(void);
     void __lu_scene_start(void);
+    uint64_t __lu_scene_spawn_entity(const char* name);
 ]]
 
 local Scene = {
@@ -13,6 +14,7 @@ local Scene = {
 }
 
 function Scene.new(name, setupFunc, startFunc, tickFunc)
+    setupFunc = setupFunc or function() return {} end
     startFunc = startFunc or function() end
     tickFunc = tickFunc or function() end
 
@@ -27,7 +29,7 @@ function Scene.new(name, setupFunc, startFunc, tickFunc)
     local id = ffi.C.__lu_scene_new() -- create native scene
     assert(type(id) == 'number' and id ~= 0, 'failed to create scene')
 
-    local newScene = {
+    local SceneInstance = {
         name = name,
         id = id,
         data = data,
@@ -35,23 +37,29 @@ function Scene.new(name, setupFunc, startFunc, tickFunc)
         tickCallback = tickFunc
     }
 
-    function newScene:__onStart()
-        newScene.startCallback(newScene.data)
+    function SceneInstance:__onStart()
+        SceneInstance.startCallback(SceneInstance.data)
         ffi.C.__lu_scene_start()
     end
 
-    function newScene:__onTick()
-        newScene.tickCallback(newScene.data)
+    function SceneInstance:__onTick()
+        SceneInstance.tickCallback(SceneInstance.data)
         ffi.C.__lu_scene_tick()
+    end
+
+    function SceneInstance:spawnEntity(name)
+        assert(type(name) == 'string', 'name must be a string')
+        return ffi.C.__lu_scene_spawn_entity(name)
     end
 
     Scene.active = nil -- clear active scene
     collectgarbage('collect') -- collect garbage before starting new scene
 
-    newScene:__onStart() -- call start callback to start playing
-    Scene.active = newScene
+    SceneInstance:__onStart() -- call start callback to start playing
+    Scene.active = SceneInstance
     print(string.format('Created new scene: %s, id: %x', name, id))
-    App.Window.setTitle(string.format('Lunam Engine v.%s - %s %s - %s.scene', App.engineVersion, jit.os, jit.arch, name))
 end
+
+Scene.new('Default')
 
 return Scene
