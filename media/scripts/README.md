@@ -3,10 +3,10 @@
 <img src="../icons/logo.png" width="200" height="200">
 
 ## Directories
+- `editor` - Editor scripts
 - `ext` - External libraries (useable in all scripts)
-- `imgui` - ImGui scripts (for the editor only)
 - `jit` - LuaJIT scripts (internal scripts)
-- `lu` - Lua scripts with event handlers (add your own here - useable in all scripts)
+- `lu` - Lunam core API with event handlers
 - `system` - System scripts (internal scripts)
 - `tools` - Tool scripts (internal scripts)
 
