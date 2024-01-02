@@ -52,6 +52,7 @@ for _, path in ipairs(INCLUDE_DIRS) do
 end
 
 -- Verify filesystem
+-- TODO must be done before any imports!
 print('Verifying filesystem...')
 local numchecks = 0
 local function checkFsEntry(path)
@@ -93,17 +94,19 @@ local EngineContext = {
 
 print('Lua mem: '..string.format("%.3f", collectgarbage('count')/1024.0)..' MiB')
 
-function EngineContext:hookModules()
-    self.hooks = require 'system.hookmgr'
+function EngineContext:validateHookContext()
     if not self.hooks then
         panic('Failed to load hookmgr, internal error!')
     end
 end
 
+function EngineContext:hookModules()
+    self.hooks = require 'system.hookmgr'
+    self:validateHookContext()
+end
+
 function EngineContext:tick()
-    if not self.hooks then
-        panic('Failed to load hookmgr, internal error!')
-    end
+    self:validateHookContext()
     self.hooks:tick()
 end
 

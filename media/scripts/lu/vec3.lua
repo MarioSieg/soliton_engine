@@ -285,7 +285,7 @@ ffi.metatype('Vec3', {
     end,
 })
 
-Vec3 = setmetatable({
+local Vec3 = setmetatable({
     new = new,
     fromAngles = fromAngles,
     mag = mag,
@@ -319,3 +319,5 @@ Vec3 = setmetatable({
         return new(x, y, z)
     end
 })
+
+return Vec3

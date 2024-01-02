@@ -176,7 +176,7 @@ ffi.metatype('Quat', {
     end,
 })
 
-Quat = setmetatable({
+local Quat = setmetatable({
     new = new,
     norm = norm,
     fromAxisAngle = fromAxisAngle,
@@ -200,3 +200,5 @@ Quat = setmetatable({
         return new(x, y, z, w)
     end,
 })
+
+return Quat

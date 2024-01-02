@@ -1,9 +1,9 @@
 local ffi = require 'ffi'
 local gui = require 'editor.imgui'
 
-local m = {}
+local Style = {}
 
-function m.setupDarkStyle()
+function Style.setupDarkStyle()
     local style = gui.GetStyle()
     style.WindowPadding     = gui.ImVec2(8.00, 8.00)
     style.FramePadding      = gui.ImVec2(5.00, 2.00)
@@ -87,4 +87,4 @@ function m.setupDarkStyle()
     colors[ffi.C.ImGuiCol_PlotHistogram]            = colors[ffi.C.ImGuiCol_CheckMark]
 end
 
-return m
+return Style

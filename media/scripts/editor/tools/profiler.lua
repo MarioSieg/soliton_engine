@@ -2,7 +2,10 @@
 
 local ffi = require 'ffi'
 local profile = require 'jit.p'
-local gui = require 'editor.imgui'
+
+local UI = require 'editor.imgui'
+local ICONS = require 'editor.icons'
+local Time = require('Time')
 
 local Profiler = {
     name = ICONS.CLOCK..' Profiler',
@@ -34,26 +37,26 @@ end
 function fileProxy:close() end
 
 function Profiler:render()
-    if gui.Begin(Profiler.name, Profiler.isVisible) then
-        if gui.BeginTabBar('##profiler_tabs') then
-            if gui.BeginTabItem(ICONS.ALARM_CLOCK..' General') then
-                if gui.CollapsingHeader(ICONS.CHART_AREA..' Histogram', ffi.C.ImGuiTreeNodeFlags_DefaultOpen) then
-                    local plot_size = gui.ImVec2(WINDOW_SIZE.x, 200.0)
-                    gui.PlotHistogram_FloatPtr('##frame_times', Time.fpsHistogram, Time.HISTOGRAM_SAMPLES, 0, nil, 0.0, Time.fpsAvg * 2.0, plot_size)
+    if UI.Begin(Profiler.name, Profiler.isVisible) then
+        if UI.BeginTabBar('##profiler_tabs') then
+            if UI.BeginTabItem(ICONS.ALARM_CLOCK..' General') then
+                if UI.CollapsingHeader(ICONS.CHART_AREA..' Histogram', ffi.C.ImGuiTreeNodeFlags_DefaultOpen) then
+                    local plot_size = UI.ImVec2(WINDOW_SIZE.x, 200.0)
+                    UI.PlotHistogram_FloatPtr('##frame_times', Time.fpsHistogram, Time.HISTOGRAM_SAMPLES, 0, nil, 0.0, Time.fpsAvg * 2.0, plot_size)
                 end
-                if gui.CollapsingHeader(ICONS.INFO..' Stats', ffi.C.ImGuiTreeNodeFlags_DefaultOpen) then
-                    gui.Text(string.format('FPS: %d', Time.fpsAvg))
-                    gui.Text(string.format('FPS avg: %d', Time.fpsAvg))
-                    gui.Text(string.format('FPS min: %d', Time.fpsMin))
-                    gui.Text(string.format('FPS max: %d', Time.fpsMax))
-                    gui.Text(string.format('Time: %.3f s', Time.time))
-                    gui.Text(string.format('Delta time: %.3f s', Time.deltaTime))
-                    gui.Text(string.format('Frame time: %.3f ms', Time.frameTime))
-                    gui.Text(string.format('Frame: %d', Time.frame))
+                if UI.CollapsingHeader(ICONS.INFO..' Stats', ffi.C.ImGuiTreeNodeFlags_DefaultOpen) then
+                    UI.Text(string.format('FPS: %d', Time.fpsAvg))
+                    UI.Text(string.format('FPS avg: %d', Time.fpsAvg))
+                    UI.Text(string.format('FPS min: %d', Time.fpsMin))
+                    UI.Text(string.format('FPS max: %d', Time.fpsMax))
+                    UI.Text(string.format('Time: %.3f s', Time.time))
+                    UI.Text(string.format('Delta time: %.3f s', Time.deltaTime))
+                    UI.Text(string.format('Frame time: %.3f ms', Time.frameTime))
+                    UI.Text(string.format('Frame: %d', Time.frame))
                 end
-                gui.EndTabItem()
+                UI.EndTabItem()
             end
-            if gui.BeginTabItem(ICONS.CODE..' Scripting') then
+            if UI.BeginTabItem(ICONS.CODE..' Scripting') then
                 if Profiler.isProfilerRunning then
                     startTime = startTime + Time.deltaTime
                     if startTime >= timeLimit then
@@ -63,8 +66,8 @@ function Profiler:render()
                     end
                 end
                 local title = Profiler.isProfilerRunning and ICONS.STOP_CIRCLE..' Stop' or ICONS.PLAY_CIRCLE..' Record'
-                gui.PushStyleColor_U32(ffi.C.ImGuiCol_Button, Profiler.isProfilerRunning and 0xff000088 or 0xff008800)
-                if gui.Button(title) then
+                UI.PushStyleColor_U32(ffi.C.ImGuiCol_Button, Profiler.isProfilerRunning and 0xff000088 or 0xff008800)
+                if UI.Button(title) then
                     if Profiler.isProfilerRunning then
                         print('Stopped profiling')
                         profile.stop()
@@ -76,41 +79,41 @@ function Profiler:render()
                     end
                     Profiler.isProfilerRunning = not Profiler.isProfilerRunning
                 end
-                gui.PopStyleColor()
-                gui.SameLine()
-                gui.Text(string.format(ICONS.STOPWATCH..' %d s', startTime))
-                gui.SameLine()
-                gui.PushItemWidth(MAX_WIDTH)
-                if gui.BeginCombo('##profiler_time_limit', TIMINGS[timeLimit] or '?', ffi.C.ImGuiComboFlags_HeightSmall) then
-                    if gui.Selectable('15 Seconds', timeLimit == 15) then timeLimit = 15 end
-                    if gui.Selectable('30 Seconds', timeLimit == 30) then timeLimit = 30 end
-                    if gui.Selectable('1 Minute', timeLimit == 60) then timeLimit = 60 end
-                    if gui.Selectable('5 Minute', timeLimit == 60*5) then timeLimit = 60*5 end
-                    if gui.Selectable('10 Minute', timeLimit == 60*10) then timeLimit = 60*10 end
-                    if gui.Selectable('1 Hour', timeLimit == 60^2) then timeLimit = 60^2 end
-                    gui.EndCombo()
+                UI.PopStyleColor()
+                UI.SameLine()
+                UI.Text(string.format(ICONS.STOPWATCH..' %d s', startTime))
+                UI.SameLine()
+                UI.PushItemWidth(MAX_WIDTH)
+                if UI.BeginCombo('##profiler_time_limit', TIMINGS[timeLimit] or '?', ffi.C.ImGuiComboFlags_HeightSmall) then
+                    if UI.Selectable('15 Seconds', timeLimit == 15) then timeLimit = 15 end
+                    if UI.Selectable('30 Seconds', timeLimit == 30) then timeLimit = 30 end
+                    if UI.Selectable('1 Minute', timeLimit == 60) then timeLimit = 60 end
+                    if UI.Selectable('5 Minute', timeLimit == 60*5) then timeLimit = 60*5 end
+                    if UI.Selectable('10 Minute', timeLimit == 60*10) then timeLimit = 60*10 end
+                    if UI.Selectable('1 Hour', timeLimit == 60^2) then timeLimit = 60^2 end
+                    UI.EndCombo()
                 end
-                gui.PopItemWidth()
-                gui.SameLine()
-                gui.ProgressBar(startTime / timeLimit)
-                gui.Separator()
+                UI.PopItemWidth()
+                UI.SameLine()
+                UI.ProgressBar(startTime / timeLimit)
+                UI.Separator()
                 if #profileDataRoutines == 0 then
-                    gui.TextUnformatted('No data recorded')
+                    UI.TextUnformatted('No data recorded')
                 else
-                    if gui.BeginChild('##profiler_callstack') then
+                    if UI.BeginChild('##profiler_callstack') then
                         for _, routine in ipairs(profileDataRoutines) do
-                            gui.TextUnformatted(routine)
-                            gui.Separator()
+                            UI.TextUnformatted(routine)
+                            UI.Separator()
                         end
                     end
-                    gui.EndChild()
+                    UI.EndChild()
                 end
-                gui.EndTabItem()
+                UI.EndTabItem()
             end
-            gui.EndTabBar()
+            UI.EndTabBar()
         end
     end
-    gui.End()
+    UI.End()
 end
 
 return Profiler

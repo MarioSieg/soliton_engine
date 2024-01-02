@@ -1,4 +1,4 @@
-ICONS = {
+local ICONS = {
     ABACUS = '\xef\x99\x80',
     ACORN = '\xef\x9a\xae',
     AD = '\xef\x99\x81',
@@ -1859,3 +1859,5 @@ ICONS = {
 for _, v in ipairs(ICONS) do
     v = s:gsub('\\x(%x%x)', function (x) return string.char(tonumber(x, 16)) end)
 end
+
+return ICONS

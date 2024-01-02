@@ -1,7 +1,9 @@
 -- Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 local ffi = require 'ffi'
-local gui = require 'editor.imgui'
+
+local ICONS = require 'editor.icons'
+local UI = require 'editor.imgui'
 
 ffi.cdef [[
     void __lu_script_editor_render(const char* title);
@@ -127,41 +129,41 @@ local ScriptEditor = {
 }
 
 function ScriptEditor:render()
-    gui.SetNextWindowSize(WINDOW_SIZE, ffi.C.ImGuiCond_FirstUseEver)
-    if gui.Begin(ScriptEditor.name, ScriptEditor.isVisible, ffi.C.ImGuiWindowFlags_MenuBar) then
-        if gui.BeginMenuBar() then
-            if gui.BeginMenu('File') then
-                gui.EndMenu()
+    UI.SetNextWindowSize(WINDOW_SIZE, ffi.C.ImGuiCond_FirstUseEver)
+    if UI.Begin(ScriptEditor.name, ScriptEditor.isVisible, ffi.C.ImGuiWindowFlags_MenuBar) then
+        if UI.BeginMenuBar() then
+            if UI.BeginMenu('File') then
+                UI.EndMenu()
             end
-            if gui.BeginMenu('Edit') then
-                gui.EndMenu()
+            if UI.BeginMenu('Edit') then
+                UI.EndMenu()
             end
-            if gui.BeginMenu('View') then
-                gui.EndMenu()
+            if UI.BeginMenu('View') then
+                UI.EndMenu()
             end
-            gui.Separator()
-            if gui.Button(ICONS.PLAY_CIRCLE..' Run') then
+            UI.Separator()
+            if UI.Button(ICONS.PLAY_CIRCLE..' Run') then
                 local script = ScriptEditor.scripts[ScriptEditor.activeScriptName]
                 assert(script)
                 script:exec()
             end
-            if gui.Button(ICONS.FLAME..' Reload') then
+            if UI.Button(ICONS.FLAME..' Reload') then
                 
             end
-            gui.EndMenuBar()
+            UI.EndMenuBar()
         end
-        gui.Separator()
-        if gui.BeginTabBar('##ScriptEditorTabs') then
+        UI.Separator()
+        if UI.BeginTabBar('##ScriptEditorTabs') then
             for name, script in pairs(ScriptEditor.scripts) do
-                if gui.BeginTabItem(name) then
+                if UI.BeginTabItem(name) then
                     NativeEditor.render(name)
-                    gui.EndTabItem()
+                    UI.EndTabItem()
                 end
             end
-            gui.EndTabBar()
+            UI.EndTabBar()
         end
     end
-    gui.End()
+    UI.End()
 end
 
 return ScriptEditor

@@ -1,6 +1,6 @@
 -- Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
-Color = {}
+local Color = {}
 
 local min = math.min
 local max = math.max
@@ -479,3 +479,5 @@ function Color.wrapLuv(fn)
     return fn(Color.RGBtoLuv(...))
   end
 end
+
+return Color

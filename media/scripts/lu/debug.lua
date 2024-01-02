@@ -20,7 +20,7 @@ ffi.cdef[[
     void __lu_dd_end(void);
 ]]
 
-Debug = {
+local Debug = {
     AXIS = {
         X = 0,
         Y = 1,

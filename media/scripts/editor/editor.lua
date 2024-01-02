@@ -3,14 +3,20 @@
 -- The ImGui LuaJIT bindings are useable but somewhat dirty, which makes this file a bit messy - but hey it works!
 
 local ffi = require 'ffi'
-local gui = require 'editor.imgui'
-local style = require 'editor.style'
 
+local UI = require 'editor.imgui'
+local Style = require 'editor.style'
+
+local Time = require 'Time'
+local Debug = require 'Debug'
+local Vec3 = require 'Vec3'
+
+local ICONS = require 'editor.icons'
 local Terminal = require 'editor.tools.terminal'
 local Profiler = require 'editor.tools.profiler'
 local ScriptEditor = require 'editor.tools.scripteditor'
 
-WINDOW_SIZE = gui.ImVec2(800, 600)
+WINDOW_SIZE = UI.ImVec2(800, 600)
 
 local Editor = {
     isVisible = ffi.new('bool[1]', true),
@@ -30,7 +36,7 @@ for _, tool in ipairs(Editor.tools) do -- hide all tools by default
     tool.isVisible[0] = false
 end
 
-style.setupDarkStyle()
+Style.setupDarkStyle()
 
 function Editor.gizmos:drawGizmos()
     Debug.start()
@@ -44,54 +50,54 @@ function Editor.gizmos:drawGizmos()
 end
 
 function Editor:renderMainMenu()
-    if gui.BeginMainMenuBar() then
-        if gui.BeginMenu('File') then
-            if gui.MenuItem(ICONS.PORTAL_EXIT..' Exit', 'Alt+F4') then
+    if UI.BeginMainMenuBar() then
+        if UI.BeginMenu('File') then
+            if UI.MenuItem(ICONS.PORTAL_EXIT..' Exit', 'Alt+F4') then
                 App.exit()
             end
-            gui.EndMenu()
+            UI.EndMenu()
         end
-        if gui.BeginMenu('Tools') then
+        if UI.BeginMenu('Tools') then
             for _, tool in ipairs(self.tools) do
-                if gui.MenuItem(tool.name, nil, tool.isVisible[0]) then
+                if UI.MenuItem(tool.name, nil, tool.isVisible[0]) then
                     tool.isVisible[0] = not tool.isVisible[0]
                 end
             end
-            gui.EndMenu()
+            UI.EndMenu()
         end
-        if gui.BeginMenu('View') then
-            if gui.MenuItem(ICONS.RULER_TRIANGLE..' Show Grid', nil, self.gizmos.showGrid) then
+        if UI.BeginMenu('View') then
+            if UI.MenuItem(ICONS.RULER_TRIANGLE..' Show Grid', nil, self.gizmos.showGrid) then
                 self.gizmos.showGrid = not self.gizmos.showGrid
             end
-            if gui.MenuItem(ICONS.ARROW_UP..' Show Center Axis', nil, self.gizmos.showCenterAxis) then
+            if UI.MenuItem(ICONS.ARROW_UP..' Show Center Axis', nil, self.gizmos.showCenterAxis) then
                 self.gizmos.showCenterAxis = not self.gizmos.showCenterAxis
             end
-            gui.EndMenu()
+            UI.EndMenu()
         end
-        if gui.BeginMenu('Help') then
-            gui.EndMenu()
+        if UI.BeginMenu('Help') then
+            UI.EndMenu()
         end
-        gui.Separator()
-        gui.Text(string.format('FPS: %d', Time.fpsAvg))
+        UI.Separator()
+        UI.Text(string.format('FPS: %d', Time.fpsAvg))
         local time = os.date('*t')
-        gui.Separator()
-        gui.Text(string.format('%02d:%02d', time.hour, time.min))
+        UI.Separator()
+        UI.Text(string.format('%02d:%02d', time.hour, time.min))
         if Profiler.isProfilerRunning then
-            gui.Separator()
-            gui.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff0000ff)
-            gui.TextUnformatted(ICONS.STOPWATCH)
-            gui.PopStyleColor()
-            if gui.IsItemHovered() and gui.BeginTooltip() then
-                gui.TextUnformatted('Profiler is running')
-                gui.EndTooltip()
+            UI.Separator()
+            UI.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff0000ff)
+            UI.TextUnformatted(ICONS.STOPWATCH)
+            UI.PopStyleColor()
+            if UI.IsItemHovered() and UI.BeginTooltip() then
+                UI.TextUnformatted('Profiler is running')
+                UI.EndTooltip()
             end
         end
-        gui.EndMainMenuBar()
+        UI.EndMainMenuBar()
     end
 end
 
 function Editor:drawTools()
-    gui.DockSpaceOverViewport(gui.GetMainViewport(), ffi.C.ImGuiDockNodeFlags_PassthruCentralNode)
+    UI.DockSpaceOverViewport(UI.GetMainViewport(), ffi.C.ImGuiDockNodeFlags_PassthruCentralNode)
     for _, tool in ipairs(self.tools) do
         if tool.isVisible[0] then
             tool:render()

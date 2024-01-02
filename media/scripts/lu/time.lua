@@ -8,7 +8,7 @@ ffi.cdef [[
 
 local SAMPLES = 256
 
-Time = {
+local Time = {
     deltaTime = 0.0, -- in seconds
     time = 0.0, -- in seconds
     frameTime = 16.0, -- in milliseconds

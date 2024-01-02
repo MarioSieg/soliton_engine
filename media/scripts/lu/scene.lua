@@ -8,7 +8,7 @@ ffi.cdef[[
     void __lu_scene_start(void);
 ]]
 
-Scene = {
+local Scene = {
     active = nil
 }
 
@@ -53,3 +53,5 @@ function Scene.new(name, setupFunc, startFunc, tickFunc)
     print(string.format('Created new scene: %s, id: %x', name, id))
     App.Window.setTitle(string.format('Lunam Engine v.%s - %s %s - %s.scene', App.engineVersion, jit.os, jit.arch, name))
 end
+
+return Scene

@@ -1,7 +1,19 @@
 -- Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 local ffi = require 'ffi'
-local gui = require 'editor.imgui'
+
+local ICONS = require 'editor.icons'
+local UI = require 'editor.imgui'
+
+local COMMANDS = {}
+
+COMMANDS['panic'] = {
+    description = 'Panic!',
+    arguments = {},
+    execute = function(args)
+        App.panic(args[2] or 'Panic!')
+    end
+}
 
 local Terminal = {
     name = ICONS.LINE_COLUMNS..' Terminal',
@@ -12,24 +24,24 @@ local Terminal = {
 }
 
 function Terminal:render()
-    gui.SetNextWindowSize(WINDOW_SIZE, ffi.C.ImGuiCond_FirstUseEver)
-    if gui.Begin(Terminal.name, Terminal.isVisible, ffi.C.ImGuiWindowFlags_NoScrollbar) then
-        if gui.BeginChild('ScrollingRegion', gui.ImVec2(0, -gui.GetFrameHeightWithSpacing()), false, ffi.C.ImGuiWindowFlags_HorizontalScrollbar) then
-            gui.PushStyleVar(ffi.C.ImGuiStyleVar_ItemSpacing, gui.ImVec2(4.0, 1.0))
+    UI.SetNextWindowSize(WINDOW_SIZE, ffi.C.ImGuiCond_FirstUseEver)
+    if UI.Begin(Terminal.name, Terminal.isVisible, ffi.C.ImGuiWindowFlags_NoScrollbar) then
+        if UI.BeginChild('ScrollingRegion', UI.ImVec2(0, -UI.GetFrameHeightWithSpacing()), false, ffi.C.ImGuiWindowFlags_HorizontalScrollbar) then
+            UI.PushStyleVar(ffi.C.ImGuiStyleVar_ItemSpacing, UI.ImVec2(4.0, 1.0))
             for _, record in ipairs(protocol) do
-                gui.TextUnformatted(record)
-                gui.Separator()
+                UI.TextUnformatted(record)
+                UI.Separator()
             end
-            gui.PopStyleVar()
+            UI.PopStyleVar()
             if Terminal.autoScroll[0] then
-                gui.SetScrollHereY(1.0)
+                UI.SetScrollHereY(1.0)
                 Terminal.autoScroll[0] = false
             end
-            gui.EndChild()
-            gui.Separator()
-            gui.TextUnformatted(string.format('%s %d', ICONS.ENVELOPE, #protocol))
-            gui.SameLine()
-            if gui.InputTextEx(ICONS.ARROW_LEFT, 'Enter command...', Terminal.cmdBuf, Terminal.cmdBufLen, gui.ImVec2(0, 0), ffi.C.ImGuiInputTextFlags_EnterReturnsTrue) then
+            UI.EndChild()
+            UI.Separator()
+            UI.TextUnformatted(string.format('%s %d', ICONS.ENVELOPE, #protocol))
+            UI.SameLine()
+            if UI.InputTextEx(ICONS.ARROW_LEFT, 'Enter command...', Terminal.cmdBuf, Terminal.cmdBufLen, UI.ImVec2(0, 0), ffi.C.ImGuiInputTextFlags_EnterReturnsTrue) then
                 if Terminal.cmdBuf[0] ~= 0 then
                     local command = ffi.string(Terminal.cmdBuf)
                     -- split by spaces get first word:
@@ -38,21 +50,21 @@ function Terminal:render()
                         table.insert(args, word)
                     end
                     local cmd = args[1] -- get first word
-                    if TERMINAL_COMMANDS[cmd] then -- check if command exists
-                        TERMINAL_COMMANDS[cmd].execute(args) -- execute command
+                    if COMMANDS[cmd] then -- check if command exists
+                        COMMANDS[cmd].execute(args) -- execute command
                     else -- command not found
                         print('Unknown command: '..cmd)
                     end
                     Terminal.cmdBuf[0] = 0 -- Clear buffer by terminating string
                     Terminal.autoScroll[0] = true
-                    gui.SetKeyboardFocusHere(-1) -- Focus on command line
+                    UI.SetKeyboardFocusHere(-1) -- Focus on command line
                 end
             end
-            gui.SameLine()
-            gui.Checkbox(ICONS.MOUSE..' Scroll', Terminal.autoScroll)
+            UI.SameLine()
+            UI.Checkbox(ICONS.MOUSE..' Scroll', Terminal.autoScroll)
         end
     end
-    gui.End()
+    UI.End()
 end
 
 return Terminal

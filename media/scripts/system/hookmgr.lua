@@ -6,15 +6,6 @@
 -- _tick_() - Called every frame
 -- Other loading can be done on global scope when the script is loaded.
 
--- Load and execute a single hook script
-local function loadHookScriptInstance(file)
-    local chunk, err = loadfile(file) -- load the script
-    if chunk == nil then
-        panic('Failed to load script: '..file..': '..err)
-    end
-    return chunk() -- execute the script
-end
-
 local function searchHookTargetsFromDirRecursive(searchDir)
     assert(searchDir ~= nil and type(searchDir) == 'string')
     local targets = {}
@@ -47,41 +38,28 @@ end
 
 local ON_START_HOOK = '__onStart'
 local ON_TICK_HOOK = '__onTick'
-local MANUAL_HOOK_FILES = {}
-
-if SYSTEM_CFG.editor_enable then -- load editor hook
-    table.insert(MANUAL_HOOK_FILES, 'media/scripts/editor/editor.lua')
-end
 
 -- Load all hook scripts in a directory
-local function initCoreHooks(searchDir)
-    assert(searchDir ~= nil and type(searchDir) == 'string')
-    print('Loading hook scripts in: '..searchDir)
-    local candicates = searchHookTargetsFromDirRecursive(searchDir)
-    for _, file in ipairs(MANUAL_HOOK_FILES) do
-        table.insert(candicates, file)
-    end
+local function preloadHooks()
+    local preload = require 'preload'
+    assert(preload ~= nil and type(preload) == 'table')
     local hooks = {}
-    for _, file in ipairs(candicates) do
-        local target = loadHookScriptInstance(file)
-        if target ~= nil and type(target) == 'table' and (target[ON_START_HOOK] or target[ON_TICK_HOOK]) then -- check if the script has a hook
-            table.insert(hooks, target)
+    for key, module in pairs(preload) do
+        -- check if the script has a hook
+        if module ~= nil and type(module) == 'table' and (module[ON_START_HOOK] or module[ON_TICK_HOOK]) then
+            table.insert(hooks, module)
         end
     end
+    print('Loaded '..#hooks..' hooks')
     return hooks
 end
 
 local HookManager = {
     HOOK_DIR = 'media/scripts/lu',
-    hooks = {}
+    hooks = preloadHooks()
 }
 
-HookManager.hooks = initCoreHooks(HookManager.HOOK_DIR)
-print('Loaded '..#HookManager.hooks..' hooks')
-
-if not Scene then -- check if the scene module is loaded
-    panic('scene is not defined')
-end
+local Scene = require ('Scene')
 
 local function tickEngineSystems()
     for _, hook in ipairs(HookManager.hooks) do

@@ -19,7 +19,7 @@ ffi.cdef [[
     void __lu_app_exit(void);
 ]]
 
-App = {
+local App = {
     name = 'Untitled App',
     appVersion = '0.1',
     engineVersion = '0.1',
