@@ -45,7 +45,7 @@ LUA_INTEROP_API auto __lu_script_editor_undo() -> void {
     }
 }
 
-LUA_INTEROP_API auto __lu_script_editor_set_readonly(bool readonly) -> void {
+LUA_INTEROP_API auto __lu_script_editor_set_readonly(const bool readonly) -> void {
     getEditor().SetReadOnly(readonly);
 }
 

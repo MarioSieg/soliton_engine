@@ -8,7 +8,7 @@ using platform::platform_subsystem;
 
 typedef struct { int v[2]; } __lu_ivec2;
 
-LUA_INTEROP_API auto __lu_panic(const char* msg) -> void {
+LUA_INTEROP_API auto __lu_panic(const char* const msg) -> void {
     panic(msg ? msg : "unknown error");
 }
 
@@ -32,15 +32,15 @@ LUA_INTEROP_API auto __lu_window_leave_fullscreen() -> void {
 
 }
 
-LUA_INTEROP_API auto __lu_window_set_title(const char* title) -> void {
+LUA_INTEROP_API auto __lu_window_set_title(const char* const title) -> void {
     glfwSetWindowTitle(platform_subsystem::get_glfw_window(), title);
 }
 
-LUA_INTEROP_API auto __lu_window_set_size(int width, int height) -> void {
+LUA_INTEROP_API auto __lu_window_set_size(const int width, const int height) -> void {
     glfwSetWindowSize(platform_subsystem::get_glfw_window(), width, height);
 }
 
-LUA_INTEROP_API auto __lu_window_set_pos(int x, int y) -> void {
+LUA_INTEROP_API auto __lu_window_set_pos(const int x, const int y) -> void {
     glfwSetWindowPos(platform_subsystem::get_glfw_window(), x, y);
 }
 
@@ -52,7 +52,7 @@ LUA_INTEROP_API auto __lu_window_hide() -> void {
     glfwHideWindow(platform_subsystem::get_glfw_window());
 }
 
-LUA_INTEROP_API auto __lu_window_allow_resize(bool allow) -> void {
+LUA_INTEROP_API auto __lu_window_allow_resize(const bool allow) -> void {
     glfwSetWindowAttrib(platform_subsystem::get_glfw_window(), GLFW_RESIZABLE, allow);
 }
 

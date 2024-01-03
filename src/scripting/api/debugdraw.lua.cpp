@@ -16,17 +16,17 @@ LUA_INTEROP_API auto __lu_dd_begin() -> void {
     }
 }
 
-LUA_INTEROP_API auto  __lu_dd_set_wireframe(bool wireframe) -> void {
+LUA_INTEROP_API auto  __lu_dd_set_wireframe(const bool wireframe) -> void {
     if (!s_encoder.has_value()) [[unlikely]] return;
     s_encoder->setWireframe(wireframe);
 }
 
-LUA_INTEROP_API auto  __lu_dd_set_color(uint32_t abgr) -> void {
+LUA_INTEROP_API auto  __lu_dd_set_color(const uint32_t abgr) -> void {
     if (!s_encoder.has_value()) [[unlikely]] return;
     s_encoder->setColor(abgr);
 }
 
-LUA_INTEROP_API auto __lu_dd_grid(int axis, lua_vec3 pos, std::uint32_t size, float step) -> void {
+LUA_INTEROP_API auto __lu_dd_grid(const int axis, const lua_vec3 pos, const std::uint32_t size, const float step) -> void {
     if (!s_encoder.has_value()) [[unlikely]] return;
     bx::Vec3 axis_vec {0.0f, 0.0f, 0.0f};
     switch (axis) {
@@ -38,7 +38,7 @@ LUA_INTEROP_API auto __lu_dd_grid(int axis, lua_vec3 pos, std::uint32_t size, fl
     s_encoder->drawGrid(axis_vec, pos.to_bxvec(), size, step);
 }
 
-LUA_INTEROP_API auto __lu_dd_axis(lua_vec3 pos, float len, int axis_highlight, float thickness) -> void {
+LUA_INTEROP_API auto __lu_dd_axis(const lua_vec3 pos, const float len, const int axis_highlight, const float thickness) -> void {
     if (!s_encoder.has_value()) [[unlikely]] return;
     Axis::Enum axis = Axis::Y;
     switch (axis_highlight) {
@@ -50,13 +50,13 @@ LUA_INTEROP_API auto __lu_dd_axis(lua_vec3 pos, float len, int axis_highlight, f
     s_encoder->drawAxis(static_cast<float>(pos.x), static_cast<float>(pos.y), static_cast<float>(pos.z), len, axis, thickness);
 }
 
-LUA_INTEROP_API auto __lu_dd_aabb(lua_vec3 min, lua_vec3 max) -> void {
+LUA_INTEROP_API auto __lu_dd_aabb(const lua_vec3 min, const lua_vec3 max) -> void {
     if (!s_encoder.has_value()) [[unlikely]] return;
     bx::Aabb aabb {min.to_bxvec(), max.to_bxvec()};
     s_encoder->draw(aabb);
 }
 
-LUA_INTEROP_API auto __lu_dd_sphere(lua_vec3 center, float radius) -> void {
+LUA_INTEROP_API auto __lu_dd_sphere(const lua_vec3 center, const float radius) -> void {
     if (!s_encoder.has_value()) [[unlikely]] return;
     bx::Sphere sphere {center.to_bxvec(), radius};
     s_encoder->draw(sphere);

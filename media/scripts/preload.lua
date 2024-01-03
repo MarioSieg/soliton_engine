@@ -5,6 +5,7 @@ local MODULES = {
     ['App'] = 'lu/app',
     ['Color'] = 'lu/color',
     ['Debug'] = 'lu/debug',
+    ['Entity'] = 'lu/entity',
     ['Math'] = 'lu/math',
     ['Quat'] = 'lu/quat',
     ['Scene'] = 'lu/scene',
