@@ -7,6 +7,7 @@ ffi.cdef[[
     void __lu_scene_tick(void);
     void __lu_scene_start(void);
     double __lu_scene_spawn_entity(const char* name);
+    double __lu_scene_get_entity_by_name(const char* name);
 ]]
 
 local C = ffi.C
@@ -37,6 +38,11 @@ end
 function Scene:spawn(name)
     assert(type(name) == 'string', 'name must be a string')
     return C.__lu_scene_spawn_entity(name)
+end
+
+function Scene:getEntityByName(name)
+    assert(type(name) == 'string', 'name must be a string')
+    return C.__lu_scene_get_entity_by_name(name)
 end
 
 function Scene.new(name, setupFunc, startFunc, tickFunc)

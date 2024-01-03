@@ -3,7 +3,7 @@
 -- Set to true to enable JIT assembly dump (useful for optimizing):
 
 local EngineConfig = {
-    jit_asm_dump = false,
+    jit_asm_dump = true,
     editor_enable = true,
 }
 

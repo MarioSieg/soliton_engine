@@ -18,8 +18,19 @@ LUA_INTEROP_API auto __lu_scene_start() -> void {
 }
 
 LUA_INTEROP_API auto __lu_scene_spawn_entity(const char* const name) -> double {
-    if (scene::get_active() == nullptr) [[unlikely]] return 0.0;
-    const entity entity = scene::get_active()->entity(name);
+    if (scene::get_active() == nullptr) [[unlikely]] {
+        return entity_id_to_double(0);
+    }
+    const entity entity = scene::get_active()->spawn(name);
+    const double d = entity_id_to_double(entity.id());
+    return d;
+}
+
+LUA_INTEROP_API auto __lu_scene_get_entity_by_name(const char* const name) -> double {
+    if (scene::get_active() == nullptr) [[unlikely]] {
+        return entity_id_to_double(0);
+    }
+    const entity entity = scene::get_active()->lookup(name);
     const double d = entity_id_to_double(entity.id());
     return d;
 }

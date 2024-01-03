@@ -53,56 +53,97 @@ __attribute__((always_inline)) inline auto double_to_entity_id(const double d) n
     return entity{scene->get_world(), entity_id};
 }
 
-struct lua_vec2 {
-    double x;
-    double y;
+// Vector2 for LUA interop
+// Only a proxy type holding the data and allowing implicit conversions to other vector types.
+// Note that each conversion will result in a cast or vector cast.
+struct lvec2 {
+    double x = 0.0;
+    double y = 0.0;
 
-    [[nodiscard]] auto to_vec2() const noexcept -> DirectX::XMFLOAT2 {
+    constexpr __attribute__((always_inline)) lvec2() noexcept = default;
+    constexpr __attribute__((always_inline)) lvec2(const double x, const double y) noexcept : x{x}, y{y} {}
+    constexpr __attribute__((always_inline)) lvec2(const XMFLOAT2& vec) noexcept
+        : x{static_cast<float>(vec.x)}, y{static_cast<float>(vec.y)} {}
+
+    [[nodiscard]] constexpr __attribute__((always_inline)) operator XMFLOAT2 () const noexcept {
         return {
             static_cast<float>(x),
             static_cast<float>(y)
         };
     }
-    [[nodiscard]] auto to_xmvec() const noexcept -> DirectX::XMVECTOR {
-        const DirectX::XMFLOAT2 tmp = to_vec2();
-        return DirectX::XMLoadFloat2(&tmp);
+    [[nodiscard]] __attribute__((always_inline)) operator XMVECTOR() const noexcept {
+        const XMFLOAT2 tmp = *this;
+        return XMLoadFloat2(&tmp);
     }
 };
-static_assert(sizeof(lua_vec2) == sizeof(double) * 2 && std::is_standard_layout_v<lua_vec2>);
+static_assert(sizeof(lvec2) == sizeof(double) * 2 && std::is_standard_layout_v<lvec2>);
 
-struct lua_vec3 {
-    double x;
-    double y;
-    double z;
+// Vector3 for LUA interop
+// Only a proxy type holding the data and allowing implicit conversions to other vector types.
+// Note that each conversion will result in a cast or vector cast.
+struct lvec3 {
+    double x = 0.0;
+    double y = 0.0;
+    double z = 0.0;
 
-    [[nodiscard]] auto to_vec3() const noexcept -> DirectX::XMFLOAT3 {
+    constexpr __attribute__((always_inline)) lvec3() noexcept = default;
+    constexpr __attribute__((always_inline)) lvec3(const double x, const double y, const double z) noexcept
+        : x{x}, y{y}, z{z} {}
+    constexpr __attribute__((always_inline)) lvec3(const XMFLOAT3& vec) noexcept
+        : x{static_cast<float>(vec.x)}
+        , y{static_cast<float>(vec.y)}
+        , z{static_cast<float>(vec.z)} {}
+    constexpr __attribute__((always_inline)) lvec3(const bx::Vec3& vec) noexcept
+        : x{static_cast<float>(vec.x)}
+        , y{static_cast<float>(vec.y)}
+        , z{static_cast<float>(vec.z)} {}
+
+    [[nodiscard]] constexpr __attribute__((always_inline)) operator XMFLOAT2 () const noexcept {
+        return {
+            static_cast<float>(x),
+            static_cast<float>(y)
+        };
+    }
+    [[nodiscard]] constexpr __attribute__((always_inline)) operator XMFLOAT3 () const noexcept {
         return {
             static_cast<float>(x),
             static_cast<float>(y),
             static_cast<float>(z)
         };
     }
-    [[nodiscard]] auto to_xmvec() const noexcept -> DirectX::XMVECTOR {
-        const DirectX::XMFLOAT3 tmp = to_vec3();
-        return DirectX::XMLoadFloat3(&tmp);
-    }
-    [[nodiscard]] auto to_bxvec() const noexcept -> bx::Vec3 {
+    [[nodiscard]] constexpr __attribute__((always_inline)) operator bx::Vec3 () const noexcept {
         return {
             static_cast<float>(x),
             static_cast<float>(y),
             static_cast<float>(z)
         };
     }
+    [[nodiscard]] __attribute__((always_inline)) operator XMVECTOR() const noexcept {
+        const XMFLOAT3 tmp = *this;
+        return XMLoadFloat3(&tmp);
+    }
 };
-static_assert(sizeof(lua_vec3) == sizeof(double) * 3 && std::is_standard_layout_v<lua_vec3>);
+static_assert(sizeof(lvec3) == sizeof(double) * 3 && std::is_standard_layout_v<lvec3>);
 
-struct lua_vec4 {
-    double x;
-    double y;
-    double z;
-    double w;
+// Vector4 for LUA interop
+// Only a proxy type holding the data and allowing implicit conversions to other vector types.
+// Note that each conversion will result in a cast or vector cast.
+struct lvec4 {
+    double x = 0.0;
+    double y = 0.0;
+    double z = 0.0;
+    double w = 0.0;
 
-    [[nodiscard]] auto to_vec4() const noexcept -> DirectX::XMFLOAT4 {
+    constexpr __attribute__((always_inline)) lvec4() noexcept = default;
+    constexpr __attribute__((always_inline)) lvec4(const double x, const double y, const double z, const double w) noexcept
+        : x{x}, y{y}, z{z}, w{w} {}
+    constexpr __attribute__((always_inline)) lvec4(const XMFLOAT4& vec) noexcept
+    : x{static_cast<float>(vec.x)}
+    , y{static_cast<float>(vec.y)}
+    , z{static_cast<float>(vec.z)}
+    , w{static_cast<float>(vec.w)} {}
+
+    [[nodiscard]] constexpr __attribute__((always_inline)) operator XMFLOAT4() const noexcept {
         return {
             static_cast<float>(x),
             static_cast<float>(y),
@@ -110,9 +151,9 @@ struct lua_vec4 {
             static_cast<float>(w)
         };
     }
-    [[nodiscard]] auto to_xmvec() const noexcept -> DirectX::XMVECTOR {
-        const DirectX::XMFLOAT4 tmp = to_vec4();
-        return DirectX::XMLoadFloat4(&tmp);
+    [[nodiscard]] __attribute__((always_inline)) operator XMVECTOR() const noexcept{
+        const XMFLOAT4 tmp = *this;
+        return XMLoadFloat4(&tmp);
     }
 };
-static_assert(sizeof(lua_vec4) == sizeof(double) * 4 && std::is_standard_layout_v<lua_vec4>);
+static_assert(sizeof(lvec4) == sizeof(double) * 4 && std::is_standard_layout_v<lvec4>);

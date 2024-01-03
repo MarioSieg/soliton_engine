@@ -125,8 +125,7 @@ namespace graphics {
     }
 
     void graphics_subsystem::on_start(scene& scene) {
-        entity camera = scene.entity();
-        camera.add<c_transform>();
+        entity camera = scene.spawn("MainCamera");
         camera.add<c_camera>();
     }
 

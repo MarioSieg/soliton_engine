@@ -17,6 +17,8 @@ public:
     virtual auto on_tick() -> void;
     virtual auto on_start() -> void;
 
+    [[nodiscard]] auto spawn(const char* name) const -> struct entity;
+
 private:
     friend struct proxy;
     static inline constinit std::unique_ptr<scene> m_active {};

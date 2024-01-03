@@ -29,3 +29,10 @@ auto scene::on_tick() -> void {
 auto scene::on_start() -> void {
     kernel::get().on_new_scene_start(*this);
 }
+
+auto scene::spawn(const char* name) const -> struct entity {
+    struct entity ent = this->entity(name);
+    ent.add<c_meta>();
+    ent.add<c_transform>();
+    return ent;
+}
