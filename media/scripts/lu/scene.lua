@@ -9,54 +9,64 @@ ffi.cdef[[
     double __lu_scene_spawn_entity(const char* name);
 ]]
 
+local C = ffi.C
+
+local activeScene = nil
 local Scene = {
-    active = nil
+    name = nil,
+    id = 0,
+    store = nil,
+    startCallback = function(scene) end,
+    tickCallback = function(scene) end
 }
+
+function Scene.getActive()
+    return activeScene
+end
+
+function Scene:__onStart()
+    C.__lu_scene_start()
+    self.startCallback(self)
+end
+
+function Scene:__onTick()
+    self.tickCallback(self)
+    C.__lu_scene_tick()
+end
+
+function Scene:spawn(name)
+    assert(type(name) == 'string', 'name must be a string')
+    return C.__lu_scene_spawn_entity(name)
+end
 
 function Scene.new(name, setupFunc, startFunc, tickFunc)
     setupFunc = setupFunc or function() return {} end
-    startFunc = startFunc or function(scene, data) end
-    tickFunc = tickFunc or function(scene, data) end
+    startFunc = startFunc or function(scene) end
+    tickFunc = tickFunc or function(scene) end
 
     assert(type(setupFunc) == 'function', 'setupFunc must be a function')
     assert(type(startFunc) == 'function', 'startFunc must be a function')
     assert(type(tickFunc) == 'function', 'tickFunc must be a function')
 
-    local data = setupFunc() -- call setup callback to get scene-specific data
-    assert(type(data) == 'table', 'setupFunc must return a table')
+    local store = setupFunc() -- call setup callback to get scene-specific data
+    assert(type(store) == 'table', 'setupFunc must return a table')
 
     name = name or 'untitled'
-    local id = ffi.C.__lu_scene_new() -- create native scene
+    local id = C.__lu_scene_new() -- create native scene
     assert(type(id) == 'number' and id ~= 0, 'failed to create scene')
 
-    local SceneInstance = {
-        name = name,
-        id = id,
-        data = data,
-        startCallback = startFunc,
-        tickCallback = tickFunc
-    }
+    local scene = {}
+    setmetatable(scene, {__index = Scene})
+    scene.name = name
+    scene.id = id
+    scene.store = store
+    scene.startCallback = startFunc
+    scene.tickCallback = tickFunc
 
-    function SceneInstance:__onStart()
-        ffi.C.__lu_scene_start()
-        SceneInstance.startCallback(self, SceneInstance.data)
-    end
-
-    function SceneInstance:__onTick()
-        SceneInstance.tickCallback(self, SceneInstance.data)
-        ffi.C.__lu_scene_tick()
-    end
-
-    function SceneInstance:spawn(name)
-        assert(type(name) == 'string', 'name must be a string')
-        return ffi.C.__lu_scene_spawn_entity(name)
-    end
-
-    Scene.active = nil -- clear active scene
+    activeScene = nil -- clear active scene
+    scene:__onStart() -- call start callback to start playing
+    activeScene = scene
     collectgarbage('collect') -- collect garbage before starting new scene
-
-    SceneInstance:__onStart() -- call start callback to start playing
-    Scene.active = SceneInstance
     print(string.format('Created new scene: %s, id: %x', name, id))
 end
 

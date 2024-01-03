@@ -58,11 +58,13 @@ local HookManager = {
     HOOK_DIR = 'media/scripts/lu',
     hooks = preloadHooks()
 }
+local hooks = HookManager.hooks
 
-local Scene = require ('Scene')
+local Scene = require 'Scene'
 
 local function tickEngineSystems()
-    for _, hook in ipairs(HookManager.hooks) do
+    for i = 1, #hooks do
+        local hook = hooks[i]
         local routine = hook[ON_TICK_HOOK]
         if routine ~= nil then -- check if the hook has a tick function
             routine(hook) -- execute tick hook
@@ -71,8 +73,9 @@ local function tickEngineSystems()
 end
 
 local function tickScene()
-    if Scene.active then
-        Scene.active:__onTick()
+    local active = Scene.getActive()
+    if active then
+        active:__onTick()
     end
 end
 

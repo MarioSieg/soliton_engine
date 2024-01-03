@@ -39,23 +39,19 @@ LUA_INTEROP_API auto __lu_scene_new() -> std::uint32_t {
 }
 
 LUA_INTEROP_API auto __lu_scene_tick() -> void {
-    if (scene::get_active() != nullptr) [[likely]] {
-        scene::get_active()->on_tick();
-    }
+    if (scene::get_active() == nullptr) [[unlikely]] return;
+    scene::get_active()->on_tick();
 }
 
 LUA_INTEROP_API auto __lu_scene_start() -> void {
-    if (scene::get_active() != nullptr) [[likely]] {
-        scene::get_active()->on_start();
-    }
+    if (scene::get_active() == nullptr) [[unlikely]] return;
+    scene::get_active()->on_start();
 }
 
 LUA_INTEROP_API auto __lu_scene_spawn_entity(const char* name) -> double {
-    if (scene::get_active() != nullptr) [[likely]] {
-        const entity entity = scene::get_active()->entity(name);
-        const double d = entity_id_to_double(entity.id());
-        return d;
-    }
-    return 0.0;
+    if (scene::get_active() == nullptr) [[unlikely]] return 0.0;
+    const entity entity = scene::get_active()->entity(name);
+    const double d = entity_id_to_double(entity.id());
+    return d;
 }
 

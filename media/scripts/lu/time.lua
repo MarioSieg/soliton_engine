@@ -5,6 +5,7 @@ local ffi = require 'ffi'
 ffi.cdef [[
     double __lu_get_delta_time(void);
 ]]
+local C = ffi.C
 
 local SAMPLES = 256
 
@@ -28,7 +29,7 @@ local prev = 0.0
 local idx = 1 -- ring buffer index
 
 function Time:__onTick()
-    self.deltaTime = ffi.C.__lu_get_delta_time()
+    self.deltaTime = C.__lu_get_delta_time()
     self.time = self.time + self.deltaTime
     self.frameTime = self.deltaTime * 1000.0
     self.frame = self.frame + 1

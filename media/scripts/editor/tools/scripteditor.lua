@@ -52,30 +52,14 @@ function NativeEditor.hasTextChanged()
     return ffi.C.__lu_script_editor_has_text_changed()
 end
 
-local SCRIPT_TEMPLATE = [[
-local Scene = require 'Scene'
-
--- Setup initial scene data
-local function _onSetup()
-    print('Setting up scene...')
-    return {}
+function readAllText(file)
+    local f = assert(io.open(file, "rb"))
+    local content = f:read("*all")
+    f:close()
+    return content
 end
 
--- Start scene
--- 'data' is the table returned by _onSetup()
-local function _onStart(scene, data)
-    print('Starting scene...')
-end
-
--- Tick scene
--- 'data' is the table returned by _onSetup()
-local function _onTick(scene, data)
-
-end
-
-Scene.new('Untitled', _onSetup, _onStart, _onTick)
-
-]]
+local SCRIPT_TEMPLATE = readAllText('media/scripts/editor/tools/script_template.lua')
 
 function newScript(str, name)
     assert(type(str) == 'string')

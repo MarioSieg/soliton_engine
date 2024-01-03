@@ -20,6 +20,8 @@ ffi.cdef[[
     void __lu_dd_end(void);
 ]]
 
+local C = ffi.C
+
 local Debug = {
     AXIS = {
         X = 0,
@@ -29,12 +31,12 @@ local Debug = {
 }
 
 function Debug.start()
-    ffi.C.__lu_dd_begin()
+    C.__lu_dd_begin()
 end
 
 function Debug.setWireframe(isWireframe)
     assert(type(isWireframe) == 'boolean')
-    ffi.C.__lu_dd_set_wireframe(isWireframe)
+    C.__lu_dd_set_wireframe(isWireframe)
 end
 
 function Debug.setColor(rgb)
@@ -47,7 +49,7 @@ function Debug.setColor(rgb)
     abgr = bor(lshift(abgr, 8), g) -- abgr = (abgr << 8) | x
     abgr = bor(lshift(abgr, 8), r) -- abgr = (abgr << 8) | x
     abgr = band(abgr, 0xffffffff)
-    ffi.C.__lu_dd_set_color(abgr)
+    C.__lu_dd_set_color(abgr)
 end
 
 function Debug.drawGrid(axis, pos, size, step)
@@ -55,7 +57,7 @@ function Debug.drawGrid(axis, pos, size, step)
     assert(ffi.istype('Vec3', pos))
     assert(type(size) == 'number')
     assert(type(step) == 'number')
-    ffi.C.__lu_dd_grid(axis, pos, size, step)
+    C.__lu_dd_grid(axis, pos, size, step)
 end
 
 function Debug.drawAxis(pos, len, axis_highlight, thickness)
@@ -63,23 +65,23 @@ function Debug.drawAxis(pos, len, axis_highlight, thickness)
     assert(type(len) == 'number')
     assert(type(axis_highlight) == 'number')
     assert(type(thickness) == 'number')
-    ffi.C.__lu_dd_axis(pos, len, axis_highlight, thickness)
+    C.__lu_dd_axis(pos, len, axis_highlight, thickness)
 end
 
 function Debug.drawAABB(min, max)
     assert(ffi.istype('Vec3', min))
     assert(ffi.istype('Vec3', max))
-    ffi.C.__lu_dd_aabb(min, max)
+    C.__lu_dd_aabb(min, max)
 end
 
 function Debug.drawSphere(center, radius)
     assert(ffi.istype('Vec3', center))
     assert(type(radius) == 'number')
-    ffi.C.__lu_dd_sphere(center, radius)
+    C.__lu_dd_sphere(center, radius)
 end
 
 function Debug.finish()
-    ffi.C.__lu_dd_end()
+    C.__lu_dd_end()
 end
 
 return Debug

@@ -19,6 +19,8 @@ ffi.cdef [[
     void __lu_app_exit(void);
 ]]
 
+local C = ffi.C
+
 local App = {
     name = 'Untitled App',
     appVersion = '0.1',
@@ -36,69 +38,69 @@ local App = {
 }
 
 function App.Window.maximize()
-    ffi.C.__lu_window_maximize()
+    C.__lu_window_maximize()
     App.Window.isMaximized = true
 end
 
 function App.Window.minimize()
-    ffi.C.__lu_window_minimize()
+    C.__lu_window_minimize()
     App.Window.isMaximized = false
 end
 
 function App.Window.enterFullscreen()
-    ffi.C.__lu_window_enter_fullscreen()
+    C.__lu_window_enter_fullscreen()
     App.Window.isFullscreen = true
 end
 
 function App.Window.leaveFullscreen()
-    ffi.C.__lu_window_leave_fullscreen()
+    C.__lu_window_leave_fullscreen()
     App.Window.isFullscreen = false
 end
 
 function App.Window.setTitle(title)
     assert(type(title) == 'string')
-    ffi.C.__lu_window_set_title(title)
+    C.__lu_window_set_title(title)
 end
 
 function App.Window.setSize(width, height)
     assert(type(width) == 'number')
     assert(type(height) == 'number')
-    ffi.C.__lu_window_set_size(width, height)
+    C.__lu_window_set_size(width, height)
 end
 
 function App.Window.setPos(x, y)
     assert(type(x) == 'number')
     assert(type(y) == 'number')
-    ffi.C.__lu_window_set_pos(x, y)
+    C.__lu_window_set_pos(x, y)
 end
 
 function App.Window.show()
-    ffi.C.__lu_window_show()
+    C.__lu_window_show()
     App.Window.isVisible = true
 end
 
 function App.Window.hide()
-    ffi.C.__lu_window_hide()
+    C.__lu_window_hide()
     App.Window.isVisible = false
 end
 
 function App.Window.allowResize(allow)
     assert(type(allow) == 'boolean')
-    ffi.C.__lu_window_allow_resize(allow)
+    C.__lu_window_allow_resize(allow)
 end
 
 function App.Window.getSize()
-    local v = ffi.C.__lu_window_get_size()
+    local v = C.__lu_window_get_size()
     return v.v[0], v.v[1]
 end
 
 function App.Window.getPos()
-    local v = ffi.C.__lu_window_get_pos()
+    local v = C.__lu_window_get_pos()
     return v.v[0], v.v[1]
 end
 
 function App.exit()
-    ffi.C.__lu_app_exit()
+    C.__lu_app_exit()
 end
 
 App.Window.setTitle(string.format('Lunam Engine v.%s - %s %s', App.engineVersion, jit.os, jit.arch))
