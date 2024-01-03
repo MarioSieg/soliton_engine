@@ -6,7 +6,7 @@ ffi.cdef[[
     uint32_t __lu_scene_new(void);
     void __lu_scene_tick(void);
     void __lu_scene_start(void);
-    uint64_t __lu_scene_spawn_entity(const char* name);
+    double __lu_scene_spawn_entity(const char* name);
 ]]
 
 local Scene = {
@@ -15,8 +15,8 @@ local Scene = {
 
 function Scene.new(name, setupFunc, startFunc, tickFunc)
     setupFunc = setupFunc or function() return {} end
-    startFunc = startFunc or function() end
-    tickFunc = tickFunc or function() end
+    startFunc = startFunc or function(scene, data) end
+    tickFunc = tickFunc or function(scene, data) end
 
     assert(type(setupFunc) == 'function', 'setupFunc must be a function')
     assert(type(startFunc) == 'function', 'startFunc must be a function')
@@ -38,16 +38,16 @@ function Scene.new(name, setupFunc, startFunc, tickFunc)
     }
 
     function SceneInstance:__onStart()
-        SceneInstance.startCallback(SceneInstance.data)
         ffi.C.__lu_scene_start()
+        SceneInstance.startCallback(self, SceneInstance.data)
     end
 
     function SceneInstance:__onTick()
-        SceneInstance.tickCallback(SceneInstance.data)
+        SceneInstance.tickCallback(self, SceneInstance.data)
         ffi.C.__lu_scene_tick()
     end
 
-    function SceneInstance:spawnEntity(name)
+    function SceneInstance:spawn(name)
         assert(type(name) == 'string', 'name must be a string')
         return ffi.C.__lu_scene_spawn_entity(name)
     end

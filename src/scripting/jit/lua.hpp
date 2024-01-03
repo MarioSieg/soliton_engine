@@ -4,6 +4,6 @@ extern "C" {
 #include "lua.h"
 #include "lauxlib.h"
 #include "lualib.h"
-#include "luajit_rolling.h"
+#include "luajit.h"
 }
 

@@ -5,6 +5,9 @@
 local stp = require 'ext.stack_trace_plus'
 debug.traceback = stp.stacktrace
 
+-- Init extensions
+require 'system.stdextend'
+
 SYSTEM_CFG = require 'system.config' -- Load config
 if SYSTEM_CFG.jit_asm_dump then -- Enable JIT ASM dump if requested
     require('jit.dump').on('m')

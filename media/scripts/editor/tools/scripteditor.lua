@@ -53,16 +53,23 @@ function NativeEditor.hasTextChanged()
 end
 
 local SCRIPT_TEMPLATE = [[
+local Scene = require 'Scene'
+
+-- Setup initial scene data
 local function _onSetup()
     print('Setting up scene...')
     return {}
 end
 
-local function _onStart(scene)
+-- Start scene
+-- 'data' is the table returned by _onSetup()
+local function _onStart(scene, data)
     print('Starting scene...')
 end
 
-local function _onTick(scene)
+-- Tick scene
+-- 'data' is the table returned by _onSetup()
+local function _onTick(scene, data)
 
 end
 
