@@ -40,7 +40,7 @@ namespace graphics {
 
         passert(bgfx::init(init));
 
-        ImGuiEx::Create(platform_subsystem::get_glfw_window());
+        ImGuiEx::Create(platform_subsystem::get_glfw_window(), 20.0f);
 
         // load all shaders
         load_shader_registry("media/shaders", m_programs);

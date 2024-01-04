@@ -1819,11 +1819,11 @@ const TextEditor::Palette& TextEditor::GetDarkPalette() {
             0xff70a0e0, // Char literal
             0xffffffff, // Punctuation
             0xff408080, // Preprocessor
-            0xffaaaaaa, // Identifier
-            0xff9bc64d, // Known identifier
+            0xffaadcdc, // Identifier
+            0xffaadcdc, // Known identifier
             0xffc040a0, // Preproc identifier
-            0xff206020, // Comment (single line)
-            0xff406020, // Comment (multi line)
+            0xff569869, // Comment (single line)
+            0xff569869, // Comment (multi line)
             0xff101010, // Background
             0xffe0e0e0, // Cursor
             0x80a06020, // Selection
@@ -2940,7 +2940,8 @@ const TextEditor::LanguageDefinition& TextEditor::LanguageDefinition::Lua() {
     if (!inited) {
         static const char* const keywords[] = {
             "and", "break", "do", "", "else", "elseif", "end", "false", "for", "function", "if", "in", "", "local",
-            "nil", "not", "or", "repeat", "return", "then", "true", "until", "while"
+            "nil", "not", "or", "repeat", "return", "then", "true", "until", "while", "continue", "goto",
+            "require"
         };
 
         for (auto& k : keywords)
@@ -2965,7 +2966,8 @@ const TextEditor::LanguageDefinition& TextEditor::LanguageDefinition::Lua() {
             "char", "dump", "find", "format", "gmatch", "gsub", "len", "lower", "match", "rep",
             "reverse", "sub", "upper", "pack", "packsize", "unpack", "concat", "maxn", "insert", "pack", "unpack",
             "remove", "move", "sort", "offset", "codepoint", "char", "len", "codes", "charpattern",
-            "coroutine", "table", "io", "os", "string", "utf8", "bit32", "math", "debug", "package"
+            "coroutine", "table", "io", "os", "string", "utf8", "bit32", "math", "debug", "package",
+            "ffi", "jit", "band", "bor", "bxor", "lshift", "rshift", "arshift"
         };
         for (auto& k : identifiers) {
             Identifier id;

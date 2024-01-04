@@ -133,14 +133,13 @@ function ScriptEditor:render()
                 UI.EndMenu()
             end
             UI.Separator()
-            if UI.Button(ICONS.PLAY_CIRCLE..' Run') then
+            UI.PushStyleColor_U32(ffi.C.ImGuiCol_Button, 0xff000088)
+            if UI.Button(ICONS.PLAY_CIRCLE..' Restart') then
                 local script = ScriptEditor.scripts[ScriptEditor.activeScriptName]
                 assert(script)
                 script:exec()
             end
-            if UI.Button(ICONS.FLAME..' Reload') then
-                
-            end
+            UI.PopStyleColor(1)
             UI.EndMenuBar()
         end
         UI.Separator()

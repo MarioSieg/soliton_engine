@@ -163,10 +163,10 @@ struct ImguiContext final {
         }
     }
 
-    void create() {
+    void create(float font_size) {
         IMGUI_CHECKVERSION();
 
-        m_viewId = 255;
+        m_viewId = 0xff;
 
         ImGui::SetAllocatorFunctions(+[](size_t x, void*) -> void* {
         	return mi_malloc(x);
@@ -209,8 +209,6 @@ struct ImguiContext final {
 
         s_tex = bgfx::createUniform("s_tex", bgfx::UniformType::Sampler);
 
-        constexpr float fontSize = 18.0f;
-
         // add primary text font:
         ImFontConfig config { };
         config.FontDataOwnedByAtlas = false;
@@ -218,7 +216,7 @@ struct ImguiContext final {
         ImFont* primaryFont = io.Fonts->AddFontFromMemoryTTF(
             const_cast<void*>(static_cast<const void*>(k_ttf_jet_brains_mono)),
             sizeof(k_ttf_jet_brains_mono) / sizeof(*k_ttf_jet_brains_mono),
-            fontSize, // font size
+            font_size, // font size
             &config,
             io.Fonts->GetGlyphRangesDefault()
         );
@@ -234,7 +232,7 @@ struct ImguiContext final {
         ImGui::GetIO().Fonts->AddFontFromMemoryTTF(
             const_cast<void*>(static_cast<const void*>(range.data.data())),
             static_cast<int>(range.data.size()),
-            fontSize-3.0f,
+            font_size-3.0f,
             &config,
             reinterpret_cast<const ImWchar*>(range.ranges.data())
         );
@@ -296,8 +294,8 @@ struct ImguiContext final {
 static ImguiContext s_imgui_ctx {};
 
 namespace ImGuiEx {
-    void Create(GLFWwindow* window) {
-        s_imgui_ctx.create();
+    void Create(GLFWwindow* window, float font_size) {
+        s_imgui_ctx.create(font_size);
         ImGui_ImplGlfw_InitForOther(window, true);
         auto& io = ImGui::GetIO();
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;

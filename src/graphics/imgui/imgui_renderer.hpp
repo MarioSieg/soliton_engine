@@ -3,7 +3,7 @@
 #pragma once
 
 namespace ImGuiEx {
-    extern auto Create(GLFWwindow* window) -> void;
+    extern auto Create(GLFWwindow* window, float font_size) -> void;
     extern auto Destroy() -> void;
     extern auto BeginFrame(uint16_t _width, uint16_t _height, bgfx::ViewId _viewId) -> void;
     extern auto EndFrame() -> void;
