@@ -135,7 +135,7 @@ local Input = {
         RIGHT_SUPER = 347,
         MENU = 348
     },
-    MOUSE_BUTTON = {
+    MOUSE_BUTTONS = {
         MB1 = 0,
         MB2 = 1,
         MB3 = 2,

@@ -15,8 +15,8 @@ local LEFT = rawnew(-1.0, 0.0, 0.0)
 local RIGHT = rawnew(1.0, 0.0, 0.0)
 local UP = rawnew(0.0, 1.0, 0.0)
 local DOWN = rawnew(0.0, -1.0, 0.0)
-local FORWARD = rawnew(0.0, 0.0, -1.0)
-local BACKWARD = rawnew(0.0, 0.0, 1.0)
+local FORWARD = rawnew(0.0, 0.0, 1.0)
+local BACKWARD = rawnew(0.0, 0.0, -1.0)
 
 local function new(x, y, z)
     assert(type(x) == 'number')
@@ -125,7 +125,7 @@ local function smoothDamp(current, target, velocity, smoothTime, maxSpeed, delta
     assert(type(deltaTime) == 'number')
 
     local out_x, out_y, out_z = 0.0, 0.0, 0.0
-    smoothTime = M.max(0.0001, smoothTime)
+    smoothTime = max(0.0001, smoothTime)
     local omega = 2.0 / smoothTime
     local x = omega * deltaTime
     local exp = 1.0 / (1.0 + x + 0.48 * x * x + 0.235 * x * x * x)
@@ -215,15 +215,15 @@ ffi.metatype('lua_vec3', {
         if istype('lua_vec3', x) then
             if istype('lua_vec3', y) then
                 return new(x.x * y.x, x.y * y.y, x.z * y.z)
-            elseif istype('Quat', y) then -- quaternion rotation
+            elseif istype('lua_vec4', y) then -- quaternion rotation
                 local ix =  y.w*y.x + y.y*x.z - y.z*x.y
                 local iy =  y.w*y.y + y.z*x.x - y.x*x.z
                 local iz =  y.w*y.z + y.x*x.y - y.y*x.x
                 local iw = -y.x*x.x - y.y*x.y - y.z*x.z
                 local x = ix*y.w + iw*-y.x + iy*-y.z - iz*-y.y
-                local y = iy*y.w + iw*-y.y + iz*-y.x - ix*-y.z
+                local yy = iy*y.w + iw*-y.y + iz*-y.x - ix*-y.z
                 local z = iz*y.w + iw*-y.z + ix*-y.y - iy*-y.x
-                return rawnew(x, y, z)
+                return rawnew(x, yy, z)
             elseif type(y) == 'number' then
                 return new(x.x * y, x.y * y, x.z * y)
             end
