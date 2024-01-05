@@ -1,12 +1,10 @@
 // Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
-#include "../api_prelude.hpp"
+#include "_prelude.hpp"
 #include "../../core/kernel.hpp"
 #include "../../platform/subsystem.hpp"
 
 using platform::platform_subsystem;
-
-typedef struct { int v[2]; } __lu_ivec2;
 
 LUA_INTEROP_API auto __lu_panic(const char* const msg) -> void {
     panic(msg ? msg : "unknown error");
@@ -56,16 +54,16 @@ LUA_INTEROP_API auto __lu_window_allow_resize(const bool allow) -> void {
     glfwSetWindowAttrib(platform_subsystem::get_glfw_window(), GLFW_RESIZABLE, allow);
 }
 
-LUA_INTEROP_API auto __lu_window_get_size() -> __lu_ivec2 {
+LUA_INTEROP_API auto __lu_window_get_size() -> lua_vec2 {
     int width, height;
     glfwGetWindowSize(platform_subsystem::get_glfw_window(), &width, &height);
-    return __lu_ivec2 { .v = { width, height } };
+    return lua_vec2 { static_cast<float>(width), static_cast<float>(height) };
 }
 
-LUA_INTEROP_API auto __lu_window_get_pos() -> __lu_ivec2 {
+LUA_INTEROP_API auto __lu_window_get_pos() -> lua_vec2 {
     int x, y;
     glfwGetWindowPos(platform_subsystem::get_glfw_window(), &x, &y);
-    return __lu_ivec2 { .v = { x, y } };
+    return lua_vec2 { static_cast<float>(x), static_cast<float>(y) };
 }
 
 LUA_INTEROP_API auto __lu_app_exit() -> void {

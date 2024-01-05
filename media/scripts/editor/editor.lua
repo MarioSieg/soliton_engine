@@ -78,7 +78,7 @@ function Editor:renderMainMenu()
             UI.EndMenu()
         end
         UI.Separator()
-        UI.Text(string.format('FPS: %d', Time.fpsAvg))
+        UI.Text(string.format('FPS: %d', Time.fps))
         local time = os.date('*t')
         UI.Separator()
         UI.Text(string.format('%02d:%02d', time.hour, time.min))

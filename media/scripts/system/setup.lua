@@ -85,6 +85,9 @@ else
     -- TODO check shaders
 end
 
+-- Load CDEFS
+require 'system.cdefs'
+
 -- Init random seed
 math.randomseed(os.time())
 for i = 1, math.random() * 10 do -- warm up the random generator

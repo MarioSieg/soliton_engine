@@ -3,16 +3,10 @@
 local ffi = require 'ffi'
 
 ffi.cdef[[
-    typedef struct {
-        double x;
-        double y;
-        double z;
-    } Vec3;
-    typedef double entity_id;
-    bool __lu_entity_is_valid(entity_id id);
-    bool __lu_entity_is_alive(entity_id id);
-    void __lu_entity_set_pos(entity_id id, double x, double y, double z);
-    Vec3 __lu_entity_get_pos(entity_id id);
+    bool __lu_entity_is_valid(lua_entity_id id);
+    bool __lu_entity_is_alive(lua_entity_id id);
+    void __lu_entity_set_pos(lua_entity_id id, double x, double y, double z);
+    lua_vec3 __lu_entity_get_pos(lua_entity_id id);
 ]]
 
 local C = ffi.C
@@ -32,7 +26,7 @@ end
 
 function Entity.setPos(id, pos)
     assert(type(id) == 'number')
-    assert(istype('Vec3', pos))
+    assert(istype('lua_vec3', pos))
     C.__lu_entity_set_pos(id, pos.x, pos.y, pos.z)
 end
 

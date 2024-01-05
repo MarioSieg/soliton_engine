@@ -1,11 +1,12 @@
 -- Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
--- Preload all files in this directory:
+-- Preload all files in this directory: TODO make this better
 local MODULES = {
     ['App'] = 'lu/app',
     ['Color'] = 'lu/color',
     ['Debug'] = 'lu/debug',
     ['Entity'] = 'lu/entity',
+    ['Input'] = 'lu/input',
     ['Math'] = 'lu/math',
     ['Quat'] = 'lu/quat',
     ['Scene'] = 'lu/scene',

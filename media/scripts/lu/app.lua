@@ -3,7 +3,6 @@
 local ffi = require 'ffi'
 
 ffi.cdef [[
-    typedef struct { int v[2]; } __lu_ivec2;
     void __lu_window_maximize(void);
     void __lu_window_minimize(void);
     void __lu_window_enter_fullscreen(void);
@@ -14,8 +13,8 @@ ffi.cdef [[
     void __lu_window_show(void);
     void __lu_window_hide(void);
     void __lu_window_allow_resize(bool allow);
-    __lu_ivec2 __lu_window_get_size(void);
-    __lu_ivec2 __lu_window_get_pos(void);
+    lua_vec2 __lu_window_get_size(void);
+    lua_vec2 __lu_window_get_pos(void);
     void __lu_app_exit(void);
 ]]
 
@@ -90,13 +89,11 @@ function App.Window.allowResize(allow)
 end
 
 function App.Window.getSize()
-    local v = C.__lu_window_get_size()
-    return v.v[0], v.v[1]
+    return C.__lu_window_get_size()
 end
 
 function App.Window.getPos()
-    local v = C.__lu_window_get_pos()
-    return v.v[0], v.v[1]
+    return C.__lu_window_get_pos()
 end
 
 function App.exit()

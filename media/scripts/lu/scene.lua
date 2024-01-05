@@ -3,12 +3,11 @@
 local ffi = require 'ffi'
 
 ffi.cdef[[
-    typedef double entity_id;
     uint32_t __lu_scene_new(void);
     void __lu_scene_tick(void);
     void __lu_scene_start(void);
-    entity_id __lu_scene_spawn_entity(const char* name);
-    entity_id __lu_scene_get_entity_by_name(const char* name);
+    lua_entity_id __lu_scene_spawn_entity(const char* name);
+    lua_entity_id __lu_scene_get_entity_by_name(const char* name);
 ]]
 
 local C = ffi.C
@@ -36,12 +35,13 @@ function Scene:__onTick()
 end
 
 function Scene:spawn(name)
-    assert(type(name) == 'string', 'name must be a string')
+    assert(type(name) == 'string')
     return C.__lu_scene_spawn_entity(name)
 end
 
 function Scene:getEntityByName(name)
-    assert(type(name) == 'string', 'name must be a string')
+    assert(name ~= nil)
+    assert(type(name) == 'string')
     return C.__lu_scene_get_entity_by_name(name)
 end
 

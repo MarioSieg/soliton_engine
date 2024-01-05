@@ -1,19 +1,9 @@
 -- Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
-
 local ffi = require 'ffi'
 
-ffi.cdef [[
-    typedef struct {
-        double x;
-        double y;
-        double z;
-        double w;
-    } Quat;
-]]
-
 local istype = ffi.istype
-local rawnew = ffi.typeof('Quat')
+local rawnew = ffi.typeof('lua_vec4')
 local sqrt, cos, sin, atan2, min, max, acos, abs = math.sqrt, math.cos, math.sin, math.atan2, math.min, math.max, math.acos, math.abs
 
 local ZERO = rawnew(0.0, 0.0, 0.0, 0.0)
@@ -79,15 +69,15 @@ local function fromRollPitchYaw(pitch, yaw, roll)
 end
 
 local function dot(q, other)
-    assert(istype('Quat', other))
+    assert(istype('lua_vec4', other))
     local x, y, z, w = q.x, q.y, q.z, q.w
     local ox, oy, oz, ow = other.x, other.y, other.z, other.w
     return x*ox + y*oy + z*oz + w*ow
 end
 
 local function slerp(x, y, i)
-    assert(istype('Quat', x))
-    assert(istype('Quat', y))
+    assert(istype('lua_vec4', x))
+    assert(istype('lua_vec4', y))
     assert(type(i) == 'number')
     if x == y then return x end
     local cosHalfTheta = dot(x, y)
@@ -141,17 +131,17 @@ local function clone(q)
     return rawnew(q.x, q.y, q.z, q.w)
 end
 
-ffi.metatype('Quat', {
+ffi.metatype('lua_vec4', {
     _add = function(x, y)
-        assert(istype('Quat', y))
+        assert(istype('lua_vec4', y))
         return rawnew(x.x + y.x, x.y + y.y, x.z + y.z, x.w + y.w)
     end,
     _sub = function(x, y)
-        assert(istype('Quat', y))
+        assert(istype('lua_vec4', y))
         return rawnew(x.x - y.x, x.y - y.y, x.z - y.z, x.w - y.w)
     end,
     _mul = function(x, y)
-        if type(y) == 'cdata' and istype('Quat', y) then
+        if type(y) == 'cdata' and istype('lua_vec4', y) then
             local x = x.x*y.w + x.w*y.x + x.y*y.z - x.z*y.y
             local y = x.y*y.w + x.w*y.y + x.z*y.x - x.x*y.z
             local z = x.z*y.w + x.w*y.z + x.x*y.y - x.y*y.x
@@ -168,7 +158,7 @@ ffi.metatype('Quat', {
         return mag(self)
     end,
     __eq = function(x, y)
-        local is_vec3 = type(y) == 'cdata' and istype('Quat', y)
+        local is_vec3 = type(y) == 'cdata' and istype('lua_vec4', y)
         return is_vec3 and x.x == y.x and x.y == y.y and x.z == y.z and x.w == y.w
     end,
     __tostring = function(self)

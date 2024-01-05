@@ -6,24 +6,16 @@ local App = require 'App'
 local Color = require 'Color'
 local Debug = require 'Debug'
 local Entity = require 'Entity'
+local Input = require 'Input'
 local Math = require 'Math'
 local Quat = require 'Quat'
 local Scene = require 'Scene'
 local Time = require 'Time'
-local Tween = require 'Tween'
 local Vec2 = require 'Vec2'
 local Vec3 = require 'Vec3'
 
--- Setup initial scene data and return scene storage table
-local function _onSetup()
-    print('Setting up scene...')
-    return {
-        -- Add scene-specific data here. Can be accessed from other callbacks via 'scene.store'
-    }
-end
-
 -- Start scene
-local function _onStart(scene)
+local function onStart(scene)
 	local cam = scene:getEntityByName('MainCamera')
 	Entity.setPos(cam, Vec3(0, 6, -20))
     print('Starting scene...')
@@ -32,7 +24,7 @@ end
 local said = false
 
 -- Tick scene
-local function _onTick(scene)
+local function onTick(scene)
 	local N = 10
 	local NN = 0
 	Debug.start()
@@ -54,4 +46,4 @@ local function _onTick(scene)
 	Debug.finish()
 end
 
-Scene.new('Untitled', _onSetup, _onStart, _onTick)
+Scene.new('Untitled', onStart, onTick)

@@ -1,6 +1,6 @@
 // Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
-#include "../api_prelude.hpp"
+#include "_prelude.hpp"
 #include "../../graphics/subsystem.hpp"
 #include "../../graphics/debugdraw/debugdraw.h"
 
@@ -26,7 +26,7 @@ LUA_INTEROP_API auto __lu_dd_set_color(const uint32_t abgr) -> void {
     s_encoder->setColor(abgr);
 }
 
-LUA_INTEROP_API auto __lu_dd_grid(const int axis, const lvec3 pos, const std::uint32_t size, const float step) -> void {
+LUA_INTEROP_API auto __lu_dd_grid(const int axis, const lua_vec3 pos, const std::uint32_t size, const float step) -> void {
     if (!s_encoder.has_value()) [[unlikely]] return;
     bx::Vec3 axis_vec {0.0f, 0.0f, 0.0f};
     switch (axis) {
@@ -38,7 +38,7 @@ LUA_INTEROP_API auto __lu_dd_grid(const int axis, const lvec3 pos, const std::ui
     s_encoder->drawGrid(axis_vec, pos, size, step);
 }
 
-LUA_INTEROP_API auto __lu_dd_axis(const lvec3 pos, const float len, const int axis_highlight, const float thickness) -> void {
+LUA_INTEROP_API auto __lu_dd_axis(const lua_vec3 pos, const float len, const int axis_highlight, const float thickness) -> void {
     if (!s_encoder.has_value()) [[unlikely]] return;
     Axis::Enum axis = Axis::Y;
     switch (axis_highlight) {
@@ -50,13 +50,13 @@ LUA_INTEROP_API auto __lu_dd_axis(const lvec3 pos, const float len, const int ax
     s_encoder->drawAxis(static_cast<float>(pos.x), static_cast<float>(pos.y), static_cast<float>(pos.z), len, axis, thickness);
 }
 
-LUA_INTEROP_API auto __lu_dd_aabb(const lvec3 min, const lvec3 max) -> void {
+LUA_INTEROP_API auto __lu_dd_aabb(const lua_vec3 min, const lua_vec3 max) -> void {
     if (!s_encoder.has_value()) [[unlikely]] return;
     bx::Aabb aabb {min, max};
     s_encoder->draw(aabb);
 }
 
-LUA_INTEROP_API auto __lu_dd_sphere(const lvec3 center, const float radius) -> void {
+LUA_INTEROP_API auto __lu_dd_sphere(const lua_vec3 center, const float radius) -> void {
     if (!s_encoder.has_value()) [[unlikely]] return;
     bx::Sphere sphere {center, radius};
     s_encoder->draw(sphere);
