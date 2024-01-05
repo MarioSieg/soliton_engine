@@ -3,11 +3,12 @@
 local ffi = require 'ffi'
 
 ffi.cdef[[
+    typedef double entity_id;
     uint32_t __lu_scene_new(void);
     void __lu_scene_tick(void);
     void __lu_scene_start(void);
-    double __lu_scene_spawn_entity(const char* name);
-    double __lu_scene_get_entity_by_name(const char* name);
+    entity_id __lu_scene_spawn_entity(const char* name);
+    entity_id __lu_scene_get_entity_by_name(const char* name);
 ]]
 
 local C = ffi.C
@@ -16,7 +17,6 @@ local activeScene = nil
 local Scene = {
     name = nil,
     id = 0,
-    store = nil,
     startCallback = function(scene) end,
     tickCallback = function(scene) end
 }
@@ -45,17 +45,12 @@ function Scene:getEntityByName(name)
     return C.__lu_scene_get_entity_by_name(name)
 end
 
-function Scene.new(name, setupFunc, startFunc, tickFunc)
-    setupFunc = setupFunc or function() return {} end
+function Scene.new(name, startFunc, tickFunc)
     startFunc = startFunc or function(scene) end
     tickFunc = tickFunc or function(scene) end
 
-    assert(type(setupFunc) == 'function', 'setupFunc must be a function')
     assert(type(startFunc) == 'function', 'startFunc must be a function')
     assert(type(tickFunc) == 'function', 'tickFunc must be a function')
-
-    local store = setupFunc() -- call setup callback to get scene-specific data
-    assert(type(store) == 'table', 'setupFunc must return a table')
 
     name = name or 'untitled'
     local id = C.__lu_scene_new() -- create native scene
@@ -65,14 +60,13 @@ function Scene.new(name, setupFunc, startFunc, tickFunc)
     setmetatable(scene, {__index = Scene})
     scene.name = name
     scene.id = id
-    scene.store = store
     scene.startCallback = startFunc
     scene.tickCallback = tickFunc
 
     activeScene = nil -- clear active scene
     scene:__onStart() -- call start callback to start playing
     activeScene = scene
-    collectgarbage('collect') -- collect garbage before starting new scene
+    collectgarbage('collect') -- collect garbage after new scene is created
     print(string.format('Created new scene: %s, id: %x', name, id))
 end
 

@@ -8,10 +8,11 @@ ffi.cdef[[
         double y;
         double z;
     } Vec3;
-    bool __lu_entity_is_valid(double id);
-    bool __lu_entity_is_alive(double id);
-    void __lu_entity_set_pos(double id, double x, double y, double z);
-    Vec3 __lu_entity_get_pos(double id);
+    typedef double entity_id;
+    bool __lu_entity_is_valid(entity_id id);
+    bool __lu_entity_is_alive(entity_id id);
+    void __lu_entity_set_pos(entity_id id, double x, double y, double z);
+    Vec3 __lu_entity_get_pos(entity_id id);
 ]]
 
 local C = ffi.C

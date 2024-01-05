@@ -14,23 +14,15 @@ local Tween = require 'Tween'
 local Vec2 = require 'Vec2'
 local Vec3 = require 'Vec3'
 
--- Setup initial scene data and return scene storage table
-local function _onSetup()
-    print('Setting up scene...')
-    return {
-        -- Add scene-specific data here. Can be accessed from other callbacks via 'scene.store'
-    }
-end
-
 -- Start scene
-local function _onStart(scene)
+local function onStart(scene)
 
     print('Starting scene...')
 end
 
 -- Tick scene
-local function _onTick(scene)
+local function onTick(scene)
 
 end
 
-Scene.new('Untitled', _onSetup, _onStart, _onTick)
+Scene.new('Untitled', onStart, onTick)
