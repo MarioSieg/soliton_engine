@@ -7,6 +7,7 @@ local ffi = require 'ffi'
 local UI = require 'editor.imgui'
 local Style = require 'editor.style'
 
+local App = require 'App'
 local Time = require 'Time'
 local Debug = require 'Debug'
 local Vec3 = require 'Vec3'
@@ -52,13 +53,14 @@ end
 function Editor:renderMainMenu()
     if UI.BeginMainMenuBar() then
         if UI.BeginMenu('File') then
-            if UI.MenuItem(ICONS.PORTAL_EXIT..' Exit', 'Alt+F4') then
+            if UI.MenuItem(ICONS.PORTAL_EXIT..' Exit') then
                 App.exit()
             end
             UI.EndMenu()
         end
         if UI.BeginMenu('Tools') then
-            for _, tool in ipairs(self.tools) do
+            for i=1, #self.tools do
+                local tool = self.tools[i]
                 if UI.MenuItem(tool.name, nil, tool.isVisible[0]) then
                     tool.isVisible[0] = not tool.isVisible[0]
                 end
@@ -66,6 +68,13 @@ function Editor:renderMainMenu()
             UI.EndMenu()
         end
         if UI.BeginMenu('View') then
+            if UI.MenuItem('Fullscreen', nil, App.Window.isFullscreen) then
+                if App.Window.isFullscreen then
+                    App.Window.leaveFullscreen()
+                else
+                    App.Window.enterFullscreen()
+                end
+            end
             if UI.MenuItem(ICONS.RULER_TRIANGLE..' Show Grid', nil, self.gizmos.showGrid) then
                 self.gizmos.showGrid = not self.gizmos.showGrid
             end
@@ -98,7 +107,8 @@ end
 
 function Editor:drawTools()
     UI.DockSpaceOverViewport(UI.GetMainViewport(), ffi.C.ImGuiDockNodeFlags_PassthruCentralNode)
-    for _, tool in ipairs(self.tools) do
+    for i=1, #self.tools do
+        local tool = self.tools[i]
         if tool.isVisible[0] then
             tool:render()
         end

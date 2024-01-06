@@ -283,7 +283,6 @@ auto dump_loaded_dylibs() -> void {
 }
 
     static constinit GLFWwindow* s_window;
-    static constinit GLFWmonitor* s_monitor;
     static constinit void* s_native_window;
     static constinit void* s_native_display;
 
@@ -354,16 +353,16 @@ auto dump_loaded_dylibs() -> void {
                 }
             }
         };
-        s_monitor = glfwGetPrimaryMonitor();
-        if (s_monitor != nullptr) [[likely]] {
-            printMonitorInfo(s_monitor);
+        GLFWmonitor* mon = glfwGetPrimaryMonitor();
+        if (mon != nullptr) [[likely]] {
+            printMonitorInfo(mon);
         } else {
             log_warn("No primary monitor found");
         }
         int n;
         if (GLFWmonitor** mons = glfwGetMonitors(&n); mons) {
             for (int i = 0; i < n; ++i) {
-                if (mons[i] != s_monitor) {
+                if (mons[i] != mon) {
                     printMonitorInfo(mons[i]);
                 }
             }
@@ -384,7 +383,6 @@ auto dump_loaded_dylibs() -> void {
 
     platform_subsystem::~platform_subsystem() {
         s_window = nullptr;
-        s_monitor = nullptr;
         s_native_window = nullptr;
         s_native_display = nullptr;
         glfwDestroyWindow(s_window);
