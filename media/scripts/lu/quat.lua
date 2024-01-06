@@ -38,14 +38,14 @@ local function norm(q)
 end
 
 local function fromAxisAngle(vec)
-    assert(istype('Vec3', vec))
+    assert(istype('lua_vec3', vec))
     local angle = #vec
     if angle == 0.0 then
         return IDENTITY
     end
     local axis = vec / angle
     local s, c = sin(angle * 0.5), cos(angle * 0.5)
-    return normnormalize(new(axis.x * s, axis.y * s, axis.z * s, c))
+    return norm(new(axis.x * s, axis.y * s, axis.z * s, c))
 end
 
 local function fromRollPitchYaw(pitch, yaw, roll)

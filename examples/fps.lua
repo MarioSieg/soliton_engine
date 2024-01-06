@@ -44,7 +44,7 @@ Camera.lookSnappiness = 15.0
 Camera._prevMousePos = Vec2.ZERO
 Camera._mouseAngles = Vec2.ZERO
 Camera._smoothAngles = Vec2.ZERO
-Camera._rotation = Quat.ZERO
+Camera._rotation = Quat.IDENTITY
 Camera._position = Vec3.ZERO
 Camera._velocity = Vec3.ZERO
 

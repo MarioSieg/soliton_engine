@@ -4,7 +4,7 @@ local ffi = require 'ffi'
 
 local istype = ffi.istype
 local rawnew = ffi.typeof('lua_vec3')
-local sqrt, cos, sin, atan2, min, max = math.sqrt, math.cos, math.sin, math.atan2, math.min, math.max
+local sqrt, cos, sin, atan2, min, max, random = math.sqrt, math.cos, math.sin, math.atan2, math.min, math.max, math.random
 
 local ZERO = rawnew(0.0, 0.0, 0.0)
 local ONE = rawnew(1.0, 1.0, 1.0)
@@ -25,6 +25,28 @@ local function new(x, y, z)
     x = x or 0.0
     y = y or x
     z = z or x
+    return rawnew(x, y, z)
+end
+
+local function randomInterval(lower, greater)
+    return lower + random() * (greater - lower);
+end
+
+local function randomXYZ(from, to)
+    from = from or 0.0
+    to = to or 1.0
+    local x = randomInterval(from, to)
+    local y = randomInterval(from, to)
+    local z = randomInterval(from, to)
+    return rawnew(x, y, z)
+end
+
+local function randomXZ(from, to, y)
+    from = from or 0.0
+    to = to or 1.0
+    y = y or 0.0
+    local x = randomInterval(from, to)
+    local z = randomInterval(from, to)
     return rawnew(x, y, z)
 end
 
@@ -129,56 +151,45 @@ local function smoothDamp(current, target, velocity, smoothTime, maxSpeed, delta
     local omega = 2.0 / smoothTime
     local x = omega * deltaTime
     local exp = 1.0 / (1.0 + x + 0.48 * x * x + 0.235 * x * x * x)
-
     local change_x = current.x - target.x
     local change_y = current.y - target.y
     local change_z = current.z - target.z
-
     local origin = target
     local maxChange = maxSpeed * smoothTime
     local maxChangeSq = maxChange ^ 2
     local sqrMag = change_x * change_x + change_y * change_y + change_z * change_z
-
     if sqrMag > maxChangeSq then
         local mag = sqrt(sqrMag)
         change_x = change_x / mag * maxChange
         change_y = change_y / mag * maxChange
         change_z = change_z / mag * maxChange
     end
-
     target.x = current.x - change_x
     target.y = current.y - change_y
     target.z = current.z - change_z
-
     local temp_x = (velocity.x + omega * change_x) * deltaTime
     local temp_y = (velocity.y + omega * change_y) * deltaTime
     local temp_z = (velocity.z + omega * change_z) * deltaTime
-
     velocity.x = (velocity.x - omega * temp_x) * exp
     velocity.y = (velocity.y - omega * temp_y) * exp
     velocity.z = (velocity.z - omega * temp_z) * exp
-
     out_x = target.x + (change_x + temp_x) * exp
     out_y = target.y + (change_y + temp_y) * exp
     out_z = target.z + (change_z + temp_z) * exp
-
     local origMinusCurrent_x = origin.x - current.x
     local origMinusCurrent_y = origin.y - current.y
     local origMinusCurrent_z = origin.z - current.z
     local outMinusOrig_x = out_x - origin.x
     local outMinusOrig_y = out_y - origin.y
     local outMinusOrig_z = out_z - origin.z
-
     if origMinusCurrent_x * outMinusOrig_x + origMinusCurrent_y * outMinusOrig_y + origMinusCurrent_z * outMinusOrig_z > 0 then
         out_x = origin.x
         out_y = origin.y
         out_z = origin.z
-
         velocity.x = (out_x - origin.x) / deltaTime
         velocity.y = (out_y - origin.y) / deltaTime
         velocity.z = (out_z - origin.z) / deltaTime
     end
-
     return rawnew(out_x, out_y, out_z), velocity
 end
 
@@ -279,6 +290,8 @@ ffi.metatype('lua_vec3', {
 
 local Vec3 = setmetatable({
     new = new,
+    randomXYZ = randomXYZ,
+    randomXZ = randomXZ,
     fromAngles = fromAngles,
     mag = mag,
     magSqr = magSqr,

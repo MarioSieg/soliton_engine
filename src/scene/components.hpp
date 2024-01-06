@@ -20,7 +20,7 @@ struct c_transform final {
     }
 
     [[nodiscard]] auto XM_CALLCONV compute_matrix() const noexcept -> XMMATRIX {
-        const XMVECTOR zero {XMVectorZero() };
+        const XMVECTOR zero { XMVectorZero() };
         return XMMatrixTransformation(
             zero,
             zero,
@@ -66,7 +66,7 @@ struct c_camera final {
    }
 
    [[nodiscard]] auto XM_CALLCONV compute_projection() const noexcept -> XMMATRIX {
-       float aspect = viewport.x/viewport.y;
+       const float aspect = viewport.x/viewport.y;
        return XMMatrixPerspectiveFovLH(XMConvertToRadians(this->fov), aspect, this->z_clip_near, this->z_clip_far);
    }
 };
