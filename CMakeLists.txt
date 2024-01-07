@@ -5,7 +5,7 @@ project(lunam LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_compile_options(-mpopcnt -msse -msse2 -msse3 -mssse3 -msse4.1 -msse4.2 -maes -mfxsr -mpclmul -msahf)
+add_compile_options(-march=haswell)
 if (WIN32)
     add_compile_options(-Xclang -fvisibility=hidden -Wno-defaulted-function-deleted)
 else()

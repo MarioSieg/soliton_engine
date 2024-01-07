@@ -34,18 +34,14 @@ LUA_INTEROP_API auto __lu_window_enter_fullscreen() -> void {
     if (!mode) [[unlikely]] { return; }
     glfwGetWindowPos(platform_subsystem::get_glfw_window(), &s_window_pos_x, &s_window_pos_y);
     glfwGetWindowSize(platform_subsystem::get_glfw_window(), &s_window_width, &s_window_height);
-    glfwSetWindowMonitor(platform_subsystem::get_glfw_window(), mon, 0, 0, mode->width, mode->height, mode->refreshRate);
+    glfwSetWindowMonitor(platform_subsystem::get_glfw_window(), mon, 0, 0, mode->width, mode->height, GLFW_DONT_CARE);
 }
 
 LUA_INTEROP_API auto __lu_window_leave_fullscreen() -> void {
     s_window_width = std::max(s_window_width, 1280);
     s_window_height = std::max(s_window_height, 720);
-    GLFWmonitor* mon = glfwGetPrimaryMonitor();
-    if (!mon) [[unlikely]] { return; }
-    const GLFWvidmode* mode = glfwGetVideoMode(mon);
-    if (!mode) [[unlikely]] { return; }
     glfwSetWindowMonitor(platform_subsystem::get_glfw_window(), nullptr,
-        s_window_pos_x, s_window_pos_y, s_window_width, s_window_height, mode->refreshRate);
+        s_window_pos_x, s_window_pos_y, s_window_width, s_window_height, GLFW_DONT_CARE);
 }
 
 LUA_INTEROP_API auto __lu_window_set_title(const char* const title) -> void {
