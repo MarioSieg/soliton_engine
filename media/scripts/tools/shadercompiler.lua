@@ -5,11 +5,11 @@ local VERBOSE = false -- set to true to enable verbose shader compilation
 local PARALLEL = true -- set to true to enable parallel shader compilation
 
 local now = os.clock()
-local json = require 'ext.json'
+local xml = require 'ext.xml'
 
 local EXECUTABLE = 'tools/shaderc_'
 local OUT_DIR = 'media/shaders/'
-local REGISTRY = OUT_DIR..'registry.json'
+local REGISTRY = OUT_DIR..'registry.xml'
 
 print('Shader compiler script started.')
 print('Checking for modified shader files...')
@@ -45,12 +45,20 @@ end
 
 -- So if the registry exists, we check if any file has changed
 if lfs.attributes(REGISTRY) then
-    local oldTimes = json.decode(io.open(REGISTRY, 'r'):read('*a'))
-    local newTimes = getFileModificationTimes('shaders')
-    local changed, file = checkForChanges(oldTimes, newTimes)
-    if changed then
-        print('Shader file '..file..' has changed. Recompiling shaders...')
+    local handler = require 'ext.xml_tree'
+    local parser = xml.parser(handler)
+    parser:parse(xml.loadFile(REGISTRY))
+    if not handler.root or not handler.root.shader_registry then
+        panic('Invalid shader registry file: '..REGISTRY)
         FORCE_SHADER_RECOMPILATION = true
+    else
+        local oldTimes = handler.root.shader_registry
+        local newTimes = getFileModificationTimes('shaders')
+        local changed, file = checkForChanges(oldTimes, newTimes)
+        if changed then
+            print('Shader file '..file..' has changed. Recompiling shaders...')
+            FORCE_SHADER_RECOMPILATION = true
+        end
     end
 end
 
@@ -58,18 +66,6 @@ if lfs.attributes(OUT_DIR) and not FORCE_SHADER_RECOMPILATION then
     print('Shader compilation skipped, already compiled and no force recompilation flag set.')
     return
 end
-
--- Now we update the registry
-local newTimes = getFileModificationTimes('shaders')
-if not lfs.attributes(OUT_DIR) then
-    lfs.mkdir(OUT_DIR)
-end
-if not lfs.attributes(REGISTRY) then
-    lfs.touch(REGISTRY)
-end
-local file = io.open(REGISTRY, 'w')
-file:write(json.encode(newTimes))
-file:close()
 
 -- delete output directory:
 print('Deleting output directory '..OUT_DIR)
@@ -82,6 +78,25 @@ for file in lfs.dir(OUT_DIR) do
     end
 end
 lfs.rmdir(OUT_DIR)
+
+-- create output directory:
+lfs.mkdir(OUT_DIR)
+OUT_DIR = OUT_DIR..(jit.os:lower())..'/' -- append platform name
+lfs.mkdir(OUT_DIR)
+print('Output directory: '..OUT_DIR)
+
+-- Now we update the registry
+print('Updating shader registry...')
+local newTimes = getFileModificationTimes('shaders')
+if not lfs.attributes(OUT_DIR) then
+    lfs.mkdir(OUT_DIR)
+end
+if not lfs.attributes(REGISTRY) then
+    lfs.touch(REGISTRY)
+end
+local file = io.open(REGISTRY, 'w')
+file:write(xml.toXml(newTimes, 'shader_registry'))
+file:close()
 
 printsep()
 
@@ -154,12 +169,6 @@ local PLATFORM_TARGETS = {
 
 local VARYING_DEF = 'def.sc'
 local STDLIB_INCLUDE = 'shaders/lib'
-
--- create output directory:
-lfs.mkdir(OUT_DIR)
-OUT_DIR = OUT_DIR..(jit.os:lower())..'/' -- append platform name
-lfs.mkdir(OUT_DIR)
-print('Output directory: '..OUT_DIR)
 
 -- Following shaders must be compiled:
 -- Windows: DX11, Vulkan - DX12 uses the same shaders
