@@ -48,7 +48,7 @@ local function fromAxisAngle(vec)
     return norm(new(axis.x * s, axis.y * s, axis.z * s, c))
 end
 
-local function fromRollPitchYaw(pitch, yaw, roll)
+local function fromYawPitchRoll(yaw, pitch, roll)
     assert(type(pitch) == 'number')
     assert(type(yaw) == 'number')
     assert(type(roll) == 'number')
@@ -170,7 +170,7 @@ local Quat = setmetatable({
     new = new,
     norm = norm,
     fromAxisAngle = fromAxisAngle,
-    fromRollPitchYaw = fromRollPitchYaw,
+    fromYawPitchRoll = fromYawPitchRoll,
     mag = mag,
     magSqr = magSqr,
     dot = dot,

@@ -74,6 +74,12 @@ LUA_INTEROP_API auto __lu_window_get_size() -> lua_vec2 {
     return lua_vec2 { static_cast<float>(width), static_cast<float>(height) };
 }
 
+LUA_INTEROP_API auto __lu_window_get_framebuf_size() -> lua_vec2 {
+    int width, height;
+    glfwGetFramebufferSize(platform_subsystem::get_glfw_window(), &width, &height);
+    return lua_vec2 { static_cast<float>(width), static_cast<float>(height) };
+}
+
 LUA_INTEROP_API auto __lu_window_get_pos() -> lua_vec2 {
     int x, y;
     glfwGetWindowPos(platform_subsystem::get_glfw_window(), &x, &y);

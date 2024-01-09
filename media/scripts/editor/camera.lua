@@ -81,7 +81,7 @@ function Camera:_computeCameraRotation()
     delta = delta * Vec2(sens, sens)
     self._mouseAngles = self._mouseAngles + delta
     self._mouseAngles.y = Math.clamp(self._mouseAngles.y, -clampYRad, clampYRad)
-    self._rotation = Quat.fromRollPitchYaw(self._mouseAngles.y, self._mouseAngles.x, 0)
+    self._rotation = Quat.fromYawPitchRoll(self._mouseAngles.x, self._mouseAngles.y, 0.0)
     Entity.setRot(self.entity, self._rotation)
 end
 

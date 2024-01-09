@@ -20,6 +20,7 @@ local Terminal = require 'editor.tools.terminal'
 local Profiler = require 'editor.tools.profiler'
 local ScriptEditor = require 'editor.tools.scripteditor'
 local Camera = require 'editor.camera'
+Camera._position = Vec3(0, 1, -6)
 
 WINDOW_SIZE = UI.ImVec2(800, 600)
 
@@ -135,9 +136,12 @@ function Editor:renderOverlay()
     if UI.Begin('Overlay', nil, overlayFlags) then
         UI.Text(string.format('FPS: %d, T: %.01f, %sT: %f', Time.fpsAvg, Time.time, ICONS.TRIANGLE, Time.deltaTime))
         UI.SameLine()
+        local size = App.Window.getFrameBufSize()
+        UI.Text(string.format(' | %d X %d', size.x, size.y))
+        UI.Text(string.format('GC Mem: %.03f MB', collectgarbage('count')/1000.0))
+        UI.SameLine()
         local time = os.date('*t')
         UI.Text(string.format(' | %02d.%02d.%02d %02d:%02d', time.day, time.month, time.year, time.hour, time.min))
-        UI.Text(string.format('GC Mem: %.03f MB', collectgarbage('count')/1000.0))
         UI.Separator()
         UI.Text(string.format('Pos: %s', self.camera._position))
         UI.Text(string.format('Rot: %s', self.camera._rotation))

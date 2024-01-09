@@ -14,6 +14,7 @@ ffi.cdef [[
     void __lu_window_hide(void);
     void __lu_window_allow_resize(bool allow);
     lua_vec2 __lu_window_get_size(void);
+    lua_vec2 __lu_window_get_framebuf_size(void);
     lua_vec2 __lu_window_get_pos(void);
     void __lu_app_exit(void);
 ]]
@@ -90,6 +91,10 @@ end
 
 function App.Window.getSize()
     return C.__lu_window_get_size()
+end
+
+function App.Window.getFrameBufSize()
+    return C.__lu_window_get_framebuf_size()
 end
 
 function App.Window.getPos()
