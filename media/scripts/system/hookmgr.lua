@@ -72,16 +72,9 @@ local function tickEngineSystems()
     end
 end
 
-local function tickScene()
-    local active = Scene.getActive()
-    if active then
-        active:__onTick()
-    end
-end
-
 function HookManager:tick()
     tickEngineSystems()
-    tickScene()
+    Scene.__onTick()
 end
 
 return HookManager

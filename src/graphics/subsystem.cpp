@@ -43,7 +43,7 @@ namespace graphics {
         ImGuiEx::Create(platform_subsystem::get_glfw_window(), 20.0f);
 
         // load all shaders
-        load_shader_registry("media/shaders", m_programs);
+        load_shader_registry("media/compiledshaders", m_programs);
         passert(!m_programs.empty() && "No shaders found");
         for (auto&& [name, _] : m_programs) {
             log_info("Registered shader program '{}'", name);

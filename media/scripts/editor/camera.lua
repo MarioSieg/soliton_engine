@@ -23,7 +23,7 @@ Camera.defaultMovementSpeed = 4 -- default movement speed
 Camera.fastMovementSpeed = 6 -- movement speed when pressing fast movement button (e.g. shift) (see below)
 
 Camera.enableMouseLook = true -- enables/disables looking around
-Camera.enableMouseButtonLook = false -- if true looking around is only working while a mouse button is down
+Camera.enableMouseButtonLook = true -- if true looking around is only working while a mouse button is down
 Camera.lookMouseButton = Input.MOUSE_BUTTONS.RIGHT -- the mouse button to look around if the above option is true
 
 Camera.enableMovement = true -- enables/disables camera movement
@@ -37,8 +37,8 @@ Camera.enableFastMovement = true -- enable faster movement when the key below is
 Camera.fastMovementKey = Input.KEYS.LEFT_SHIFT -- move fast when this key is pressed
 Camera.lockAxisMovement = Vec3.ONE -- enables to disable the movement on any axis, by setting the axis to 0
 Camera.enableSmoothMovement = false
-Camera.smoothMovementTime = 1
-Camera.enableSmoothLook = false
+Camera.smoothMovementTime = 1.0
+Camera.enableSmoothLook = true
 Camera.lookSnappiness = 15.0
 
 Camera._prevMousePos = Vec2.ZERO
@@ -132,14 +132,5 @@ function Camera:_computeMovement()
     Entity.setPos(self.entity, self._position)
 end
 
--- Start scene
-local function onStart(scene)
-    Camera.entity = scene:getEntityByName('MainCamera')
-end
-
--- Tick scene
-local function onTick(scene)
-	Camera:tick()
-end
-
-Scene.new('Untitled', onStart, onTick)
+Camera.entity = Scene.getEntityByName('MainCamera')
+return Camera

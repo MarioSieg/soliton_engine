@@ -101,5 +101,6 @@ function App.exit()
 end
 
 App.Window.setTitle(string.format('Lunam Engine v.%s - %s %s', App.engineVersion, jit.os, jit.arch))
+App.Window.maximize()
 
 return App

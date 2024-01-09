@@ -8,7 +8,7 @@ local now = os.clock()
 local xml = require 'ext.xml'
 
 local EXECUTABLE = 'tools/shaderc_'
-local OUT_DIR = 'media/shaders/'
+local OUT_DIR = 'media/compiledshaders/'
 local REGISTRY = OUT_DIR..'registry.xml'
 
 print('Shader compiler script started.')
@@ -24,7 +24,7 @@ local function getFileModificationTimes(directory, times)
             local path = directory .. '/' .. file
             local attr = lfs.attributes(path)
             if attr.mode == "file" then
-                times[path] = attr.modification
+                times[path] = tostring(attr.modification)
             elseif attr.mode == "directory" then
                 getFileModificationTimes(path, times) -- Recursive call for subdirectories
             end

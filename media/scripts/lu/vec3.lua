@@ -227,13 +227,13 @@ ffi.metatype('lua_vec3', {
             if istype('lua_vec3', y) then
                 return new(x.x * y.x, x.y * y.y, x.z * y.z)
             elseif istype('lua_vec4', y) then -- quaternion rotation
-                local ix =  y.w*y.x + y.y*x.z - y.z*x.y
-                local iy =  y.w*y.y + y.z*x.x - y.x*x.z
-                local iz =  y.w*y.z + y.x*x.y - y.y*x.x
-                local iw = -y.x*x.x - y.y*x.y - y.z*x.z
-                local x = ix*y.w + iw*-y.x + iy*-y.z - iz*-y.y
-                local yy = iy*y.w + iw*-y.y + iz*-y.x - ix*-y.z
-                local z = iz*y.w + iw*-y.z + ix*-y.y - iy*-y.x
+                local ix = y.w * x.x + y.y * x.z - y.z * x.y
+                local iy = y.w * x.y + y.z * x.x - y.x * x.z
+                local iz = y.w * x.z + y.x * x.y - y.y * x.x
+                local iw = - y.x * x.x - y.y * x.y - y.z * x.z
+                local x = ix * y.w + iw * - y.x + iy * - y.z - iz * - y.y
+                local yy = iy * y.w + iw * - y.y + iz * - y.x - ix * - y.z
+                local z = iz * y.w + iw * - y.z + ix * - y.y - iy * - y.x
                 return rawnew(x, yy, z)
             elseif type(y) == 'number' then
                 return new(x.x * y, x.y * y, x.z * y)

@@ -14,62 +14,40 @@ local C = ffi.C
 
 local activeScene = nil
 local Scene = {
-    name = nil,
-    id = 0,
-    startCallback = function(scene) end,
-    tickCallback = function(scene) end
+    name = 'untitled',
+    id = 0
 }
 
 function Scene.getActive()
     return activeScene
 end
 
-function Scene:__onStart()
+function Scene.__onStart()
     C.__lu_scene_start()
-    self.startCallback(self)
 end
 
-function Scene:__onTick()
-    self.tickCallback(self)
+function Scene.__onTick()
     C.__lu_scene_tick()
 end
 
-function Scene:spawn(name)
-    assert(type(name) == 'string')
+function Scene.spawn(name)
     return C.__lu_scene_spawn_entity(name)
 end
 
-function Scene:getEntityByName(name)
-    assert(name ~= nil)
-    assert(type(name) == 'string')
+function Scene.getEntityByName(name)
     return C.__lu_scene_get_entity_by_name(name)
 end
 
-function Scene.new(name, startFunc, tickFunc)
-    startFunc = startFunc or function(scene) end
-    tickFunc = tickFunc or function(scene) end
-
-    assert(type(startFunc) == 'function', 'startFunc must be a function')
-    assert(type(tickFunc) == 'function', 'tickFunc must be a function')
-
-    name = name or 'untitled'
+function Scene.new(name)
+    Scene.name = name or 'untitled'
     local id = C.__lu_scene_new() -- create native scene
     assert(type(id) == 'number' and id ~= 0, 'failed to create scene')
-
-    local scene = {}
-    setmetatable(scene, {__index = Scene})
-    scene.name = name
-    scene.id = id
-    scene.startCallback = startFunc
-    scene.tickCallback = tickFunc
-
-    activeScene = nil -- clear active scene
-    scene:__onStart() -- call start callback to start playing
-    activeScene = scene
+    Scene.id = id
+    Scene.__onStart() -- invoke start hook
     collectgarbage('collect') -- collect garbage after new scene is created
     print(string.format('Created new scene: %s, id: %x', name, id))
 end
 
-Scene.new('Default')
+Scene.new()
 
 return Scene
