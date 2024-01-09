@@ -105,6 +105,7 @@ kernel::kernel() {
 #if PLATFORM_WINDOWS
     redirect_io();
     SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS); // Is this smart?
+    SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
 #endif
     std::ostream::sync_with_stdio(false);
     spdlog::init_thread_pool(k_log_queue_size, k_log_threads);
