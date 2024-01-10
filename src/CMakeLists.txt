@@ -84,6 +84,10 @@ add_subdirectory(src/rendercore)
 include_directories(src/rendercore/bgfx/include)
 target_link_libraries(lunam bgfx bx bimg)
 
+add_subdirectory(src/meshio)
+include_directories(src/meshio/include)
+target_link_libraries(lunam assimp)
+
 if (WIN32)
     target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/win_amd64/lua51.lib)
 else()
