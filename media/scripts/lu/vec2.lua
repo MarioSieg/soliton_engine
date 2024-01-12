@@ -12,15 +12,12 @@ local UNIT_X = rawnew(1.0, 0.0)
 local UNIT_Y = rawnew(0.0, 1.0)
 
 local function new(x, y)
-    assert(type(x) == 'number')
-    assert(type(y) == 'number' or y == nil)
     x = x or 0.0
     y = y or x
     return rawnew(x, y)
 end
 
 local function fromAngle(theta)
-    assert(type(theta) == 'number')
     return rawnew(cos(theta), sin(theta))
 end
 
@@ -35,19 +32,16 @@ local function magSqr(v)
 end
 
 local function dist(v, other)
-    assert(istype('lua_vec2', other))
     local x, y = other.x - v.x, other.y - v.y
     return sqrt(x*x + y*y)
 end
 
 local function distSqr(v, other)
-    assert(istype('lua_vec2', other))
     local x, y = other.x - v.x, other.y - v.y
     return x*x + y*y
 end
 
 local function dot(v, other)
-    assert(istype('lua_vec2', other))
     local xx, yy = v.x, v.y
     local ox, oy = other.x, other.y
     return xx*ox + yy*oy
@@ -58,7 +52,6 @@ local function norm(v)
 end
 
 local function reflect(v, normal)
-    assert(istype('lua_vec2', normal))
     return v - 2.0*dot(v, normal) * normal
 end
 
@@ -67,7 +60,6 @@ local function angle(v)
 end
 
 local function rotate(v, theta)
-    assert(type(theta) == 'number')
     local c, s = cos(theta), sin(theta)
     return Vec2.new(
         c*v.x - s*v.y,
@@ -76,8 +68,6 @@ local function rotate(v, theta)
 end
 
 local function clamp(v, lower, upper)
-    assert(istype('lua_vec2', lower))
-    assert(istype('lua_vec2', upper))
     return new(
         max(lower.x, min(upper.x, v.x)),
         max(lower.y, min(upper.y, v.y))

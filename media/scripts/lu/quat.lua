@@ -12,10 +12,6 @@ local IDENTITY = rawnew(0.0, 0.0, 0.0, 1.0)
 local EPSILON = 1e-6
 
 local function new(x, y, z, w)
-    assert(type(x) == 'number')
-    assert(type(y) == 'number' or y == nil)
-    assert(type(z) == 'number' or z == nil)
-    assert(type(w) == 'number' or w == nil)
     x = x or 0.0
     y = y or x
     z = z or x
@@ -38,7 +34,6 @@ local function norm(q)
 end
 
 local function fromAxisAngle(vec)
-    assert(istype('lua_vec3', vec))
     local angle = #vec
     if angle == 0.0 then
         return IDENTITY
@@ -49,9 +44,6 @@ local function fromAxisAngle(vec)
 end
 
 local function fromYawPitchRoll(yaw, pitch, roll)
-    assert(type(pitch) == 'number')
-    assert(type(yaw) == 'number')
-    assert(type(roll) == 'number')
     local hp = pitch * 0.5
     local cp = cos(hp)
     local sp = sin(hp)
@@ -69,16 +61,12 @@ local function fromYawPitchRoll(yaw, pitch, roll)
 end
 
 local function dot(q, other)
-    assert(istype('lua_vec4', other))
     local x, y, z, w = q.x, q.y, q.z, q.w
     local ox, oy, oz, ow = other.x, other.y, other.z, other.w
     return x*ox + y*oy + z*oz + w*ow
 end
 
 local function slerp(x, y, i)
-    assert(istype('lua_vec4', x))
-    assert(istype('lua_vec4', y))
-    assert(type(i) == 'number')
     if x == y then return x end
     local cosHalfTheta = dot(x, y)
     local halfTheta = acos(cosHalfTheta)
@@ -133,11 +121,9 @@ end
 
 ffi.metatype('lua_vec4', {
     _add = function(x, y)
-        assert(istype('lua_vec4', y))
         return rawnew(x.x + y.x, x.y + y.y, x.z + y.z, x.w + y.w)
     end,
     _sub = function(x, y)
-        assert(istype('lua_vec4', y))
         return rawnew(x.x - y.x, x.y - y.y, x.z - y.z, x.w - y.w)
     end,
     _mul = function(x, y)

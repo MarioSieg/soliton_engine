@@ -18,7 +18,6 @@ ffi.cdef [[
 ]]
 
 function panic(msg)
-    assert(type(msg) == 'string')
     ffi.C.__lu_panic(msg)
 end
 

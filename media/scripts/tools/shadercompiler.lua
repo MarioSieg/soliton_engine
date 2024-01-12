@@ -188,7 +188,6 @@ for dir in lfs.dir('shaders') do
 end
 
 local function getFileName(file)
-    assert(type(file) == 'string')
     local name = file:match("[^/]*.sc$")
     return name:sub(0, #name-3)
 end
@@ -221,11 +220,6 @@ print('Compiling '..#shaderFiles..' shader module(s)...')
 local WKDIR = lfs.currentdir()..'/'
 
 local function compileShader(base, file, varying, stype, target)
-    assert(type(base) == 'string')
-    assert(type(file) == 'string')
-    assert(type(varying) == 'string')
-    assert(type(stype) == 'number')
-    assert(type(target) == 'number')
     local apiDir = string.format('%s%s/', OUT_DIR, SHADER_TARGET_NAMES[target])
     lfs.mkdir(apiDir)
     apiDir = apiDir..base

@@ -31,7 +31,6 @@ local startTimePtr = ffi.new('double[1]', 0.0)
 local fileProxy = {}
 
 function fileProxy:write(str)
-    assert(type(str) == 'string')
     table.insert(profileDataRoutines, str)
 end
 function fileProxy:close() end

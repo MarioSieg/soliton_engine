@@ -151,23 +151,18 @@ local Input = {
 }
 
 function Input.isKeyPressed(key)
-    assert(type(key) == 'number')
     return C.__lu_input_is_key_pressed(key)
 end
 
 function Input.isKeyReleased(key)
-    assert(type(key) == 'number')
-    key = Math.clamp(key, MIN_KEY, MAX_KEY)
     return C.__lu_input_is_key_released(key)
 end
 
 function Input.isMouseButtonPressed(mb)
-    assert(type(mb) == 'number')
     return C.__lu_input_is_mouse_button_pressed(mb)
 end
 
 function Input.isMouseButtonReleased(mb)
-    assert(type(mb) == 'number')
     return C.__lu_input_is_mouse_button_released(mb)
 end
 

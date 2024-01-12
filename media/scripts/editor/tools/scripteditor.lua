@@ -30,7 +30,6 @@ function NativeEditor.getText()
     local len = ffi.C.__lu_script_editor_get_text_len()
     local str = ffi.string(ffi.C.__lu_script_editor_get_text(), len)
     assert(str ~= nil)
-    assert(type(str) == 'string')
     assert(#str == len)
     return str
 end
@@ -43,9 +42,8 @@ function NativeEditor.undo()
     ffi.C.__lu_script_editor_undo()
 end
 
-function NativeEditor.setReadOnly(read_only)
-    assert(type(read_only) == 'boolean')
-    ffi.C.__lu_script_editor_set_read_only(read_only)
+function NativeEditor.setReadOnly(readOnly)
+    ffi.C.__lu_script_editor_set_read_only(readOnly)
 end
 
 function NativeEditor.hasTextChanged()
@@ -62,9 +60,6 @@ end
 local SCRIPT_TEMPLATE = readAllText('media/scripts/editor/tools/script_template.lua')
 
 function newScript(str, name)
-    assert(type(str) == 'string')
-    assert(type(name) == 'string')
-
     local script = {
         name = name,
         textBuf = ffi.new('char[?]', #str+1),

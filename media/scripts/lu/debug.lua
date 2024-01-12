@@ -31,12 +31,10 @@ function Debug.start()
 end
 
 function Debug.setWireframe(isWireframe)
-    assert(type(isWireframe) == 'boolean')
     C.__lu_dd_set_wireframe(isWireframe)
 end
 
 function Debug.setColor(rgb)
-    assert(istype('lua_vec3', rgb))
     local r = bit.band(rgb.x*255.0, 0xff) -- normalized [0,1] to u8[0,0xff]
     local g = bit.band(rgb.y*255.0, 0xff)
     local b = bit.band(rgb.z*255.0, 0xff)
@@ -49,30 +47,18 @@ function Debug.setColor(rgb)
 end
 
 function Debug.drawGrid(axis, pos, size, step)
-    assert(type(axis) == 'number')
-    assert(istype('lua_vec3', pos))
-    assert(type(size) == 'number')
-    assert(type(step) == 'number')
     C.__lu_dd_grid(axis, pos, size, step)
 end
 
 function Debug.drawAxis(pos, len, axisHighlight, thickness)
-    assert(istype('lua_vec3', pos))
-    assert(type(len) == 'number')
-    assert(type(axisHighlight) == 'number')
-    assert(type(thickness) == 'number')
     C.__lu_dd_axis(pos, len, axisHighlight, thickness)
 end
 
 function Debug.drawAABB(min, max)
-    assert(istype('lua_vec3', min))
-    assert(istype('lua_vec3', max))
     C.__lu_dd_aabb(min, max)
 end
 
 function Debug.drawSphere(center, radius)
-    assert(istype('lua_vec3', center))
-    assert(type(radius) == 'number')
     C.__lu_dd_sphere(center, radius)
 end
 

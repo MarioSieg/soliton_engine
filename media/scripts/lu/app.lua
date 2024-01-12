@@ -58,19 +58,14 @@ function App.Window.leaveFullscreen()
 end
 
 function App.Window.setTitle(title)
-    assert(type(title) == 'string')
     C.__lu_window_set_title(title)
 end
 
 function App.Window.setSize(width, height)
-    assert(type(width) == 'number')
-    assert(type(height) == 'number')
     C.__lu_window_set_size(width, height)
 end
 
 function App.Window.setPos(x, y)
-    assert(type(x) == 'number')
-    assert(type(y) == 'number')
     C.__lu_window_set_pos(x, y)
 end
 
@@ -85,7 +80,6 @@ function App.Window.hide()
 end
 
 function App.Window.allowResize(allow)
-    assert(type(allow) == 'boolean')
     C.__lu_window_allow_resize(allow)
 end
 

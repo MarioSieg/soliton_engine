@@ -19,9 +19,6 @@ local FORWARD = rawnew(0.0, 0.0, 1.0)
 local BACKWARD = rawnew(0.0, 0.0, -1.0)
 
 local function new(x, y, z)
-    assert(type(x) == 'number')
-    assert(type(y) == 'number' or y == nil)
-    assert(type(z) == 'number' or z == nil)
     x = x or 0.0
     y = y or x
     z = z or x
@@ -51,8 +48,6 @@ local function randomXZ(from, to, y)
 end
 
 local function fromAngles(theta, phi)
-    assert(type(theta) == 'number')
-    assert(type(phi) == 'number')
     local st, sp, ct, cp = sin(theta), sin(phi), cos(theta), cos(phi)
     return rawnew(st*sp, ct, st*cp)
 end
@@ -68,26 +63,22 @@ local function magSqr(v)
 end
 
 local function dist(v, other)
-    assert(istype('lua_vec3', other))
     local x, y, z = other.x - v.x, other.y - v.y, other.z - v.z
     return sqrt(x*x + y*y + z*z)
 end
 
 local function distSqr(v, other)
-    assert(istype('lua_vec3', other))
     local x, y, z = other.x - v.x, other.y - v.y, other.z - v.z
     return x*x + y*y + z*z
 end
 
 local function dot(v, other)
-    assert(istype('lua_vec3', other))
     local xx, yy, zz = v.x, v.y, v.z
     local ox, oy, oz = other.x, other.y, other.z
     return xx*ox + yy*oy + zz*oz
 end
 
 local function cross(v, other)
-    assert(istype('lua_vec3', other))
     local xx, yy, zz = v.x, v.y, v.z
     local ox, oy, oz = other.x, other.y, other.z
     return rawnew(yy*oz - zz*oy, zz*ox - xx*oz, xx*oy - yy*ox)
@@ -98,7 +89,6 @@ local function norm(v)
 end
 
 local function reflect(v, normal)
-    assert(istype('lua_vec3', normal))
     return v - 2.0*dot(v, normal) * normal
 end
 
@@ -107,7 +97,6 @@ local function angle(v)
 end
 
 local function rotate(v, theta)
-    assert(type(theta) == 'number')
     local c, s = cos(theta), sin(theta)
     return Vec3.new(
         c*v.x - s*v.y,
@@ -117,8 +106,6 @@ local function rotate(v, theta)
 end
 
 local function clamp(v, lower, upper)
-    assert(istype('lua_vec3', lower))
-    assert(istype('lua_vec3', upper))
     return new(
         max(lower.x, min(upper.x, v.x)),
         max(lower.y, min(upper.y, v.y)),
@@ -139,13 +126,6 @@ local function clone(v)
 end
 
 local function smoothDamp(current, target, velocity, smoothTime, maxSpeed, deltaTime)
-    assert(istype('lua_vec3', current))
-    assert(istype('lua_vec3', target))
-    assert(istype('lua_vec3', velocity))
-    assert(type(smoothTime) == 'number')
-    assert(type(maxSpeed) == 'number')
-    assert(type(deltaTime) == 'number')
-
     local out_x, out_y, out_z = 0.0, 0.0, 0.0
     smoothTime = max(0.0001, smoothTime)
     local omega = 2.0 / smoothTime
