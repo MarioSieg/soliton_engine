@@ -4,7 +4,7 @@
 local ffi = require 'ffi'
 
 ffi.cdef[[
-    typedef double lua_entity_id;
+    typedef uint32_t lua_entity_id;
 
     typedef struct {
         double x;

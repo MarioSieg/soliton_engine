@@ -1,6 +1,7 @@
 -- Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 local ffi = require 'ffi'
+local Entity = require 'lu.entity'
 
 ffi.cdef[[
     uint32_t __lu_scene_new(void);
@@ -31,11 +32,11 @@ function Scene.__onTick()
 end
 
 function Scene.spawn(name)
-    return C.__lu_scene_spawn_entity(name)
+    return Entity:new(C.__lu_scene_spawn_entity(name))
 end
 
 function Scene.getEntityByName(name)
-    return C.__lu_scene_get_entity_by_name(name)
+    return Entity:new(C.__lu_scene_get_entity_by_name(name))
 end
 
 function Scene.new(name)

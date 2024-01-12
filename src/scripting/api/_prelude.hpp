@@ -14,36 +14,6 @@
 #define LUA_INTEROP_API extern "C" __attribute__((visibility("default")))
 #endif
 
-// We need to store the entity id which is 64-bits wide inside a double which has 52-bits mantissa.
-// This means we can't store the full entity id inside a double.
-// We can however store the lower 52-bits of the entity id inside a double.
-// This is what we do here.
-// LuaJIT can only handle 64-bit integers using the FFI which will allocate each integer on the heap, which sucks.
-
-using lua_entity_id = double;
-
-// std::isfinite() doesn't work with -ffast-math, so we need to do this ourselves:
-[[nodiscard]] constexpr __attribute__((always_inline)) auto lua_entity_id_is_valid(const lua_entity_id x) noexcept -> bool {
-    return ((std::bit_cast<id_t>(x) >> 52) & 0x7ff) != 0x7ff; // Check if exponent is not 0x7ff (infinity or NaN)
-}
-
-[[nodiscard]] inline __attribute__((always_inline)) auto lua_entity_id_to_entity_id(const lua_entity_id x) noexcept -> id_t {
-    passert(lua_entity_id_is_valid(x));
-    return std::bit_cast<id_t>(x);
-}
-
-[[nodiscard]] inline __attribute__((always_inline)) auto lua_entity_id_from_entity_id(const id_t x) noexcept -> lua_entity_id {
-    const auto id = std::bit_cast<lua_entity_id>(x);
-    passert(lua_entity_id_is_valid(id));
-    return id;
-}
-
-[[nodiscard]] inline __attribute__((always_inline)) auto lua_entity_id_connect(const lua_entity_id x) noexcept -> entity {
-    const auto& scene = scene::get_active();
-    if (!scene) [[unlikely]] { return entity::null(); }
-    return entity{scene->get_world(), lua_entity_id_to_entity_id(x)};
-}
-
 
 // Vector2 for LUA interop
 // Only a proxy type holding the data and allowing implicit conversions to other vector types.

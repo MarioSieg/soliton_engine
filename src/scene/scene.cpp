@@ -13,6 +13,7 @@ static constinit std::atomic_uint32_t id_gen = 1;
 scene::scene() : id{id_gen.fetch_add(1, std::memory_order_relaxed)} {
     static const auto main_tid = std::this_thread::get_id();
     passert(main_tid == std::this_thread::get_id());
+    m_eitbl.reserve(0x1000);
 }
 
 auto scene::new_active(std::string&& name) -> void {
@@ -30,9 +31,13 @@ auto scene::on_start() -> void {
     kernel::get().on_new_scene_start(*this);
 }
 
-auto scene::spawn(const char* name) const -> struct entity {
+auto scene::spawn(const char* name, lua_entity* l_id) -> struct entity {
     struct entity ent = this->entity(name);
     ent.add<c_meta>();
     ent.add<c_transform>();
+    if (l_id)
+        *l_id = m_eitbl.size() & ~0u;
+    m_eitbl.emplace_back(ent);
+    passert(m_eitbl.size() <= k_max_entities);
     return ent;
 }

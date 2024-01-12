@@ -16,7 +16,7 @@ local Vec3 = require 'Vec3'
 
 local Camera = {}
 
-Camera.entity = 0
+Camera.targetEntity = 0
 Camera.sensitivity = 0.5 -- mouse look sensitivity
 Camera.clampY = 80 -- mouse look Y-axis clamp
 Camera.defaultMovementSpeed = 4 -- default movement speed
@@ -82,7 +82,7 @@ function Camera:_computeCameraRotation()
     self._mouseAngles = self._mouseAngles + delta
     self._mouseAngles.y = Math.clamp(self._mouseAngles.y, -clampYRad, clampYRad)
     self._rotation = Quat.fromYawPitchRoll(self._mouseAngles.x, self._mouseAngles.y, 0.0)
-    Entity.setRot(self.entity, self._rotation)
+    self.targetEntity:setRotation(self._rotation)
 end
 
 function Camera:_computeMovement()
@@ -129,8 +129,8 @@ function Camera:_computeMovement()
     end
 
     self._position = self._position * self.lockAxisMovement -- apply axis lock
-    Entity.setPos(self.entity, self._position)
+    self.targetEntity:setPosition(self._position)
 end
 
-Camera.entity = Scene.getEntityByName('MainCamera')
+Camera.targetEntity = Scene.getEntityByName('MainCamera')
 return Camera

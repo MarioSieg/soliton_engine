@@ -141,6 +141,6 @@ mesh::mesh(std::string&& path, std::underlying_type_t<aiPostProcessSteps> post_p
             v.tangent = std::bit_cast<XMFLOAT3>(*vt++);
         }
     }
-    *this = std::move(std::decay_t<decltype(*this)>{outVertices, outIndices});
+    *this = std::decay_t<decltype(*this)>{outVertices, outIndices};
     file_path = std::move(path);
 }

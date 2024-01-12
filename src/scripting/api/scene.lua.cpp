@@ -8,29 +8,39 @@ LUA_INTEROP_API auto __lu_scene_new() -> std::uint32_t {
 }
 
 LUA_INTEROP_API auto __lu_scene_tick() -> void {
-    if (!scene::get_active()) [[unlikely]] return;
+    if (!scene::get_active()) [[unlikely]]
+        return;
     scene::get_active()->on_tick();
 }
 
 LUA_INTEROP_API auto __lu_scene_start() -> void {
-    if (!scene::get_active()) [[unlikely]] return;
+    if (!scene::get_active()) [[unlikely]]
+        return;
     scene::get_active()->on_start();
 }
 
-LUA_INTEROP_API auto __lu_scene_spawn_entity(const char* const name) -> lua_entity_id {
-    if (!scene::get_active()) [[unlikely]] {
-        return {};
-    }
-    const entity entity = scene::get_active()->spawn(name);
-    return lua_entity_id_from_entity_id(entity.id());
+LUA_INTEROP_API auto __lu_scene_spawn_entity(const char* const name) -> lua_entity {
+    if (!scene::get_active()) [[unlikely]]
+        return scene::k_invalid_entity;
+    lua_entity id = 0;
+    scene::get_active()->spawn(name, &id);
+    return id;
 }
 
-LUA_INTEROP_API auto __lu_scene_get_entity_by_name(const char* const name) -> lua_entity_id {
-    log_info("Looking up entity by name: {}", name);
-    if (!scene::get_active()) [[unlikely]] {
-        return {};
-    }
+LUA_INTEROP_API auto __lu_scene_get_entity_by_name(const char* const name) -> lua_entity {
+    const auto& active = scene::get_active();
+    if (!active) [[unlikely]]
+       return scene::k_invalid_entity;
     const entity entity = scene::get_active()->lookup(name);
-    return lua_entity_id_from_entity_id(entity.id());
+    if (!entity) [[unlikely]]
+        return scene::k_invalid_entity;
+    const std::span<const struct entity> entities = active->get_eitbl();
+    const auto entry = std::ranges::find(entities, entity); // TODO: Smarter way to handle this?
+    if (entry != entities.end()) [[likely]] {
+        const std::ptrdiff_t id = std::distance(entities.begin(), entry);
+        passert(id <= scene::k_max_entities);
+        return static_cast<lua_entity>(id);
+    }
+    return scene::k_invalid_entity;
 }
 
