@@ -19,19 +19,35 @@ namespace graphics {
     public:
         auto realloc(void* p, size_t size, size_t align, const char* _filePath, uint32_t _line) -> void* override;
     };
+    class callback_hook final : public bgfx::CallbackI {
+        auto fatal(const char* filePath, uint16_t line, bgfx::Fatal::Enum code, const char* str) -> void override;
+        virtual void traceVargs(const char* _filePath, uint16_t _line, const char* _format, va_list _argList) = 0;
+		virtual void profilerBegin(const char* _name, uint32_t _abgr, const char* _filePath, uint16_t _line) = 0;
+		virtual void profilerBeginLiteral(const char* _name, uint32_t _abgr, const char* _filePath, uint16_t _line) = 0;
+		virtual void profilerEnd() = 0;
+		virtual uint32_t cacheReadSize(uint64_t _id) override;
+		virtual bool cacheRead(uint64_t _id, void* _data, uint32_t _size) override;
+		virtual void cacheWrite(uint64_t _id, const void* _data, uint32_t _size) -> void override;
+		virtual void screenShot(const char* _filePath, uint32_t _width, uint32_t _height, uint32_t _pitch, const void* _data, uint32_t _size, bool _yflip) -> void override;
+		virtual void captureBegin(uint32_t _width, uint32_t _height, uint32_t _pitch, bgfx::TextureFormat::Enum _format, bool _yflip) -> void override;
+		virtual void captureEnd() -> void override;
+		virtual void captureFrame(const void* _data, uint32_t _size) -> void override;
+    };
 
     graphics_subsystem::graphics_subsystem() : subsystem{"Graphics"} {
         log_info("Initializing graphics subsystem");
         void* wnd = platform_subsystem::get_native_window();
         passert(wnd != nullptr);
         static allocator g_bgfx_alloc;
+        static callback_hook g_bgfx_callback;
         bgfx::Init init {};
         init.allocator = &g_bgfx_alloc;
         init.platformData.nwh = wnd;
         init.platformData.ndt = platform_subsystem::get_native_display();
         init.resolution.reset = m_reset_flags;
+        init.callback = &g_bgfx_callback;
 #if PLATFORM_WINDOWS
-        init.type = bgfx::RendererType::Direct3D11;
+        init.type = bgfx::RendererType::Vulkan;
 #elif PLATFORM_LINUX
         init.type = bgfx::RendererType::Vulkan;
 #elif PLATFORM_MACOS
@@ -48,6 +64,8 @@ namespace graphics {
         for (auto&& [name, _] : m_programs) {
             log_info("Registered shader program '{}'", name);
         }
+
+        m_mesh.emplace("media/meshes/cube.obj");
     }
 
     graphics_subsystem::~graphics_subsystem() {
@@ -108,6 +126,13 @@ namespace graphics {
         update_main_camera(m_width, m_height);
         ImGuiEx::BeginFrame(m_width, m_height, k_imgui_view);
         s_is_draw_phase = true;
+        constexpr std::uint64_t state =
+                BGFX_STATE_WRITE_RGB
+                | BGFX_STATE_WRITE_Z
+                | BGFX_STATE_DEPTH_TEST_LESS
+                | BGFX_STATE_CULL_CW;
+        bgfx::setState(state);
+        m_mesh->render(0, m_programs["pbr"]);
         return true;
     }
 
@@ -137,7 +162,6 @@ namespace graphics {
     }
 
     static constexpr std::size_t k_natural_align = 8;
-
     auto allocator::realloc(void* p, std::size_t size, std::size_t align, const char*, std::uint32_t) -> void* {
         if (0 == size) {
             if (nullptr != p) {
@@ -159,5 +183,9 @@ namespace graphics {
             return mi_realloc(p, size);
         }
         return mi_realloc_aligned(p, size, align);
+    }
+
+    auto callback_hook::fatal(const char* filePath, uint16_t line, bgfx::Fatal::Enum code, const char* str) -> void {
+        panic("renderer fatal error: {}:{}: {} ({})", filePath, line, str, code);
     }
 }

@@ -109,21 +109,23 @@ mesh::mesh(std::string&& path, std::underlying_type_t<aiPostProcessSteps> post_p
     const aiMesh& assimpMesh = **scene->mMeshes;
     passert(assimpMesh.mNumFaces > 0);
     passert(assimpMesh.mNumVertices > 0);
-    std::vector<index> outIndices {};
-    std::vector<vertex> outVertices {};
-    outIndices.reserve(3*static_cast<std::size_t>(assimpMesh.mNumFaces));
+    passert(assimpMesh.HasPositions());
+    const bgfx::Memory* const ibmem = bgfx::alloc(static_cast<std::size_t>(assimpMesh.mNumFaces)*3*sizeof(index));
+    passert(ibmem != nullptr);
+    auto* idst = reinterpret_cast<index*>(ibmem->data);
     for (const aiFace* i = assimpMesh.mFaces, *const e = assimpMesh.mFaces + assimpMesh.mNumFaces; i < e; ++i) {
         if (i->mNumIndices != 3) [[unlikely]] continue;
         const std::uint32_t* j = i->mIndices;
-        outIndices.emplace_back(static_cast<index>(*j));
-        outIndices.emplace_back(static_cast<index>(*++j));
-        outIndices.emplace_back(static_cast<index>(*++j));
+        *idst++ = static_cast<index>(*j);
+        *idst++ = static_cast<index>(*++j);
+        *idst++ = static_cast<index>(*++j);
+        assert(idst <= reinterpret_cast<index*>(ibmem->data) + ibmem->size/sizeof(index));
     }
-    if (assimpMesh.HasPositions()) [[likely]] {
-        outVertices.resize(assimpMesh.mNumVertices);
-        for (const aiVector3D* vt = assimpMesh.mVertices; vertex& v : outVertices) {
-            v.position = std::bit_cast<XMFLOAT3>(*vt++);
-        }
+    const bgfx::Memory* const vbmem = bgfx::alloc(assimpMesh.mNumVertices*sizeof(vertex));
+    passert(vbmem != nullptr);
+    std::span outVertices { reinterpret_cast<vertex*>(vbmem->data), assimpMesh.mNumVertices };
+    for (const aiVector3D* vt = assimpMesh.mVertices; vertex& v : outVertices) {
+        v.position = std::bit_cast<XMFLOAT3>(*vt++);
     }
     if (assimpMesh.HasTextureCoords(channel_uv)) [[likely]] {
         for (const aiVector3D* vt = &assimpMesh.mTextureCoords[channel_uv][0]; vertex& v : outVertices) {
@@ -141,6 +143,15 @@ mesh::mesh(std::string&& path, std::underlying_type_t<aiPostProcessSteps> post_p
             v.tangent = std::bit_cast<XMFLOAT3>(*vt++);
         }
     }
-    *this = std::decay_t<decltype(*this)>{outVertices, outIndices};
+    vertex_buffer = handle{bgfx::createVertexBuffer(vbmem, k_vertex_layout)};
+    index_buffer = handle{bgfx::createIndexBuffer(ibmem, BGFX_BUFFER_INDEX32)};
+    passert(bgfx::isValid(vertex_buffer));
+    passert(bgfx::isValid(index_buffer));
     file_path = std::move(path);
+}
+
+auto mesh::render(const bgfx::ViewId view, const bgfx::ProgramHandle program) const -> void {
+    bgfx::setVertexBuffer(0, vertex_buffer);
+    //bgfx::setIndexBuffer(index_buffer);
+    bgfx::submit(view, program);
 }

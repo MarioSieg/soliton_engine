@@ -2,10 +2,7 @@
 
 #pragma once
 
-#include <bit>
-
 #include "prelude.hpp"
-#include "Mesh.hpp"
 
 #include <assimp/scene.h>
 
@@ -27,7 +24,7 @@ struct vertex final {
 
 using index = std::uint32_t;
 
-class mesh final : public no_copy {
+class mesh final : public no_copy, public no_move {
 public:
     std::string file_path {"memory"};
     handle<bgfx::VertexBufferHandle> vertex_buffer {};
@@ -42,6 +39,7 @@ public:
         index_format format = index_format::i32
     );
     mesh(std::string&& path, std::underlying_type_t<aiPostProcessSteps> post_process_steps = aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_ConvertToLeftHanded);
+    auto render(bgfx::ViewId view, bgfx::ProgramHandle program) const -> void;
 };
 
 extern const bgfx::VertexLayout k_vertex_layout;
