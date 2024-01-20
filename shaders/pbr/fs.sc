@@ -1,7 +1,5 @@
-$input v_color0
-
 #include "common.shh"
 
 void main() {
-	gl_FragColor = v_color0;
+	gl_FragColor = vec4_splat(1.0);
 }

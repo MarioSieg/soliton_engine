@@ -17,21 +17,21 @@ using platform::platform_subsystem;
 namespace graphics {
     class allocator final : public bx::AllocatorI {
     public:
-        auto realloc(void* p, size_t size, size_t align, const char* _filePath, uint32_t _line) -> void* override;
+        auto realloc(void* p, size_t size, size_t align, const char* filePath, std::uint32_t line) -> void* override;
     };
     class callback_hook final : public bgfx::CallbackI {
-        auto fatal(const char* filePath, uint16_t line, bgfx::Fatal::Enum code, const char* str) -> void override;
-        virtual void traceVargs(const char* _filePath, uint16_t _line, const char* _format, va_list _argList) = 0;
-		virtual void profilerBegin(const char* _name, uint32_t _abgr, const char* _filePath, uint16_t _line) = 0;
-		virtual void profilerBeginLiteral(const char* _name, uint32_t _abgr, const char* _filePath, uint16_t _line) = 0;
-		virtual void profilerEnd() = 0;
-		virtual uint32_t cacheReadSize(uint64_t _id) override;
-		virtual bool cacheRead(uint64_t _id, void* _data, uint32_t _size) override;
-		virtual void cacheWrite(uint64_t _id, const void* _data, uint32_t _size) -> void override;
-		virtual void screenShot(const char* _filePath, uint32_t _width, uint32_t _height, uint32_t _pitch, const void* _data, uint32_t _size, bool _yflip) -> void override;
-		virtual void captureBegin(uint32_t _width, uint32_t _height, uint32_t _pitch, bgfx::TextureFormat::Enum _format, bool _yflip) -> void override;
-		virtual void captureEnd() -> void override;
-		virtual void captureFrame(const void* _data, uint32_t _size) -> void override;
+        auto fatal(const char* filePath, std::uint16_t line, bgfx::Fatal::Enum code, const char* str) -> void override;
+        auto traceVargs(const char* filePath, std::uint16_t line, const char* format, va_list argList) -> void override;
+		auto profilerBegin(const char* name, std::uint32_t abgr, const char* filePath, std::uint16_t line) -> void override;
+		auto profilerBeginLiteral(const char* name, std::uint32_t abgr, const char* filePath, std::uint16_t line) -> void override;
+		auto profilerEnd() -> void override;
+		auto cacheReadSize(std::uint64_t id) -> std::uint32_t override;
+		auto cacheRead(std::uint64_t id, void* data, std::uint32_t size)  -> bool override;
+		auto cacheWrite(std::uint64_t id, const void* data, std::uint32_t size) -> void override;
+		auto screenShot(const char* _filePath, std::uint32_t width, std::uint32_t height, std::uint32_t pitch, const void* data, std::uint32_t size, bool yflip) -> void override;
+		auto captureBegin(std::uint32_t width, std::uint32_t height, std::uint32_t pitch, bgfx::TextureFormat::Enum format, bool yflip) -> void override;
+		auto captureEnd() -> void override;
+		auto captureFrame(const void* _data, std::uint32_t size) -> void override;
     };
 
     graphics_subsystem::graphics_subsystem() : subsystem{"Graphics"} {
@@ -47,7 +47,7 @@ namespace graphics {
         init.resolution.reset = m_reset_flags;
         init.callback = &g_bgfx_callback;
 #if PLATFORM_WINDOWS
-        init.type = bgfx::RendererType::Vulkan;
+        init.type = bgfx::RendererType::Direct3D11;
 #elif PLATFORM_LINUX
         init.type = bgfx::RendererType::Vulkan;
 #elif PLATFORM_MACOS
@@ -128,11 +128,13 @@ namespace graphics {
         s_is_draw_phase = true;
         constexpr std::uint64_t state =
                 BGFX_STATE_WRITE_RGB
-                | BGFX_STATE_WRITE_Z
-                | BGFX_STATE_DEPTH_TEST_LESS
-                | BGFX_STATE_CULL_CW;
+                | BGFX_STATE_WRITE_A
+                | BGFX_STATE_WRITE_Z;
         bgfx::setState(state);
-        m_mesh->render(0, m_programs["pbr"]);
+        XMMATRIX mtx = XMMatrixTranslation(0.0, 0.0, 3.0);
+        bgfx::setTransform(&mtx);
+        const auto& program = m_programs["pbr"];
+        m_mesh->render(0, *program);
         return true;
     }
 
@@ -187,5 +189,45 @@ namespace graphics {
 
     auto callback_hook::fatal(const char* filePath, uint16_t line, bgfx::Fatal::Enum code, const char* str) -> void {
         panic("renderer fatal error: {}:{}: {} ({})", filePath, line, str, code);
+    }
+
+    auto callback_hook::traceVargs(const char* filePath, std::uint16_t line, const char* format,
+        va_list argList) -> void {
+    }
+
+    auto callback_hook::profilerBegin(const char* name, std::uint32_t abgr, const char* filePath,
+        std::uint16_t line) -> void {
+    }
+
+    auto callback_hook::profilerBeginLiteral(const char* name, std::uint32_t abgr, const char* filePath,
+        std::uint16_t line) -> void {
+    }
+
+    auto callback_hook::profilerEnd() -> void {
+    }
+
+    auto callback_hook::cacheReadSize(std::uint64_t id) -> std::uint32_t {
+        return 0;
+    }
+
+    auto callback_hook::cacheRead(std::uint64_t id, void* data, std::uint32_t size) -> bool {
+        return false;
+    }
+
+    auto callback_hook::cacheWrite(std::uint64_t id, const void* data, std::uint32_t size) -> void {
+    }
+
+    auto callback_hook::screenShot(const char* _filePath, std::uint32_t width, std::uint32_t height,
+        std::uint32_t pitch, const void* data, std::uint32_t size, bool yflip) -> void {
+    }
+
+    auto callback_hook::captureBegin(std::uint32_t width, std::uint32_t height, std::uint32_t pitch,
+        bgfx::TextureFormat::Enum format, bool yflip) -> void {
+    }
+
+    auto callback_hook::captureEnd() -> void {
+    }
+
+    auto callback_hook::captureFrame(const void* _data, std::uint32_t _size) -> void {
     }
 }

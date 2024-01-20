@@ -9,8 +9,6 @@
 
 using namespace DirectX;
 
-static constexpr std::size_t channel_uv = 0;
-
 static_assert(sizeof(DirectX::XMFLOAT3) == sizeof(aiVector3D));
 static_assert(alignof(DirectX::XMFLOAT3) == alignof(aiVector3D));
 
@@ -56,7 +54,7 @@ auto compute_aabb(const std::span<const vertex> vertices) noexcept -> BoundingBo
     return r;
 }
 
-const bgfx::VertexLayout k_vertex_layout = [] {
+static const bgfx::VertexLayout k_vertex_layout = [] {
     bgfx::VertexLayout layout { };
     layout
     .begin()
@@ -66,6 +64,10 @@ const bgfx::VertexLayout k_vertex_layout = [] {
     .add(bgfx::Attrib::Tangent, 3, bgfx::AttribType::Float)
     .end();
     passert(layout.getStride() == sizeof(vertex));
+    passert(layout.getOffset(bgfx::Attrib::Position) == offsetof(vertex, position));
+    passert(layout.getOffset(bgfx::Attrib::Normal) == offsetof(vertex, normal));
+    passert(layout.getOffset(bgfx::Attrib::TexCoord0) == offsetof(vertex, uv));
+    passert(layout.getOffset(bgfx::Attrib::Tangent) == offsetof(vertex, tangent));
     return layout;
 }();
 
@@ -102,7 +104,7 @@ mesh::mesh(const std::span<const vertex> vertices, const std::span<const index> 
     aabb = compute_aabb(vertices);
 }
 
-mesh::mesh(std::string&& path, std::underlying_type_t<aiPostProcessSteps> post_process_steps) {
+mesh::mesh(std::string&& path, const std::underlying_type_t<aiPostProcessSteps> post_process_steps) {
     Assimp::Importer importer { };
     const aiScene* const scene = importer.ReadFile(path, post_process_steps);
     passert(scene && scene->mNumMeshes > 0);
@@ -112,6 +114,7 @@ mesh::mesh(std::string&& path, std::underlying_type_t<aiPostProcessSteps> post_p
     passert(assimpMesh.HasPositions());
     const bgfx::Memory* const ibmem = bgfx::alloc(static_cast<std::size_t>(assimpMesh.mNumFaces)*3*sizeof(index));
     passert(ibmem != nullptr);
+    std::memset(ibmem->data, 0, ibmem->size);
     auto* idst = reinterpret_cast<index*>(ibmem->data);
     for (const aiFace* i = assimpMesh.mFaces, *const e = assimpMesh.mFaces + assimpMesh.mNumFaces; i < e; ++i) {
         if (i->mNumIndices != 3) [[unlikely]] continue;
@@ -123,10 +126,12 @@ mesh::mesh(std::string&& path, std::underlying_type_t<aiPostProcessSteps> post_p
     }
     const bgfx::Memory* const vbmem = bgfx::alloc(assimpMesh.mNumVertices*sizeof(vertex));
     passert(vbmem != nullptr);
+    std::memset(vbmem->data, 0, vbmem->size);
     std::span outVertices { reinterpret_cast<vertex*>(vbmem->data), assimpMesh.mNumVertices };
     for (const aiVector3D* vt = assimpMesh.mVertices; vertex& v : outVertices) {
         v.position = std::bit_cast<XMFLOAT3>(*vt++);
     }
+    static constexpr auto channel_uv = 0;
     if (assimpMesh.HasTextureCoords(channel_uv)) [[likely]] {
         for (const aiVector3D* vt = &assimpMesh.mTextureCoords[channel_uv][0]; vertex& v : outVertices) {
             std::memcpy(&v.uv, vt, sizeof(XMFLOAT2)); // only copy first 2 floats
@@ -145,13 +150,11 @@ mesh::mesh(std::string&& path, std::underlying_type_t<aiPostProcessSteps> post_p
     }
     vertex_buffer = handle{bgfx::createVertexBuffer(vbmem, k_vertex_layout)};
     index_buffer = handle{bgfx::createIndexBuffer(ibmem, BGFX_BUFFER_INDEX32)};
-    passert(bgfx::isValid(vertex_buffer));
-    passert(bgfx::isValid(index_buffer));
     file_path = std::move(path);
 }
 
 auto mesh::render(const bgfx::ViewId view, const bgfx::ProgramHandle program) const -> void {
-    bgfx::setVertexBuffer(0, vertex_buffer);
-    //bgfx::setIndexBuffer(index_buffer);
+    bgfx::setVertexBuffer(0, *vertex_buffer);
+    bgfx::setIndexBuffer(*index_buffer);
     bgfx::submit(view, program);
 }

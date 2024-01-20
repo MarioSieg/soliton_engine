@@ -41,5 +41,3 @@ public:
     mesh(std::string&& path, std::underlying_type_t<aiPostProcessSteps> post_process_steps = aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_ConvertToLeftHanded);
     auto render(bgfx::ViewId view, bgfx::ProgramHandle program) const -> void;
 };
-
-extern const bgfx::VertexLayout k_vertex_layout;

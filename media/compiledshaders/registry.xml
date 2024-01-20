@@ -1,9 +1,9 @@
 <shader_registry>
-  <shaders/pbr/def.sc>1704808664</shaders/pbr/def.sc>
+  <shaders/pbr/vs.sc>1705762237</shaders/pbr/vs.sc>
+  <shaders/pbr/def.sc>1705762222</shaders/pbr/def.sc>
   <shaders/lib/bgfx_shader.shh>1704808664</shaders/lib/bgfx_shader.shh>
-  <shaders/pbr/fs.sc>1704808664</shaders/pbr/fs.sc>
+  <shaders/pbr/fs.sc>1705762249</shaders/pbr/fs.sc>
   <shaders/lib/common.shh>1704808664</shaders/lib/common.shh>
-  <shaders/pbr/vs.sc>1704808664</shaders/pbr/vs.sc>
-  <shaders/lib/shaderlib.shh>1704808664</shaders/lib/shaderlib.shh>
   <shaders/lib/bgfx_compute.shh>1704808664</shaders/lib/bgfx_compute.shh>
+  <shaders/lib/shaderlib.shh>1704808664</shaders/lib/shaderlib.shh>
 </shader_registry>

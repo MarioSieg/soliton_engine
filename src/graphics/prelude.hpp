@@ -25,7 +25,6 @@ template <typename T> requires (sizeof(T) == sizeof(std::uint16_t))
     }
     [[nodiscard]] constexpr auto operator * () const noexcept -> T { return value; }
     operator bool() const noexcept { return bgfx::isValid(value); }
-    constexpr operator T() const noexcept { return value; }
 
     ~handle() noexcept {
         if (bgfx::isValid(value)) {
@@ -34,7 +33,7 @@ template <typename T> requires (sizeof(T) == sizeof(std::uint16_t))
     }
 };
 
-[[nodiscard]] extern auto load_shader(const std::string& path) -> handle<bgfx::ShaderHandle>;
+[[nodiscard]] extern auto load_shader(const std::string& path) -> bgfx::ShaderHandle;
 extern auto load_shader_registry(
     std::filesystem::path&& root,
     ankerl::unordered_dense::map<std::string, handle<bgfx::ProgramHandle>>& registry

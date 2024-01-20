@@ -6,9 +6,9 @@
 
 using namespace std::filesystem;
 
-auto load_shader_program(const std::string& path) -> handle<bgfx::ShaderHandle> {
-    if (!exists(path)) {
-        return handle<bgfx::ShaderHandle>{};
+auto load_shader_program(const std::string& path) -> bgfx::ShaderHandle {
+    if (!exists(path)) [[unlikely]] {
+        return BGFX_INVALID_HANDLE;
     }
     log_info("Loading shader {}", path);
     std::ifstream file {path, std::ios::binary};
@@ -16,14 +16,14 @@ auto load_shader_program(const std::string& path) -> handle<bgfx::ShaderHandle> 
     file.unsetf(std::ios::skipws);
     file.seekg(0, std::ios::end);
     const std::streamsize size = file.tellg();
-    passert(size != 0 && size <= 0xffffffffull);
+    passert(size > 0 && size <= std::numeric_limits<std::uint32_t>::max());
     file.seekg(0, std::ios::beg);
     const auto* mem = bgfx::alloc(size);
     passert(mem != nullptr);
     file.read(reinterpret_cast<char*>(mem->data), size);
     bgfx::ShaderHandle h = bgfx::createShader(mem);
     passert(bgfx::isValid(h));
-    return handle {h};
+    return h;
 }
 
 auto load_shader_registry(
@@ -58,16 +58,16 @@ auto load_shader_registry(
     log_info("Loading shaders from {}", root.string());
     for (auto&& dir : directory_iterator{root}) {
         if (dir.exists() && dir.is_directory()) {
-            const auto load_file = [root = dir.path()](path&& name) -> handle<bgfx::ShaderHandle> {
+            const auto load_file = [root = dir.path()](path&& name) -> bgfx::ShaderHandle {
                 return load_shader_program((root / name).string());
             };
-            handle<bgfx::ShaderHandle> vs = load_file("vs.bin");
-            handle<bgfx::ShaderHandle> fs = load_file("fs.bin");
-            handle<bgfx::ShaderHandle> cs = load_file("cs.bin");
-            if (vs && fs) {
-                registry.emplace(dir.path().filename().string(), handle {bgfx::createProgram(vs, fs, true)});
-            } else if (cs) {
-                registry.emplace(dir.path().filename().string(), handle {bgfx::createProgram(cs, true)});
+            bgfx::ShaderHandle vs = load_file("vs.bin");
+            bgfx::ShaderHandle fs = load_file("fs.bin");
+            bgfx::ShaderHandle cs = load_file("cs.bin");
+            if (bgfx::isValid(vs) && bgfx::isValid(fs) && !bgfx::isValid(cs)) {
+                registry.emplace(dir.path().filename().string(), bgfx::createProgram(vs, fs, true));
+            } else if (bgfx::isValid(cs)) {
+                registry.emplace(dir.path().filename().string(), bgfx::createProgram(cs, true));
             } else {
                 panic("No shaders found in {}", dir.path().string());
             }
