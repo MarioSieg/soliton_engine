@@ -5,9 +5,10 @@
 #include <filesystem>
 
 #include "../core/core.hpp"
-
 #include "../dense/unordered_dense.h"
+
 #include <bgfx/bgfx.h>
+#include <bx/allocator.h>
 
 template <typename T> requires (sizeof(T) == sizeof(std::uint16_t))
     struct handle final { // Destroys BGFX when out of scope
@@ -25,11 +26,14 @@ template <typename T> requires (sizeof(T) == sizeof(std::uint16_t))
     }
     [[nodiscard]] constexpr auto operator * () const noexcept -> T { return value; }
     operator bool() const noexcept { return bgfx::isValid(value); }
-
-    ~handle() noexcept {
+    auto reset() -> void {
         if (bgfx::isValid(value)) {
             bgfx::destroy(value);
+            value = BGFX_INVALID_HANDLE;
         }
+    }
+    ~handle() noexcept {
+        reset();
     }
 };
 

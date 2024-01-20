@@ -82,7 +82,7 @@ target_link_libraries(lunam infoware)
 
 add_subdirectory(src/rendercore)
 include_directories(src/rendercore/bgfx/include)
-target_link_libraries(lunam bgfx bx bimg)
+target_link_libraries(lunam bgfx bx bimg bimg_encode bimg_decode)
 
 add_subdirectory(src/meshio)
 include_directories(src/meshio/include)

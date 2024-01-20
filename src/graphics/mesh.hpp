@@ -26,12 +26,12 @@ using index = std::uint32_t;
 
 class mesh final : public no_copy, public no_move {
 public:
-    std::string file_path {"memory"};
-    handle<bgfx::VertexBufferHandle> vertex_buffer {};
-    handle<bgfx::IndexBufferHandle> index_buffer {};
+    std::string file_path {};
     std::size_t vertex_count = 0;
     std::size_t index_count = 0;
     DirectX::BoundingBox aabb {};
+    handle<bgfx::VertexBufferHandle> vertex_buffer {};
+    handle<bgfx::IndexBufferHandle> index_buffer {};
 
     mesh(
         std::span<const vertex> vertices,

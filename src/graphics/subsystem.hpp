@@ -7,8 +7,14 @@
 
 #include "prelude.hpp"
 #include "mesh.hpp"
+#include "texture.hpp"
 
 namespace graphics {
+    class allocator final : public bx::AllocatorI {
+    public:
+        auto realloc(void* p, size_t size, size_t align, const char* filePath, std::uint32_t line) -> void* override;
+    };
+
     class graphics_subsystem final : public subsystem {
     public:
         graphics_subsystem();
@@ -37,6 +43,8 @@ namespace graphics {
         float m_height = 0.0f;
         ankerl::unordered_dense::map<std::string, handle<bgfx::ProgramHandle>> m_programs {};
         std::uint32_t m_reset_flags = 0;
+        handle<bgfx::UniformHandle> m_sampler {};
         std::optional<mesh> m_mesh {};
+        std::optional<texture> m_texture {};
     };
 }

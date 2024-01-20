@@ -6,7 +6,6 @@
 
 #include <mimalloc.h>
 #include <bgfx/bgfx.h>
-#include <bx/allocator.h>
 
 #include "imgui/imgui_renderer.hpp"
 #include "debugdraw/debugdraw.h"
@@ -15,10 +14,6 @@
 using platform::platform_subsystem;
 
 namespace graphics {
-    class allocator final : public bx::AllocatorI {
-    public:
-        auto realloc(void* p, size_t size, size_t align, const char* filePath, std::uint32_t line) -> void* override;
-    };
     class callback_hook final : public bgfx::CallbackI {
         auto fatal(const char* filePath, std::uint16_t line, bgfx::Fatal::Enum code, const char* str) -> void override;
         auto traceVargs(const char* filePath, std::uint16_t line, const char* format, va_list argList) -> void override;
@@ -65,10 +60,14 @@ namespace graphics {
             log_info("Registered shader program '{}'", name);
         }
 
-        m_mesh.emplace("media/meshes/cube.obj");
+        m_sampler = handle{bgfx::createUniform("s_sampler", bgfx::UniformType::Sampler)};
+        m_mesh.emplace("media/meshes/fish.gltf");
+        m_texture.emplace("media/textures/fish.png");
     }
 
     graphics_subsystem::~graphics_subsystem() {
+        m_sampler.reset();
+        m_texture.reset();
         m_mesh.reset();
         m_programs.clear();
         if (s_is_dd_init) {
@@ -127,12 +126,16 @@ namespace graphics {
         update_main_camera(m_width, m_height);
         ImGuiEx::BeginFrame(m_width, m_height, k_imgui_view);
         s_is_draw_phase = true;
-        constexpr std::uint64_t state =
+        bgfx::setTexture(0, *m_sampler, *m_texture->texel_buffer);
+        static constexpr std::uint64_t state =
                 BGFX_STATE_WRITE_RGB
-                | BGFX_STATE_WRITE_A
-                | BGFX_STATE_WRITE_Z;
+                | BGFX_STATE_WRITE_Z
+                | BGFX_STATE_DEPTH_TEST_LESS
+                | BGFX_STATE_CULL_CCW;
         bgfx::setState(state);
-        XMMATRIX mtx = XMMatrixTranslation(0.0, 0.0, 3.0);
+        float s = 10.0f;
+        XMMATRIX mtx = XMMatrixMultiply(XMMatrixScaling(s, s, s), XMMatrixRotationRollPitchYaw(0.0, 180.0, 0.0));
+        mtx = XMMatrixMultiply(mtx, XMMatrixTranslation(0.0, 0.0, 3.0));
         bgfx::setTransform(&mtx);
         const auto& program = m_programs["pbr"];
         m_mesh->render(0, *program);
