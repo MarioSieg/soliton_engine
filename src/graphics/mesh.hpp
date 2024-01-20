@@ -38,6 +38,6 @@ public:
         std::span<const index> indices,
         index_format format = index_format::i32
     );
-    mesh(std::string&& path, std::underlying_type_t<aiPostProcessSteps> post_process_steps = aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_ConvertToLeftHanded);
+    explicit mesh(std::string&& path, std::underlying_type_t<aiPostProcessSteps> post_process_steps = aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_ConvertToLeftHanded);
     auto render(bgfx::ViewId view, bgfx::ProgramHandle program) const -> void;
 };

@@ -2,6 +2,7 @@
 
 #include "subsystem.hpp"
 
+#include "../scene/scene.hpp"
 #include "lfs/lfs.h"
 
 namespace scripting {

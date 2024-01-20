@@ -1,6 +1,7 @@
 // Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "kernel.hpp"
+#include "../scene/scene.hpp"
 
 #include <iostream>
 
@@ -122,6 +123,9 @@ kernel::kernel() {
 
 kernel::~kernel() {
     log_info("Shutting down...");
+    // Kill active scene before other subsystems are shut down
+    auto& active = const_cast<std::unique_ptr<scene>&>(scene::get_active());
+    active.reset();
     m_subsystems.clear();
     log_info("System offline");
     std::cout.flush();

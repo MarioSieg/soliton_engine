@@ -17,7 +17,7 @@ public:
     virtual ~scene() = default;
 
     static auto new_active(std::string&& name = {}) -> void;
-    [[nodiscard]] static auto get_active() noexcept -> const std::unique_ptr<scene>& { return m_active; }
+    [[nodiscard]] static auto get_active() noexcept -> const std::unique_ptr<scene>& { passert(m_active != nullptr); return m_active; }
 
     virtual auto on_tick() -> void;
     virtual auto on_start() -> void;

@@ -69,6 +69,7 @@ namespace graphics {
     }
 
     graphics_subsystem::~graphics_subsystem() {
+        m_mesh.reset();
         m_programs.clear();
         if (s_is_dd_init) {
             ddShutdown();
