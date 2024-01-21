@@ -61,11 +61,13 @@ namespace graphics {
         }
 
         m_sampler = handle{bgfx::createUniform("s_sampler", bgfx::UniformType::Sampler)};
-        m_mesh.emplace("media/meshes/fish.gltf");
-        m_texture.emplace("media/textures/fish.png");
+        m_mesh.emplace("media/meshes/orb.obj");
+        m_texture.emplace("media/textures/fish.png", true);
+        m_pbr.emplace();
     }
 
     graphics_subsystem::~graphics_subsystem() {
+        m_pbr.reset();
         m_sampler.reset();
         m_texture.reset();
         m_mesh.reset();
@@ -101,6 +103,7 @@ namespace graphics {
     static XMMATRIX m_mtx_view;
     static XMMATRIX m_mtx_proj;
     static XMMATRIX m_mtx_view_proj;
+    static c_transform m_camera_transform;
 
     static auto update_main_camera(float width, float height) -> void {
         entity main_cam = get_main_camera();
@@ -109,13 +112,13 @@ namespace graphics {
             return;
         }
         c_camera::active_camera = main_cam;
-        const c_transform& transform = *main_cam.get<c_transform>();
+        m_camera_transform = *main_cam.get<c_transform>();
         c_camera& cam = *main_cam.get_mut<c_camera>();
         if (cam.auto_viewport) {
             cam.viewport.x = width;
             cam.viewport.y = height;
         }
-        m_mtx_view = cam.compute_view(transform);
+        m_mtx_view = cam.compute_view(m_camera_transform);
         m_mtx_proj = cam.compute_projection();
         m_mtx_view_proj = XMMatrixMultiply(m_mtx_view, m_mtx_proj);
         bgfx::setViewTransform(graphics_subsystem::k_scene_view, &m_mtx_view, &m_mtx_proj);
@@ -126,19 +129,34 @@ namespace graphics {
         update_main_camera(m_width, m_height);
         ImGuiEx::BeginFrame(m_width, m_height, k_imgui_view);
         s_is_draw_phase = true;
-        bgfx::setTexture(0, *m_sampler, *m_texture->texel_buffer);
+
+        static_assert(sizeof(m_camera_transform.position) == 3*sizeof(float));
+        memcpy(m_pbr->m_cameraPos, &m_camera_transform.position, 3*sizeof(float));
+
+        const auto& program = m_programs["pbr"];
+
         static constexpr std::uint64_t state =
                 BGFX_STATE_WRITE_RGB
                 | BGFX_STATE_WRITE_Z
                 | BGFX_STATE_DEPTH_TEST_LESS
-                | BGFX_STATE_CULL_CCW;
-        bgfx::setState(state);
-        float s = 10.0f;
-        XMMATRIX mtx = XMMatrixMultiply(XMMatrixScaling(s, s, s), XMMatrixRotationRollPitchYaw(0.0, 180.0, 0.0));
-        mtx = XMMatrixMultiply(mtx, XMMatrixTranslation(0.0, 0.0, 3.0));
-        bgfx::setTransform(&mtx);
-        const auto& program = m_programs["pbr"];
-        m_mesh->render(0, *program);
+                | BGFX_STATE_MSAA;
+
+        float env_rot_mtx[16];
+        bx::mtxRotateY(env_rot_mtx,0.0f);
+        std::memcpy(m_pbr->m_mtx, env_rot_mtx, 16*sizeof(float));
+
+        float lim = 5.0f;
+        for (float y = 0.0f; y < lim; y += 1.0f) {
+            for (float x = 0.0f; x < lim; x += 1.0f) {
+                XMMATRIX mtx = XMMatrixMultiply(XMMatrixTranslation(x * 2.0f, y * 2.0f, 0.0f), XMMatrixRotationY(XMConvertToRadians(180.0f)));
+                bgfx::setTransform(&mtx);
+                bgfx::setState(state);
+                m_pbr->m_glossiness = x * (1.0f / lim);
+                m_pbr->m_reflectivity = (lim - y) * (1.0f / lim);
+                m_pbr->submit_uniforms();
+                m_mesh->render(graphics_subsystem::k_scene_view, *program);
+            }
+        }
         return true;
     }
 

@@ -10,7 +10,7 @@
 #include <bimg/encode.h>
 #include <bx/allocator.h>
 
-texture::texture(std::string&& path, bool gen_mips) {
+texture::texture(std::string&& path, bool gen_mips, std::uint64_t flags) {
     log_info("Loading texture from '{}'", path);
     std::ifstream file {path, std::ios::binary};
     passert(file.is_open() && file.good());
@@ -24,10 +24,10 @@ texture::texture(std::string&& path, bool gen_mips) {
     file.read(reinterpret_cast<char*>(mem.data()), size);
     const bool is_dds = std::filesystem::path { path }.extension().string() == ".dds";
     graphics::allocator alloc {};
-    bimg::ImageContainer* image = bimg::imageParse(dynamic_cast<bx::AllocatorI*>(&alloc), mem.data(), static_cast<std::uint32_t>(mem.size()));
+    bimg::ImageContainer* image = bimg::imageParse(&alloc, mem.data(), static_cast<std::uint32_t>(mem.size()));
     passert(image != nullptr);
     if (!is_dds && gen_mips && !image->m_cubeMap && image->m_numMips <= 1) {
-        auto* const with_mips = bimg::imageGenerateMips(dynamic_cast<bx::AllocatorI*>(&alloc), *image);
+        auto* const with_mips = bimg::imageGenerateMips(&alloc, *image);
         if (with_mips) [[likely]] {
             bimg::imageFree(image);
             image = with_mips;
@@ -39,22 +39,28 @@ texture::texture(std::string&& path, bool gen_mips) {
         static_cast<const std::uint8_t*>(image->m_data),
         static_cast<const std::uint8_t*>(image->m_data) + image->m_size
     };
-    passert(bgfx::isTextureValid(image->m_depth, image->m_cubeMap, image->m_numLayers, static_cast<bgfx::TextureFormat::Enum>(image->m_format), BGFX_TEXTURE_NONE));
+    passert(bgfx::isTextureValid(image->m_depth, image->m_cubeMap, image->m_numLayers, static_cast<bgfx::TextureFormat::Enum>(image->m_format), flags));
     const bgfx::Memory* const texel_gpu_buf = bgfx::alloc(texels.size());
     std::memcpy(texel_gpu_buf->data, texels.data(), texels.size());
     bgfx::TextureHandle handle = BGFX_INVALID_HANDLE;
     if (image->m_cubeMap) {
-        assert(image->m_width == image->m_height);
-        handle = bgfx::createTextureCube(image->m_width, false, image->m_numLayers, static_cast<bgfx::TextureFormat::Enum>(image->m_format), BGFX_TEXTURE_NONE, texel_gpu_buf);
+        passert(image->m_width == image->m_height);
+        handle = bgfx::createTextureCube(
+            image->m_width,
+            image->m_numMips > 1,
+            image->m_numLayers,
+            static_cast<bgfx::TextureFormat::Enum>(image->m_format),
+            flags,
+            texel_gpu_buf
+        );
     } else {
-        handle = bgfx::createTexture2D
-        (
+        handle = bgfx::createTexture2D(
             image->m_width,
             image->m_height,
             image->m_numMips > 1,
             image->m_numLayers,
             static_cast<bgfx::TextureFormat::Enum>(image->m_format),
-            BGFX_TEXTURE_NONE,
+            flags,
             texel_gpu_buf
         );
     }
@@ -67,8 +73,8 @@ texture::texture(std::string&& path, bool gen_mips) {
     format = static_cast<bgfx::TextureFormat::Enum>(image->m_format);
     num_mips = image->m_numMips;
     is_cubemap = image->m_cubeMap;
-    flags = BGFX_TEXTURE_NONE;
     num_texels = mem.size();
-    texel_buffer = ::handle{handle};
+    this->handle = ::handle{handle};
+    this->flags = flags;
     bimg::imageFree(image);
 }

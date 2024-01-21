@@ -8,6 +8,7 @@
 #include "prelude.hpp"
 #include "mesh.hpp"
 #include "texture.hpp"
+#include "pbr.hpp"
 
 namespace graphics {
     class allocator final : public bx::AllocatorI {
@@ -42,9 +43,10 @@ namespace graphics {
         float m_width = 0.0f;
         float m_height = 0.0f;
         ankerl::unordered_dense::map<std::string, handle<bgfx::ProgramHandle>> m_programs {};
-        std::uint32_t m_reset_flags = 0;
+        std::uint32_t m_reset_flags = BGFX_RESET_NONE;
         handle<bgfx::UniformHandle> m_sampler {};
         std::optional<mesh> m_mesh {};
         std::optional<texture> m_texture {};
+        std::optional<pbr_renderer> m_pbr {};
     };
 }
