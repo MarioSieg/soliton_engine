@@ -19,8 +19,10 @@ void main() {
 	// Sample maps.
 	vec3 albedo = texture2D(s_texAlbedo, v_texcoord0).rgb;
 	vec3 normal = normalize(texture2D(s_texNormal, v_texcoord0).rgb * 2.0 - 1.0);
-	float metallic = texture2D(s_texMetallic, v_texcoord0).r;
-	float roughness = texture2D(s_texRoughness, v_texcoord0).r;
+	//float metallic = texture2D(s_texMetallic, v_texcoord0).r;
+	//float roughness = texture2D(s_texRoughness, v_texcoord0).r;
+    float metallic = u_reflectivity;
+    float roughness = u_glossiness;
 	float ao = texture2D(s_texAO, v_texcoord0).r;
 
 	mat3 tbn = mtxFromCols(v_tangent, v_bitangent, v_normal);
@@ -79,8 +81,7 @@ void main() {
     vec3 diffuse = irradiance * albedo;
 
 	// sample both the pre-filter map and the BRDF lut and combine them together as per the Split-Sum approximation to get the IBL specular part.
-    vec3 prefilteredColor = textureCubeLod(s_texCube, R, roughness * MAX_REFLECTION_LOD).rgb;    
-    //vec3 prefilteredColor = textureCube(s_texCube, R).rgb;    
+    vec3 prefilteredColor = textureCubeLod(s_texCube, R, roughness * MAX_REFLECTION_LOD).rgb; 
     vec2 brdf  = texture2D(s_texLUT, vec2(max(dot(N, V), 0.0), roughness)).rg;
     vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
 

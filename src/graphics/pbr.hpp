@@ -10,10 +10,7 @@ class pbr_light_probe final : public no_copy, public no_move {
 public:
     explicit pbr_light_probe(const std::string& name)
         : tex{name + "_lod.dds", false, BGFX_TEXTURE_SRGB},
-        tex_irr{name + "_irr.dds", false, BGFX_TEXTURE_SRGB}
-    {
-
-    }
+        tex_irr{name + "_irr.dds", false, BGFX_TEXTURE_SRGB} {}
 
     texture tex;
     texture tex_irr;
@@ -29,10 +26,10 @@ public:
         m_lightCol[0] = 1.0f;
         m_lightCol[1] = 1.0f;
         m_lightCol[2] = 1.0f;
-        m_glossiness = 0.7f;
+        m_roughness = 0.7f;
         m_exposure = 0.0f;
         m_bgType = 2.0f;
-        m_reflectivity = 0.85f;
+        m_metalness = 0.85f;
         m_rgbDiff[0] = 1.0f;
         m_rgbDiff[1] = 1.0f;
         m_rgbDiff[2] = 1.0f;
@@ -69,8 +66,8 @@ public:
         constexpr std::uint32_t flags = BGFX_SAMPLER_MIN_ANISOTROPIC|BGFX_SAMPLER_MAG_ANISOTROPIC;
         std::uint8_t stage = 0;
         bgfx::setTexture(stage++, *m_s_texLUT, *m_pbr_lut.handle);
-        bgfx::setTexture(stage++, *m_s_texCube, *m_probe.tex.handle, flags);
-        bgfx::setTexture(stage++, *m_s_texCubeIrr, *m_probe.tex_irr.handle, flags);
+        bgfx::setTexture(stage++, *m_s_texCube, *m_probe.tex.handle);
+        bgfx::setTexture(stage++, *m_s_texCubeIrr, *m_probe.tex_irr.handle);
         bgfx::setTexture(stage++, *m_s_texAlbedo, albedo_map, flags);
         bgfx::setTexture(stage++, *m_s_texNormal, normal_map, flags);
         bgfx::setTexture(stage++, *m_s_texMetallic, roughness_map, flags);
@@ -89,7 +86,7 @@ public:
                 /* 2*/ struct { float m_mtx2[4]; };
                 /* 3*/ struct { float m_mtx3[4]; };
             };
-            /* 4*/ struct { float m_glossiness, m_reflectivity, m_exposure, m_bgType; };
+            /* 4*/ struct { float m_roughness, m_metalness, m_exposure, m_bgType; };
             /* 5*/ struct { float m_metalOrSpec, m_unused5[3]; };
             /* 6*/ struct { float m_cameraPos[3], m_unused7[1]; };
             /* 7*/ struct { float m_rgbDiff[4]; };

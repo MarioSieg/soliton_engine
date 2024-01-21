@@ -10,6 +10,7 @@
 #include "imgui/imgui_renderer.hpp"
 #include "debugdraw/debugdraw.h"
 #include "prelude.hpp"
+#include "../rendercore/bgfx/3rdparty/dear-imgui/imgui.h"
 
 using platform::platform_subsystem;
 
@@ -166,13 +167,16 @@ namespace graphics {
 
         float lim = m_materials.size();
         int i = 0;
+        if (ImGui::Begin("Trololo")) {
+            ImGui::SliderFloat("Roughness", &m_pbr->m_roughness, 0.0001f, 0.999f);
+            ImGui::SliderFloat("Metalness", &m_pbr->m_metalness, 0.0001f, 0.999f);
+        }
+        ImGui::End();
         for (float y = 0.0f; y < lim; y += 1.0f) {
             for (float x = 0.0f; x < lim; x += 1.0f) {
                 XMMATRIX mtx = XMMatrixMultiply(XMMatrixTranslation(x * 2.0f, 0.0f, y * 2.0f), XMMatrixRotationY(XMConvertToRadians(180.0f)));
                 bgfx::setTransform(&mtx);
                 bgfx::setState(state);
-                m_pbr->m_glossiness = x * (1.0f / lim);
-                m_pbr->m_reflectivity = (lim - y) * (1.0f / lim);
                 material& mat = m_materials[i++ % m_materials.size()];
                 m_pbr->submit_material_data(
                     mtx,
