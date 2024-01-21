@@ -12,20 +12,26 @@
 
 texture::texture(std::string&& path, bool gen_mips, std::uint64_t flags) {
     log_info("Loading texture from '{}'", path);
-    std::ifstream file {path, std::ios::binary};
-    passert(file.is_open() && file.good());
-    file.unsetf(std::ios::skipws);
-    file.seekg(0, std::ios::end);
-    const std::streamsize size = file.tellg();
-    passert(size > 0 && size <= std::numeric_limits<std::uint32_t>::max());
-    file.seekg(0, std::ios::beg);
-    std::vector<std::uint8_t> mem {};
-    mem.resize(size);
-    file.read(reinterpret_cast<char*>(mem.data()), size);
+    bimg::ImageContainer* image = nullptr;
+    static graphics::allocator alloc {};
+    {
+        std::vector<std::uint8_t> mem {};
+        {
+            std::ifstream file {path, std::ios::binary};
+            passert(file.is_open() && file.good());
+            file.unsetf(std::ios::skipws);
+            file.seekg(0, std::ios::end);
+            const std::streamsize size = file.tellg();
+            passert(size > 0 && size <= std::numeric_limits<std::uint32_t>::max());
+            file.seekg(0, std::ios::beg);
+            mem.resize(size);
+            file.read(reinterpret_cast<char*>(mem.data()), size);
+        }
+        image = bimg::imageParse(&alloc, mem.data(), static_cast<std::uint32_t>(mem.size()));
+        passert(image != nullptr);
+    }
+
     const bool is_dds = std::filesystem::path { path }.extension().string() == ".dds";
-    graphics::allocator alloc {};
-    bimg::ImageContainer* image = bimg::imageParse(&alloc, mem.data(), static_cast<std::uint32_t>(mem.size()));
-    passert(image != nullptr);
     if (!is_dds && gen_mips && !image->m_cubeMap && image->m_numMips <= 1) {
         auto* const with_mips = bimg::imageGenerateMips(&alloc, *image);
         if (with_mips) [[likely]] {
@@ -35,13 +41,10 @@ texture::texture(std::string&& path, bool gen_mips, std::uint64_t flags) {
             log_warn("Failed to generate mipmaps for texture: '{}'", path);
         }
     }
-    const std::span texels {
-        static_cast<const std::uint8_t*>(image->m_data),
-        static_cast<const std::uint8_t*>(image->m_data) + image->m_size
-    };
     passert(bgfx::isTextureValid(image->m_depth, image->m_cubeMap, image->m_numLayers, static_cast<bgfx::TextureFormat::Enum>(image->m_format), flags));
-    const bgfx::Memory* const texel_gpu_buf = bgfx::alloc(texels.size());
-    std::memcpy(texel_gpu_buf->data, texels.data(), texels.size());
+    const bgfx::Memory* const texel_gpu_buf = bgfx::makeRef(image->m_data, image->m_size, +[]([[maybe_unused]] void* p, void* usr) {
+        bimg::imageFree(static_cast<bimg::ImageContainer*>(usr));
+    }, image);
     bgfx::TextureHandle handle = BGFX_INVALID_HANDLE;
     if (image->m_cubeMap) {
         passert(image->m_width == image->m_height);
@@ -73,8 +76,7 @@ texture::texture(std::string&& path, bool gen_mips, std::uint64_t flags) {
     format = static_cast<bgfx::TextureFormat::Enum>(image->m_format);
     num_mips = image->m_numMips;
     is_cubemap = image->m_cubeMap;
-    num_texels = mem.size();
+    num_texels = image->m_size;
     this->handle = ::handle{handle};
     this->flags = flags;
-    bimg::imageFree(image);
 }
