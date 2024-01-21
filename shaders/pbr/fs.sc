@@ -1,94 +1,91 @@
-$input v_view, v_normal, v_texcoord0, v_tangent, v_bitangent
+$input v_position, v_normal, v_texcoord0, v_tangent, v_bitangent
 
 #include "common.shh"
 #include "uniforms.shh"
+#include "pbr.shh"
 
-SAMPLERCUBE(s_texCube, 0);
-SAMPLERCUBE(s_texCubeIrr, 1);
-SAMPLER2D(s_texAlbedo, 2);
-SAMPLER2D(s_texNormal, 3);
-SAMPLER2D(s_texMetallic, 4);
+#define MAX_REFLECTION_LOD 8.0
 
-vec3 calcFresnel(vec3 _cspec, float _dot, float _strength) {
-	return _cspec + (1.0 - _cspec) * pow(1.0 - _dot, 5.0) * _strength;
-}
-
-vec3 calcLambert(vec3 _cdiff, float _ndotl) {
-	return _cdiff * _ndotl;
-}
-
-vec3 calcBlinn(vec3 _cspec, float _ndoth, float _ndotl, float _specPwr) {
-	float norm = (_specPwr+8.0)*0.125;
-	float brdf = pow(_ndoth, _specPwr)*_ndotl*norm;
-	return _cspec * brdf;
-}
-
-float specPwr(float _gloss) {
-	return exp2(10.0*_gloss+2.0);
-}
+SAMPLER2D(s_texLUT, 0);
+SAMPLERCUBE(s_texCube, 1);
+SAMPLERCUBE(s_texCubeIrr, 2);
+SAMPLER2D(s_texAlbedo, 3);
+SAMPLER2D(s_texNormal, 4);
+SAMPLER2D(s_texMetallic, 5);
+SAMPLER2D(s_texRoughness, 6);
+SAMPLER2D(s_texAO, 7);
 
 void main() {
 	// Sample maps.
 	vec3 albedo = texture2D(s_texAlbedo, v_texcoord0).rgb;
-	vec3 normalMap = normalize(texture2D(s_texNormal, v_texcoord0).rgb * 2.0 - 1.0);
+	vec3 normal = normalize(texture2D(s_texNormal, v_texcoord0).rgb * 2.0 - 1.0);
 	float metallic = texture2D(s_texMetallic, v_texcoord0).r;
+	float roughness = texture2D(s_texRoughness, v_texcoord0).r;
+	float ao = texture2D(s_texAO, v_texcoord0).r;
 
-	// Light.
-	vec3 ld     = normalize(u_lightDir);
-	vec3 clight = u_lightCol;
-
-	// Input.
 	mat3 tbn = mtxFromCols(v_tangent, v_bitangent, v_normal);
-	vec3 nn = normalize(mul(tbn, normalMap));
-	vec3 vv = normalize(v_view);
-	vec3 hh = normalize(vv + ld);
+	vec3 N = normalize(mul(tbn, normal));
+	vec3 V = normalize(u_camPos - v_position);
+    vec3 R = reflect(-V, N);
 
-	float ndotv = clamp(dot(nn, vv), 0.0, 1.0);
-	float ndotl = clamp(dot(nn, ld), 0.0, 1.0);
-	float ndoth = clamp(dot(nn, hh), 0.0, 1.0);
-	float hdotv = clamp(dot(hh, vv), 0.0, 1.0);
+	// calculate reflectance at normal incidence; if dia-electric (like plastic) use F0 
+    // of 0.04 and if it's a metal, use the albedo color as F0 (metallic workflow)    
+    vec3 F0 = vec3_splat(0.04); 
+    F0 = mix(F0, albedo, metallic);
 
-	// Material params.
-	vec3  inAlbedo       = u_rgbDiff.xyz * albedo;
-	float inReflectivity = mix(u_reflectivity, 1.0, metallic);
-	float inGloss        = u_glossiness;
+	// reflectance equation
+    vec3 Lo = vec3_splat(0.0);
+	{
+		// calculate per-light radiance
+        vec3 L = normalize(vec3(0.0, 1.5, 0.0) - v_position);
+        vec3 H = normalize(V + L);
+        float distance = length(vec3(0.0, 1.5, 0.0) - v_position);
+        float attenuation = 0.0;
+        vec3 radiance = vec3_splat(1.0) * attenuation;
 
-	// Reflection.
-	vec3 refl;
-	if (0.0 == u_metalOrSpec) { // Metalness workflow.
-		refl = mix(vec3_splat(0.04), inAlbedo, inReflectivity);
-	} else { // Specular workflow.
-		refl = u_rgbSpec.xyz * vec3_splat(inReflectivity);
+        // Cook-Torrance BRDF
+        float NDF = distributionGGX(N, H, roughness);   
+        float G = geometrySmith(N, V, L, roughness);    
+        vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);        
+        
+        vec3 numerator = NDF * G * F;
+        float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001; // + 0.0001 to prevent divide by zero
+        vec3 specular = numerator / denominator;
+        
+         // kS is equal to Fresnel
+        vec3 kS = F;
+        // for energy conservation, the diffuse and specular light can't
+        // be above 1.0 (unless the surface emits light); to preserve this
+        // relationship the diffuse component (kD) should equal 1.0 - kS.
+        vec3 kD = vec3_splat(1.0) - kS;
+        // multiply kD by the inverse metalness such that only non-metals 
+        // have diffuse lighting, or a linear blend if partly metal (pure metals
+        // have no diffuse light).
+        kD *= 1.0 - metallic;	                
+            
+        // scale light by NdotL
+        float NdotL = max(dot(N, L), 0.0);        
+
+        // add to outgoing radiance Lo
+        Lo += (kD * albedo / PI + specular) * radiance * NdotL; // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
 	}
-	albedo = inAlbedo * (1.0 - inReflectivity);
-	vec3 dirFresnel = calcFresnel(refl, hdotv, inGloss);
-	vec3 envFresnel = calcFresnel(refl, ndotv, inGloss);
+	
+	// ambient lighting (we now use IBL as the ambient term)
+	vec3 F = fresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
+    vec3 kS = F;
+    vec3 kD = 1.0 - kS;
+    kD *= 1.0 - metallic;	  
+    vec3 irradiance = textureCube(s_texCubeIrr, N).rgb;
+    vec3 diffuse = irradiance * albedo;
 
-	vec3 lambert = calcLambert(albedo * (1.0 - dirFresnel), ndotl);
-	vec3 blinn   = calcBlinn(dirFresnel, ndoth, ndotl, specPwr(inGloss));
-	vec3 direct  = (lambert + blinn) * clight;
+	// sample both the pre-filter map and the BRDF lut and combine them together as per the Split-Sum approximation to get the IBL specular part.
+    vec3 prefilteredColor = textureCubeLod(s_texCube, R, roughness * MAX_REFLECTION_LOD).rgb;    
+    //vec3 prefilteredColor = textureCube(s_texCube, R).rgb;    
+    vec2 brdf  = texture2D(s_texLUT, vec2(max(dot(N, V), 0.0), roughness)).rg;
+    vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
 
-	float mip = 1.0 + 5.0*(1.0 - inGloss); // Use mip levels [1..6] for radiance.
-
-	mat4 mtx;
-	mtx[0] = u_mtx0;
-	mtx[1] = u_mtx1;
-	mtx[2] = u_mtx2;
-	mtx[3] = u_mtx3;
-	vec3 vr = 2.0*ndotv*nn - vv; // Same as: -reflect(vv, nn);
-	vec3 cubeR = normalize(instMul(mtx, vec4(vr, 0.0)).xyz);
-	vec3 cubeN = normalize(instMul(mtx, vec4(nn, 0.0)).xyz);
-	cubeR = fixCubeLookup(cubeR, mip, 256.0);
-
-	vec3 radiance    = toLinear(textureCubeLod(s_texCube, cubeR, mip).xyz);
-	vec3 irradiance  = toLinear(textureCube(s_texCubeIrr, cubeN).xyz);
-	vec3 envDiffuse  = albedo     * irradiance;
-	vec3 envSpecular = envFresnel * radiance;
-	vec3 indirect    = envDiffuse + envSpecular;
-
-	// Color.
-	vec3 color = direct + indirect;
-	color = color * exp2(u_exposure);
-	gl_FragColor.xyz = toFilmic(color);
-	gl_FragColor.w = 1.0;
+    vec3 ambient = (kD * diffuse + specular) * ao;
+    
+    vec3 color = ambient + Lo;
+    gl_FragColor = vec4(color , 1.0);
 }

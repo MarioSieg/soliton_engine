@@ -16,6 +16,14 @@ namespace graphics {
         auto realloc(void* p, size_t size, size_t align, const char* filePath, std::uint32_t line) -> void* override;
     };
 
+    struct material final {
+        std::unique_ptr<texture> m_albedo;
+        std::unique_ptr<texture> m_normal;
+        std::unique_ptr<texture> m_metallic;
+        std::unique_ptr<texture> m_roughness;
+        std::unique_ptr<texture> m_ao;
+    };
+
     class graphics_subsystem final : public subsystem {
     public:
         graphics_subsystem();
@@ -43,12 +51,10 @@ namespace graphics {
         float m_width = 0.0f;
         float m_height = 0.0f;
         ankerl::unordered_dense::map<std::string, handle<bgfx::ProgramHandle>> m_programs {};
-        std::uint32_t m_reset_flags = BGFX_RESET_SRGB_BACKBUFFER;
+        std::uint32_t m_reset_flags = BGFX_RESET_SRGB_BACKBUFFER | BGFX_RESET_MSAA_X4;
         handle<bgfx::UniformHandle> m_sampler {};
         std::optional<mesh> m_mesh {};
-        std::optional<texture> m_albedo {};
-        std::optional<texture> m_normal {};
-        std::optional<texture> m_metallic {};
+        std::vector<material> m_materials {};
         std::optional<pbr_renderer> m_pbr {};
     };
 }

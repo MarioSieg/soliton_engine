@@ -51,6 +51,8 @@ namespace graphics {
 
         passert(bgfx::init(init));
 
+        //bgfx::reset(init.resolution.width, init.resolution.height, m_reset_flags);
+
         ImGuiEx::Create(platform_subsystem::get_glfw_window(), 20.0f);
 
         // load all shaders
@@ -61,19 +63,31 @@ namespace graphics {
         }
 
         m_sampler = handle{bgfx::createUniform("s_sampler", bgfx::UniformType::Sampler)};
-        m_mesh.emplace("media/meshes/platform.obj");
-        m_albedo.emplace("media/textures/wall_albedo.dds", true, BGFX_TEXTURE_SRGB);
-        m_normal.emplace("media/textures/wall_normal.dds", true, BGFX_TEXTURE_NONE);
-        m_metallic.emplace("media/textures/wall_roughness.dds", true, BGFX_TEXTURE_NONE);
+        m_mesh.emplace("media/meshes/orb.obj");
+        auto load_mat = [this](const std::string& name) {
+            auto load_tex = [&name](std::string&& type, bool srgb = false) {
+                return std::make_unique<texture>("media/textures/"+name+"/"+type+".png", true, srgb ? BGFX_TEXTURE_SRGB : BGFX_TEXTURE_NONE);
+            };
+            m_materials.emplace_back(material{
+                load_tex("albedo", true),
+                load_tex("normal"),
+                load_tex("metallic"),
+                load_tex("roughness"),
+                load_tex("ao"),
+            });
+        };
+        load_mat("plastic");
+        load_mat("wall");
+        load_mat("gold");
+        //load_mat("rusted_iron");
+        //load_mat("grass");
         m_pbr.emplace();
     }
 
     graphics_subsystem::~graphics_subsystem() {
         m_pbr.reset();
         m_sampler.reset();
-        m_metallic.reset();
-        m_normal.reset();
-        m_albedo.reset();
+        m_materials.clear();
         m_mesh.reset();
         m_programs.clear();
         if (s_is_dd_init) {
@@ -150,7 +164,8 @@ namespace graphics {
         bx::mtxRotateY(env_rot_mtx,0.0f);
         std::memcpy(m_pbr->m_mtx, env_rot_mtx, 16*sizeof(float));
 
-        float lim = 5.0f;
+        float lim = m_materials.size();
+        int i = 0;
         for (float y = 0.0f; y < lim; y += 1.0f) {
             for (float x = 0.0f; x < lim; x += 1.0f) {
                 XMMATRIX mtx = XMMatrixMultiply(XMMatrixTranslation(x * 2.0f, 0.0f, y * 2.0f), XMMatrixRotationY(XMConvertToRadians(180.0f)));
@@ -158,7 +173,15 @@ namespace graphics {
                 bgfx::setState(state);
                 m_pbr->m_glossiness = x * (1.0f / lim);
                 m_pbr->m_reflectivity = (lim - y) * (1.0f / lim);
-                m_pbr->submit_material_data(*m_albedo->handle, *m_normal->handle, *m_metallic->handle);
+                material& mat = m_materials[i++ % m_materials.size()];
+                m_pbr->submit_material_data(
+                    mtx,
+                    *mat.m_albedo->handle,
+                    *mat.m_normal->handle,
+                    *mat.m_metallic->handle,
+                    *mat.m_roughness->handle,
+                    *mat.m_ao->handle
+                );
                 m_mesh->render(graphics_subsystem::k_scene_view, *program);
             }
         }

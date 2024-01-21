@@ -33,13 +33,26 @@ texture::texture(std::string&& path, bool gen_mips, std::uint64_t flags) {
 
     const bool is_dds = std::filesystem::path { path }.extension().string() == ".dds";
     if (!is_dds && gen_mips && !image->m_cubeMap && image->m_numMips <= 1) {
+        if (image->m_format != bimg::TextureFormat::RGBA8 && image->m_format != bimg::TextureFormat::RGBA32F) { // Mipgen is only supported for these
+            auto* const transcoded = bimg::imageConvert(&alloc, bimg::TextureFormat::RGBA8, *image, false);
+            if (transcoded) [[likely]] {
+                bimg::imageFree(image);
+                image = transcoded;
+            } else {
+                log_warn("Failed to transcode texture: '{}' with format: {} to format: {}", path, bimg::getName(image->m_format), bimg::getName(bimg::TextureFormat::RGBA8));
+            }
+        }
         auto* const with_mips = bimg::imageGenerateMips(&alloc, *image);
         if (with_mips) [[likely]] {
             bimg::imageFree(image);
             image = with_mips;
         } else {
-            log_warn("Failed to generate mipmaps for texture: '{}'", path);
+            log_warn("Failed to generate mipmaps for texture: '{}' with format: {}", path, bimg::getName(image->m_format));
         }
+    }
+    if (!bgfx::isTextureValid(image->m_depth, image->m_cubeMap, image->m_numLayers, static_cast<bgfx::TextureFormat::Enum>(image->m_format), flags)) {
+        log_warn("SRGB sampling not supported for texture: '{}' with format: {}", path, bimg::getName(image->m_format));
+        flags &= ~BGFX_TEXTURE_SRGB;
     }
     passert(bgfx::isTextureValid(image->m_depth, image->m_cubeMap, image->m_numLayers, static_cast<bgfx::TextureFormat::Enum>(image->m_format), flags));
     const bgfx::Memory* const texel_gpu_buf = bgfx::makeRef(image->m_data, image->m_size, +[]([[maybe_unused]] void* p, void* usr) {
