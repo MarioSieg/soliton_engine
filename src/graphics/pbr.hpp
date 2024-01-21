@@ -16,7 +16,7 @@ public:
 };
 
 class pbr_renderer final : public no_copy, public no_move {
-    static constexpr std::size_t num_vec4 = 12;
+    static constexpr std::size_t num_vec4 = 11;
 public:
     pbr_renderer() {
         m_lightDir[0] = -0.8f;
@@ -35,20 +35,26 @@ public:
         m_rgbSpec[0] = 1.0f;
         m_rgbSpec[1] = 1.0f;
         m_rgbSpec[2] = 1.0f;
-        m_doDiffuse = static_cast<float>(false);
-        m_doSpecular = static_cast<float>(false);
-        m_doDiffuseIbl = static_cast<float>(true);
-        m_doSpecularIbl = static_cast<float>(true);
         m_metalOrSpec = 0.0f;
         m_u_params = handle{bgfx::createUniform("u_params", bgfx::UniformType::Vec4, num_vec4)};
         m_s_texCube = handle{bgfx::createUniform("s_texCube", bgfx::UniformType::Sampler)};
         m_s_texCubeIrr = handle{bgfx::createUniform("s_texCubeIrr", bgfx::UniformType::Sampler)};
+        m_s_texAlbedo = handle{bgfx::createUniform("s_texAlbedo", bgfx::UniformType::Sampler)};
+        m_s_texNormal = handle{bgfx::createUniform("s_texNormal", bgfx::UniformType::Sampler)};
+        m_s_texMetallic = handle{bgfx::createUniform("s_texMetallic", bgfx::UniformType::Sampler)};
     }
-    auto submit_uniforms() const -> void {
+
+    auto submit_material_data(bgfx::TextureHandle albedo_map, bgfx::TextureHandle normal_map,  bgfx::TextureHandle metallic_map) const -> void {
         bgfx::setUniform(*m_u_params, m_params, num_vec4);
-        bgfx::setTexture(0, *m_s_texCube, *m_probe.tex.handle);
-        bgfx::setTexture(1, *m_s_texCubeIrr, *m_probe.tex_irr.handle);
+        std::uint8_t stage = 0;
+        bgfx::setTexture(stage++, *m_s_texCube, *m_probe.tex.handle);
+        bgfx::setTexture(stage++, *m_s_texCubeIrr, *m_probe.tex_irr.handle);
+        constexpr std::uint32_t flags = BGFX_SAMPLER_MIN_ANISOTROPIC | BGFX_SAMPLER_MAG_ANISOTROPIC;
+        bgfx::setTexture(stage++, *m_s_texAlbedo, albedo_map, flags);
+        bgfx::setTexture(stage++, *m_s_texNormal, normal_map, flags);
+        bgfx::setTexture(stage++, *m_s_texMetallic, metallic_map, flags);
     }
+
     ~pbr_renderer() = default;
 
     union {
@@ -62,12 +68,11 @@ public:
             };
             /* 4*/ struct { float m_glossiness, m_reflectivity, m_exposure, m_bgType; };
             /* 5*/ struct { float m_metalOrSpec, m_unused5[3]; };
-            /* 6*/ struct { float m_doDiffuse, m_doSpecular, m_doDiffuseIbl, m_doSpecularIbl; };
-            /* 7*/ struct { float m_cameraPos[3], m_unused7[1]; };
-            /* 8*/ struct { float m_rgbDiff[4]; };
-            /* 9*/ struct { float m_rgbSpec[4]; };
-            /*10*/ struct { float m_lightDir[3], m_unused10[1]; };
-            /*11*/ struct { float m_lightCol[3], m_unused11[1]; };
+            /* 6*/ struct { float m_cameraPos[3], m_unused7[1]; };
+            /* 7*/ struct { float m_rgbDiff[4]; };
+            /* 8*/ struct { float m_rgbSpec[4]; };
+            /* 9*/ struct { float m_lightDir[3], m_unused10[1]; };
+            /*10*/ struct { float m_lightCol[3], m_unused11[1]; };
         };
 
         float m_params[num_vec4*4] {};
@@ -78,4 +83,7 @@ private:
     handle<bgfx::UniformHandle> m_u_params {};
     handle<bgfx::UniformHandle> m_s_texCube {};
     handle<bgfx::UniformHandle> m_s_texCubeIrr {};
+    handle<bgfx::UniformHandle> m_s_texAlbedo {};
+    handle<bgfx::UniformHandle> m_s_texNormal {};
+    handle<bgfx::UniformHandle> m_s_texMetallic {};
 };

@@ -62,12 +62,14 @@ static const bgfx::VertexLayout k_vertex_layout = [] {
     .add(bgfx::Attrib::Normal, 3, bgfx::AttribType::Float)
     .add(bgfx::Attrib::TexCoord0, 2, bgfx::AttribType::Float)
     .add(bgfx::Attrib::Tangent, 3, bgfx::AttribType::Float)
+    .add(bgfx::Attrib::TexCoord1, 3, bgfx::AttribType::Float) // BiTangent leads to a crash, so we use TEXCPPRD1 instead, idk why
     .end();
     passert(layout.getStride() == sizeof(vertex));
     passert(layout.getOffset(bgfx::Attrib::Position) == offsetof(vertex, position));
     passert(layout.getOffset(bgfx::Attrib::Normal) == offsetof(vertex, normal));
     passert(layout.getOffset(bgfx::Attrib::TexCoord0) == offsetof(vertex, uv));
     passert(layout.getOffset(bgfx::Attrib::Tangent) == offsetof(vertex, tangent));
+    passert(layout.getOffset(bgfx::Attrib::TexCoord1) == offsetof(vertex, bitangent));
     return layout;
 }();
 
@@ -115,7 +117,6 @@ mesh::mesh(std::string&& path, const std::underlying_type_t<aiPostProcessSteps> 
     passert(assimpMesh.HasPositions());
     const bgfx::Memory* const ibmem = bgfx::alloc(static_cast<std::size_t>(assimpMesh.mNumFaces)*3*sizeof(index));
     passert(ibmem != nullptr);
-    std::memset(ibmem->data, 0, ibmem->size);
     auto* idst = reinterpret_cast<index*>(ibmem->data);
     for (const aiFace* i = assimpMesh.mFaces, *const e = assimpMesh.mFaces + assimpMesh.mNumFaces; i < e; ++i) {
         if (i->mNumIndices != 3) [[unlikely]] continue;
@@ -127,7 +128,6 @@ mesh::mesh(std::string&& path, const std::underlying_type_t<aiPostProcessSteps> 
     }
     const bgfx::Memory* const vbmem = bgfx::alloc(assimpMesh.mNumVertices*sizeof(vertex));
     passert(vbmem != nullptr);
-    std::memset(vbmem->data, 0, vbmem->size);
     std::span outVertices { reinterpret_cast<vertex*>(vbmem->data), assimpMesh.mNumVertices };
     for (const aiVector3D* vt = assimpMesh.mVertices; vertex& v : outVertices) {
         v.position = std::bit_cast<XMFLOAT3>(*vt++);
@@ -145,8 +145,11 @@ mesh::mesh(std::string&& path, const std::underlying_type_t<aiPostProcessSteps> 
         }
     }
     if (assimpMesh.HasTangentsAndBitangents()) [[likely]] {
-        for (const aiVector3D* vt = assimpMesh.mTangents; vertex& v : outVertices) {
+        const aiVector3D* vt = assimpMesh.mTangents;
+        const aiVector3D* vt2 = assimpMesh.mBitangents;
+        for (vertex& v : outVertices) {
             v.tangent = std::bit_cast<XMFLOAT3>(*vt++);
+            v.bitangent = std::bit_cast<XMFLOAT3>(*vt2++);
         }
     }
     vertex_buffer = handle{bgfx::createVertexBuffer(vbmem, k_vertex_layout)};

@@ -61,15 +61,19 @@ namespace graphics {
         }
 
         m_sampler = handle{bgfx::createUniform("s_sampler", bgfx::UniformType::Sampler)};
-        m_mesh.emplace("media/meshes/orb.obj");
-        m_texture.emplace("media/textures/fish.png", true);
+        m_mesh.emplace("media/meshes/platform.obj");
+        m_albedo.emplace("media/textures/wall_albedo.dds", true, BGFX_TEXTURE_SRGB);
+        m_normal.emplace("media/textures/wall_normal.dds", true, BGFX_TEXTURE_NONE);
+        m_metallic.emplace("media/textures/wall_roughness.dds", true, BGFX_TEXTURE_NONE);
         m_pbr.emplace();
     }
 
     graphics_subsystem::~graphics_subsystem() {
         m_pbr.reset();
         m_sampler.reset();
-        m_texture.reset();
+        m_metallic.reset();
+        m_normal.reset();
+        m_albedo.reset();
         m_mesh.reset();
         m_programs.clear();
         if (s_is_dd_init) {
@@ -148,12 +152,12 @@ namespace graphics {
         float lim = 5.0f;
         for (float y = 0.0f; y < lim; y += 1.0f) {
             for (float x = 0.0f; x < lim; x += 1.0f) {
-                XMMATRIX mtx = XMMatrixMultiply(XMMatrixTranslation(x * 2.0f, y * 2.0f, 0.0f), XMMatrixRotationY(XMConvertToRadians(180.0f)));
+                XMMATRIX mtx = XMMatrixMultiply(XMMatrixTranslation(x * 2.0f, 0.0f, y * 2.0f), XMMatrixRotationY(XMConvertToRadians(180.0f)));
                 bgfx::setTransform(&mtx);
                 bgfx::setState(state);
                 m_pbr->m_glossiness = x * (1.0f / lim);
                 m_pbr->m_reflectivity = (lim - y) * (1.0f / lim);
-                m_pbr->submit_uniforms();
+                m_pbr->submit_material_data(*m_albedo->handle, *m_normal->handle, *m_metallic->handle);
                 m_mesh->render(graphics_subsystem::k_scene_view, *program);
             }
         }

@@ -16,10 +16,11 @@ enum struct index_format : std::uint8_t {
 };
 
 struct vertex final {
-    DirectX::XMFLOAT3 position;
-    DirectX::XMFLOAT3 normal;
-    DirectX::XMFLOAT2 uv;
-    DirectX::XMFLOAT3 tangent;
+    DirectX::XMFLOAT3 position {};
+    DirectX::XMFLOAT3 normal {};
+    DirectX::XMFLOAT2 uv {};
+    DirectX::XMFLOAT3 tangent {};
+    DirectX::XMFLOAT3 bitangent {};
 };
 
 using index = std::uint32_t;
@@ -38,6 +39,7 @@ public:
         std::span<const index> indices,
         index_format format = index_format::i32
     );
-    explicit mesh(std::string&& path, std::underlying_type_t<aiPostProcessSteps> post_process_steps = aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_ConvertToLeftHanded);
+    explicit mesh(std::string&& path, std::underlying_type_t<aiPostProcessSteps> post_process_steps
+        = aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_ConvertToLeftHanded | aiProcess_CalcTangentSpace);
     auto render(bgfx::ViewId view, bgfx::ProgramHandle program) const -> void;
 };

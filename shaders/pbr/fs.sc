@@ -1,40 +1,45 @@
-$input v_view, v_normal
+$input v_view, v_normal, v_texcoord0, v_tangent, v_bitangent
 
 #include "common.shh"
 #include "uniforms.shh"
 
 SAMPLERCUBE(s_texCube, 0);
 SAMPLERCUBE(s_texCubeIrr, 1);
+SAMPLER2D(s_texAlbedo, 2);
+SAMPLER2D(s_texNormal, 3);
+SAMPLER2D(s_texMetallic, 4);
 
-vec3 calcFresnel(vec3 _cspec, float _dot, float _strength)
-{
-	return _cspec + (1.0 - _cspec)*pow(1.0 - _dot, 5.0) * _strength;
+vec3 calcFresnel(vec3 _cspec, float _dot, float _strength) {
+	return _cspec + (1.0 - _cspec) * pow(1.0 - _dot, 5.0) * _strength;
 }
 
-vec3 calcLambert(vec3 _cdiff, float _ndotl)
-{
-	return _cdiff*_ndotl;
+vec3 calcLambert(vec3 _cdiff, float _ndotl) {
+	return _cdiff * _ndotl;
 }
 
-vec3 calcBlinn(vec3 _cspec, float _ndoth, float _ndotl, float _specPwr)
-{
+vec3 calcBlinn(vec3 _cspec, float _ndoth, float _ndotl, float _specPwr) {
 	float norm = (_specPwr+8.0)*0.125;
 	float brdf = pow(_ndoth, _specPwr)*_ndotl*norm;
-	return _cspec*brdf;
+	return _cspec * brdf;
 }
 
-float specPwr(float _gloss)
-{
+float specPwr(float _gloss) {
 	return exp2(10.0*_gloss+2.0);
 }
 
 void main() {
+	// Sample maps.
+	vec3 albedo = texture2D(s_texAlbedo, v_texcoord0).rgb;
+	vec3 normalMap = normalize(texture2D(s_texNormal, v_texcoord0).rgb * 2.0 - 1.0);
+	float metallic = texture2D(s_texMetallic, v_texcoord0).r;
+
 	// Light.
 	vec3 ld     = normalize(u_lightDir);
 	vec3 clight = u_lightCol;
 
 	// Input.
-	vec3 nn = normalize(v_normal);
+	mat3 tbn = mtxFromCols(v_tangent, v_bitangent, v_normal);
+	vec3 nn = normalize(mul(tbn, normalMap));
 	vec3 vv = normalize(v_view);
 	vec3 hh = normalize(vv + ld);
 
@@ -44,35 +49,25 @@ void main() {
 	float hdotv = clamp(dot(hh, vv), 0.0, 1.0);
 
 	// Material params.
-	vec3  inAlbedo       = u_rgbDiff.xyz;
-	float inReflectivity = u_reflectivity;
+	vec3  inAlbedo       = u_rgbDiff.xyz * albedo;
+	float inReflectivity = mix(u_reflectivity, 1.0, metallic);
 	float inGloss        = u_glossiness;
 
 	// Reflection.
 	vec3 refl;
-	if (0.0 == u_metalOrSpec) // Metalness workflow.
-	{
+	if (0.0 == u_metalOrSpec) { // Metalness workflow.
 		refl = mix(vec3_splat(0.04), inAlbedo, inReflectivity);
-	}
-	else // Specular workflow.
-	{
+	} else { // Specular workflow.
 		refl = u_rgbSpec.xyz * vec3_splat(inReflectivity);
 	}
-	vec3 albedo = inAlbedo * (1.0 - inReflectivity);
+	albedo = inAlbedo * (1.0 - inReflectivity);
 	vec3 dirFresnel = calcFresnel(refl, hdotv, inGloss);
 	vec3 envFresnel = calcFresnel(refl, ndotv, inGloss);
 
-	vec3 lambert = u_doDiffuse  * calcLambert(albedo * (1.0 - dirFresnel), ndotl);
-	vec3 blinn   = u_doSpecular * calcBlinn(dirFresnel, ndoth, ndotl, specPwr(inGloss));
-	vec3 direct  = (lambert + blinn)*clight;
+	vec3 lambert = calcLambert(albedo * (1.0 - dirFresnel), ndotl);
+	vec3 blinn   = calcBlinn(dirFresnel, ndoth, ndotl, specPwr(inGloss));
+	vec3 direct  = (lambert + blinn) * clight;
 
-	// Note: Environment textures are filtered with cmft: https://github.com/dariomanesku/cmft
-	// Params used:
-	// --excludeBase true //!< First level mip is not filtered.
-	// --mipCount 7       //!< 7 mip levels are used in total, [256x256 .. 4x4]. Lower res mip maps should be avoided.
-	// --glossScale 10    //!< Spec power scale. See: specPwr().
-	// --glossBias 2      //!< Spec power bias. See: specPwr().
-	// --edgeFixup warp   //!< This must be used on DirectX9. When fileted with 'warp', fixCubeLookup() should be used.
 	float mip = 1.0 + 5.0*(1.0 - inGloss); // Use mip levels [1..6] for radiance.
 
 	mat4 mtx;
@@ -87,8 +82,8 @@ void main() {
 
 	vec3 radiance    = toLinear(textureCubeLod(s_texCube, cubeR, mip).xyz);
 	vec3 irradiance  = toLinear(textureCube(s_texCubeIrr, cubeN).xyz);
-	vec3 envDiffuse  = albedo     * irradiance * u_doDiffuseIbl;
-	vec3 envSpecular = envFresnel * radiance   * u_doSpecularIbl;
+	vec3 envDiffuse  = albedo     * irradiance;
+	vec3 envSpecular = envFresnel * radiance;
 	vec3 indirect    = envDiffuse + envSpecular;
 
 	// Color.

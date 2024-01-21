@@ -43,10 +43,12 @@ namespace graphics {
         float m_width = 0.0f;
         float m_height = 0.0f;
         ankerl::unordered_dense::map<std::string, handle<bgfx::ProgramHandle>> m_programs {};
-        std::uint32_t m_reset_flags = BGFX_RESET_NONE;
+        std::uint32_t m_reset_flags = BGFX_RESET_SRGB_BACKBUFFER;
         handle<bgfx::UniformHandle> m_sampler {};
         std::optional<mesh> m_mesh {};
-        std::optional<texture> m_texture {};
+        std::optional<texture> m_albedo {};
+        std::optional<texture> m_normal {};
+        std::optional<texture> m_metallic {};
         std::optional<pbr_renderer> m_pbr {};
     };
 }

@@ -18,5 +18,5 @@ public:
     std::size_t num_texels = 0;
     handle<bgfx::TextureHandle> handle {};
 
-    explicit texture(std::string&& path, bool gen_mips, std::uint64_t flags = BGFX_TEXTURE_NONE);
+    explicit texture(std::string&& path, bool gen_mips, std::uint64_t flags);
 };
