@@ -149,8 +149,7 @@ namespace graphics {
         ImGuiEx::BeginFrame(m_width, m_height, k_imgui_view);
         s_is_draw_phase = true;
 
-        static_assert(sizeof(m_camera_transform.position) == 3*sizeof(float));
-        memcpy(m_pbr->m_cameraPos, &m_camera_transform.position, 3*sizeof(float));
+        m_pbr->set_camera_pos(m_camera_transform.position);
 
         const auto& program = m_programs["pbr"];
 
@@ -161,15 +160,15 @@ namespace graphics {
                 | BGFX_STATE_CULL_CCW
                 | BGFX_STATE_MSAA;
 
-        float env_rot_mtx[16];
-        bx::mtxRotateY(env_rot_mtx,0.0f);
-        std::memcpy(m_pbr->m_mtx, env_rot_mtx, 16*sizeof(float));
-
         float lim = m_materials.size();
         int i = 0;
         if (ImGui::Begin("Trololo")) {
-            ImGui::SliderFloat("Roughness", &m_pbr->m_roughness, 0.0001f, 0.999f);
-            ImGui::SliderFloat("Metalness", &m_pbr->m_metalness, 0.0001f, 0.999f);
+            float r = m_pbr->get_roughness();
+            ImGui::SliderFloat("Roughness", &r, 0.01f, 0.99f);
+            m_pbr->set_roughness(r);
+            float m = m_pbr->get_metalness();
+            ImGui::SliderFloat("Metalness", &m, 0.01f, 0.99f);
+            m_pbr->set_metalness(m);
         }
         ImGui::End();
         for (float y = 0.0f; y < lim; y += 1.0f) {
