@@ -1,5 +1,6 @@
 -- Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
+local jit = require 'jit'
 local ffi = require 'ffi'
 
 ffi.cdef [[
@@ -17,6 +18,9 @@ ffi.cdef [[
     lua_vec2 __lu_window_get_framebuf_size(void);
     lua_vec2 __lu_window_get_pos(void);
     void __lu_app_exit(void);
+    const char* __lu_app_host_get_cpu_name(void);
+    const char* __lu_app_host_get_gpu_name(void);
+    const char* __lu_app_host_get_gapi_name(void);
 ]]
 
 local C = ffi.C
@@ -34,6 +38,12 @@ local App = {
         isMaximized = false,
         isFullscreen = false,
         isVisible = true,
+    },
+    Host = {
+        CPU_NAME = ffi.string(C.__lu_app_host_get_cpu_name()),
+        GPU_NAME = ffi.string(C.__lu_app_host_get_gpu_name()),
+        GRAPHICS_API = ffi.string(C.__lu_app_host_get_gapi_name()),
+        HOST = jit.os..' '..jit.arch
     }
 }
 

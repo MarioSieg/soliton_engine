@@ -29,6 +29,8 @@ local timeLimit = 30
 local startTime = 0.0
 local startTimePtr = ffi.new('double[1]', 0.0)
 local fileProxy = {}
+local fpsPlot = {}
+local fpsAvg = 0.0
 
 function fileProxy:write(str)
     table.insert(profileDataRoutines, str)
@@ -57,9 +59,16 @@ function Profiler:render()
             end
             if UI.BeginTabItem(ICONS.CODE..' Scripting') then
                 if Profiler.isProfilerRunning then
+                    table.insert(fpsPlot, Time.fps)
                     startTime = startTime + Time.deltaTime
                     if startTime >= timeLimit then
                         print('Stopped profiling')
+                        local sum = 0.0
+                        for i=1, #fpsPlot do
+                            sum = sum + fpsPlot[i]
+                        end
+                        fpsAvg = sum / #fpsPlot
+                        fpsPlot = {}
                         profile.stop()
                         Profiler.isProfilerRunning = false
                     end
@@ -99,6 +108,8 @@ function Profiler:render()
                 if #profileDataRoutines == 0 then
                     UI.TextUnformatted('No data recorded')
                 else
+                    UI.Text(string.format('AVG: %.03fHz', fpsAvg))
+                    UI.Separator()
                     if UI.BeginChild('##profiler_callstack') then
                         for _, routine in ipairs(profileDataRoutines) do
                             UI.TextUnformatted(routine)

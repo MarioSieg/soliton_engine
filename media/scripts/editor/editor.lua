@@ -134,7 +134,7 @@ function Editor:renderOverlay()
     end
     UI.SetNextWindowBgAlpha(0.35)
     if UI.Begin('Overlay', nil, overlayFlags) then
-        UI.Text(string.format('FPS: %d, T: %.01f, %sT: %f', Time.fpsAvg, Time.time, ICONS.TRIANGLE, Time.deltaTime))
+        UI.Text(string.format('Sim Hz: %d, T: %.01f, %sT: %f', Time.fpsAvg, Time.time, ICONS.TRIANGLE, Time.deltaTime))
         UI.SameLine()
         local size = App.Window.getFrameBufSize()
         UI.Text(string.format(' | %d X %d', size.x, size.y))
@@ -145,6 +145,10 @@ function Editor:renderOverlay()
         UI.Separator()
         UI.Text(string.format('Pos: %s', self.camera._position))
         UI.Text(string.format('Rot: %s', self.camera._rotation))
+        UI.Separator()
+        UI.Text(App.Host.GRAPHICS_API..' | '..App.Host.HOST)
+        UI.Text(App.Host.CPU_NAME)
+        UI.Text(App.Host.GPU_NAME)
         if UI.BeginPopupContextWindow() then
             if UI.MenuItem('Custom', nil, overlayLocation == -1) then
                 overlayLocation = -1

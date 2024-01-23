@@ -4,6 +4,9 @@
 #include "../../core/kernel.hpp"
 #include "../../platform/subsystem.hpp"
 
+#include <infoware/infoware.hpp>
+#include <bgfx/bgfx.h>
+
 using platform::platform_subsystem;
 
 LUA_INTEROP_API auto __lu_panic(const char* const msg) -> void {
@@ -89,3 +92,20 @@ LUA_INTEROP_API auto __lu_window_get_pos() -> lua_vec2 {
 LUA_INTEROP_API auto __lu_app_exit() -> void {
     kernel::get().request_exit();
 }
+
+static std::string tmp;
+
+LUA_INTEROP_API auto __lu_app_host_get_cpu_name() -> const char* {
+    tmp = iware::cpu::model_name();
+    return tmp.c_str();
+}
+
+LUA_INTEROP_API auto __lu_app_host_get_gpu_name() -> const char* {
+    // TODO
+    return "NVidia GeForce RTX 4090";
+}
+
+LUA_INTEROP_API auto __lu_app_host_get_gapi_name() -> const char* {
+    return bgfx::getRendererName(bgfx::getRendererType());
+}
+
