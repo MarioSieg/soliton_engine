@@ -11,13 +11,11 @@
 #include <bx/allocator.h>
 
 texture::texture(std::string&& path, bool gen_mips, std::uint64_t flags) {
-    static constinit std::atomic_unsigned_lock_free num;
+    static constinit std::atomic_uint32_t num;
     log_info("Loading texture #{} from '{}'", num.fetch_add(1, std::memory_order_relaxed), path);
     bimg::ImageContainer* image = nullptr;
-    static graphics::allocator alloc {};
-    {
-        std::vector<std::uint8_t> mem {};
-        {
+    static graphics::allocator alloc {}; {
+        std::vector<std::uint8_t> mem {}; {
             std::ifstream file {path, std::ios::binary};
             passert(file.is_open() && file.good());
             file.unsetf(std::ios::skipws);

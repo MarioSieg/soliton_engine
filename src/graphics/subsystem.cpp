@@ -46,7 +46,7 @@ namespace graphics {
 #if PLATFORM_WINDOWS
         init.type = bgfx::RendererType::Direct3D11;
 #elif PLATFORM_LINUX
-        init.type = bgfx::RendererType::Vulkan;
+        init.type = bgfx::RendererType::OpenGL;
 #elif PLATFORM_MACOS
         init.type = bgfx::RendererType::Metal;
 #endif
@@ -258,8 +258,11 @@ namespace graphics {
         panic("renderer fatal error: {}:{}: {} ({})", filePath, line, str, code);
     }
 
-    auto callback_hook::traceVargs(const char* filePath, std::uint16_t line, const char* format,
-        va_list argList) -> void {
+    auto callback_hook::traceVargs(const char* filePath, std::uint16_t line, const char* format, va_list argList) -> void {
+        char buf[8192];
+        std::vsnprintf(buf, sizeof(buf), format, argList);
+        buf[std::strlen(buf)-1] = '\0';
+        log_info("{}:{}: {}", filePath, line, buf);
     }
 
     auto callback_hook::profilerBegin(const char* name, std::uint32_t abgr, const char* filePath,

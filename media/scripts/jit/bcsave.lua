@@ -27,9 +27,11 @@ local function usage()
   io.stderr:write[[
 Save LuaJIT bytecode: luajit -b[options] input output
   -l        Only list bytecode.
-  -L        Only list bytecode with lineinfo.
   -s        Strip debug info (default).
   -g        Keep debug info.
+  -W        Generate 32 bit (non-GC64) bytecode.
+  -X        Generate 64 bit (GC64) bytecode.
+  -d        Generate bytecode in deterministic manner.
   -n name   Set module name (default: auto-detect from input name).
   -t type   Set output file type (default: auto-detect from output name).
   -a arch   Override architecture for object files (default: native).
@@ -52,8 +54,9 @@ local function check(ok, ...)
 end
 
 local function readfile(ctx, input)
-  if type(input) == "function" then return input end
-  if ctx.filename then
+  if ctx.string then
+    return check(loadstring(input, nil, ctx.mode))
+  elseif ctx.filename then
     local data
     if input == "-" then
       data = io.stdin:read("*a")
@@ -62,10 +65,10 @@ local function readfile(ctx, input)
       data = assert(fp:read("*a"))
       assert(fp:close())
     end
-    return check(load(data, ctx.filename))
+    return check(load(data, ctx.filename, ctx.mode))
   else
     if input == "-" then input = nil end
-    return check(loadfile(input))
+    return check(loadfile(input, ctx.mode))
   end
 end
 
@@ -98,7 +101,6 @@ local map_arch = {
   mips64el =	{ e = "le", b = 64, m = 8, f = 0x80000007, },
   mips64r6 =	{ e = "be", b = 64, m = 8, f = 0xa0000407, },
   mips64r6el =	{ e = "le", b = 64, m = 8, f = 0xa0000407, },
-  s390x =	{ e = "be", b = 64, m = 22, },
 }
 
 local map_os = {
@@ -619,14 +621,14 @@ end
 
 ------------------------------------------------------------------------------
 
-local function bclist(ctx, input, output, lineinfo)
+local function bclist(ctx, input, output)
   local f = readfile(ctx, input)
-  require("jit.bc").dump(f, savefile(output, "w"), true, lineinfo)
+  require("jit.bc").dump(f, savefile(output, "w"), true)
 end
 
 local function bcsave(ctx, input, output)
   local f = readfile(ctx, input)
-  local s = string.dump(f, ctx.strip)
+  local s = string.dump(f, ctx.mode)
   local t = ctx.type
   if not t then
     t = detecttype(output)
@@ -648,11 +650,12 @@ local function docmd(...)
   local arg = {...}
   local n = 1
   local list = false
-  local lineinfo = false
   local ctx = {
-    strip = true, arch = jit.arch, os = jit.os:lower(),
-    type = false, modname = false,
+    mode = "bt", arch = jit.arch, os = jit.os:lower(),
+    type = false, modname = false, string = false,
   }
+  local strip = "s"
+  local gc64 = ""
   while n <= #arg do
     local a = arg[n]
     if type(a) == "string" and a:sub(1, 1) == "-" and a ~= "-" then
@@ -662,18 +665,19 @@ local function docmd(...)
 	local opt = a:sub(m, m)
 	if opt == "l" then
 	  list = true
-	elseif opt == "L" then
-	  list = true
-	  lineinfo = true
 	elseif opt == "s" then
-	  ctx.strip = true
+	  strip = "s"
 	elseif opt == "g" then
-	  ctx.strip = false
+	  strip = ""
+	elseif opt == "W" or opt == "X" then
+	  gc64 = opt
+	elseif opt == "d" then
+	  ctx.mode = ctx.mode .. opt
 	else
 	  if arg[n] == nil or m ~= #a then usage() end
 	  if opt == "e" then
 	    if n ~= 1 then usage() end
-	    arg[1] = check(loadstring(arg[1]))
+	    ctx.string = true
 	  elseif opt == "n" then
 	    ctx.modname = checkmodname(tremove(arg, n))
 	  elseif opt == "t" then
@@ -693,9 +697,10 @@ local function docmd(...)
       n = n + 1
     end
   end
+  ctx.mode = ctx.mode .. strip .. gc64
   if list then
     if #arg == 0 or #arg > 2 then usage() end
-    bclist(ctx, arg[1], arg[2] or "-", lineinfo)
+    bclist(ctx, arg[1], arg[2] or "-")
   else
     if #arg ~= 2 then usage() end
     bcsave(ctx, arg[1], arg[2])

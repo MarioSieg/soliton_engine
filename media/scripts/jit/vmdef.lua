@@ -1,6 +1,6 @@
 -- This is a generated file. DO NOT EDIT!
 
-assert(require("jit").version == "LuaJIT 2.1.1700206165", "LuaJIT core/library version mismatch")
+assert(require("jit").version == "LuaJIT 2.1.1706032906", "LuaJIT core/library version mismatch")
 
 return {
 
@@ -10,7 +10,7 @@ irnames = "LT    GE    LE    GT    ULT   UGE   ULE   UGT   EQ    NE    ABC   RET
 
 irfpm = { [0]="floor", "ceil", "trunc", "sqrt", "log", "log2", "other", },
 
-irfield = { [0]="str.len", "func.env", "func.pc", "func.ffid", "thread.env", "thread.exdata", "thread.exdata2", "tab.meta", "tab.array", "tab.node", "tab.asize", "tab.hmask", "tab.nomm", "udata.meta", "udata.udtype", "udata.file", "sbuf.w", "sbuf.e", "sbuf.b", "sbuf.l", "sbuf.ref", "sbuf.r", "cdata.ctypeid", "cdata.ptr", "cdata.int", "cdata.int64", "cdata.int64_4", },
+irfield = { [0]="str.len", "func.env", "func.pc", "func.ffid", "thread.env", "tab.meta", "tab.array", "tab.node", "tab.asize", "tab.hmask", "tab.nomm", "udata.meta", "udata.udtype", "udata.file", "sbuf.w", "sbuf.e", "sbuf.b", "sbuf.l", "sbuf.ref", "sbuf.r", "cdata.ctypeid", "cdata.ptr", "cdata.int", "cdata.int64", "cdata.int64_4", },
 
 ircall = {
 [0]="lj_str_cmp",
@@ -52,10 +52,6 @@ ircall = {
 "lj_tab_keyindex",
 "lj_vm_next",
 "lj_tab_len",
-"lj_tab_clone",
-"lj_tab_isarray",
-"lj_tab_nkeys",
-"lj_tab_isempty",
 "lj_tab_len_hint",
 "lj_gc_step_jit",
 "lj_gc_barrieruv",
@@ -209,8 +205,6 @@ ffnames = {
 "coroutine.resume",
 "coroutine.wrap_aux",
 "coroutine.wrap",
-"thread.exdata",
-"thread.exdata2",
 "math.abs",
 "math.floor",
 "math.ceil",
@@ -266,10 +260,6 @@ ffnames = {
 "table.maxn",
 "table.insert",
 "table.concat",
-"table.clone",
-"table.isarray",
-"table.nkeys",
-"table.isempty",
 "table.sort",
 "table.new",
 "table.clear",
@@ -326,7 +316,6 @@ ffnames = {
 "jit.status",
 "jit.security",
 "jit.attach",
-"jit.prngstate",
 "jit.util.funcinfo",
 "jit.util.funcbc",
 "jit.util.funck",

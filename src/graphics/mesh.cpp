@@ -73,7 +73,7 @@ static const bgfx::VertexLayout k_vertex_layout = [] {
     return layout;
 }();
 
-mesh::mesh(const std::span<const vertex> vertices, const std::span<const index> indices, const index_format format) {
+mesh::mesh(const std::span<const vertex> vertices, const std::span<const vertex_index> indices, const index_format format) {
     passert(!vertices.empty());
     passert(!indices.empty());
     const bgfx::VertexBufferHandle vb = [&vertices]{
@@ -88,11 +88,11 @@ mesh::mesh(const std::span<const vertex> vertices, const std::span<const index> 
         return vb;
     }();
     const bgfx::IndexBufferHandle ib = [&indices, format]{
-        const bgfx::Memory* const ibmem { bgfx::alloc(indices.size()*sizeof(index)) };
+        const bgfx::Memory* const ibmem { bgfx::alloc(indices.size()*sizeof(vertex_index)) };
         passert(ibmem != nullptr);
-        const index* __restrict__ const begin = &*indices.begin();
-        const index* __restrict__ const end = begin + indices.size();
-        auto* __restrict__ const dst = reinterpret_cast<index*>(ibmem->data);
+        const vertex_index* __restrict__ const begin = &*indices.begin();
+        const vertex_index* __restrict__ const end = begin + indices.size();
+        auto* __restrict__ const dst = reinterpret_cast<vertex_index*>(ibmem->data);
         std::copy(begin, end, dst);
         const auto indexFormat { format == index_format::i32 ? BGFX_BUFFER_INDEX32 : BGFX_BUFFER_NONE };
         const bgfx::IndexBufferHandle ib = bgfx::createIndexBuffer(ibmem, indexFormat);
@@ -107,7 +107,7 @@ mesh::mesh(const std::span<const vertex> vertices, const std::span<const index> 
 }
 
 mesh::mesh(std::string&& path, const std::underlying_type_t<aiPostProcessSteps> post_process_steps) {
-    static constinit std::atomic_unsigned_lock_free num;
+    static constinit std::atomic_uint32_t num;
     log_info("Loading mesh #{} from '{}'", num.fetch_add(1, std::memory_order_relaxed), path);
     Assimp::Importer importer { };
     const aiScene* const scene = importer.ReadFile(path, post_process_steps);
@@ -116,16 +116,16 @@ mesh::mesh(std::string&& path, const std::underlying_type_t<aiPostProcessSteps> 
     passert(assimpMesh.mNumFaces > 0);
     passert(assimpMesh.mNumVertices > 0);
     passert(assimpMesh.HasPositions());
-    const bgfx::Memory* const ibmem = bgfx::alloc(static_cast<std::size_t>(assimpMesh.mNumFaces)*3*sizeof(index));
+    const bgfx::Memory* const ibmem = bgfx::alloc(static_cast<std::size_t>(assimpMesh.mNumFaces)*3*sizeof(vertex_index));
     passert(ibmem != nullptr);
-    auto* idst = reinterpret_cast<index*>(ibmem->data);
+    auto* idst = reinterpret_cast<vertex_index*>(ibmem->data);
     for (const aiFace* i = assimpMesh.mFaces, *const e = assimpMesh.mFaces + assimpMesh.mNumFaces; i < e; ++i) {
         if (i->mNumIndices != 3) [[unlikely]] continue;
         const std::uint32_t* j = i->mIndices;
-        *idst++ = static_cast<index>(*j);
-        *idst++ = static_cast<index>(*++j);
-        *idst++ = static_cast<index>(*++j);
-        assert(idst <= reinterpret_cast<index*>(ibmem->data) + ibmem->size/sizeof(index));
+        *idst++ = static_cast<vertex_index>(*j);
+        *idst++ = static_cast<vertex_index>(*++j);
+        *idst++ = static_cast<vertex_index>(*++j);
+        assert(idst <= reinterpret_cast<vertex_index*>(ibmem->data) + ibmem->size/sizeof(vertex_index));
     }
     const bgfx::Memory* const vbmem = bgfx::alloc(assimpMesh.mNumVertices*sizeof(vertex));
     passert(vbmem != nullptr);

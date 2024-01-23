@@ -10,4 +10,4 @@ using namespace flecs;
 
 using namespace DirectX;
 
-static_assert(sizeof(id_t) == 8);
+static_assert(sizeof(flecs::id_t) == 8);

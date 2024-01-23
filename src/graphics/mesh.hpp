@@ -23,7 +23,7 @@ struct vertex final {
     DirectX::XMFLOAT3 bitangent {};
 };
 
-using index = std::uint32_t;
+using vertex_index = std::uint32_t;
 
 class mesh final : public no_copy, public no_move {
 public:
@@ -36,7 +36,7 @@ public:
 
     mesh(
         std::span<const vertex> vertices,
-        std::span<const index> indices,
+        std::span<const vertex_index> indices,
         index_format format = index_format::i32
     );
     explicit mesh(std::string&& path, std::underlying_type_t<aiPostProcessSteps> post_process_steps

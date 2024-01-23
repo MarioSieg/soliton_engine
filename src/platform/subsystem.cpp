@@ -19,6 +19,7 @@
 #include <psapi.h>
 #else
 #define GLFW_EXPOSE_NATIVE_X11
+#define GLFW_EXPOSE_NATIVE_WAYLAND
 #include <link.h>
 #endif
 #include <GLFW/glfw3native.h>
@@ -313,7 +314,15 @@ auto dump_loaded_dylibs() -> void {
         passert(std::filesystem::exists("media"));
 
         // init glfw
-        passert(glfwInit() == GLFW_TRUE);
+        const bool is_glfw_online = glfwInit() == GLFW_TRUE;
+        if (!is_glfw_online) [[unlikely]] {
+            char const* desc;
+            glfwGetError(&desc);
+            if (desc) {
+                log_error("Failed to initialize GLFW: {}", desc);
+            }
+            passert(is_glfw_online);
+        }
 
         // create window
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -324,12 +333,27 @@ auto dump_loaded_dylibs() -> void {
         #if PLATFORM_WINDOWS
             s_native_window = reinterpret_cast<void*>(glfwGetWin32Window(s_window));
         #elif PLATFORM_LINUX
-            s_native_window = reinterpret_cast<void*>(glfwGetX11Window(s_window));
-            s_native_display = reinterpret_cast<void*>(glfwGetX11Display());
+            passert(glfwPlatformSupported(GLFW_PLATFORM_WAYLAND) || glfwPlatformSupported(GLFW_PLATFORM_X11));
+            if (const char* wayland = std::getenv("WAYLAND_DISPLAY"); !wayland && std::strlen(wayland) > 0 && glfwPlatformSupported(GLFW_PLATFORM_WAYLAND)) {
+                log_info("Detected Wayland");
+                s_native_window = reinterpret_cast<void*>(glfwGetWaylandWindow(s_window));
+                s_native_display = reinterpret_cast<void*>(glfwGetWaylandDisplay());
+            } else {
+                log_info("Detected X11");
+                s_native_window = reinterpret_cast<void*>(glfwGetX11Window(s_window));
+                s_native_display = reinterpret_cast<void*>(glfwGetX11Display());
+            }
         #else
             #error "Unsupported platform"
         #endif
-        passert(s_native_window != nullptr);
+        if (!s_native_window) [[unlikely]] {
+            char const* desc;
+            glfwGetError(&desc);
+            if (desc) {
+                log_error("Failed to connnect window: {}", desc);
+            }
+            passert(s_native_window != nullptr);
+        }
         glfwSetWindowUserPointer(s_window, this);
         glfwSetWindowSizeLimits(s_window, 800, 600, GLFW_DONT_CARE, GLFW_DONT_CARE);
 

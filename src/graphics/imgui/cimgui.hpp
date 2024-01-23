@@ -1,6 +1,6 @@
 #pragma once
 
-#include "..\..\scripting\api\_prelude.hpp"
+#include "../../scripting/api/_prelude.hpp"
 
 #define CIMGUI_API LUA_INTEROP_API
 #define CONST const

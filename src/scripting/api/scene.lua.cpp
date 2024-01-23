@@ -35,7 +35,7 @@ LUA_INTEROP_API auto __lu_scene_get_entity_by_name(const char* const name) -> lu
     if (!entity) [[unlikely]]
         return scene::k_invalid_entity;
     const std::span<const struct entity> entities = active->get_eitbl();
-    const auto entry = std::ranges::find(entities, entity); // TODO: Smarter way to handle this?
+    const auto entry = std::find(entities.begin(), entities.end(), entity); // TODO: Smarter way to handle this?
     if (entry != entities.end()) [[likely]] {
         const std::ptrdiff_t id = std::distance(entities.begin(), entry);
         passert(id <= scene::k_max_entities);

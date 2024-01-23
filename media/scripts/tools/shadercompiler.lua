@@ -69,15 +69,17 @@ end
 
 -- delete output directory:
 print('Deleting output directory '..OUT_DIR)
-for file in lfs.dir(OUT_DIR) do
-    if file ~= '.' and file ~= '..' then
-        local path = OUT_DIR..'/'..file
-        if lfs.attributes(path).mode == 'file' then
-            os.remove(path)
+if lfs.attributes(OUT_DIR) then
+    for file in lfs.dir(OUT_DIR) do
+        if file ~= '.' and file ~= '..' then
+            local path = OUT_DIR..'/'..file
+            if lfs.attributes(path).mode == 'file' then
+                os.remove(path)
+            end
         end
     end
+    lfs.rmdir(OUT_DIR)
 end
-lfs.rmdir(OUT_DIR)
 
 -- create output directory:
 lfs.mkdir(OUT_DIR)
