@@ -11,7 +11,8 @@
 #include <bx/allocator.h>
 
 texture::texture(std::string&& path, bool gen_mips, std::uint64_t flags) {
-    log_info("Loading texture from '{}'", path);
+    static constinit std::atomic_unsigned_lock_free num;
+    log_info("Loading texture #{} from '{}'", num.fetch_add(1, std::memory_order_relaxed), path);
     bimg::ImageContainer* image = nullptr;
     static graphics::allocator alloc {};
     {

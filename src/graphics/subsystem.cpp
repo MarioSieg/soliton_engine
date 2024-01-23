@@ -4,6 +4,7 @@
 
 #include "../platform/subsystem.hpp"
 
+#include <execution>
 #include <mimalloc.h>
 #include <bgfx/bgfx.h>
 
@@ -65,23 +66,36 @@ namespace graphics {
 
         m_sampler = handle{bgfx::createUniform("s_sampler", bgfx::UniformType::Sampler)};
         m_mesh.emplace("media/meshes/orb.obj");
-        auto load_mat = [this](const std::string& name) {
+        auto load_mat = [](const std::string& name) {
             auto load_tex = [&name](std::string&& type, bool srgb = false) {
                 return std::make_unique<texture>("media/textures/"+name+"/"+type+".png", true, srgb ? BGFX_TEXTURE_SRGB : BGFX_TEXTURE_NONE);
             };
-            m_materials.emplace_back(material{
+            return material{
                 load_tex("albedo", true),
                 load_tex("normal"),
                 load_tex("metallic"),
                 load_tex("roughness"),
                 load_tex("ao"),
-            });
+            };
         };
-        load_mat("plastic");
-        load_mat("wall");
-        load_mat("gold");
-        //load_mat("rusted_iron");
-        //load_mat("grass");
+        static constexpr std::array<std::string_view, 5> mat_names = {
+            "plastic",
+            "wall",
+            "gold",
+            "rusted_iron",
+            "grass"
+        };
+        std::vector<std::pair<std::string, std::optional<material>>> results {};
+        results.reserve(mat_names.size());
+        m_materials.reserve(mat_names.size());
+        for (auto&& name : mat_names)
+            results.emplace_back(std::make_pair(std::move(name), std::nullopt));
+        std::for_each(std::execution::par_unseq, results.begin(), results.end(), [load_mat](auto& p) {
+            p.second = load_mat(p.first);
+        });
+        for (auto&& [name, mat] : results) {
+            m_materials.emplace_back(std::move(*mat));
+        }
         m_pbr.emplace();
     }
 

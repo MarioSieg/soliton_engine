@@ -107,7 +107,8 @@ mesh::mesh(const std::span<const vertex> vertices, const std::span<const index> 
 }
 
 mesh::mesh(std::string&& path, const std::underlying_type_t<aiPostProcessSteps> post_process_steps) {
-    log_info("Loading mesh from '{}'", path, post_process_steps);
+    static constinit std::atomic_unsigned_lock_free num;
+    log_info("Loading mesh #{} from '{}'", num.fetch_add(1, std::memory_order_relaxed), path);
     Assimp::Importer importer { };
     const aiScene* const scene = importer.ReadFile(path, post_process_steps);
     passert(scene && scene->mNumMeshes > 0);
