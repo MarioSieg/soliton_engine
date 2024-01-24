@@ -21,6 +21,7 @@ namespace vkb {
         create_instance();
         find_physical_device();
         create_logical_device({}, {}, nullptr);
+        init_vma();
         passert(find_supported_depth_format(require_stencil, m_depth_format));
 
         // Create a default command pool for graphics command buffers
@@ -36,6 +37,7 @@ namespace vkb {
 
     device::~device() {
         m_logical_device.destroyCommandPool(m_command_pool);
+        vmaDestroyAllocator(m_allocator);
         m_logical_device.destroy();
         log_info("Destroying Vulkan device...");
         if (m_debug_utils_messenger != VK_NULL_HANDLE) {
@@ -371,6 +373,15 @@ namespace vkb {
         }
 
         panic("Could not find a matching queue family index");
+    }
+
+    auto device::init_vma() -> void {
+        log_info("Initializing Vulkan Memory Allocator...");
+        VmaAllocatorCreateInfo allocator_info {};
+        allocator_info.physicalDevice = m_physical_device;
+        allocator_info.device = m_logical_device;
+        allocator_info.instance = m_instance;
+        vkccheck(vmaCreateAllocator(&allocator_info, &m_allocator));
     }
 
     auto device::find_supported_depth_format(const bool stencil_required, vk::Format& out_format) const -> bool {
