@@ -334,7 +334,7 @@ auto dump_loaded_dylibs() -> void {
             s_native_window = reinterpret_cast<void*>(glfwGetWin32Window(s_window));
         #elif PLATFORM_LINUX
             passert(glfwPlatformSupported(GLFW_PLATFORM_WAYLAND) || glfwPlatformSupported(GLFW_PLATFORM_X11));
-            if (const char* wayland = std::getenv("WAYLAND_DISPLAY"); !wayland && std::strlen(wayland) > 0 && glfwPlatformSupported(GLFW_PLATFORM_WAYLAND)) {
+            if (const char* wayland = std::getenv("WAYLAND_DISPLAY"); wayland && std::strlen(wayland) > 0 && glfwPlatformSupported(GLFW_PLATFORM_WAYLAND)) {
                 log_info("Detected Wayland");
                 s_native_window = reinterpret_cast<void*>(glfwGetWaylandWindow(s_window));
                 s_native_display = reinterpret_cast<void*>(glfwGetWaylandDisplay());

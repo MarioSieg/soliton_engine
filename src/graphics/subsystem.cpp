@@ -46,7 +46,7 @@ namespace graphics {
 #if PLATFORM_WINDOWS
         init.type = bgfx::RendererType::Direct3D11;
 #elif PLATFORM_LINUX
-        init.type = bgfx::RendererType::OpenGL;
+        init.type = bgfx::RendererType::Vulkan;
 #elif PLATFORM_MACOS
         init.type = bgfx::RendererType::Metal;
 #endif
