@@ -6,8 +6,6 @@
 #include "../../scene/scene.hpp"
 #include "../../math/DirectXMath.h"
 
-#include <../../rendercore/bx/include/bx/math.h>
-
 #if PLATFORM_WINDOWS
 #define LUA_INTEROP_API extern "C" __cdecl __declspec(dllexport)
 #else
@@ -55,10 +53,6 @@ struct lua_vec3 {
         : x{static_cast<float>(vec.x)}
         , y{static_cast<float>(vec.y)}
         , z{static_cast<float>(vec.z)} {}
-    constexpr __attribute__((always_inline)) lua_vec3(const bx::Vec3& vec) noexcept
-        : x{static_cast<float>(vec.x)}
-        , y{static_cast<float>(vec.y)}
-        , z{static_cast<float>(vec.z)} {}
 
     [[nodiscard]] constexpr __attribute__((always_inline)) operator XMFLOAT2 () const noexcept {
         return {
@@ -67,13 +61,6 @@ struct lua_vec3 {
         };
     }
     [[nodiscard]] constexpr __attribute__((always_inline)) operator XMFLOAT3 () const noexcept {
-        return {
-            static_cast<float>(x),
-            static_cast<float>(y),
-            static_cast<float>(z)
-        };
-    }
-    [[nodiscard]] constexpr __attribute__((always_inline)) operator bx::Vec3 () const noexcept {
         return {
             static_cast<float>(x),
             static_cast<float>(y),

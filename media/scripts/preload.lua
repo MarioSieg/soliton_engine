@@ -31,7 +31,7 @@ for key, module in pairs(MODULES) do
 end
 
 if SYSTEM_CFG.editor_enable then
-    loadMod('Editor', 'editor/editor')
+    --loadMod('Editor', 'editor/editor')
 end
 
 return loaded

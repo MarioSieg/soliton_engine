@@ -27,10 +27,6 @@ file(GLOB_RECURSE SOURCES
     src/platform/*.c
     src/platform/*.hpp
 
-    src/sal/*.cpp
-    src/sal/*.c
-    src/sal/*.hpp
-
     src/scene/*.cpp
     src/scene/*.c
     src/scene/*.hpp
@@ -64,6 +60,8 @@ add_subdirectory(src/msgbox)
 include_directories(src/msgbox/include)
 target_link_libraries(lunam Boxer)
 
+include_directories(src/sal)
+
 add_subdirectory(src/glfw)
 include_directories(src/glfw/include)
 target_link_libraries(lunam glfw)
@@ -79,10 +77,6 @@ target_link_libraries(lunam mimalloc-static)
 add_subdirectory(src/machineinfo)
 include_directories(src/machineinfo/include)
 target_link_libraries(lunam infoware)
-
-add_subdirectory(src/rendercore)
-include_directories(src/rendercore/bgfx/include)
-target_link_libraries(lunam bgfx bx bimg bimg_encode bimg_decode)
 
 add_subdirectory(src/meshio)
 include_directories(src/meshio/include)

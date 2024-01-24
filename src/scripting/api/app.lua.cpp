@@ -5,7 +5,6 @@
 #include "../../platform/subsystem.hpp"
 
 #include <infoware/infoware.hpp>
-#include <bgfx/bgfx.h>
 
 using platform::platform_subsystem;
 
@@ -106,6 +105,6 @@ LUA_INTEROP_API auto __lu_app_host_get_gpu_name() -> const char* {
 }
 
 LUA_INTEROP_API auto __lu_app_host_get_gapi_name() -> const char* {
-    return bgfx::getRendererName(bgfx::getRendererType());
+    return "Vulkan";
 }
 

@@ -32,10 +32,6 @@
 /* TODO: figure out when <sal.h> first appeared. */
 #if defined(_MSC_VER)
 #  include <sal.h>
-#elif defined(__has_include)
-#  if __has_include(<sal.h>)
-#    include <sal.h>
-#  endif
 #endif
 
 /* The main concern for the implementation is that we don't want to
