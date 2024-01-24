@@ -5,6 +5,8 @@
 #include "../core/subsystem.hpp"
 #include "../scene/scene.hpp"
 
+#include "../vulkancore/device.hpp"
+
 namespace graphics {
     class graphics_subsystem final : public subsystem {
     public:
@@ -22,5 +24,6 @@ namespace graphics {
     private:
         float m_width = 0.0f;
         float m_height = 0.0f;
+        vkb::device m_device {true};
     };
 }

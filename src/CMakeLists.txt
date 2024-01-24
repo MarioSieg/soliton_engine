@@ -42,6 +42,10 @@ file(GLOB_RECURSE SOURCES
     src/log/*.cpp
     src/log/*.c
     src/log/*.hpp
+
+    src/vulkancore/*.cpp
+    src/vulkancore/*.c
+    src/vulkancore/*.hpp
 )
 
 add_compile_definitions(SPDLOG_COMPILED_LIB)
@@ -81,6 +85,9 @@ target_link_libraries(lunam infoware)
 add_subdirectory(src/meshio)
 include_directories(src/meshio/include)
 target_link_libraries(lunam assimp)
+
+add_subdirectory(src/vulkanloader)
+target_link_libraries(lunam vulkan)
 
 if (WIN32)
     target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/win_amd64/lua51.lib)
