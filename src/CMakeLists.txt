@@ -3,6 +3,10 @@ file(GLOB_RECURSE SOURCES
     src/boot/*.c
     src/boot/*.hpp
 
+    src/assetmgr/*.cpp
+    src/assetmgr/*.c
+    src/assetmgr/*.hpp
+
     src/core/*.cpp
     src/core/*.c
     src/core/*.hpp

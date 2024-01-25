@@ -83,8 +83,10 @@ namespace scripting {
         }
     }
 
-    auto scripting_subsystem::exec_file(const char* file) -> bool {
-        if (luaL_dofile(m_L, file) != LUA_OK) [[unlikely]] {
+    auto scripting_subsystem::exec_file(const std::string& file) -> bool {
+        std::string source {};
+        assetmgr::load_asset_text_or_panic(asset_category::script, file, source);
+        if (luaL_dostring(m_L, source.c_str()) != LUA_OK) [[unlikely]] {
             lua_log_error("script error in {}: {}", file, lua_tostring(m_L, -1));
             lua_pop(m_L, 1);
             return false;

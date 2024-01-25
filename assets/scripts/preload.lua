@@ -22,7 +22,7 @@ local function loadMod(key, module)
     print('Preloading module: '..key)
     assert(key ~= nil, 'Failed to preload module, missing key')
     assert(module ~= nil, 'Failed to preload module: '..key)
-    loaded[key] = dofile('media/scripts/'..module..'.lua')
+    loaded[key] = dofile('assets/scripts/'..module..'.lua')
     package.preload[key] = function() return loaded[key] end
 end
 

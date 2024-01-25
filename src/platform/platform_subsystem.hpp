@@ -16,6 +16,6 @@ namespace platform {
 
         [[nodiscard]] static auto get_glfw_window() -> GLFWwindow*;
 
-        static constexpr const char* k_window_icon_file = "media/icons/logo.png";
+        static constexpr const char* k_window_icon_file = "logo.png";
     };
 }

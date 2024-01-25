@@ -23,10 +23,10 @@ namespace scripting {
 
         [[nodiscard]] static auto get_lua_state() noexcept -> lua_State* { return m_L; }
 
-        static auto exec_file(const char* file) -> bool;
+        static auto exec_file(const std::string& file) -> bool;
 
     private:
-        static constexpr const char* k_boot_script = "media/scripts/system/__boot__.lua";
+        static constexpr const char* k_boot_script = "system/__boot__.lua";
         static constexpr const char* k_prepare_hook = "__on_prepare__";
         static constexpr const char* k_tick_hook = "__on_tick__";
         static inline constinit lua_State* m_L = nullptr;

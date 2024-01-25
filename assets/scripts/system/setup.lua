@@ -64,8 +64,8 @@ local function checkFsEntry(path)
         panic('Broken installation! Required file or directory not found: '..path)
     end
 end
-checkFsEntry('media')
-if lfs.attributes('media/scripts/system/fsregistry.lua') then -- check if the fsregistry file exists
+checkFsEntry('assets')
+if lfs.attributes('assets/scripts/system/fsregistry.lua') then -- check if the fsregistry file exists
     local REQUIRED_FILES = require 'system.fsregistry' -- load the list of required files
     if type(REQUIRED_FILES) == 'table' then
         for _, path in ipairs(REQUIRED_FILES) do
@@ -73,16 +73,7 @@ if lfs.attributes('media/scripts/system/fsregistry.lua') then -- check if the fs
         end
     end
     print('Filesystem OK, '..numchecks..' entries checked.')
-    dofile('media/scripts/tools/fsregistry_gen.lua') -- regenerate the fsregistry file
-end
-
--- Compile shaders
-local SHADERC = 'media/scripts/tools/shadercompiler.lua'
-if lfs.attributes(SHADERC) then
-    dofile(SHADERC)
-else
-    print('Warning: Shader compiler not found, assuming production build')
-    -- TODO check shaders
+    dofile('assets/scripts/tools/fsregistry_gen.lua') -- regenerate the fsregistry file
 end
 
 -- Load CDEFS

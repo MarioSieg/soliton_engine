@@ -1,7 +1,7 @@
 -- Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
-local SOURCE = 'media'
-local TARGET = 'media/scripts/system/fsregistry.lua'
+local SOURCE = 'assets'
+local TARGET = 'assets/scripts/system/fsregistry.lua'
 
 print('Generating fsregistry file: '..TARGET)
 

@@ -6,6 +6,8 @@
 #include <fstream>
 #include <filesystem>
 
+#include "../assetmgr/assetmgr.hpp"
+
 namespace vkb {
     static constinit std::optional<shaderc::Compiler> s_compiler;
     static constinit std::atomic_bool s_initialized;
@@ -80,24 +82,9 @@ namespace vkb {
 
         const auto start = std::chrono::high_resolution_clock::now();
 
-        std::string path = "media/shaders/" + file_name;
-
-        log_info("Compiling shader: {}", path);
-        if (!std::filesystem::exists(path)) [[unlikely]] {
-            panic("Shader file does not exist: {}", path);
-        }
-
         // Load string BLOB from file
-        std::ifstream file {path};
-        file.seekg(0, std::ios::end);
-        std::streamsize size = file.tellg();
         std::string buffer {};
-        buffer.resize(size);
-        file.seekg(0);
-        file.read(buffer.data(), size);
-        if (buffer.empty()) [[unlikely]] {
-            panic("Shader file is empty: {}", path);
-        }
+        assetmgr::load_asset_text_or_panic(asset_category::shader, file_name, buffer);
 
         shaderc::CompileOptions options {};
         options.SetOptimizationLevel(shaderc_optimization_level_performance);
@@ -119,7 +106,7 @@ namespace vkb {
         }
 
         shaderc_shader_kind kind = shaderc_glsl_infer_from_source;
-        if (std::filesystem::path fspath {path}; fspath.has_extension()) { // try to infer shader kind from file extension
+        if (std::filesystem::path fspath {file_name}; fspath.has_extension()) { // try to infer shader kind from file extension
             if (std::string ext {fspath.extension().string()}; ext == ".vert") { kind = shaderc_glsl_vertex_shader; }
             else if (ext == ".tesc") { kind = shaderc_glsl_tess_control_shader; }
             else if (ext == ".tese") { kind = shaderc_glsl_tess_evaluation_shader; }
@@ -148,7 +135,7 @@ namespace vkb {
         create_info.pCode = spirv_bytecode.data();
         vkcheck(context::s_instance->get_device().get_logical_device().createShaderModule(&create_info, &s_allocator, &m_module));
 
-        log_info("Compiled shader: {} in {:.03f}s", path, std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - start).count());
+        log_info("Compiled shader: {} in {:.03f}s", file_name, std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - start).count());
     }
 
     shader::~shader() noexcept {

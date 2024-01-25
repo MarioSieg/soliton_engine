@@ -304,9 +304,6 @@ auto dump_loaded_dylibs() -> void {
         dump_loaded_dylibs();
         print_sep();
 
-        // check that media directory exists TODO make this better
-        passert(std::filesystem::exists("media"));
-
         // init glfw
         const bool is_glfw_online = glfwInit() == GLFW_TRUE;
         if (!is_glfw_online) [[unlikely]] {
@@ -362,9 +359,12 @@ auto dump_loaded_dylibs() -> void {
             }
         }
 
+        std::vector<std::uint8_t> pixel_buf {};
+        assetmgr::load_asset_blob_or_panic(asset_category::icon, k_window_icon_file, pixel_buf);
+
         // set window icon
         int w, h;
-        stbi_uc *pixels = stbi_load(k_window_icon_file, &w, &h, nullptr, STBI_rgb_alpha);
+        stbi_uc *pixels = stbi_load_from_memory(pixel_buf.data(), pixel_buf.size(), &w, &h, nullptr, STBI_rgb_alpha);
         passert(pixels != nullptr);
         const GLFWimage icon {
             .width = w,

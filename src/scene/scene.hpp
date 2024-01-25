@@ -4,6 +4,7 @@
 
 #include "base.hpp"
 #include "components.hpp"
+#include "../assetmgr/assetmgr.hpp"
 
 using lua_entity = std::uint32_t;
 

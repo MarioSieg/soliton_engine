@@ -28,7 +28,7 @@ if cookie ~= 0xfefec0c0 then
 end
 
 INCLUDE_DIRS = {
-    'media/scripts'
+    'assets/scripts'
 }
 
 -- add all other directories to package paths
