@@ -9,6 +9,11 @@
 namespace vkb {
     class swapchain final : public no_copy, public no_move {
     public:
+        struct buffer final {
+            vk::Image image {};
+            vk::ImageView view {};
+        };
+
         swapchain(
             vk::Instance instance,
             vk::PhysicalDevice physical_device,
@@ -17,12 +22,26 @@ namespace vkb {
         ~swapchain();
 
         auto init_surface(GLFWwindow* window) -> void;
+        auto create(
+            std::uint32_t& w,
+            std::uint32_t& h,
+            bool vsync,
+            bool fullscreen
+        ) -> void;
+        [[nodiscard]] auto acquire_next_image(vk::Semaphore present_complete_semaphore, std::uint32_t& idx) -> vk::Result;
+        [[nodiscard]] auto queue_present(
+            vk::Queue queue,
+            std::uint32_t image_index,
+            vk::Semaphore wait_semaphore = nullptr
+        ) -> vk::Result;
+        [[nodiscard]] auto get_queue_node_index() const noexcept -> std::uint32_t { return m_queue_node_index; }
+        [[nodiscard]] auto get_image_count() const noexcept -> std::uint32_t { return m_image_count; }
+        [[nodiscard]] auto get_buffer(std::uint32_t index) const noexcept -> const buffer& { return m_buffers[index]; }
+        [[nodiscard]] auto get_format() const noexcept -> vk::Format { return m_format; }
+        [[nodiscard]] auto get_color_space() const noexcept -> vk::ColorSpaceKHR { return m_color_space; }
+        [[nodiscard]] auto get_surface() const noexcept -> vk::SurfaceKHR { return m_surface; }
 
     private:
-        struct buffer final {
-            vk::Image image {};
-            vk::ImageView view {};
-        };
 
         vk::Instance m_instance {};
         vk::PhysicalDevice m_physical_device {};

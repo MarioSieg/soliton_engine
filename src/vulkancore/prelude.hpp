@@ -12,14 +12,14 @@ namespace vkb {
 }
 
 #define vkcheck(f) \
-    if (vk::Result result = (f); result != vk::Result::eSuccess) [[unlikely]] { \
-        log_error("Vulkan error: {}", string_VkResult(static_cast<VkResult>(result))); \
-        passert(result == vk::Result::eSuccess); \
+    if (const vk::Result rrr = (f); rrr != vk::Result::eSuccess) [[unlikely]] { \
+        log_error("Vulkan error: {}", string_VkResult(static_cast<VkResult>(rrr))); \
+        passert(rrr == vk::Result::eSuccess); \
     }
 
 #define vkccheck(f) \
-    if (VkResult result = (f); result != VK_SUCCESS) [[unlikely]] { \
-        log_error("Vulkan error: {}", string_VkResult(result)); \
-        passert(result == VK_SUCCESS); \
+    if (const VkResult rrr = (f); rrr != VK_SUCCESS) [[unlikely]] { \
+        log_error("Vulkan error: {}", string_VkResult(rrr)); \
+        passert(rrr == VK_SUCCESS); \
     }
 

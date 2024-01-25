@@ -63,6 +63,24 @@ namespace vkb {
         return VK_FALSE;
     }
 
+    auto device::get_mem_type(
+        std::uint32_t type_bits,
+        vk::MemoryPropertyFlags properties,
+        vk::Bool32& found
+    ) const -> std::uint32_t {
+        for (std::uint32_t i = 0; i < m_memory_properties.memoryTypeCount; i++) {
+            if ((type_bits & 1) == 1) {
+                if ((m_memory_properties.memoryTypes[i].propertyFlags & properties) == properties) {
+                    found = true;
+                    return i;
+                }
+            }
+            type_bits >>= 1;
+        }
+        found = false;
+        return 0;
+    }
+
     auto device::create_instance() -> void {
         log_info("Creating Vulkan instance...");
 
@@ -365,7 +383,7 @@ namespace vkb {
         // Dedicated queue for transfer
         // Try to find a queue family index that supports transfer but not graphics and compute
         if ((flags & vk::QueueFlagBits::eTransfer) == flags) {
-            for (std::uint32_t i = 0; i < static_cast<std::uint32_t>(families.size()); i++) {
+            for (std::uint32_t i = 0; i < static_cast<std::uint32_t>(families.size()); ++i) {
                 if (families[i].queueFlags & vk::QueueFlagBits::eTransfer
                     && static_cast<std::uint32_t>(families[i].queueFlags & vk::QueueFlagBits::eGraphics) == 0
                     && static_cast<std::uint32_t>(families[i].queueFlags & vk::QueueFlagBits::eCompute) == 0) {
