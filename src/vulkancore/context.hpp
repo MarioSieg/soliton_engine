@@ -33,10 +33,10 @@ namespace vkb {
         auto create_pipeline_cache() -> void;
         auto recreate_swapchain() -> void;
 
-        auto destroy_depth_stencil() -> void;
-        auto destroy_frame_buffer() -> void;
-        auto destroy_command_buffers() -> void;
-        auto destroy_sync_prims() -> void;
+        auto destroy_depth_stencil() const -> void;
+        auto destroy_frame_buffer() const -> void;
+        auto destroy_command_buffers() const -> void;
+        auto destroy_sync_prims() const -> void;
 
         GLFWwindow* m_window = nullptr;
         std::uint32_t m_width = 0;
@@ -54,7 +54,7 @@ namespace vkb {
         struct {
             vk::Image image {};
             vk::ImageView view {};
-            vk::DeviceMemory memory {};
+            VmaAllocation memory {};
         } m_depth_stencil {};
         vk::RenderPass m_render_pass {};
         std::vector<vk::Framebuffer> m_framebuffers {};

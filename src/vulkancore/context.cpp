@@ -18,6 +18,12 @@ namespace vkb {
     context::~context() {
         m_device->get_logical_device().waitIdle();
 
+        // Dump VMA Infos
+        char* vma_stats_string = nullptr;
+        vmaBuildStatsString(m_device->get_allocator(), &vma_stats_string, true);
+        spdlog::info("VMA Stats:\n{}", vma_stats_string);
+        vmaFreeStatsString(m_device->get_allocator(), vma_stats_string);
+
         m_device->get_logical_device().destroyPipelineCache(m_pipeline_cache);
         m_device->get_logical_device().destroyRenderPass(m_render_pass);
 
@@ -214,19 +220,18 @@ namespace vkb {
         image_ci.tiling = vk::ImageTiling::eOptimal;
         image_ci.usage = vk::ImageUsageFlagBits::eDepthStencilAttachment;
         image_ci.initialLayout = vk::ImageLayout::eUndefined;
-        vkcheck(m_device->get_logical_device().createImage(&image_ci, nullptr, &m_depth_stencil.image));
 
-        vk::MemoryRequirements memory_requirements {};
-        m_device->get_logical_device().getImageMemoryRequirements(m_depth_stencil.image, &memory_requirements);
-
-        // Allocate memory for the image (device local) and bind it to our image
-        vk::MemoryAllocateInfo memory_allocate_info {};
-        memory_allocate_info.allocationSize = memory_requirements.size;
-        vk::Bool32 found = false;
-        memory_allocate_info.memoryTypeIndex = m_device->get_mem_type(memory_requirements.memoryTypeBits, vk::MemoryPropertyFlagBits::eDeviceLocal, found);
-        passert(found);
-        vkcheck(m_device->get_logical_device().allocateMemory(&memory_allocate_info, nullptr, &m_depth_stencil.memory));
-        m_device->get_logical_device().bindImageMemory(m_depth_stencil.image, m_depth_stencil.memory, 0);
+        VmaAllocationCreateInfo vma_allocation_ci {};
+        vma_allocation_ci.usage = VMA_MEMORY_USAGE_AUTO;
+        vma_allocation_ci.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
+        vmaCreateImage(
+            m_device->get_allocator(),
+            &static_cast<VkImageCreateInfo&>(image_ci),
+            &vma_allocation_ci,
+            reinterpret_cast<VkImage*>(&m_depth_stencil.image),
+            &m_depth_stencil.memory,
+            nullptr
+        );
 
         // Create a view for the depth stencil image
         // Images aren't directly accessed in Vulkan, but rather through views described by a subresource range
@@ -347,23 +352,22 @@ namespace vkb {
         m_swapchain->create(m_width, m_height, false, false);
     }
 
-    auto context::destroy_depth_stencil() -> void {
-        m_device->get_logical_device().destroyImage(m_depth_stencil.image);
+    auto context::destroy_depth_stencil() const -> void {
         m_device->get_logical_device().destroyImageView(m_depth_stencil.view);
-        m_device->get_logical_device().freeMemory(m_depth_stencil.memory);
+        vmaDestroyImage(m_device->get_allocator(), m_depth_stencil.image, m_depth_stencil.memory);
     }
 
-    auto context::destroy_frame_buffer() -> void {
+    auto context::destroy_frame_buffer() const -> void {
         for (auto&& framebuffer : m_framebuffers) {
             m_device->get_logical_device().destroyFramebuffer(framebuffer);
         }
     }
 
-    auto context::destroy_command_buffers() -> void {
+    auto context::destroy_command_buffers() const -> void {
         m_device->get_logical_device().freeCommandBuffers(m_command_pool, m_command_buffers);
     }
 
-    auto context::destroy_sync_prims() -> void {
+    auto context::destroy_sync_prims() const -> void {
         for (auto&& fence : m_wait_fences) {
             m_device->get_logical_device().destroyFence(fence);
         }
