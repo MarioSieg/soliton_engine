@@ -40,6 +40,8 @@ namespace vkb {
         [[nodiscard]] auto get_format() const noexcept -> vk::Format { return m_format; }
         [[nodiscard]] auto get_color_space() const noexcept -> vk::ColorSpaceKHR { return m_color_space; }
         [[nodiscard]] auto get_surface() const noexcept -> vk::SurfaceKHR { return m_surface; }
+        [[nodiscard]] auto get_swapchain() const noexcept -> vk::SwapchainKHR { return m_swapchain; }
+        [[nodiscard]] auto get_images() const noexcept -> std::span<const vk::Image> { return m_images; }
 
     private:
 

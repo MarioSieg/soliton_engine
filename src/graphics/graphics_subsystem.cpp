@@ -18,9 +18,8 @@ namespace graphics {
 
         boot_vulkan_core();
         create_command_pool();
-        create_semaphores();
         create_command_buffers();
-        create_fences();
+        create_sync_prims();
         setup_depth_stencil();
         setup_render_pass();
         setup_frame_buffer();
@@ -37,23 +36,20 @@ namespace graphics {
         ImPlot::DestroyContext();
         ImGui::DestroyContext();
 
+        m_device->get_logical_device().waitIdle();
+
         m_device->get_logical_device().destroyPipelineCache(m_pipeline_cache);
         m_device->get_logical_device().destroyRenderPass(m_render_pass);
-        for (auto&& framebuffer : m_framebuffers) {
-            m_device->get_logical_device().destroyFramebuffer(framebuffer);
-        }
-        m_device->get_logical_device().destroyImage(m_depth_stencil.image);
-        m_device->get_logical_device().destroyImageView(m_depth_stencil.view);
-        m_device->get_logical_device().freeMemory(m_depth_stencil.memory);
-        for (auto&& fence : m_wait_fences) {
-            m_device->get_logical_device().destroyFence(fence);
-        }
-        for (auto&& buffer : m_command_buffers) {
-            m_device->get_logical_device().freeCommandBuffers(m_command_pool, buffer);
-        }
+
+        destroy_depth_stencil();
+        destroy_frame_buffer();
+
+        destroy_command_buffers();
+
         m_device->get_logical_device().destroyCommandPool(m_command_pool);
-        m_device->get_logical_device().destroySemaphore(m_semaphores.render_complete);
-        m_device->get_logical_device().destroySemaphore(m_semaphores.present_complete);
+
+        destroy_sync_prims();
+
         m_swapchain.reset();
         m_device.reset();
     }
@@ -102,29 +98,134 @@ namespace graphics {
         //auto& io = ImGui::GetIO();
         //io.DisplaySize.x = m_width;
         //io.DisplaySize.y = m_height;
-        const vk::Result result = m_swapchain->acquire_next_image(m_semaphores.present_complete, m_current_buffer);
+
+        // Use a fence to wait until the command buffer has finished execution before using it again
+        vkcheck(m_device->get_logical_device().waitForFences(1, &m_wait_fences[m_current_frame], vk::True, std::numeric_limits<std::uint64_t>::max()));
+        vkcheck(m_device->get_logical_device().resetFences(1, &m_wait_fences[m_current_frame]));
+
+        // Get the next swap chain image from the implementation
+        // Note that the implementation is free to return the images in any order, so we must use the acquire function and can't just cycle through the images/imageIndex on our own
+        std::uint32_t image_index;
+        vk::Result result = m_swapchain->acquire_next_image(m_semaphores.present_complete[m_current_frame], image_index);
         if (result == vk::Result::eErrorOutOfDateKHR || result == vk::Result::eSuboptimalKHR) [[unlikely]] {
-            //recreate_swapchain();
+            on_resize();
         } else {
             vkcheck(result);
         }
+
+        // Build the command buffer
+        // Unlike in OpenGL all rendering commands are recorded into command buffers that are then submitted to the queue
+        // This allows to generate work upfront in a separate thread
+        // For basic command buffers (like in this sample), recording is so fast that there is no need to offload this
+        m_command_buffers[m_current_frame].reset();
+
+        vk::CommandBufferBeginInfo command_buffer_begin_info {};
+
+        // Set clear values for all framebuffer attachments with loadOp set to clear
+        // We use two attachments (color and depth) that are cleared at the start of the subpass and as such we need to set clear values for both
+        std::array<vk::ClearValue, 2> clear_values {};
+        clear_values[0].color = vk::ClearColorValue{0.0f, 0.0f, 1.0f, 1.0f};
+        clear_values[1].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
+
+        vk::RenderPassBeginInfo render_pass_begin_info {};
+        render_pass_begin_info.renderPass = m_render_pass;
+        render_pass_begin_info.framebuffer = m_framebuffers[image_index];
+        render_pass_begin_info.renderArea.extent.width = m_width;
+        render_pass_begin_info.renderArea.extent.height = m_height;
+        render_pass_begin_info.clearValueCount = static_cast<std::uint32_t>(clear_values.size());
+        render_pass_begin_info.pClearValues = clear_values.data();
+
+        vk::CommandBuffer cmd_buf = m_command_buffers[m_current_frame];
+        vkcheck(cmd_buf.begin(&command_buffer_begin_info));
+
+        // Start the first sub pass specified in our default render pass setup by the base class
+        // This will clear the color and depth attachment
+        cmd_buf.beginRenderPass(&render_pass_begin_info, vk::SubpassContents::eInline);
+
+        // Update dynamic viewport state
+        vk::Viewport viewport {};
+        viewport.width = m_width;
+        viewport.height = m_height;
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+        cmd_buf.setViewport(0, 1, &viewport);
+
+        // Update dynamic scissor state
+        vk::Rect2D scissor {};
+        scissor.extent.width = m_width;
+        scissor.extent.height = m_height;
+        scissor.offset.x = 0.0f;
+        scissor.offset.y = 0.0f;
+        cmd_buf.setScissor(0, 1, &scissor);
+
+        cmd_buf.endRenderPass();
+        cmd_buf.end();
+
+        vk::PipelineStageFlags wait_stage_mask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
+        vk::SubmitInfo submit_info {};
+        submit_info.pWaitDstStageMask = &wait_stage_mask;
+        submit_info.commandBufferCount = 1;
+        submit_info.pCommandBuffers = &cmd_buf;
+        // Semaphore to wait upon before the submitted command buffer starts executing
+        submit_info.waitSemaphoreCount = 1;
+        submit_info.pWaitSemaphores = &m_semaphores.present_complete[m_current_frame];
+        // Semaphore to be signaled when command buffers have completed
+        submit_info.signalSemaphoreCount = 1;
+        submit_info.pSignalSemaphores = &m_semaphores.render_complete[m_current_frame];
+
+        // Submit to the graphics queue passing a wait fence
+        vkcheck(m_device->get_graphics_queue().submit(1, &submit_info, m_wait_fences[m_current_frame]));
+
+        // Present the current frame buffer to the swap chain
+        // Pass the semaphore signaled by the command buffer submission from the submit info as the wait semaphore for swap chain presentation
+        // This ensures that the image is not presented to the windowing system until all commands have been submitted
+        vk::PresentInfoKHR present_info {};
+        present_info.swapchainCount = 1;
+        vk::SwapchainKHR swapchain = m_swapchain->get_swapchain();
+        present_info.pSwapchains = &swapchain;
+        present_info.pImageIndices = &image_index;
+        present_info.waitSemaphoreCount = 1;
+        present_info.pWaitSemaphores = &m_semaphores.render_complete[m_current_frame];
+        result = m_device->get_graphics_queue().presentKHR(&present_info);
+        if (result == vk::Result::eErrorOutOfDateKHR || result == vk::Result::eSuboptimalKHR) [[unlikely]] {
+            on_resize();
+        } else {
+            vkcheck(result);
+        }
+
+        m_current_frame = (m_current_frame + 1) % k_max_concurrent_frames;
+
         return true;
     }
 
     HOTPROC auto graphics_subsystem::on_post_tick() -> void {
-        const vk::Result result = m_swapchain->queue_present(m_device->get_graphics_queue(), m_current_buffer, m_semaphores.render_complete);
-        if (result == vk::Result::eErrorOutOfDateKHR || result == vk::Result::eSuboptimalKHR) [[unlikely]] {
-            //recreate_swapchain();
-        } else {
-            vkcheck(result);
-        }
-        m_device->get_graphics_queue().waitIdle();
         //ImGui::EndFrame();
         c_camera::active_camera = entity::null();
     }
 
     auto graphics_subsystem::on_resize() -> void {
+        m_device->get_logical_device().waitIdle();
+
+        int w, h;
+        glfwGetFramebufferSize(platform_subsystem::get_glfw_window(), &w, &h);
+        m_width = w;
+        m_height = h;
+
         recreate_swapchain();
+
+        destroy_depth_stencil();
+        setup_depth_stencil();
+
+        destroy_frame_buffer();
+        setup_frame_buffer();
+
+        destroy_command_buffers();
+        create_command_buffers();
+
+        destroy_sync_prims();
+        create_sync_prims();
+
+        m_device->get_logical_device().waitIdle();
     }
 
     void graphics_subsystem::on_start(scene& scene) {
@@ -141,6 +242,16 @@ namespace graphics {
         recreate_swapchain();
     }
 
+    auto graphics_subsystem::create_sync_prims() -> void {
+        constexpr vk::SemaphoreCreateInfo semaphore_ci {};
+        constexpr vk::FenceCreateInfo fence_ci { vk::FenceCreateFlagBits::eSignaled };
+        for (std::uint32_t i = 0; i < k_max_concurrent_frames; ++i) {
+            vkcheck(m_device->get_logical_device().createSemaphore(&semaphore_ci, nullptr, &m_semaphores.present_complete[i]));
+            vkcheck(m_device->get_logical_device().createSemaphore(&semaphore_ci, nullptr, &m_semaphores.render_complete[i]));
+            vkcheck(m_device->get_logical_device().createFence(&fence_ci, nullptr, &m_wait_fences[i]));
+        }
+    }
+
     auto graphics_subsystem::create_command_pool() -> void {
         vk::CommandPoolCreateInfo command_pool_ci {};
         command_pool_ci.queueFamilyIndex = m_swapchain->get_queue_node_index();
@@ -148,19 +259,7 @@ namespace graphics {
         vkcheck(m_device->get_logical_device().createCommandPool(&command_pool_ci, nullptr, &m_command_pool));
     }
 
-    auto graphics_subsystem::create_semaphores() -> void {
-        constexpr vk::SemaphoreCreateInfo semaphore_ci {};
-        vkcheck(m_device->get_logical_device().createSemaphore(&semaphore_ci, nullptr, &m_semaphores.present_complete));
-        vkcheck(m_device->get_logical_device().createSemaphore(&semaphore_ci, nullptr, &m_semaphores.render_complete));
-        m_submit_info.pWaitDstStageMask = &m_submit_info_wait_stage_mask;
-        m_submit_info.waitSemaphoreCount = 1;
-        m_submit_info.pWaitSemaphores = &m_semaphores.present_complete;
-        m_submit_info.signalSemaphoreCount = 1;
-        m_submit_info.pSignalSemaphores = &m_semaphores.render_complete;
-    }
-
     auto graphics_subsystem::create_command_buffers() -> void {
-        m_command_buffers.resize(m_swapchain->get_image_count());
         vk::CommandBufferAllocateInfo command_buffer_allocate_info {};
         command_buffer_allocate_info.commandPool = m_command_pool;
         command_buffer_allocate_info.level = vk::CommandBufferLevel::ePrimary;
@@ -168,16 +267,8 @@ namespace graphics {
         vkcheck(m_device->get_logical_device().allocateCommandBuffers(&command_buffer_allocate_info, m_command_buffers.data()));
     }
 
-    auto graphics_subsystem::create_fences() -> void {
-        // Wait fences to sync command buffer access
-        vk::FenceCreateInfo fence_ci { vk::FenceCreateFlagBits::eSignaled };
-        m_wait_fences.resize(m_command_buffers.size());
-        for (auto& fence : m_wait_fences) {
-            vkcheck(m_device->get_logical_device().createFence(&fence_ci, nullptr, &fence));
-        }
-    }
-
     auto graphics_subsystem::setup_depth_stencil() -> void {
+        // Create an optimal image used as the depth stencil attachment
         vk::ImageCreateInfo image_ci {};
         image_ci.imageType = vk::ImageType::e2D;
         image_ci.format = m_device->get_depth_format();
@@ -195,6 +286,7 @@ namespace graphics {
         vk::MemoryRequirements memory_requirements {};
         m_device->get_logical_device().getImageMemoryRequirements(m_depth_stencil.image, &memory_requirements);
 
+        // Allocate memory for the image (device local) and bind it to our image
         vk::MemoryAllocateInfo memory_allocate_info {};
         memory_allocate_info.allocationSize = memory_requirements.size;
         vk::Bool32 found = false;
@@ -203,6 +295,9 @@ namespace graphics {
         vkcheck(m_device->get_logical_device().allocateMemory(&memory_allocate_info, nullptr, &m_depth_stencil.memory));
         m_device->get_logical_device().bindImageMemory(m_depth_stencil.image, m_depth_stencil.memory, 0);
 
+        // Create a view for the depth stencil image
+        // Images aren't directly accessed in Vulkan, but rather through views described by a subresource range
+        // This allows for multiple views of one image with differing ranges (e.g. for different layers)
         vk::ImageViewCreateInfo image_view_ci {};
         image_view_ci.viewType = vk::ImageViewType::e2D;
         image_view_ci.format = m_device->get_depth_format();
@@ -219,6 +314,10 @@ namespace graphics {
         vkcheck(m_device->get_logical_device().createImageView(&image_view_ci, nullptr, &m_depth_stencil.view));
     }
 
+    // Render pass setup
+    // Render passes are a new concept in Vulkan. They describe the attachments used during rendering and may contain multiple subpasses with attachment dependencies
+    // This allows the driver to know up-front what the rendering will look like and is a good opportunity to optimize especially on tile-based renderers (with multiple subpasses)
+    // Using sub pass dependencies also adds implicit layout transitions for the attachment used, so we don't need to add explicit image memory barriers to transform them
     auto graphics_subsystem::setup_render_pass() -> void {
         std::array<vk::AttachmentDescription, 2> attachments {};
 
@@ -288,33 +387,58 @@ namespace graphics {
     }
 
     auto graphics_subsystem::setup_frame_buffer() -> void {
-        std::array<vk::ImageView, 2> attachments {};
-        attachments[1] = m_depth_stencil.view;
-
-        vk::FramebufferCreateInfo framebuffer_ci {};
-        framebuffer_ci.renderPass = m_render_pass;
-        framebuffer_ci.attachmentCount = 2;
-        framebuffer_ci.pAttachments = attachments.data();
-        framebuffer_ci.width = m_width;
-        framebuffer_ci.height = m_height;
-        framebuffer_ci.layers = 1;
+        // Create a frame buffer for every image in the swapchain
         m_framebuffers.resize(m_swapchain->get_image_count());
         for (std::size_t i = 0; i < m_framebuffers.size(); ++i) {
-            attachments[0] = m_swapchain->get_buffer(static_cast<std::uint32_t>(i)).view;
+            std::array<vk::ImageView, 2> attachments {};
+            attachments[0] = m_swapchain->get_buffer(i).view;
+            attachments[1] = m_depth_stencil.view;
+
+            vk::FramebufferCreateInfo framebuffer_ci {};
+            framebuffer_ci.renderPass = m_render_pass;
+            framebuffer_ci.attachmentCount = 2;
+            framebuffer_ci.pAttachments = attachments.data();
+            framebuffer_ci.width = m_width;
+            framebuffer_ci.height = m_height;
+            framebuffer_ci.layers = 1;
             vkcheck(m_device->get_logical_device().createFramebuffer(&framebuffer_ci, nullptr, &m_framebuffers[i]));
         }
     }
 
     auto graphics_subsystem::create_pipeline_cache() -> void {
-        vk::PipelineCacheCreateInfo pipeline_cache_ci {};
+        constexpr vk::PipelineCacheCreateInfo pipeline_cache_ci {};
         vkcheck(m_device->get_logical_device().createPipelineCache(&pipeline_cache_ci, nullptr, &m_pipeline_cache));
     }
 
     auto graphics_subsystem::recreate_swapchain() -> void {
-        int w, h;
-        glfwGetFramebufferSize(platform_subsystem::get_glfw_window(), &w, &h);
-        m_width = w;
-        m_height = h;
         m_swapchain->create(m_width, m_height, false, false);
+    }
+
+    auto graphics_subsystem::destroy_depth_stencil() -> void {
+        m_device->get_logical_device().destroyImage(m_depth_stencil.image);
+        m_device->get_logical_device().destroyImageView(m_depth_stencil.view);
+        m_device->get_logical_device().freeMemory(m_depth_stencil.memory);
+    }
+
+    auto graphics_subsystem::destroy_frame_buffer() -> void {
+        for (auto&& framebuffer : m_framebuffers) {
+            m_device->get_logical_device().destroyFramebuffer(framebuffer);
+        }
+    }
+
+    auto graphics_subsystem::destroy_command_buffers() -> void {
+        m_device->get_logical_device().freeCommandBuffers(m_command_pool, m_command_buffers);
+    }
+
+    auto graphics_subsystem::destroy_sync_prims() -> void {
+        for (auto&& fence : m_wait_fences) {
+            m_device->get_logical_device().destroyFence(fence);
+        }
+        for (auto&& semaphore : m_semaphores.render_complete) {
+            m_device->get_logical_device().destroySemaphore(semaphore);
+        }
+        for (auto&& semaphore : m_semaphores.present_complete) {
+            m_device->get_logical_device().destroySemaphore(semaphore);
+        }
     }
 }
