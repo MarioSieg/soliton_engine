@@ -20,25 +20,18 @@ namespace vkb {
         init_vma();
         passert(find_supported_depth_format(require_stencil, m_depth_format));
 
-        // Create a default command pool for graphics command buffers
-        vk::CommandPoolCreateInfo cmd_pool_info {};
-        cmd_pool_info.queueFamilyIndex = m_queue_families.graphics;
-        cmd_pool_info.flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer;
-        m_command_pool = m_logical_device.createCommandPool(cmd_pool_info);
-
         log_info("Vulkan device initialized");
     }
 
     device::~device() {
-        m_logical_device.destroyCommandPool(m_command_pool);
         vmaDestroyAllocator(m_allocator);
-        m_logical_device.destroy();
+        m_logical_device.destroy(&s_allocator);
         log_info("Destroying Vulkan device...");
         if (m_debug_utils_messenger != VK_NULL_HANDLE) {
-            (*m_destroy_debug_utils_messenger_ext)(m_instance, m_debug_utils_messenger, nullptr);
+            (*m_destroy_debug_utils_messenger_ext)(m_instance, m_debug_utils_messenger, reinterpret_cast<const VkAllocationCallbacks*>(&s_allocator));
             log_info("Destroyed Vulkan debug utils messenger");
         }
-        m_instance.destroy();
+        m_instance.destroy(&s_allocator);
         log_info("Destroyed Vulkan instance");
     }
 
@@ -173,7 +166,7 @@ namespace vkb {
             }
         }
 
-        vkcheck(vk::createInstance(&instance_create_info, nullptr, &m_instance));
+        vkcheck(vk::createInstance(&instance_create_info, &s_allocator, &m_instance));
 
 #if 0
         if (std::ranges::find(m_supported_instance_extensions, VK_EXT_DEBUG_UTILS_EXTENSION_NAME) != m_supported_instance_extensions.end()) {
@@ -188,7 +181,7 @@ namespace vkb {
             vkccheck((*m_create_debug_utils_messenger_ext)(
                 m_instance,
                 &static_cast<VkDebugUtilsMessengerCreateInfoEXT&>(m_debug_utils_messenger_ci),
-                nullptr,
+                reinterpret_cast<const VkAllocationCallbacks*>(&s_allocator),
                 &dst
             ));
             m_debug_utils_messenger = dst;
@@ -355,7 +348,7 @@ namespace vkb {
         m_enabled_features = enabled_features;
 
         log_info("Creating Vulkan logical device...");
-        m_logical_device = m_physical_device.createDevice(device_create_info, nullptr);
+        m_logical_device = m_physical_device.createDevice(device_create_info, &s_allocator);
 
         // Fetch queues
         m_logical_device.getQueue(m_queue_families.graphics, 0, &m_graphics_queue);
@@ -405,6 +398,7 @@ namespace vkb {
         allocator_info.physicalDevice = m_physical_device;
         allocator_info.device = m_logical_device;
         allocator_info.instance = m_instance;
+        allocator_info.pAllocationCallbacks = reinterpret_cast<const VkAllocationCallbacks*>(&s_allocator);
         vkccheck(vmaCreateAllocator(&allocator_info, &m_allocator));
     }
 

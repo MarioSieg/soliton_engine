@@ -23,9 +23,9 @@ namespace vkb {
 
     swapchain::~swapchain() {
         for (std::uint32_t i = 0; i < m_image_count; ++i) {
-            m_logical_device.destroyImageView(m_buffers[i].view);
+            m_logical_device.destroyImageView(m_buffers[i].view, &s_allocator);
         }
-        m_logical_device.destroySwapchainKHR(m_swapchain, nullptr);
+        m_logical_device.destroySwapchainKHR(m_swapchain, &s_allocator);
         m_instance.destroySurfaceKHR(m_surface);
     }
 
@@ -211,15 +211,15 @@ namespace vkb {
             swapchain_ci.imageUsage |= vk::ImageUsageFlagBits::eTransferDst;
         }
 
-        vkcheck(m_logical_device.createSwapchainKHR(&swapchain_ci, nullptr, &m_swapchain));
+        vkcheck(m_logical_device.createSwapchainKHR(&swapchain_ci, &s_allocator, &m_swapchain));
 
         // If an existing swap chain is re-created, destroy the old swap chain
         // This also cleans up all the presentable images
         if (old_swapchain) {
             for (std::uint32_t i = 0; i < m_image_count; ++i) {
-                m_logical_device.destroyImageView(m_buffers[i].view);
+                m_logical_device.destroyImageView(m_buffers[i].view, &s_allocator);
             }
-            m_logical_device.destroySwapchainKHR(old_swapchain, nullptr);
+            m_logical_device.destroySwapchainKHR(old_swapchain, &s_allocator);
         }
 
         // Get the swap chain images
@@ -247,7 +247,7 @@ namespace vkb {
             color_image_view.flags = {};
             m_buffers[i].image = m_images[i];
             color_image_view.image = m_images[i];
-            vkcheck(m_logical_device.createImageView(&color_image_view, nullptr, &m_buffers[i].view));
+            vkcheck(m_logical_device.createImageView(&color_image_view, &s_allocator, &m_buffers[i].view));
         }
     }
 

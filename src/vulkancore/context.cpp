@@ -24,15 +24,15 @@ namespace vkb {
         spdlog::info("VMA Stats:\n{}", vma_stats_string);
         vmaFreeStatsString(m_device->get_allocator(), vma_stats_string);
 
-        m_device->get_logical_device().destroyPipelineCache(m_pipeline_cache);
-        m_device->get_logical_device().destroyRenderPass(m_render_pass);
+        m_device->get_logical_device().destroyPipelineCache(m_pipeline_cache, &s_allocator);
+        m_device->get_logical_device().destroyRenderPass(m_render_pass, &s_allocator);
 
         destroy_depth_stencil();
         destroy_frame_buffer();
 
         destroy_command_buffers();
 
-        m_device->get_logical_device().destroyCommandPool(m_command_pool);
+        m_device->get_logical_device().destroyCommandPool(m_command_pool, &s_allocator);
 
         destroy_sync_prims();
 
@@ -185,9 +185,9 @@ namespace vkb {
         constexpr vk::SemaphoreCreateInfo semaphore_ci {};
         constexpr vk::FenceCreateInfo fence_ci { vk::FenceCreateFlagBits::eSignaled };
         for (std::uint32_t i = 0; i < k_max_concurrent_frames; ++i) {
-            vkcheck(m_device->get_logical_device().createSemaphore(&semaphore_ci, nullptr, &m_semaphores.present_complete[i]));
-            vkcheck(m_device->get_logical_device().createSemaphore(&semaphore_ci, nullptr, &m_semaphores.render_complete[i]));
-            vkcheck(m_device->get_logical_device().createFence(&fence_ci, nullptr, &m_wait_fences[i]));
+            vkcheck(m_device->get_logical_device().createSemaphore(&semaphore_ci, &s_allocator, &m_semaphores.present_complete[i]));
+            vkcheck(m_device->get_logical_device().createSemaphore(&semaphore_ci, &s_allocator, &m_semaphores.render_complete[i]));
+            vkcheck(m_device->get_logical_device().createFence(&fence_ci, &s_allocator, &m_wait_fences[i]));
         }
     }
 
@@ -195,7 +195,7 @@ namespace vkb {
         vk::CommandPoolCreateInfo command_pool_ci {};
         command_pool_ci.queueFamilyIndex = m_swapchain->get_queue_node_index();
         command_pool_ci.flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer;
-        vkcheck(m_device->get_logical_device().createCommandPool(&command_pool_ci, nullptr, &m_command_pool));
+        vkcheck(m_device->get_logical_device().createCommandPool(&command_pool_ci, &s_allocator, &m_command_pool));
     }
 
     auto context::create_command_buffers() -> void {
@@ -249,7 +249,7 @@ namespace vkb {
         if (m_device->get_depth_format() >= vk::Format::eD16UnormS8Uint) {
             image_view_ci.subresourceRange.aspectMask |= vk::ImageAspectFlagBits::eStencil;
         }
-        vkcheck(m_device->get_logical_device().createImageView(&image_view_ci, nullptr, &m_depth_stencil.view));
+        vkcheck(m_device->get_logical_device().createImageView(&image_view_ci, &s_allocator, &m_depth_stencil.view));
     }
 
     // Render pass setup
@@ -321,7 +321,7 @@ namespace vkb {
         render_pass_ci.pSubpasses = &subpass_description;
         render_pass_ci.dependencyCount = static_cast<std::uint32_t>(dependencies.size());
         render_pass_ci.pDependencies = dependencies.data();
-        vkcheck(m_device->get_logical_device().createRenderPass(&render_pass_ci, nullptr, &m_render_pass));
+        vkcheck(m_device->get_logical_device().createRenderPass(&render_pass_ci, &s_allocator, &m_render_pass));
     }
 
     auto context::setup_frame_buffer() -> void {
@@ -339,13 +339,13 @@ namespace vkb {
             framebuffer_ci.width = m_width;
             framebuffer_ci.height = m_height;
             framebuffer_ci.layers = 1;
-            vkcheck(m_device->get_logical_device().createFramebuffer(&framebuffer_ci, nullptr, &m_framebuffers[i]));
+            vkcheck(m_device->get_logical_device().createFramebuffer(&framebuffer_ci, &s_allocator, &m_framebuffers[i]));
         }
     }
 
     auto context::create_pipeline_cache() -> void {
         constexpr vk::PipelineCacheCreateInfo pipeline_cache_ci {};
-        vkcheck(m_device->get_logical_device().createPipelineCache(&pipeline_cache_ci, nullptr, &m_pipeline_cache));
+        vkcheck(m_device->get_logical_device().createPipelineCache(&pipeline_cache_ci, &s_allocator, &m_pipeline_cache));
     }
 
     auto context::recreate_swapchain() -> void {
@@ -353,13 +353,13 @@ namespace vkb {
     }
 
     auto context::destroy_depth_stencil() const -> void {
-        m_device->get_logical_device().destroyImageView(m_depth_stencil.view);
+        m_device->get_logical_device().destroyImageView(m_depth_stencil.view, &s_allocator);
         vmaDestroyImage(m_device->get_allocator(), m_depth_stencil.image, m_depth_stencil.memory);
     }
 
     auto context::destroy_frame_buffer() const -> void {
         for (auto&& framebuffer : m_framebuffers) {
-            m_device->get_logical_device().destroyFramebuffer(framebuffer);
+            m_device->get_logical_device().destroyFramebuffer(framebuffer, &s_allocator);
         }
     }
 
@@ -369,13 +369,13 @@ namespace vkb {
 
     auto context::destroy_sync_prims() const -> void {
         for (auto&& fence : m_wait_fences) {
-            m_device->get_logical_device().destroyFence(fence);
+            m_device->get_logical_device().destroyFence(fence, &s_allocator);
         }
         for (auto&& semaphore : m_semaphores.render_complete) {
-            m_device->get_logical_device().destroySemaphore(semaphore);
+            m_device->get_logical_device().destroySemaphore(semaphore, &s_allocator);
         }
         for (auto&& semaphore : m_semaphores.present_complete) {
-            m_device->get_logical_device().destroySemaphore(semaphore);
+            m_device->get_logical_device().destroySemaphore(semaphore, &s_allocator);
         }
     }
 }

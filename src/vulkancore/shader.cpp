@@ -146,13 +146,13 @@ namespace vkb {
         vk::ShaderModuleCreateInfo create_info {};
         create_info.codeSize = spirv_bytecode.size() * sizeof(std::uint32_t);
         create_info.pCode = spirv_bytecode.data();
-        vkcheck(context::s_instance->get_device().get_logical_device().createShaderModule(&create_info, nullptr, &m_module));
+        vkcheck(context::s_instance->get_device().get_logical_device().createShaderModule(&create_info, &s_allocator, &m_module));
 
         log_info("Compiled shader: {} in {:.03f}s", path, std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - start).count());
     }
 
     shader::~shader() noexcept {
-        context::s_instance->get_device().get_logical_device().destroyShaderModule(m_module);
+        context::s_instance->get_device().get_logical_device().destroyShaderModule(m_module, &s_allocator);
     }
 
     auto shader::shutdown_online_compiler() -> void {

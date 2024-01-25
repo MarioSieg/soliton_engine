@@ -31,7 +31,6 @@ namespace vkb {
         [[nodiscard]] auto get_graphics_queue() const noexcept -> vk::Queue { return m_graphics_queue; }
         [[nodiscard]] auto get_compute_queue() const noexcept -> vk::Queue { return m_compute_queue; }
         [[nodiscard]] auto get_transfer_queue() const noexcept -> vk::Queue { return m_transfer_queue; }
-        [[nodiscard]] auto get_command_pool() const noexcept -> vk::CommandPool { return m_command_pool; }
         [[nodiscard]] auto get_allocator() const noexcept -> VmaAllocator { return m_allocator; }
 
     private:
@@ -67,7 +66,6 @@ namespace vkb {
         vk::PhysicalDeviceMemoryProperties m_memory_properties {};
         std::vector<vk::QueueFamilyProperties> m_queue_family_properties {};
         VmaAllocator m_allocator {};
-        vk::CommandPool m_command_pool {};
         vk::Queue m_graphics_queue {};
         vk::Queue m_compute_queue {};
         vk::Queue m_transfer_queue {};
