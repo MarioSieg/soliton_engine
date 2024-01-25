@@ -17,6 +17,15 @@ namespace vkb {
 
         operator vk::Device() const noexcept { return m_logical_device; }
 
+        [[nodiscard]] auto get_instance() const noexcept -> vk::Instance { return m_instance; }
+        [[nodiscard]] auto get_physical_device() const noexcept -> vk::PhysicalDevice { return m_physical_device; }
+        [[nodiscard]] auto get_logical_device() const noexcept -> vk::Device { return m_logical_device; }
+        [[nodiscard]] auto get_physical_device_props() const noexcept -> const vk::PhysicalDeviceProperties& { return m_device_properties; }
+        [[nodiscard]] auto get_physical_device_features() const noexcept -> const vk::PhysicalDeviceFeatures& { return m_device_features; }
+        [[nodiscard]] auto get_physical_device_enabled_features() const noexcept -> const vk::PhysicalDeviceFeatures& { return m_enabled_features; }
+        [[nodiscard]] auto get_supported_device_extensions() const noexcept -> std::span<const vk::ExtensionProperties> { return m_supported_device_extensions; }
+        [[nodiscard]] auto get_supported_instance_extensions() const noexcept -> std::span<const std::string> { return m_supported_instance_extensions; }
+
     private:
         auto create_instance() -> void;
         auto find_physical_device() -> void;
@@ -38,8 +47,8 @@ namespace vkb {
 
         PFN_vkCreateDebugUtilsMessengerEXT m_create_debug_utils_messenger_ext {};
         PFN_vkDestroyDebugUtilsMessengerEXT m_destroy_debug_utils_messenger_ext {};
-        VkDebugUtilsMessengerCreateInfoEXT m_debug_utils_messenger_ci {};
-        VkDebugUtilsMessengerEXT m_debug_utils_messenger {};
+        vk::DebugUtilsMessengerCreateInfoEXT m_debug_utils_messenger_ci {};
+        vk::DebugUtilsMessengerEXT m_debug_utils_messenger {};
 
         vk::PhysicalDevice m_physical_device {};
         vk::Device m_logical_device {};

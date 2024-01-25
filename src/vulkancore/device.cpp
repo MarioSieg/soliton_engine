@@ -2,10 +2,7 @@
 
 #include "device.hpp"
 
-#if PLATFORM_LINUX
-#include <vulkan/vulkan_wayland.h>
-#include <xcb/xcb.h>
-#endif
+#include <GLFW/glfw3.h>
 
 namespace vkb {
     device::device(
@@ -81,13 +78,15 @@ namespace vkb {
             VK_KHR_SURFACE_EXTENSION_NAME
         };
 
-#if PLATFORM_WINDOWS
-        instance_extensions.emplace_back(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
-#elif PLATFORM_LINUX
-        instance_extensions.emplace_back(VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME);
-#else
-#error "Unsupported platform"
-#endif
+        passert(glfwVulkanSupported());
+
+        std::uint32_t glfw_extension_count = 0;
+        const char** glfw_extensions = glfwGetRequiredInstanceExtensions(&glfw_extension_count);
+        if (glfw_extensions && glfw_extension_count) {
+            for (std::uint32_t i = 0; i < glfw_extension_count; i++) {
+                instance_extensions.emplace_back(glfw_extensions[i]);
+            }
+        }
 
         // Enumerate supported instance extensions
         uint32_t extCount = 0;
@@ -113,11 +112,8 @@ namespace vkb {
             log_info("Enabling Vulkan validation layers...");
             if (std::ranges::find(m_supported_instance_extensions, VK_EXT_DEBUG_UTILS_EXTENSION_NAME) != m_supported_instance_extensions.end()) {
                 log_info("Enabling Vulkan debug utils extension...");
-                m_debug_utils_messenger_ci.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-                m_debug_utils_messenger_ci.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT
-                    | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT;
-                m_debug_utils_messenger_ci.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
-                    | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+                m_debug_utils_messenger_ci.messageSeverity = vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning | vk::DebugUtilsMessageSeverityFlagBitsEXT::eError | vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose;
+                m_debug_utils_messenger_ci.messageType = vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral | vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation | vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance;
                 m_debug_utils_messenger_ci.pfnUserCallback = &vulkan_debug_message_callback;
                 m_debug_utils_messenger_ci.pNext = instance_create_info.pNext;
                 instance_create_info.pNext = &m_debug_utils_messenger_ci;
@@ -129,6 +125,12 @@ namespace vkb {
 
         // Setup enabled instance extensions
         if (!instance_extensions.empty()) [[likely]] {
+            for (const char* ext : instance_extensions) {
+                log_info("Enabling instance extension: {}", ext);
+                if (std::ranges::find(m_supported_instance_extensions, ext) == m_supported_instance_extensions.end()) {
+                    panic("Instance extension {} not supported", ext);
+                }
+            }
             instance_create_info.enabledExtensionCount = static_cast<std::uint32_t>(instance_extensions.size());
             instance_create_info.ppEnabledExtensionNames = instance_extensions.data();
         }
@@ -167,7 +169,14 @@ namespace vkb {
         if (m_enable_validation) {
             m_create_debug_utils_messenger_ext = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(m_instance.getProcAddr("vkCreateDebugUtilsMessengerEXT"));
             m_destroy_debug_utils_messenger_ext = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(m_instance.getProcAddr("vkDestroyDebugUtilsMessengerEXT"));
-            vkccheck((*m_create_debug_utils_messenger_ext)(m_instance, &m_debug_utils_messenger_ci, nullptr, &m_debug_utils_messenger));
+            auto* dst = static_cast<VkDebugUtilsMessengerEXT>(m_debug_utils_messenger);
+            vkccheck((*m_create_debug_utils_messenger_ext)(
+                m_instance,
+                &static_cast<VkDebugUtilsMessengerCreateInfoEXT&>(m_debug_utils_messenger_ci),
+                nullptr,
+                &dst
+            ));
+            m_debug_utils_messenger = dst;
         }
     }
 
@@ -179,9 +188,9 @@ namespace vkb {
         log_info("Found {} Vulkan physical device(s)", num_gpus);
         passert(num_gpus > 0 && "No Vulkan physical devices found");
         std::uint32_t best_device = 0;
+        vk::PhysicalDeviceProperties device_properties;
         // Find best GPU, prefer discrete GPU
         for (std::uint32_t i = 0; i < num_gpus; i++) {
-            vk::PhysicalDeviceProperties device_properties;
             physical_devices[i].getProperties(&device_properties);
             log_info("Found Vulkan physical device: {}", device_properties.deviceName);
             if (device_properties.deviceType == vk::PhysicalDeviceType::eDiscreteGpu) {
@@ -190,7 +199,7 @@ namespace vkb {
             }
         }
         m_physical_device = physical_devices[best_device];
-        log_info("Using Vulkan physical device: {}", m_physical_device.getProperties().deviceName);
+        log_info("Using Vulkan physical device: {}, Type: {}", device_properties.deviceName, string_VkPhysicalDeviceType(static_cast<VkPhysicalDeviceType>(device_properties.deviceType)));
         m_physical_device.getProperties(&m_device_properties);
         m_physical_device.getFeatures(&m_device_features);
         m_physical_device.getMemoryProperties(&m_memory_properties);
@@ -405,6 +414,7 @@ namespace vkb {
             const vk::FormatProperties props = m_physical_device.getFormatProperties(format);
             if (props.optimalTilingFeatures & vk::FormatFeatureFlagBits::eDepthStencilAttachment) {
                 out_format = format;
+                log_info("Found supported depth format: {}", string_VkFormat(static_cast<VkFormat>(format)));
                 return true;
             }
         }

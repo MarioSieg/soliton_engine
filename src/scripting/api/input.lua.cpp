@@ -1,7 +1,7 @@
 // Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "_prelude.hpp"
-#include "../../platform/subsystem.hpp"
+#include "../../platform/platform_subsystem.hpp"
 
 using platform::platform_subsystem;
 

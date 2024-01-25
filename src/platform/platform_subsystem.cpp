@@ -1,15 +1,14 @@
 // Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
-#include "subsystem.hpp"
+#include "platform_subsystem.hpp"
 
 #include <iostream>
 #include <filesystem>
 
-#include "../graphics/subsystem.hpp"
+#include "../graphics/graphics_subsystem.hpp"
 
 #include <GLFW/glfw3.h>
 #if PLATFORM_WINDOWS // TODO: OSX, Linux
-#define GLFW_EXPOSE_NATIVE_WIN32
 #include <Windows.h>
 #include <Lmcons.h>
 #include <processthreadsapi.h>
@@ -18,11 +17,8 @@
 #include <io.h>
 #include <psapi.h>
 #else
-#define GLFW_EXPOSE_NATIVE_X11
-#define GLFW_EXPOSE_NATIVE_WAYLAND
 #include <link.h>
 #endif
-#include <GLFW/glfw3native.h>
 #include <mimalloc.h>
 #include <infoware/infoware.hpp>
 #include "../stb/stb_image.h"
@@ -284,8 +280,6 @@ auto dump_loaded_dylibs() -> void {
 }
 
     static constinit GLFWwindow* s_window;
-    static constinit void* s_native_window;
-    static constinit void* s_native_display;
 
     static auto proxy_resize_hook(GLFWwindow* window, int w, int h) -> void {
         passert(window != nullptr);
@@ -330,30 +324,6 @@ auto dump_loaded_dylibs() -> void {
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // window is hidden by default
         s_window = glfwCreateWindow(1280, 720, "LunamEngine", nullptr, nullptr);
         passert(s_window != nullptr);
-        #if PLATFORM_WINDOWS
-            s_native_window = reinterpret_cast<void*>(glfwGetWin32Window(s_window));
-        #elif PLATFORM_LINUX
-            passert(glfwPlatformSupported(GLFW_PLATFORM_WAYLAND) || glfwPlatformSupported(GLFW_PLATFORM_X11));
-            if (const char* wayland = std::getenv("WAYLAND_DISPLAY"); wayland && std::strlen(wayland) > 0 && glfwPlatformSupported(GLFW_PLATFORM_WAYLAND)) {
-                log_info("Detected Wayland");
-                s_native_window = reinterpret_cast<void*>(glfwGetWaylandWindow(s_window));
-                s_native_display = reinterpret_cast<void*>(glfwGetWaylandDisplay());
-            } else {
-                log_info("Detected X11");
-                s_native_window = reinterpret_cast<void*>(glfwGetX11Window(s_window));
-                s_native_display = reinterpret_cast<void*>(glfwGetX11Display());
-            }
-        #else
-            #error "Unsupported platform"
-        #endif
-        if (!s_native_window) [[unlikely]] {
-            char const* desc;
-            glfwGetError(&desc);
-            if (desc) {
-                log_error("Failed to connnect window: {}", desc);
-            }
-            passert(s_native_window != nullptr);
-        }
         glfwSetWindowUserPointer(s_window, this);
         glfwSetWindowSizeLimits(s_window, 800, 600, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
@@ -407,8 +377,6 @@ auto dump_loaded_dylibs() -> void {
 
     platform_subsystem::~platform_subsystem() {
         s_window = nullptr;
-        s_native_window = nullptr;
-        s_native_display = nullptr;
         glfwDestroyWindow(s_window);
         glfwTerminate();
     }
@@ -425,13 +393,5 @@ auto dump_loaded_dylibs() -> void {
 
     auto platform_subsystem::get_glfw_window() -> GLFWwindow* {
         return s_window;
-    }
-
-    auto platform_subsystem::get_native_window() -> void* {
-        return s_native_window;
-    }
-
-    auto platform_subsystem::get_native_display() -> void* {
-        return s_native_display;
     }
 }

@@ -2,10 +2,13 @@
 
 #pragma once
 
+#include <optional>
+
 #include "../core/subsystem.hpp"
 #include "../scene/scene.hpp"
 
 #include "../vulkancore/device.hpp"
+#include "../vulkancore/swapchain.hpp"
 
 namespace graphics {
     class graphics_subsystem final : public subsystem {
@@ -24,6 +27,7 @@ namespace graphics {
     private:
         float m_width = 0.0f;
         float m_height = 0.0f;
-        vkb::device m_device {true};
+        std::optional<vkb::device> m_device {};
+        std::optional<vkb::swapchain> m_swapchain {};
     };
 }

@@ -15,8 +15,6 @@ namespace platform {
         HOTPROC auto on_pre_tick() -> bool override;
 
         [[nodiscard]] static auto get_glfw_window() -> GLFWwindow*;
-        [[nodiscard]] static auto get_native_window() -> void*;
-        [[nodiscard]] static auto get_native_display() -> void*;
 
         static constexpr const char* k_window_icon_file = "media/icons/logo.png";
     };

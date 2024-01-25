@@ -1,8 +1,8 @@
 // Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
-#include "subsystem.hpp"
+#include "graphics_subsystem.hpp"
 
-#include "../platform/subsystem.hpp"
+#include "../platform/platform_subsystem.hpp"
 
 #include <execution>
 #include <mimalloc.h>
@@ -15,8 +15,11 @@ using platform::platform_subsystem;
 namespace graphics {
     graphics_subsystem::graphics_subsystem() : subsystem{"Graphics"} {
         log_info("Initializing graphics subsystem");
-        void* wnd = platform_subsystem::get_native_window();
-        passert(wnd != nullptr);
+        GLFWwindow* window = platform_subsystem::get_glfw_window();
+        passert(window != nullptr);
+        m_device.emplace(true);
+        m_swapchain.emplace(m_device->get_instance(), m_device->get_physical_device(), m_device->get_logical_device());
+        m_swapchain->init_surface(window);
         ImGui::CreateContext();
         ImPlot::CreateContext();
         auto& io = ImGui::GetIO();
@@ -27,6 +30,8 @@ namespace graphics {
     graphics_subsystem::~graphics_subsystem() {
         ImPlot::DestroyContext();
         ImGui::DestroyContext();
+        m_swapchain.reset();
+        m_device.reset();
     }
 
     [[nodiscard]] static auto get_main_camera() -> entity {

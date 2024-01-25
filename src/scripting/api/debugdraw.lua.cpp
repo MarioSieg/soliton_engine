@@ -1,7 +1,7 @@
 // Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "_prelude.hpp"
-#include "../../graphics/subsystem.hpp"
+#include "../../graphics/graphics_subsystem.hpp"
 
 using graphics::graphics_subsystem;
 
