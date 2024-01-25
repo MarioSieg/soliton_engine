@@ -123,10 +123,16 @@ kernel::kernel() {
 
 kernel::~kernel() {
     log_info("Shutting down...");
+    log_info("Killing active scene...");
     // Kill active scene before other subsystems are shut down
     auto& active = const_cast<std::unique_ptr<scene>&>(scene::get_active());
     active.reset();
+    log_info("Killing subsystems...");
     m_subsystems.clear();
+    // Print asset manager infos
+    log_info("Asset manager stats:");
+    log_info("  Total assets requests: {}", assetmgr::get_asset_request_count());
+    log_info("  Total data loaded: {:.03f} MiB", static_cast<double>(assetmgr::get_total_bytes_loaded()) / (1024.0*1024.0));
     log_info("System offline");
     std::cout.flush();
     std::fflush(stdout);

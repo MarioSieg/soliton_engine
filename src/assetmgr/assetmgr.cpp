@@ -66,7 +66,8 @@ namespace assetmgr {
         return dir;
     }
 
-    static constinit std::atomic_size_t s_asset_request;
+    static constinit std::atomic_uint64_t s_asset_requests = 0;
+    static constinit std::atomic_uint64_t s_total_bytes_loaded = 0;
 
     [[nodiscard]] static auto validate_path(const std::string& full_path) -> bool {
         const int encoding = simdutf::autodetect_encoding(full_path.c_str(), full_path.size());
@@ -97,7 +98,7 @@ namespace assetmgr {
         std::string full_path {get_asset_path(category, name)};
         log_info(
             "Asset blob load request {}, type: {}, name: {}, path: {}",
-            s_asset_request.fetch_add(1, std::memory_order_relaxed),
+            s_asset_requests.fetch_add(1, std::memory_order_relaxed),
             k_asset_type_names[static_cast<std::size_t>(category)],
             name,
             full_path
@@ -114,6 +115,7 @@ namespace assetmgr {
         file.seekg(0, std::ios::beg);
         out.resize(size);
         file.read(reinterpret_cast<char*>(out.data()), size);
+        s_total_bytes_loaded.fetch_add(static_cast<std::uint64_t>(size), std::memory_order_relaxed);
         return true;
     }
 
@@ -123,5 +125,13 @@ namespace assetmgr {
 
     auto load_asset_text(asset_category category, const std::string& name, std::string& out) -> bool {
         return load_asset(category, name, out);
+    }
+
+    auto get_asset_request_count() noexcept -> std::uint64_t {
+        return s_asset_requests.load(std::memory_order_relaxed);
+    }
+
+    auto get_total_bytes_loaded() noexcept -> std::uint64_t {
+        return s_total_bytes_loaded.load(std::memory_order_relaxed);
     }
 }
