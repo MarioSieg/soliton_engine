@@ -89,11 +89,6 @@ namespace graphics {
     }
 
     HOTPROC auto graphics_subsystem::on_pre_tick() -> bool {
-        int w, h;
-        glfwGetFramebufferSize(platform_subsystem::get_glfw_window(), &w, &h);
-        m_width = static_cast<float>(w);
-        m_height = static_cast<float>(h);
-        update_main_camera(m_width, m_height);
         //ImGui::NewFrame();
         //auto& io = ImGui::GetIO();
         //io.DisplaySize.x = m_width;
@@ -108,7 +103,10 @@ namespace graphics {
         std::uint32_t image_index;
         vk::Result result = m_swapchain->acquire_next_image(m_semaphores.present_complete[m_current_frame], image_index);
         if (result == vk::Result::eErrorOutOfDateKHR || result == vk::Result::eSuboptimalKHR) [[unlikely]] {
-            on_resize();
+            if (result == vk::Result::eErrorOutOfDateKHR) {
+                on_resize();
+                return true; // Skip rendering this frame
+            }
         } else {
             vkcheck(result);
         }
