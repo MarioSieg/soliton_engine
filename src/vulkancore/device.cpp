@@ -7,13 +7,12 @@
 namespace vkb {
     device::device(
         const bool enable_validation,
-        const bool require_stencil,
-        const std::uint32_t api_version
+        const bool require_stencil
     ) {
         log_info("Initializing Vulkan device...");
 
         m_enable_validation = enable_validation;
-        m_api_version = api_version;
+        m_api_version = k_vulkan_api_version;
 
         create_instance();
         find_physical_device();
@@ -26,8 +25,6 @@ namespace vkb {
         cmd_pool_info.queueFamilyIndex = m_queue_families.graphics;
         cmd_pool_info.flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer;
         m_command_pool = m_logical_device.createCommandPool(cmd_pool_info);
-
-        // TODO: connect swap chain
 
         log_info("Vulkan device initialized");
     }

@@ -8,6 +8,7 @@
 #include "../scene/scene.hpp"
 
 #include "../vulkancore/context.hpp"
+#include "../vulkancore/shader.hpp"
 
 namespace graphics {
     class graphics_subsystem final : public subsystem {
@@ -22,7 +23,8 @@ namespace graphics {
         auto on_start(scene& scene) -> void override;
 
     private:
-        static inline constinit std::optional<vkb::context> s_context {};
         vk::CommandBuffer cmd_buf = nullptr;
+        std::optional<vkb::shader> m_vs {};
+        std::optional<vkb::shader> m_fs {};
     };
 }

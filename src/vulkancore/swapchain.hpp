@@ -44,7 +44,6 @@ namespace vkb {
         [[nodiscard]] auto get_images() const noexcept -> std::span<const vk::Image> { return m_images; }
 
     private:
-
         vk::Instance m_instance {};
         vk::PhysicalDevice m_physical_device {};
         vk::Device m_logical_device {};

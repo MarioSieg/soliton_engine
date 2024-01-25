@@ -89,6 +89,13 @@ target_link_libraries(lunam assimp)
 add_subdirectory(src/vulkanloader)
 target_link_libraries(lunam vulkan)
 
+add_subdirectory(src/spirvheaders)
+add_subdirectory(src/spirvtools)
+add_subdirectory(src/glslang)
+add_subdirectory(src/shaderc)
+include_directories(src/shaderc/libshaderc/include)
+target_link_libraries(lunam shaderc)
+
 if (WIN32)
     target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/win_amd64/lua51.lib)
 else()

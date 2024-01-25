@@ -13,10 +13,15 @@
 using platform::platform_subsystem;
 
 namespace graphics {
+    using vkb::context;
+
     graphics_subsystem::graphics_subsystem() : subsystem{"Graphics"} {
         log_info("Initializing graphics subsystem");
         GLFWwindow* window = platform_subsystem::get_glfw_window();
-        s_context.emplace(window); // Create vulkan context
+        context::s_instance = std::make_unique<context>(window); // Create vulkan context
+
+        m_vs.emplace("triangle.vert");
+        m_fs.emplace("triangle.frag");
 
         ImGui::CreateContext();
         ImPlot::CreateContext();
@@ -26,9 +31,11 @@ namespace graphics {
     }
 
     graphics_subsystem::~graphics_subsystem() {
+        m_fs.reset();
+        m_vs.reset();
         ImPlot::DestroyContext();
         ImGui::DestroyContext();
-        s_context.reset();
+        context::s_instance.reset();
     }
 
     [[nodiscard]] static auto get_main_camera() -> entity {
@@ -71,7 +78,7 @@ namespace graphics {
         //io.DisplaySize.x = w;
         //io.DisplaySize.y = h;
 
-        cmd_buf = s_context->begin_frame(DirectX::XMFLOAT4{0.0f, 1.0f, 1.0f, 1.0f});
+        cmd_buf = context::s_instance->begin_frame(DirectX::XMFLOAT4{0.0f, 1.0f, 1.0f, 1.0f});
 
         return true;
     }
@@ -80,7 +87,7 @@ namespace graphics {
         //ImGui::EndFrame();
 
         if (cmd_buf) [[likely]] {
-            s_context->end_frame(cmd_buf);
+            context::s_instance->end_frame(cmd_buf);
         }
 
         c_camera::active_camera = entity::null();

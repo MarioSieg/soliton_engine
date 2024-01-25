@@ -9,6 +9,7 @@
 namespace vkb {
     class context final : public no_copy, public no_move {
     public:
+        inline constinit static std::unique_ptr<context> s_instance {};
         explicit context(
             GLFWwindow* window
         );
@@ -16,6 +17,8 @@ namespace vkb {
 
         [[nodiscard]] auto get_width() const noexcept -> std::uint32_t { return m_width; }
         [[nodiscard]] auto get_height() const noexcept -> std::uint32_t { return m_height; }
+        [[nodiscard]] auto get_device() const noexcept -> const device& { return *m_device; }
+        [[nodiscard]] auto get_swapchain() const noexcept -> const swapchain& { return *m_swapchain; }
 
         HOTPROC auto begin_frame(const DirectX::XMFLOAT4& clear_color) -> vk::CommandBuffer;
         HOTPROC auto end_frame(vk::CommandBuffer cmd_buf) -> void;

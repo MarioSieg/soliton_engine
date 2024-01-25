@@ -8,10 +8,11 @@
 namespace vkb {
     class device final : public no_copy, public no_move {
     public:
+        static constexpr std::uint32_t k_vulkan_api_version = VK_API_VERSION_1_2;
+
         explicit device(
             bool enable_validation,
-            bool require_stencil = false,
-            std::uint32_t api_version = VK_API_VERSION_1_0
+            bool require_stencil = false
         );
         ~device();
 
