@@ -23,5 +23,6 @@ namespace graphics {
 
     private:
         static inline constinit std::optional<vkb::context> s_context {};
+        vk::CommandBuffer cmd_buf = nullptr;
     };
 }

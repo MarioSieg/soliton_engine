@@ -4,6 +4,7 @@
 
 #include "device.hpp"
 #include "swapchain.hpp"
+#include "../math/DirectXMath.h"
 
 namespace vkb {
     class context final : public no_copy, public no_move {
@@ -16,8 +17,8 @@ namespace vkb {
         [[nodiscard]] auto get_width() const noexcept -> std::uint32_t { return m_width; }
         [[nodiscard]] auto get_height() const noexcept -> std::uint32_t { return m_height; }
 
-        HOTPROC auto begin_frame() -> void;
-        HOTPROC auto end_frame() -> void;
+        HOTPROC auto begin_frame(const DirectX::XMFLOAT4& clear_color) -> vk::CommandBuffer;
+        HOTPROC auto end_frame(vk::CommandBuffer cmd_buf) -> void;
         auto on_resize() -> void;
 
     private:
@@ -59,5 +60,6 @@ namespace vkb {
         std::vector<vk::Framebuffer> m_framebuffers {};
         vk::PipelineCache m_pipeline_cache {};
         std::uint32_t m_current_frame = 0; // To select the correct sync objects, we need to keep track of the current frame
+        std::uint32_t m_image_index = 0; // The current swap chain image index
     };
 }

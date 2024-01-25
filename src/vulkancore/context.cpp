@@ -34,19 +34,18 @@ namespace vkb {
         m_device.reset();
     }
 
-    auto context::begin_frame() -> void {
+    auto context::begin_frame(const DirectX::XMFLOAT4& clear_color) -> vk::CommandBuffer {
         // Use a fence to wait until the command buffer has finished execution before using it again
         vkcheck(m_device->get_logical_device().waitForFences(1, &m_wait_fences[m_current_frame], vk::True, std::numeric_limits<std::uint64_t>::max()));
         vkcheck(m_device->get_logical_device().resetFences(1, &m_wait_fences[m_current_frame]));
 
         // Get the next swap chain image from the implementation
         // Note that the implementation is free to return the images in any order, so we must use the acquire function and can't just cycle through the images/imageIndex on our own
-        std::uint32_t image_index;
-        vk::Result result = m_swapchain->acquire_next_image(m_semaphores.present_complete[m_current_frame], image_index);
+        vk::Result result = m_swapchain->acquire_next_image(m_semaphores.present_complete[m_current_frame], m_image_index);
         if (result == vk::Result::eErrorOutOfDateKHR || result == vk::Result::eSuboptimalKHR) [[unlikely]] {
             if (result == vk::Result::eErrorOutOfDateKHR) {
                 on_resize();
-                return; // Skip rendering this frame
+                return nullptr; // Skip rendering this frame
             }
         } else {
             vkcheck(result);
@@ -58,33 +57,36 @@ namespace vkb {
         // For basic command buffers (like in this sample), recording is so fast that there is no need to offload this
         m_command_buffers[m_current_frame].reset();
 
-        vk::CommandBufferBeginInfo command_buffer_begin_info {};
+        constexpr vk::CommandBufferBeginInfo command_buffer_begin_info {};
 
         // Set clear values for all framebuffer attachments with loadOp set to clear
         // We use two attachments (color and depth) that are cleared at the start of the subpass and as such we need to set clear values for both
         std::array<vk::ClearValue, 2> clear_values {};
-        clear_values[0].color = vk::ClearColorValue{0.0f, 0.0f, 1.0f, 1.0f};
+        clear_values[0].color = std::bit_cast<vk::ClearColorValue>(clear_color);
         clear_values[1].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
 
         vk::RenderPassBeginInfo render_pass_begin_info {};
         render_pass_begin_info.renderPass = m_render_pass;
-        render_pass_begin_info.framebuffer = m_framebuffers[image_index];
+        render_pass_begin_info.framebuffer = m_framebuffers[m_image_index];
         render_pass_begin_info.renderArea.extent.width = m_width;
         render_pass_begin_info.renderArea.extent.height = m_height;
         render_pass_begin_info.clearValueCount = static_cast<std::uint32_t>(clear_values.size());
         render_pass_begin_info.pClearValues = clear_values.data();
 
-        vk::CommandBuffer cmd_buf = m_command_buffers[m_current_frame];
+        const vk::CommandBuffer cmd_buf = m_command_buffers[m_current_frame];
         vkcheck(cmd_buf.begin(&command_buffer_begin_info));
 
         // Start the first sub pass specified in our default render pass setup by the base class
         // This will clear the color and depth attachment
         cmd_buf.beginRenderPass(&render_pass_begin_info, vk::SubpassContents::eInline);
 
+        const auto w = static_cast<float>(m_width);
+        const auto h = static_cast<float>(m_height);
+
         // Update dynamic viewport state
         vk::Viewport viewport {};
-        viewport.width = m_width;
-        viewport.height = m_height;
+        viewport.width = w;
+        viewport.height = h;
         viewport.minDepth = 0.0f;
         viewport.maxDepth = 1.0f;
         cmd_buf.setViewport(0, 1, &viewport);
@@ -96,6 +98,12 @@ namespace vkb {
         scissor.offset.x = 0.0f;
         scissor.offset.y = 0.0f;
         cmd_buf.setScissor(0, 1, &scissor);
+
+        return cmd_buf;
+    }
+
+    auto context::end_frame(vk::CommandBuffer cmd_buf) -> void {
+        passert(cmd_buf);
 
         cmd_buf.endRenderPass();
         cmd_buf.end();
@@ -122,10 +130,10 @@ namespace vkb {
         present_info.swapchainCount = 1;
         vk::SwapchainKHR swapchain = m_swapchain->get_swapchain();
         present_info.pSwapchains = &swapchain;
-        present_info.pImageIndices = &image_index;
+        present_info.pImageIndices = &m_image_index;
         present_info.waitSemaphoreCount = 1;
         present_info.pWaitSemaphores = &m_semaphores.render_complete[m_current_frame];
-        result = m_device->get_graphics_queue().presentKHR(&present_info);
+        vk::Result result = m_device->get_graphics_queue().presentKHR(&present_info);
         if (result == vk::Result::eErrorOutOfDateKHR || result == vk::Result::eSuboptimalKHR) [[unlikely]] {
             on_resize();
         } else {
@@ -133,10 +141,6 @@ namespace vkb {
         }
 
         m_current_frame = (m_current_frame + 1) % k_max_concurrent_frames;
-    }
-
-    auto context::end_frame() -> void {
-
     }
 
     auto context::on_resize() -> void {

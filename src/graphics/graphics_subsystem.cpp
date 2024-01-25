@@ -68,18 +68,22 @@ namespace graphics {
     HOTPROC auto graphics_subsystem::on_pre_tick() -> bool {
         //ImGui::NewFrame();
         //auto& io = ImGui::GetIO();
-        //io.DisplaySize.x = m_width;
-        //io.DisplaySize.y = m_height;
+        //io.DisplaySize.x = w;
+        //io.DisplaySize.y = h;
 
-        s_context->begin_frame();
+        cmd_buf = s_context->begin_frame(DirectX::XMFLOAT4{0.0f, 1.0f, 1.0f, 1.0f});
 
         return true;
     }
 
     HOTPROC auto graphics_subsystem::on_post_tick() -> void {
         //ImGui::EndFrame();
+
+        if (cmd_buf) [[likely]] {
+            s_context->end_frame(cmd_buf);
+        }
+
         c_camera::active_camera = entity::null();
-        s_context->end_frame();
     }
 
     auto graphics_subsystem::on_resize() -> void {
