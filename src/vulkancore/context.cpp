@@ -24,8 +24,8 @@ namespace vkb {
     context::~context() {
         m_device->get_logical_device().waitIdle();
 
-        ImGui_ImplGlfw_Shutdown();
         ImGui_ImplVulkan_Shutdown();
+        ImGui_ImplGlfw_Shutdown();
 
         // Dump VMA Infos
         char* vma_stats_string = nullptr;
@@ -410,7 +410,7 @@ namespace vkb {
         init_info.Allocator = reinterpret_cast<const VkAllocationCallbacks*>(&s_allocator);
         passert(ImGui_ImplVulkan_Init(&init_info, m_render_pass));
 
-        float font_size = 20.0f;
+        float font_size = 18.0f;
 
         // add primary text font:
         ImFontConfig config { };
