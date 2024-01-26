@@ -294,7 +294,7 @@ end
 ------------------------------------------------------------------------------
 
 local function start(mode, outfile)
-  if not outfile then outfile = os.getenv("LUAJIT_PROFILEFILE") end
+  out = outfile
   prof_start(mode or "f")
 end
 
