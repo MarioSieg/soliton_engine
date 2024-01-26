@@ -1,9 +1,12 @@
 // Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
+#pragma once
+
 #include <optional>
 
 #include "device.hpp"
 #include "swapchain.hpp"
+#include "../graphics/imgui/imgui.h"
 #include "../math/DirectXMath.h"
 
 namespace vkb {
@@ -22,6 +25,7 @@ namespace vkb {
 
         HOTPROC auto begin_frame(const DirectX::XMFLOAT4& clear_color) -> vk::CommandBuffer;
         HOTPROC auto end_frame(vk::CommandBuffer cmd_buf) -> void;
+        auto render_imgui(ImDrawData* data, vk::CommandBuffer cmd_buf) -> void;
         auto on_resize() -> void;
 
     private:
@@ -35,6 +39,7 @@ namespace vkb {
         auto setup_frame_buffer() -> void;
         auto create_pipeline_cache() -> void;
         auto recreate_swapchain() -> void;
+        auto create_imgui_renderer() -> void;
 
         auto destroy_depth_stencil() const -> void;
         auto destroy_frame_buffer() const -> void;
@@ -64,5 +69,6 @@ namespace vkb {
         vk::PipelineCache m_pipeline_cache {};
         std::uint32_t m_current_frame = 0; // To select the correct sync objects, we need to keep track of the current frame
         std::uint32_t m_image_index = 0; // The current swap chain image index
+        vk::DescriptorPool m_imgui_descriptor_pool {};
     };
 }

@@ -1,6 +1,11 @@
 // Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "context.hpp"
+#include "imgui_impl_vulkan.h"
+#include "../../graphics/imgui/imgui_impl_glfw.h"
+#include "../../graphics/imgui/font_awesome.ttf.inl"
+#include "../../graphics/imgui/jetbrains_mono.ttf.inl"
+#include "../../graphics/imgui/font_awesome_pro_5.hpp"
 
 namespace vkb {
     context::context(GLFWwindow* window) : m_window{window} {
@@ -13,10 +18,14 @@ namespace vkb {
         setup_render_pass();
         setup_frame_buffer();
         create_pipeline_cache();
+        create_imgui_renderer();
     }
 
     context::~context() {
         m_device->get_logical_device().waitIdle();
+
+        ImGui_ImplGlfw_Shutdown();
+        ImGui_ImplVulkan_Shutdown();
 
         // Dump VMA Infos
         char* vma_stats_string = nullptr;
@@ -41,6 +50,7 @@ namespace vkb {
     }
 
     auto context::begin_frame(const DirectX::XMFLOAT4& clear_color) -> vk::CommandBuffer {
+
         // Use a fence to wait until the command buffer has finished execution before using it again
         vkcheck(m_device->get_logical_device().waitForFences(1, &m_wait_fences[m_current_frame], vk::True, std::numeric_limits<std::uint64_t>::max()));
         vkcheck(m_device->get_logical_device().resetFences(1, &m_wait_fences[m_current_frame]));
@@ -105,6 +115,9 @@ namespace vkb {
         scissor.offset.y = 0.0f;
         cmd_buf.setScissor(0, 1, &scissor);
 
+        ImGui_ImplGlfw_NewFrame();
+        ImGui_ImplVulkan_NewFrame();
+
         return cmd_buf;
     }
 
@@ -147,6 +160,11 @@ namespace vkb {
         }
 
         m_current_frame = (m_current_frame + 1) % k_max_concurrent_frames;
+    }
+
+    auto context::render_imgui(ImDrawData* data, vk::CommandBuffer cmd_buf) -> void {
+        assert(data);
+        ImGui_ImplVulkan_RenderDrawData(data, cmd_buf);
     }
 
     auto context::on_resize() -> void {
@@ -350,6 +368,80 @@ namespace vkb {
 
     auto context::recreate_swapchain() -> void {
         m_swapchain->create(m_width, m_height, false, false);
+    }
+
+    auto context::create_imgui_renderer() -> void {
+        ImGui_ImplGlfw_InitForVulkan(m_window, true);
+
+        constexpr std::size_t k_num = 1024;
+        constexpr std::array<vk::DescriptorPoolSize, 11> k_pool_sizes {
+            vk::DescriptorPoolSize { vk::DescriptorType::eSampler, k_num },
+            vk::DescriptorPoolSize { vk::DescriptorType::eCombinedImageSampler, k_num },
+            vk::DescriptorPoolSize { vk::DescriptorType::eSampledImage, k_num },
+            vk::DescriptorPoolSize { vk::DescriptorType::eStorageImage, k_num },
+            vk::DescriptorPoolSize { vk::DescriptorType::eUniformTexelBuffer, k_num },
+            vk::DescriptorPoolSize { vk::DescriptorType::eStorageTexelBuffer, k_num },
+            vk::DescriptorPoolSize { vk::DescriptorType::eUniformBuffer, k_num },
+            vk::DescriptorPoolSize { vk::DescriptorType::eStorageBuffer, k_num },
+            vk::DescriptorPoolSize { vk::DescriptorType::eUniformBufferDynamic, k_num },
+            vk::DescriptorPoolSize { vk::DescriptorType::eStorageBufferDynamic, k_num },
+            vk::DescriptorPoolSize { vk::DescriptorType::eInputAttachment, k_num }
+        };
+
+        vk::DescriptorPoolCreateInfo pool_info = {};
+        pool_info.flags = vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet;
+        pool_info.maxSets = k_num;
+        pool_info.poolSizeCount = k_pool_sizes.size();
+        pool_info.pPoolSizes = k_pool_sizes.data();
+
+        vkcheck(m_device->get_logical_device().createDescriptorPool(&pool_info, &s_allocator, &m_imgui_descriptor_pool));
+
+        ImGui_ImplVulkan_InitInfo init_info {};
+        init_info.Instance = m_device->get_instance();
+        init_info.PhysicalDevice = m_device->get_physical_device();
+        auto dev = m_device->get_logical_device();
+        init_info.Device = dev;
+        init_info.QueueFamily = m_swapchain->get_queue_node_index();
+        init_info.Queue = m_device->get_graphics_queue();
+        init_info.PipelineCache = m_pipeline_cache;
+        init_info.DescriptorPool = m_imgui_descriptor_pool;
+        init_info.ImageCount = k_max_concurrent_frames;
+        init_info.MinImageCount = k_max_concurrent_frames;
+        init_info.Allocator = reinterpret_cast<const VkAllocationCallbacks*>(&s_allocator);
+        passert(ImGui_ImplVulkan_Init(&init_info, m_render_pass));
+
+        float font_size = 20.0f;
+
+        // add primary text font:
+        ImFontConfig config { };
+        config.FontDataOwnedByAtlas = false;
+        config.MergeMode = false;
+        auto& io = ImGui::GetIO();
+        ImFont* primaryFont = io.Fonts->AddFontFromMemoryTTF(
+            const_cast<void*>(static_cast<const void*>(k_ttf_jet_brains_mono)),
+            sizeof(k_ttf_jet_brains_mono) / sizeof(*k_ttf_jet_brains_mono),
+            font_size, // font size
+            &config,
+            io.Fonts->GetGlyphRangesDefault()
+        );
+
+        // now add font awesome icons:
+        config.MergeMode = true;
+        config.DstFont = primaryFont;
+        struct font_range final {
+            std::span<const std::uint8_t> data {};
+            std::array<char16_t, 3> ranges {};
+        };
+        static constexpr font_range range = { k_font_awesome_ttf, { ICON_MIN_FA, ICON_MAX_FA, 0 } };
+        ImGui::GetIO().Fonts->AddFontFromMemoryTTF(
+            const_cast<void*>(static_cast<const void*>(range.data.data())),
+            static_cast<int>(range.data.size()),
+            font_size-3.0f,
+            &config,
+            reinterpret_cast<const ImWchar*>(range.ranges.data())
+        );
+        static_assert(sizeof(ImWchar) == sizeof(char16_t));
+        passert(ImGui_ImplVulkan_CreateFontsTexture());
     }
 
     auto context::destroy_depth_stencil() const -> void {

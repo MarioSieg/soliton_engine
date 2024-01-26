@@ -17,24 +17,25 @@ namespace graphics {
 
     graphics_subsystem::graphics_subsystem() : subsystem{"Graphics"} {
         log_info("Initializing graphics subsystem");
-        GLFWwindow* window = platform_subsystem::get_glfw_window();
-        context::s_instance = std::make_unique<context>(window); // Create vulkan context
-
-        m_vs.emplace("triangle.vert");
-        m_fs.emplace("triangle.frag");
-
         ImGui::CreateContext();
         ImPlot::CreateContext();
         auto& io = ImGui::GetIO();
         io.DisplaySize.x = 800.0f;
         io.DisplaySize.y = 600.0f;
+
+        GLFWwindow* window = platform_subsystem::get_glfw_window();
+        context::s_instance = std::make_unique<context>(window); // Create vulkan context
+
+        m_vs.emplace("triangle.vert");
+        m_fs.emplace("triangle.frag");
     }
 
     graphics_subsystem::~graphics_subsystem() {
-        m_fs.reset();
-        m_vs.reset();
         ImPlot::DestroyContext();
         ImGui::DestroyContext();
+
+        m_fs.reset();
+        m_vs.reset();
         context::s_instance.reset();
     }
 
@@ -73,20 +74,22 @@ namespace graphics {
     }
 
     HOTPROC auto graphics_subsystem::on_pre_tick() -> bool {
-        //ImGui::NewFrame();
-        //auto& io = ImGui::GetIO();
-        //io.DisplaySize.x = w;
-        //io.DisplaySize.y = h;
+        ImGui::NewFrame();
+        auto& io = ImGui::GetIO();
+        io.DisplaySize.x = static_cast<float>(context::s_instance->get_width());
+        io.DisplaySize.y = static_cast<float>(context::s_instance->get_height());
 
-        cmd_buf = context::s_instance->begin_frame(DirectX::XMFLOAT4{0.0f, 1.0f, 1.0f, 1.0f});
+        cmd_buf = context::s_instance->begin_frame(DirectX::XMFLOAT4{0.0f, 0.0f, 0.0f, 1.0f});
 
         return true;
     }
 
     HOTPROC auto graphics_subsystem::on_post_tick() -> void {
-        //ImGui::EndFrame();
-
         if (cmd_buf) [[likely]] {
+            ImGui::Render();
+            if (auto* dd = ImGui::GetDrawData(); dd) [[likely]] {
+                context::s_instance->render_imgui(dd, cmd_buf);
+            }
             context::s_instance->end_frame(cmd_buf);
         }
 

@@ -57,7 +57,7 @@ function readAllText(file)
     return content
 end
 
-local SCRIPT_TEMPLATE = readAllText('media/scripts/editor/tools/script_template.lua')
+local SCRIPT_TEMPLATE = readAllText('assets/scripts/editor/tools/script_template.lua')
 
 function newScript(str, name)
     local script = {
