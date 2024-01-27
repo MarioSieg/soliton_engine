@@ -27,7 +27,7 @@ namespace vkb {
         vmaDestroyAllocator(m_allocator);
         m_logical_device.destroy(&s_allocator);
         log_info("Destroying Vulkan device...");
-        if (m_debug_utils_messenger != VK_NULL_HANDLE) {
+        if (m_debug_utils_messenger != nullptr) {
             (*m_destroy_debug_utils_messenger_ext)(m_instance, m_debug_utils_messenger, reinterpret_cast<const VkAllocationCallbacks*>(&s_allocator));
             log_info("Destroyed Vulkan debug utils messenger");
         }
@@ -50,7 +50,7 @@ namespace vkb {
         } else if (severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) {
             log_error("[{}] [{}] {}", data->messageIdNumber, data->pMessageIdName, data->pMessage);
         }
-        return VK_FALSE;
+        return vk::False;
     }
 
     auto device::get_mem_type_idx(

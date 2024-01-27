@@ -17,6 +17,6 @@ out gl_PerVertex {
 };
 
 void main() {
-	outColor = inPos;
+	outColor = inNormal;
 	gl_Position = ubo.mvp * vec4(inPos.xyz, 1.0);
 }

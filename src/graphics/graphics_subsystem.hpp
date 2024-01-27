@@ -36,8 +36,6 @@ namespace graphics {
         auto on_start(scene& scene) -> void override;
 
     private:
-        auto create_vertex_buffer() -> void;
-        auto create_index_buffer() -> void;
         auto create_uniform_buffers() -> void;
         auto create_descriptor_set_layout() -> void;
         auto create_descriptor_pool() -> void;
@@ -55,5 +53,7 @@ namespace graphics {
         vk::PipelineLayout pipeline_layout {};
         vk::DescriptorPool descriptor_pool {};
         vk::Pipeline pipeline {};
+
+        std::optional<mesh> m_mesh {};
     };
 }

@@ -7,6 +7,7 @@
 using namespace flecs;
 
 #include "../math/DirectXMath.h"
+#include "../math/DirectXCollision.h"
 
 using namespace DirectX;
 

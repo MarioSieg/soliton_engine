@@ -30,16 +30,19 @@ namespace graphics {
         m_vs.emplace("triangle.vert");
         m_fs.emplace("triangle.frag");
 
-        create_vertex_buffer();
-        create_index_buffer();
         create_uniform_buffers();
         create_descriptor_set_layout();
         create_descriptor_pool();
         create_descriptor_sets();
         create_pipeline();
+
+        m_mesh.emplace("/home/neo/Documents/AssetLibrary/EmeraldSquare/EmeraldSquare_Day.gltf");
     }
 
     graphics_subsystem::~graphics_subsystem() {
+        context::s_instance->get_device().get_logical_device().waitIdle();
+        m_mesh.reset();
+
         m_vertex_buffer.destroy();
         m_index_buffer.destroy();
         for (auto& [buffer, descriptor_set] : uniforms) {
@@ -110,17 +113,14 @@ namespace graphics {
         update_main_camera(w, h);
 
         cpu_uniform_buffer ubo {};
-        XMMATRIX model = XMMatrixIdentity();
+        XMMATRIX model = XMMatrixRotationX(XMConvertToRadians(-90.0f));
+        model = XMMatrixMultiply(model, XMMatrixScalingFromVector(XMVectorReplicate(0.01f)));
         ubo.mvp = XMMatrixMultiply(model, m_mtx_view_proj);
         std::memcpy(uniforms[context::s_instance->get_current_frame()].buffer.get_mapped_ptr(), &ubo, sizeof(cpu_uniform_buffer));
 
         cmd_buf.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pipeline_layout, 0, 1, &uniforms[context::s_instance->get_current_frame()].descriptor_set, 0, nullptr);
         cmd_buf.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
-        constexpr vk::DeviceSize offsets = 0;
-        cmd_buf.bindVertexBuffers(0, 1, &m_vertex_buffer.get_buffer(), &offsets);
-        cmd_buf.bindIndexBuffer(m_index_buffer.get_buffer(), 0, vk::IndexType::eUint32);
-        cmd_buf.drawIndexed(m_index_count, 1, 0, 0, 1);
-
+        m_mesh->draw(cmd_buf);
 
         ImGui::Render();
         context::s_instance->render_imgui(ImGui::GetDrawData(), cmd_buf);
@@ -136,48 +136,6 @@ namespace graphics {
     void graphics_subsystem::on_start(scene& scene) {
         entity camera = scene.spawn("MainCamera");
         camera.add<c_camera>();
-    }
-
-    struct staging_buffer final {
-        vk::DeviceMemory mem {};
-        vk::Buffer buf {};
-    };
-
-    auto graphics_subsystem::create_vertex_buffer() -> void {
-        const vkb::device& vkb_device = context::s_instance->get_device();
-        vk::Device device = vkb_device.get_logical_device();
-
-        // Setup vertices
-        std::vector<vertex> vb {
-			{ {  1.0f,  1.0f, 0.0f } },
-            { { -1.0f,  1.0f, 0.0f } },
-            { {  0.0f, -1.0f, 0.0f } }
-        };
-        auto vb_size = static_cast<std::uint32_t>(vb .size()) * sizeof(vertex);
-
-        m_vertex_buffer.create(
-            vb.size() * sizeof(vb[0]),
-            0,
-            vk::BufferUsageFlagBits::eVertexBuffer,
-            VMA_MEMORY_USAGE_GPU_ONLY,
-            0,
-            vb.data()
-        );
-    }
-
-    auto graphics_subsystem::create_index_buffer() -> void {
-
-        // Setup indices
-        std::vector<uint32_t> ib { 0, 1, 2 };
-        m_index_count = static_cast<std::uint32_t>(ib.size());
-        m_index_buffer.create(
-            ib.size() * sizeof(ib[0]),
-            0,
-            vk::BufferUsageFlagBits::eIndexBuffer,
-            VMA_MEMORY_USAGE_GPU_ONLY,
-            0,
-            ib.data()
-        );
     }
 
     auto graphics_subsystem::create_uniform_buffers() -> void {
@@ -301,8 +259,8 @@ namespace graphics {
         // Rasterization state
         vk::PipelineRasterizationStateCreateInfo rasterization_state {};
         rasterization_state.polygonMode = vk::PolygonMode::eFill;
-        rasterization_state.cullMode = vk::CullModeFlagBits::eNone;
-        rasterization_state.frontFace = vk::FrontFace::eClockwise;
+        rasterization_state.cullMode = vk::CullModeFlagBits::eBack;
+        rasterization_state.frontFace = vk::FrontFace::eCounterClockwise;
         rasterization_state.depthClampEnable = vk::False;
         rasterization_state.rasterizerDiscardEnable = vk::False;
         rasterization_state.depthBiasEnable = vk::False;
@@ -381,17 +339,17 @@ namespace graphics {
             vertex_input_attributes[loc].offset = offset;
             ++loc;
         };
-        push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(vertex, position));
-        push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(vertex, normal));
-        push_attribute(vk::Format::eR32G32Sfloat, offsetof(vertex, uv));
-        push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(vertex, tangent));
-        push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(vertex, bitangent));
+        push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(mesh::vertex, position));
+        push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(mesh::vertex, normal));
+        push_attribute(vk::Format::eR32G32Sfloat, offsetof(mesh::vertex, uv));
+        push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(mesh::vertex, tangent));
+        push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(mesh::vertex, bitangent));
 
         // Vertex input binding
         // This example uses a single vertex input binding at binding point 0 (see vkCmdBindVertexBuffers)
         vk::VertexInputBindingDescription k_vertex_input_binding {};
         k_vertex_input_binding.binding = 0;
-        k_vertex_input_binding.stride = static_cast<std::uint32_t>(sizeof(vertex));
+        k_vertex_input_binding.stride = static_cast<std::uint32_t>(sizeof(mesh::vertex));
         k_vertex_input_binding.inputRate = vk::VertexInputRate::eVertex;
 
         // Vertex input state used for pipeline creation

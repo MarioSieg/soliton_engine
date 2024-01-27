@@ -47,10 +47,10 @@ namespace vkb {
             const std::vector<const char*>& enabled_extensions,
             void* next_chain,
             bool use_swap_chain = true,
-            vk::QueueFlags requested_queue_types = vk::QueueFlagBits::eGraphics | vk::QueueFlagBits::eCompute
+            vk::QueueFlags requested_queue_types = vk::QueueFlagBits::eGraphics | vk::QueueFlagBits::eCompute | vk::QueueFlagBits::eTransfer
         ) -> void;
-        [[nodiscard]] auto get_queue_family_index(vk::QueueFlags flags) const noexcept -> std::uint32_t;
         auto init_vma() -> void;
+        [[nodiscard]] auto get_queue_family_index(vk::QueueFlags flags) const noexcept -> std::uint32_t;
         [[nodiscard]] auto find_supported_depth_format(bool stencil_required, vk::Format& out_format) const -> bool;
 
         bool m_enable_validation = false;
