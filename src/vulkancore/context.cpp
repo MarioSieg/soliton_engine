@@ -90,6 +90,7 @@ namespace vkb {
         render_pass_begin_info.pClearValues = clear_values.data();
 
         const vk::CommandBuffer cmd_buf = m_command_buffers[m_current_frame];
+        cmd_buf.reset();
         vkcheck(cmd_buf.begin(&command_buffer_begin_info));
 
         // Start the first sub pass specified in our default render pass setup by the base class

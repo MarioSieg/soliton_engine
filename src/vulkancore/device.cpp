@@ -53,7 +53,7 @@ namespace vkb {
         return VK_FALSE;
     }
 
-    auto device::get_mem_type(
+    auto device::get_mem_type_idx(
         std::uint32_t type_bits,
         vk::MemoryPropertyFlags properties,
         vk::Bool32& found
