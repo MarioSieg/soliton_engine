@@ -32,12 +32,12 @@ namespace graphics {
     }
 
     graphics_subsystem::~graphics_subsystem() {
-        ImPlot::DestroyContext();
-        ImGui::DestroyContext();
-
         m_fs.reset();
         m_vs.reset();
         context::s_instance.reset();
+
+        ImPlot::DestroyContext();
+        ImGui::DestroyContext();
     }
 
     [[nodiscard]] static auto get_main_camera() -> entity {
