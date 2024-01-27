@@ -87,7 +87,7 @@ namespace assetmgr {
     }
 
     template <typename T>
-    [[nodiscard]] static auto load_asset(const asset_category category, const std::string& name, T& out) -> bool {
+    [[nodiscard]] static auto load_asset(const std::string& path, T& out) -> bool {
         static constinit std::atomic_bool is_fs_validated = false;
         if (!is_fs_validated.load(std::memory_order_relaxed)) {
             if (!is_fs_valid()) [[unlikely]] {
@@ -95,20 +95,13 @@ namespace assetmgr {
             }
             is_fs_validated.store(true, std::memory_order_relaxed);
         }
-        std::string full_path {get_asset_path(category, name)};
-        log_info(
-            "Asset blob load request {}, type: {}, name: {}, path: {}",
-            s_asset_requests.fetch_add(1, std::memory_order_relaxed),
-            k_asset_type_names[static_cast<std::size_t>(category)],
-            name,
-            full_path
-        );
-        if (!validate_path(full_path)) [[unlikely]] {
+        log_info("Asset load request [{}]: {}", s_asset_requests.fetch_add(1, std::memory_order_relaxed), path);
+        if (!validate_path(path)) [[unlikely]] {
             return false;
         }
-        std::ifstream file {full_path, std::ios::binary | std::ios::ate | std::ios::in};
+        std::ifstream file {path, std::ios::binary | std::ios::ate | std::ios::in};
         if (!file.is_open() || !file.good()) [[unlikely]] {
-            log_error("Failed to open asset: {}", full_path);
+            log_error("Failed to open asset: {}", path);
             return false;
         }
         const std::streamsize size = file.tellg();
@@ -119,12 +112,22 @@ namespace assetmgr {
         return true;
     }
 
+    auto load_asset_blob_raw(const std::string& path, std::vector<std::uint8_t>& out) -> bool {
+        return load_asset(path, out);
+    }
+
+    auto load_asset_text_raw(const std::string& path, std::string& out) -> bool {
+        return load_asset(path, out);
+    }
+
     auto load_asset_blob(const asset_category category, const std::string& name, std::vector<std::uint8_t>& out) -> bool {
-        return load_asset(category, name, out);
+        const std::string path = get_asset_path(category, name);
+        return load_asset(path, out);
     }
 
     auto load_asset_text(asset_category category, const std::string& name, std::string& out) -> bool {
-        return load_asset(category, name, out);
+        const std::string path = get_asset_path(category, name);
+        return load_asset(path, out);
     }
 
     auto get_asset_request_count() noexcept -> std::uint64_t {

@@ -21,8 +21,21 @@ namespace graphics {
 	) -> bool;
 
     mesh::mesh(const std::string& path) {
+		log_info("Importing mesh: {}", path);
+    	const auto start = std::chrono::high_resolution_clock::now();
+
         tinygltf::Model model {};
         tinygltf::TinyGLTF loader {};
+    	tinygltf::FsCallbacks fs {};
+    	fs.FileExists = &tinygltf::FileExists;
+    	fs.ExpandFilePath = &tinygltf::ExpandFilePath;
+    	fs.ReadWholeFile = +[](std::vector<unsigned char>* out, std::string* err, const std::string& path, void* usr) -> bool {
+			return assetmgr::load_asset_blob_raw(path, *out);
+    	};
+    	fs.WriteWholeFile = &tinygltf::WriteWholeFile;
+    	fs.GetFileSizeInBytes = &tinygltf::GetFileSizeInBytes;
+    	loader.SetFsCallbacks(fs);
+
         std::string err {};
         std::string warn {};
         const bool is_bin = std::filesystem::path{path}.extension() == ".glb";
@@ -48,6 +61,7 @@ namespace graphics {
 
     	// count vertices to reserve memory
     	std::size_t acc_vertices = 0;
+    	std::size_t acc_indices = 0;
     	for (const tinygltf::Mesh& mesh : model.meshes) {
     		for (const tinygltf::Primitive& prim : mesh.primitives) {
     			if (prim.indices < 0) [[unlikely]] {
@@ -59,21 +73,22 @@ namespace graphics {
     				log_error("GLTF import: Mesh has no position attribute");
     				continue;
     			}
-
     			const tinygltf::Accessor& pos_accessor = model.accessors[prim.attributes.find("POSITION")->second];
+    			const tinygltf::Accessor& idx_accessor = model.accessors[prim.indices];
     			acc_vertices += pos_accessor.count;
+    			acc_indices += idx_accessor.count;
     		}
     	}
 
     	vertices.reserve(acc_vertices);
-    	indices.reserve(acc_vertices);
+    	indices.reserve(acc_indices);
 
-    	std::uint32_t n = 0;
+    	std::uint32_t num_nodes = 0;
     	std::function<auto (const tinygltf::Node&) -> void> visitor = [&](const tinygltf::Node& node) {
+    		++num_nodes;
     		for (const int child : node.children) {
     			visitor(model.nodes[child]);
     		}
-    		log_info("Processing Node {}: {}", n++, node.name);
     		if (node.mesh < 0) [[unlikely]] {
     			return;
     		}
@@ -116,6 +131,7 @@ namespace graphics {
     	}
 
     	passert(acc_vertices == vertices.size());
+    	passert(acc_indices == indices.size());
     	passert(indices.size() <= std::numeric_limits<index>::max());
 
     	m_vertex_buffer.create(
@@ -127,19 +143,41 @@ namespace graphics {
 			vertices.data()
 		);
 
-    	m_index_count = static_cast<std::uint32_t>(indices.size());
-    	m_index_buffer.create(
-			indices.size() * sizeof(indices[0]),
-			0,
-			vk::BufferUsageFlagBits::eIndexBuffer,
-			VMA_MEMORY_USAGE_GPU_ONLY,
-			0,
-			indices.data()
-		);
+    	if (indices.size() <= std::numeric_limits<std::uint16_t>::max()) { // 16 bit indices
+    		std::vector<std::uint16_t> indices16 {};
+    		indices16.reserve(indices.size());
+    		for (const index idx : indices) {
+				indices16.emplace_back(static_cast<std::uint16_t>(idx));
+			}
+    		m_index_32bit = false;
+    		m_index_count = static_cast<std::uint32_t>(indices16.size());
+    		m_index_buffer.create(
+				indices16.size() * sizeof(indices16[0]),
+				0,
+				vk::BufferUsageFlagBits::eIndexBuffer,
+				VMA_MEMORY_USAGE_GPU_ONLY,
+				0,
+				indices16.data()
+			);
+    	} else {
+    		m_index_32bit = true;
+    		m_index_count = static_cast<std::uint32_t>(indices.size());
+    		m_index_buffer.create(
+				indices.size() * sizeof(indices[0]),
+				0,
+				vk::BufferUsageFlagBits::eIndexBuffer,
+				VMA_MEMORY_USAGE_GPU_ONLY,
+				0,
+				indices.data()
+			);
+    	}
 
     	for (const primitive& prim : m_primitives) {
 			BoundingBox::CreateMerged(aabb, aabb, prim.aabb);
 		}
+
+    	const auto time = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - start);
+    	log_info("Mesh import done in {}s: {} vertices, {} indices, {} nodes", time.count(), vertices.size(), indices.size(), num_nodes);
     }
 
     mesh::~mesh() {
@@ -147,10 +185,10 @@ namespace graphics {
 		m_vertex_buffer.destroy();
     }
 
-    auto mesh::draw(vk::CommandBuffer cmd) -> void {
+    auto mesh::draw(const vk::CommandBuffer cmd) -> void {
     	constexpr vk::DeviceSize offsets = 0;
     	cmd.bindVertexBuffers(0, 1, &m_vertex_buffer.get_buffer(), &offsets);
-    	cmd.bindIndexBuffer(m_index_buffer.get_buffer(), 0, vk::IndexType::eUint32);
+    	cmd.bindIndexBuffer(m_index_buffer.get_buffer(), 0, is_index_32bit() ? vk::IndexType::eUint32 : vk::IndexType::eUint16);
     	for (const primitive& prim : m_primitives) {
     		cmd.drawIndexed(prim.index_count, 1, prim.first_index, 0, 1);
     	}
@@ -167,7 +205,8 @@ namespace graphics {
         const std::size_t index_start = indices.size();
         std::size_t num_vertices = 0;
         std::size_t num_indices = 0;
-        XMVECTOR pmin {}, pmax {};
+        XMVECTOR pmin;
+    	XMVECTOR pmax;
 
         if (prim.indices < 0) [[unlikely]] {
             log_error("GLTF import: Mesh has no indices");
@@ -193,23 +232,21 @@ namespace graphics {
             const float* buffer_tex_coords = nullptr;
             const float* buffer_tangents = nullptr;
 			buffer_pos = reinterpret_cast<const float *>(&(model.buffers[pos_view.buffer].data[pos_accessor.byteOffset + pos_view.byteOffset]));
-			//posMin = glm::vec3(posAccessor.minValues[0], posAccessor.minValues[1], posAccessor.minValues[2]);
-			//posMax = glm::vec3(posAccessor.maxValues[0], posAccessor.maxValues[1], posAccessor.maxValues[2]);
 
 			if (prim.attributes.contains("NORMAL")) {
 				const tinygltf::Accessor& norm_accessor = model.accessors[prim.attributes.find("NORMAL")->second];
 				const tinygltf::BufferView& norm_view = model.bufferViews[norm_accessor.bufferView];
-				buffer_normals = reinterpret_cast<const float *>(&(model.buffers[norm_view.buffer].data[norm_accessor.byteOffset + norm_view.byteOffset]));
+				buffer_normals = reinterpret_cast<const float*>(&(model.buffers[norm_view.buffer].data[norm_accessor.byteOffset + norm_view.byteOffset]));
 			}
 			if (prim.attributes.contains("TEXCOORD_0")) {
 				const tinygltf::Accessor& uv_accessor = model.accessors[prim.attributes.find("TEXCOORD_0")->second];
 				const tinygltf::BufferView& uv_view = model.bufferViews[uv_accessor.bufferView];
-				buffer_tex_coords = reinterpret_cast<const float *>(&(model.buffers[uv_view.buffer].data[uv_accessor.byteOffset + uv_view.byteOffset]));
+				buffer_tex_coords = reinterpret_cast<const float*>(&(model.buffers[uv_view.buffer].data[uv_accessor.byteOffset + uv_view.byteOffset]));
 			}
 			if (prim.attributes.contains("TANGENT")) {
 				const tinygltf::Accessor& tangent_accessor = model.accessors[prim.attributes.find("TANGENT")->second];
 				const tinygltf::BufferView& tangent_view = model.bufferViews[tangent_accessor.bufferView];
-				buffer_tangents = reinterpret_cast<const float *>(&(model.buffers[tangent_view.buffer].data[tangent_accessor.byteOffset + tangent_view.byteOffset]));
+				buffer_tangents = reinterpret_cast<const float*>(&(model.buffers[tangent_view.buffer].data[tangent_accessor.byteOffset + tangent_view.byteOffset]));
 			}
 
             num_vertices = pos_accessor.count;
@@ -233,28 +270,25 @@ namespace graphics {
             const tinygltf::Buffer& buffer = model.buffers[bufferView.buffer];
             switch (accessor.componentType) {
             	case TINYGLTF_PARAMETER_TYPE_UNSIGNED_INT: {
-            		auto* buf = new std::uint32_t[accessor.count];
-            		std::memcpy(buf, &buffer.data[accessor.byteOffset + bufferView.byteOffset], accessor.count * sizeof(uint32_t));
+            		std::unique_ptr<std::uint32_t[]> buf {new std::uint32_t[accessor.count]};
+            		std::memcpy(buf.get(), &buffer.data[accessor.byteOffset + bufferView.byteOffset], accessor.count * sizeof(uint32_t));
             		for (std::size_t i = 0; i < accessor.count; ++i) {
             			indices.emplace_back(buf[i] + vertex_start);
             		}
-            		delete[] buf;
             	} break;
             	case TINYGLTF_PARAMETER_TYPE_UNSIGNED_SHORT: {
-		            auto* buf = new std::uint16_t[accessor.count];
-            		std::memcpy(buf, &buffer.data[accessor.byteOffset + bufferView.byteOffset], accessor.count * sizeof(uint16_t));
+					std::unique_ptr<std::uint16_t[]> buf {new std::uint16_t[accessor.count]};
+            		std::memcpy(buf.get(), &buffer.data[accessor.byteOffset + bufferView.byteOffset], accessor.count * sizeof(uint16_t));
             		for (std::size_t i = 0; i < accessor.count; ++i) {
             			indices.emplace_back(buf[i] + vertex_start);
             		}
-            		delete[] buf;
             	} break;
             	case TINYGLTF_PARAMETER_TYPE_UNSIGNED_BYTE: {
-            		auto* buf = new std::uint8_t[accessor.count];
-            		std::memcpy(buf, &buffer.data[accessor.byteOffset + bufferView.byteOffset], accessor.count * sizeof(uint8_t));
+            		std::unique_ptr<std::uint8_t[]> buf {new std::uint8_t[accessor.count]};
+            		std::memcpy(buf.get(), &buffer.data[accessor.byteOffset + bufferView.byteOffset], accessor.count * sizeof(uint8_t));
             		for (std::size_t i = 0; i < accessor.count; ++i) {
             			indices.emplace_back(buf[i] + vertex_start);
             		}
-            		delete[] buf;
             	} break;
             	default:
             		log_error("GLTF import: Index component type {} not supported", accessor.componentType);

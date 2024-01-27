@@ -33,11 +33,16 @@ namespace graphics {
 
         [[nodiscard]] auto get_primitives() const noexcept -> std::span<const primitive> { return m_primitives; }
         [[nodiscard]] auto get_aabb() const noexcept -> const BoundingBox& { return aabb; }
+        [[nodiscard]] auto get_vertex_buffer() const noexcept -> const vkb::buffer& { return m_vertex_buffer; }
+        [[nodiscard]] auto get_index_buffer() const noexcept -> const vkb::buffer& { return m_index_buffer; }
+        [[nodiscard]] auto get_index_count() const noexcept -> std::uint32_t { return m_index_count; }
+        [[nodiscard]] auto is_index_32bit() const noexcept -> bool { return m_index_32bit; }
 
     private:
         vkb::buffer m_vertex_buffer {};
         vkb::buffer m_index_buffer {};
         std::uint32_t m_index_count = 0;
+        bool m_index_32bit = false;
         std::vector<primitive> m_primitives {};
         BoundingBox aabb {};
     };

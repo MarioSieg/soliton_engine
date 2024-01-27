@@ -23,6 +23,8 @@ namespace assetmgr {
     [[nodiscard]] extern auto get_asset_root() -> const std::string&;
     [[nodiscard]] extern auto get_asset_dir(asset_category category) -> const std::string&;
     [[nodiscard]] extern auto get_asset_path(asset_category category, const std::string& name) -> std::string;
+    [[nodiscard]] extern auto load_asset_blob_raw(const std::string& path, std::vector<std::uint8_t>& out) -> bool;
+    [[nodiscard]] extern auto load_asset_text_raw(const std::string& path, std::string& out) -> bool;
     [[nodiscard]] extern auto load_asset_blob(asset_category category, const std::string& name, std::vector<std::uint8_t>& out) -> bool;
     [[nodiscard]] extern auto load_asset_text(asset_category category, const std::string& name, std::string& out) -> bool;
     inline auto load_asset_blob_or_panic(asset_category category, const std::string& name, std::vector<std::uint8_t>& out) -> void {

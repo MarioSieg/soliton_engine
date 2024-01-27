@@ -43,11 +43,6 @@ namespace graphics {
         auto create_pipeline() -> void;
 
         vk::CommandBuffer cmd_buf = nullptr;
-        std::optional<vkb::shader> m_vs {};
-        std::optional<vkb::shader> m_fs {};
-        vkb::buffer m_vertex_buffer {};
-        vkb::buffer m_index_buffer {};
-        std::uint32_t m_index_count = 0;
         std::array<uniform_buffer, vkb::context::k_max_concurrent_frames> uniforms {};
         vk::DescriptorSetLayout descriptor_set_layout {};
         vk::PipelineLayout pipeline_layout {};

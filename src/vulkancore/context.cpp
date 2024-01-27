@@ -28,10 +28,12 @@ namespace vkb {
         ImGui_ImplGlfw_Shutdown();
 
         // Dump VMA Infos
+#if 0
         char* vma_stats_string = nullptr;
         vmaBuildStatsString(m_device->get_allocator(), &vma_stats_string, true);
         spdlog::info("VMA Stats:\n{}", vma_stats_string);
         vmaFreeStatsString(m_device->get_allocator(), vma_stats_string);
+#endif
 
         m_device->get_logical_device().destroyDescriptorPool(m_imgui_descriptor_pool, &s_allocator);
         m_device->get_logical_device().destroyPipelineCache(m_pipeline_cache, &s_allocator);

@@ -27,9 +27,6 @@ namespace graphics {
         GLFWwindow* window = platform_subsystem::get_glfw_window();
         context::s_instance = std::make_unique<context>(window); // Create vulkan context
 
-        m_vs.emplace("triangle.vert");
-        m_fs.emplace("triangle.frag");
-
         create_uniform_buffers();
         create_descriptor_set_layout();
         create_descriptor_pool();
@@ -43,17 +40,13 @@ namespace graphics {
         context::s_instance->get_device().get_logical_device().waitIdle();
         m_mesh.reset();
 
-        m_vertex_buffer.destroy();
-        m_index_buffer.destroy();
         for (auto& [buffer, descriptor_set] : uniforms) {
             buffer.destroy();
         }
-        vkb_vk_device().destroyDescriptorSetLayout(descriptor_set_layout);
-        vkb_vk_device().destroyPipelineLayout(pipeline_layout);
-        vkb_vk_device().destroyDescriptorPool(descriptor_pool);
-        vkb_vk_device().destroyPipeline(pipeline);
-        m_fs.reset();
-        m_vs.reset();
+        vkb_vk_device().destroyDescriptorSetLayout(descriptor_set_layout, &vkb::s_allocator);
+        vkb_vk_device().destroyPipelineLayout(pipeline_layout, &vkb::s_allocator);
+        vkb_vk_device().destroyDescriptorPool(descriptor_pool, &vkb::s_allocator);
+        vkb_vk_device().destroyPipeline(pipeline, &vkb::s_allocator);
         context::s_instance.reset();
 
         ImPlot::DestroyContext();
@@ -316,14 +309,16 @@ namespace graphics {
         // Specifies the vertex input parameters for a pipeline
 
 
+        vkb::shader vs{"triangle.vert"};
+        vkb::shader fs{"triangle.frag"};
 
         // Shaders
         std::array<vk::PipelineShaderStageCreateInfo, 2> shader_stages {};
         shader_stages[0].stage = vk::ShaderStageFlagBits::eVertex;
-        shader_stages[0].module = m_vs->get_module();
+        shader_stages[0].module = vs.get_module();
         shader_stages[0].pName = "main";
         shader_stages[1].stage = vk::ShaderStageFlagBits::eFragment;
-        shader_stages[1].module = m_fs->get_module();
+        shader_stages[1].module = fs.get_module();
         shader_stages[1].pName = "main";
 
         // Set pipeline shader stage info
@@ -371,9 +366,5 @@ namespace graphics {
 
         // Create rendering pipeline using the specified states
         vkcheck(device.createGraphicsPipelines(nullptr, 1, &pipeline_ci, &vkb::s_allocator, &pipeline));
-
-        // Shader modules are no longer needed once the graphics pipeline has been created
-        device.destroyShaderModule(m_vs->get_module(), &vkb::s_allocator);
-        device.destroyShaderModule(m_fs->get_module(), &vkb::s_allocator);
     }
 }
