@@ -9,18 +9,20 @@
 
 #include "../vulkancore/context.hpp"
 #include "../vulkancore/shader.hpp"
+#include "../vulkancore/buffer.hpp"
 
 namespace graphics {
     struct vertex final {
-        XMFLOAT3 pos;
-        XMFLOAT3 color;
+        XMFLOAT3 position;
+        XMFLOAT3 normal;
+        XMFLOAT2 uv;
+        XMFLOAT3 tangent;
+        XMFLOAT3 bitangent;
     };
 
     struct uniform_buffer final {
-        vk::DeviceMemory mem {};
-        vk::Buffer buf {};
+        vkb::buffer buffer {};
         vk::DescriptorSet descriptor_set {};
-        std::uint8_t* mapped {};
     };
 
     struct cpu_uniform_buffer final {
@@ -51,15 +53,9 @@ namespace graphics {
         vk::CommandBuffer cmd_buf = nullptr;
         std::optional<vkb::shader> m_vs {};
         std::optional<vkb::shader> m_fs {};
-        struct {
-            vk::DeviceMemory mem {};
-            vk::Buffer buf {};
-        } vertices;
-        struct {
-            vk::DeviceMemory mem {};
-            vk::Buffer buf {};
-            std::uint32_t count {};
-        } indices;
+        vkb::buffer m_vertex_buffer {};
+        vkb::buffer m_index_buffer {};
+        std::uint32_t m_index_count = 0;
         std::array<uniform_buffer, vkb::context::k_max_concurrent_frames> uniforms {};
         vk::DescriptorSetLayout descriptor_set_layout {};
         vk::PipelineLayout pipeline_layout {};

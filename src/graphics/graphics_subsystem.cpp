@@ -40,6 +40,15 @@ namespace graphics {
     }
 
     graphics_subsystem::~graphics_subsystem() {
+        m_vertex_buffer.destroy();
+        m_index_buffer.destroy();
+        for (auto& [buffer, descriptor_set] : uniforms) {
+            buffer.destroy();
+        }
+        vkb_vk_device().destroyDescriptorSetLayout(descriptor_set_layout);
+        vkb_vk_device().destroyPipelineLayout(pipeline_layout);
+        vkb_vk_device().destroyDescriptorPool(descriptor_pool);
+        vkb_vk_device().destroyPipeline(pipeline);
         m_fs.reset();
         m_vs.reset();
         context::s_instance.reset();
@@ -103,14 +112,14 @@ namespace graphics {
         cpu_uniform_buffer ubo {};
         XMMATRIX model = XMMatrixIdentity();
         ubo.mvp = XMMatrixMultiply(model, m_mtx_view_proj);
-        std::memcpy(uniforms[context::s_instance->get_current_frame()].mapped, &ubo, sizeof(cpu_uniform_buffer));
+        std::memcpy(uniforms[context::s_instance->get_current_frame()].buffer.get_mapped_ptr(), &ubo, sizeof(cpu_uniform_buffer));
 
         cmd_buf.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pipeline_layout, 0, 1, &uniforms[context::s_instance->get_current_frame()].descriptor_set, 0, nullptr);
         cmd_buf.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
         constexpr vk::DeviceSize offsets = 0;
-        cmd_buf.bindVertexBuffers(0, 1, &vertices.buf, &offsets);
-        cmd_buf.bindIndexBuffer(indices.buf, 0, vk::IndexType::eUint32);
-        cmd_buf.drawIndexed(indices.count, 1, 0, 0, 1);
+        cmd_buf.bindVertexBuffers(0, 1, &m_vertex_buffer.get_buffer(), &offsets);
+        cmd_buf.bindIndexBuffer(m_index_buffer.get_buffer(), 0, vk::IndexType::eUint32);
+        cmd_buf.drawIndexed(m_index_count, 1, 0, 0, 1);
 
 
         ImGui::Render();
@@ -140,166 +149,38 @@ namespace graphics {
 
         // Setup vertices
         std::vector<vertex> vb {
-			{ {  1.0f,  1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f } },
-            { { -1.0f,  1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
-            { {  0.0f, -1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } }
+			{ {  1.0f,  1.0f, 0.0f } },
+            { { -1.0f,  1.0f, 0.0f } },
+            { {  0.0f, -1.0f, 0.0f } }
         };
         auto vb_size = static_cast<std::uint32_t>(vb .size()) * sizeof(vertex);
 
-        staging_buffer staging {};
-        vk::MemoryAllocateInfo alloc_info {};
-        vk::MemoryRequirements mem_reqs {};
-        void* dst {};
-
-        vk::BufferCreateInfo buffer_info {};
-        buffer_info.size = vb_size;
-        buffer_info.usage = vk::BufferUsageFlagBits::eTransferSrc; // Buffer is used as the copy source
-        // Create a host-visible buffer to copy the vertex data to (staging buffer)
-        vkcheck(device.createBuffer(&buffer_info, &vkb::s_allocator, &staging.buf));
-        device.getBufferMemoryRequirements(staging.buf, &mem_reqs);
-        // Request a host visible memory type that can be used to copy our data do
-        // Also request it to be coherent, so that writes are visible to the GPU right after unmapping the buffer
-        alloc_info.allocationSize = vb_size;
-        alloc_info.memoryTypeIndex = vkb_device.get_mem_type_idx_or_panic(
-            mem_reqs.memoryTypeBits,
-            vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent
+        m_vertex_buffer.create(
+            vb.size() * sizeof(vb[0]),
+            0,
+            vk::BufferUsageFlagBits::eVertexBuffer,
+            VMA_MEMORY_USAGE_GPU_ONLY,
+            0,
+            vb.data()
         );
-        vkcheck(device.allocateMemory(&alloc_info, &vkb::s_allocator, &staging.mem));
-        // Map and copy
-        vkcheck(device.mapMemory(staging.mem, 0, vb_size, {}, &dst));
-        std::memcpy(dst, vb.data(), vb_size);
-        device.unmapMemory(staging.mem);
-        // Bind memory
-        device.bindBufferMemory(staging.buf, staging.mem, 0);
-
-        // Create a device local buffer to which the (host local) vertex data will be copied and which will be used for rendering
-        buffer_info.usage = vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eTransferDst; // Buffer will be used as a vertex buffer and is the copy destination
-        vkcheck(device.createBuffer(&buffer_info, &vkb::s_allocator, &vertices.buf));
-        device.getBufferMemoryRequirements(vertices.buf, &mem_reqs);
-        alloc_info.allocationSize = mem_reqs.size;
-        alloc_info.memoryTypeIndex = vkb_device.get_mem_type_idx_or_panic(
-            mem_reqs.memoryTypeBits,
-            vk::MemoryPropertyFlagBits::eDeviceLocal
-        );
-        vkcheck(device.allocateMemory(&alloc_info, &vkb::s_allocator, &vertices.mem));
-        device.bindBufferMemory(vertices.buf, vertices.mem, 0);
-
-        // Buffer copies have to be submitted to a queue, so we need a command buffer for them
-        // Note: Some devices offer a dedicated transfer queue (with only the transfer bit set) that may be faster when doing lots of copies
-        vk::CommandBuffer copy_cmd {};
-        vk::CommandBufferAllocateInfo cmd_alloc_info {};
-        cmd_alloc_info.commandPool = context::s_instance->get_command_pool();
-        cmd_alloc_info.level = vk::CommandBufferLevel::ePrimary;
-        cmd_alloc_info.commandBufferCount = 1;
-        vkcheck(device.allocateCommandBuffers(&cmd_alloc_info, &copy_cmd));
-
-        vk::CommandBufferBeginInfo cmd_begin_info {};
-        cmd_begin_info.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
-        vkcheck(copy_cmd.begin(&cmd_begin_info));
-        vk::BufferCopy copy_region {};
-        copy_region.size = vb_size;
-        copy_cmd.copyBuffer(staging.buf, vertices.buf, 1, &copy_region);
-        copy_cmd.end();
-
-        vk::FenceCreateInfo fence_info {};
-        vk::Fence fence {};
-        vkcheck(device.createFence(&fence_info, &vkb::s_allocator, &fence));
-
-        vk::SubmitInfo submit_info {};
-        submit_info.commandBufferCount = 1;
-        submit_info.pCommandBuffers = &copy_cmd;
-        vkcheck(vkb_device.get_graphics_queue().submit(1, &submit_info, fence));
-        vkcheck(device.waitForFences(1, &fence, vk::True, std::numeric_limits<std::uint64_t>::max()));
-
-        device.destroyFence(fence, &vkb::s_allocator);
-        device.freeCommandBuffers(context::s_instance->get_command_pool(), 1, &copy_cmd);
-        device.destroyBuffer(staging.buf, &vkb::s_allocator);
-        device.freeMemory(staging.mem, &vkb::s_allocator);
     }
 
     auto graphics_subsystem::create_index_buffer() -> void {
-        const vkb::device& vkb_device = context::s_instance->get_device();
-        vk::Device device = vkb_device.get_logical_device();
 
         // Setup indices
         std::vector<uint32_t> ib { 0, 1, 2 };
-        indices.count = static_cast<std::uint32_t>(ib.size());
-        const auto ib_size = indices.count * sizeof(std::uint32_t);
-
-        staging_buffer staging {};
-        vk::MemoryAllocateInfo alloc_info {};
-        vk::MemoryRequirements mem_reqs {};
-        void* dst {};
-
-        vk::BufferCreateInfo buffer_info {};
-        buffer_info.size = ib_size;
-        buffer_info.usage = vk::BufferUsageFlagBits::eTransferSrc; // Buffer is used as the copy source
-        // Create a host-visible buffer to copy the index data to (staging buffer)
-        vkcheck(device.createBuffer(&buffer_info, &vkb::s_allocator, &staging.buf));
-        device.getBufferMemoryRequirements(staging.buf, &mem_reqs);
-        // Request a host visible memory type that can be used to copy our data do
-        // Also request it to be coherent, so that writes are visible to the GPU right after unmapping the buffer
-        alloc_info.allocationSize = ib_size;
-        alloc_info.memoryTypeIndex = vkb_device.get_mem_type_idx_or_panic(
-            mem_reqs.memoryTypeBits,
-            vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent
+        m_index_count = static_cast<std::uint32_t>(ib.size());
+        m_index_buffer.create(
+            ib.size() * sizeof(ib[0]),
+            0,
+            vk::BufferUsageFlagBits::eIndexBuffer,
+            VMA_MEMORY_USAGE_GPU_ONLY,
+            0,
+            ib.data()
         );
-        vkcheck(device.allocateMemory(&alloc_info, &vkb::s_allocator, &staging.mem));
-        // Map and copy
-        vkcheck(device.mapMemory(staging.mem, 0, ib_size, {}, &dst));
-        std::memcpy(dst, ib.data(), ib_size);
-        device.unmapMemory(staging.mem);
-        // Bind memory
-        device.bindBufferMemory(staging.buf, staging.mem, 0);
-
-        // Create a device local buffer to which the (host local) index data will be copied and which will be used for rendering
-        buffer_info.usage = vk::BufferUsageFlagBits::eIndexBuffer | vk::BufferUsageFlagBits::eTransferDst; // Buffer will be used as a vertex buffer and is the copy destination
-        vkcheck(device.createBuffer(&buffer_info, &vkb::s_allocator, &indices.buf));
-        device.getBufferMemoryRequirements(indices.buf, &mem_reqs);
-        alloc_info.allocationSize = mem_reqs.size;
-        alloc_info.memoryTypeIndex = vkb_device.get_mem_type_idx_or_panic(
-            mem_reqs.memoryTypeBits,
-            vk::MemoryPropertyFlagBits::eDeviceLocal
-        );
-        vkcheck(device.allocateMemory(&alloc_info, &vkb::s_allocator, &indices.mem));
-        device.bindBufferMemory(indices.buf, indices.mem, 0);
-
-        // Buffer copies have to be submitted to a queue, so we need a command buffer for them
-        // Note: Some devices offer a dedicated transfer queue (with only the transfer bit set) that may be faster when doing lots of copies
-        vk::CommandBuffer copy_cmd {};
-        vk::CommandBufferAllocateInfo cmd_alloc_info {};
-        cmd_alloc_info.commandPool = context::s_instance->get_command_pool();
-        cmd_alloc_info.level = vk::CommandBufferLevel::ePrimary;
-        cmd_alloc_info.commandBufferCount = 1;
-        vkcheck(device.allocateCommandBuffers(&cmd_alloc_info, &copy_cmd));
-
-        vk::CommandBufferBeginInfo cmd_begin_info {};
-        cmd_begin_info.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
-        vkcheck(copy_cmd.begin(&cmd_begin_info));
-        vk::BufferCopy copy_region {};
-        copy_region.size = ib_size;
-        copy_cmd.copyBuffer(staging.buf, indices.buf, 1, &copy_region);
-        copy_cmd.end();
-
-        vk::FenceCreateInfo fence_info {};
-        vk::Fence fence {};
-        vkcheck(device.createFence(&fence_info, &vkb::s_allocator, &fence));
-
-        vk::SubmitInfo submit_info {};
-        submit_info.commandBufferCount = 1;
-        submit_info.pCommandBuffers = &copy_cmd;
-        vkcheck(vkb_device.get_graphics_queue().submit(1, &submit_info, fence));
-        vkcheck(device.waitForFences(1, &fence, vk::True, std::numeric_limits<std::uint64_t>::max()));
-
-        device.destroyFence(fence, &vkb::s_allocator);
-        device.freeCommandBuffers(context::s_instance->get_command_pool(), 1, &copy_cmd);
-        device.destroyBuffer(staging.buf, &vkb::s_allocator);
-        device.freeMemory(staging.mem, &vkb::s_allocator);
     }
 
     auto graphics_subsystem::create_uniform_buffers() -> void {
-        const vkb::device& vkb_device = context::s_instance->get_device();
-        vk::Device device = vkb_device.get_logical_device();
 
         vk::MemoryRequirements mem_reqs {};
         // Vertex shader uniform buffer block
@@ -308,23 +189,13 @@ namespace graphics {
         buffer_info.usage = vk::BufferUsageFlagBits::eUniformBuffer;
 
         for (std::uint32_t i = 0; i < context::k_max_concurrent_frames; ++i) {
-            vkcheck(device.createBuffer(&buffer_info, nullptr, &uniforms[i].buf));
-            // Get memory requirements including size, alignment and memory type
-            device.getBufferMemoryRequirements(uniforms[i].buf, &mem_reqs);
-            vk::MemoryAllocateInfo alloc_info {};
-            alloc_info.allocationSize = mem_reqs.size;
-            // Get the memory type index that supports host visible memory access
-            // Most implementations offer multiple memory types and selecting the correct one to allocate memory from is crucial
-            // We also want the buffer to be host coherent so we don't have to flush (or sync after every update.
-            // Note: This may affect performance so you might not want to do this in a real world application that updates buffers on a regular base
-            alloc_info.memoryTypeIndex = vkb_device.get_mem_type_idx_or_panic(
-                mem_reqs.memoryTypeBits,
-                vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent
+            uniforms[i].buffer.create(
+                sizeof(cpu_uniform_buffer),
+                0,
+                vk::BufferUsageFlagBits::eUniformBuffer,
+                VMA_MEMORY_USAGE_CPU_TO_GPU,
+                VMA_ALLOCATION_CREATE_MAPPED_BIT
             );
-            vkcheck(device.allocateMemory(&alloc_info, &vkb::s_allocator, &uniforms[i].mem));
-            device.bindBufferMemory(uniforms[i].buf, uniforms[i].mem, 0);
-            // We map the buffer once, so we can update it without having to map it again
-            device.mapMemory(uniforms[i].mem, 0, sizeof(cpu_uniform_buffer), {}, reinterpret_cast<void**>(&uniforms[i].mapped));
         }
     }
 
@@ -391,7 +262,7 @@ namespace graphics {
             // For every binding point used in a shader there needs to be one
             // descriptor set matching that binding point
             vk::DescriptorBufferInfo buffer_info {};
-            buffer_info.buffer = uniforms[i].buf;
+            buffer_info.buffer = uniforms[i].buffer.get_buffer();
             buffer_info.offset = 0;
             buffer_info.range = sizeof(cpu_uniform_buffer);
 
@@ -486,35 +357,7 @@ namespace graphics {
 
         // Specifies the vertex input parameters for a pipeline
 
-        // Vertex input binding
-        // This example uses a single vertex input binding at binding point 0 (see vkCmdBindVertexBuffers)
-        vk::VertexInputBindingDescription vertex_input_binding {};
-        vertex_input_binding.binding = 0;
-        vertex_input_binding.stride = sizeof(vertex);
-        vertex_input_binding.inputRate = vk::VertexInputRate::eVertex;
 
-        // Input attribute bindings describe shader attribute locations and memory layouts
-        std::array<vk::VertexInputAttributeDescription, 2> vertex_input_attributes {};
-        // These match the following shader layout (see triangle.vert):
-        //	layout (location = 0) in vec3 inPos;
-        //	layout (location = 1) in vec3 inColor;
-        // Attribute location 0: Position
-        vertex_input_attributes[0].binding = 0;
-        vertex_input_attributes[0].location = 0;
-        vertex_input_attributes[0].format = vk::Format::eR32G32B32Sfloat;
-        vertex_input_attributes[0].offset = offsetof(vertex, pos);
-        // Attribute location 1: Color
-        vertex_input_attributes[1].binding = 0;
-        vertex_input_attributes[1].location = 1;
-        vertex_input_attributes[1].format = vk::Format::eR32G32B32Sfloat;
-        vertex_input_attributes[1].offset = offsetof(vertex, color);
-
-        // Vertex input state used for pipeline creation
-        vk::PipelineVertexInputStateCreateInfo vertex_input_state {};
-        vertex_input_state.vertexBindingDescriptionCount = 1;
-        vertex_input_state.pVertexBindingDescriptions = &vertex_input_binding;
-        vertex_input_state.vertexAttributeDescriptionCount = static_cast<std::uint32_t>(vertex_input_attributes.size());
-        vertex_input_state.pVertexAttributeDescriptions = vertex_input_attributes.data();
 
         // Shaders
         std::array<vk::PipelineShaderStageCreateInfo, 2> shader_stages {};
@@ -528,6 +371,35 @@ namespace graphics {
         // Set pipeline shader stage info
         pipeline_ci.stageCount = static_cast<std::uint32_t>(shader_stages.size());
         pipeline_ci.pStages = shader_stages.data();
+
+        // Input attribute bindings describe shader attribute locations and memory layouts
+        std::array<vk::VertexInputAttributeDescription, 5> vertex_input_attributes {};
+        auto push_attribute = [&vertex_input_attributes, loc = 0](const vk::Format format, const std::uint32_t offset) mutable  {
+            vertex_input_attributes[loc].location = loc;
+            vertex_input_attributes[loc].binding = 0;
+            vertex_input_attributes[loc].format = format;
+            vertex_input_attributes[loc].offset = offset;
+            ++loc;
+        };
+        push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(vertex, position));
+        push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(vertex, normal));
+        push_attribute(vk::Format::eR32G32Sfloat, offsetof(vertex, uv));
+        push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(vertex, tangent));
+        push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(vertex, bitangent));
+
+        // Vertex input binding
+        // This example uses a single vertex input binding at binding point 0 (see vkCmdBindVertexBuffers)
+        vk::VertexInputBindingDescription k_vertex_input_binding {};
+        k_vertex_input_binding.binding = 0;
+        k_vertex_input_binding.stride = static_cast<std::uint32_t>(sizeof(vertex));
+        k_vertex_input_binding.inputRate = vk::VertexInputRate::eVertex;
+
+        // Vertex input state used for pipeline creation
+        vk::PipelineVertexInputStateCreateInfo vertex_input_state {};
+        vertex_input_state.vertexBindingDescriptionCount = 1;
+        vertex_input_state.pVertexBindingDescriptions = &k_vertex_input_binding;
+        vertex_input_state.vertexAttributeDescriptionCount = static_cast<std::uint32_t>(vertex_input_attributes.size());
+        vertex_input_state.pVertexAttributeDescriptions = vertex_input_attributes.data();
 
         // Assign the pipeline states to the pipeline creation info structure
         pipeline_ci.pVertexInputState = &vertex_input_state;

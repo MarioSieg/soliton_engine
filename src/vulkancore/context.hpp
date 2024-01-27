@@ -89,4 +89,10 @@ namespace vkb {
         std::uint32_t m_image_index = 0; // The current swap chain image index
         vk::DescriptorPool m_imgui_descriptor_pool {};
     };
+
+    // Convenience macros hehe
+    #define vkb_context() (*vkb::context::s_instance)
+    #define vkb_device() (vkb_context().get_device())
+    #define vkb_swapchain() (vkb_context().get_swapchain())
+    #define vkb_vk_device() (vkb_device().get_logical_device())
 }
