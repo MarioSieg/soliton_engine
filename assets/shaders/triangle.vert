@@ -17,6 +17,6 @@ out gl_PerVertex {
 };
 
 void main() {
-	outColor = vec3(1, 1, 1);
+	outColor = inPos;
 	gl_Position = ubo.mvp * vec4(inPos.xyz, 1.0);
 }
