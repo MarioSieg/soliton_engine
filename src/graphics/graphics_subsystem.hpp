@@ -11,15 +11,9 @@
 #include "../vulkancore/shader.hpp"
 #include "../vulkancore/buffer.hpp"
 
-namespace graphics {
-    struct vertex final {
-        XMFLOAT3 position;
-        XMFLOAT3 normal;
-        XMFLOAT2 uv;
-        XMFLOAT3 tangent;
-        XMFLOAT3 bitangent;
-    };
+#include "mesh.hpp"
 
+namespace graphics {
     struct uniform_buffer final {
         vkb::buffer buffer {};
         vk::DescriptorSet descriptor_set {};

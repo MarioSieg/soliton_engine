@@ -48,7 +48,7 @@ namespace vkb {
         alloc_create_info.requiredFlags = static_cast<VkMemoryPropertyFlags>(mem_props);
         alloc_create_info.preferredFlags = 0;
         alloc_create_info.memoryTypeBits = 0;
-        alloc_create_info.pool = VK_NULL_HANDLE;
+        alloc_create_info.pool = nullptr;
         if (!alignment) {
             vkccheck(vmaCreateBuffer(
                 m_allocator,
@@ -123,7 +123,7 @@ namespace vkb {
             vk::SubmitInfo submit_info {};
             submit_info.commandBufferCount = 1;
             submit_info.pCommandBuffers = &copy_cmd;
-            vkcheck(vkb_device().get_graphics_queue().submit(1, &submit_info, fence));// TODO: not thread safe
+            vkcheck(vkb_device().get_transfer_queue().submit(1, &submit_info, fence));// TODO: not thread safe
             vkcheck(device.waitForFences(1, &fence, vk::True, std::numeric_limits<std::uint64_t>::max()));
             device.destroyFence(fence, &vkb::s_allocator);
             device.freeCommandBuffers(context::s_instance->get_command_pool(), 1, &copy_cmd);
