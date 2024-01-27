@@ -5,7 +5,7 @@ project(lunam LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_compile_options(-march=haswell)
+add_compile_options(-march=haswell -fno-exceptions -fno-rtti)
 if (WIN32)
     add_compile_options(-Xclang -fvisibility=hidden -Wno-defaulted-function-deleted)
 else()

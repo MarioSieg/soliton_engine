@@ -10,7 +10,7 @@
 #include <vector>
 
 #define FMT_CONSTEVAL constexpr
-
+#define SPDLOG_NO_EXCEPTIONS
 #include "../log/include/spdlog/spdlog.h"
 
 #define log_info SPDLOG_INFO

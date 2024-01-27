@@ -14,7 +14,6 @@ public:
 
     template <typename T, typename... Ar> requires is_subsystem<T, Ar...>
     auto install(Ar&&... args) -> std::shared_ptr<T> {
-        log_info("Installing subsystem: {}", typeid(T).name());
         auto subsystem = std::make_shared<T>(std::forward<Ar>(args)...);
         subsystem->resize_hook = [this] { this->resize(); };
         m_subsystems.emplace_back(subsystem);

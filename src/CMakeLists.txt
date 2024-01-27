@@ -86,10 +86,6 @@ add_subdirectory(src/machineinfo)
 include_directories(src/machineinfo/include)
 target_link_libraries(lunam infoware)
 
-add_subdirectory(src/meshio)
-include_directories(src/meshio/include)
-target_link_libraries(lunam assimp)
-
 add_subdirectory(src/vulkanloader)
 target_link_libraries(lunam vulkan)
 
