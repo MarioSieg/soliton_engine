@@ -54,7 +54,7 @@ auto scene::spawn(const char* name, lua_entity* l_id) -> struct entity {
     return ent;
 }
 
-auto scene::load_from_gltf(const std::string& path) -> void {
+auto scene::load_from_gltf(const std::string& path, const float scale) -> void {
 	tinygltf::Model model {};
 	tinygltf::TinyGLTF loader {};
 	tinygltf::FsCallbacks fs {};
@@ -86,8 +86,8 @@ auto scene::load_from_gltf(const std::string& path) -> void {
 	passert(result);
 	passert(!model.scenes.empty());
 
+	const XMMATRIX scale_mtx = XMMatrixScalingFromVector(XMVectorReplicate(0.1f));
 	std::uint32_t num_nodes = 0;
-	MatrixStack stack {};
 	std::function<auto (const tinygltf::Node&) -> void> visitor = [&](const tinygltf::Node& node) {
 		++num_nodes;
 		const struct entity ent = this->spawn(nullptr);
@@ -95,43 +95,44 @@ auto scene::load_from_gltf(const std::string& path) -> void {
 		auto* metadata = ent.get_mut<c_metadata>();
 		metadata->name = name;
 
-		stack.Push();
+		XMMATRIX local = XMMatrixIdentity();
 		if (node.matrix.size() == 16) {
-			XMMATRIX local = XMMatrixIdentity();
 			auto* dst = reinterpret_cast<float*>(&local);
 			for (int i = 0; i < 16; ++i) {
 				dst[i] = static_cast<float>(node.matrix[i]);
 			}
-			stack.MultiplyMatrixLocal(local);
 		} else {
 			if (node.translation.size() == 3) {
-				stack.TranslateLocal(
+				const XMMATRIX mm = XMMatrixTranslation(
 					static_cast<float>(node.translation[0]),
 					static_cast<float>(node.translation[1]),
 					static_cast<float>(node.translation[2])
 				);
+				local = XMMatrixMultiply(mm, local);
 			}
 			if (node.rotation.size() == 4) {
-				stack.RotateByQuaternionLocal(XMVectorSet(
+				const XMMATRIX mm = XMMatrixRotationQuaternion(XMVectorSet(
 					static_cast<float>(node.rotation[0]),
 					static_cast<float>(node.rotation[1]),
 					static_cast<float>(node.rotation[2]),
 					static_cast<float>(node.rotation[3])
 				));
+				local = XMMatrixMultiply(mm, local);
 			}
 			if (node.scale.size() == 3) {
-				stack.ScaleLocal(
+				const XMMATRIX mm = XMMatrixScaling(
 					static_cast<float>(node.scale[0]),
 					static_cast<float>(node.scale[1]),
 					static_cast<float>(node.scale[2])
 				);
+				local = XMMatrixMultiply(mm, local);
 			}
 		}
-		float sscale = 2.0f;
-		stack.ScaleLocal(sscale, sscale, sscale);
+		local = XMMatrixMultiply(local, scale_mtx);
+		local = XMMatrixMultiply(local, XMMatrixRotationX(XMConvertToRadians(-90.0f)));
 
 		XMVECTOR scale, rotation, translation;
-		XMMatrixDecompose(&scale, &rotation, &translation, stack.Top());
+		XMMatrixDecompose(&scale, &rotation, &translation, local);
 		auto* transform = ent.get_mut<c_transform>();
 		XMStoreFloat4(&transform->position, translation);
 		XMStoreFloat4(&transform->rotation, rotation);
@@ -141,7 +142,7 @@ auto scene::load_from_gltf(const std::string& path) -> void {
 			graphics::mesh* mesh_ptr = nullptr;
 			const int midx = node.mesh;
 			const tinygltf::Mesh& mesh = model.meshes[midx];
-			mesh_ptr = new graphics::mesh{model, mesh, stack.Top()};
+			mesh_ptr = new graphics::mesh{model, mesh, local};
 			m_meshes.emplace_back(mesh_ptr);
 			auto* rendrer = ent.get_mut<c_mesh_renderer>();
 			rendrer->mesh = mesh_ptr;
@@ -150,8 +151,6 @@ auto scene::load_from_gltf(const std::string& path) -> void {
 		for (const int child : node.children) {
 			visitor(model.nodes[child]);
 		}
-
-		stack.Pop();
 	};
 
 	const int scene_idx = model.defaultScene > -1 ? model.defaultScene : 0;
