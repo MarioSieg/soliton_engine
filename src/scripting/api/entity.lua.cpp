@@ -29,7 +29,8 @@ LUA_INTEROP_API auto __lu_entity_set_pos(const lua_entity id, const double x, co
         transform->position = {
             static_cast<float>(x),
             static_cast<float>(y),
-            static_cast<float>(z)
+            static_cast<float>(z),
+            0.0f
         };
     }
 }
@@ -88,7 +89,8 @@ LUA_INTEROP_API auto __lu_entity_set_scale(const lua_entity id, const double x, 
         transform->scale = {
             static_cast<float>(x),
             static_cast<float>(y),
-            static_cast<float>(z)
+            static_cast<float>(z),
+            0.0f
         };
     }
 }

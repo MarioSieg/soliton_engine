@@ -41,9 +41,9 @@ namespace graphics {
         const bool is_bin = std::filesystem::path{path}.extension() == ".glb";
         bool result;
         if (is_bin) {
-            result = loader.LoadBinaryFromFile(&model, &err, &warn, path.c_str());
+            result = loader.LoadBinaryFromFile(&model, &err, &warn, path);
         } else {
-            result = loader.LoadASCIIFromFile(&model, &err, &warn, path.c_str());
+            result = loader.LoadASCIIFromFile(&model, &err, &warn, path);
         }
         if (!warn.empty()) [[unlikely]] {
             printf("Warn: %s\n", warn.c_str());
@@ -84,6 +84,7 @@ namespace graphics {
     	indices.reserve(acc_indices);
 
     	std::uint32_t num_nodes = 0;
+    	std::uint32_t num_duplicates = 0;
     	std::function<auto (const tinygltf::Node&) -> void> visitor = [&](const tinygltf::Node& node) {
     		++num_nodes;
     		for (const int child : node.children) {
@@ -94,7 +95,7 @@ namespace graphics {
     		}
     		const int midx = node.mesh;
     		if (already_loaded.contains(midx)) {
-    			return;
+				++num_duplicates;
     		}
 
     		already_loaded.emplace(midx); // mark as loaded
@@ -103,26 +104,25 @@ namespace graphics {
     		XMVECTOR rotation = XMQuaternionIdentity();
     		XMVECTOR scale = XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f);
     		if (node.translation.size() == 3) {
-    			translation = XMVectorSet(node.translation[0], node.translation[1], node.translation[2], 1.0f);
+    			translation = XMVectorSet(static_cast<float>(node.translation[0]), static_cast<float>(node.translation[1]), static_cast<float>(node.translation[2]), 1.0f);
     		}
     		if (node.rotation.size() == 4) {
-    			rotation = XMVectorSet(node.rotation[0], node.rotation[1], node.rotation[2], node.rotation[3]);
+    			rotation = XMVectorSet(static_cast<float>(node.rotation[0]), static_cast<float>(node.rotation[1]), static_cast<float>(node.rotation[2]), static_cast<float>(node.rotation[3]));
     		}
     		if (node.scale.size() == 3) {
-    			scale = XMVectorSet(node.scale[0], node.scale[1], node.scale[2], 1.0f);
+    			scale = XMVectorSet(static_cast<float>(node.scale[0]), static_cast<float>(node.scale[1]), static_cast<float>(node.scale[2]), 1.0f);
     		}
-    		const XMMATRIX transform = XMMatrixTransformation(XMVectorZero(), XMVectorZero(), scale, XMVectorZero(), rotation, translation);
     		for (const tinygltf::Primitive& prim : mesh.primitives) {
     			primitive prim_info {};
     			if (load_primitive(vertices, indices, prim, model, prim_info)) {
     				m_primitives.emplace_back(prim_info);
     			}
-    			// pre transform vertices:
-    			for (std::span<vertex> verts {vertices.data() + prim_info.first_vertex, prim_info.vertex_count}; vertex& v : verts) {
-    				XMStoreFloat3(&v.position, XMVector3Transform(XMLoadFloat3(&v.position), transform));
-    			}
     		}
     	};
+
+    	if (num_duplicates) {
+    		log_warn("GLTF import: {} meshes were cloned multiple times, consider importing a scene instead", num_duplicates);
+    	}
 
     	for (const tinygltf::Scene& scene : model.scenes) {
     		for (const int node : scene.nodes) {
@@ -130,8 +130,40 @@ namespace graphics {
     		}
     	}
 
-    	passert(acc_vertices == vertices.size());
-    	passert(acc_indices == indices.size());
+    	create_buffers(vertices, indices);
+
+    	for (const primitive& prim : m_primitives) {
+			BoundingBox::CreateMerged(aabb, aabb, prim.aabb);
+		}
+
+    	const auto time = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - start);
+    	log_info("Mesh import done in {}s: {} vertices, {} indices, {} nodes", time.count(), vertices.size(), indices.size(), num_nodes);
+    }
+
+    mesh::mesh(const std::span<const vertex> vertices, const std::span<const index> indices) {
+    	create_buffers(vertices, indices);
+    }
+
+    mesh::mesh(const tinygltf::Model& model, const tinygltf::Mesh& mesh, FXMMATRIX transform) {
+    	load_mesh_from_gltf(model, mesh, transform);
+    }
+
+    mesh::~mesh() {
+    	m_index_buffer.destroy();
+		m_vertex_buffer.destroy();
+    }
+
+    auto mesh::draw(const vk::CommandBuffer cmd) -> void {
+    	constexpr vk::DeviceSize offsets = 0;
+    	cmd.bindVertexBuffers(0, 1, &m_vertex_buffer.get_buffer(), &offsets);
+    	cmd.bindIndexBuffer(m_index_buffer.get_buffer(), 0, m_index_32bit ? vk::IndexType::eUint32 : vk::IndexType::eUint16);
+    	//for (const primitive& prim : m_primitives) {
+    	//	cmd.drawIndexed(prim.index_count, 1, prim.first_index, 0, 1);
+    	//}
+    	cmd.drawIndexed(m_index_count, 1, 0, 0, 0);
+    }
+
+    auto mesh::create_buffers(std::span<const vertex> vertices, std::span<const index> indices) -> void {
     	passert(indices.size() <= std::numeric_limits<index>::max());
 
     	m_vertex_buffer.create(
@@ -147,8 +179,8 @@ namespace graphics {
     		std::vector<std::uint16_t> indices16 {};
     		indices16.reserve(indices.size());
     		for (const index idx : indices) {
-				indices16.emplace_back(static_cast<std::uint16_t>(idx));
-			}
+    			indices16.emplace_back(static_cast<std::uint16_t>(idx));
+    		}
     		m_index_32bit = false;
     		m_index_count = static_cast<std::uint32_t>(indices16.size());
     		m_index_buffer.create(
@@ -171,30 +203,24 @@ namespace graphics {
 				indices.data()
 			);
     	}
-
-    	for (const primitive& prim : m_primitives) {
-			BoundingBox::CreateMerged(aabb, aabb, prim.aabb);
-		}
-
-    	const auto time = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - start);
-    	log_info("Mesh import done in {}s: {} vertices, {} indices, {} nodes", time.count(), vertices.size(), indices.size(), num_nodes);
     }
 
-    mesh::~mesh() {
-    	m_index_buffer.destroy();
-		m_vertex_buffer.destroy();
-    }
-
-    auto mesh::draw(const vk::CommandBuffer cmd) -> void {
-    	constexpr vk::DeviceSize offsets = 0;
-    	cmd.bindVertexBuffers(0, 1, &m_vertex_buffer.get_buffer(), &offsets);
-    	cmd.bindIndexBuffer(m_index_buffer.get_buffer(), 0, is_index_32bit() ? vk::IndexType::eUint32 : vk::IndexType::eUint16);
-    	for (const primitive& prim : m_primitives) {
-    		cmd.drawIndexed(prim.index_count, 1, prim.first_index, 0, 1);
+    auto mesh::load_mesh_from_gltf(const tinygltf::Model& model, const tinygltf::Mesh& mesh, FXMMATRIX transform) -> void {
+    	std::vector<vertex> vertices {};
+    	std::vector<index> indices {};
+    	for (const tinygltf::Primitive& prim : mesh.primitives) {
+    		primitive prim_info {};
+    		if (load_primitive(vertices, indices, prim, model, prim_info)) {
+    			m_primitives.emplace_back(prim_info);
+    		}
     	}
+    	for (vertex& v : vertices) {
+    		XMStoreFloat3(&v.position, XMVector3Transform(XMLoadFloat3(&v.position), transform));
+    	}
+    	create_buffers(vertices, indices);
     }
 
-	static auto load_primitive(
+    static auto load_primitive(
 		std::vector<mesh::vertex>& vertices,
 		std::vector<mesh::index>& indices,
 		const tinygltf::Primitive& prim,

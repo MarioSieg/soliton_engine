@@ -32,13 +32,10 @@ namespace graphics {
         create_descriptor_pool();
         create_descriptor_sets();
         create_pipeline();
-
-        m_mesh.emplace("/home/neo/Documents/AssetLibrary/EmeraldSquare/EmeraldSquare_Day.gltf");
     }
 
     graphics_subsystem::~graphics_subsystem() {
         context::s_instance->get_device().get_logical_device().waitIdle();
-        m_mesh.reset();
 
         for (auto& [buffer, descriptor_set] : uniforms) {
             buffer.destroy();
@@ -54,11 +51,10 @@ namespace graphics {
     }
 
     [[nodiscard]] static auto get_main_camera() -> entity {
-        const auto& scene = scene::get_active();
-        if (scene) [[likely]] {
-            auto query = scene->filter<const c_transform, c_camera>();
-            if (query.count() > 0) {
-                return query.first();
+        if (const auto& scene = scene::get_active()) [[likely]] {
+            const auto filter = scene->filter<const c_transform, c_camera>();
+            if (filter.count() > 0) {
+                return filter.first();
             }
         }
         return entity::null();
@@ -69,8 +65,8 @@ namespace graphics {
     static XMMATRIX m_mtx_view_proj;
     static c_transform m_camera_transform;
 
-    static auto update_main_camera(float width, float height) -> void {
-        entity main_cam = get_main_camera();
+    static auto update_main_camera(const float width, const float height) -> void {
+        const entity main_cam = get_main_camera();
         if (!main_cam.is_valid() || !main_cam.is_alive()) [[unlikely]] {
             log_warn("No camera found in scene");
             return;
@@ -98,6 +94,24 @@ namespace graphics {
         return true;
     }
 
+    HOTPROC auto graphics_subsystem::render_scene(const vk::CommandBuffer cmd_buf) const -> void {
+        if (const auto& scene = scene::get_active()) [[likely]] {
+            const auto query = scene->query<const c_transform, const c_mesh_renderer>();
+            const auto render = [&](const c_transform& transform, const c_mesh_renderer& renderer) {
+                if (!renderer.mesh || renderer.flags & render_flags::skip_rendering) [[unlikely]] {
+                    return;
+                }
+                cpu_uniform_buffer ubo {};
+                const XMMATRIX model = transform.compute_matrix();
+                ubo.model_view_proj = XMMatrixMultiply(model, m_mtx_view_proj);
+                ubo.normal_matrix = XMMatrixTranspose(XMMatrixInverse(nullptr, model));
+                std::memcpy(uniforms[context::s_instance->get_current_frame()].buffer.get_mapped_ptr(), &ubo, sizeof(cpu_uniform_buffer));
+                renderer.mesh->draw(cmd_buf);
+            };
+            query.iter().each(render);
+        }
+    }
+
     HOTPROC auto graphics_subsystem::on_post_tick() -> void {
         if (!cmd_buf) [[unlikely]] return;
 
@@ -105,15 +119,10 @@ namespace graphics {
         const auto h = static_cast<float>(context::s_instance->get_height());
         update_main_camera(w, h);
 
-        cpu_uniform_buffer ubo {};
-        XMMATRIX model = XMMatrixRotationX(XMConvertToRadians(-90.0f));
-        model = XMMatrixMultiply(model, XMMatrixScalingFromVector(XMVectorReplicate(0.01f)));
-        ubo.mvp = XMMatrixMultiply(model, m_mtx_view_proj);
-        std::memcpy(uniforms[context::s_instance->get_current_frame()].buffer.get_mapped_ptr(), &ubo, sizeof(cpu_uniform_buffer));
-
         cmd_buf.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pipeline_layout, 0, 1, &uniforms[context::s_instance->get_current_frame()].descriptor_set, 0, nullptr);
         cmd_buf.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
-        m_mesh->draw(cmd_buf);
+
+        render_scene(cmd_buf);
 
         ImGui::Render();
         context::s_instance->render_imgui(ImGui::GetDrawData(), cmd_buf);
@@ -132,8 +141,6 @@ namespace graphics {
     }
 
     auto graphics_subsystem::create_uniform_buffers() -> void {
-
-        vk::MemoryRequirements mem_reqs {};
         // Vertex shader uniform buffer block
         vk::BufferCreateInfo buffer_info {};
         buffer_info.size = sizeof(cpu_uniform_buffer);
@@ -253,7 +260,7 @@ namespace graphics {
         vk::PipelineRasterizationStateCreateInfo rasterization_state {};
         rasterization_state.polygonMode = vk::PolygonMode::eFill;
         rasterization_state.cullMode = vk::CullModeFlagBits::eBack;
-        rasterization_state.frontFace = vk::FrontFace::eCounterClockwise;
+        rasterization_state.frontFace = vk::FrontFace::eClockwise;
         rasterization_state.depthClampEnable = vk::False;
         rasterization_state.rasterizerDiscardEnable = vk::False;
         rasterization_state.depthBiasEnable = vk::False;

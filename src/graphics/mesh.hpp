@@ -4,6 +4,7 @@
 
 #include "../scene/scene.hpp"
 #include "../vulkancore/buffer.hpp"
+#include "../gltf/tiny_gltf.h"
 
 namespace graphics {
     class mesh final : public no_copy, public no_move {
@@ -27,6 +28,8 @@ namespace graphics {
         };
 
         explicit mesh(const std::string& path);
+        mesh(std::span<const vertex> vertices, std::span<const index> indices);
+        mesh(const tinygltf::Model& model, const tinygltf::Mesh& mesh, FXMMATRIX transform = XMMatrixIdentity());
         ~mesh();
 
         auto draw(vk::CommandBuffer cmd) -> void;
@@ -39,6 +42,9 @@ namespace graphics {
         [[nodiscard]] auto is_index_32bit() const noexcept -> bool { return m_index_32bit; }
 
     private:
+        auto create_buffers(std::span<const vertex> vertices, std::span<const index> indices) -> void;
+        auto load_mesh_from_gltf(const tinygltf::Model& model, const tinygltf::Mesh& mesh, FXMMATRIX transform) -> void;
+
         vkb::buffer m_vertex_buffer {};
         vkb::buffer m_index_buffer {};
         std::uint32_t m_index_count = 0;

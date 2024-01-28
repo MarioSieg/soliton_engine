@@ -7,16 +7,18 @@ layout (location = 3) in vec3 inTangent;
 layout (location = 4) in vec3 inBitangent;
 
 layout (binding = 0) uniform UBO {
-	mat4 mvp;
+	mat4 ModelViewProj;
+	mat4 NormalMatrix;
 } ubo;
 
-layout (location = 0) out vec3 outColor;
+layout (location = 0) out vec3 inNormalColor;
 
 out gl_PerVertex {
     vec4 gl_Position;
 };
 
 void main() {
-	outColor = inNormal;
-	gl_Position = ubo.mvp * vec4(inPos.xyz, 1.0);
+	gl_Position = ubo.ModelViewProj * vec4(inPos.xyz, 1.0);
+	vec4 nn = ubo.NormalMatrix * vec4(inNormal, 0.0);
+	inNormalColor = nn.xyz;
 }

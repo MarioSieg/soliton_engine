@@ -4,30 +4,34 @@
 
 #include "base.hpp"
 
-struct c_meta final {
+namespace graphics {
+    class mesh;
+}
+
+struct c_metadata final {
     std::string name {};
 };
 
 struct c_transform final {
-    XMFLOAT3 position;
+    XMFLOAT4 position;
     XMFLOAT4 rotation;
-    XMFLOAT3 scale;
+    XMFLOAT4 scale;
 
     c_transform() noexcept {
-        XMStoreFloat3(&this->position, XMVectorZero());
+        XMStoreFloat4(&this->position, XMVectorZero());
         XMStoreFloat4(&this->rotation, XMQuaternionIdentity());
-        XMStoreFloat3(&this->scale, XMVectorReplicate(1.F));
+        XMStoreFloat4(&this->scale, XMVectorReplicate(1.F));
     }
 
     [[nodiscard]] auto XM_CALLCONV compute_matrix() const noexcept -> XMMATRIX {
         const XMVECTOR zero { XMVectorZero() };
         return XMMatrixTransformation(
             zero,
-            zero,
-            XMLoadFloat3(&this->scale),
+            XMQuaternionIdentity(),
+            XMLoadFloat4(&this->scale),
             zero,
             XMLoadFloat4(&this->rotation),
-            XMLoadFloat3(&this->position)
+            XMLoadFloat4(&this->position)
         );
     }
     [[nodiscard]] auto XM_CALLCONV forward_vec() const noexcept -> XMVECTOR {
@@ -60,7 +64,7 @@ struct c_camera final {
     static inline entity active_camera = entity::null(); // main camera, resetted every frame
 
    [[nodiscard]] static auto XM_CALLCONV compute_view(const c_transform& transform) noexcept -> XMMATRIX {
-       const XMVECTOR eyePos { XMLoadFloat3(&transform.position) };
+       const XMVECTOR eyePos { XMLoadFloat4(&transform.position) };
        const XMVECTOR focusPos { XMVectorAdd(eyePos, transform.forward_vec()) };
        return XMMatrixLookAtLH(eyePos, focusPos, XMVectorSet(.0F, 1.F, .0F, .0F));
    }
@@ -69,4 +73,17 @@ struct c_camera final {
        const float aspect = viewport.x/viewport.y;
        return XMMatrixPerspectiveFovLH(XMConvertToRadians(this->fov), aspect, this->z_clip_near, this->z_clip_far);
    }
+};
+
+struct render_flags final {
+    enum $ {
+        none = 0,
+        skip_rendering = 1 << 0,
+        skip_frustum_culling = 1 << 1,
+    };
+};
+
+struct c_mesh_renderer final {
+    graphics::mesh* mesh = nullptr;
+    std::underlying_type_t<render_flags::$> flags = render_flags::none;
 };

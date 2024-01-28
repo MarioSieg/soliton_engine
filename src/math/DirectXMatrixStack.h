@@ -20,7 +20,7 @@
 #include <malloc.h>
 #endif
 
-#include <DirectXMath.h>
+#include "DirectXMath.h"
 
 
 namespace DirectX
@@ -222,7 +222,7 @@ namespace DirectX
             void* ptr = aligned_alloc(16, newSize * sizeof(XMMATRIX));
 #endif
             if (!ptr)
-                throw std::bad_alloc();
+                std::abort();
 
             if (m_stack)
             {

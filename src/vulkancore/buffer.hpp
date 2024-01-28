@@ -16,7 +16,7 @@ namespace vkb {
             vk::BufferUsageFlags buffer_usage,
             VmaMemoryUsage memory_usage,
             VmaAllocationCreateFlags create_flags = 0,
-            void* data = nullptr
+            const void* data = nullptr
         ) -> void;
         auto destroy() -> void;
         [[nodiscard]] auto get_size() const noexcept -> std::size_t { return m_size; }
@@ -30,7 +30,7 @@ namespace vkb {
         [[nodiscard]] auto get_memory_properties() const noexcept -> vk::MemoryPropertyFlags { return m_memory_properties; }
         [[nodiscard]] auto get_usage() const noexcept -> vk::BufferUsageFlags { return m_usage; }
 
-        auto upload_data(void* data, std::size_t size, std::size_t offset) -> void;
+        auto upload_data(const void* data, std::size_t size, std::size_t offset) -> void;
 
     private:
         std::size_t m_size {};

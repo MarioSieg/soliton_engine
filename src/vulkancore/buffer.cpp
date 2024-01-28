@@ -10,7 +10,7 @@ namespace vkb {
         vk::BufferUsageFlags buffer_usage,
         const VmaMemoryUsage memory_usage,
         const VmaAllocationCreateFlags create_flags,
-        void* data
+        const void* data
     ) -> void {
         m_allocator = vkb_device().get_allocator();
         vk::BufferCreateInfo buffer_create_info {};
@@ -87,7 +87,7 @@ namespace vkb {
         vmaDestroyBuffer(m_allocator, m_buffer, m_allocation);
     }
 
-    auto buffer::upload_data(void* data, std::size_t size, std::size_t offset) -> void {
+    auto buffer::upload_data(const void* data, const std::size_t size, const std::size_t offset) -> void {
         const vk::Device device = vkb_vk_device();
         if (m_memory_usage == VMA_MEMORY_USAGE_GPU_ONLY) {
             buffer staging_buffer {};

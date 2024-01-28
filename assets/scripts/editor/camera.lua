@@ -20,7 +20,7 @@ Camera.targetEntity = 0
 Camera.sensitivity = 0.5 -- mouse look sensitivity
 Camera.clampY = 80 -- mouse look Y-axis clamp
 Camera.defaultMovementSpeed = 4 -- default movement speed
-Camera.fastMovementSpeed = 6 -- movement speed when pressing fast movement button (e.g. shift) (see below)
+Camera.fastMovementSpeed = 10*Camera.defaultMovementSpeed-- movement speed when pressing fast movement button (e.g. shift) (see below)
 
 Camera.enableMouseLook = true -- enables/disables looking around
 Camera.enableMouseButtonLook = true -- if true looking around is only working while a mouse button is down
@@ -62,7 +62,7 @@ function Camera:_computeCameraRotation()
     local sens = Math.abs(self.sensitivity) * 0.01
     local clampYRad = Math.rad(Math.abs(self.clampY))
     local mousePos = Input.getMousePos()
-    mousePos.y = -mousePos.y -- invert Y-axis because of Vulkan idk why
+    --mousePos.y = -mousePos.y -- invert Y-axis because of Vulkan idk why
 
     local delta = mousePos
     delta = delta - self._prevMousePos

@@ -20,7 +20,8 @@ namespace graphics {
     };
 
     struct cpu_uniform_buffer final {
-        XMMATRIX mvp;
+        XMMATRIX model_view_proj;
+        XMMATRIX normal_matrix;
     };
     static_assert(sizeof(cpu_uniform_buffer) % 4 == 0);
 
@@ -42,13 +43,13 @@ namespace graphics {
         auto create_descriptor_sets() -> void;
         auto create_pipeline() -> void;
 
+        auto render_scene(vk::CommandBuffer cmd_buf) const -> void;
+
         vk::CommandBuffer cmd_buf = nullptr;
         std::array<uniform_buffer, vkb::context::k_max_concurrent_frames> uniforms {};
         vk::DescriptorSetLayout descriptor_set_layout {};
         vk::PipelineLayout pipeline_layout {};
         vk::DescriptorPool descriptor_pool {};
         vk::Pipeline pipeline {};
-
-        std::optional<mesh> m_mesh {};
     };
 }

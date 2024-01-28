@@ -106,7 +106,9 @@ namespace vkb {
         // Update dynamic viewport state
         vk::Viewport viewport {};
         viewport.width = w;
-        viewport.height = h;
+        viewport.height = -h;
+        viewport.x = 0.0f;
+        viewport.y = h;
         viewport.minDepth = 0.0f;
         viewport.maxDepth = 1.0f;
         cmd_buf.setViewport(0, 1, &viewport);

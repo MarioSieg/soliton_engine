@@ -16,7 +16,10 @@ namespace vkb {
 
         create_instance();
         find_physical_device();
-        create_logical_device({}, {}, nullptr);
+        std::vector<const char*> device_extensions {
+            VK_KHR_MAINTENANCE1_EXTENSION_NAME
+        };
+        create_logical_device({}, device_extensions, nullptr);
         init_vma();
         passert(find_supported_depth_format(require_stencil, m_depth_format));
 
