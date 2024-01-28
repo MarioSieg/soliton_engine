@@ -96,7 +96,7 @@ namespace graphics {
 
     HOTPROC auto graphics_subsystem::render_scene(const vk::CommandBuffer cmd_buf) const -> void {
         if (const auto& scene = scene::get_active()) [[likely]] {
-            const auto query = scene->query<const c_transform, const c_mesh_renderer>();
+            const auto query = scene->filter<const c_transform, const c_mesh_renderer>();
             const auto render = [&](const c_transform& transform, const c_mesh_renderer& renderer) {
                 if (!renderer.mesh || renderer.flags & render_flags::skip_rendering) [[unlikely]] {
                     return;

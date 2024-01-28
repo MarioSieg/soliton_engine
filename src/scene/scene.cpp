@@ -4,6 +4,7 @@
 #include "../core/kernel.hpp"
 #include "../gltf/tiny_gltf.h"
 #include "../graphics/mesh.hpp"
+#include "../vulkancore/context.hpp"
 #include "../dense/unordered_dense.h"
 #include "../math/DirectXMatrixStack.h"
 
@@ -21,6 +22,7 @@ scene::scene() : id{id_gen.fetch_add(1, std::memory_order_relaxed)} {
 }
 
 scene::~scene() {
+	vkb_vk_device().waitIdle();
     for (graphics::mesh* mesh : m_meshes) {
         delete mesh;
     }
