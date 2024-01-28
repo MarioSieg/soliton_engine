@@ -88,13 +88,13 @@ namespace graphics {
             cam.viewport.x = width;
             cam.viewport.y = height;
         }
-        XMMATRIX view = cam.compute_view(s_camera_transform);
-        XMMATRIX proj = cam.compute_projection();
+        const XMMATRIX view = cam.compute_view(s_camera_transform);
+        const XMMATRIX proj = cam.compute_projection();
         XMStoreFloat4x4A(&s_view_mtx, view);
         XMStoreFloat4x4A(&s_proj_mtx, proj);
         XMStoreFloat4x4A(&s_view_proj_mtx, XMMatrixMultiply(view, proj));
         BoundingFrustum::CreateFromMatrix(s_frustum, proj);
-        s_frustum.Transform(s_frustum, XMMatrixInverse(nullptr, view));
+        s_frustum.Transform(s_frustum, XMMatrixTranspose(XMMatrixInverse(nullptr, view)));
     }
 
     HOTPROC auto graphics_subsystem::on_pre_tick() -> bool {
@@ -125,7 +125,7 @@ namespace graphics {
                 obb.CreateFromBoundingBox(obb, renderer.mesh->get_aabb());
                 obb.Transform(obb, model);
                 if ((renderer.flags & render_flags::skip_frustum_culling) == 0) [[likely]] {
-                    if (s_frustum.Contains(obb) == ContainmentType::INTERSECTS) { // Object is culled
+                    if (s_frustum.Contains(obb) == ContainmentType::DISJOINT) { // Object is culled
                         return;
                     }
                 }
@@ -149,7 +149,15 @@ namespace graphics {
         const auto h = static_cast<float>(context::s_instance->get_height());
         update_main_camera(w, h);
 
-        cmd_buf.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pipeline_layout, 0, 1, &uniforms[context::s_instance->get_current_frame()].descriptor_set, 0, nullptr);
+        cmd_buf.bindDescriptorSets(
+            vk::PipelineBindPoint::eGraphics,
+            pipeline_layout,
+            0,
+            1,
+            &uniforms[context::s_instance->get_current_frame()].descriptor_set,
+            0,
+            nullptr
+        );
         cmd_buf.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
 
         render_scene(cmd_buf);
@@ -162,7 +170,7 @@ namespace graphics {
     }
 
     auto graphics_subsystem::on_resize() -> void {
-
+        vkb_context().on_resize();
     }
 
     void graphics_subsystem::on_start(scene& scene) {

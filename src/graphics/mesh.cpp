@@ -210,15 +210,8 @@ namespace graphics {
 				max = XMVectorMax(max, pos);
 			}
     		BoundingBox::CreateFromPoints(prim.aabb, min, max);
+    		BoundingBox::CreateMerged(m_aabb, m_aabb, prim.aabb);
     	}
-    	XMVECTOR min = XMVectorReplicate(std::numeric_limits<float>::max());
-    	XMVECTOR max = XMVectorReplicate(std::numeric_limits<float>::lowest());
-    	for (const vertex& v : vertices) {
-    		XMVECTOR pos = XMLoadFloat3(&v.position);
-    		min = XMVectorMin(min, pos);
-    		max = XMVectorMax(max, pos);
-    	}
-    	BoundingBox::CreateFromPoints(m_aabb, min, max);
     }
 
     auto mesh::load_mesh_from_gltf(const tinygltf::Model& model, const tinygltf::Mesh& mesh, FXMMATRIX transform) -> void {

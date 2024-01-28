@@ -70,7 +70,7 @@ struct c_camera final {
    }
 
    [[nodiscard]] auto XM_CALLCONV compute_projection() const noexcept -> XMMATRIX {
-       const float aspect = viewport.x/viewport.y;
+       const float aspect = viewport.x / viewport.y;
        return XMMatrixPerspectiveFovLH(XMConvertToRadians(this->fov), aspect, this->z_clip_near, this->z_clip_far);
    }
 };
