@@ -38,12 +38,15 @@ namespace vkb {
         log_info("Destroyed Vulkan instance");
     }
 
-    VKAPI_ATTR auto VKAPI_CALL vulkan_debug_message_callback(
-        VkDebugUtilsMessageSeverityFlagBitsEXT severity,
+    extern "C" VKAPI_ATTR auto VKAPI_CALL vulkan_debug_message_callback(
+        const VkDebugUtilsMessageSeverityFlagBitsEXT severity,
         VkDebugUtilsMessageTypeFlagsEXT type,
         const VkDebugUtilsMessengerCallbackDataEXT* data,
         void* usr
     ) -> VkBool32 {
+        if (!data->pMessageIdName || !data->pMessage) [[unlikely]] {
+            return vk::False;
+        }
         if (severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT) {
             log_info("[{}] [{}] {}", data->messageIdNumber, data->pMessageIdName, data->pMessage);
         } else if (severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT) {
