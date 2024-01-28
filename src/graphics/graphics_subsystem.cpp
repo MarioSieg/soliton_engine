@@ -19,10 +19,10 @@ namespace graphics {
         log_info("Initializing graphics subsystem");
 
         ImGui::SetAllocatorFunctions(
-            +[](size_t size, void* user_data) -> void* {
+            +[](size_t size, [[maybe_unused]] void* usr) -> void* {
                 return mi_malloc(size);
             },
-            +[](void* ptr, void* user_data) -> void {
+            +[](void* ptr, [[maybe_unused]] void* usr) -> void {
                 mi_free(ptr);
             }
         );
