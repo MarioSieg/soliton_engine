@@ -17,6 +17,15 @@ namespace graphics {
 
     graphics_subsystem::graphics_subsystem() : subsystem{"Graphics"} {
         log_info("Initializing graphics subsystem");
+
+        ImGui::SetAllocatorFunctions(
+            +[](size_t size, void* user_data) -> void* {
+                return mi_malloc(size);
+            },
+            +[](void* ptr, void* user_data) -> void {
+                mi_free(ptr);
+            }
+        );
         ImGui::CreateContext();
         ImPlot::CreateContext();
         auto& io = ImGui::GetIO();
