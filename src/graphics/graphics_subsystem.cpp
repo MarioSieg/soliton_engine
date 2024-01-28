@@ -60,10 +60,11 @@ namespace graphics {
         return entity::null();
     }
 
-    static XMMATRIX m_mtx_view;
-    static XMMATRIX m_mtx_proj;
-    static XMMATRIX m_mtx_view_proj;
-    static c_transform m_camera_transform;
+    static constinit XMFLOAT4X4A s_view_mtx;
+    static constinit XMFLOAT4X4A s_proj_mtx;
+    static constinit XMFLOAT4X4A s_view_proj_mtx;
+    static BoundingFrustum s_frustum;
+    static c_transform s_camera_transform;
 
     static auto update_main_camera(const float width, const float height) -> void {
         const entity main_cam = get_main_camera();
@@ -72,15 +73,19 @@ namespace graphics {
             return;
         }
         c_camera::active_camera = main_cam;
-        m_camera_transform = *main_cam.get<c_transform>();
+        s_camera_transform = *main_cam.get<c_transform>();
         c_camera& cam = *main_cam.get_mut<c_camera>();
         if (cam.auto_viewport) {
             cam.viewport.x = width;
             cam.viewport.y = height;
         }
-        m_mtx_view = cam.compute_view(m_camera_transform);
-        m_mtx_proj = cam.compute_projection();
-        m_mtx_view_proj = XMMatrixMultiply(m_mtx_view, m_mtx_proj);
+        XMMATRIX view = cam.compute_view(s_camera_transform);
+        XMMATRIX proj = cam.compute_projection();
+        XMStoreFloat4x4A(&s_view_mtx, view);
+        XMStoreFloat4x4A(&s_proj_mtx, proj);
+        XMStoreFloat4x4A(&s_view_proj_mtx, XMMatrixMultiply(view, proj));
+        BoundingFrustum::CreateFromMatrix(s_frustum, proj);
+        s_frustum.Transform(s_frustum, XMMatrixInverse(nullptr, view));
     }
 
     HOTPROC auto graphics_subsystem::on_pre_tick() -> bool {
@@ -97,15 +102,31 @@ namespace graphics {
     HOTPROC auto graphics_subsystem::render_scene(const vk::CommandBuffer cmd_buf) const -> void {
         if (const auto& scene = scene::get_active()) [[likely]] {
             const auto query = scene->filter<const c_transform, const c_mesh_renderer>();
+            const XMMATRIX vp = XMLoadFloat4x4A(&s_view_proj_mtx);
             const auto render = [&](const c_transform& transform, const c_mesh_renderer& renderer) {
+                // Checks
                 if (!renderer.mesh || renderer.flags & render_flags::skip_rendering) [[unlikely]] {
                     return;
                 }
-                cpu_uniform_buffer ubo {};
+
                 const XMMATRIX model = transform.compute_matrix();
-                ubo.model_view_proj = XMMatrixMultiply(model, m_mtx_view_proj);
+
+                // Frustum Culling
+                BoundingOrientedBox obb {};
+                obb.CreateFromBoundingBox(obb, renderer.mesh->get_aabb());
+                obb.Transform(obb, model);
+                if ((renderer.flags & render_flags::skip_frustum_culling) == 0) [[likely]] {
+                    if (s_frustum.Contains(obb) == ContainmentType::INTERSECTS) { // Object is culled
+                        return;
+                    }
+                }
+
+                // Uniforms
+                cpu_uniform_buffer ubo {};
+                ubo.model_view_proj = XMMatrixMultiply(model, vp);
                 ubo.normal_matrix = XMMatrixTranspose(XMMatrixInverse(nullptr, model));
                 std::memcpy(uniforms[context::s_instance->get_current_frame()].buffer.get_mapped_ptr(), &ubo, sizeof(cpu_uniform_buffer));
+
                 renderer.mesh->draw(cmd_buf);
             };
             query.iter().each(render);

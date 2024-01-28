@@ -20,6 +20,8 @@ add_link_options("-Wl,--thinlto-jobs=64")
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
     add_compile_options(-Ofast -flto=thin)
     add_link_options(-flto=thin)
+else()
+    add_compile_options(-O0 -gdwarf-4)
 endif()
 
 include(src/CMakeLists.txt)

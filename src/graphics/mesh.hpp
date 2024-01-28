@@ -20,9 +20,9 @@ namespace graphics {
         using index = std::uint32_t;
 
         struct primitive final {
-            std::uint32_t first_index = 0;
+            std::uint32_t index_start = 0;
             std::uint32_t index_count = 0;
-            std::uint32_t first_vertex = 0;
+            std::uint32_t vertex_start = 0;
             std::uint32_t vertex_count = 0;
             BoundingBox aabb {};
         };
@@ -35,7 +35,7 @@ namespace graphics {
         auto draw(vk::CommandBuffer cmd) -> void;
 
         [[nodiscard]] auto get_primitives() const noexcept -> std::span<const primitive> { return m_primitives; }
-        [[nodiscard]] auto get_aabb() const noexcept -> const BoundingBox& { return aabb; }
+        [[nodiscard]] auto get_aabb() const noexcept -> const BoundingBox& { return m_aabb; }
         [[nodiscard]] auto get_vertex_buffer() const noexcept -> const vkb::buffer& { return m_vertex_buffer; }
         [[nodiscard]] auto get_index_buffer() const noexcept -> const vkb::buffer& { return m_index_buffer; }
         [[nodiscard]] auto get_index_count() const noexcept -> std::uint32_t { return m_index_count; }
@@ -50,6 +50,6 @@ namespace graphics {
         std::uint32_t m_index_count = 0;
         bool m_index_32bit = false;
         std::vector<primitive> m_primitives {};
-        BoundingBox aabb {};
+        BoundingBox m_aabb {};
     };
 }

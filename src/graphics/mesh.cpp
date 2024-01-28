@@ -132,10 +132,6 @@ namespace graphics {
 
     	create_buffers(vertices, indices);
 
-    	for (const primitive& prim : m_primitives) {
-			BoundingBox::CreateMerged(aabb, aabb, prim.aabb);
-		}
-
     	const auto time = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - start);
     	log_info("Mesh import done in {}s: {} vertices, {} indices, {} nodes", time.count(), vertices.size(), indices.size(), num_nodes);
     }
@@ -203,6 +199,26 @@ namespace graphics {
 				indices.data()
 			);
     	}
+
+    	for (primitive& prim : m_primitives) {
+    		XMVECTOR min = XMVectorReplicate(std::numeric_limits<float>::max());
+    		XMVECTOR max = XMVectorReplicate(std::numeric_limits<float>::lowest());
+    		for (std::size_t i = prim.vertex_start; i < prim.vertex_count; ++i) {
+				const vertex& v = vertices[i];
+				XMVECTOR pos = XMLoadFloat3(&v.position);
+				min = XMVectorMin(min, pos);
+				max = XMVectorMax(max, pos);
+			}
+    		BoundingBox::CreateFromPoints(prim.aabb, min, max);
+    	}
+    	XMVECTOR min = XMVectorReplicate(std::numeric_limits<float>::max());
+    	XMVECTOR max = XMVectorReplicate(std::numeric_limits<float>::lowest());
+    	for (const vertex& v : vertices) {
+    		XMVECTOR pos = XMLoadFloat3(&v.position);
+    		min = XMVectorMin(min, pos);
+    		max = XMVectorMax(max, pos);
+    	}
+    	BoundingBox::CreateFromPoints(m_aabb, min, max);
     }
 
     auto mesh::load_mesh_from_gltf(const tinygltf::Model& model, const tinygltf::Mesh& mesh, FXMMATRIX transform) -> void {
@@ -231,8 +247,6 @@ namespace graphics {
         const std::size_t index_start = indices.size();
         std::size_t num_vertices = 0;
         std::size_t num_indices = 0;
-        XMVECTOR pmin;
-    	XMVECTOR pmax;
 
         if (prim.indices < 0) [[unlikely]] {
             log_error("GLTF import: Mesh has no indices");
@@ -250,14 +264,11 @@ namespace graphics {
 			num_vertices = pos_accessor.count;
 			const tinygltf::BufferView& pos_view = model.bufferViews[pos_accessor.bufferView];
 
-			pmin = XMVectorSet(pos_accessor.minValues[0], pos_accessor.minValues[1], pos_accessor.minValues[2], 0.0f);
-			pmax = XMVectorSet(pos_accessor.maxValues[0], pos_accessor.maxValues[1], pos_accessor.maxValues[2], 0.0f);
-
             const float* buffer_pos = nullptr;
             const float* buffer_normals = nullptr;
             const float* buffer_tex_coords = nullptr;
             const float* buffer_tangents = nullptr;
-			buffer_pos = reinterpret_cast<const float *>(&(model.buffers[pos_view.buffer].data[pos_accessor.byteOffset + pos_view.byteOffset]));
+			buffer_pos = reinterpret_cast<const float*>(&model.buffers[pos_view.buffer].data[pos_accessor.byteOffset + pos_view.byteOffset]);
 
 			if (prim.attributes.contains("NORMAL")) {
 				const tinygltf::Accessor& norm_accessor = model.accessors[prim.attributes.find("NORMAL")->second];
@@ -321,11 +332,10 @@ namespace graphics {
             }
         }
 
-        prim_info.first_index = index_start;
+        prim_info.index_start = index_start;
         prim_info.index_count = num_indices;
-        prim_info.first_vertex = vertex_start;
+        prim_info.vertex_start = vertex_start;
         prim_info.vertex_count = num_vertices;
-        BoundingBox::CreateFromPoints(prim_info.aabb, pmin, pmax);
     	return true;
 	}
 }

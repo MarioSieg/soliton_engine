@@ -305,6 +305,20 @@ auto dump_loaded_dylibs() -> void {
         print_sep();
 
         // init glfw
+        glfwSetErrorCallback([](const int code, const char* desc) {
+            log_error("Platform error: {} ({:#X})", desc, code);
+        });
+        static GLFWallocator allocator {};
+        allocator.allocate = [](const std::size_t size, [[maybe_unused]] void* usr) -> void* {
+            return mi_malloc(size);
+        };
+        allocator.deallocate = [](void* ptr, [[maybe_unused]] void* usr) -> void {
+            mi_free(ptr);
+        };
+        allocator.reallocate = [](void* ptr, const std::size_t size, [[maybe_unused]] void* usr) -> void* {
+            return mi_realloc(ptr, size);
+        };
+        glfwInitAllocator(&allocator);
         const bool is_glfw_online = glfwInit() == GLFW_TRUE;
         if (!is_glfw_online) [[unlikely]] {
             char const* desc;

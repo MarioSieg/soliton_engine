@@ -20,7 +20,7 @@ struct c_transform final {
     c_transform() noexcept {
         XMStoreFloat4(&this->position, XMVectorZero());
         XMStoreFloat4(&this->rotation, XMQuaternionIdentity());
-        XMStoreFloat4(&this->scale, XMVectorReplicate(1.F));
+        XMStoreFloat4(&this->scale, XMVectorSplatOne());
     }
 
     [[nodiscard]] auto XM_CALLCONV compute_matrix() const noexcept -> XMMATRIX {

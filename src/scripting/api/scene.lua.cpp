@@ -2,8 +2,8 @@
 
 #include "_prelude.hpp"
 
-LUA_INTEROP_API auto __lu_scene_new() -> std::uint32_t {
-    scene::new_active();
+LUA_INTEROP_API auto __lu_scene_new(const char* name) -> std::uint32_t {
+    scene::new_active(name);
     return scene::get_active()->id;
 }
 
