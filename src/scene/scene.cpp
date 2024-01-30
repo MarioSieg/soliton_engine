@@ -89,7 +89,7 @@ auto scene::load_from_gltf(const std::string& path, const float scale) -> void {
 	passert(!model.scenes.empty());
 
 	const XMMATRIX scale_mtx = XMMatrixScalingFromVector(XMVectorReplicate(scale));
-	ankerl::unordered_dense::set<int> already_visited {};
+	ankerl::unordered_dense::map<int, graphics::mesh*> already_loaded {};
 	std::uint32_t num_nodes, num_meshes = 0;
 	std::function<auto (const tinygltf::Node&) -> void> visitor = [&](const tinygltf::Node& node) {
 		if (node.mesh > -1) [[likely]] {
@@ -144,28 +144,27 @@ auto scene::load_from_gltf(const std::string& path, const float scale) -> void {
 
 			graphics::mesh* mesh_ptr = nullptr;
 			const int midx = node.mesh;
-			const tinygltf::Mesh& mesh = model.meshes[midx];
-			mesh_ptr = new graphics::mesh{model, mesh};
-			m_meshes.emplace_back(mesh_ptr);
+			if (already_loaded.contains(midx)) {
+				mesh_ptr = already_loaded[midx];
+			} else {
+				const tinygltf::Mesh& mesh = model.meshes[midx];
+				mesh_ptr = new graphics::mesh{model, mesh};
+				m_meshes.emplace_back(mesh_ptr);
+				already_loaded[midx] = mesh_ptr;
+			}
 			auto* rendrer = ent.get_mut<c_mesh_renderer>();
 			rendrer->mesh = mesh_ptr;
 			++num_meshes;
 		}
 		for (const int child : node.children) {
-			if (already_visited.contains(child))
-				continue;
 			visitor(model.nodes[child]);
-			already_visited.emplace(child);
 		}
 	};
 
 	const int scene_idx = model.defaultScene > -1 ? model.defaultScene : 0;
 	const auto& scene = model.scenes[scene_idx];
 	for (const int node : scene.nodes) {
-		if (already_visited.contains(node))
-			continue;
 		visitor(model.nodes[node]);
-		already_visited.emplace(node);
 	}
 
 	log_info("Loaded GLTF scene '{}', {} nodes, {} meshes", path, num_nodes, num_meshes);
