@@ -47,7 +47,7 @@ namespace graphics {
     }
 
     graphics_subsystem::~graphics_subsystem() {
-        context::s_instance->get_device().get_logical_device().waitIdle();
+        vkcheck(context::s_instance->get_device().get_logical_device().waitIdle());
 
         m_texture.reset();
 
