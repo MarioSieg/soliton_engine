@@ -5,10 +5,8 @@
 
 #include <unordered_set>
 
-// STB impls are in src/stb/stb_impls.cpp
 #define TINYGLTF_NO_EXTERNAL_IMAGE
 #define TINYGLTF_ENABLE_DRACO
-#define TINYGLTF_IMPLEMENTATION
 #include <tiny_gltf.h>
 
 namespace graphics {

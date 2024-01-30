@@ -36,3 +36,19 @@ target_link_libraries(lunam tinygltf)
 
 add_subdirectory(extern/DirectXMath)
 include_directories(extern/DirectXMath/Inc)
+
+include_directories(extern/salieri)
+include_directories(extern/stb)
+
+add_subdirectory(extern/draco)
+include_directories(extern/draco/src)
+target_link_libraries(lunam draco_static)
+
+add_subdirectory(extern/Vulkan-Loader)
+add_subdirectory(extern/SPIRV-Headers)
+add_subdirectory(extern/SPIRV-Tools)
+add_subdirectory(extern/glslang)
+add_subdirectory(extern/shaderc)
+include_directories(extern/shaderc/libshaderc/include)
+target_link_libraries(lunam vulkan)
+target_link_libraries(lunam shaderc)

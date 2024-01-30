@@ -60,22 +60,6 @@ endif()
 
 add_executable(lunam WIN32 ${SOURCES} ${APP_ICON_RESOURCE_WINDOWS})
 
-include_directories(src/sal)
-
-add_subdirectory(src/vulkanloader)
-target_link_libraries(lunam vulkan)
-
-add_subdirectory(src/spirvheaders)
-add_subdirectory(src/spirvtools)
-add_subdirectory(src/glslang)
-add_subdirectory(src/shaderc)
-include_directories(src/shaderc/libshaderc/include)
-target_link_libraries(lunam shaderc)
-
-add_subdirectory(src/draco)
-include_directories(src/draco/src)
-target_link_libraries(lunam draco_static)
-
 if (WIN32)
     target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/win_amd64/lua51.lib)
 else()
