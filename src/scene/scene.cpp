@@ -2,9 +2,9 @@
 
 #include "scene.hpp"
 #include "../core/kernel.hpp"
-#include <tiny_gltf.h>
 #include "../graphics/mesh.hpp"
 #include "../vulkancore/context.hpp"
+#include <tiny_gltf.h>
 #include <ankerl/unordered_dense.h>
 #include <DirectXMath.h>
 

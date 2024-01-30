@@ -31,8 +31,7 @@ include_directories(extern/flecs/include)
 target_link_libraries(lunam flecs_static)
 
 add_subdirectory(extern/tinygltf)
-include_directories(extern/tinygltf/include)
-target_link_libraries(lunam tinygltf)
+include_directories(extern/tinygltf)
 
 add_subdirectory(extern/DirectXMath)
 include_directories(extern/DirectXMath/Inc)
@@ -44,6 +43,7 @@ add_subdirectory(extern/draco)
 include_directories(extern/draco/src)
 target_link_libraries(lunam draco_static)
 
+add_subdirectory(extern/Vulkan-Headers)
 add_subdirectory(extern/Vulkan-Loader)
 add_subdirectory(extern/SPIRV-Headers)
 add_subdirectory(extern/SPIRV-Tools)
