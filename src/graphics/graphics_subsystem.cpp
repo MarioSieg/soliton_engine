@@ -34,9 +34,9 @@ namespace graphics {
         io.IniFilename = nullptr;
 
         GLFWwindow* window = platform_subsystem::get_glfw_window();
-        context::s_instance = std::make_unique<context>(window); // Create vulkan context
+        context::s_instance = std::make_unique<context>(window); // Create Vulkan context
 
-        m_texture.emplace("proto/light/texture_03.png");
+        m_texture.emplace("proto/light/texture_10.png");
 
         create_uniform_buffers();
         create_sampler();
@@ -484,6 +484,9 @@ namespace graphics {
     }
 
     auto graphics_subsystem::create_sampler() -> void {
+        const vk::Device device = vkb_vk_device();
+        const bool supports_anisotropy = vkb_device().get_physical_device_features().samplerAnisotropy;
+
         vk::SamplerCreateInfo sampler_info {};
         sampler_info.magFilter = vk::Filter::eLinear;
         sampler_info.minFilter = vk::Filter::eLinear;
@@ -494,9 +497,9 @@ namespace graphics {
         sampler_info.mipLodBias = 0.0f;
         sampler_info.compareOp = vk::CompareOp::eNever;
         sampler_info.minLod = 0.0f;
-        sampler_info.maxLod = 0.0f;
-        sampler_info.maxAnisotropy = 1.0f;
-        sampler_info.anisotropyEnable = vk::False;
+        sampler_info.maxLod = static_cast<float>(m_texture->get_mip_levels());
+        sampler_info.maxAnisotropy = supports_anisotropy ? vkb_device().get_physical_device_props().limits.maxSamplerAnisotropy : 1.0f;
+        sampler_info.anisotropyEnable = supports_anisotropy ? vk::True : vk::False;
         sampler_info.borderColor = vk::BorderColor::eFloatOpaqueWhite;
         vkcheck(vkb_vk_device().createSampler(&sampler_info, &vkb::s_allocator, &m_sampler));
     }
