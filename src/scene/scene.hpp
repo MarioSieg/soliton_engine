@@ -8,14 +8,14 @@
 
 using lua_entity = std::uint32_t;
 
-class scene : public world, public no_copy, public no_move {
+class scene : public flecs::world, public no_copy, public no_move {
 public:
     static_assert(sizeof(unsigned) == sizeof(std::uint32_t));
     static constexpr std::size_t k_invalid_entity = ~0u;
     static constexpr std::size_t k_max_entities = ~0u-1; // Lua entity id is uint32_t!
     const std::uint32_t id;
     std::string name = {};
-    virtual ~scene() override;
+    virtual ~scene();
 
     static auto new_active(std::string&& name = {}) -> void;
     [[nodiscard]] static auto get_active() noexcept -> const std::unique_ptr<scene>& { passert(m_active != nullptr); return m_active; }
@@ -23,13 +23,13 @@ public:
     virtual auto on_tick() -> void;
     virtual auto on_start() -> void;
 
-    auto spawn(const char* name, lua_entity* l_id = nullptr) -> struct entity;
-    [[nodiscard]] auto get_eitbl() const noexcept -> std::span<const struct entity> {
+    auto spawn(const char* name, lua_entity* l_id = nullptr) -> flecs::entity;
+    [[nodiscard]] auto get_eitbl() const noexcept -> std::span<const flecs::entity> {
         return m_eitbl;
     }
-    [[nodiscard]] auto lookup_entity_via_lua_id(const lua_entity e) const -> struct entity {
+    [[nodiscard]] auto lookup_entity_via_lua_id(const lua_entity e) const -> flecs::entity {
         if (e == k_invalid_entity || e >= m_eitbl.size()) [[unlikely]]
-            return entity::null();
+            return flecs::entity::null();
         return m_eitbl[e];
     }
 
@@ -37,7 +37,7 @@ private:
     auto load_from_gltf(const std::string& path, float scale = 0.025f) -> void;
 
     std::vector<graphics::mesh*> m_meshes {}; // TODO: use unique ptr
-    std::vector<struct entity> m_eitbl {}; // entity id translation lookaside buffer lol
+    std::vector<flecs::entity> m_eitbl {}; // entity id translation lookaside buffer lol
     friend struct proxy;
     static inline constinit std::unique_ptr<scene> m_active {};
     scene();

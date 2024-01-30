@@ -20,14 +20,14 @@ namespace graphics {
     };
 
     struct gpu_vertex_push_constants final {
-        XMMATRIX model_view_proj;
-        XMMATRIX normal_matrix;
+        DirectX::XMMATRIX model_view_proj;
+        DirectX::XMMATRIX normal_matrix;
     };
     static_assert(sizeof(gpu_vertex_push_constants) <= 128);
 
     struct gpu_uniform_buffer final {
-        XMMATRIX model_view_proj;
-        XMMATRIX normal_matrix;
+        DirectX::XMMATRIX model_view_proj;
+        DirectX::XMMATRIX normal_matrix;
     };
     static_assert(sizeof(gpu_uniform_buffer) % 4 == 0);
 

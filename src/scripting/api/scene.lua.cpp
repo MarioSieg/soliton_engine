@@ -31,10 +31,10 @@ LUA_INTEROP_API auto __lu_scene_get_entity_by_name(const char* const name) -> lu
     const auto& active = scene::get_active();
     if (!active) [[unlikely]]
        return scene::k_invalid_entity;
-    const entity entity = scene::get_active()->lookup(name);
+    const flecs::entity entity = scene::get_active()->lookup(name);
     if (!entity) [[unlikely]]
         return scene::k_invalid_entity;
-    const std::span<const struct entity> entities = active->get_eitbl();
+    const std::span<const flecs::entity> entities = active->get_eitbl();
     const auto entry = std::find(entities.begin(), entities.end(), entity); // TODO: Smarter way to handle this?
     if (entry != entities.end()) [[likely]] {
         const std::ptrdiff_t id = std::distance(entities.begin(), entry);

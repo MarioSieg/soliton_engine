@@ -59,24 +59,24 @@ namespace graphics {
         ImGui::DestroyContext();
     }
 
-    [[nodiscard]] static auto get_main_camera() -> entity {
+    [[nodiscard]] static auto get_main_camera() -> flecs::entity {
         if (const auto& scene = scene::get_active()) [[likely]] {
             const auto filter = scene->filter<const c_transform, c_camera>();
             if (filter.count() > 0) {
                 return filter.first();
             }
         }
-        return entity::null();
+        return flecs::entity::null();
     }
 
-    static constinit XMFLOAT4X4A s_view_mtx;
-    static constinit XMFLOAT4X4A s_proj_mtx;
-    static constinit XMFLOAT4X4A s_view_proj_mtx;
-    static BoundingFrustum s_frustum;
+    static constinit DirectX::XMFLOAT4X4A s_view_mtx;
+    static constinit DirectX::XMFLOAT4X4A s_proj_mtx;
+    static constinit DirectX::XMFLOAT4X4A s_view_proj_mtx;
+    static DirectX::BoundingFrustum s_frustum;
     static c_transform s_camera_transform;
 
     static auto update_main_camera(const float width, const float height) -> void {
-        const entity main_cam = get_main_camera();
+        const flecs::entity main_cam = get_main_camera();
         if (!main_cam.is_valid() || !main_cam.is_alive()) [[unlikely]] {
             log_warn("No camera found in scene");
             return;
@@ -88,12 +88,12 @@ namespace graphics {
             cam.viewport.x = width;
             cam.viewport.y = height;
         }
-        const XMMATRIX view = cam.compute_view(s_camera_transform);
-        const XMMATRIX proj = cam.compute_projection();
+        const DirectX::XMMATRIX view = cam.compute_view(s_camera_transform);
+        const DirectX::XMMATRIX proj = cam.compute_projection();
         XMStoreFloat4x4A(&s_view_mtx, view);
         XMStoreFloat4x4A(&s_proj_mtx, proj);
         XMStoreFloat4x4A(&s_view_proj_mtx, XMMatrixMultiply(view, proj));
-        BoundingFrustum::CreateFromMatrix(s_frustum, proj);
+        DirectX::BoundingFrustum::CreateFromMatrix(s_frustum, proj);
         s_frustum.Transform(s_frustum, XMMatrixInverse(nullptr, view));
     }
 
@@ -111,21 +111,21 @@ namespace graphics {
     HOTPROC auto graphics_subsystem::render_scene(const vk::CommandBuffer cmd_buf) -> void {
         if (const auto& scene = scene::get_active()) [[likely]] {
             const auto query = scene->filter<const c_transform, const c_mesh_renderer>();
-            const XMMATRIX vp = XMLoadFloat4x4A(&s_view_proj_mtx);
+            const DirectX::XMMATRIX vp = XMLoadFloat4x4A(&s_view_proj_mtx);
             const auto render = [&](const c_transform& transform, const c_mesh_renderer& renderer) {
                 // Checks
                 if (!renderer.mesh || renderer.flags & render_flags::skip_rendering) [[unlikely]] {
                     return;
                 }
 
-                const XMMATRIX model = transform.compute_matrix();
+                const DirectX::XMMATRIX model = transform.compute_matrix();
 
                 // Frustum Culling
-                BoundingOrientedBox obb {};
+                DirectX::BoundingOrientedBox obb {};
                 obb.CreateFromBoundingBox(obb, renderer.mesh->get_aabb());
                 obb.Transform(obb, model);
                 if ((renderer.flags & render_flags::skip_frustum_culling) == 0) [[likely]] {
-                    if (s_frustum.Contains(obb) == ContainmentType::DISJOINT) { // Object is culled
+                    if (s_frustum.Contains(obb) == DirectX::ContainmentType::DISJOINT) { // Object is culled
                         return;
                     }
                 }
@@ -172,15 +172,15 @@ namespace graphics {
         context::s_instance->render_imgui(ImGui::GetDrawData(), m_cmd_buf);
         context::s_instance->end_frame(m_cmd_buf);
 
-        c_camera::active_camera = entity::null();
+        c_camera::active_camera = flecs::entity::null();
     }
 
     auto graphics_subsystem::on_resize() -> void {
         vkb_context().on_resize();
     }
 
-    void graphics_subsystem::on_start(scene& scene) {
-        entity camera = scene.spawn("MainCamera");
+    auto graphics_subsystem::on_start(scene& scene) -> void {
+        flecs::entity camera = scene.spawn("MainCamera");
         camera.add<c_camera>();
     }
 

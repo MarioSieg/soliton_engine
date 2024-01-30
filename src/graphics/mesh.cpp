@@ -9,7 +9,7 @@
 #define TINYGLTF_NO_EXTERNAL_IMAGE
 #define TINYGLTF_ENABLE_DRACO
 #define TINYGLTF_IMPLEMENTATION
-#include "../gltf/tiny_gltf.h"
+#include <tiny_gltf.h>
 
 namespace graphics {
 	[[nodiscard]] static auto load_primitive(
@@ -52,15 +52,15 @@ namespace graphics {
 
     auto mesh::recompute_bounds(const std::span<const vertex> vertices) -> void {
     	for (primitive& prim : m_primitives) {
-    		XMVECTOR min = XMVectorReplicate(std::numeric_limits<float>::max());
-    		XMVECTOR max = XMVectorReplicate(std::numeric_limits<float>::lowest());
+    		DirectX::XMVECTOR min = DirectX::XMVectorReplicate(std::numeric_limits<float>::max());
+    		DirectX::XMVECTOR max = DirectX::XMVectorReplicate(std::numeric_limits<float>::lowest());
     		for (std::size_t i = prim.vertex_start; i < prim.vertex_count; ++i) {
     			const vertex& v = vertices[i];
-    			XMVECTOR pos = XMLoadFloat3(&v.position);
-    			min = XMVectorMin(min, pos);
-    			max = XMVectorMax(max, pos);
+    			DirectX::XMVECTOR pos = XMLoadFloat3(&v.position);
+    			min = DirectX::XMVectorMin(min, pos);
+    			max = DirectX::XMVectorMax(max, pos);
     		}
-    		BoundingBox::CreateFromPoints(prim.aabb, min, max);
+    		DirectX::BoundingBox::CreateFromPoints(prim.aabb, min, max);
     		m_aabb.CreateMerged(m_aabb, m_aabb, prim.aabb);
     	}
     }
@@ -160,11 +160,11 @@ namespace graphics {
             num_vertices = pos_accessor.count;
             for (std::size_t i = 0; i < num_vertices; ++i) {
             	mesh::vertex vv {
-            		.position = *reinterpret_cast<const XMFLOAT3*>(buffer_pos + i * 3),
-            		.normal = buffer_normals ? *reinterpret_cast<const XMFLOAT3*>(buffer_normals + i * 3) : XMFLOAT3{0.0f, 0.0f, 0.0f},
-            		.uv = buffer_tex_coords ? *reinterpret_cast<const XMFLOAT2*>(buffer_tex_coords + i * 2) : XMFLOAT2{0.0f, 0.0f},
-            		.tangent = buffer_tangents ? *reinterpret_cast<const XMFLOAT3*>(buffer_tangents + i * 3) : XMFLOAT3{0.0f, 0.0f, 0.0f},
-            		.bitangent = XMFLOAT3{0.0f, 0.0f, 0.0f} // TODO
+            		.position = *reinterpret_cast<const DirectX::XMFLOAT3*>(buffer_pos + i * 3),
+            		.normal = buffer_normals ? *reinterpret_cast<const DirectX::XMFLOAT3*>(buffer_normals + i * 3) : DirectX::XMFLOAT3{0.0f, 0.0f, 0.0f},
+            		.uv = buffer_tex_coords ? *reinterpret_cast<const DirectX::XMFLOAT2*>(buffer_tex_coords + i * 2) : DirectX::XMFLOAT2{0.0f, 0.0f},
+            		.tangent = buffer_tangents ? *reinterpret_cast<const DirectX::XMFLOAT3*>(buffer_tangents + i * 3) : DirectX::XMFLOAT3{0.0f, 0.0f, 0.0f},
+            		.bitangent = DirectX::XMFLOAT3{0.0f, 0.0f, 0.0f} // TODO
             	};
             	vertices.emplace_back(vv);
             }

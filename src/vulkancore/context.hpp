@@ -8,7 +8,7 @@
 #include "swapchain.hpp"
 
 #include "../graphics/imgui/imgui.h"
-#include "../math/DirectXMath.h"
+#include <DirectXMath.h>
 
 namespace vkb {
     class context final : public no_copy, public no_move {

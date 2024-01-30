@@ -22,7 +22,7 @@
 #include <mimalloc.h>
 #include <infoware/infoware.hpp>
 #include "../stb/stb_image.h"
-#include "../math/DirectXMath.h"
+#include <DirectXMath.h>
 
 namespace platform {
 [[maybe_unused]]

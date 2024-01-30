@@ -4,17 +4,17 @@
 
 #include "../scene/scene.hpp"
 #include "../vulkancore/buffer.hpp"
-#include "../gltf/tiny_gltf.h"
+#include <tiny_gltf.h>
 
 namespace graphics {
     class mesh final : public no_copy, public no_move {
     public:
         struct vertex final {
-            XMFLOAT3 position;
-            XMFLOAT3 normal;
-            XMFLOAT2 uv;
-            XMFLOAT3 tangent;
-            XMFLOAT3 bitangent;
+            DirectX::XMFLOAT3 position;
+            DirectX::XMFLOAT3 normal;
+            DirectX::XMFLOAT2 uv;
+            DirectX::XMFLOAT3 tangent;
+            DirectX::XMFLOAT3 bitangent;
         };
 
         using index = std::uint32_t;
@@ -24,7 +24,7 @@ namespace graphics {
             std::uint32_t index_count = 0;
             std::uint32_t vertex_start = 0;
             std::uint32_t vertex_count = 0;
-            BoundingBox aabb {};
+            DirectX::BoundingBox aabb {};
         };
 
         mesh(const tinygltf::Model& model, const tinygltf::Mesh& mesh);
@@ -33,7 +33,7 @@ namespace graphics {
         auto draw(vk::CommandBuffer cmd) -> void;
 
         [[nodiscard]] auto get_primitives() const noexcept -> std::span<const primitive> { return m_primitives; }
-        [[nodiscard]] auto get_aabb() const noexcept -> const BoundingBox& { return m_aabb; }
+        [[nodiscard]] auto get_aabb() const noexcept -> const DirectX::BoundingBox& { return m_aabb; }
         [[nodiscard]] auto get_vertex_buffer() const noexcept -> const vkb::buffer& { return m_vertex_buffer; }
         [[nodiscard]] auto get_index_buffer() const noexcept -> const vkb::buffer& { return m_index_buffer; }
         [[nodiscard]] auto get_index_count() const noexcept -> std::uint32_t { return m_index_count; }
@@ -48,6 +48,6 @@ namespace graphics {
         std::uint32_t m_index_count = 0;
         bool m_index_32bit = false;
         std::vector<primitive> m_primitives {};
-        BoundingBox m_aabb {};
+        DirectX::BoundingBox m_aabb {};
     };
 }

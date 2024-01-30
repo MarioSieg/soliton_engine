@@ -2,11 +2,11 @@
 
 #include "scene.hpp"
 #include "../core/kernel.hpp"
-#include "../gltf/tiny_gltf.h"
+#include <tiny_gltf.h>
 #include "../graphics/mesh.hpp"
 #include "../vulkancore/context.hpp"
-#include "../dense/unordered_dense.h"
-#include "../math/DirectXMatrixStack.h"
+#include <ankerl/unordered_dense.h>
+#include <DirectXMath.h>
 
 struct proxy final : scene {
     template <typename... Ts>
@@ -44,8 +44,8 @@ auto scene::on_start() -> void {
     kernel::get().on_new_scene_start(*this);
 }
 
-auto scene::spawn(const char* name, lua_entity* l_id) -> struct entity {
-    struct entity ent = this->entity(name);
+auto scene::spawn(const char* name, lua_entity* l_id) -> flecs::entity {
+    flecs::entity ent = this->entity(name);
     ent.add<c_metadata>();
     ent.add<c_transform>();
     if (l_id) {
@@ -88,18 +88,18 @@ auto scene::load_from_gltf(const std::string& path, const float scale) -> void {
 	passert(result);
 	passert(!model.scenes.empty());
 
-	const XMMATRIX scale_mtx = XMMatrixScalingFromVector(XMVectorReplicate(scale));
+	const DirectX::XMMATRIX scale_mtx = DirectX::XMMatrixScalingFromVector(DirectX::XMVectorReplicate(scale));
 	ankerl::unordered_dense::map<int, graphics::mesh*> already_loaded {};
 	std::uint32_t num_nodes, num_meshes = 0;
 	std::function<auto (const tinygltf::Node&) -> void> visitor = [&](const tinygltf::Node& node) {
 		if (node.mesh > -1) [[likely]] {
 			++num_nodes;
-			const struct entity ent = this->spawn(nullptr);
+			const flecs::entity ent = this->spawn(nullptr);
 			const std::string name = node.name.empty() ? "unnamed" : node.name;
 			auto* metadata = ent.get_mut<c_metadata>();
 			metadata->name = name;
 
-			XMMATRIX local = XMMatrixIdentity();
+			DirectX::XMMATRIX local = DirectX::XMMatrixIdentity();
 			if (node.matrix.size() == 16) {
 				auto* dst = reinterpret_cast<float*>(&local);
 				for (int i = 0; i < 16; ++i) {
@@ -107,7 +107,7 @@ auto scene::load_from_gltf(const std::string& path, const float scale) -> void {
 				}
 			} else {
 				if (node.translation.size() == 3) {
-					const XMMATRIX mm = XMMatrixTranslation(
+					const DirectX::XMMATRIX mm = DirectX::XMMatrixTranslation(
 						static_cast<float>(node.translation[0]),
 						static_cast<float>(node.translation[1]),
 						static_cast<float>(node.translation[2])
@@ -115,7 +115,7 @@ auto scene::load_from_gltf(const std::string& path, const float scale) -> void {
 					local = XMMatrixMultiply(mm, local);
 				}
 				if (node.rotation.size() == 4) {
-					const XMMATRIX mm = XMMatrixRotationQuaternion(XMVectorSet(
+					const DirectX::XMMATRIX mm = DirectX::XMMatrixRotationQuaternion(DirectX::XMVectorSet(
 						static_cast<float>(node.rotation[0]),
 						static_cast<float>(node.rotation[1]),
 						static_cast<float>(node.rotation[2]),
@@ -124,7 +124,7 @@ auto scene::load_from_gltf(const std::string& path, const float scale) -> void {
 					local = XMMatrixMultiply(mm, local);
 				}
 				if (node.scale.size() == 3) {
-					const XMMATRIX mm = XMMatrixScaling(
+					const DirectX::XMMATRIX mm = DirectX::XMMatrixScaling(
 						static_cast<float>(node.scale[0]),
 						static_cast<float>(node.scale[1]),
 						static_cast<float>(node.scale[2])
@@ -133,9 +133,9 @@ auto scene::load_from_gltf(const std::string& path, const float scale) -> void {
 				}
 			}
 			local = XMMatrixMultiply(local, scale_mtx);
-			local = XMMatrixMultiply(local, XMMatrixRotationX(XMConvertToRadians(90.0f)));
+			local = XMMatrixMultiply(local, DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(90.0f)));
 
-			XMVECTOR scale, rotation, translation;
+			DirectX::XMVECTOR scale, rotation, translation;
 			XMMatrixDecompose(&scale, &rotation, &translation, local);
 			auto* transform = ent.get_mut<c_transform>();
 			XMStoreFloat4(&transform->position, translation);

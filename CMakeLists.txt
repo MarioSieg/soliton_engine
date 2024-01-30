@@ -25,3 +25,4 @@ else()
 endif()
 
 include(src/CMakeLists.txt)
+include(cmake/extern.cmake)
