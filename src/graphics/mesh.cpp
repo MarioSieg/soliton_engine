@@ -34,11 +34,6 @@ namespace graphics {
     	create_buffers(vertices, indices);
     }
 
-    mesh::~mesh() {
-    	m_index_buffer.destroy();
-		m_vertex_buffer.destroy();
-    }
-
     auto mesh::draw(const vk::CommandBuffer cmd) -> void {
     	constexpr vk::DeviceSize offsets = 0;
     	cmd.bindVertexBuffers(0, 1, &m_vertex_buffer.get_buffer(), &offsets);

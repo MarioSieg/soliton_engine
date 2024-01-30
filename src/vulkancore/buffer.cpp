@@ -83,8 +83,11 @@ namespace vkb {
         }
     }
 
-    auto buffer::destroy() -> void {
-        vmaDestroyBuffer(m_allocator, m_buffer, m_allocation);
+    buffer::~buffer() {
+        if (m_buffer) {
+            vmaDestroyBuffer(m_allocator, m_buffer, m_allocation);
+            m_buffer = nullptr;
+        }
     }
 
     auto buffer::upload_data(const void* data, const std::size_t size, const std::size_t offset) -> void {
@@ -127,8 +130,6 @@ namespace vkb {
             vkcheck(device.waitForFences(1, &fence, vk::True, std::numeric_limits<std::uint64_t>::max()));
             device.destroyFence(fence, &vkb::s_allocator);
             device.freeCommandBuffers(context::s_instance->get_command_pool(), 1, &copy_cmd);
-
-            staging_buffer.destroy();
         } else {
             if (!m_mapped) {
                 vkcheck(device.mapMemory(m_memory, 0, size, {}, &m_mapped));

@@ -1,9 +1,10 @@
 // Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 #pragma once
-
-#include "../scene/scene.hpp"
 #include "../vulkancore/buffer.hpp"
+
+#include <DirectXMath.h>
+#include <DirectXCollision.h>
 #include <tiny_gltf.h>
 
 namespace graphics {
@@ -28,7 +29,7 @@ namespace graphics {
         };
 
         mesh(const tinygltf::Model& model, const tinygltf::Mesh& mesh);
-        ~mesh();
+        ~mesh() = default;
 
         auto draw(vk::CommandBuffer cmd) -> void;
 

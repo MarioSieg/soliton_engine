@@ -36,7 +36,7 @@ public:
 private:
     auto load_from_gltf(const std::string& path, float scale = 0.025f) -> void;
 
-    std::vector<graphics::mesh*> m_meshes {}; // TODO: use unique ptr
+    std::vector<std::unique_ptr<graphics::mesh>> m_meshes {};
     std::vector<flecs::entity> m_eitbl {}; // entity id translation lookaside buffer lol
     friend struct proxy;
     static inline constinit std::unique_ptr<scene> m_active {};

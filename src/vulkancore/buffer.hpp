@@ -18,7 +18,7 @@ namespace vkb {
             VmaAllocationCreateFlags create_flags = 0,
             const void* data = nullptr
         ) -> void;
-        auto destroy() -> void;
+        ~buffer();
         [[nodiscard]] auto get_size() const noexcept -> std::size_t { return m_size; }
         [[nodiscard]] auto get_mapped_ptr() const noexcept -> void* { return m_mapped; }
         [[nodiscard]] auto get_buffer() noexcept -> vk::Buffer& { return m_buffer; }

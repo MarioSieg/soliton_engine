@@ -47,7 +47,7 @@ namespace graphics {
         context::s_instance->get_device().get_logical_device().waitIdle();
 
         for (auto& [buffer, descriptor_set] : m_uniforms) {
-            buffer.destroy();
+            buffer.~buffer();
         }
         vkb_vk_device().destroyDescriptorSetLayout(m_descriptor_set_layout, &vkb::s_allocator);
         vkb_vk_device().destroyPipelineLayout(m_pipeline_layout, &vkb::s_allocator);
