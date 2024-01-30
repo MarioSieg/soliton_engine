@@ -7,6 +7,7 @@
 #define VULKAN_HPP_DISABLE_ENHANCED_MODE
 #define VULKAN_HPP_NO_EXCEPTIONS
 #define VULKAN_HPP_NO_STRUCT_SETTERS
+#define VULKAN_HPP_NO_STRUCT_CONSTRUCTORS
 #include <vulkan/vulkan.hpp>
 #include <vulkan/vk_enum_string_helper.h>
 #include <mimalloc.h>

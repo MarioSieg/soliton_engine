@@ -12,6 +12,7 @@
 #include "../vulkancore/buffer.hpp"
 
 #include "mesh.hpp"
+#include "texture.hpp"
 
 namespace graphics {
     struct uniform_buffer final {
@@ -48,6 +49,7 @@ namespace graphics {
         auto create_descriptor_pool() -> void;
         auto create_descriptor_sets() -> void;
         auto create_pipeline() -> void;
+        auto create_sampler() -> void;
 
         auto render_scene(vk::CommandBuffer cmd_buf) -> void;
 
@@ -57,10 +59,13 @@ namespace graphics {
         vk::PipelineLayout m_pipeline_layout {};
         vk::DescriptorPool m_descriptor_pool {};
         vk::Pipeline m_pipeline {};
+        vk::Sampler m_sampler {};
 
         struct {
             flecs::query<const c_transform, const c_mesh_renderer> query {};
             scene* scene {};
         } m_render_query {};
+
+        std::optional<texture> m_texture {};
     };
 }

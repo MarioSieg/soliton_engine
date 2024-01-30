@@ -202,7 +202,8 @@ namespace vkb {
 
     auto context::create_sync_prims() -> void {
         constexpr vk::SemaphoreCreateInfo semaphore_ci {};
-        constexpr vk::FenceCreateInfo fence_ci { vk::FenceCreateFlagBits::eSignaled };
+        vk::FenceCreateInfo fence_ci {};
+        fence_ci.flags = vk::FenceCreateFlagBits::eSignaled;
         for (std::uint32_t i = 0; i < k_max_concurrent_frames; ++i) {
             vkcheck(m_device->get_logical_device().createSemaphore(&semaphore_ci, &s_allocator, &m_semaphores.present_complete[i]));
             vkcheck(m_device->get_logical_device().createSemaphore(&semaphore_ci, &s_allocator, &m_semaphores.render_complete[i]));

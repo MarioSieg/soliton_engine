@@ -33,7 +33,7 @@ namespace vkb {
         log_info("Initializing swapchain surface");
         passert(window != nullptr);
 
-        vkccheck(glfwCreateWindowSurface(m_instance, window, nullptr, reinterpret_cast<VkSurfaceKHR*>(&m_surface)));
+        vkccheck(glfwCreateWindowSurface(m_instance, window, reinterpret_cast<const VkAllocationCallbacks*>(&vkb::s_allocator), reinterpret_cast<VkSurfaceKHR*>(&m_surface)));
 
         // Get available queue family properties
         std::uint32_t num_qeueues = 0;

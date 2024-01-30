@@ -18,7 +18,7 @@ namespace vkb {
         buffer_create_info.sharingMode = vk::SharingMode::eExclusive;
         vk::MemoryPropertyFlags mem_props {};
         switch (memory_usage) {
-            case VMA_MEMORY_USAGE_CPU_COPY:
+            case VMA_MEMORY_USAGE_CPU_ONLY:
                 mem_props |= vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent;
                 buffer_usage |= vk::BufferUsageFlagBits::eTransferSrc;
             break;
@@ -97,7 +97,7 @@ namespace vkb {
                 size,
                 0,
                 vk::BufferUsageFlagBits::eTransferSrc,
-                VMA_MEMORY_USAGE_CPU_COPY,
+                VMA_MEMORY_USAGE_CPU_ONLY,
                 VMA_ALLOCATION_CREATE_MAPPED_BIT,
                 data
             );
@@ -116,7 +116,7 @@ namespace vkb {
             copy_region.size = size;
             copy_region.dstOffset = offset;
             copy_cmd.copyBuffer(staging_buffer.get_buffer(), m_buffer, 1, &copy_region);
-            copy_cmd.end();
+            vkcheck(copy_cmd.end());
 
             vk::FenceCreateInfo fence_info {};
             vk::Fence fence {};

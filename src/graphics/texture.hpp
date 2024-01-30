@@ -27,7 +27,8 @@ namespace graphics {
         );
         ~texture();
 
-        [[nodiscard]] auto get_image() const noexcept -> vk::Image { return m_image; }
+        [[nodiscard]] auto get_image() const noexcept -> const vk::Image& { return m_image; }
+        [[nodiscard]] auto get_view() const noexcept -> const vk::ImageView& { return m_image_view; }
         [[nodiscard]] auto get_memory() const noexcept -> vk::DeviceMemory { return m_memory; }
         [[nodiscard]] auto get_allocation() const noexcept -> VmaAllocation { return m_allocation; }
         [[nodiscard]] auto get_allocator() const noexcept -> VmaAllocator { return m_allocator; }
@@ -37,6 +38,7 @@ namespace graphics {
         [[nodiscard]] auto get_depth() const noexcept -> std::uint32_t { return m_depth; }
         [[nodiscard]] auto get_mip_levels() const noexcept -> std::uint32_t { return m_mip_levels; }
         [[nodiscard]] auto get_array_size() const noexcept -> std::uint32_t { return m_array_size; }
+        [[nodiscard]] auto get_layout() const noexcept -> vk::ImageLayout { return m_layout; }
         [[nodiscard]] auto get_format() const noexcept -> vk::Format { return m_format; }
         [[nodiscard]] auto get_usage() const noexcept -> vk::ImageUsageFlags { return m_usage; }
         [[nodiscard]] auto get_memory_usage() const noexcept -> VmaMemoryUsage { return m_memory_usage; }
@@ -56,6 +58,24 @@ namespace graphics {
         ) -> void;
 
     private:
+        auto create(
+            vk::ImageType type,
+            std::uint32_t width,
+            std::uint32_t height,
+            std::uint32_t depth,
+            std::uint32_t mip_levels,
+            std::uint32_t array_size,
+            vk::Format format,
+            VmaMemoryUsage memory_usage,
+            vk::ImageUsageFlags usage,
+            vk::SampleCountFlagBits sample_count,
+            vk::ImageLayout initial_layout,
+            const void* data,
+            std::size_t size,
+            vk::ImageCreateFlags flags = {},
+            vk::ImageTiling tiling = vk::ImageTiling::eOptimal
+        ) -> void;
+
         auto upload(
             std::size_t array_idx,
             std::size_t mip_level,
@@ -83,7 +103,9 @@ namespace graphics {
         vk::ImageType m_type = vk::ImageType::e2D;
         vk::ImageCreateFlags m_flags {};
         vk::ImageTiling m_tiling = vk::ImageTiling::eOptimal;
+        vk::ImageLayout m_layout = vk::ImageLayout::eUndefined;
         vk::Image m_image {};
+        vk::ImageView m_image_view {};
         vk::DeviceMemory m_memory {};
         VmaMemoryUsage m_memory_usage = VMA_MEMORY_USAGE_UNKNOWN;
         VmaAllocation m_allocation {};

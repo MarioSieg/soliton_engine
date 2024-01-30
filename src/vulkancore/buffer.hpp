@@ -21,7 +21,7 @@ namespace vkb {
         ~buffer();
         [[nodiscard]] auto get_size() const noexcept -> std::size_t { return m_size; }
         [[nodiscard]] auto get_mapped_ptr() const noexcept -> void* { return m_mapped; }
-        [[nodiscard]] auto get_buffer() noexcept -> vk::Buffer& { return m_buffer; }
+        [[nodiscard]] auto get_buffer() const noexcept -> const vk::Buffer& { return m_buffer; }
         [[nodiscard]] auto get_memory() const noexcept -> vk::DeviceMemory { return m_memory; }
         [[nodiscard]] auto get_device_address() const noexcept -> vk::DeviceAddress { return m_device_address; }
         [[nodiscard]] auto get_allocator() const noexcept -> VmaAllocator { return m_allocator; }
