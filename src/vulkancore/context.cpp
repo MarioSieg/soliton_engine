@@ -23,7 +23,7 @@ namespace vkb {
     }
 
     context::~context() {
-        m_device->get_logical_device().waitIdle();
+        vkcheck(m_device->get_logical_device().waitIdle());
 
         ImGui_ImplVulkan_Shutdown();
         ImGui_ImplGlfw_Shutdown();
@@ -88,7 +88,7 @@ namespace vkb {
         render_pass_begin_info.pClearValues = clear_values.data();
 
         const vk::CommandBuffer cmd_buf = m_command_buffers[m_current_frame];
-        cmd_buf.reset({});
+        vkcheck(cmd_buf.reset({}));
         vkcheck(cmd_buf.begin(&command_buffer_begin_info));
 
         // Start the first sub pass specified in our default render pass setup by the base class
@@ -126,7 +126,7 @@ namespace vkb {
         passert(cmd_buf);
 
         cmd_buf.endRenderPass();
-        cmd_buf.end();
+        vkcheck(cmd_buf.end());
 
         vk::PipelineStageFlags wait_stage_mask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
         vk::SubmitInfo submit_info {};
@@ -169,7 +169,7 @@ namespace vkb {
     }
 
     auto context::on_resize() -> void {
-        m_device->get_logical_device().waitIdle();
+        vkcheck(m_device->get_logical_device().waitIdle());
 
         int w, h;
         glfwGetFramebufferSize(m_window, &w, &h);
@@ -190,7 +190,7 @@ namespace vkb {
         destroy_sync_prims();
         create_sync_prims();
 
-        m_device->get_logical_device().waitIdle();
+        vkcheck(m_device->get_logical_device().waitIdle());
     }
 
     auto context::boot_vulkan_core() -> void {
@@ -401,8 +401,7 @@ namespace vkb {
         ImGui_ImplVulkan_InitInfo init_info {};
         init_info.Instance = m_device->get_instance();
         init_info.PhysicalDevice = m_device->get_physical_device();
-        auto dev = m_device->get_logical_device();
-        init_info.Device = dev;
+        init_info.Device = m_device->get_logical_device();
         init_info.QueueFamily = m_swapchain->get_queue_node_index();
         init_info.Queue = m_device->get_graphics_queue();
         init_info.PipelineCache = m_pipeline_cache;
@@ -410,6 +409,9 @@ namespace vkb {
         init_info.ImageCount = k_max_concurrent_frames;
         init_info.MinImageCount = k_max_concurrent_frames;
         init_info.Allocator = reinterpret_cast<const VkAllocationCallbacks*>(&s_allocator);
+        init_info.CheckVkResultFn = [](const VkResult result) {
+            vkccheck(result);
+        };
         passert(ImGui_ImplVulkan_Init(&init_info, m_render_pass));
 
         float font_size = 18.0f;
