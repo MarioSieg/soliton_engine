@@ -34,7 +34,7 @@ public:
     }
 
 private:
-    auto load_from_gltf(const std::string& path, float scale = 0.1f) -> void;
+    auto load_from_gltf(const std::string& path, float scale = 0.025f) -> void;
 
     std::vector<graphics::mesh*> m_meshes {}; // TODO: use unique ptr
     std::vector<struct entity> m_eitbl {}; // entity id translation lookaside buffer lol

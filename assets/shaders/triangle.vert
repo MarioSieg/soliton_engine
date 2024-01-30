@@ -6,10 +6,10 @@ layout (location = 2) in vec2 inUV;
 layout (location = 3) in vec3 inTangent;
 layout (location = 4) in vec3 inBitangent;
 
-layout (binding = 0) uniform UBO {
+layout (push_constant) uniform PushConstants {
 	mat4 ModelViewProj;
 	mat4 NormalMatrix;
-} ubo;
+} pushConstants;
 
 layout (location = 0) out vec3 inNormalColor;
 
@@ -18,7 +18,7 @@ out gl_PerVertex {
 };
 
 void main() {
-	gl_Position = ubo.ModelViewProj * vec4(inPos.xyz, 1.0);
-	vec4 nn = ubo.NormalMatrix * vec4(inNormal, 0.0);
+	gl_Position = pushConstants.ModelViewProj * vec4(inPos.xyz, 1.0);
+	vec4 nn = pushConstants.NormalMatrix * vec4(inNormal, 0.0);
 	inNormalColor = nn.xyz;
 }

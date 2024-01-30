@@ -88,7 +88,7 @@ auto scene::load_from_gltf(const std::string& path, const float scale) -> void {
 	passert(result);
 	passert(!model.scenes.empty());
 
-	const XMMATRIX scale_mtx = XMMatrixScalingFromVector(XMVectorReplicate(0.1f));
+	const XMMATRIX scale_mtx = XMMatrixScalingFromVector(XMVectorReplicate(scale));
 	ankerl::unordered_dense::set<int> already_visited {};
 	std::uint32_t num_nodes, num_meshes = 0;
 	std::function<auto (const tinygltf::Node&) -> void> visitor = [&](const tinygltf::Node& node) {
@@ -133,7 +133,7 @@ auto scene::load_from_gltf(const std::string& path, const float scale) -> void {
 				}
 			}
 			local = XMMatrixMultiply(local, scale_mtx);
-			local = XMMatrixMultiply(local, XMMatrixRotationX(XMConvertToRadians(-90.0f)));
+			local = XMMatrixMultiply(local, XMMatrixRotationX(XMConvertToRadians(90.0f)));
 
 			XMVECTOR scale, rotation, translation;
 			XMMatrixDecompose(&scale, &rotation, &translation, local);
@@ -145,7 +145,7 @@ auto scene::load_from_gltf(const std::string& path, const float scale) -> void {
 			graphics::mesh* mesh_ptr = nullptr;
 			const int midx = node.mesh;
 			const tinygltf::Mesh& mesh = model.meshes[midx];
-			mesh_ptr = new graphics::mesh{model, mesh, local};
+			mesh_ptr = new graphics::mesh{model, mesh};
 			m_meshes.emplace_back(mesh_ptr);
 			auto* rendrer = ent.get_mut<c_mesh_renderer>();
 			rendrer->mesh = mesh_ptr;

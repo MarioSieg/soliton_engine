@@ -19,11 +19,17 @@ namespace graphics {
         vk::DescriptorSet descriptor_set {};
     };
 
-    struct cpu_uniform_buffer final {
+    struct gpu_vertex_push_constants final {
         XMMATRIX model_view_proj;
         XMMATRIX normal_matrix;
     };
-    static_assert(sizeof(cpu_uniform_buffer) % 4 == 0);
+    static_assert(sizeof(gpu_vertex_push_constants) <= 128);
+
+    struct gpu_uniform_buffer final {
+        XMMATRIX model_view_proj;
+        XMMATRIX normal_matrix;
+    };
+    static_assert(sizeof(gpu_uniform_buffer) % 4 == 0);
 
     class graphics_subsystem final : public subsystem {
     public:
@@ -43,13 +49,13 @@ namespace graphics {
         auto create_descriptor_sets() -> void;
         auto create_pipeline() -> void;
 
-        auto render_scene(vk::CommandBuffer cmd_buf) const -> void;
+        auto render_scene(vk::CommandBuffer cmd_buf) -> void;
 
-        vk::CommandBuffer cmd_buf = nullptr;
-        std::array<uniform_buffer, vkb::context::k_max_concurrent_frames> uniforms {};
-        vk::DescriptorSetLayout descriptor_set_layout {};
-        vk::PipelineLayout pipeline_layout {};
-        vk::DescriptorPool descriptor_pool {};
-        vk::Pipeline pipeline {};
+        vk::CommandBuffer m_cmd_buf = nullptr;
+        std::array<uniform_buffer, vkb::context::k_max_concurrent_frames> m_uniforms {};
+        vk::DescriptorSetLayout m_descriptor_set_layout {};
+        vk::PipelineLayout m_pipeline_layout {};
+        vk::DescriptorPool m_descriptor_pool {};
+        vk::Pipeline m_pipeline {};
     };
 }

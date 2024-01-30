@@ -27,9 +27,7 @@ namespace graphics {
             BoundingBox aabb {};
         };
 
-        explicit mesh(const std::string& path);
-        mesh(std::span<const vertex> vertices, std::span<const index> indices);
-        mesh(const tinygltf::Model& model, const tinygltf::Mesh& mesh, FXMMATRIX transform = XMMatrixIdentity());
+        mesh(const tinygltf::Model& model, const tinygltf::Mesh& mesh);
         ~mesh();
 
         auto draw(vk::CommandBuffer cmd) -> void;
@@ -43,7 +41,7 @@ namespace graphics {
 
     private:
         auto create_buffers(std::span<const vertex> vertices, std::span<const index> indices) -> void;
-        auto load_mesh_from_gltf(const tinygltf::Model& model, const tinygltf::Mesh& mesh, FXMMATRIX transform) -> void;
+        auto recompute_bounds(std::span<const vertex> vertices) -> void;
 
         vkb::buffer m_vertex_buffer {};
         vkb::buffer m_index_buffer {};

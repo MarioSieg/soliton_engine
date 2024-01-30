@@ -20,128 +20,19 @@ namespace graphics {
 		mesh::primitive& prim_info
 	) -> bool;
 
-    mesh::mesh(const std::string& path) {
-		log_info("Importing mesh: {}", path);
-    	const auto start = std::chrono::high_resolution_clock::now();
-
-        tinygltf::Model model {};
-        tinygltf::TinyGLTF loader {};
-    	tinygltf::FsCallbacks fs {};
-    	fs.FileExists = &tinygltf::FileExists;
-    	fs.ExpandFilePath = &tinygltf::ExpandFilePath;
-    	fs.ReadWholeFile = +[](std::vector<unsigned char>* out, std::string* err, const std::string& path, void* usr) -> bool {
-			return assetmgr::load_asset_blob_raw(path, *out);
-    	};
-    	fs.WriteWholeFile = &tinygltf::WriteWholeFile;
-    	fs.GetFileSizeInBytes = &tinygltf::GetFileSizeInBytes;
-    	loader.SetFsCallbacks(fs);
-
-        std::string err {};
-        std::string warn {};
-        const bool is_bin = std::filesystem::path{path}.extension() == ".glb";
-        bool result;
-        if (is_bin) {
-            result = loader.LoadBinaryFromFile(&model, &err, &warn, path);
-        } else {
-            result = loader.LoadASCIIFromFile(&model, &err, &warn, path);
-        }
-        if (!warn.empty()) [[unlikely]] {
-            printf("Warn: %s\n", warn.c_str());
-            log_warn("GLTF import: {}", warn);
-        }
-        if (!err.empty()) [[unlikely]] {
-            log_error("GLTF import: {}", err);
-        }
-		passert(result);
-
-        std::vector<vertex> vertices {};
-        std::vector<index> indices {};
-    	std::unordered_set<int> already_loaded {};
-    	already_loaded.reserve(model.meshes.size());
-
-    	// count vertices to reserve memory
-    	std::size_t acc_vertices = 0;
-    	std::size_t acc_indices = 0;
-    	for (const tinygltf::Mesh& mesh : model.meshes) {
-    		for (const tinygltf::Primitive& prim : mesh.primitives) {
-    			if (prim.indices < 0) [[unlikely]] {
-    				log_error("GLTF import: Mesh has no indices");
-    				continue;
-    			}
-    			// Position attribute is required
-    			if (!prim.attributes.contains("POSITION")) [[unlikely]] {
-    				log_error("GLTF import: Mesh has no position attribute");
-    				continue;
-    			}
-    			const tinygltf::Accessor& pos_accessor = model.accessors[prim.attributes.find("POSITION")->second];
-    			const tinygltf::Accessor& idx_accessor = model.accessors[prim.indices];
-    			acc_vertices += pos_accessor.count;
-    			acc_indices += idx_accessor.count;
+    mesh::mesh(const tinygltf::Model& model, const tinygltf::Mesh& mesh) {
+    	std::vector<vertex> vertices {};
+    	std::vector<index> indices {};
+    	m_primitives.reserve(mesh.primitives.size());
+    	for (const tinygltf::Primitive& prim : mesh.primitives) {
+    		primitive prim_info {};
+    		if (load_primitive(vertices, indices, prim, model, prim_info)) {
+    			m_primitives.emplace_back(prim_info);
     		}
     	}
-
-    	vertices.reserve(acc_vertices);
-    	indices.reserve(acc_indices);
-
-    	std::uint32_t num_nodes = 0;
-    	std::uint32_t num_duplicates = 0;
-    	std::function<auto (const tinygltf::Node&) -> void> visitor = [&](const tinygltf::Node& node) {
-    		++num_nodes;
-    		for (const int child : node.children) {
-    			visitor(model.nodes[child]);
-    		}
-    		if (node.mesh < 0) [[unlikely]] {
-    			return;
-    		}
-    		const int midx = node.mesh;
-    		if (already_loaded.contains(midx)) {
-				++num_duplicates;
-    		}
-
-    		already_loaded.emplace(midx); // mark as loaded
-    		const tinygltf::Mesh& mesh = model.meshes[midx];
-    		XMVECTOR translation = XMVectorZero();
-    		XMVECTOR rotation = XMQuaternionIdentity();
-    		XMVECTOR scale = XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f);
-    		if (node.translation.size() == 3) {
-    			translation = XMVectorSet(static_cast<float>(node.translation[0]), static_cast<float>(node.translation[1]), static_cast<float>(node.translation[2]), 1.0f);
-    		}
-    		if (node.rotation.size() == 4) {
-    			rotation = XMVectorSet(static_cast<float>(node.rotation[0]), static_cast<float>(node.rotation[1]), static_cast<float>(node.rotation[2]), static_cast<float>(node.rotation[3]));
-    		}
-    		if (node.scale.size() == 3) {
-    			scale = XMVectorSet(static_cast<float>(node.scale[0]), static_cast<float>(node.scale[1]), static_cast<float>(node.scale[2]), 1.0f);
-    		}
-    		for (const tinygltf::Primitive& prim : mesh.primitives) {
-    			primitive prim_info {};
-    			if (load_primitive(vertices, indices, prim, model, prim_info)) {
-    				m_primitives.emplace_back(prim_info);
-    			}
-    		}
-    	};
-
-    	if (num_duplicates) {
-    		log_warn("GLTF import: {} meshes were cloned multiple times, consider importing a scene instead", num_duplicates);
-    	}
-
-    	for (const tinygltf::Scene& scene : model.scenes) {
-    		for (const int node : scene.nodes) {
-    			visitor(model.nodes[node]);
-    		}
-    	}
-
+    	m_primitives.shrink_to_fit();
+    	recompute_bounds(vertices);
     	create_buffers(vertices, indices);
-
-    	const auto time = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - start);
-    	log_info("Mesh import done in {}s: {} vertices, {} indices, {} nodes", time.count(), vertices.size(), indices.size(), num_nodes);
-    }
-
-    mesh::mesh(const std::span<const vertex> vertices, const std::span<const index> indices) {
-    	create_buffers(vertices, indices);
-    }
-
-    mesh::mesh(const tinygltf::Model& model, const tinygltf::Mesh& mesh, FXMMATRIX transform) {
-    	load_mesh_from_gltf(model, mesh, transform);
     }
 
     mesh::~mesh() {
@@ -157,6 +48,21 @@ namespace graphics {
     	//	cmd.drawIndexed(prim.index_count, 1, prim.first_index, 0, 1);
     	//}
     	cmd.drawIndexed(m_index_count, 1, 0, 0, 0);
+    }
+
+    auto mesh::recompute_bounds(const std::span<const vertex> vertices) -> void {
+    	for (primitive& prim : m_primitives) {
+    		XMVECTOR min = XMVectorReplicate(std::numeric_limits<float>::max());
+    		XMVECTOR max = XMVectorReplicate(std::numeric_limits<float>::lowest());
+    		for (std::size_t i = prim.vertex_start; i < prim.vertex_count; ++i) {
+    			const vertex& v = vertices[i];
+    			XMVECTOR pos = XMLoadFloat3(&v.position);
+    			min = XMVectorMin(min, pos);
+    			max = XMVectorMax(max, pos);
+    		}
+    		BoundingBox::CreateFromPoints(prim.aabb, min, max);
+    		m_aabb.CreateMerged(m_aabb, m_aabb, prim.aabb);
+    	}
     }
 
     auto mesh::create_buffers(std::span<const vertex> vertices, std::span<const index> indices) -> void {
@@ -199,34 +105,6 @@ namespace graphics {
 				indices.data()
 			);
     	}
-
-    	for (primitive& prim : m_primitives) {
-    		XMVECTOR min = XMVectorReplicate(std::numeric_limits<float>::max());
-    		XMVECTOR max = XMVectorReplicate(std::numeric_limits<float>::lowest());
-    		for (std::size_t i = prim.vertex_start; i < prim.vertex_count; ++i) {
-				const vertex& v = vertices[i];
-				XMVECTOR pos = XMLoadFloat3(&v.position);
-				min = XMVectorMin(min, pos);
-				max = XMVectorMax(max, pos);
-			}
-    		BoundingBox::CreateFromPoints(prim.aabb, min, max);
-    		BoundingBox::CreateMerged(m_aabb, m_aabb, prim.aabb);
-    	}
-    }
-
-    auto mesh::load_mesh_from_gltf(const tinygltf::Model& model, const tinygltf::Mesh& mesh, FXMMATRIX transform) -> void {
-    	std::vector<vertex> vertices {};
-    	std::vector<index> indices {};
-    	for (const tinygltf::Primitive& prim : mesh.primitives) {
-    		primitive prim_info {};
-    		if (load_primitive(vertices, indices, prim, model, prim_info)) {
-    			m_primitives.emplace_back(prim_info);
-    		}
-    	}
-    	for (vertex& v : vertices) {
-    		XMStoreFloat3(&v.position, XMVector3Transform(XMLoadFloat3(&v.position), transform));
-    	}
-    	create_buffers(vertices, indices);
     }
 
     static auto load_primitive(

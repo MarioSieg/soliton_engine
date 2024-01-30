@@ -46,13 +46,13 @@ namespace graphics {
     graphics_subsystem::~graphics_subsystem() {
         context::s_instance->get_device().get_logical_device().waitIdle();
 
-        for (auto& [buffer, descriptor_set] : uniforms) {
+        for (auto& [buffer, descriptor_set] : m_uniforms) {
             buffer.destroy();
         }
-        vkb_vk_device().destroyDescriptorSetLayout(descriptor_set_layout, &vkb::s_allocator);
-        vkb_vk_device().destroyPipelineLayout(pipeline_layout, &vkb::s_allocator);
-        vkb_vk_device().destroyDescriptorPool(descriptor_pool, &vkb::s_allocator);
-        vkb_vk_device().destroyPipeline(pipeline, &vkb::s_allocator);
+        vkb_vk_device().destroyDescriptorSetLayout(m_descriptor_set_layout, &vkb::s_allocator);
+        vkb_vk_device().destroyPipelineLayout(m_pipeline_layout, &vkb::s_allocator);
+        vkb_vk_device().destroyDescriptorPool(m_descriptor_pool, &vkb::s_allocator);
+        vkb_vk_device().destroyPipeline(m_pipeline, &vkb::s_allocator);
         context::s_instance.reset();
 
         ImPlot::DestroyContext();
@@ -94,7 +94,7 @@ namespace graphics {
         XMStoreFloat4x4A(&s_proj_mtx, proj);
         XMStoreFloat4x4A(&s_view_proj_mtx, XMMatrixMultiply(view, proj));
         BoundingFrustum::CreateFromMatrix(s_frustum, proj);
-        s_frustum.Transform(s_frustum, XMMatrixTranspose(XMMatrixInverse(nullptr, view)));
+        s_frustum.Transform(s_frustum, XMMatrixInverse(nullptr, view));
     }
 
     HOTPROC auto graphics_subsystem::on_pre_tick() -> bool {
@@ -103,12 +103,12 @@ namespace graphics {
         io.DisplaySize.x = static_cast<float>(context::s_instance->get_width());
         io.DisplaySize.y = static_cast<float>(context::s_instance->get_height());
 
-        cmd_buf = context::s_instance->begin_frame(DirectX::XMFLOAT4{0.0f, 0.0f, 0.0f, 1.0f});
+        m_cmd_buf = context::s_instance->begin_frame(DirectX::XMFLOAT4{0.0f, 0.0f, 0.0f, 1.0f});
 
         return true;
     }
 
-    HOTPROC auto graphics_subsystem::render_scene(const vk::CommandBuffer cmd_buf) const -> void {
+    HOTPROC auto graphics_subsystem::render_scene(const vk::CommandBuffer cmd_buf) -> void {
         if (const auto& scene = scene::get_active()) [[likely]] {
             const auto query = scene->filter<const c_transform, const c_mesh_renderer>();
             const XMMATRIX vp = XMLoadFloat4x4A(&s_view_proj_mtx);
@@ -131,10 +131,16 @@ namespace graphics {
                 }
 
                 // Uniforms
-                cpu_uniform_buffer ubo {};
-                ubo.model_view_proj = XMMatrixMultiply(model, vp);
-                ubo.normal_matrix = XMMatrixTranspose(XMMatrixInverse(nullptr, model));
-                std::memcpy(uniforms[context::s_instance->get_current_frame()].buffer.get_mapped_ptr(), &ubo, sizeof(cpu_uniform_buffer));
+                gpu_vertex_push_constants push_constants {};
+                push_constants.model_view_proj = XMMatrixMultiply(model, vp);
+                push_constants.normal_matrix = XMMatrixTranspose(XMMatrixInverse(nullptr, model));
+                cmd_buf.pushConstants(
+                    m_pipeline_layout,
+                    vk::ShaderStageFlagBits::eVertex,
+                    0,
+                    sizeof(gpu_vertex_push_constants),
+                    &push_constants
+                );
 
                 renderer.mesh->draw(cmd_buf);
             };
@@ -143,28 +149,28 @@ namespace graphics {
     }
 
     HOTPROC auto graphics_subsystem::on_post_tick() -> void {
-        if (!cmd_buf) [[unlikely]] return;
+        if (!m_cmd_buf) [[unlikely]] return;
 
         const auto w = static_cast<float>(context::s_instance->get_width());
         const auto h = static_cast<float>(context::s_instance->get_height());
         update_main_camera(w, h);
 
-        cmd_buf.bindDescriptorSets(
+        m_cmd_buf.bindDescriptorSets(
             vk::PipelineBindPoint::eGraphics,
-            pipeline_layout,
+            m_pipeline_layout,
             0,
             1,
-            &uniforms[context::s_instance->get_current_frame()].descriptor_set,
+            &m_uniforms[context::s_instance->get_current_frame()].descriptor_set,
             0,
             nullptr
         );
-        cmd_buf.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
+        m_cmd_buf.bindPipeline(vk::PipelineBindPoint::eGraphics, m_pipeline);
 
-        render_scene(cmd_buf);
+        render_scene(m_cmd_buf);
 
         ImGui::Render();
-        context::s_instance->render_imgui(ImGui::GetDrawData(), cmd_buf);
-        context::s_instance->end_frame(cmd_buf);
+        context::s_instance->render_imgui(ImGui::GetDrawData(), m_cmd_buf);
+        context::s_instance->end_frame(m_cmd_buf);
 
         c_camera::active_camera = entity::null();
     }
@@ -181,12 +187,12 @@ namespace graphics {
     auto graphics_subsystem::create_uniform_buffers() -> void {
         // Vertex shader uniform buffer block
         vk::BufferCreateInfo buffer_info {};
-        buffer_info.size = sizeof(cpu_uniform_buffer);
+        buffer_info.size = sizeof(gpu_uniform_buffer);
         buffer_info.usage = vk::BufferUsageFlagBits::eUniformBuffer;
 
         for (std::uint32_t i = 0; i < context::k_max_concurrent_frames; ++i) {
-            uniforms[i].buffer.create(
-                sizeof(cpu_uniform_buffer),
+            m_uniforms[i].buffer.create(
+                sizeof(gpu_uniform_buffer),
                 0,
                 vk::BufferUsageFlagBits::eUniformBuffer,
                 VMA_MEMORY_USAGE_CPU_TO_GPU,
@@ -209,14 +215,21 @@ namespace graphics {
         vk::DescriptorSetLayoutCreateInfo descriptor_layout {};
         descriptor_layout.bindingCount = 1;
         descriptor_layout.pBindings = &layout_binding;
-        vkcheck(device.createDescriptorSetLayout(&descriptor_layout, &vkb::s_allocator, &descriptor_set_layout));
+        vkcheck(device.createDescriptorSetLayout(&descriptor_layout, &vkb::s_allocator, &m_descriptor_set_layout));
 
         // Create the pipeline layout that is used to generate the rendering pipelines that are based on this descriptor set layout
         // In a more complex scenario you would have different pipeline layouts for different descriptor set layouts that could be reused
         vk::PipelineLayoutCreateInfo p_pipeline_layout_create_info {};
         p_pipeline_layout_create_info.setLayoutCount = 1;
-        p_pipeline_layout_create_info.pSetLayouts = &descriptor_set_layout;
-        vkcheck(device.createPipelineLayout(&p_pipeline_layout_create_info, &vkb::s_allocator, &pipeline_layout));
+        p_pipeline_layout_create_info.pSetLayouts = &m_descriptor_set_layout;
+
+        vk::PushConstantRange push_constant_range {};
+        push_constant_range.stageFlags = vk::ShaderStageFlagBits::eVertex;
+        push_constant_range.offset = 0;
+        push_constant_range.size = sizeof(gpu_vertex_push_constants);
+        p_pipeline_layout_create_info.pushConstantRangeCount = 1;
+        p_pipeline_layout_create_info.pPushConstantRanges = &push_constant_range;
+        vkcheck(device.createPipelineLayout(&p_pipeline_layout_create_info, &vkb::s_allocator, &m_pipeline_layout));
     }
 
     // Descriptors are allocated from a pool, that tells the implementation how many and what types of descriptors we are going to use (at maximum)
@@ -226,7 +239,7 @@ namespace graphics {
 
         vk::DescriptorPoolSize pool_size {};
         pool_size.type = vk::DescriptorType::eUniformBuffer; // This example only one descriptor type (uniform buffer)
-        pool_size.descriptorCount = static_cast<std::uint32_t>(uniforms.size()); // We have one buffer (and as such descriptor) per frame
+        pool_size.descriptorCount = static_cast<std::uint32_t>(m_uniforms.size()); // We have one buffer (and as such descriptor) per frame
         // For additional types you need to add new entries in the type count list
         // E.g. for two combined image samplers :
         // typeCounts[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -237,8 +250,8 @@ namespace graphics {
         vk::DescriptorPoolCreateInfo descriptor_pool_ci {};
         descriptor_pool_ci.poolSizeCount = 1;
         descriptor_pool_ci.pPoolSizes = &pool_size;
-        descriptor_pool_ci.maxSets = static_cast<std::uint32_t>(uniforms.size()); // Allocate one set for each frame
-        vkcheck(device.createDescriptorPool(&descriptor_pool_ci, &vkb::s_allocator, &descriptor_pool));
+        descriptor_pool_ci.maxSets = static_cast<std::uint32_t>(m_uniforms.size()); // Allocate one set for each frame
+        vkcheck(device.createDescriptorPool(&descriptor_pool_ci, &vkb::s_allocator, &m_descriptor_pool));
     }
 
     // Shaders access data using descriptor sets that "point" at our uniform buffers
@@ -249,21 +262,21 @@ namespace graphics {
 
         for (std::uint32_t i = 0; i < context::k_max_concurrent_frames; ++i) {
             vk::DescriptorSetAllocateInfo alloc_info {};
-            alloc_info.descriptorPool = descriptor_pool;
+            alloc_info.descriptorPool = m_descriptor_pool;
             alloc_info.descriptorSetCount = 1;
-            alloc_info.pSetLayouts = &descriptor_set_layout;
-            vkcheck(device.allocateDescriptorSets(&alloc_info, &uniforms[i].descriptor_set));
+            alloc_info.pSetLayouts = &m_descriptor_set_layout;
+            vkcheck(device.allocateDescriptorSets(&alloc_info, &m_uniforms[i].descriptor_set));
 
             // Update the descriptor set determining the shader binding points
             // For every binding point used in a shader there needs to be one
             // descriptor set matching that binding point
             vk::DescriptorBufferInfo buffer_info {};
-            buffer_info.buffer = uniforms[i].buffer.get_buffer();
+            buffer_info.buffer = m_uniforms[i].buffer.get_buffer();
             buffer_info.offset = 0;
-            buffer_info.range = sizeof(cpu_uniform_buffer);
+            buffer_info.range = sizeof(gpu_uniform_buffer);
 
             vk::WriteDescriptorSet write_descriptor_set {};
-            write_descriptor_set.dstSet = uniforms[i].descriptor_set;
+            write_descriptor_set.dstSet = m_uniforms[i].descriptor_set;
             write_descriptor_set.dstBinding = 0;
             write_descriptor_set.descriptorCount = 1;
             write_descriptor_set.descriptorType = vk::DescriptorType::eUniformBuffer;
@@ -283,7 +296,7 @@ namespace graphics {
 
         vk::GraphicsPipelineCreateInfo pipeline_ci {};
         // The layout used for this pipeline (can be shared among multiple pipelines using the same layout)
-        pipeline_ci.layout = pipeline_layout;
+        pipeline_ci.layout = m_pipeline_layout;
         // Renderpass this pipeline is attached to
         pipeline_ci.renderPass = context::s_instance->get_render_pass();
 
@@ -399,6 +412,12 @@ namespace graphics {
         vertex_input_state.vertexAttributeDescriptionCount = static_cast<std::uint32_t>(vertex_input_attributes.size());
         vertex_input_state.pVertexAttributeDescriptions = vertex_input_attributes.data();
 
+        // Push constants
+        vk::PushConstantRange push_constant_range {};
+        push_constant_range.stageFlags = vk::ShaderStageFlagBits::eVertex;
+        push_constant_range.offset = 0;
+        push_constant_range.size = sizeof(gpu_vertex_push_constants);
+
         // Assign the pipeline states to the pipeline creation info structure
         pipeline_ci.pVertexInputState = &vertex_input_state;
         pipeline_ci.pInputAssemblyState = &input_assembly_state;
@@ -410,6 +429,6 @@ namespace graphics {
         pipeline_ci.pDynamicState = &dynamic_state;
 
         // Create rendering pipeline using the specified states
-        vkcheck(device.createGraphicsPipelines(nullptr, 1, &pipeline_ci, &vkb::s_allocator, &pipeline));
+        vkcheck(device.createGraphicsPipelines(nullptr, 1, &pipeline_ci, &vkb::s_allocator, &m_pipeline));
     }
 }
