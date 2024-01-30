@@ -109,43 +109,50 @@ namespace graphics {
     }
 
     HOTPROC auto graphics_subsystem::render_scene(const vk::CommandBuffer cmd_buf) -> void {
-        if (const auto& scene = scene::get_active()) [[likely]] {
-            const auto query = scene->filter<const c_transform, const c_mesh_renderer>();
-            const DirectX::XMMATRIX vp = XMLoadFloat4x4A(&s_view_proj_mtx);
-            const auto render = [&](const c_transform& transform, const c_mesh_renderer& renderer) {
-                // Checks
-                if (!renderer.mesh || renderer.flags & render_flags::skip_rendering) [[unlikely]] {
+        const auto& scene = scene::get_active();
+        if (!scene) [[unlikely]] return;
+        if (!m_render_query.scene || &*scene != m_render_query.scene) [[unlikely]] { // Scene changed
+            if (m_render_query.query) {
+                m_render_query.query.destruct();
+            }
+            m_render_query.scene = &*scene;
+            m_render_query.query = scene->query<const c_transform, const c_mesh_renderer>();
+        }
+        const auto& query = m_render_query.query;
+        const DirectX::XMMATRIX vp = XMLoadFloat4x4A(&s_view_proj_mtx);
+        const auto render = [&](const c_transform& transform, const c_mesh_renderer& renderer) {
+            // Checks
+            if (!renderer.mesh || renderer.flags & render_flags::skip_rendering) [[unlikely]] {
+                return;
+            }
+
+            const DirectX::XMMATRIX model = transform.compute_matrix();
+
+            // Frustum Culling
+            DirectX::BoundingOrientedBox obb {};
+            obb.CreateFromBoundingBox(obb, renderer.mesh->get_aabb());
+            obb.Transform(obb, model);
+            if ((renderer.flags & render_flags::skip_frustum_culling) == 0) [[likely]] {
+                if (s_frustum.Contains(obb) == DirectX::ContainmentType::DISJOINT) { // Object is culled
                     return;
                 }
+            }
 
-                const DirectX::XMMATRIX model = transform.compute_matrix();
+            // Uniforms
+            gpu_vertex_push_constants push_constants {};
+            push_constants.model_view_proj = XMMatrixMultiply(model, vp);
+            push_constants.normal_matrix = XMMatrixTranspose(XMMatrixInverse(nullptr, model));
+            cmd_buf.pushConstants(
+                m_pipeline_layout,
+                vk::ShaderStageFlagBits::eVertex,
+                0,
+                sizeof(gpu_vertex_push_constants),
+                &push_constants
+            );
 
-                // Frustum Culling
-                DirectX::BoundingOrientedBox obb {};
-                obb.CreateFromBoundingBox(obb, renderer.mesh->get_aabb());
-                obb.Transform(obb, model);
-                if ((renderer.flags & render_flags::skip_frustum_culling) == 0) [[likely]] {
-                    if (s_frustum.Contains(obb) == DirectX::ContainmentType::DISJOINT) { // Object is culled
-                        return;
-                    }
-                }
-
-                // Uniforms
-                gpu_vertex_push_constants push_constants {};
-                push_constants.model_view_proj = XMMatrixMultiply(model, vp);
-                push_constants.normal_matrix = XMMatrixTranspose(XMMatrixInverse(nullptr, model));
-                cmd_buf.pushConstants(
-                    m_pipeline_layout,
-                    vk::ShaderStageFlagBits::eVertex,
-                    0,
-                    sizeof(gpu_vertex_push_constants),
-                    &push_constants
-                );
-
-                renderer.mesh->draw(cmd_buf);
-            };
-            query.iter().each(render);
-        }
+            renderer.mesh->draw(cmd_buf);
+        };
+        query.iter().each(render);
     }
 
     HOTPROC auto graphics_subsystem::on_post_tick() -> void {

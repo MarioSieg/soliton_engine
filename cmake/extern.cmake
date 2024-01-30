@@ -44,6 +44,7 @@ include_directories(extern/draco/src)
 target_link_libraries(lunam draco_static)
 
 add_subdirectory(extern/Vulkan-Headers)
+include_directories(extern/Vulkan-Headers/include)
 add_subdirectory(extern/Vulkan-Loader)
 add_subdirectory(extern/SPIRV-Headers)
 add_subdirectory(extern/SPIRV-Tools)
@@ -54,4 +55,4 @@ target_link_libraries(lunam vulkan)
 target_link_libraries(lunam shaderc)
 add_subdirectory(extern/bgfx)
 include_directories(extern/bgfx/include)
-target_link_libraries(lunam bx bimg) # we only borrow bgfx's bx and bimg
+target_link_libraries(lunam bx bimg bimg_decode) # we only borrow bgfx's bx and bimg

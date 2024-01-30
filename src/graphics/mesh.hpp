@@ -1,6 +1,7 @@
 // Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 #pragma once
+
 #include "../vulkancore/buffer.hpp"
 
 #include <DirectXMath.h>

@@ -354,7 +354,7 @@ namespace vkb {
         m_enabled_features = enabled_features;
 
         log_info("Creating Vulkan logical device...");
-        m_logical_device = m_physical_device.createDevice(device_create_info, &s_allocator);
+        vkcheck(m_physical_device.createDevice(&device_create_info, &s_allocator, &m_logical_device));
 
         // Fetch queues
         m_logical_device.getQueue(m_queue_families.graphics, 0, &m_graphics_queue);
@@ -426,7 +426,8 @@ namespace vkb {
             };
         }
         for (const vk::Format format : formats) {
-            const vk::FormatProperties props = m_physical_device.getFormatProperties(format);
+            vk::FormatProperties props;
+            m_physical_device.getFormatProperties(format, &props);
             if (props.optimalTilingFeatures & vk::FormatFeatureFlagBits::eDepthStencilAttachment) {
                 out_format = format;
                 log_info("Found supported depth format: {}", string_VkFormat(static_cast<VkFormat>(format)));

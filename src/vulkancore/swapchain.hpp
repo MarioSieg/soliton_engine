@@ -28,12 +28,12 @@ namespace vkb {
             bool vsync,
             bool fullscreen
         ) -> void;
-        [[nodiscard]] auto acquire_next_image(vk::Semaphore present_complete_semaphore, std::uint32_t& idx) -> vk::Result;
+        [[nodiscard]] auto acquire_next_image(vk::Semaphore present_complete_semaphore, std::uint32_t& idx) const -> vk::Result;
         [[nodiscard]] auto queue_present(
             vk::Queue queue,
             std::uint32_t image_index,
             vk::Semaphore wait_semaphore = nullptr
-        ) -> vk::Result;
+        ) const -> vk::Result;
         [[nodiscard]] auto get_queue_node_index() const noexcept -> std::uint32_t { return m_queue_node_index; }
         [[nodiscard]] auto get_image_count() const noexcept -> std::uint32_t { return m_image_count; }
         [[nodiscard]] auto get_buffer(std::uint32_t index) const noexcept -> const buffer& { return m_buffers[index]; }

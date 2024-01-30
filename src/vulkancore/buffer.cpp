@@ -14,9 +14,8 @@ namespace vkb {
     ) -> void {
         m_allocator = vkb_device().get_allocator();
         vk::BufferCreateInfo buffer_create_info {};
-        buffer_create_info
-            .setSize(size)
-            .setSharingMode(vk::SharingMode::eExclusive);
+        buffer_create_info.size = size;
+        buffer_create_info.sharingMode = vk::SharingMode::eExclusive;
         vk::MemoryPropertyFlags mem_props {};
         switch (memory_usage) {
             case VMA_MEMORY_USAGE_CPU_COPY:
@@ -39,7 +38,7 @@ namespace vkb {
         m_memory_properties = mem_props;
         m_usage = buffer_usage;
         m_memory_usage = memory_usage;
-        buffer_create_info.setUsage(buffer_usage);
+        buffer_create_info.usage = buffer_usage;
 
         VmaAllocationInfo alloc_info {};
         VmaAllocationCreateInfo alloc_create_info {};
@@ -78,8 +77,8 @@ namespace vkb {
         }
         if ((buffer_usage & vk::BufferUsageFlagBits::eShaderDeviceAddress) != vk::BufferUsageFlagBits {}) {
             vk::BufferDeviceAddressInfo buffer_device_address_info {};
-            buffer_device_address_info.setBuffer(m_buffer);
-            m_device_address = vkb_vk_device().getBufferAddress(buffer_device_address_info);
+            buffer_device_address_info.buffer = m_buffer;
+            m_device_address = vkb_vk_device().getBufferAddress(&buffer_device_address_info);
         }
     }
 

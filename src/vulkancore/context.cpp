@@ -71,12 +71,6 @@ namespace vkb {
             vkcheck(result);
         }
 
-        // Build the command buffer
-        // Unlike in OpenGL all rendering commands are recorded into command buffers that are then submitted to the queue
-        // This allows to generate work upfront in a separate thread
-        // For basic command buffers (like in this sample), recording is so fast that there is no need to offload this
-        m_command_buffers[m_current_frame].reset();
-
         constexpr vk::CommandBufferBeginInfo command_buffer_begin_info {};
 
         // Set clear values for all framebuffer attachments with loadOp set to clear
@@ -94,7 +88,7 @@ namespace vkb {
         render_pass_begin_info.pClearValues = clear_values.data();
 
         const vk::CommandBuffer cmd_buf = m_command_buffers[m_current_frame];
-        cmd_buf.reset();
+        cmd_buf.reset({});
         vkcheck(cmd_buf.begin(&command_buffer_begin_info));
 
         // Start the first sub pass specified in our default render pass setup by the base class
@@ -463,7 +457,7 @@ namespace vkb {
     }
 
     auto context::destroy_command_buffers() const -> void {
-        m_device->get_logical_device().freeCommandBuffers(m_command_pool, m_command_buffers);
+        m_device->get_logical_device().freeCommandBuffers(m_command_pool, k_max_concurrent_frames, m_command_buffers.data());
     }
 
     auto context::destroy_sync_prims() const -> void {

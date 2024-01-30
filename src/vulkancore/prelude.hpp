@@ -2,6 +2,11 @@
 
 #pragma once
 
+// Keep Vulkan's C++ source code clean and remove some magic
+// Useful when tutorials or other stuff use plain C, so its easier to compare
+#define VULKAN_HPP_DISABLE_ENHANCED_MODE
+#define VULKAN_HPP_NO_EXCEPTIONS
+#define VULKAN_HPP_NO_STRUCT_SETTERS
 #include <vulkan/vulkan.hpp>
 #include <vulkan/vk_enum_string_helper.h>
 #include <mimalloc.h>

@@ -57,5 +57,10 @@ namespace graphics {
         vk::PipelineLayout m_pipeline_layout {};
         vk::DescriptorPool m_descriptor_pool {};
         vk::Pipeline m_pipeline {};
+
+        struct {
+            flecs::query<const c_transform, const c_mesh_renderer> query {};
+            scene* scene {};
+        } m_render_query {};
     };
 }

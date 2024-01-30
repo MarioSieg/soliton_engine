@@ -26,7 +26,7 @@ namespace vkb {
             m_logical_device.destroyImageView(m_buffers[i].view, &s_allocator);
         }
         m_logical_device.destroySwapchainKHR(m_swapchain, &s_allocator);
-        m_instance.destroySurfaceKHR(m_surface);
+        m_instance.destroySurfaceKHR(m_surface, &s_allocator);
     }
 
     auto swapchain::init_surface(GLFWwindow* window) -> void {
@@ -48,7 +48,7 @@ namespace vkb {
         std::vector<vk::Bool32> supports_present {};
         supports_present.resize(num_qeueues);
         for (std::uint32_t i = 0; i < num_qeueues; ++i) {
-            supports_present[i] = m_physical_device.getSurfaceSupportKHR(i, m_surface);
+            vkcheck(m_physical_device.getSurfaceSupportKHR(i, m_surface, &supports_present[i]));
         }
 
         // Search for a graphics and a present queue in the array of queue
@@ -115,7 +115,8 @@ namespace vkb {
     auto swapchain::create(std::uint32_t& w, std::uint32_t& h, bool vsync, bool fullscreen) -> void {
         log_info("Creating swapchain: {}x{}, VSync: {}, Fullscreen: {}", w, h, vsync, fullscreen);
         vk::SwapchainKHR old_swapchain = m_swapchain;
-        vk::SurfaceCapabilitiesKHR surface_capabilities = m_physical_device.getSurfaceCapabilitiesKHR(m_surface);
+        vk::SurfaceCapabilitiesKHR surface_capabilities;
+        vkcheck(m_physical_device.getSurfaceCapabilitiesKHR(m_surface, &surface_capabilities));
         std::uint32_t num_present_modes = 0;
         vkcheck(m_physical_device.getSurfacePresentModesKHR(m_surface, &num_present_modes, nullptr));
         passert(num_present_modes != 0);
@@ -251,22 +252,21 @@ namespace vkb {
         }
     }
 
-    auto swapchain::acquire_next_image(vk::Semaphore present_complete_semaphore, std::uint32_t& idx) -> vk::Result {
-        vk::ResultValue<std::uint32_t> result = m_logical_device.acquireNextImageKHR(
+    auto swapchain::acquire_next_image(const vk::Semaphore present_complete_semaphore, std::uint32_t& idx) const -> vk::Result {
+        return m_logical_device.acquireNextImageKHR(
             m_swapchain,
             std::numeric_limits<std::uint64_t>::max(),
             present_complete_semaphore,
-            nullptr
+            nullptr,
+            &idx
         );
-        idx = result.value;
-        return result.result;
     }
 
     auto swapchain::queue_present(
-        vk::Queue queue,
-        std::uint32_t image_index,
-        vk::Semaphore wait_semaphore
-    ) -> vk::Result {
+        const vk::Queue queue,
+        const std::uint32_t image_index,
+        const vk::Semaphore wait_semaphore
+    ) const -> vk::Result {
         vk::PresentInfoKHR present_info {};
         present_info.swapchainCount = 1;
         present_info.pSwapchains = &m_swapchain;
