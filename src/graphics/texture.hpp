@@ -2,12 +2,13 @@
 
 #pragma once
 
+#include "../assetmgr/assetmgr.hpp"
 #include "vulkancore/buffer.hpp"
 
 namespace graphics {
-    class texture final : public no_copy, public no_move {
+    class texture final : public asset {
     public:
-        explicit texture(const std::string& path);
+        explicit texture(std::string&& asset_path);
         texture(
             vk::ImageType type,
             std::uint32_t width,
@@ -25,7 +26,7 @@ namespace graphics {
             vk::ImageCreateFlags flags = {},
             vk::ImageTiling tiling = vk::ImageTiling::eOptimal
         );
-        ~texture();
+        ~texture() override;
 
         [[nodiscard]] auto get_image() const noexcept -> const vk::Image& { return m_image; }
         [[nodiscard]] auto get_view() const noexcept -> const vk::ImageView& { return m_image_view; }

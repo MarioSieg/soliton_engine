@@ -19,11 +19,13 @@ scene::scene() : id{id_gen.fetch_add(1, std::memory_order_relaxed)} {
     static const auto main_tid = std::this_thread::get_id();
     passert(main_tid == std::this_thread::get_id());
     m_eitbl.reserve(0x1000);
+
+	m_meshes.invalidate();
+	m_textures.invalidate();
 }
 
 scene::~scene() {
 	vkcheck(vkb_vk_device().waitIdle());
-    m_meshes.clear();
 	m_eitbl.clear();
 	log_info("Destroyed scene '{}', id: {}", name, id);
 }
@@ -91,7 +93,6 @@ auto scene::load_from_gltf(const std::string& path, const float scale) -> void {
 	passert(!model.scenes.empty());
 
 	const DirectX::XMMATRIX scale_mtx = DirectX::XMMatrixScalingFromVector(DirectX::XMVectorReplicate(scale));
-	ankerl::unordered_dense::map<int, graphics::mesh*> mesh_cache {};
 	std::uint32_t num_nodes, num_meshes = 0;
 	std::function<auto (const tinygltf::Node&) -> void> visitor = [&](const tinygltf::Node& node) {
 		if (node.mesh > -1) [[likely]] {
@@ -144,18 +145,10 @@ auto scene::load_from_gltf(const std::string& path, const float scale) -> void {
 			XMStoreFloat4(&transform->rotation, rotation);
 			XMStoreFloat4(&transform->scale, scale);
 
-			graphics::mesh* mesh_ptr = nullptr;
 			const int idx = node.mesh;
-			if (mesh_cache.contains(idx)) {
-				mesh_ptr = &*mesh_cache[idx];
-			} else {
-				const tinygltf::Mesh& mesh = model.meshes[idx];
-				auto ptr = std::make_unique<graphics::mesh>(model, mesh);
-				mesh_ptr = mesh_cache[idx] = &*ptr;
-				m_meshes.emplace_back(std::move(ptr));
-			}
+			graphics::mesh* mesh = m_meshes.load(idx, model, model.meshes[idx]);
 			auto* rendrer = ent.get_mut<c_mesh_renderer>();
-			rendrer->mesh = mesh_ptr;
+			rendrer->mesh = mesh;
 			++num_meshes;
 		}
 		for (const int child : node.children) {

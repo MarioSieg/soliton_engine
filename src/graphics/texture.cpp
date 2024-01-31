@@ -143,9 +143,9 @@ namespace graphics {
 
     static constinit allocator s_allocator {};
 
-    texture::texture(const std::string& path) {
+    texture::texture(std::string&& asset_path) : asset { asset_category::texture, asset_source::filesystem, std::move(asset_path) } {
         std::vector<std::uint8_t> texels {};
-        assetmgr::load_asset_blob_or_panic(asset_category::texture, path, texels);
+        assetmgr::load_asset_blob_or_panic(asset_category::texture, get_asset_path(), texels);
         passert(texels.size() <= std::numeric_limits<std::uint32_t>::max());
         bimg::ImageContainer* image = bimg::imageParse(&s_allocator, texels.data(), static_cast<std::uint32_t>(texels.size()));
 
@@ -166,6 +166,8 @@ namespace graphics {
             image->m_size
         );
 
+        m_approx_byte_size = sizeof(*this) + image->m_size;
+
         bimg::imageFree(image);
     }
 
@@ -185,7 +187,7 @@ namespace graphics {
         const std::size_t size,
         const vk::ImageCreateFlags flags,
         const vk::ImageTiling tiling
-    ) {
+    ) : asset {asset_category::texture, asset_source::memory} {
         create(
             type,
             width,

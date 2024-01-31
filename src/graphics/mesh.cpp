@@ -19,7 +19,7 @@ namespace graphics {
 		mesh::primitive& prim_info
 	) -> bool;
 
-    mesh::mesh(const tinygltf::Model& model, const tinygltf::Mesh& mesh) {
+    mesh::mesh(const tinygltf::Model& model, const tinygltf::Mesh& mesh) : asset{asset_category::mesh, asset_source::memory} {
     	std::vector<vertex> vertices {};
     	std::vector<index> indices {};
     	m_primitives.reserve(mesh.primitives.size());
@@ -32,9 +32,13 @@ namespace graphics {
     	m_primitives.shrink_to_fit();
     	recompute_bounds(vertices);
     	create_buffers(vertices, indices);
+    	m_approx_byte_size = sizeof(*this)
+    		+ m_vertex_buffer.get_size()
+    		+ m_index_buffer.get_size()
+    		+ m_primitives.size() * sizeof(primitive);
     }
 
-    auto mesh::draw(const vk::CommandBuffer cmd) -> void {
+    auto mesh::draw(const vk::CommandBuffer cmd) const -> void {
     	constexpr vk::DeviceSize offsets = 0;
     	cmd.bindVertexBuffers(0, 1, &m_vertex_buffer.get_buffer(), &offsets);
     	cmd.bindIndexBuffer(m_index_buffer.get_buffer(), 0, m_index_32bit ? vk::IndexType::eUint32 : vk::IndexType::eUint16);

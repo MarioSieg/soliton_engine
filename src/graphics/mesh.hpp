@@ -3,13 +3,14 @@
 #pragma once
 
 #include "vulkancore/buffer.hpp"
+#include "../assetmgr/assetmgr.hpp"
 
 #include <DirectXMath.h>
 #include <DirectXCollision.h>
 #include <tiny_gltf.h>
 
 namespace graphics {
-    class mesh final : public no_copy, public no_move {
+    class mesh final : public asset {
     public:
         struct vertex final {
             DirectX::XMFLOAT3 position;
@@ -30,9 +31,9 @@ namespace graphics {
         };
 
         mesh(const tinygltf::Model& model, const tinygltf::Mesh& mesh);
-        ~mesh() = default;
+        ~mesh() override = default;
 
-        auto draw(vk::CommandBuffer cmd) -> void;
+        auto draw(vk::CommandBuffer cmd) const -> void;
 
         [[nodiscard]] auto get_primitives() const noexcept -> std::span<const primitive> { return m_primitives; }
         [[nodiscard]] auto get_aabb() const noexcept -> const DirectX::BoundingBox& { return m_aabb; }

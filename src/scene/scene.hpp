@@ -4,7 +4,11 @@
 
 #include "base.hpp"
 #include "components.hpp"
+
 #include "../assetmgr/assetmgr.hpp"
+
+#include "../graphics/mesh.hpp"
+#include "../graphics/texture.hpp"
 
 using lua_entity = std::uint32_t;
 
@@ -36,7 +40,8 @@ public:
 private:
     auto load_from_gltf(const std::string& path, float scale) -> void;
 
-    std::vector<std::unique_ptr<graphics::mesh>> m_meshes {};
+    asset_registry<graphics::mesh> m_meshes {};
+    asset_registry<graphics::texture> m_textures {};
     std::vector<flecs::entity> m_eitbl {}; // entity id translation lookaside buffer lol
     friend struct proxy;
     static inline constinit std::unique_ptr<scene> m_active {};
