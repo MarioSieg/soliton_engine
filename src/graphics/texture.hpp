@@ -83,7 +83,7 @@ namespace graphics {
             std::size_t size,
             vk::ImageLayout src_layout = vk::ImageLayout::eUndefined,
             vk::ImageLayout dst_layout = vk::ImageLayout::eShaderReadOnlyOptimal
-        ) -> void;
+        ) const -> void;
 
         auto generate_mips(
             vk::ImageLayout src_layout = vk::ImageLayout::eShaderReadOnlyOptimal,

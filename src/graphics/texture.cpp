@@ -155,7 +155,7 @@ namespace graphics {
             image->m_width,
             image->m_height,
             image->m_depth,
-            image->m_numMips,
+            image->m_numMips <= 1 ? 0 : image->m_numMips,
             image->m_numLayers,
             format,
             VMA_MEMORY_USAGE_GPU_ONLY,
@@ -319,7 +319,7 @@ namespace graphics {
         const std::size_t size,
         const vk::ImageLayout src_layout,
         const vk::ImageLayout dst_layout
-    ) -> void {
+    ) const -> void {
         vkb::buffer staging {};
         staging.create(size, 0, vk::BufferUsageFlagBits::eTransferSrc, VMA_MEMORY_USAGE_CPU_ONLY, VMA_ALLOCATION_CREATE_MAPPED_BIT, data);
 
@@ -377,7 +377,7 @@ namespace graphics {
         const vk::ImageAspectFlags aspect_mask,
         const vk::Filter filter
     ) const -> void {
-        const vk::CommandBuffer blit_cmd = vkb_context().start_command_buffer<vk::QueueFlagBits::eTransfer>();
+        const vk::CommandBuffer blit_cmd = vkb_context().start_command_buffer<vk::QueueFlagBits::eGraphics>();
 
         vk::ImageSubresourceRange intial_subresource_range {};
         intial_subresource_range.aspectMask = aspect_mask;
@@ -465,7 +465,8 @@ namespace graphics {
             subresource_range
         );
 
-        vkb_context().flush_command_buffer<vk::QueueFlagBits::eTransfer>(blit_cmd);
+        vkb_context().flush_command_buffer<vk::QueueFlagBits::eGraphics>(blit_cmd);
+        log_info("Generated mipchain with {} maps", m_mip_levels);
     }
 
     auto texture::set_image_layout_barrier(
