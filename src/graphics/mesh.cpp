@@ -42,10 +42,10 @@ namespace graphics {
     	constexpr vk::DeviceSize offsets = 0;
     	cmd.bindVertexBuffers(0, 1, &m_vertex_buffer.get_buffer(), &offsets);
     	cmd.bindIndexBuffer(m_index_buffer.get_buffer(), 0, m_index_32bit ? vk::IndexType::eUint32 : vk::IndexType::eUint16);
-    	for (const primitive& prim : m_primitives) {
-    		cmd.drawIndexed(prim.index_count, 1, prim.index_start, 0, 1);
-    	}
-    	//cmd.drawIndexed(m_index_count, 1, 0, 0, 0);
+    	//for (const primitive& prim : m_primitives) {
+    	//	cmd.drawIndexed(prim.index_count, 1, prim.index_start, 0, 1);
+    	//}
+    	cmd.drawIndexed(m_index_count, 1, 0, 0, 0);
     }
 
     auto mesh::recompute_bounds(const std::span<const vertex> vertices) -> void {
