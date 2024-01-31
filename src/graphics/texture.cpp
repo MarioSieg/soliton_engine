@@ -21,19 +21,19 @@ namespace graphics {
             case BC5: return vk::Format::eBc5UnormBlock;
             case BC6H: return vk::Format::eBc6HUfloatBlock;
             case BC7: return vk::Format::eBc7UnormBlock;
-            case ETC1: return vk::Format::eEtc2R8G8B8UnormBlock; // Approximation
+            case ETC1: panic("Currently unsupported texture format: {}", bimg::getName(fmt));
             case ETC2: return vk::Format::eEtc2R8G8B8UnormBlock;
             case ETC2A: return vk::Format::eEtc2R8G8B8A8UnormBlock;
             case ETC2A1: return vk::Format::eEtc2R8G8B8A1UnormBlock;
-            case PTC12: return vk::Format::eUndefined; // No direct equivalent
-            case PTC14: return vk::Format::eUndefined; // No direct equivalent
-            case PTC12A: return vk::Format::eUndefined; // No direct equivalent
-            case PTC14A: return vk::Format::eUndefined; // No direct equivalent
-            case PTC22: return vk::Format::eUndefined; // No direct equivalent
-            case PTC24: return vk::Format::eUndefined; // No direct equivalent
-            case ATC: return vk::Format::eUndefined; // No direct equivalent
-            case ATCE: return vk::Format::eUndefined; // No direct equivalent
-            case ATCI: return vk::Format::eUndefined; // No direct equivalent
+            case PTC12:  panic("Currently unsupported texture format: {}", bimg::getName(fmt));
+            case PTC14:  panic("Currently unsupported texture format: {}", bimg::getName(fmt));
+            case PTC12A: panic("Currently unsupported texture format: {}", bimg::getName(fmt));
+            case PTC14A: panic("Currently unsupported texture format: {}", bimg::getName(fmt));
+            case PTC22:  panic("Currently unsupported texture format: {}", bimg::getName(fmt));
+            case PTC24:  panic("Currently unsupported texture format: {}", bimg::getName(fmt));
+            case ATC:    panic("Currently unsupported texture format: {}", bimg::getName(fmt));
+            case ATCE:   panic("Currently unsupported texture format: {}", bimg::getName(fmt));
+            case ATCI:   panic("Currently unsupported texture format: {}", bimg::getName(fmt));
             case ASTC4x4: return vk::Format::eAstc4x4UnormBlock;
             case ASTC5x4: return vk::Format::eAstc5x4UnormBlock;
             case ASTC5x5: return vk::Format::eAstc5x5UnormBlock;
@@ -48,8 +48,8 @@ namespace graphics {
             case ASTC10x10: return vk::Format::eAstc10x10UnormBlock;
             case ASTC12x10: return vk::Format::eAstc12x10UnormBlock;
             case ASTC12x12: return vk::Format::eAstc12x12UnormBlock;
-            case R1: return vk::Format::eR8Unorm; // Approximation
-            case A8: return vk::Format::eR8Unorm; // Approximation
+            case R1: panic("Currently unsupported texture format: {}", bimg::getName(fmt));
+            case A8:  panic("Currently unsupported texture format: {}", bimg::getName(fmt));
             case R8: return vk::Format::eR8Unorm;
             case R8I: return vk::Format::eR8Sint;
             case R8U: return vk::Format::eR8Uint;
@@ -100,15 +100,15 @@ namespace graphics {
             case RGB5A1: return vk::Format::eR5G5B5A1UnormPack16;
             case RGB10A2: return vk::Format::eA2R10G10B10UnormPack32;
             case RG11B10F: return vk::Format::eB10G11R11UfloatPack32;
-            case D16: return vk::Format::eD16Unorm;
-            case D24: return vk::Format::eD24UnormS8Uint; // Approximation
+            case D16:  panic("Currently unsupported texture format: {}", bimg::getName(fmt));
+            case D24:  panic("Currently unsupported texture format: {}", bimg::getName(fmt));
             case D24S8: return vk::Format::eD24UnormS8Uint;
             case D32: return vk::Format::eD32Sfloat;
-            case D16F: return vk::Format::eD16Unorm; // Approximation
-            case D24F: return vk::Format::eD24UnormS8Uint; // Approximation
+            case D16F:  panic("Currently unsupported texture format: {}", bimg::getName(fmt));
+            case D24F:  panic("Currently unsupported texture format: {}", bimg::getName(fmt));
             case D32F: return vk::Format::eD32Sfloat;
             case D0S8: return vk::Format::eS8Uint;
-            default: return vk::Format::eUndefined;
+            default:  panic("Currently unsupported texture format: {}", bimg::getName(fmt));
         }
     }
 
@@ -151,12 +151,12 @@ namespace graphics {
 
         const vk::Format format = map_bimg_format_to_vk(image->m_format);
         create(
-            vk::ImageType::e2D,
+            vk::ImageType::e2D, // TODO: cubemap?
             image->m_width,
             image->m_height,
-            1,
-            0,
-            1,
+            image->m_depth,
+            image->m_numMips,
+            image->m_numLayers,
             format,
             VMA_MEMORY_USAGE_GPU_ONLY,
             vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eTransferSrc,
@@ -271,18 +271,7 @@ namespace graphics {
         m_mapped = alloc_info.pMappedData;
 
         if (data && size) [[likely]] {
-            const vk::Device device = vkb_vk_device();
-
-            vk::CommandBuffer copy_cmd {};
-            vk::CommandBufferAllocateInfo cmd_alloc_info {};
-            cmd_alloc_info.commandPool = vkb_context().get_command_pool();
-            cmd_alloc_info.level = vk::CommandBufferLevel::ePrimary;
-            cmd_alloc_info.commandBufferCount = 1;
-            vkcheck(device.allocateCommandBuffers(&cmd_alloc_info, &copy_cmd)); // TODO: not thread safe
-
-            vk::CommandBufferBeginInfo cmd_begin_info {};
-            cmd_begin_info.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
-            vkcheck(copy_cmd.begin(&cmd_begin_info));
+            const vk::CommandBuffer copy_cmd = vkb_context().start_command_buffer<vk::QueueFlagBits::eTransfer>();
 
             vk::ImageSubresourceRange subresource_range {};
             subresource_range.aspectMask = vk::ImageAspectFlagBits::eColor;
@@ -301,19 +290,7 @@ namespace graphics {
                 subresource_range
             );
 
-            vkcheck(copy_cmd.end());
-
-            vk::FenceCreateInfo fence_info {};
-            vk::Fence fence {};
-            vkcheck(device.createFence(&fence_info, &vkb::s_allocator, &fence));
-
-            vk::SubmitInfo submit_info {};
-            submit_info.commandBufferCount = 1;
-            submit_info.pCommandBuffers = &copy_cmd;
-            vkcheck(vkb_device().get_graphics_queue().submit(1, &submit_info, fence));// TODO: not thread safe, use transfer queue
-            vkcheck(device.waitForFences(1, &fence, vk::True, std::numeric_limits<std::uint64_t>::max()));
-            device.destroyFence(fence, &vkb::s_allocator);
-            device.freeCommandBuffers(vkb_context().get_command_pool(), 1, &copy_cmd);
+            vkb_context().flush_command_buffer<vk::QueueFlagBits::eTransfer>(copy_cmd);
 
             upload(0, 0, data, size, vk::ImageLayout::eTransferDstOptimal);
 
@@ -363,18 +340,7 @@ namespace graphics {
         subresource_range.layerCount = 1;
         subresource_range.baseArrayLayer = array_idx;
 
-        const vk::Device device = vkb_vk_device();
-
-        vk::CommandBuffer copy_cmd {};
-        vk::CommandBufferAllocateInfo cmd_alloc_info {};
-        cmd_alloc_info.commandPool = vkb_context().get_command_pool();
-        cmd_alloc_info.level = vk::CommandBufferLevel::ePrimary;
-        cmd_alloc_info.commandBufferCount = 1;
-        vkcheck(device.allocateCommandBuffers(&cmd_alloc_info, &copy_cmd)); // TODO: not thread safe
-
-        vk::CommandBufferBeginInfo cmd_begin_info {};
-        cmd_begin_info.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
-        vkcheck(copy_cmd.begin(&cmd_begin_info));
+        const vk::CommandBuffer copy_cmd = vkb_context().start_command_buffer<vk::QueueFlagBits::eTransfer>();
 
         if (src_layout != vk::ImageLayout::eTransferDstOptimal) {
             set_image_layout_barrier(
@@ -402,19 +368,7 @@ namespace graphics {
             );
         }
 
-        vkcheck(copy_cmd.end());
-
-        vk::FenceCreateInfo fence_info {};
-        vk::Fence fence {};
-        vkcheck(device.createFence(&fence_info, &vkb::s_allocator, &fence));
-
-        vk::SubmitInfo submit_info {};
-        submit_info.commandBufferCount = 1;
-        submit_info.pCommandBuffers = &copy_cmd;
-        vkcheck(vkb_device().get_graphics_queue().submit(1, &submit_info, fence));// TODO: not thread safe, use transfer queue
-        vkcheck(device.waitForFences(1, &fence, vk::True, std::numeric_limits<std::uint64_t>::max()));
-        device.destroyFence(fence, &vkb::s_allocator);
-        device.freeCommandBuffers(vkb_context().get_command_pool(), 1, &copy_cmd);
+        vkb_context().flush_command_buffer<vk::QueueFlagBits::eTransfer>(copy_cmd);
     }
 
     auto texture::generate_mips(
@@ -422,19 +376,8 @@ namespace graphics {
         const vk::ImageLayout dst_layout,
         const vk::ImageAspectFlags aspect_mask,
         const vk::Filter filter
-    ) -> void {
-        const vk::Device device = vkb_vk_device();
-
-        vk::CommandBuffer blit_cmd {};
-        vk::CommandBufferAllocateInfo cmd_alloc_info {};
-        cmd_alloc_info.commandPool = vkb_context().get_command_pool();
-        cmd_alloc_info.level = vk::CommandBufferLevel::ePrimary;
-        cmd_alloc_info.commandBufferCount = 1;
-        vkcheck(device.allocateCommandBuffers(&cmd_alloc_info, &blit_cmd)); // TODO: not thread safe
-
-        vk::CommandBufferBeginInfo cmd_begin_info {};
-        cmd_begin_info.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
-        vkcheck(blit_cmd.begin(&cmd_begin_info));
+    ) const -> void {
+        const vk::CommandBuffer blit_cmd = vkb_context().start_command_buffer<vk::QueueFlagBits::eTransfer>();
 
         vk::ImageSubresourceRange intial_subresource_range {};
         intial_subresource_range.aspectMask = aspect_mask;
@@ -522,19 +465,7 @@ namespace graphics {
             subresource_range
         );
 
-        vkcheck(blit_cmd.end());
-
-        vk::FenceCreateInfo fence_info {};
-        vk::Fence fence {};
-        vkcheck(device.createFence(&fence_info, &vkb::s_allocator, &fence));
-
-        vk::SubmitInfo submit_info {};
-        submit_info.commandBufferCount = 1;
-        submit_info.pCommandBuffers = &blit_cmd;
-        vkcheck(vkb_device().get_graphics_queue().submit(1, &submit_info, fence));// TODO: not thread safe, use transfer queue
-        vkcheck(device.waitForFences(1, &fence, vk::True, std::numeric_limits<std::uint64_t>::max()));
-        device.destroyFence(fence, &vkb::s_allocator);
-        device.freeCommandBuffers(vkb_context().get_command_pool(), 1, &blit_cmd);
+        vkb_context().flush_command_buffer<vk::QueueFlagBits::eTransfer>(blit_cmd);
     }
 
     auto texture::set_image_layout_barrier(

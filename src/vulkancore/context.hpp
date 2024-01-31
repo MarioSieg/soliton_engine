@@ -11,6 +11,14 @@
 #include <DirectXMath.h>
 
 namespace vkb {
+    template <const vk::QueueFlagBits QueueType>
+    concept is_queue_type = requires {
+        requires
+            QueueType == vk::QueueFlagBits::eGraphics
+            || QueueType == vk::QueueFlagBits::eCompute
+            || QueueType == vk::QueueFlagBits::eTransfer;
+    };
+
     class context final : public no_copy, public no_move {
     public:
         static constexpr std::uint32_t k_max_concurrent_frames = 3;
@@ -24,7 +32,68 @@ namespace vkb {
         [[nodiscard]] auto get_height() const noexcept -> std::uint32_t { return m_height; }
         [[nodiscard]] auto get_device() const noexcept -> const device& { return *m_device; }
         [[nodiscard]] auto get_swapchain() const noexcept -> const swapchain& { return *m_swapchain; }
-        [[nodiscard]] auto get_command_pool() const noexcept -> vk::CommandPool { return m_command_pool; }
+        [[nodiscard]] auto get_graphics_command_pool() const noexcept -> vk::CommandPool { return m_graphics_command_pool; }
+        [[nodiscard]] auto get_compute_command_pool() const noexcept -> vk::CommandPool { return m_compute_command_pool; }
+        [[nodiscard]] auto get_transfer_command_pool() const noexcept -> vk::CommandPool { return m_transfer_command_pool; }
+        template <const vk::QueueFlagBits QueueType> requires is_queue_type<QueueType>
+        [[nodiscard]] auto start_command_buffer() const -> vk::CommandBuffer {
+            vk::CommandBuffer cmd {};
+            vk::CommandBufferAllocateInfo cmd_alloc_info {};
+            vk::CommandPool pool {};
+            if constexpr (QueueType == vk::QueueFlagBits::eGraphics) {
+                pool = get_graphics_command_pool();
+            } else if constexpr (QueueType == vk::QueueFlagBits::eCompute) {
+                pool = get_compute_command_pool();
+            } else if constexpr (QueueType == vk::QueueFlagBits::eTransfer) {
+                pool = get_transfer_command_pool();
+            } else {
+                panic("Invalid queue type");
+            }
+            cmd_alloc_info.commandPool = pool;
+            cmd_alloc_info.level = vk::CommandBufferLevel::ePrimary;
+            cmd_alloc_info.commandBufferCount = 1;
+            vkcheck(m_device->get_logical_device().allocateCommandBuffers(&cmd_alloc_info, &cmd)); // TODO: not thread safe
+
+            vk::CommandBufferBeginInfo cmd_begin_info {};
+            cmd_begin_info.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
+            vkcheck(cmd.begin(&cmd_begin_info));
+            return cmd;
+        }
+        template <const vk::QueueFlagBits QueueType> requires is_queue_type<QueueType>
+        auto flush_command_buffer(const vk::CommandBuffer cmd) const -> void {
+            const vk::Device device = m_device->get_logical_device();
+            vkcheck(cmd.end());
+            vk::FenceCreateInfo fence_info {};
+            vk::Fence fence {};
+            vkcheck(device.createFence(&fence_info, &vkb::s_allocator, &fence));
+            vk::SubmitInfo submit_info {};
+            submit_info.commandBufferCount = 1;
+            submit_info.pCommandBuffers = &cmd;
+            vk::Queue queue {};
+            if constexpr (QueueType == vk::QueueFlagBits::eGraphics) {
+                queue = m_device->get_graphics_queue();
+            } else if constexpr (QueueType == vk::QueueFlagBits::eCompute) {
+                queue = m_device->get_compute_queue();
+            } else if constexpr (QueueType == vk::QueueFlagBits::eTransfer) {
+                queue = m_device->get_transfer_queue();
+            } else {
+                panic("Invalid queue type");
+            }
+            vkcheck(queue.submit(1, &submit_info, fence));// TODO: not thread safe, use transfer queue
+            vkcheck(device.waitForFences(1, &fence, vk::True, std::numeric_limits<std::uint64_t>::max()));
+            device.destroyFence(fence, &vkb::s_allocator);
+            vk::CommandPool pool {};
+            if constexpr (QueueType == vk::QueueFlagBits::eGraphics) {
+                pool = get_graphics_command_pool();
+            } else if constexpr (QueueType == vk::QueueFlagBits::eCompute) {
+                pool = get_compute_command_pool();
+            } else if constexpr (QueueType == vk::QueueFlagBits::eTransfer) {
+                pool = get_transfer_command_pool();
+            } else {
+                panic("Invalid queue type");
+            }
+            device.freeCommandBuffers(pool, 1, &cmd);
+        }
         [[nodiscard]] auto get_command_buffers() const noexcept -> std::span<const vk::CommandBuffer> { return m_command_buffers; }
         [[nodiscard]] auto get_current_frame() const noexcept -> std::uint32_t { return m_current_frame; }
         [[nodiscard]] auto get_image_index() const noexcept -> std::uint32_t { return m_image_index; }
@@ -51,7 +120,7 @@ namespace vkb {
     private:
         auto boot_vulkan_core() -> void;
         auto create_sync_prims() -> void;
-        auto create_command_pool() -> void;
+        auto create_command_pools() -> void;
         auto create_command_buffers() -> void;
         auto setup_depth_stencil() -> void;
         auto setup_render_pass() -> void;
@@ -75,7 +144,9 @@ namespace vkb {
             std::array<vk::Semaphore, k_max_concurrent_frames> render_complete {}; // Command buffer submission and execution
         } m_semaphores {}; // Semaphores are used to coordinate operations within the graphics queue and ensure correct command ordering
         vk::PipelineStageFlags m_submit_info_wait_stage_mask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
-        vk::CommandPool m_command_pool {};
+        vk::CommandPool m_graphics_command_pool {};
+        vk::CommandPool m_compute_command_pool {};
+        vk::CommandPool m_transfer_command_pool {};
         std::array<vk::CommandBuffer, k_max_concurrent_frames> m_command_buffers {}; // Command buffers used for rendering
         std::array<vk::Fence, k_max_concurrent_frames> m_wait_fences {}; // Wait fences to sync command buffer access
         struct {

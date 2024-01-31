@@ -16,10 +16,7 @@ namespace vkb {
 
         create_instance();
         find_physical_device();
-        std::vector<const char*> device_extensions {
-            VK_KHR_MAINTENANCE1_EXTENSION_NAME
-        };
-        create_logical_device({}, device_extensions, nullptr);
+        create_logical_device(k_enabled_features, k_device_extensions, nullptr);
         init_vma();
         passert(find_supported_depth_format(require_stencil, m_depth_format));
 
@@ -254,9 +251,8 @@ namespace vkb {
 
     auto device::create_logical_device(
         const vk::PhysicalDeviceFeatures& enabled_features,
-        const std::vector<const char*>& enabled_extensions,
+        const std::span<const char*> enabled_extensions,
         void* next_chain,
-        bool use_swap_chain,
         vk::QueueFlags requested_queue_types
     ) -> void {
         // Desired queues need to be requested upon logical device creation
@@ -268,7 +264,7 @@ namespace vkb {
         // Get queue family indices for the requested queue family types
         // Note that the indices may overlap depending on the implementation
 
-        const float defaultQueuePriority = 0.0f;
+        constexpr float default_queue_priority = 0.0f;
 
         // Graphics queue
         if (requested_queue_types & vk::QueueFlagBits::eGraphics) {
@@ -276,7 +272,7 @@ namespace vkb {
             vk::DeviceQueueCreateInfo info {};
             info.queueFamilyIndex = m_queue_families.graphics;
             info.queueCount = 1;
-            info.pQueuePriorities = &defaultQueuePriority;
+            info.pQueuePriorities = &default_queue_priority;
             queue_infos.emplace_back(info);
         } else {
              m_queue_families.graphics = 0;
@@ -290,7 +286,7 @@ namespace vkb {
                 vk::DeviceQueueCreateInfo info {};
                 info.queueFamilyIndex = m_queue_families.compute;
                 info.queueCount = 1;
-                info.pQueuePriorities = &defaultQueuePriority;
+                info.pQueuePriorities = &default_queue_priority;
                 queue_infos.emplace_back(info);
             }
         } else {
@@ -306,16 +302,11 @@ namespace vkb {
                 vk::DeviceQueueCreateInfo info {};
                 info.queueFamilyIndex = m_queue_families.transfer;
                 info.queueCount = 1;
-                info.pQueuePriorities = &defaultQueuePriority;
+                info.pQueuePriorities = &default_queue_priority;
                 queue_infos.emplace_back(info);
             }
         } else { // Else we use the same queue
             m_queue_families.transfer = m_queue_families.graphics;
-        }
-
-        std::vector<const char*> device_extensions {enabled_extensions};
-        if (use_swap_chain) { // If the device will be used for presenting to a display via a swapchain we need to request the swapchain extension
-            device_extensions.emplace_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
         }
 
         vk::DeviceCreateInfo device_create_info {};
@@ -333,22 +324,19 @@ namespace vkb {
             device_create_info.pNext = &physical_device_features2;
         }
 
-        if (!device_extensions.empty()) [[likely]] {
+        if (!enabled_extensions.empty()) [[likely]] {
             const auto extension_supported = [this](const char* ext) -> bool {
-                for (const auto& supported_ext : m_supported_device_extensions) {
-                    if (std::strcmp(supported_ext.extensionName, ext) == 0) {
-                        return true;
-                    }
-                }
-                return false;
+                return std::ranges::any_of(m_supported_device_extensions, [ext](const vk::ExtensionProperties& extension) {
+                    return std::strcmp(extension.extensionName, ext) == 0;
+                });
             };
-            for (const char* ext : device_extensions) {
+            for (const char* ext : enabled_extensions) {
                 if (!extension_supported(ext)) {
                     log_warn("Device extension {} not supported", ext);
                 }
             }
-            device_create_info.enabledExtensionCount = static_cast<uint32_t>(device_extensions.size());
-            device_create_info.ppEnabledExtensionNames = device_extensions.data();
+            device_create_info.enabledExtensionCount = static_cast<std::uint32_t>(enabled_extensions.size());
+            device_create_info.ppEnabledExtensionNames = enabled_extensions.data();
         }
 
         m_enabled_features = enabled_features;

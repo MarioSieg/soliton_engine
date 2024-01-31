@@ -90,7 +90,7 @@ namespace graphics {
             vk::ImageLayout dst_layout = vk::ImageLayout::eShaderReadOnlyOptimal,
             vk::ImageAspectFlags aspect_mask = vk::ImageAspectFlagBits::eColor,
             vk::Filter filter = vk::Filter::eLinear
-        ) -> void;
+        ) const -> void;
 
         std::uint32_t m_width = 0;
         std::uint32_t m_height = 0;

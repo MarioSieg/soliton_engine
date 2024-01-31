@@ -12,7 +12,7 @@ namespace vkb {
     context::context(GLFWwindow* window) : m_window{window} {
         passert(m_window != nullptr);
         boot_vulkan_core();
-        create_command_pool();
+        create_command_pools();
         create_command_buffers();
         create_sync_prims();
         setup_depth_stencil();
@@ -45,7 +45,9 @@ namespace vkb {
 
         destroy_command_buffers();
 
-        m_device->get_logical_device().destroyCommandPool(m_command_pool, &s_allocator);
+        m_device->get_logical_device().destroyCommandPool(m_transfer_command_pool, &s_allocator);
+        m_device->get_logical_device().destroyCommandPool(m_compute_command_pool, &s_allocator);
+        m_device->get_logical_device().destroyCommandPool(m_graphics_command_pool, &s_allocator);
 
         destroy_sync_prims();
 
@@ -71,8 +73,6 @@ namespace vkb {
             vkcheck(result);
         }
 
-        constexpr vk::CommandBufferBeginInfo command_buffer_begin_info {};
-
         // Set clear values for all framebuffer attachments with loadOp set to clear
         // We use two attachments (color and depth) that are cleared at the start of the subpass and as such we need to set clear values for both
         std::array<vk::ClearValue, 2> clear_values {};
@@ -89,6 +89,7 @@ namespace vkb {
 
         const vk::CommandBuffer cmd_buf = m_command_buffers[m_current_frame];
         vkcheck(cmd_buf.reset({}));
+        constexpr vk::CommandBufferBeginInfo command_buffer_begin_info {};
         vkcheck(cmd_buf.begin(&command_buffer_begin_info));
 
         // Start the first sub pass specified in our default render pass setup by the base class
@@ -211,16 +212,21 @@ namespace vkb {
         }
     }
 
-    auto context::create_command_pool() -> void {
-        vk::CommandPoolCreateInfo command_pool_ci {};
-        command_pool_ci.queueFamilyIndex = m_swapchain->get_queue_node_index();
-        command_pool_ci.flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer;
-        vkcheck(m_device->get_logical_device().createCommandPool(&command_pool_ci, &s_allocator, &m_command_pool));
+    auto context::create_command_pools() -> void {
+        const auto create_cp = [this](const std::uint32_t family, auto& dst) {
+            vk::CommandPoolCreateInfo command_pool_ci {};
+            command_pool_ci.queueFamilyIndex = family;
+            command_pool_ci.flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer;
+            vkcheck(m_device->get_logical_device().createCommandPool(&command_pool_ci, &s_allocator, &dst));
+        };
+        create_cp(m_device->get_graphics_queue_idx(), m_graphics_command_pool);
+        create_cp(m_device->get_compute_queue_idx(), m_compute_command_pool);
+        create_cp(m_device->get_transfer_queue_idx(), m_transfer_command_pool);
     }
 
     auto context::create_command_buffers() -> void {
         vk::CommandBufferAllocateInfo command_buffer_allocate_info {};
-        command_buffer_allocate_info.commandPool = m_command_pool;
+        command_buffer_allocate_info.commandPool = m_graphics_command_pool;
         command_buffer_allocate_info.level = vk::CommandBufferLevel::ePrimary;
         command_buffer_allocate_info.commandBufferCount = static_cast<std::uint32_t>(m_command_buffers.size());
         vkcheck(m_device->get_logical_device().allocateCommandBuffers(&command_buffer_allocate_info, m_command_buffers.data()));
@@ -460,7 +466,7 @@ namespace vkb {
     }
 
     auto context::destroy_command_buffers() const -> void {
-        m_device->get_logical_device().freeCommandBuffers(m_command_pool, k_max_concurrent_frames, m_command_buffers.data());
+        m_device->get_logical_device().freeCommandBuffers(m_graphics_command_pool, k_max_concurrent_frames, m_command_buffers.data());
     }
 
     auto context::destroy_sync_prims() const -> void {

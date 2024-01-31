@@ -101,34 +101,15 @@ namespace vkb {
                 VMA_ALLOCATION_CREATE_MAPPED_BIT,
                 data
             );
-            vk::CommandBuffer copy_cmd {};
-            vk::CommandBufferAllocateInfo cmd_alloc_info {};
-            cmd_alloc_info.commandPool = vkb_context().get_command_pool();
-            cmd_alloc_info.level = vk::CommandBufferLevel::ePrimary;
-            cmd_alloc_info.commandBufferCount = 1;
-            vkcheck(device.allocateCommandBuffers(&cmd_alloc_info, &copy_cmd)); // TODO: not thread safe
 
-            vk::CommandBufferBeginInfo cmd_begin_info {};
-            cmd_begin_info.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
-            vkcheck(copy_cmd.begin(&cmd_begin_info));
+            const vk::CommandBuffer copy_cmd = vkb_context().start_command_buffer<vk::QueueFlagBits::eTransfer>();
 
             vk::BufferCopy copy_region {};
             copy_region.size = size;
             copy_region.dstOffset = offset;
             copy_cmd.copyBuffer(staging_buffer.get_buffer(), m_buffer, 1, &copy_region);
-            vkcheck(copy_cmd.end());
 
-            vk::FenceCreateInfo fence_info {};
-            vk::Fence fence {};
-            vkcheck(device.createFence(&fence_info, &vkb::s_allocator, &fence));
-
-            vk::SubmitInfo submit_info {};
-            submit_info.commandBufferCount = 1;
-            submit_info.pCommandBuffers = &copy_cmd;
-            vkcheck(vkb_device().get_graphics_queue().submit(1, &submit_info, fence));// TODO: not thread safe, use transfer queue
-            vkcheck(device.waitForFences(1, &fence, vk::True, std::numeric_limits<std::uint64_t>::max()));
-            device.destroyFence(fence, &vkb::s_allocator);
-            device.freeCommandBuffers(context::s_instance->get_command_pool(), 1, &copy_cmd);
+            vkb_context().flush_command_buffer<vk::QueueFlagBits::eTransfer>(copy_cmd);
         } else {
             if (!m_mapped) {
                 vkcheck(device.mapMemory(m_memory, 0, size, {}, &m_mapped));

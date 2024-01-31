@@ -37,16 +37,28 @@ namespace vkb {
         [[nodiscard]] auto get_graphics_queue() const noexcept -> vk::Queue { return m_graphics_queue; }
         [[nodiscard]] auto get_compute_queue() const noexcept -> vk::Queue { return m_compute_queue; }
         [[nodiscard]] auto get_transfer_queue() const noexcept -> vk::Queue { return m_transfer_queue; }
+        [[nodiscard]] auto get_graphics_queue_idx() const noexcept -> std::uint32_t { return m_queue_families.graphics; }
+        [[nodiscard]] auto get_compute_queue_idx() const noexcept -> std::uint32_t { return m_queue_families.compute; }
+        [[nodiscard]] auto get_transfer_queue_idx() const noexcept -> std::uint32_t { return m_queue_families.transfer; }
         [[nodiscard]] auto get_allocator() const noexcept -> VmaAllocator { return m_allocator; }
 
     private:
+        static inline constinit std::array<const char*, 2> k_device_extensions {
+            VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+            VK_KHR_MAINTENANCE1_EXTENSION_NAME
+        };
+        static constexpr vk::PhysicalDeviceFeatures k_enabled_features = [] {
+            vk::PhysicalDeviceFeatures enabled_features {};
+            enabled_features.samplerAnisotropy = vk::True;
+            return enabled_features;
+        }();
+
         auto create_instance() -> void;
         auto find_physical_device() -> void;
         auto create_logical_device(
             const vk::PhysicalDeviceFeatures& enabled_features,
-            const std::vector<const char*>& enabled_extensions,
+            std::span<const char*> enabled_extensions,
             void* next_chain,
-            bool use_swap_chain = true,
             vk::QueueFlags requested_queue_types = vk::QueueFlagBits::eGraphics | vk::QueueFlagBits::eCompute | vk::QueueFlagBits::eTransfer
         ) -> void;
         auto init_vma() -> void;
