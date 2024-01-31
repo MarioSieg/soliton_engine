@@ -63,7 +63,7 @@ namespace vkb {
         auto flush_command_buffer(const vk::CommandBuffer cmd) const -> void {
             const vk::Device device = m_device->get_logical_device();
             vkcheck(cmd.end());
-            vk::FenceCreateInfo fence_info {};
+            constexpr vk::FenceCreateInfo fence_info {};
             vk::Fence fence {};
             vkcheck(device.createFence(&fence_info, &vkb::s_allocator, &fence));
             vk::SubmitInfo submit_info {};

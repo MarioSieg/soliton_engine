@@ -28,7 +28,7 @@ namespace vkb {
         [[nodiscard]] auto get_supported_instance_extensions() const noexcept -> std::span<const std::string> { return m_supported_instance_extensions; }
         [[nodiscard]] auto get_depth_format() const noexcept -> vk::Format { return m_depth_format; }
         [[nodiscard]] auto get_mem_type_idx(std::uint32_t type_bits, vk::MemoryPropertyFlags properties, vk::Bool32& found) const -> std::uint32_t;
-        [[nodiscard]] auto get_mem_type_idx_or_panic(std::uint32_t type_bits, vk::MemoryPropertyFlags properties) const -> std::uint32_t {
+        [[nodiscard]] auto get_mem_type_idx_or_panic(const std::uint32_t type_bits, const vk::MemoryPropertyFlags properties) const -> std::uint32_t {
             vk::Bool32 found {};
             const auto idx = get_mem_type_idx(type_bits, properties, found);
             passert(found == vk::True);
