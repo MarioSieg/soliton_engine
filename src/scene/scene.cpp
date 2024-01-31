@@ -19,7 +19,6 @@ scene::scene() : id{id_gen.fetch_add(1, std::memory_order_relaxed)} {
     static const auto main_tid = std::this_thread::get_id();
     passert(main_tid == std::this_thread::get_id());
     m_eitbl.reserve(0x1000);
-    load_from_gltf("/home/neo/Documents/AssetLibrary/EmeraldSquare/EmeraldSquare_Day.gltf");
 }
 
 scene::~scene() {
@@ -29,10 +28,13 @@ scene::~scene() {
 	log_info("Destroyed scene '{}', id: {}", name, id);
 }
 
-auto scene::new_active(std::string&& name) -> void {
+auto scene::new_active(std::string&& name, std::string&& gltf_file, const float scale) -> void {
     auto scene = std::make_unique<proxy>();
     scene->name = std::move(name);
     log_info("Created scene '{}', id: {}", scene->name, scene->id);
+	if (!gltf_file.empty()) {
+		scene->load_from_gltf(gltf_file, scale);
+	}
     m_active = std::move(scene);
 }
 

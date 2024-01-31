@@ -4,7 +4,7 @@ local ffi = require 'ffi'
 local Entity = require 'lu.entity'
 
 ffi.cdef[[
-    uint32_t __lu_scene_new(const char* name);
+    uint32_t __lu_scene_new(const char* name, const char* gltf_file, double scale);
     void __lu_scene_tick(void);
     void __lu_scene_start(void);
     lua_entity_id __lu_scene_spawn_entity(const char* name);
@@ -39,11 +39,20 @@ function Scene.getEntityByName(name)
     return Entity:new(C.__lu_scene_get_entity_by_name(name))
 end
 
-function Scene.new(scene_name)
-    scene_name = scene_name or 'untitled'
+function Scene.new(scene_name, gltf_file, scale)
+    assert(scene_name or gltf_file, 'scene name or gltf file must be provided')
+    if gltf_file and type(gltf_file) == 'string' then
+        if not lfs.attributes(gltf_file) then
+            panic(string.format('gltf file %s does not exist', gltf_file))
+        end
+        scene_name = scene_name or gltf_file:match("[^/]*.gltf$")
+    else
+        scene_name = scene_name or 'untitled'
+        gltf_file = ''
+    end
     Scene.name = scene_name
     assert(type(scene_name) == 'string')
-    local id = C.__lu_scene_new(scene_name) -- create native scene
+    local id = C.__lu_scene_new(scene_name, gltf_file, scale) -- create native scene
     assert(type(id) == 'number' and id ~= 0, 'failed to create scene')
     Scene.id = id
     Scene.__onStart() -- invoke start hook
@@ -51,6 +60,6 @@ function Scene.new(scene_name)
     print(string.format('Created new scene: %s, id: %x', scene_name, id))
 end
 
-Scene.new()
+Scene.new(nil, '/home/neo/Documents/AssetLibrary/EmeraldSquare/EmeraldSquare_Day.gltf', 0.025)
 
 return Scene

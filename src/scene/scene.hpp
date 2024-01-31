@@ -17,7 +17,7 @@ public:
     std::string name = {};
     virtual ~scene();
 
-    static auto new_active(std::string&& name = {}) -> void;
+    static auto new_active(std::string&& name, std::string&& gltf_file, float scale = 1.0f) -> void;
     [[nodiscard]] static auto get_active() noexcept -> const std::unique_ptr<scene>& { passert(m_active != nullptr); return m_active; }
 
     virtual auto on_tick() -> void;
@@ -34,7 +34,7 @@ public:
     }
 
 private:
-    auto load_from_gltf(const std::string& path, float scale = 0.025f) -> void;
+    auto load_from_gltf(const std::string& path, float scale) -> void;
 
     std::vector<std::unique_ptr<graphics::mesh>> m_meshes {};
     std::vector<flecs::entity> m_eitbl {}; // entity id translation lookaside buffer lol

@@ -2,8 +2,11 @@
 
 #include "_prelude.hpp"
 
-LUA_INTEROP_API auto __lu_scene_new(const char* name) -> std::uint32_t {
-    scene::new_active(name);
+LUA_INTEROP_API auto __lu_scene_new(const char* name, const char* gltf_file, const double scale) -> std::uint32_t {
+    std::string sname {}, sgltf_file {};
+    if (name) sname = name;
+    if (gltf_file) sgltf_file = gltf_file;
+    scene::new_active(std::move(sname), std::move(sgltf_file), static_cast<float>(scale));
     return scene::get_active()->id;
 }
 
