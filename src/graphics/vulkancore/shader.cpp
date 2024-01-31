@@ -6,7 +6,7 @@
 #include <fstream>
 #include <filesystem>
 
-#include "../assetmgr/assetmgr.hpp"
+#include "../../assetmgr/assetmgr.hpp"
 
 namespace vkb {
     static constinit std::optional<shaderc::Compiler> s_compiler;

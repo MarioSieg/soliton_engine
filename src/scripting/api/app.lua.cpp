@@ -2,7 +2,7 @@
 
 #include "_prelude.hpp"
 #include "../../core/kernel.hpp"
-#include "../../vulkancore/context.hpp"
+#include "../../graphics/vulkancore/context.hpp"
 #include "../../platform/platform_subsystem.hpp"
 
 #include <infoware/infoware.hpp>

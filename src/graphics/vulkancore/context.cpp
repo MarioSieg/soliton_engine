@@ -3,10 +3,10 @@
 #include "context.hpp"
 #include "imgui_impl_vulkan.h"
 
-#include "../graphics/imgui/imgui_impl_glfw.h"
-#include "../graphics/imgui/font_awesome.ttf.inl"
-#include "../graphics/imgui/jetbrains_mono.ttf.inl"
-#include "../graphics/imgui/font_awesome_pro_5.hpp"
+#include "../imgui/imgui_impl_glfw.h"
+#include "../imgui/font_awesome.ttf.inl"
+#include "../imgui/jetbrains_mono.ttf.inl"
+#include "../imgui/font_awesome_pro_5.hpp"
 
 namespace vkb {
     context::context(GLFWwindow* window) : m_window{window} {

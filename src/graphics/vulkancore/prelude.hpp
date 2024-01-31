@@ -12,7 +12,7 @@
 #include <vulkan/vk_enum_string_helper.h>
 #include <mimalloc.h>
 
-#include "../core/core.hpp"
+#include "../../core/core.hpp"
 
 namespace vkb {
     extern auto dump_physical_device_props(const vk::PhysicalDeviceProperties& props) -> void;

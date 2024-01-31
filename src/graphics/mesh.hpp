@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "../vulkancore/buffer.hpp"
+#include "vulkancore/buffer.hpp"
 
 #include <DirectXMath.h>
 #include <DirectXCollision.h>

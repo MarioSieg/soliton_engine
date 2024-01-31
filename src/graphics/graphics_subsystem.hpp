@@ -7,9 +7,9 @@
 #include "../core/subsystem.hpp"
 #include "../scene/scene.hpp"
 
-#include "../vulkancore/context.hpp"
-#include "../vulkancore/shader.hpp"
-#include "../vulkancore/buffer.hpp"
+#include "vulkancore/context.hpp"
+#include "vulkancore/shader.hpp"
+#include "vulkancore/buffer.hpp"
 
 #include "mesh.hpp"
 #include "texture.hpp"

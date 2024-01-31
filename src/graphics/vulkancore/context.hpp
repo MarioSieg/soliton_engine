@@ -7,7 +7,7 @@
 #include "device.hpp"
 #include "swapchain.hpp"
 
-#include "../graphics/imgui/imgui.h"
+#include "../imgui/imgui.h"
 #include <DirectXMath.h>
 
 namespace vkb {

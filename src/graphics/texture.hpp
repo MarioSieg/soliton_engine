@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "../vulkancore/buffer.hpp"
+#include "vulkancore/buffer.hpp"
 
 namespace graphics {
     class texture final : public no_copy, public no_move {

@@ -3,8 +3,8 @@
 #include "texture.hpp"
 
 #include "../assetmgr/assetmgr.hpp"
-#include "../vulkancore/context.hpp"
-#include "../vulkancore/buffer.hpp"
+#include "vulkancore/context.hpp"
+#include "vulkancore/buffer.hpp"
 
 #include <bx/allocator.h>
 #include <bimg/bimg.h>
