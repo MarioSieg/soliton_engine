@@ -6,6 +6,8 @@
 
 namespace graphics {
     class mesh;
+    class texture;
+    class material;
 }
 
 struct c_metadata final {
@@ -85,5 +87,6 @@ struct render_flags final {
 
 struct c_mesh_renderer final {
     graphics::mesh* mesh = nullptr;
+    graphics::material* material = nullptr;
     std::underlying_type_t<render_flags::$> flags = render_flags::none;
 };

@@ -37,21 +37,17 @@ namespace graphics {
         GLFWwindow* window = platform_subsystem::get_glfw_window();
         context::s_instance = std::make_unique<context>(window); // Create Vulkan context
 
-        m_texture.emplace("proto/light/texture_10.png");
-
-        material::create_descriptor_set_layout_lazy();
+        material::create_global_descriptors();
 
         create_uniform_buffers();
         create_descriptor_set_layout();
-        create_descriptor_pool(1024);
+        create_descriptor_pool();
         create_descriptor_sets();
         create_pipeline();
     }
 
     graphics_subsystem::~graphics_subsystem() {
         vkcheck(context::s_instance->get_device().get_logical_device().waitIdle());
-
-        m_texture.reset();
 
         for (auto& [buffer, descriptor_set] : m_uniforms) {
             buffer.~buffer();
@@ -125,25 +121,39 @@ namespace graphics {
             m_render_query.scene = &*scene;
             m_render_query.query = scene->query<const c_transform, const c_mesh_renderer>();
         }
+
         const auto& query = m_render_query.query;
         const DirectX::XMMATRIX vp = XMLoadFloat4x4A(&s_view_proj_mtx);
         const auto render = [&](const c_transform& transform, const c_mesh_renderer& renderer) {
             // Checks
-            if (!renderer.mesh || renderer.flags & render_flags::skip_rendering) [[unlikely]] {
+            if (!renderer.mesh || !renderer.material || renderer.flags & render_flags::skip_rendering) [[unlikely]] {
                 return;
             }
+
+            const mesh& mesh = *renderer.mesh;
+            const material& mat = *renderer.material;
 
             const DirectX::XMMATRIX model = transform.compute_matrix();
 
             // Frustum Culling
             DirectX::BoundingOrientedBox obb {};
-            obb.CreateFromBoundingBox(obb, renderer.mesh->get_aabb());
+            obb.CreateFromBoundingBox(obb, mesh.get_aabb());
             obb.Transform(obb, model);
             if ((renderer.flags & render_flags::skip_frustum_culling) == 0) [[likely]] {
                 if (s_frustum.Contains(obb) == DirectX::ContainmentType::DISJOINT) { // Object is culled
                     return;
                 }
             }
+
+            cmd_buf.bindDescriptorSets(
+                vk::PipelineBindPoint::eGraphics,
+                m_pipeline_layout,
+                1,
+                1,
+                &mat.get_descriptor_set(),
+                0,
+                nullptr
+            );
 
             // Uniforms
             gpu_vertex_push_constants push_constants {};
@@ -157,7 +167,7 @@ namespace graphics {
                 &push_constants
             );
 
-            renderer.mesh->draw(cmd_buf);
+            mesh.draw(cmd_buf);
         };
         query.iter().each(render);
     }
@@ -261,19 +271,15 @@ namespace graphics {
     }
 
     // Descriptors are allocated from a pool, that tells the implementation how many and what types of descriptors we are going to use (at maximum)
-    auto graphics_subsystem::create_descriptor_pool(const std::uint32_t num_resources) const -> void {
+    auto graphics_subsystem::create_descriptor_pool() -> void {
         const vkb::device& vkb_device = context::s_instance->get_device();
         const vk::Device device = vkb_device.get_logical_device();
 
-        const std::array<vk::DescriptorPoolSize, 2> sizes {
+        const std::array<vk::DescriptorPoolSize, 1> sizes {
             vk::DescriptorPoolSize {
                 .type = vk::DescriptorType::eUniformBuffer,
                 .descriptorCount = static_cast<std::uint32_t>(m_uniforms.size())
             },
-            vk::DescriptorPoolSize {
-                .type = vk::DescriptorType::eCombinedImageSampler,
-                .descriptorCount = num_resources
-            }
         };
 
         // Create the global descriptor pool

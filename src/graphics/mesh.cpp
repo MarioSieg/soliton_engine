@@ -3,11 +3,6 @@
 #include "mesh.hpp"
 #include "vulkancore/context.hpp"
 
-#define STB_IMAGE_IMPLEMENTATION
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#define TINYGLTF_IMPLEMENTATION
-#define TINYGLTF_NO_EXTERNAL_IMAGE
-#define TINYGLTF_ENABLE_DRACO
 #include <tiny_gltf.h>
 
 namespace graphics {

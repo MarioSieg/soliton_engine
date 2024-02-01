@@ -6,7 +6,6 @@
 #include "vulkancore/context.hpp"
 #include "vulkancore/buffer.hpp"
 
-#include <bx/allocator.h>
 #include <bimg/bimg.h>
 #include <bimg/decode.h>
 
@@ -112,13 +111,8 @@ namespace graphics {
         }
     }
 
-    class allocator final : public bx::AllocatorI {
-    public:
-        auto realloc(void* p, size_t size, size_t align, const char* filePath, std::uint32_t line) -> void* override;
-    };
-
     static constexpr std::size_t k_natural_align = 8;
-    auto allocator::realloc(void* p, std::size_t size, std::size_t align, const char*, std::uint32_t) -> void* {
+    auto texture_allocator::realloc(void* p, std::size_t size, std::size_t align, const char*, std::uint32_t) -> void* {
         if (0 == size) {
             if (nullptr != p) {
                 if (k_natural_align >= align) {
@@ -141,34 +135,16 @@ namespace graphics {
         return mi_realloc_aligned(p, size, align);
     }
 
-    static constinit allocator s_allocator {};
+    constinit texture_allocator s_texture_allocator {};
 
     texture::texture(std::string&& asset_path) : asset { asset_category::texture, asset_source::filesystem, std::move(asset_path) } {
         std::vector<std::uint8_t> texels {};
         assetmgr::load_asset_blob_or_panic(asset_category::texture, get_asset_path(), texels);
-        passert(texels.size() <= std::numeric_limits<std::uint32_t>::max());
-        bimg::ImageContainer* image = bimg::imageParse(&s_allocator, texels.data(), static_cast<std::uint32_t>(texels.size()));
+        parse_from_raw_memory(texels);
+    }
 
-        const vk::Format format = map_bimg_format_to_vk(image->m_format);
-        create(
-            vk::ImageType::e2D, // TODO: cubemap?
-            image->m_width,
-            image->m_height,
-            image->m_depth,
-            image->m_numMips <= 1 ? 0 : image->m_numMips,
-            image->m_numLayers,
-            format,
-            VMA_MEMORY_USAGE_GPU_ONLY,
-            vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eTransferSrc,
-            vk::SampleCountFlagBits::e1,
-            vk::ImageLayout::eUndefined,
-            image->m_data,
-            image->m_size
-        );
-
-        m_approx_byte_size = sizeof(*this) + image->m_size;
-
-        bimg::imageFree(image);
+    texture::texture(const std::span<const std::uint8_t> raw_mem) : asset {asset_category::texture, asset_source::memory} {
+        parse_from_raw_memory(raw_mem);
     }
 
     texture::texture(
@@ -244,7 +220,6 @@ namespace graphics {
         m_type = type;
         m_flags = flags;
         m_tiling = tiling;
-        m_layout = initial_layout;
         m_allocator = vkb_device().get_allocator();
 
         vk::ImageCreateInfo image_info {};
@@ -312,6 +287,33 @@ namespace graphics {
         image_view_ci.subresourceRange.levelCount = m_mip_levels;
         image_view_ci.image = m_image;
         vkcheck(vkb_vk_device().createImageView(&image_view_ci, &vkb::s_allocator, &m_image_view));
+    }
+
+    auto texture::parse_from_raw_memory(const std::span<const std::uint8_t> texels) -> void {
+        passert(texels.size() <= std::numeric_limits<std::uint32_t>::max());
+        bimg::ImageContainer* image = bimg::imageParse(&s_texture_allocator, texels.data(), static_cast<std::uint32_t>(texels.size()), bimg::TextureFormat::RGBA8);
+        passert(image != nullptr);
+
+        const vk::Format format = map_bimg_format_to_vk(image->m_format);
+        create(
+            vk::ImageType::e2D, // TODO: cubemap?
+            image->m_width,
+            image->m_height,
+            image->m_depth,
+            image->m_numMips <= 1 ? 0 : image->m_numMips,
+            image->m_numLayers,
+            format,
+            VMA_MEMORY_USAGE_GPU_ONLY,
+            vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eTransferSrc,
+            vk::SampleCountFlagBits::e1,
+            vk::ImageLayout::eUndefined,
+            image->m_data,
+            image->m_size
+        );
+
+        m_approx_byte_size = sizeof(*this) + image->m_size;
+
+        //bimg::imageFree(image); TODO: leak
     }
 
     auto texture::upload(

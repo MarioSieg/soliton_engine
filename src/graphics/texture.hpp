@@ -5,10 +5,19 @@
 #include "../assetmgr/assetmgr.hpp"
 #include "vulkancore/buffer.hpp"
 
+#include <bx/allocator.h>
+
 namespace graphics {
+    class texture_allocator final : public bx::AllocatorI {
+    public:
+        auto realloc(void* p, size_t size, size_t align, const char* filePath, std::uint32_t line) -> void* override;
+    };
+    extern constinit texture_allocator s_texture_allocator;
+
     class texture final : public asset {
     public:
         explicit texture(std::string&& asset_path);
+        explicit texture(std::span<const std::uint8_t> raw_mem);
         texture(
             vk::ImageType type,
             std::uint32_t width,
@@ -39,7 +48,6 @@ namespace graphics {
         [[nodiscard]] auto get_depth() const noexcept -> std::uint32_t { return m_depth; }
         [[nodiscard]] auto get_mip_levels() const noexcept -> std::uint32_t { return m_mip_levels; }
         [[nodiscard]] auto get_array_size() const noexcept -> std::uint32_t { return m_array_size; }
-        [[nodiscard]] auto get_layout() const noexcept -> vk::ImageLayout { return m_layout; }
         [[nodiscard]] auto get_format() const noexcept -> vk::Format { return m_format; }
         [[nodiscard]] auto get_usage() const noexcept -> vk::ImageUsageFlags { return m_usage; }
         [[nodiscard]] auto get_memory_usage() const noexcept -> VmaMemoryUsage { return m_memory_usage; }
@@ -77,6 +85,8 @@ namespace graphics {
             vk::ImageTiling tiling = vk::ImageTiling::eOptimal
         ) -> void;
 
+        auto parse_from_raw_memory(std::span<const std::uint8_t> texels) -> void;
+
         auto upload(
             std::size_t array_idx,
             std::size_t mip_level,
@@ -104,7 +114,6 @@ namespace graphics {
         vk::ImageType m_type = vk::ImageType::e2D;
         vk::ImageCreateFlags m_flags {};
         vk::ImageTiling m_tiling = vk::ImageTiling::eOptimal;
-        vk::ImageLayout m_layout = vk::ImageLayout::eUndefined;
         vk::Image m_image {};
         vk::ImageView m_image_view {};
         vk::DeviceMemory m_memory {};

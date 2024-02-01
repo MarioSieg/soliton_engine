@@ -4,9 +4,17 @@
 #include "../core/kernel.hpp"
 #include "../graphics/mesh.hpp"
 #include "../graphics/vulkancore/context.hpp"
-#include <tiny_gltf.h>
+
 #include <ankerl/unordered_dense.h>
 #include <DirectXMath.h>
+#include <bimg/bimg.h>
+#include <bimg/decode.h>
+
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#define TINYGLTF_IMPLEMENTATION
+#define TINYGLTF_ENABLE_DRACO
+#include <tiny_gltf.h>
 
 struct proxy final : scene {
     template <typename... Ts>
@@ -18,7 +26,7 @@ static constinit std::atomic_uint32_t id_gen = 1;
 scene::scene() : id{id_gen.fetch_add(1, std::memory_order_relaxed)} {
     static const auto main_tid = std::this_thread::get_id();
     passert(main_tid == std::this_thread::get_id());
-    m_eitbl.reserve(0x1000);
+    m_eitbl.reserve(256);
 
 	m_meshes.invalidate();
 	m_textures.invalidate();
@@ -63,6 +71,7 @@ auto scene::spawn(const char* name, lua_entity* l_id) -> flecs::entity {
 auto scene::load_from_gltf(const std::string& path, const float scale) -> void {
 	tinygltf::Model model {};
 	tinygltf::TinyGLTF loader {};
+
 	tinygltf::FsCallbacks fs {};
 	fs.FileExists = &tinygltf::FileExists;
 	fs.ExpandFilePath = &tinygltf::ExpandFilePath;
@@ -72,6 +81,33 @@ auto scene::load_from_gltf(const std::string& path, const float scale) -> void {
 	fs.WriteWholeFile = &tinygltf::WriteWholeFile;
 	fs.GetFileSizeInBytes = &tinygltf::GetFileSizeInBytes;
 	loader.SetFsCallbacks(fs);
+
+	struct tex_ctx_struct {
+		scene* self;
+		ankerl::unordered_dense::map<std::string, graphics::texture*> map;
+	} tex_ctx {
+		.self = this,
+		.map = {}
+	};
+
+	static constexpr auto image_loader = [](
+		tinygltf::Image* image,
+		const int image_idx,
+		std::string* err,
+		std::string* warn,
+		const int req_width,
+		const int req_height,
+		const unsigned char* bytes,
+		const int size,
+		void* usr
+	) -> bool {
+		tex_ctx_struct& ctx = *static_cast<tex_ctx_struct*>(usr);
+		const std::span<const std::uint8_t> data {bytes, static_cast<std::size_t>(size)};
+		graphics::texture* tex = ctx.self->m_textures.load(image_idx, data);
+		ctx.map[image->uri] = tex;
+		return true;
+	};
+	loader.SetImageLoader(image_loader, &tex_ctx);
 
 	std::string err {};
 	std::string warn {};
@@ -147,8 +183,22 @@ auto scene::load_from_gltf(const std::string& path, const float scale) -> void {
 
 			const int idx = node.mesh;
 			graphics::mesh* mesh = m_meshes.load(idx, model, model.meshes[idx]);
-			auto* rendrer = ent.get_mut<c_mesh_renderer>();
-			rendrer->mesh = mesh;
+
+			graphics::texture* albedo = nullptr;
+			if (!model.materials.empty()) {
+				const tinygltf::Material& mat = model.materials[model.meshes[idx].primitives[0].material];
+				if (mat.pbrMetallicRoughness.baseColorTexture.index > -1) {
+					albedo = tex_ctx.map[model.images[model.textures[mat.pbrMetallicRoughness.baseColorTexture.index].source].uri];
+				}
+			}
+
+			graphics::material* material = m_materials.load(idx);
+			material->albedo_map = albedo;
+			material->flush_property_updates();
+
+			auto* renderer = ent.get_mut<c_mesh_renderer>();
+			renderer->mesh = mesh;
+			renderer->material = material;
 			++num_meshes;
 		}
 		for (const int child : node.children) {

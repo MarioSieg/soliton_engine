@@ -9,6 +9,7 @@
 
 #include "../graphics/mesh.hpp"
 #include "../graphics/texture.hpp"
+#include "../graphics/material.hpp"
 
 using lua_entity = std::uint32_t;
 
@@ -42,6 +43,8 @@ private:
 
     asset_registry<graphics::mesh> m_meshes {};
     asset_registry<graphics::texture> m_textures {};
+    asset_registry<graphics::material> m_materials {};
+
     std::vector<flecs::entity> m_eitbl {}; // entity id translation lookaside buffer lol
     friend struct proxy;
     static inline constinit std::unique_ptr<scene> m_active {};

@@ -68,6 +68,15 @@ public:
         m_registry.reserve(capacity);
     }
 
+    [[nodiscard]] auto contains_ptr(const T* ptr) const noexcept -> bool {
+        for (const auto& [_, p] : m_registry) {
+            if (&*p == ptr) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     template <typename Path, typename... Args>
     [[nodiscard]] auto load(Path&& asset_path_or_id, Args&&... args) -> T* {
         if constexpr (std::is_same_v<std::decay_t<Path>, std::string>) {

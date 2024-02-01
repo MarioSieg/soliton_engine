@@ -20,11 +20,12 @@ namespace graphics {
         passert(m_descriptor_set_layout);
 
         vk::DescriptorSetAllocateInfo descriptor_set_alloc_info {};
-        descriptor_set_alloc_info.descriptorPool = graphics_subsystem::get_descriptor_pool();
+        descriptor_set_alloc_info.descriptorPool = m_descriptor_pool;
         descriptor_set_alloc_info.descriptorSetCount = 1;
         descriptor_set_alloc_info.pSetLayouts = &m_descriptor_set_layout;
         vkcheck(vkb::context::s_instance->get_device().get_logical_device().allocateDescriptorSets(&descriptor_set_alloc_info, &m_descriptor_set));
 
+        create_sampler();
         flush_property_updates();
     }
 
@@ -33,20 +34,22 @@ namespace graphics {
     }
 
     auto material::flush_property_updates() const -> void {
-        auto make_write_tex_info = [i = 0u, this](texture* tex) mutable -> vk::WriteDescriptorSet {
-            vk::DescriptorImageInfo image_info {};
-            image_info.imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-            image_info.imageView = tex->get_view();
-            image_info.sampler = m_sampler;
-            return vk::WriteDescriptorSet {
+        std::array<vk::DescriptorImageInfo, 4> image_infos {};
+        auto make_write_tex_info = [i = 0u, this, &image_infos](const texture* tex) mutable -> vk::WriteDescriptorSet {
+            image_infos[i].imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+            image_infos[i].imageView = tex ? tex->get_view() : m_default_texture->get_view();
+            image_infos[i].sampler = m_sampler;
+            const vk::WriteDescriptorSet result {
                 .dstSet = m_descriptor_set,
-                .dstBinding = i++,
+                .dstBinding = i,
                 .dstArrayElement = 0u,
                 .descriptorCount = 1u,
                 .descriptorType = vk::DescriptorType::eCombinedImageSampler,
-                .pImageInfo = &image_info,
+                .pImageInfo = &image_infos[i],
                 .pBufferInfo = nullptr
             };
+            ++i;
+            return result;
         };
         const std::array<vk::WriteDescriptorSet, 4> write_descriptor_sets = {
             make_write_tex_info(albedo_map),
@@ -82,12 +85,28 @@ namespace graphics {
         vkcheck(vkb_vk_device().createSampler(&sampler_info, &vkb::s_allocator, &m_sampler));
     }
 
-    auto material::create_descriptor_set_layout_lazy() -> void {
-        if (m_descriptor_set_layout) { // not thread safe
+    auto material::create_global_descriptors() -> void {
+        if (m_descriptor_pool) { // not thread safe
             return;
         }
 
-        auto get_texture_binding = [i = 0] mutable -> vk::DescriptorSetLayoutBinding {
+        m_default_texture = std::make_unique<texture>("proto/red/texture_01.png");
+
+        constexpr unsigned lim = 8192u;
+        std::array<vk::DescriptorPoolSize, 1> pool_sizes = {
+            vk::DescriptorPoolSize {
+                .type = vk::DescriptorType::eCombinedImageSampler,
+                .descriptorCount = lim
+            }
+        };
+
+        vk::DescriptorPoolCreateInfo descriptor_pool_create_info {};
+        descriptor_pool_create_info.maxSets = lim;
+        descriptor_pool_create_info.poolSizeCount = static_cast<std::uint32_t>(pool_sizes.size());
+        descriptor_pool_create_info.pPoolSizes = pool_sizes.data();
+        vkcheck(vkb::context::s_instance->get_device().get_logical_device().createDescriptorPool(&descriptor_pool_create_info, &vkb::s_allocator, &m_descriptor_pool));
+
+        auto get_texture_binding = [i = 0] () mutable -> vk::DescriptorSetLayoutBinding {
             vk::DescriptorSetLayoutBinding binding {};
             binding.binding = i++;
             binding.descriptorType = vk::DescriptorType::eCombinedImageSampler;
