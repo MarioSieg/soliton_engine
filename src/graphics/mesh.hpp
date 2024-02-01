@@ -10,6 +10,8 @@
 #include <tiny_gltf.h>
 
 namespace graphics {
+    class material;
+
     class mesh final : public asset {
     public:
         struct vertex final {
@@ -27,13 +29,13 @@ namespace graphics {
             std::uint32_t index_count = 0;
             std::uint32_t vertex_start = 0;
             std::uint32_t vertex_count = 0;
+            std::int32_t src_material_index = 0;
+            std::uint32_t dst_material_index = 0;
             DirectX::BoundingBox aabb {};
         };
 
         mesh(const tinygltf::Model& model, const tinygltf::Mesh& mesh);
         ~mesh() override = default;
-
-        auto draw(vk::CommandBuffer cmd) const -> void;
 
         [[nodiscard]] auto get_primitives() const noexcept -> std::span<const primitive> { return m_primitives; }
         [[nodiscard]] auto get_aabb() const noexcept -> const DirectX::BoundingBox& { return m_aabb; }

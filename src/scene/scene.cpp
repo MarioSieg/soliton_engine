@@ -104,7 +104,7 @@ auto scene::load_from_gltf(const std::string& path, const float scale) -> void {
 		tex_ctx_struct& ctx = *static_cast<tex_ctx_struct*>(usr);
 		const std::span<const std::uint8_t> data {bytes, static_cast<std::size_t>(size)};
 		graphics::texture* tex = ctx.self->m_textures.load(image_idx, data);
-		ctx.map[image->uri] = tex;
+		ctx.map.emplace(image->uri, tex);
 		return true;
 	};
 	loader.SetImageLoader(image_loader, &tex_ctx);
@@ -184,21 +184,27 @@ auto scene::load_from_gltf(const std::string& path, const float scale) -> void {
 			const int idx = node.mesh;
 			graphics::mesh* mesh = m_meshes.load(idx, model, model.meshes[idx]);
 
-			graphics::texture* albedo = nullptr;
-			if (!model.materials.empty()) {
-				const tinygltf::Material& mat = model.materials[model.meshes[idx].primitives[0].material];
+			std::vector<graphics::material*> mats {};
+			mats.reserve(model.materials.size());
+			for (std::uint32_t dst_max_idx = 0; const auto& prim : mesh->get_primitives()) {
+				const int mat_idx = prim.src_material_index;
+				const tinygltf::Material& mat = model.materials[mat_idx];
+
+				graphics::texture* albedo = nullptr;
 				if (mat.pbrMetallicRoughness.baseColorTexture.index > -1) {
 					albedo = tex_ctx.map[model.images[model.textures[mat.pbrMetallicRoughness.baseColorTexture.index].source].uri];
 				}
-			}
 
-			graphics::material* material = m_materials.load(idx);
-			material->albedo_map = albedo;
-			material->flush_property_updates();
+				const_cast<graphics::mesh::primitive&>(prim).dst_material_index = dst_max_idx++;
+				graphics::material* material = m_materials.load(mat_idx);
+				material->albedo_map = albedo;
+				material->flush_property_updates();
+				mats.emplace_back(material);
+			}
 
 			auto* renderer = ent.get_mut<c_mesh_renderer>();
 			renderer->mesh = mesh;
-			renderer->material = material;
+			renderer->materials = std::move(mats);
 			++num_meshes;
 		}
 		for (const int child : node.children) {

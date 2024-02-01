@@ -114,6 +114,37 @@ namespace graphics {
         return true;
     }
 
+    HOTPROC static auto draw_mesh(
+        const mesh& mesh,
+        const vk::CommandBuffer cmd,
+        const std::vector<material*>& mats,
+        const vk::PipelineLayout layout
+    ) -> void {
+        constexpr vk::DeviceSize offsets = 0;
+        cmd.bindVertexBuffers(0, 1, &mesh.get_vertex_buffer().get_buffer(), &offsets);
+        cmd.bindIndexBuffer(mesh.get_index_buffer().get_buffer(), 0, mesh.is_index_32bit() ? vk::IndexType::eUint32 : vk::IndexType::eUint16);
+        if (mesh.get_primitives().size() <= mats.size()) { // we have at least one material for each primitive
+            for (const mesh::primitive& prim : mesh.get_primitives()) {
+                if (prim.dst_material_index >= mats.size()) [[unlikely]] {
+                    log_error("Mesh has invalid material index");
+                    continue;
+                }
+                cmd.bindDescriptorSets(
+                    vk::PipelineBindPoint::eGraphics,
+                    layout,
+                    1,
+                    1,
+                    &mats[prim.dst_material_index]->get_descriptor_set(),
+                    0,
+                    nullptr
+                );
+                cmd.drawIndexed(prim.index_count, 1, prim.index_start, 0, 1);
+            }
+        } else {
+            cmd.drawIndexed(mesh.get_index_count(), 1, 0, 0, 0);
+        }
+    }
+
     HOTPROC auto graphics_subsystem::render_scene(const vk::CommandBuffer cmd_buf) -> void {
         const auto& scene = scene::get_active();
         if (!scene) [[unlikely]] return;
@@ -129,12 +160,11 @@ namespace graphics {
         const DirectX::XMMATRIX vp = XMLoadFloat4x4A(&s_view_proj_mtx);
         const auto render = [&](const c_transform& transform, const c_mesh_renderer& renderer) {
             // Checks
-            if (!renderer.mesh || !renderer.material || renderer.flags & render_flags::skip_rendering) [[unlikely]] {
+            if (!renderer.mesh || renderer.materials.empty() || renderer.flags & render_flags::skip_rendering) [[unlikely]] {
                 return;
             }
 
             const mesh& mesh = *renderer.mesh;
-            const material& mat = *renderer.material;
 
             const DirectX::XMMATRIX model = transform.compute_matrix();
 
@@ -148,16 +178,6 @@ namespace graphics {
                 }
             }
 
-            cmd_buf.bindDescriptorSets(
-                vk::PipelineBindPoint::eGraphics,
-                m_pipeline_layout,
-                1,
-                1,
-                &mat.get_descriptor_set(),
-                0,
-                nullptr
-            );
-
             // Uniforms
             gpu_vertex_push_constants push_constants {};
             push_constants.model_view_proj = XMMatrixMultiply(model, vp);
@@ -170,7 +190,7 @@ namespace graphics {
                 &push_constants
             );
 
-            mesh.draw(cmd_buf);
+            draw_mesh(mesh, cmd_buf, renderer.materials, m_pipeline_layout);
         };
         query.iter().each(render);
     }
