@@ -22,6 +22,7 @@ enum class asset_category : std::uint8_t {
     script,
     shader,
     texture,
+    material,
 
     $count
 };

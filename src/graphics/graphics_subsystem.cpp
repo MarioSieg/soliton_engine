@@ -9,6 +9,7 @@
 
 #include "imgui/text_editor.hpp"
 #include "imgui/implot.h"
+#include "material.hpp"
 
 using platform::platform_subsystem;
 
@@ -38,10 +39,11 @@ namespace graphics {
 
         m_texture.emplace("proto/light/texture_10.png");
 
+        material::create_descriptor_set_layout_lazy();
+
         create_uniform_buffers();
-        create_sampler();
         create_descriptor_set_layout();
-        create_descriptor_pool();
+        create_descriptor_pool(1024);
         create_descriptor_sets();
         create_pipeline();
     }
@@ -50,8 +52,6 @@ namespace graphics {
         vkcheck(context::s_instance->get_device().get_logical_device().waitIdle());
 
         m_texture.reset();
-
-        vkb_vk_device().destroySampler(m_sampler, &vkb::s_allocator);
 
         for (auto& [buffer, descriptor_set] : m_uniforms) {
             buffer.~buffer();
@@ -226,21 +226,14 @@ namespace graphics {
         layout_binding.stageFlags = vk::ShaderStageFlagBits::eVertex;
         layout_binding.pImmutableSamplers = nullptr;
 
-        constexpr std::array<vk::DescriptorSetLayoutBinding, 2> bindings {
+        constexpr std::array<vk::DescriptorSetLayoutBinding, 1> bindings {
             vk::DescriptorSetLayoutBinding {
                 .binding = 0u,
                 .descriptorType = vk::DescriptorType::eUniformBuffer,
                 .descriptorCount = 1u,
                 .stageFlags = vk::ShaderStageFlagBits::eVertex,
                 .pImmutableSamplers = nullptr
-            },
-            vk::DescriptorSetLayoutBinding {
-                .binding = 1u,
-                .descriptorType = vk::DescriptorType::eCombinedImageSampler,
-                .descriptorCount = 1u,
-                .stageFlags = vk::ShaderStageFlagBits::eFragment,
-                .pImmutableSamplers = nullptr
-            },
+            }
         };
 
         vk::DescriptorSetLayoutCreateInfo descriptor_layout {};
@@ -251,8 +244,12 @@ namespace graphics {
         // Create the pipeline layout that is used to generate the rendering pipelines that are based on this descriptor set layout
         // In a more complex scenario you would have different pipeline layouts for different descriptor set layouts that could be reused
         vk::PipelineLayoutCreateInfo p_pipeline_layout_create_info {};
-        p_pipeline_layout_create_info.setLayoutCount = 1;
-        p_pipeline_layout_create_info.pSetLayouts = &m_descriptor_set_layout;
+        const std::array<vk::DescriptorSetLayout, 2> set_layouts {
+            m_descriptor_set_layout,
+            material::get_descriptor_set_layout()
+        };
+        p_pipeline_layout_create_info.setLayoutCount = static_cast<std::uint32_t>(set_layouts.size());
+        p_pipeline_layout_create_info.pSetLayouts = set_layouts.data();
 
         vk::PushConstantRange push_constant_range {};
         push_constant_range.stageFlags = vk::ShaderStageFlagBits::eVertex;
@@ -264,7 +261,7 @@ namespace graphics {
     }
 
     // Descriptors are allocated from a pool, that tells the implementation how many and what types of descriptors we are going to use (at maximum)
-    auto graphics_subsystem::create_descriptor_pool() -> void {
+    auto graphics_subsystem::create_descriptor_pool(const std::uint32_t num_resources) const -> void {
         const vkb::device& vkb_device = context::s_instance->get_device();
         const vk::Device device = vkb_device.get_logical_device();
 
@@ -275,7 +272,7 @@ namespace graphics {
             },
             vk::DescriptorPoolSize {
                 .type = vk::DescriptorType::eCombinedImageSampler,
-                .descriptorCount = 1u
+                .descriptorCount = num_resources
             }
         };
 
@@ -306,12 +303,7 @@ namespace graphics {
             buffer_info.offset = 0;
             buffer_info.range = sizeof(gpu_uniform_buffer);
 
-            vk::DescriptorImageInfo image_info {};
-            image_info.imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-            image_info.imageView = m_texture->get_view();
-            image_info.sampler = m_sampler;
-
-            const std::array<vk::WriteDescriptorSet, 2> write_descriptor_sets {
+            const std::array<vk::WriteDescriptorSet, 1> write_descriptor_sets {
                 vk::WriteDescriptorSet {
                     .dstSet = m_uniforms[i].descriptor_set,
                     .dstBinding = 0u,
@@ -320,15 +312,6 @@ namespace graphics {
                     .descriptorType = vk::DescriptorType::eUniformBuffer,
                     .pImageInfo = nullptr,
                     .pBufferInfo = &buffer_info
-                },
-                vk::WriteDescriptorSet {
-                    .dstSet = m_uniforms[i].descriptor_set,
-                    .dstBinding = 1u,
-                    .dstArrayElement = 0u,
-                    .descriptorCount = 1u,
-                    .descriptorType = vk::DescriptorType::eCombinedImageSampler,
-                    .pImageInfo = &image_info,
-                    .pBufferInfo = nullptr
                 }
             };
 
@@ -481,26 +464,5 @@ namespace graphics {
 
         // Create rendering pipeline using the specified states
         vkcheck(device.createGraphicsPipelines(nullptr, 1, &pipeline_ci, &vkb::s_allocator, &m_pipeline));
-    }
-
-    auto graphics_subsystem::create_sampler() -> void {
-        const vk::Device device = vkb_vk_device();
-        const bool supports_anisotropy = vkb_device().get_physical_device_features().samplerAnisotropy;
-
-        vk::SamplerCreateInfo sampler_info {};
-        sampler_info.magFilter = vk::Filter::eLinear;
-        sampler_info.minFilter = vk::Filter::eLinear;
-        sampler_info.mipmapMode = vk::SamplerMipmapMode::eLinear;
-        sampler_info.addressModeU = vk::SamplerAddressMode::eRepeat;
-        sampler_info.addressModeV = vk::SamplerAddressMode::eRepeat;
-        sampler_info.addressModeW = vk::SamplerAddressMode::eRepeat;
-        sampler_info.mipLodBias = 0.0f;
-        sampler_info.compareOp = vk::CompareOp::eNever;
-        sampler_info.minLod = 0.0f;
-        sampler_info.maxLod = static_cast<float>(m_texture->get_mip_levels());
-        sampler_info.maxAnisotropy = supports_anisotropy ? vkb_device().get_physical_device_props().limits.maxSamplerAnisotropy : 1.0f;
-        sampler_info.anisotropyEnable = supports_anisotropy ? vk::True : vk::False;
-        sampler_info.borderColor = vk::BorderColor::eFloatOpaqueWhite;
-        vkcheck(vkb_vk_device().createSampler(&sampler_info, &vkb::s_allocator, &m_sampler));
     }
 }

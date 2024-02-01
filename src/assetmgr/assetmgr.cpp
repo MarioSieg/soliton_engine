@@ -13,21 +13,25 @@ namespace assetmgr {
         return asset_root;
     }
 
-    static constexpr std::array<std::string_view, static_cast<std::size_t>(asset_category::$count)> k_asset_type_names = {
+    static constexpr std::string_view k_asset_type_names[] = {
         "icon",
         "mesh",
         "script",
         "shader",
-        "texture"
+        "texture",
+        "material"
     };
+    static_assert(std::size(k_asset_type_names) == static_cast<std::size_t>(asset_category::$count));
 
-    static constexpr std::array<std::string_view, static_cast<std::size_t>(asset_category::$count)> k_asset_dir_names = {
+    static constexpr std::string_view k_asset_dir_names[] = {
         "icons",
         "meshes",
         "scripts",
         "shaders",
-        "textures"
+        "textures",
+        "materials"
     };
+    static_assert(std::size(k_asset_dir_names) == static_cast<std::size_t>(asset_category::$count));
 
     static constexpr char k_dir_sep = '/';
 

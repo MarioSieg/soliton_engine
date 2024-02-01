@@ -43,13 +43,16 @@ namespace graphics {
         auto on_resize() -> void override;
         auto on_start(scene& scene) -> void override;
 
+        [[nodiscard]] static auto get_descriptor_pool() noexcept -> vk::DescriptorPool {
+            return m_descriptor_pool;
+        }
+
     private:
         auto create_uniform_buffers() -> void;
         auto create_descriptor_set_layout() -> void;
-        auto create_descriptor_pool() -> void;
+        auto create_descriptor_pool(std::uint32_t num_resources) const -> void;
         auto create_descriptor_sets() -> void;
         auto create_pipeline() -> void;
-        auto create_sampler() -> void;
 
         auto render_scene(vk::CommandBuffer cmd_buf) -> void;
 
@@ -57,9 +60,8 @@ namespace graphics {
         std::array<uniform_buffer, vkb::context::k_max_concurrent_frames> m_uniforms {};
         vk::DescriptorSetLayout m_descriptor_set_layout {};
         vk::PipelineLayout m_pipeline_layout {};
-        vk::DescriptorPool m_descriptor_pool {};
+        static inline constinit vk::DescriptorPool m_descriptor_pool {};
         vk::Pipeline m_pipeline {};
-        vk::Sampler m_sampler {};
 
         struct {
             flecs::query<const c_transform, const c_mesh_renderer> query {};
