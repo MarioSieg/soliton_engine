@@ -373,7 +373,7 @@ namespace graphics {
         // Rasterization state
         vk::PipelineRasterizationStateCreateInfo rasterization_state {};
         rasterization_state.polygonMode = vk::PolygonMode::eFill;
-        rasterization_state.cullMode = vk::CullModeFlagBits::eBack;
+        rasterization_state.cullMode = vk::CullModeFlagBits::eNone; // TODO No culling because of trees
         rasterization_state.frontFace = vk::FrontFace::eCounterClockwise;
         rasterization_state.depthClampEnable = vk::False;
         rasterization_state.rasterizerDiscardEnable = vk::False;
@@ -384,7 +384,13 @@ namespace graphics {
         // We need one blend attachment state per color attachment (even if blending is not used)
         vk::PipelineColorBlendAttachmentState blend_attachment_state {};
         blend_attachment_state.colorWriteMask = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA;
-        blend_attachment_state.blendEnable = vk::False;
+        blend_attachment_state.blendEnable = vk::True;
+        blend_attachment_state.srcColorBlendFactor = vk::BlendFactor::eSrcAlpha;
+        blend_attachment_state.dstColorBlendFactor = vk::BlendFactor::eOneMinusSrcAlpha;
+        blend_attachment_state.colorBlendOp = vk::BlendOp::eAdd;
+        blend_attachment_state.srcAlphaBlendFactor = vk::BlendFactor::eOne;
+        blend_attachment_state.dstAlphaBlendFactor = vk::BlendFactor::eZero;
+        blend_attachment_state.alphaBlendOp = vk::BlendOp::eAdd;
 
         vk::PipelineColorBlendStateCreateInfo color_blend_state {};
         color_blend_state.attachmentCount = 1;
@@ -425,6 +431,7 @@ namespace graphics {
         // This example does not make use of multi sampling (for anti-aliasing), the state must still be set and passed to the pipeline
         vk::PipelineMultisampleStateCreateInfo multisample_state {};
         multisample_state.rasterizationSamples = vk::SampleCountFlagBits::e1;
+        multisample_state.alphaToCoverageEnable = vk::True;
         multisample_state.pSampleMask = nullptr;
 
         // Specifies the vertex input parameters for a pipeline
