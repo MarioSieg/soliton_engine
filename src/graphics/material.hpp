@@ -11,8 +11,8 @@ namespace graphics {
     class material : public asset {
     public:
         texture* albedo_map = nullptr;
-        texture* metallic_roughness_map = nullptr;
         texture* normal_map = nullptr;
+        texture* metallic_roughness_map = nullptr;
         texture* ambient_occlusion_map = nullptr;
 
         explicit material(
@@ -24,9 +24,8 @@ namespace graphics {
         ~material() override;
 
         [[nodiscard]] auto get_descriptor_set() const noexcept -> const vk::DescriptorSet& { return m_descriptor_set; }
-        [[nodiscard]] auto get_sampler() const noexcept -> const vk::Sampler& { return m_sampler; }
 
-        auto flush_property_updates() -> void;
+        auto flush_property_updates() const -> void;
 
     private:
         friend class graphics_subsystem;
@@ -37,12 +36,9 @@ namespace graphics {
             return s_descriptor_set_layout;
         }
 
-        auto create_sampler() -> void;
-
         static inline constinit std::optional<graphics::texture> s_default_texture {};
         static inline constinit vk::DescriptorPool s_descriptor_pool {};
         static inline constinit vk::DescriptorSetLayout s_descriptor_set_layout {};
-        vk::Sampler m_sampler {};
         vk::DescriptorSet m_descriptor_set {};
     };
 }

@@ -118,6 +118,39 @@ namespace graphics {
     		prim_info.src_material_index = prim.material;
     	}
 
+    	// Indices
+	    {
+			const tinygltf::Accessor& accessor = model.accessors[prim.indices];
+			num_indices = accessor.count;
+			const tinygltf::BufferView& bufferView = model.bufferViews[accessor.bufferView];
+			const tinygltf::Buffer& buffer = model.buffers[bufferView.buffer];
+			switch (accessor.componentType) {
+				case TINYGLTF_PARAMETER_TYPE_UNSIGNED_INT: {
+					std::unique_ptr<std::uint32_t[]> buf {new std::uint32_t[accessor.count]};
+					std::memcpy(buf.get(), &buffer.data[accessor.byteOffset + bufferView.byteOffset], accessor.count * sizeof(uint32_t));
+					for (std::size_t i = 0; i < accessor.count; ++i) {
+						indices.emplace_back(buf[i] + vertex_start);
+					}
+				} break;
+				case TINYGLTF_PARAMETER_TYPE_UNSIGNED_SHORT: {
+					std::unique_ptr<std::uint16_t[]> buf {new std::uint16_t[accessor.count]};
+					std::memcpy(buf.get(), &buffer.data[accessor.byteOffset + bufferView.byteOffset], accessor.count * sizeof(uint16_t));
+					for (std::size_t i = 0; i < accessor.count; ++i) {
+						indices.emplace_back(buf[i] + vertex_start);
+					}
+				} break;
+				case TINYGLTF_PARAMETER_TYPE_UNSIGNED_BYTE: {
+					std::unique_ptr<std::uint8_t[]> buf {new std::uint8_t[accessor.count]};
+					std::memcpy(buf.get(), &buffer.data[accessor.byteOffset + bufferView.byteOffset], accessor.count * sizeof(uint8_t));
+					for (std::size_t i = 0; i < accessor.count; ++i) {
+						indices.emplace_back(buf[i] + vertex_start);
+					}
+				} break;
+				default:
+					log_error("GLTF import: Index component type {} not supported", accessor.componentType);
+			}
+	    }
+
         // Vertices
 		{
 			const tinygltf::Accessor& pos_accessor = model.accessors[prim.attributes.find("POSITION")->second];
@@ -157,40 +190,68 @@ namespace graphics {
             	};
             	vertices.emplace_back(vv);
             }
-		}
+			if (!buffer_tangents) {
+				log_warn("GLTF import: Mesh has no tangents, recomputing");
+				for (std::size_t i = 0; i < indices.size(); i += 3) {
+					mesh::vertex& v0 = vertices[indices[i]];
+					mesh::vertex& v1 = vertices[indices[i + 1]];
+					mesh::vertex& v2 = vertices[indices[i + 2]];
 
-        // Indices
-        {
-            const tinygltf::Accessor& accessor = model.accessors[prim.indices];
-            num_indices = accessor.count;
-            const tinygltf::BufferView& bufferView = model.bufferViews[accessor.bufferView];
-            const tinygltf::Buffer& buffer = model.buffers[bufferView.buffer];
-            switch (accessor.componentType) {
-            	case TINYGLTF_PARAMETER_TYPE_UNSIGNED_INT: {
-            		std::unique_ptr<std::uint32_t[]> buf {new std::uint32_t[accessor.count]};
-            		std::memcpy(buf.get(), &buffer.data[accessor.byteOffset + bufferView.byteOffset], accessor.count * sizeof(uint32_t));
-            		for (std::size_t i = 0; i < accessor.count; ++i) {
-            			indices.emplace_back(buf[i] + vertex_start);
-            		}
-            	} break;
-            	case TINYGLTF_PARAMETER_TYPE_UNSIGNED_SHORT: {
-					std::unique_ptr<std::uint16_t[]> buf {new std::uint16_t[accessor.count]};
-            		std::memcpy(buf.get(), &buffer.data[accessor.byteOffset + bufferView.byteOffset], accessor.count * sizeof(uint16_t));
-            		for (std::size_t i = 0; i < accessor.count; ++i) {
-            			indices.emplace_back(buf[i] + vertex_start);
-            		}
-            	} break;
-            	case TINYGLTF_PARAMETER_TYPE_UNSIGNED_BYTE: {
-            		std::unique_ptr<std::uint8_t[]> buf {new std::uint8_t[accessor.count]};
-            		std::memcpy(buf.get(), &buffer.data[accessor.byteOffset + bufferView.byteOffset], accessor.count * sizeof(uint8_t));
-            		for (std::size_t i = 0; i < accessor.count; ++i) {
-            			indices.emplace_back(buf[i] + vertex_start);
-            		}
-            	} break;
-            	default:
-            		log_error("GLTF import: Index component type {} not supported", accessor.componentType);
-            }
-        }
+					const DirectX::XMVECTOR pos0 = DirectX::XMLoadFloat3(&v0.position);
+					const DirectX::XMVECTOR pos1 = DirectX::XMLoadFloat3(&v1.position);
+					const DirectX::XMVECTOR pos2 = DirectX::XMLoadFloat3(&v2.position);
+					const DirectX::XMVECTOR uv0 = DirectX::XMLoadFloat2(&v0.uv);
+					const DirectX::XMVECTOR uv1 = DirectX::XMLoadFloat2(&v1.uv);
+					const DirectX::XMVECTOR uv2 = DirectX::XMLoadFloat2(&v2.uv);
+
+					const DirectX::XMVECTOR edge1 = DirectX::XMVectorSubtract(pos1, pos0);
+					const DirectX::XMVECTOR edge2 = DirectX::XMVectorSubtract(pos2, pos0);
+					const DirectX::XMVECTOR deltaUV1 = DirectX::XMVectorSubtract(uv1, uv0);
+					const DirectX::XMVECTOR deltaUV2 = DirectX::XMVectorSubtract(uv2, uv0);
+
+					const float f = 1.0f / DirectX::XMVectorGetX(DirectX::XMVector2Cross(deltaUV1, deltaUV2));
+
+					DirectX::XMVECTOR tangent = DirectX::XMVectorSet(
+						f * (DirectX::XMVectorGetY(deltaUV2) * DirectX::XMVectorGetX(edge1) - DirectX::XMVectorGetY(deltaUV1) * DirectX::XMVectorGetX(edge2)),
+						f * (DirectX::XMVectorGetY(deltaUV2) * DirectX::XMVectorGetY(edge1) - DirectX::XMVectorGetY(deltaUV1) * DirectX::XMVectorGetY(edge2)),
+						f * (DirectX::XMVectorGetY(deltaUV2) * DirectX::XMVectorGetZ(edge1) - DirectX::XMVectorGetY(deltaUV1) * DirectX::XMVectorGetZ(edge2)),
+						0.0f
+					);
+
+					DirectX::XMVECTOR bitangent = DirectX::XMVectorSet(
+						f * (-DirectX::XMVectorGetX(deltaUV2) * DirectX::XMVectorGetX(edge1) + DirectX::XMVectorGetX(deltaUV1) * DirectX::XMVectorGetX(edge2)),
+						f * (-DirectX::XMVectorGetX(deltaUV2) * DirectX::XMVectorGetY(edge1) + DirectX::XMVectorGetX(deltaUV1) * DirectX::XMVectorGetY(edge2)),
+						f * (-DirectX::XMVectorGetX(deltaUV2) * DirectX::XMVectorGetZ(edge1) + DirectX::XMVectorGetX(deltaUV1) * DirectX::XMVectorGetZ(edge2)),
+						0.0f
+					);
+
+					// Adding the computed tangent to each vertex of the triangle
+					DirectX::XMStoreFloat3(&v0.tangent, tangent);
+					DirectX::XMStoreFloat3(&v1.tangent, tangent);
+					DirectX::XMStoreFloat3(&v2.tangent, tangent);
+					DirectX::XMStoreFloat3(&v0.bitangent, bitangent);
+					DirectX::XMStoreFloat3(&v1.bitangent, bitangent);
+					DirectX::XMStoreFloat3(&v2.bitangent, bitangent);
+				}
+
+				// Normalize the tangents
+				for (auto& vertex : vertices) {
+					// Make it orthogonal to the normal
+					DirectX::XMVECTOR normal = XMLoadFloat3(&vertex.normal);
+					DirectX::XMVECTOR tangent = XMLoadFloat3(&vertex.tangent);
+
+					// Gram-Schmidt orthogonalize
+					tangent = DirectX::XMVector3Normalize(tangent - normal * DirectX::XMVector3Dot(normal, tangent));
+
+					// Compute handedness
+					DirectX::XMVECTOR handedness = DirectX::XMVector3Dot(DirectX::XMVector3Cross(normal, tangent), XMLoadFloat3(&vertex.bitangent));
+					const float sign = DirectX::XMVectorGetX(handedness) < 0.0f ? -1.0f : 1.0f;
+					tangent = DirectX::XMVectorMultiply(tangent, DirectX::XMVectorReplicate(sign));
+
+					DirectX::XMStoreFloat3(&vertex.tangent, tangent);
+				}
+			}
+		}
 
         prim_info.index_start = index_start;
         prim_info.index_count = num_indices;

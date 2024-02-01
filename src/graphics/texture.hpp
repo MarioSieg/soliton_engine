@@ -55,6 +55,7 @@ namespace graphics {
         [[nodiscard]] auto get_type() const noexcept -> vk::ImageType { return m_type; }
         [[nodiscard]] auto get_flags() const noexcept -> vk::ImageCreateFlags { return m_flags; }
         [[nodiscard]] auto get_tiling() const noexcept -> vk::ImageTiling { return m_tiling; }
+        [[nodiscard]] auto get_sampler() const noexcept -> const vk::Sampler& { return m_sampler; }
 
         static auto set_image_layout_barrier(
             vk::CommandBuffer cmd_buf,
@@ -68,6 +69,7 @@ namespace graphics {
 
     private:
         auto create(
+            void* img,
             vk::ImageType type,
             std::uint32_t width,
             std::uint32_t height,
@@ -88,6 +90,7 @@ namespace graphics {
         auto parse_from_raw_memory(std::span<const std::uint8_t> texels) -> void;
 
         auto upload(
+            void* img,
             std::size_t array_idx,
             std::size_t mip_level,
             const void* data,
@@ -103,6 +106,8 @@ namespace graphics {
             vk::ImageAspectFlags aspect_mask = vk::ImageAspectFlagBits::eColor,
             vk::Filter filter = vk::Filter::eLinear
         ) const -> void;
+
+        auto create_sampler() -> void;
 
         std::uint32_t m_width = 0;
         std::uint32_t m_height = 0;
@@ -122,5 +127,6 @@ namespace graphics {
         VmaAllocation m_allocation {};
         VmaAllocator m_allocator {};
         void* m_mapped = nullptr;
+        vk::Sampler m_sampler {};
     };
 }

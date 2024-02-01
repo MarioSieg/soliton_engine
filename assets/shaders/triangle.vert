@@ -11,8 +11,11 @@ layout (push_constant) uniform PushConstants {
 	mat4 NormalMatrix;
 } pushConstants;
 
-layout (location = 0) out vec3 outNormal;
-layout (location = 1) out vec2 outUV;
+layout (location = 0) out vec2 outUV;
+layout (location = 1) out vec3 outNormal;
+layout (location = 2) out vec3 outTangent;
+layout (location = 3) out vec3 outBiTangent;
+layout (location = 4) out mat3 outTBN;
 
 out gl_PerVertex {
     vec4 gl_Position;
@@ -20,7 +23,9 @@ out gl_PerVertex {
 
 void main() {
 	gl_Position = pushConstants.ModelViewProj * vec4(inPos.xyz, 1.0);
-	vec4 nn = pushConstants.NormalMatrix * vec4(inNormal, 0.0);
-	outNormal = nn.xyz;
+	outNormal = (pushConstants.NormalMatrix * vec4(inNormal, 0.0)).xyz;
+	outTangent = (pushConstants.NormalMatrix * vec4(inTangent, 0.0)).xyz;
+	outBiTangent = (pushConstants.NormalMatrix * vec4(inBitangent, 0.0)).xyz;
+	outTBN = mat3(normalize(outTangent), normalize(outBiTangent), normalize(outNormal));
 	outUV = inUV;
 }

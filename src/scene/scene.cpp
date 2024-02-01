@@ -195,9 +195,15 @@ auto scene::load_from_gltf(const std::string& path, const float scale) -> void {
 					albedo = tex_ctx.map[model.images[model.textures[mat.pbrMetallicRoughness.baseColorTexture.index].source].uri];
 				}
 
+				graphics::texture* normal = nullptr;
+				if (mat.normalTexture.index > -1) {
+					normal = tex_ctx.map[model.images[model.textures[mat.normalTexture.index].source].uri];
+				}
+
 				const_cast<graphics::mesh::primitive&>(prim).dst_material_index = dst_max_idx++;
 				graphics::material* material = m_materials.load(mat_idx);
 				material->albedo_map = albedo;
+				material->normal_map = normal;
 				material->flush_property_updates();
 				mats.emplace_back(material);
 			}

@@ -28,24 +28,18 @@ namespace graphics {
         flush_property_updates();
     }
 
-    material::~material() {
-        vkb_vk_device().destroySampler(m_sampler, &vkb::s_allocator);
-    }
+    material::~material() = default;
 
-    auto material::flush_property_updates() -> void {
+    auto material::flush_property_updates() const -> void {
         if (!albedo_map) { // TODO: This is a temporary fix for the missing albedo map.
             return;
-        }
-
-        if (!m_sampler) {
-            create_sampler();
         }
 
         std::array<vk::DescriptorImageInfo, 4> image_infos {};
         auto make_write_tex_info = [i = 0u, this, &image_infos](const texture* tex) mutable -> vk::WriteDescriptorSet {
             image_infos[i].imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
             image_infos[i].imageView = tex ? tex->get_view() : s_default_texture->get_view();
-            image_infos[i].sampler = m_sampler;
+            image_infos[i].sampler = tex ? tex->get_sampler() : s_default_texture->get_sampler();
             const vk::WriteDescriptorSet result {
                 .dstSet = m_descriptor_set,
                 .dstBinding = i,
@@ -60,8 +54,8 @@ namespace graphics {
         };
         const std::array<vk::WriteDescriptorSet, 4> write_descriptor_sets = {
             make_write_tex_info(albedo_map),
-            make_write_tex_info(metallic_roughness_map),
             make_write_tex_info(normal_map),
+            make_write_tex_info(metallic_roughness_map),
             make_write_tex_info(ambient_occlusion_map)
         };
         vkb_vk_device().updateDescriptorSets(
@@ -72,28 +66,8 @@ namespace graphics {
         );
     }
 
-    auto material::create_sampler() -> void {
-        const bool supports_anisotropy = vkb_device().get_physical_device_features().samplerAnisotropy;
-
-        vk::SamplerCreateInfo sampler_info {};
-        sampler_info.magFilter = vk::Filter::eLinear;
-        sampler_info.minFilter = vk::Filter::eLinear;
-        sampler_info.mipmapMode = vk::SamplerMipmapMode::eLinear;
-        sampler_info.addressModeU = vk::SamplerAddressMode::eRepeat;
-        sampler_info.addressModeV = vk::SamplerAddressMode::eRepeat;
-        sampler_info.addressModeW = vk::SamplerAddressMode::eRepeat;
-        sampler_info.mipLodBias = 0.0f;
-        sampler_info.compareOp = vk::CompareOp::eNever;
-        sampler_info.minLod = 0.0f;
-        //sampler_info.maxLod = static_cast<float>(albedo_map->get_mip_levels()); TODO
-        sampler_info.maxAnisotropy = supports_anisotropy ? vkb_device().get_physical_device_props().limits.maxSamplerAnisotropy : 1.0f;
-        sampler_info.anisotropyEnable = supports_anisotropy ? vk::True : vk::False;
-        sampler_info.borderColor = vk::BorderColor::eFloatOpaqueWhite;
-        vkcheck(vkb_vk_device().createSampler(&sampler_info, &vkb::s_allocator, &m_sampler));
-    }
-
     auto material::init_static_resources() -> void {
-        s_default_texture.emplace("proto/red/texture_01.png");
+        s_default_texture.emplace("system/error.png");
 
         constexpr unsigned lim = 8192u;
         std::array<vk::DescriptorPoolSize, 1> pool_sizes = {

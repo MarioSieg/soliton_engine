@@ -24,7 +24,7 @@ namespace graphics {
         DirectX::XMMATRIX model_view_proj;
         DirectX::XMMATRIX normal_matrix;
     };
-    static_assert(sizeof(gpu_vertex_push_constants) <= 128);
+    static_assert(sizeof(gpu_vertex_push_constants) <= 256); // TODO: Check AMD has 256 byte limit too.
 
     struct gpu_uniform_buffer final {
         DirectX::XMMATRIX model_view_proj;

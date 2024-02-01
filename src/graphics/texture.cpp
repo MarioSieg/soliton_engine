@@ -188,6 +188,7 @@ namespace graphics {
         const vk::ImageTiling tiling
     ) : asset {asset_category::texture, asset_source::memory} {
         create(
+            nullptr,
             type,
             width,
             height,
@@ -208,6 +209,7 @@ namespace graphics {
 
     texture::~texture() {
         if (m_image) {
+            vkb_vk_device().destroySampler(m_sampler, &vkb::s_allocator);
             vkb_vk_device().destroyImageView(m_image_view, &vkb::s_allocator);
             vmaDestroyImage(m_allocator, m_image, m_allocation);
             m_image = nullptr;
@@ -215,6 +217,7 @@ namespace graphics {
     }
 
     auto texture::create(
+        void* img,
         const vk::ImageType type,
         const std::uint32_t width,
         const std::uint32_t height,
@@ -299,12 +302,12 @@ namespace graphics {
 
             vkb_context().flush_command_buffer<vk::QueueFlagBits::eTransfer>(copy_cmd);
 
-            upload(0, 0, data, size, vk::ImageLayout::eTransferDstOptimal);
+            upload(img, 0, 0, data, size, vk::ImageLayout::eTransferDstOptimal);
 
             if (m_mip_levels > 1) {
                 // if mip_levels == 1, we can just use the image as-is and not generate mipmaps but only barrier them
                 const bool transfer_only = mip_levels > 1;
-                generate_mips(transfer_only);
+                //generate_mips(transfer_only);
             }
         }
 
@@ -319,6 +322,8 @@ namespace graphics {
         image_view_ci.subresourceRange.levelCount = m_mip_levels;
         image_view_ci.image = m_image;
         vkcheck(vkb_vk_device().createImageView(&image_view_ci, &vkb::s_allocator, &m_image_view));
+
+        create_sampler();
     }
 
     auto texture::parse_from_raw_memory(const std::span<const std::uint8_t> texels) -> void {
@@ -339,7 +344,9 @@ namespace graphics {
             passert(image != nullptr);
             format = static_cast<vk::Format>(k_texture_format_map[k_fallback_format].fmt);
         }
+
         create(
+            image,
             vk::ImageType::e2D, // TODO: cubemap?
             image->m_width,
             image->m_height,
@@ -363,6 +370,7 @@ namespace graphics {
     }
 
     auto texture::upload(
+        void* img,
         const std::size_t array_idx,
         const std::size_t mip_level,
         const void* data,
@@ -373,20 +381,10 @@ namespace graphics {
         vkb::buffer staging {};
         staging.create(size, 0, vk::BufferUsageFlagBits::eTransferSrc, VMA_MEMORY_USAGE_CPU_ONLY, VMA_ALLOCATION_CREATE_MAPPED_BIT, data);
 
-        vk::BufferImageCopy region {};
-        region.bufferOffset = 0;
-        region.imageSubresource.aspectMask = vk::ImageAspectFlagBits::eColor;
-        region.imageSubresource.mipLevel = mip_level;
-        region.imageSubresource.baseArrayLayer = array_idx;
-        region.imageSubresource.layerCount = 1;
-        region.imageExtent.width = m_width;
-        region.imageExtent.height = m_height;
-        region.imageExtent.depth = 1;
-
         vk::ImageSubresourceRange subresource_range {};
         subresource_range.aspectMask = vk::ImageAspectFlagBits::eColor;
         subresource_range.baseMipLevel = mip_level;
-        subresource_range.levelCount = 1;
+        subresource_range.levelCount = m_mip_levels;
         subresource_range.layerCount = 1;
         subresource_range.baseArrayLayer = array_idx;
 
@@ -401,12 +399,35 @@ namespace graphics {
                 subresource_range
             );
         }
+        // copy all mip levels
+        std::vector<vk::BufferImageCopy> regions {};
+        regions.reserve(m_mip_levels);
+        std::size_t offset = 0;
+        for (std::uint32_t i = 0; i < m_mip_levels; ++i) { /* TODO is this optimal? */
+            passert(img);
+            bimg::ImageContainer* image = static_cast<bimg::ImageContainer*>(img);
+            bimg::ImageMip mip {};
+            if (!bimg::imageGetRawData(*image, 0, i, data, size, mip)) {
+                continue;
+            }
+            vk::BufferImageCopy region {};
+            region.bufferOffset = offset;
+            offset += mip.m_size;
+            region.imageSubresource.aspectMask = vk::ImageAspectFlagBits::eColor;
+            region.imageSubresource.mipLevel = i;
+            region.imageSubresource.baseArrayLayer = array_idx;
+            region.imageSubresource.layerCount = 1;
+            region.imageExtent.width = m_width >> i;
+            region.imageExtent.height = m_height >> i;
+            region.imageExtent.depth = 1;
+            regions.emplace_back(region);
+        }
         copy_cmd.copyBufferToImage(
             staging.get_buffer(),
             m_image,
             vk::ImageLayout::eTransferDstOptimal,
-            1,
-            &region
+            regions.size(),
+            regions.data()
         );
         if (dst_layout != vk::ImageLayout::eTransferDstOptimal) {
             set_image_layout_barrier(
@@ -520,6 +541,28 @@ namespace graphics {
 
         vkb_context().flush_command_buffer<vk::QueueFlagBits::eGraphics>(blit_cmd);
         log_info("{} mipchain with {} maps", transfer_only ? "Loaded" : "Generated", m_mip_levels);
+    }
+
+    auto texture::create_sampler() -> void {
+        const bool supports_anisotropy = vkb_device().get_physical_device_features().samplerAnisotropy;
+
+        vk::SamplerCreateInfo sampler_info {};
+        sampler_info.magFilter = vk::Filter::eLinear;
+        sampler_info.minFilter = vk::Filter::eLinear;
+        sampler_info.mipmapMode = vk::SamplerMipmapMode::eLinear;
+        sampler_info.addressModeU = vk::SamplerAddressMode::eRepeat;
+        sampler_info.addressModeV = vk::SamplerAddressMode::eRepeat;
+        sampler_info.addressModeW = vk::SamplerAddressMode::eRepeat;
+        sampler_info.mipLodBias = 0.0f;
+        sampler_info.compareOp = vk::CompareOp::eAlways;
+        sampler_info.compareEnable = vk::False;
+        sampler_info.minLod = 0.0f;
+        sampler_info.maxLod = static_cast<float>(m_mip_levels);
+        sampler_info.maxAnisotropy = supports_anisotropy ? vkb_device().get_physical_device_props().limits.maxSamplerAnisotropy : 1.0f;
+        sampler_info.anisotropyEnable = supports_anisotropy ? vk::True : vk::False;
+        sampler_info.borderColor = vk::BorderColor::eFloatOpaqueBlack;
+        sampler_info.unnormalizedCoordinates = vk::False;
+        vkcheck(vkb_vk_device().createSampler(&sampler_info, &vkb::s_allocator, &m_sampler));
     }
 
     auto texture::set_image_layout_barrier(
