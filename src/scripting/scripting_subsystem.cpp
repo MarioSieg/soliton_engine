@@ -64,7 +64,7 @@ namespace scripting {
     scripting_subsystem::~scripting_subsystem() {
         m_on_tick.reset();
         m_on_prepare.reset();
-        spdlog::get("App")->flush();
+        spdlog::get("app")->flush();
         lua_close(m_L);
         m_L = nullptr;
     }
