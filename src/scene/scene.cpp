@@ -128,7 +128,7 @@ auto scene::load_from_gltf(const std::string& path, const float scale) -> void {
 	passert(result);
 	passert(!model.scenes.empty());
 
-	const DirectX::XMMATRIX scale_mtx = DirectX::XMMatrixScalingFromVector(DirectX::XMVectorReplicate(scale));
+	DirectX::XMMATRIX scale_mtx = DirectX::XMMatrixScalingFromVector(DirectX::XMVectorSet(-scale, scale, scale, 0.0f));
 	std::uint32_t num_nodes, num_meshes = 0;
 	std::function<auto (const tinygltf::Node&) -> void> visitor = [&](const tinygltf::Node& node) {
 		if (node.mesh > -1) [[likely]] {

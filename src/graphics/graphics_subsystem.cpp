@@ -374,7 +374,7 @@ namespace graphics {
         vk::PipelineRasterizationStateCreateInfo rasterization_state {};
         rasterization_state.polygonMode = vk::PolygonMode::eFill;
         rasterization_state.cullMode = vk::CullModeFlagBits::eBack;
-        rasterization_state.frontFace = vk::FrontFace::eClockwise;
+        rasterization_state.frontFace = vk::FrontFace::eCounterClockwise;
         rasterization_state.depthClampEnable = vk::False;
         rasterization_state.rasterizerDiscardEnable = vk::False;
         rasterization_state.depthBiasEnable = vk::False;

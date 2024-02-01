@@ -8,12 +8,12 @@
 namespace scripting {
     template <typename... Ts>
     static auto lua_log_info(const fmt::format_string<Ts...> fmt, Ts&&... args) -> void {
-        SPDLOG_LOGGER_INFO(spdlog::get("App"), "[Lua]: {}", fmt::format(fmt, std::forward<Ts>(args)...));
+        SPDLOG_LOGGER_INFO(spdlog::get("app"), "[Lua]: {}", fmt::format(fmt, std::forward<Ts>(args)...));
     }
 
     template <typename... Ts>
     static auto lua_log_error(const fmt::format_string<Ts...> fmt, Ts&&... args) -> void {
-        SPDLOG_LOGGER_ERROR(spdlog::get("App"), "[Lua]: {}", fmt::format(fmt, std::forward<Ts>(args)...));
+        SPDLOG_LOGGER_ERROR(spdlog::get("app"), "[Lua]: {}", fmt::format(fmt, std::forward<Ts>(args)...));
     }
 
     scripting_subsystem::scripting_subsystem() : subsystem{"Scripting"} {
