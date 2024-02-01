@@ -10,106 +10,129 @@
 #include <bimg/decode.h>
 
 namespace graphics {
-    [[nodiscard]] static auto map_bimg_format_to_vk(const bimg::TextureFormat::Enum fmt) noexcept -> vk::Format {
-        using enum bimg::TextureFormat::Enum;
-        switch(fmt) {
-            case BC1: return vk::Format::eBc1RgbUnormBlock;
-            case BC2: return vk::Format::eBc2UnormBlock;
-            case BC3: return vk::Format::eBc3UnormBlock;
-            case BC4: return vk::Format::eBc4UnormBlock;
-            case BC5: return vk::Format::eBc5UnormBlock;
-            case BC6H: return vk::Format::eBc6HUfloatBlock;
-            case BC7: return vk::Format::eBc7UnormBlock;
-            case ETC1: panic("Currently unsupported texture format: {}", bimg::getName(fmt));
-            case ETC2: return vk::Format::eEtc2R8G8B8UnormBlock;
-            case ETC2A: return vk::Format::eEtc2R8G8B8A8UnormBlock;
-            case ETC2A1: return vk::Format::eEtc2R8G8B8A1UnormBlock;
-            case PTC12:  panic("Currently unsupported texture format: {}", bimg::getName(fmt));
-            case PTC14:  panic("Currently unsupported texture format: {}", bimg::getName(fmt));
-            case PTC12A: panic("Currently unsupported texture format: {}", bimg::getName(fmt));
-            case PTC14A: panic("Currently unsupported texture format: {}", bimg::getName(fmt));
-            case PTC22:  panic("Currently unsupported texture format: {}", bimg::getName(fmt));
-            case PTC24:  panic("Currently unsupported texture format: {}", bimg::getName(fmt));
-            case ATC:    panic("Currently unsupported texture format: {}", bimg::getName(fmt));
-            case ATCE:   panic("Currently unsupported texture format: {}", bimg::getName(fmt));
-            case ATCI:   panic("Currently unsupported texture format: {}", bimg::getName(fmt));
-            case ASTC4x4: return vk::Format::eAstc4x4UnormBlock;
-            case ASTC5x4: return vk::Format::eAstc5x4UnormBlock;
-            case ASTC5x5: return vk::Format::eAstc5x5UnormBlock;
-            case ASTC6x5: return vk::Format::eAstc6x5UnormBlock;
-            case ASTC6x6: return vk::Format::eAstc6x6UnormBlock;
-            case ASTC8x5: return vk::Format::eAstc8x5UnormBlock;
-            case ASTC8x6: return vk::Format::eAstc8x6UnormBlock;
-            case ASTC8x8: return vk::Format::eAstc8x8UnormBlock;
-            case ASTC10x5: return vk::Format::eAstc10x5UnormBlock;
-            case ASTC10x6: return vk::Format::eAstc10x6UnormBlock;
-            case ASTC10x8: return vk::Format::eAstc10x8UnormBlock;
-            case ASTC10x10: return vk::Format::eAstc10x10UnormBlock;
-            case ASTC12x10: return vk::Format::eAstc12x10UnormBlock;
-            case ASTC12x12: return vk::Format::eAstc12x12UnormBlock;
-            case R1: panic("Currently unsupported texture format: {}", bimg::getName(fmt));
-            case A8:  panic("Currently unsupported texture format: {}", bimg::getName(fmt));
-            case R8: return vk::Format::eR8Unorm;
-            case R8I: return vk::Format::eR8Sint;
-            case R8U: return vk::Format::eR8Uint;
-            case R8S: return vk::Format::eR8Snorm;
-            case R16: return vk::Format::eR16Unorm;
-            case R16I: return vk::Format::eR16Sint;
-            case R16U: return vk::Format::eR16Uint;
-            case R16F: return vk::Format::eR16Sfloat;
-            case R16S: return vk::Format::eR16Snorm;
-            case R32I: return vk::Format::eR32Sint;
-            case R32U: return vk::Format::eR32Uint;
-            case R32F: return vk::Format::eR32Sfloat;
-            case RG8: return vk::Format::eR8G8Unorm;
-            case RG8I: return vk::Format::eR8G8Sint;
-            case RG8U: return vk::Format::eR8G8Uint;
-            case RG8S: return vk::Format::eR8G8Snorm;
-            case RG16: return vk::Format::eR16G16Unorm;
-            case RG16I: return vk::Format::eR16G16Sint;
-            case RG16U: return vk::Format::eR16G16Uint;
-            case RG16F: return vk::Format::eR16G16Sfloat;
-            case RG16S: return vk::Format::eR16G16Snorm;
-            case RG32I: return vk::Format::eR32G32Sint;
-            case RG32U: return vk::Format::eR32G32Uint;
-            case RG32F: return vk::Format::eR32G32Sfloat;
-            case RGB8: return vk::Format::eR8G8B8Unorm;
-            case RGB8I: return vk::Format::eR8G8B8Sint;
-            case RGB8U: return vk::Format::eR8G8B8Uint;
-            case RGB8S: return vk::Format::eR8G8B8Snorm;
-            case RGB9E5F: return vk::Format::eE5B9G9R9UfloatPack32;
-            case BGRA8: return vk::Format::eB8G8R8A8Unorm;
-            case RGBA8: return vk::Format::eR8G8B8A8Unorm;
-            case RGBA8I: return vk::Format::eR8G8B8A8Sint;
-            case RGBA8U: return vk::Format::eR8G8B8A8Uint;
-            case RGBA8S: return vk::Format::eR8G8B8A8Snorm;
-            case RGBA16: return vk::Format::eR16G16B16A16Unorm;
-            case RGBA16I: return vk::Format::eR16G16B16A16Sint;
-            case RGBA16U: return vk::Format::eR16G16B16A16Uint;
-            case RGBA16F: return vk::Format::eR16G16B16A16Sfloat;
-            case RGBA16S: return vk::Format::eR16G16B16A16Snorm;
-            case RGBA32I: return vk::Format::eR32G32B32A32Sint;
-            case RGBA32U: return vk::Format::eR32G32B32A32Uint;
-            case RGBA32F: return vk::Format::eR32G32B32A32Sfloat;
-            case B5G6R5: return vk::Format::eB5G6R5UnormPack16;
-            case R5G6B5: return vk::Format::eR5G6B5UnormPack16;
-            case BGRA4: return vk::Format::eB4G4R4A4UnormPack16;
-            case RGBA4: return vk::Format::eR4G4B4A4UnormPack16;
-            case BGR5A1: return vk::Format::eB5G5R5A1UnormPack16;
-            case RGB5A1: return vk::Format::eR5G5B5A1UnormPack16;
-            case RGB10A2: return vk::Format::eA2R10G10B10UnormPack32;
-            case RG11B10F: return vk::Format::eB10G11R11UfloatPack32;
-            case D16:  panic("Currently unsupported texture format: {}", bimg::getName(fmt));
-            case D24:  panic("Currently unsupported texture format: {}", bimg::getName(fmt));
-            case D24S8: return vk::Format::eD24UnormS8Uint;
-            case D32: return vk::Format::eD32Sfloat;
-            case D16F:  panic("Currently unsupported texture format: {}", bimg::getName(fmt));
-            case D24F:  panic("Currently unsupported texture format: {}", bimg::getName(fmt));
-            case D32F: return vk::Format::eD32Sfloat;
-            case D0S8: return vk::Format::eS8Uint;
-            default:  panic("Currently unsupported texture format: {}", bimg::getName(fmt));
-        }
-    }
+    static constexpr bimg::TextureFormat::Enum k_fallback_format = bimg::TextureFormat::RGBA8; // Textures are converted to this when native format is not supported
+
+    struct texture_format_info {
+        VkFormat fmt {};
+        VkFormat fmt_srv {};
+        VkFormat fmt_dsv {};
+        VkFormat fmt_srgb {};
+        VkComponentMapping mapping {};
+    };
+
+    static constexpr texture_format_info k_texture_format_map[] = {
+#define $_ VK_COMPONENT_SWIZZLE_IDENTITY
+#define $0 VK_COMPONENT_SWIZZLE_ZERO
+#define $1 VK_COMPONENT_SWIZZLE_ONE
+#define $R VK_COMPONENT_SWIZZLE_R
+#define $G VK_COMPONENT_SWIZZLE_G
+#define $B VK_COMPONENT_SWIZZLE_B
+#define $A VK_COMPONENT_SWIZZLE_A
+		{ VK_FORMAT_BC1_RGB_UNORM_BLOCK,       VK_FORMAT_BC1_RGB_UNORM_BLOCK,      VK_FORMAT_UNDEFINED,           VK_FORMAT_BC1_RGB_SRGB_BLOCK,       { $_, $_, $_, $_ } }, // BC1
+		{ VK_FORMAT_BC2_UNORM_BLOCK,           VK_FORMAT_BC2_UNORM_BLOCK,          VK_FORMAT_UNDEFINED,           VK_FORMAT_BC2_SRGB_BLOCK,           { $_, $_, $_, $_ } }, // BC2
+		{ VK_FORMAT_BC3_UNORM_BLOCK,           VK_FORMAT_BC3_UNORM_BLOCK,          VK_FORMAT_UNDEFINED,           VK_FORMAT_BC3_SRGB_BLOCK,           { $_, $_, $_, $_ } }, // BC3
+		{ VK_FORMAT_BC4_UNORM_BLOCK,           VK_FORMAT_BC4_UNORM_BLOCK,          VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // BC4
+		{ VK_FORMAT_BC5_UNORM_BLOCK,           VK_FORMAT_BC5_UNORM_BLOCK,          VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // BC5
+		{ VK_FORMAT_BC6H_SFLOAT_BLOCK,         VK_FORMAT_BC6H_SFLOAT_BLOCK,        VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // BC6H
+		{ VK_FORMAT_BC7_UNORM_BLOCK,           VK_FORMAT_BC7_UNORM_BLOCK,          VK_FORMAT_UNDEFINED,           VK_FORMAT_BC7_SRGB_BLOCK,           { $_, $_, $_, $_ } }, // BC7
+		{ VK_FORMAT_UNDEFINED,                 VK_FORMAT_UNDEFINED,                VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // ETC1
+		{ VK_FORMAT_ETC2_R8G8B8_UNORM_BLOCK,   VK_FORMAT_UNDEFINED,                VK_FORMAT_UNDEFINED,           VK_FORMAT_ETC2_R8G8B8_SRGB_BLOCK,   { $_, $_, $_, $_ } }, // ETC2
+		{ VK_FORMAT_ETC2_R8G8B8A8_UNORM_BLOCK, VK_FORMAT_UNDEFINED,                VK_FORMAT_UNDEFINED,           VK_FORMAT_ETC2_R8G8B8A8_SRGB_BLOCK, { $_, $_, $_, $_ } }, // ETC2A
+		{ VK_FORMAT_ETC2_R8G8B8A1_UNORM_BLOCK, VK_FORMAT_UNDEFINED,                VK_FORMAT_UNDEFINED,           VK_FORMAT_ETC2_R8G8B8A1_SRGB_BLOCK, { $_, $_, $_, $_ } }, // ETC2A1
+		{ VK_FORMAT_UNDEFINED,                 VK_FORMAT_UNDEFINED,                VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // PTC12
+		{ VK_FORMAT_UNDEFINED,                 VK_FORMAT_UNDEFINED,                VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // PTC14
+		{ VK_FORMAT_UNDEFINED,                 VK_FORMAT_UNDEFINED,                VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // PTC12A
+		{ VK_FORMAT_UNDEFINED,                 VK_FORMAT_UNDEFINED,                VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // PTC14A
+		{ VK_FORMAT_UNDEFINED,                 VK_FORMAT_UNDEFINED,                VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // PTC22
+		{ VK_FORMAT_UNDEFINED,                 VK_FORMAT_UNDEFINED,                VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // PTC24
+		{ VK_FORMAT_UNDEFINED,                 VK_FORMAT_UNDEFINED,                VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // ATC
+		{ VK_FORMAT_UNDEFINED,                 VK_FORMAT_UNDEFINED,                VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // ATCE
+		{ VK_FORMAT_UNDEFINED,                 VK_FORMAT_UNDEFINED,                VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // ATCI
+		{ VK_FORMAT_ASTC_4x4_UNORM_BLOCK,      VK_FORMAT_ASTC_4x4_UNORM_BLOCK,     VK_FORMAT_UNDEFINED,           VK_FORMAT_ASTC_4x4_SRGB_BLOCK,      { $_, $_, $_, $_ } }, // ASTC4x4
+		{ VK_FORMAT_ASTC_5x4_UNORM_BLOCK,      VK_FORMAT_ASTC_5x4_UNORM_BLOCK,     VK_FORMAT_UNDEFINED,           VK_FORMAT_ASTC_5x4_SRGB_BLOCK,      { $_, $_, $_, $_ } }, // ASTC5x4
+		{ VK_FORMAT_ASTC_5x5_UNORM_BLOCK,      VK_FORMAT_ASTC_5x5_UNORM_BLOCK,     VK_FORMAT_UNDEFINED,           VK_FORMAT_ASTC_5x5_SRGB_BLOCK,      { $_, $_, $_, $_ } }, // ASTC5x5
+		{ VK_FORMAT_ASTC_6x5_UNORM_BLOCK,      VK_FORMAT_ASTC_6x5_UNORM_BLOCK,     VK_FORMAT_UNDEFINED,           VK_FORMAT_ASTC_6x5_SRGB_BLOCK,      { $_, $_, $_, $_ } }, // ASTC6x5
+		{ VK_FORMAT_ASTC_6x6_UNORM_BLOCK,      VK_FORMAT_ASTC_6x6_UNORM_BLOCK,     VK_FORMAT_UNDEFINED,           VK_FORMAT_ASTC_6x6_SRGB_BLOCK,      { $_, $_, $_, $_ } }, // ASTC6x6
+		{ VK_FORMAT_ASTC_8x5_UNORM_BLOCK,      VK_FORMAT_ASTC_8x5_UNORM_BLOCK,     VK_FORMAT_UNDEFINED,           VK_FORMAT_ASTC_8x5_SRGB_BLOCK,      { $_, $_, $_, $_ } }, // ASTC8x5
+		{ VK_FORMAT_ASTC_8x6_UNORM_BLOCK,      VK_FORMAT_ASTC_8x6_UNORM_BLOCK,     VK_FORMAT_UNDEFINED,           VK_FORMAT_ASTC_8x6_SRGB_BLOCK,      { $_, $_, $_, $_ } }, // ASTC8x6
+		{ VK_FORMAT_ASTC_8x8_UNORM_BLOCK,      VK_FORMAT_ASTC_8x8_UNORM_BLOCK,     VK_FORMAT_UNDEFINED,           VK_FORMAT_ASTC_8x8_SRGB_BLOCK,      { $_, $_, $_, $_ } }, // ASTC8x8
+		{ VK_FORMAT_ASTC_10x5_UNORM_BLOCK,     VK_FORMAT_ASTC_10x5_UNORM_BLOCK,    VK_FORMAT_UNDEFINED,           VK_FORMAT_ASTC_10x5_SRGB_BLOCK,     { $_, $_, $_, $_ } }, // ASTC10x5
+		{ VK_FORMAT_ASTC_10x6_UNORM_BLOCK,     VK_FORMAT_ASTC_10x6_UNORM_BLOCK,    VK_FORMAT_UNDEFINED,           VK_FORMAT_ASTC_10x6_SRGB_BLOCK,     { $_, $_, $_, $_ } }, // ASTC10x6
+		{ VK_FORMAT_ASTC_10x8_UNORM_BLOCK,     VK_FORMAT_ASTC_10x8_UNORM_BLOCK,    VK_FORMAT_UNDEFINED,           VK_FORMAT_ASTC_10x8_SRGB_BLOCK,     { $_, $_, $_, $_ } }, // ASTC10x8
+		{ VK_FORMAT_ASTC_10x10_UNORM_BLOCK,    VK_FORMAT_ASTC_10x10_UNORM_BLOCK,   VK_FORMAT_UNDEFINED,           VK_FORMAT_ASTC_10x10_SRGB_BLOCK,    { $_, $_, $_, $_ } }, // ASTC10x10
+		{ VK_FORMAT_ASTC_12x10_UNORM_BLOCK,    VK_FORMAT_ASTC_12x10_UNORM_BLOCK,   VK_FORMAT_UNDEFINED,           VK_FORMAT_ASTC_12x10_SRGB_BLOCK,    { $_, $_, $_, $_ } }, // ASTC12x10
+		{ VK_FORMAT_ASTC_12x12_UNORM_BLOCK,    VK_FORMAT_ASTC_12x12_UNORM_BLOCK,   VK_FORMAT_UNDEFINED,           VK_FORMAT_ASTC_12x12_SRGB_BLOCK,    { $_, $_, $_, $_ } }, // ASTC12x12
+		{ VK_FORMAT_UNDEFINED,                 VK_FORMAT_UNDEFINED,                VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // Unknown
+		{ VK_FORMAT_UNDEFINED,                 VK_FORMAT_UNDEFINED,                VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // R1
+		{ VK_FORMAT_R8_UNORM,                  VK_FORMAT_R8_UNORM,                 VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $0, $0, $0, $R } }, // A8
+		{ VK_FORMAT_R8_UNORM,                  VK_FORMAT_R8_UNORM,                 VK_FORMAT_UNDEFINED,           VK_FORMAT_R8_SRGB,                  { $_, $_, $_, $_ } }, // R8
+		{ VK_FORMAT_R8_SINT,                   VK_FORMAT_R8_SINT,                  VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // R8I
+		{ VK_FORMAT_R8_UINT,                   VK_FORMAT_R8_UINT,                  VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // R8U
+		{ VK_FORMAT_R8_SNORM,                  VK_FORMAT_R8_SNORM,                 VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // R8S
+		{ VK_FORMAT_R16_UNORM,                 VK_FORMAT_R16_UNORM,                VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // R16
+		{ VK_FORMAT_R16_SINT,                  VK_FORMAT_R16_SINT,                 VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // R16I
+		{ VK_FORMAT_R16_UINT,                  VK_FORMAT_R16_UINT,                 VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // R16U
+		{ VK_FORMAT_R16_SFLOAT,                VK_FORMAT_R16_SFLOAT,               VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // R16F
+		{ VK_FORMAT_R16_SNORM,                 VK_FORMAT_R16_SNORM,                VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // R16S
+		{ VK_FORMAT_R32_SINT,                  VK_FORMAT_R32_SINT,                 VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // R32I
+		{ VK_FORMAT_R32_UINT,                  VK_FORMAT_R32_UINT,                 VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // R32U
+		{ VK_FORMAT_R32_SFLOAT,                VK_FORMAT_R32_SFLOAT,               VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // R32F
+		{ VK_FORMAT_R8G8_UNORM,                VK_FORMAT_R8G8_UNORM,               VK_FORMAT_UNDEFINED,           VK_FORMAT_R8G8_SRGB,                { $_, $_, $_, $_ } }, // RG8
+		{ VK_FORMAT_R8G8_SINT,                 VK_FORMAT_R8G8_SINT,                VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // RG8I
+		{ VK_FORMAT_R8G8_UINT,                 VK_FORMAT_R8G8_UINT,                VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // RG8U
+		{ VK_FORMAT_R8G8_SNORM,                VK_FORMAT_R8G8_SNORM,               VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // RG8S
+		{ VK_FORMAT_R16G16_UNORM,              VK_FORMAT_R16G16_UNORM,             VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // RG16
+		{ VK_FORMAT_R16G16_SINT,               VK_FORMAT_R16G16_SINT,              VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // RG16I
+		{ VK_FORMAT_R16G16_UINT,               VK_FORMAT_R16G16_UINT,              VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // RG16U
+		{ VK_FORMAT_R16G16_SFLOAT,             VK_FORMAT_R16G16_SFLOAT,            VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // RG16F
+		{ VK_FORMAT_R16G16_SNORM,              VK_FORMAT_R16G16_SNORM,             VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // RG16S
+		{ VK_FORMAT_R32G32_SINT,               VK_FORMAT_R32G32_SINT,              VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // RG32I
+		{ VK_FORMAT_R32G32_UINT,               VK_FORMAT_R32G32_UINT,              VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // RG32U
+		{ VK_FORMAT_R32G32_SFLOAT,             VK_FORMAT_R32G32_SFLOAT,            VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // RG32F
+		{ VK_FORMAT_R8G8B8_UNORM,              VK_FORMAT_R8G8B8_UNORM,             VK_FORMAT_UNDEFINED,           VK_FORMAT_R8G8B8_SRGB,              { $_, $_, $_, $_ } }, // RGB8
+		{ VK_FORMAT_R8G8B8_SINT,               VK_FORMAT_R8G8B8_SINT,              VK_FORMAT_UNDEFINED,           VK_FORMAT_R8G8B8_SRGB,              { $_, $_, $_, $_ } }, // RGB8I
+		{ VK_FORMAT_R8G8B8_UINT,               VK_FORMAT_R8G8B8_UINT,              VK_FORMAT_UNDEFINED,           VK_FORMAT_R8G8B8_SRGB,              { $_, $_, $_, $_ } }, // RGB8U
+		{ VK_FORMAT_R8G8B8_SNORM,              VK_FORMAT_R8G8B8_SNORM,             VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // RGB8S
+		{ VK_FORMAT_E5B9G9R9_UFLOAT_PACK32,    VK_FORMAT_E5B9G9R9_UFLOAT_PACK32,   VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // RGB9E5F
+		{ VK_FORMAT_B8G8R8A8_UNORM,            VK_FORMAT_B8G8R8A8_UNORM,           VK_FORMAT_UNDEFINED,           VK_FORMAT_B8G8R8A8_SRGB,            { $_, $_, $_, $_ } }, // BGRA8
+		{ VK_FORMAT_R8G8B8A8_UNORM,            VK_FORMAT_R8G8B8A8_UNORM,           VK_FORMAT_UNDEFINED,           VK_FORMAT_R8G8B8A8_SRGB,            { $_, $_, $_, $_ } }, // RGBA8
+		{ VK_FORMAT_R8G8B8A8_SINT,             VK_FORMAT_R8G8B8A8_SINT,            VK_FORMAT_UNDEFINED,           VK_FORMAT_R8G8B8A8_SRGB,            { $_, $_, $_, $_ } }, // RGBA8I
+		{ VK_FORMAT_R8G8B8A8_UINT,             VK_FORMAT_R8G8B8A8_UINT,            VK_FORMAT_UNDEFINED,           VK_FORMAT_R8G8B8A8_SRGB,            { $_, $_, $_, $_ } }, // RGBA8U
+		{ VK_FORMAT_R8G8B8A8_SNORM,            VK_FORMAT_R8G8B8A8_SNORM,           VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // RGBA8S
+		{ VK_FORMAT_R16G16B16A16_UNORM,        VK_FORMAT_R16G16B16A16_UNORM,       VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // RGBA16
+		{ VK_FORMAT_R16G16B16A16_SINT,         VK_FORMAT_R16G16B16A16_SINT,        VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // RGBA16I
+		{ VK_FORMAT_R16G16B16A16_UINT,         VK_FORMAT_R16G16B16A16_UINT,        VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // RGBA16U
+		{ VK_FORMAT_R16G16B16A16_SFLOAT,       VK_FORMAT_R16G16B16A16_SFLOAT,      VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // RGBA16F
+		{ VK_FORMAT_R16G16B16A16_SNORM,        VK_FORMAT_R16G16B16A16_SNORM,       VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // RGBA16S
+		{ VK_FORMAT_R32G32B32A32_SINT,         VK_FORMAT_R32G32B32A32_SINT,        VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // RGBA32I
+		{ VK_FORMAT_R32G32B32A32_UINT,         VK_FORMAT_R32G32B32A32_UINT,        VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // RGBA32U
+		{ VK_FORMAT_R32G32B32A32_SFLOAT,       VK_FORMAT_R32G32B32A32_SFLOAT,      VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // RGBA32F
+		{ VK_FORMAT_R5G6B5_UNORM_PACK16,       VK_FORMAT_R5G6B5_UNORM_PACK16,      VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // B5G6R5
+		{ VK_FORMAT_B5G6R5_UNORM_PACK16,       VK_FORMAT_B5G6R5_UNORM_PACK16,      VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // R5G6B5
+		{ VK_FORMAT_B4G4R4A4_UNORM_PACK16,     VK_FORMAT_B4G4R4A4_UNORM_PACK16,    VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $G, $R, $A, $B } }, // BGRA4
+		{ VK_FORMAT_R4G4B4A4_UNORM_PACK16,     VK_FORMAT_R4G4B4A4_UNORM_PACK16,    VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $A, $B, $G, $R } }, // RGBA4
+		{ VK_FORMAT_A1R5G5B5_UNORM_PACK16,     VK_FORMAT_A1R5G5B5_UNORM_PACK16,    VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // BGR5A1
+		{ VK_FORMAT_A1R5G5B5_UNORM_PACK16,     VK_FORMAT_A1R5G5B5_UNORM_PACK16,    VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $B, $G, $R, $A } }, // RGB5A1
+		{ VK_FORMAT_A2R10G10B10_UNORM_PACK32,  VK_FORMAT_A2R10G10B10_UNORM_PACK32, VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $B, $G, $R, $A } }, // RGB10A2
+		{ VK_FORMAT_B10G11R11_UFLOAT_PACK32,   VK_FORMAT_B10G11R11_UFLOAT_PACK32,  VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // RG11B10F
+		{ VK_FORMAT_UNDEFINED,                 VK_FORMAT_UNDEFINED,                VK_FORMAT_UNDEFINED,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // UnknownDepth
+		{ VK_FORMAT_UNDEFINED,                 VK_FORMAT_R16_UNORM,                VK_FORMAT_D16_UNORM,           VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // D16
+		{ VK_FORMAT_UNDEFINED,                 VK_FORMAT_R32_SFLOAT,               VK_FORMAT_D32_SFLOAT_S8_UINT,  VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // D24
+		{ VK_FORMAT_UNDEFINED,                 VK_FORMAT_R32_SFLOAT,               VK_FORMAT_D32_SFLOAT_S8_UINT,  VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // D24S8
+		{ VK_FORMAT_UNDEFINED,                 VK_FORMAT_R32_SFLOAT,               VK_FORMAT_D32_SFLOAT_S8_UINT,  VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // D32
+		{ VK_FORMAT_UNDEFINED,                 VK_FORMAT_R32_SFLOAT,               VK_FORMAT_D32_SFLOAT,          VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // D16F
+		{ VK_FORMAT_UNDEFINED,                 VK_FORMAT_R32_SFLOAT,               VK_FORMAT_D32_SFLOAT,          VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // D24F
+		{ VK_FORMAT_UNDEFINED,                 VK_FORMAT_R32_SFLOAT,               VK_FORMAT_D32_SFLOAT,          VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // D32F
+		{ VK_FORMAT_UNDEFINED,                 VK_FORMAT_R8_UINT,                  VK_FORMAT_S8_UINT,             VK_FORMAT_UNDEFINED,                { $_, $_, $_, $_ } }, // D0S8
+#undef $_
+#undef $0
+#undef $1
+#undef $R
+#undef $G
+#undef $B
+#undef $A
+	};
+	static_assert(bimg::TextureFormat::Count == std::size(k_texture_format_map));
 
     static constexpr std::size_t k_natural_align = 8;
     auto texture_allocator::realloc(void* p, std::size_t size, std::size_t align, const char*, std::uint32_t) -> void* {
@@ -242,7 +265,14 @@ namespace graphics {
 
         alloc_create_info.usage = m_memory_usage;
         alloc_create_info.flags = memory_usage == VMA_MEMORY_USAGE_CPU_ONLY || memory_usage == VMA_MEMORY_USAGE_GPU_TO_CPU ? VMA_ALLOCATION_CREATE_MAPPED_BIT : 0;
-        vkccheck(vmaCreateImage(m_allocator, reinterpret_cast<VkImageCreateInfo*>(&image_info), &alloc_create_info, reinterpret_cast<VkImage*>(&m_image), &m_allocation, &alloc_info));
+        vkccheck(vmaCreateImage(
+            m_allocator,
+            reinterpret_cast<VkImageCreateInfo*>(&image_info),
+            &alloc_create_info,
+            reinterpret_cast<VkImage*>(&m_image),
+            &m_allocation,
+            &alloc_info
+        ));
 
         m_memory = alloc_info.deviceMemory;
         m_mapped = alloc_info.pMappedData;
@@ -271,8 +301,10 @@ namespace graphics {
 
             upload(0, 0, data, size, vk::ImageLayout::eTransferDstOptimal);
 
-            if (m_mip_levels > 1) {
-                generate_mips();
+            if (m_mip_levels > 0) {
+                // if mip_levels == 1, we can just use the image as-is and not generate mipmaps but only barrier them
+                const bool transfer_only = mip_levels > 1;
+                generate_mips(transfer_only);
             }
         }
 
@@ -291,10 +323,22 @@ namespace graphics {
 
     auto texture::parse_from_raw_memory(const std::span<const std::uint8_t> texels) -> void {
         passert(texels.size() <= std::numeric_limits<std::uint32_t>::max());
-        bimg::ImageContainer* image = bimg::imageParse(&s_texture_allocator, texels.data(), static_cast<std::uint32_t>(texels.size()), bimg::TextureFormat::RGBA8);
+        bimg::ImageContainer* image = bimg::imageParse(&s_texture_allocator, texels.data(), static_cast<std::uint32_t>(texels.size()));
         passert(image != nullptr);
 
-        const vk::Format format = map_bimg_format_to_vk(image->m_format);
+        constexpr vk::ImageUsageFlags usage = vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eTransferSrc;
+        constexpr vk::ImageCreateFlags create_flags {};
+        constexpr vk::ImageTiling tiling = vk::ImageTiling::eOptimal;
+
+        auto format = static_cast<vk::Format>(k_texture_format_map[image->m_format].fmt);
+        if (!vkb_device().is_image_format_supported(vk::ImageType::e2D, format, create_flags, usage, tiling)) [[unlikely]] {
+            log_warn("Texture format not supported: {}, converting...", string_VkFormat(static_cast<VkFormat>(format)));
+            bimg::ImageContainer* original = image;
+            image = bimg::imageConvert(&s_texture_allocator, k_fallback_format, *original, true);
+            bimg::imageFree(original);
+            passert(image != nullptr);
+            format = static_cast<vk::Format>(k_texture_format_map[k_fallback_format].fmt);
+        }
         create(
             vk::ImageType::e2D, // TODO: cubemap?
             image->m_width,
@@ -304,16 +348,18 @@ namespace graphics {
             image->m_numLayers,
             format,
             VMA_MEMORY_USAGE_GPU_ONLY,
-            vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eTransferSrc,
+            usage,
             vk::SampleCountFlagBits::e1,
             vk::ImageLayout::eUndefined,
             image->m_data,
-            image->m_size
+            image->m_size,
+            create_flags,
+            tiling
         );
 
         m_approx_byte_size = sizeof(*this) + image->m_size;
 
-        //bimg::imageFree(image); TODO: leak
+        bimg::imageFree(image);
     }
 
     auto texture::upload(
@@ -376,6 +422,7 @@ namespace graphics {
     }
 
     auto texture::generate_mips(
+        const bool transfer_only,
         const vk::ImageLayout src_layout,
         const vk::ImageLayout dst_layout,
         const vk::ImageAspectFlags aspect_mask,
@@ -422,28 +469,30 @@ namespace graphics {
                         subresource_range
                     );
                 }
-                vk::ImageBlit blit {};
-                blit.srcOffsets[0] = vk::Offset3D { 0, 0, 0 };
-                blit.srcOffsets[1] = vk::Offset3D { static_cast<std::int32_t>(mip_w), static_cast<std::int32_t>(mip_h), 1 };
-                blit.srcSubresource.aspectMask = aspect_mask;
-                blit.srcSubresource.mipLevel = j - 1;
-                blit.srcSubresource.baseArrayLayer = i;
-                blit.srcSubresource.layerCount = 1;
-                blit.dstOffsets[0] = vk::Offset3D { 0, 0, 0 };
-                blit.dstOffsets[1] = vk::Offset3D { static_cast<std::int32_t>(mip_w > 1 ? mip_w >> 1 : 1), static_cast<std::int32_t>(mip_h > 1 ? mip_h >> 1 : 1), 1 };
-                blit.dstSubresource.aspectMask = aspect_mask;
-                blit.dstSubresource.mipLevel = j;
-                blit.dstSubresource.baseArrayLayer = i;
-                blit.dstSubresource.layerCount = 1;
-                blit_cmd.blitImage(
-                    m_image,
-                    vk::ImageLayout::eTransferSrcOptimal,
-                    m_image,
-                    vk::ImageLayout::eTransferDstOptimal,
-                    1,
-                    &blit,
-                    filter
-                );
+                if (!transfer_only) { // if we're only doing a transfer, we don't need to blit
+                    vk::ImageBlit blit {};
+                    blit.srcOffsets[0] = vk::Offset3D { 0, 0, 0 };
+                    blit.srcOffsets[1] = vk::Offset3D { static_cast<std::int32_t>(mip_w), static_cast<std::int32_t>(mip_h), 1 };
+                    blit.srcSubresource.aspectMask = aspect_mask;
+                    blit.srcSubresource.mipLevel = j - 1;
+                    blit.srcSubresource.baseArrayLayer = i;
+                    blit.srcSubresource.layerCount = 1;
+                    blit.dstOffsets[0] = vk::Offset3D { 0, 0, 0 };
+                    blit.dstOffsets[1] = vk::Offset3D { static_cast<std::int32_t>(mip_w > 1 ? mip_w >> 1 : 1), static_cast<std::int32_t>(mip_h > 1 ? mip_h >> 1 : 1), 1 };
+                    blit.dstSubresource.aspectMask = aspect_mask;
+                    blit.dstSubresource.mipLevel = j;
+                    blit.dstSubresource.baseArrayLayer = i;
+                    blit.dstSubresource.layerCount = 1;
+                    blit_cmd.blitImage(
+                        m_image,
+                        vk::ImageLayout::eTransferSrcOptimal,
+                        m_image,
+                        vk::ImageLayout::eTransferDstOptimal,
+                        1,
+                        &blit,
+                        filter
+                    );
+                }
                 set_image_layout_barrier(
                     blit_cmd,
                     m_image,
@@ -470,7 +519,7 @@ namespace graphics {
         );
 
         vkb_context().flush_command_buffer<vk::QueueFlagBits::eGraphics>(blit_cmd);
-        log_info("Generated mipchain with {} maps", m_mip_levels);
+        log_info("{} mipchain with {} maps", transfer_only ? "Loaded" : "Generated", m_mip_levels);
     }
 
     auto texture::set_image_layout_barrier(

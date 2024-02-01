@@ -37,7 +37,7 @@ namespace graphics {
         GLFWwindow* window = platform_subsystem::get_glfw_window();
         context::s_instance = std::make_unique<context>(window); // Create Vulkan context
 
-        material::create_global_descriptors();
+        material::init_static_resources();
 
         create_uniform_buffers();
         create_descriptor_set_layout();
@@ -56,6 +56,9 @@ namespace graphics {
         vkb_vk_device().destroyPipelineLayout(m_pipeline_layout, &vkb::s_allocator);
         vkb_vk_device().destroyDescriptorPool(m_descriptor_pool, &vkb::s_allocator);
         vkb_vk_device().destroyPipeline(m_pipeline, &vkb::s_allocator);
+
+        material::free_static_resources();
+
         context::s_instance.reset();
 
         ImPlot::DestroyContext();

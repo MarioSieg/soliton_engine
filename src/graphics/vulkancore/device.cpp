@@ -74,6 +74,23 @@ namespace vkb {
         return 0;
     }
 
+    auto device::is_image_format_supported(
+        const vk::ImageType type,
+        const vk::Format format,
+        const vk::ImageCreateFlags flags,
+        const vk::ImageUsageFlags usage,
+        const vk::ImageTiling tiling
+    ) const -> bool {
+        vk::PhysicalDeviceImageFormatInfo2 info {};
+        info.type = type;
+        info.format = format;
+        info.flags = flags;
+        info.usage = usage;
+        info.tiling = tiling;
+        vk::ImageFormatProperties2 props {};
+        return m_physical_device.getImageFormatProperties2(&info, &props) == vk::Result::eSuccess;
+    }
+
     auto device::create_instance() -> void {
         log_info("Creating Vulkan instance...");
 

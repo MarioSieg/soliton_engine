@@ -17,12 +17,12 @@ namespace graphics {
         this->normal_map = normal_map;
         this->ambient_occlusion_map = ambient_occlusion_map;
 
-        passert(m_descriptor_set_layout);
+        passert(s_descriptor_set_layout);
 
         vk::DescriptorSetAllocateInfo descriptor_set_alloc_info {};
-        descriptor_set_alloc_info.descriptorPool = m_descriptor_pool;
+        descriptor_set_alloc_info.descriptorPool = s_descriptor_pool;
         descriptor_set_alloc_info.descriptorSetCount = 1;
-        descriptor_set_alloc_info.pSetLayouts = &m_descriptor_set_layout;
+        descriptor_set_alloc_info.pSetLayouts = &s_descriptor_set_layout;
         vkcheck(vkb::context::s_instance->get_device().get_logical_device().allocateDescriptorSets(&descriptor_set_alloc_info, &m_descriptor_set));
 
         create_sampler();
@@ -37,7 +37,7 @@ namespace graphics {
         std::array<vk::DescriptorImageInfo, 4> image_infos {};
         auto make_write_tex_info = [i = 0u, this, &image_infos](const texture* tex) mutable -> vk::WriteDescriptorSet {
             image_infos[i].imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-            image_infos[i].imageView = tex ? tex->get_view() : m_default_texture->get_view();
+            image_infos[i].imageView = tex ? tex->get_view() : s_default_texture->get_view();
             image_infos[i].sampler = m_sampler;
             const vk::WriteDescriptorSet result {
                 .dstSet = m_descriptor_set,
@@ -85,12 +85,8 @@ namespace graphics {
         vkcheck(vkb_vk_device().createSampler(&sampler_info, &vkb::s_allocator, &m_sampler));
     }
 
-    auto material::create_global_descriptors() -> void {
-        if (m_descriptor_pool) { // not thread safe
-            return;
-        }
-
-        m_default_texture = std::make_unique<texture>("proto/red/texture_01.png");
+    auto material::init_static_resources() -> void {
+        s_default_texture.emplace("proto/red/texture_01.png");
 
         constexpr unsigned lim = 8192u;
         std::array<vk::DescriptorPoolSize, 1> pool_sizes = {
@@ -104,7 +100,7 @@ namespace graphics {
         descriptor_pool_create_info.maxSets = lim;
         descriptor_pool_create_info.poolSizeCount = static_cast<std::uint32_t>(pool_sizes.size());
         descriptor_pool_create_info.pPoolSizes = pool_sizes.data();
-        vkcheck(vkb::context::s_instance->get_device().get_logical_device().createDescriptorPool(&descriptor_pool_create_info, &vkb::s_allocator, &m_descriptor_pool));
+        vkcheck(vkb_vk_device().createDescriptorPool(&descriptor_pool_create_info, &vkb::s_allocator, &s_descriptor_pool));
 
         auto get_texture_binding = [i = 0] () mutable -> vk::DescriptorSetLayoutBinding {
             vk::DescriptorSetLayoutBinding binding {};
@@ -125,6 +121,12 @@ namespace graphics {
         vk::DescriptorSetLayoutCreateInfo descriptor_set_layout_create_info {};
         descriptor_set_layout_create_info.bindingCount = static_cast<std::uint32_t>(bindings.size());
         descriptor_set_layout_create_info.pBindings = bindings.data();
-        vkcheck(vkb::context::s_instance->get_device().get_logical_device().createDescriptorSetLayout(&descriptor_set_layout_create_info, &vkb::s_allocator, &m_descriptor_set_layout));
+        vkcheck(vkb_vk_device().createDescriptorSetLayout(&descriptor_set_layout_create_info, &vkb::s_allocator, &s_descriptor_set_layout));
+    }
+
+    auto material::free_static_resources() -> void {
+        vkb_vk_device().destroyDescriptorSetLayout(s_descriptor_set_layout, &vkb::s_allocator);
+        vkb_vk_device().destroyDescriptorPool(s_descriptor_pool, &vkb::s_allocator);
+        s_default_texture.reset();
     }
 }

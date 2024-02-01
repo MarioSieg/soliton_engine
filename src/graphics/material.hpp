@@ -27,16 +27,21 @@ namespace graphics {
         [[nodiscard]] auto get_sampler() const noexcept -> const vk::Sampler& { return m_sampler; }
 
         auto flush_property_updates() const -> void;
-        static auto create_global_descriptors() -> void;
-        static auto get_descriptor_set_layout() noexcept -> const vk::DescriptorSetLayout& {
-            return m_descriptor_set_layout;
-        }
+
     private:
+        friend class graphics_subsystem;
+        static auto init_static_resources() -> void;
+        static auto free_static_resources() -> void;
+
+        [[nodiscard]] static auto get_descriptor_set_layout() noexcept -> const vk::DescriptorSetLayout& {
+            return s_descriptor_set_layout;
+        }
+
         auto create_sampler() -> void;
 
-        static inline constinit std::unique_ptr<graphics::texture> m_default_texture {};
-        static inline constinit vk::DescriptorPool m_descriptor_pool {};
-        static inline constinit vk::DescriptorSetLayout m_descriptor_set_layout {};
+        static inline constinit std::optional<graphics::texture> s_default_texture {};
+        static inline constinit vk::DescriptorPool s_descriptor_pool {};
+        static inline constinit vk::DescriptorSetLayout s_descriptor_set_layout {};
         vk::Sampler m_sampler {};
         vk::DescriptorSet m_descriptor_set {};
     };

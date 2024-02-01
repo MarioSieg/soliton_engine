@@ -97,6 +97,7 @@ namespace graphics {
         ) const -> void;
 
         auto generate_mips(
+            bool transfer_only,
             vk::ImageLayout src_layout = vk::ImageLayout::eShaderReadOnlyOptimal,
             vk::ImageLayout dst_layout = vk::ImageLayout::eShaderReadOnlyOptimal,
             vk::ImageAspectFlags aspect_mask = vk::ImageAspectFlagBits::eColor,

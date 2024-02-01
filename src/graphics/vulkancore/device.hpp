@@ -41,6 +41,13 @@ namespace vkb {
         [[nodiscard]] auto get_compute_queue_idx() const noexcept -> std::uint32_t { return m_queue_families.compute; }
         [[nodiscard]] auto get_transfer_queue_idx() const noexcept -> std::uint32_t { return m_queue_families.transfer; }
         [[nodiscard]] auto get_allocator() const noexcept -> VmaAllocator { return m_allocator; }
+        [[nodiscard]] auto is_image_format_supported(
+            vk::ImageType type,
+            vk::Format format,
+            vk::ImageCreateFlags flags,
+            vk::ImageUsageFlags usage,
+            vk::ImageTiling tiling
+        ) const -> bool;
 
     private:
         static inline constinit std::array<const char*, 2> k_device_extensions {
