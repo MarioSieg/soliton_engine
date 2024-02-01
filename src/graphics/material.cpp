@@ -25,7 +25,6 @@ namespace graphics {
         descriptor_set_alloc_info.pSetLayouts = &s_descriptor_set_layout;
         vkcheck(vkb::context::s_instance->get_device().get_logical_device().allocateDescriptorSets(&descriptor_set_alloc_info, &m_descriptor_set));
 
-        create_sampler();
         flush_property_updates();
     }
 
@@ -33,7 +32,15 @@ namespace graphics {
         vkb_vk_device().destroySampler(m_sampler, &vkb::s_allocator);
     }
 
-    auto material::flush_property_updates() const -> void {
+    auto material::flush_property_updates() -> void {
+        if (!albedo_map) { // TODO: This is a temporary fix for the missing albedo map.
+            return;
+        }
+
+        if (!m_sampler) {
+            create_sampler();
+        }
+
         std::array<vk::DescriptorImageInfo, 4> image_infos {};
         auto make_write_tex_info = [i = 0u, this, &image_infos](const texture* tex) mutable -> vk::WriteDescriptorSet {
             image_infos[i].imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
@@ -78,7 +85,7 @@ namespace graphics {
         sampler_info.mipLodBias = 0.0f;
         sampler_info.compareOp = vk::CompareOp::eNever;
         sampler_info.minLod = 0.0f;
-        //sampler_info.maxLod = static_cast<float>(m_texture->get_mip_levels());
+        //sampler_info.maxLod = static_cast<float>(albedo_map->get_mip_levels()); TODO
         sampler_info.maxAnisotropy = supports_anisotropy ? vkb_device().get_physical_device_props().limits.maxSamplerAnisotropy : 1.0f;
         sampler_info.anisotropyEnable = supports_anisotropy ? vk::True : vk::False;
         sampler_info.borderColor = vk::BorderColor::eFloatOpaqueWhite;

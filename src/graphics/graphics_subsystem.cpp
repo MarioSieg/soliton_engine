@@ -109,7 +109,7 @@ namespace graphics {
         io.DisplaySize.x = static_cast<float>(context::s_instance->get_width());
         io.DisplaySize.y = static_cast<float>(context::s_instance->get_height());
 
-        m_cmd_buf = context::s_instance->begin_frame(DirectX::XMFLOAT4{0.0f, 0.0f, 0.0f, 1.0f});
+        m_cmd_buf = context::s_instance->begin_frame(DirectX::XMFLOAT4{0.53f, 0.81f, 0.92f, 1.0f});
 
         return true;
     }

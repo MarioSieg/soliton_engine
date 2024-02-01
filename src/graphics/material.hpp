@@ -26,7 +26,7 @@ namespace graphics {
         [[nodiscard]] auto get_descriptor_set() const noexcept -> const vk::DescriptorSet& { return m_descriptor_set; }
         [[nodiscard]] auto get_sampler() const noexcept -> const vk::Sampler& { return m_sampler; }
 
-        auto flush_property_updates() const -> void;
+        auto flush_property_updates() -> void;
 
     private:
         friend class graphics_subsystem;

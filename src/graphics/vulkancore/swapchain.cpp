@@ -94,8 +94,8 @@ namespace vkb {
         // Initialize the format to the first one returned by the implementation in case we can't find one of the preffered formats
         vk::SurfaceFormatKHR selected_format = formats[0];
         std::vector<vk::Format> preferred_image_formats = {
-            vk::Format::eB8G8R8A8Unorm,
             vk::Format::eR8G8B8A8Unorm,
+            vk::Format::eB8G8R8A8Unorm,
             vk::Format::eA8B8G8R8UnormPack32
         };
 
