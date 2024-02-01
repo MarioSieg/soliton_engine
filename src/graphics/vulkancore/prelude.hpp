@@ -15,6 +15,8 @@
 #include "../../core/core.hpp"
 
 namespace vkb {
+    constexpr vk::SampleCountFlagBits k_msaa_sample_count = vk::SampleCountFlagBits::e8;
+
     extern auto dump_physical_device_props(const vk::PhysicalDeviceProperties& props) -> void;
 
     constexpr vk::AllocationCallbacks s_allocator = [] {

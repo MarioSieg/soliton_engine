@@ -127,9 +127,11 @@ namespace vkb {
         auto setup_frame_buffer() -> void;
         auto create_pipeline_cache() -> void;
         auto recreate_swapchain() -> void;
+        auto create_msaa_target() -> void;
         auto create_imgui_renderer() -> void;
 
         auto destroy_depth_stencil() const -> void;
+        auto destroy_msaa_target() const -> void;
         auto destroy_frame_buffer() const -> void;
         auto destroy_command_buffers() const -> void;
         auto destroy_sync_prims() const -> void;
@@ -160,6 +162,18 @@ namespace vkb {
         std::uint32_t m_current_frame = 0; // To select the correct sync objects, we need to keep track of the current frame
         std::uint32_t m_image_index = 0; // The current swap chain image index
         vk::DescriptorPool m_imgui_descriptor_pool {};
+        struct {
+            struct {
+                vk::Image image {};
+                vk::ImageView view {};
+                VmaAllocation memory {};
+            } color {};
+            struct {
+                vk::Image image {};
+                vk::ImageView view {};
+                VmaAllocation memory {};
+            } depth {};
+        } m_msaa_target {};
     };
 
     // Convenience macros hehe

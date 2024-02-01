@@ -430,7 +430,7 @@ namespace graphics {
         // Multi sampling state
         // This example does not make use of multi sampling (for anti-aliasing), the state must still be set and passed to the pipeline
         vk::PipelineMultisampleStateCreateInfo multisample_state {};
-        multisample_state.rasterizationSamples = vk::SampleCountFlagBits::e1;
+        multisample_state.rasterizationSamples = vkb::k_msaa_sample_count;
         multisample_state.alphaToCoverageEnable = vk::True;
         multisample_state.pSampleMask = nullptr;
 

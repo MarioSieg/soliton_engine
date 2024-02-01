@@ -16,6 +16,7 @@ namespace vkb {
         create_command_buffers();
         create_sync_prims();
         setup_depth_stencil();
+        create_msaa_target();
         setup_render_pass();
         setup_frame_buffer();
         create_pipeline_cache();
@@ -41,6 +42,7 @@ namespace vkb {
         m_device->get_logical_device().destroyRenderPass(m_render_pass, &s_allocator);
 
         destroy_depth_stencil();
+        destroy_msaa_target();
         destroy_frame_buffer();
 
         destroy_command_buffers();
@@ -75,9 +77,10 @@ namespace vkb {
 
         // Set clear values for all framebuffer attachments with loadOp set to clear
         // We use two attachments (color and depth) that are cleared at the start of the subpass and as such we need to set clear values for both
-        std::array<vk::ClearValue, 2> clear_values {};
+        std::array<vk::ClearValue, 3> clear_values {};
         clear_values[0].color = std::bit_cast<vk::ClearColorValue>(clear_color);
-        clear_values[1].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
+        clear_values[1].color = std::bit_cast<vk::ClearColorValue>(clear_color);
+        clear_values[2].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
 
         vk::RenderPassBeginInfo render_pass_begin_info {};
         render_pass_begin_info.renderPass = m_render_pass;
@@ -182,6 +185,9 @@ namespace vkb {
         destroy_depth_stencil();
         setup_depth_stencil();
 
+        destroy_msaa_target();
+        create_msaa_target();
+
         destroy_frame_buffer();
         setup_frame_buffer();
 
@@ -283,34 +289,50 @@ namespace vkb {
     // This allows the driver to know up-front what the rendering will look like and is a good opportunity to optimize especially on tile-based renderers (with multiple subpasses)
     // Using sub pass dependencies also adds implicit layout transitions for the attachment used, so we don't need to add explicit image memory barriers to transform them
     auto context::setup_render_pass() -> void {
-        std::array<vk::AttachmentDescription, 2> attachments {};
+        std::array<vk::AttachmentDescription, 3> attachments {};
 
-        // Color attachment
+        // Multisampled attachment that we render to
         attachments[0].format = m_swapchain->get_format();
-        attachments[0].samples = vk::SampleCountFlagBits::e1;
+        attachments[0].samples = k_msaa_sample_count;
         attachments[0].loadOp = vk::AttachmentLoadOp::eClear;
-        attachments[0].storeOp = vk::AttachmentStoreOp::eStore;
+        attachments[0].storeOp = vk::AttachmentStoreOp::eDontCare;
         attachments[0].stencilLoadOp = vk::AttachmentLoadOp::eDontCare;
         attachments[0].stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
         attachments[0].initialLayout = vk::ImageLayout::eUndefined;
-        attachments[0].finalLayout = vk::ImageLayout::ePresentSrcKHR;
+        attachments[0].finalLayout = vk::ImageLayout::eColorAttachmentOptimal;
 
-        // Depth attachment
-        attachments[1].format = m_device->get_depth_format();
+        // This is the frame buffer attachment to where the multisampled image
+		// will be resolved to and which will be presented to the swapchain
+        attachments[1].format = m_swapchain->get_format();
         attachments[1].samples = vk::SampleCountFlagBits::e1;
-        attachments[1].loadOp = vk::AttachmentLoadOp::eClear;
-        attachments[1].storeOp = vk::AttachmentStoreOp::eDontCare;
+        attachments[1].loadOp = vk::AttachmentLoadOp::eDontCare;
+        attachments[1].storeOp = vk::AttachmentStoreOp::eStore;
         attachments[1].stencilLoadOp = vk::AttachmentLoadOp::eDontCare;
         attachments[1].stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
         attachments[1].initialLayout = vk::ImageLayout::eUndefined;
-        attachments[1].finalLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
+        attachments[1].finalLayout = vk::ImageLayout::ePresentSrcKHR;
+
+        // Multisampled depth attachment we render to
+        attachments[2].format = m_device->get_depth_format();
+        attachments[2].samples = k_msaa_sample_count;
+        attachments[2].loadOp = vk::AttachmentLoadOp::eClear;
+        attachments[2].storeOp = vk::AttachmentStoreOp::eDontCare;
+        attachments[2].stencilLoadOp = vk::AttachmentLoadOp::eDontCare;
+        attachments[2].stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
+        attachments[2].initialLayout = vk::ImageLayout::eUndefined;
+        attachments[2].finalLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
 
         vk::AttachmentReference color_reference {};
         color_reference.attachment = 0;
         color_reference.layout = vk::ImageLayout::eColorAttachmentOptimal;
 
+        // Resolve attachment reference for the color attachment
+        vk::AttachmentReference resolve_reference {};
+        resolve_reference.attachment = 1;
+        resolve_reference.layout = vk::ImageLayout::eColorAttachmentOptimal;
+
         vk::AttachmentReference depth_reference {};
-        depth_reference.attachment = 1;
+        depth_reference.attachment = 2;
         depth_reference.layout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
 
         vk::SubpassDescription subpass_description {};
@@ -322,7 +344,7 @@ namespace vkb {
         subpass_description.pInputAttachments = nullptr;
         subpass_description.preserveAttachmentCount = 0;
         subpass_description.pPreserveAttachments = nullptr;
-        subpass_description.pResolveAttachments = nullptr;
+        subpass_description.pResolveAttachments = &resolve_reference;
 
         // Subpass dependencies for layout transitions
         std::array<vk::SubpassDependency, 2> dependencies {};
@@ -347,6 +369,7 @@ namespace vkb {
         render_pass_ci.pSubpasses = &subpass_description;
         render_pass_ci.dependencyCount = static_cast<std::uint32_t>(dependencies.size());
         render_pass_ci.pDependencies = dependencies.data();
+
         vkcheck(m_device->get_logical_device().createRenderPass(&render_pass_ci, &s_allocator, &m_render_pass));
     }
 
@@ -354,13 +377,14 @@ namespace vkb {
         // Create a frame buffer for every image in the swapchain
         m_framebuffers.resize(m_swapchain->get_image_count());
         for (std::size_t i = 0; i < m_framebuffers.size(); ++i) {
-            std::array<vk::ImageView, 2> attachments {};
-            attachments[0] = m_swapchain->get_buffer(i).view;
-            attachments[1] = m_depth_stencil.view;
+            std::array<vk::ImageView, 3> attachments {};
+            attachments[0] = m_msaa_target.color.view;
+            attachments[1] = m_swapchain->get_buffer(i).view;
+            attachments[2] = m_msaa_target.depth.view;
 
             vk::FramebufferCreateInfo framebuffer_ci {};
             framebuffer_ci.renderPass = m_render_pass;
-            framebuffer_ci.attachmentCount = 2;
+            framebuffer_ci.attachmentCount = attachments.size();
             framebuffer_ci.pAttachments = attachments.data();
             framebuffer_ci.width = m_width;
             framebuffer_ci.height = m_height;
@@ -376,6 +400,73 @@ namespace vkb {
 
     auto context::recreate_swapchain() -> void {
         m_swapchain->create(m_width, m_height, false, false);
+    }
+
+    auto context::create_msaa_target() -> void {
+        // Color target:
+
+        vk::ImageCreateInfo image_ci {};
+        image_ci.imageType = vk::ImageType::e2D;
+        image_ci.format = m_swapchain->get_format();
+        image_ci.extent.width = m_width;
+        image_ci.extent.height = m_height;
+        image_ci.extent.depth = 1;
+        image_ci.mipLevels = 1;
+        image_ci.arrayLayers = 1;
+        image_ci.samples = k_msaa_sample_count;
+        image_ci.tiling = vk::ImageTiling::eOptimal;
+        image_ci.sharingMode = vk::SharingMode::eExclusive;
+        image_ci.initialLayout = vk::ImageLayout::eUndefined;
+        image_ci.usage = vk::ImageUsageFlagBits::eTransientAttachment | vk::ImageUsageFlagBits::eColorAttachment;
+
+        VmaAllocationCreateInfo vma_allocation_ci {};
+        vma_allocation_ci.usage = VMA_MEMORY_USAGE_GPU_ONLY;
+        vma_allocation_ci.flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
+        VmaAllocationInfo alloc_info {};
+
+        vkccheck(vmaCreateImage(
+            m_device->get_allocator(),
+            &static_cast<VkImageCreateInfo&>(image_ci),
+            &vma_allocation_ci,
+            reinterpret_cast<VkImage*>(&m_msaa_target.color.image),
+            &m_msaa_target.color.memory,
+            &alloc_info
+        ));
+
+        vk::ImageViewCreateInfo image_view_ci {};
+        image_view_ci.viewType = vk::ImageViewType::e2D;
+        image_view_ci.format = m_swapchain->get_format(); // TODO get from swap chain
+        image_view_ci.components.r = vk::ComponentSwizzle::eR;
+        image_view_ci.components.g = vk::ComponentSwizzle::eG;
+        image_view_ci.components.b = vk::ComponentSwizzle::eB;
+        image_view_ci.components.a = vk::ComponentSwizzle::eA;
+        image_view_ci.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
+        image_view_ci.subresourceRange.levelCount = 1;
+        image_view_ci.subresourceRange.layerCount = 1;
+        image_view_ci.image = m_msaa_target.color.image;
+
+        m_device->get_logical_device().createImageView(&image_view_ci, &s_allocator, &m_msaa_target.color.view);
+
+        // depth target
+        image_ci.format = m_device->get_depth_format();
+        image_ci.usage = vk::ImageUsageFlagBits::eTransientAttachment | vk::ImageUsageFlagBits::eDepthStencilAttachment;
+        vkccheck(vmaCreateImage(
+            m_device->get_allocator(),
+            &static_cast<VkImageCreateInfo&>(image_ci),
+            &vma_allocation_ci,
+            reinterpret_cast<VkImage*>(&m_msaa_target.depth.image),
+            &m_msaa_target.depth.memory,
+            &alloc_info
+        ));
+
+        image_view_ci.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eDepth;
+        image_view_ci.image = m_msaa_target.depth.image;
+        image_view_ci.format = m_device->get_depth_format();
+        if (image_ci.format >= vk::Format::eD16UnormS8Uint) {
+            image_view_ci.subresourceRange.aspectMask |= vk::ImageAspectFlagBits::eStencil;
+        }
+
+        m_device->get_logical_device().createImageView(&image_view_ci, &s_allocator, &m_msaa_target.depth.view);
     }
 
     auto context::create_imgui_renderer() -> void {
@@ -414,6 +505,7 @@ namespace vkb {
         init_info.DescriptorPool = m_imgui_descriptor_pool;
         init_info.ImageCount = k_max_concurrent_frames;
         init_info.MinImageCount = k_max_concurrent_frames;
+        init_info.MSAASamples = static_cast<VkSampleCountFlagBits>(k_msaa_sample_count);
         init_info.Allocator = reinterpret_cast<const VkAllocationCallbacks*>(&s_allocator);
         init_info.CheckVkResultFn = [](const VkResult result) {
             vkccheck(result);
@@ -457,6 +549,13 @@ namespace vkb {
     auto context::destroy_depth_stencil() const -> void {
         m_device->get_logical_device().destroyImageView(m_depth_stencil.view, &s_allocator);
         vmaDestroyImage(m_device->get_allocator(), m_depth_stencil.image, m_depth_stencil.memory);
+    }
+
+    auto context::destroy_msaa_target() const -> void {
+        vmaDestroyImage(m_device->get_allocator(), m_msaa_target.color.image, m_msaa_target.color.memory);
+        vmaDestroyImage(m_device->get_allocator(), m_msaa_target.depth.image, m_msaa_target.depth.memory);
+        m_device->get_logical_device().destroyImageView(m_msaa_target.color.view, &s_allocator);
+        m_device->get_logical_device().destroyImageView(m_msaa_target.depth.view, &s_allocator);
     }
 
     auto context::destroy_frame_buffer() const -> void {
