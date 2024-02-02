@@ -150,18 +150,16 @@ namespace physics {
 
 		{
 			c_transform* transform = floor.get_mut<c_transform>();
-			transform->position.y = 2.0f;
-			transform->scale.x = 30.0f;
-			transform->scale.y = 0.25f;
-			transform->scale.z = 30.0f;
-
-			c_mesh_renderer* renderer = floor.get_mut<c_mesh_renderer>();
-			renderer->mesh = cube;
-			renderer->materials.emplace_back(mat);
+			transform->position.y = -1.0f;
+    		transform->position.x = -500.0f;
+    		transform->position.z = -500.0f;
+			transform->scale.x = 1000.0f;
+			transform->scale.y = 1.0f;
+			transform->scale.z = 1000.0f;
 		}
 
     	JPH::BodyCreationSettings floor_settings {
-		    new JPH::BoxShape{JPH::Vec3{30.0f, 0.25f, 30.0f}},
+		    new JPH::BoxShape{lunam_vec4_to_jbh_vec3(floor.get<c_transform>()->scale)},
 			lunam_vec4_to_jbh_vec3(floor.get<c_transform>()->position),
 			std::bit_cast<JPH::Quat>(floor.get<c_transform>()->rotation),
 			JPH::EMotionType::Static,
@@ -177,11 +175,14 @@ namespace physics {
     		transform->position.x = x;
     		transform->position.z = z;
     		transform->position.y = 150.0f;
+    		transform->scale.x = 0.25f;
+    		transform->scale.y = 0.25f;
+    		transform->scale.z = 0.25f;
     		c_mesh_renderer* renderer = sphere.get_mut<c_mesh_renderer>();
     		renderer->mesh = sphere_mesh;
     		renderer->materials.emplace_back(mat);
     		JPH::BodyCreationSettings sphere_settings {
-    			new JPH::SphereShape{3.5f},
+    			new JPH::SphereShape{3.5*0.25f},
 				lunam_vec4_to_jbh_vec3(sphere.get<c_transform>()->position),
 				std::bit_cast<JPH::Quat>(sphere.get<c_transform>()->rotation),
 				JPH::EMotionType::Dynamic,
@@ -189,14 +190,21 @@ namespace physics {
 			};
     		// make sphere bouncy:
     		sphere_settings.mRestitution = 0.8f;
+    		// make sphere heavy:
+    		sphere_settings.mMassPropertiesOverride = JPH::MassProperties{30.5f};
+    		// make sphere have some friction:
+    		sphere_settings.mFriction = 0.5f;
     		JPH::BodyID sphere_body = bi.CreateAndAddBody(sphere_settings, JPH::EActivation::Activate);
     		sphere.get_mut<c_rigidbody>()->body_id = sphere_body;
-    		bi.SetLinearVelocity(sphere_body, JPH::Vec3{0.0f, -5.0f, 0.0f});
+    		// add minimal random velocity to the sphere:
+    		float xx = -static_cast<float>(rand() % 100) / 100.0f;
+    		float zz = -static_cast<float>(rand() % 100) / 100.0f;
+    		bi.SetLinearVelocity(sphere_body, JPH::Vec3{xx*10.0f, -5.0f, zz*10.0f});
     	};
 
-    	for (int i = 0; i < 10; i++) {
-			for (int j = 0; j < 10; j++) {
-				make_sphere(-15.0f + i * 5.0f, -15.0f + j * 5.0f);
+    	for (int i = 0; i < 32; i++) {
+			for (int j = 0; j < 32; j++) {
+				make_sphere(-30.0f + i * 8.0f, -30.0f + j * 8.0f);
 			}
 		}
 
