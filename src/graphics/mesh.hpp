@@ -34,6 +34,7 @@ namespace graphics {
             DirectX::BoundingBox aabb {};
         };
 
+        explicit mesh(const std::string& path);
         mesh(const tinygltf::Model& model, const tinygltf::Mesh& mesh);
         ~mesh() override = default;
 
@@ -45,6 +46,7 @@ namespace graphics {
         [[nodiscard]] auto is_index_32bit() const noexcept -> bool { return m_index_32bit; }
 
     private:
+        auto create_from_gltf(const tinygltf::Model& mode, const tinygltf::Mesh& mesh) -> void;
         auto create_buffers(std::span<const vertex> vertices, std::span<const index> indices) -> void;
         auto recompute_bounds(std::span<const vertex> vertices) -> void;
 

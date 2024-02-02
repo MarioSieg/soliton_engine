@@ -38,6 +38,14 @@ public:
         return m_eitbl[e];
     }
 
+    template <typename A>
+    [[nodiscard]] auto get_asset_registry() -> asset_registry<A>& {
+        if constexpr (std::is_same_v<A, graphics::mesh>) { return m_meshes; }
+        else if constexpr (std::is_same_v<A, graphics::texture>) { return m_textures; }
+        else if constexpr (std::is_same_v<A, graphics::material>) { return m_materials; }
+        else { panic("Unknown asset type!"); }
+    }
+
 private:
     auto load_from_gltf(const std::string& path, float scale) -> void;
 

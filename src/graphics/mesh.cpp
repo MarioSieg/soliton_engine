@@ -3,7 +3,11 @@
 #include "mesh.hpp"
 #include "vulkancore/context.hpp"
 
+#include <assimp/scene.h>
+#include <assimp/cimport.h>
+
 #include <tiny_gltf.h>
+#include <assimp/postprocess.h>
 
 #include "material.hpp"
 
@@ -16,23 +20,53 @@ namespace graphics {
 		mesh::primitive& prim_info
 	) -> bool;
 
+	mesh::mesh(const std::string& path) : asset{asset_category::mesh, asset_source::filesystem, std::string {path}} {
+		const aiScene* scene = aiImportFile(path.c_str(), aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_ConvertToLeftHanded | aiProcess_CalcTangentSpace);
+		passert(scene != nullptr);
+		passert(scene->mNumMeshes > 0);
+		aiMesh* mesh = scene->mMeshes[0];
+		std::vector<vertex> vertices {};
+		std::vector<index> indices {};
+		m_primitives.reserve(scene->mNumMeshes);
+		for (std::size_t i = 0; i < scene->mNumMeshes; ++i) {
+			primitive prim_info {};
+			aiMesh* mesh = scene->mMeshes[i];
+			for (std::size_t j = 0; j < mesh->mNumVertices; ++j) {
+				vertex v {};
+				v.position = DirectX::XMFLOAT3{mesh->mVertices[j].x, mesh->mVertices[j].y, mesh->mVertices[j].z};
+				v.normal = DirectX::XMFLOAT3{mesh->mNormals[j].x, mesh->mNormals[j].y, mesh->mNormals[j].z};
+				if (mesh->HasTextureCoords(0)) {
+					v.uv = DirectX::XMFLOAT2{mesh->mTextureCoords[0][j].x, mesh->mTextureCoords[0][j].y};
+				}
+				if (mesh->HasTangentsAndBitangents()) {
+					v.tangent = DirectX::XMFLOAT3{mesh->mTangents[j].x, mesh->mTangents[j].y, mesh->mTangents[j].z};
+					v.bitangent = DirectX::XMFLOAT3{mesh->mBitangents[j].x, mesh->mBitangents[j].y, mesh->mBitangents[j].z};
+				}
+				vertices.emplace_back(v);
+			}
+			for (std::size_t j = 0; j < mesh->mNumFaces; ++j) {
+				aiFace face = mesh->mFaces[j];
+				for (std::size_t k = 0; k < face.mNumIndices; ++k) {
+					indices.emplace_back(face.mIndices[k]);
+				}
+			}
+			prim_info.index_start = indices.size() - mesh->mNumFaces * 3;
+			prim_info.index_count = mesh->mNumFaces * 3;
+			prim_info.vertex_start = vertices.size() - mesh->mNumVertices;
+			prim_info.vertex_count = mesh->mNumVertices;
+			m_primitives.emplace_back(prim_info);
+		}
+		m_primitives.shrink_to_fit();
+		recompute_bounds(vertices);
+		create_buffers(vertices, indices);
+		m_approx_byte_size = sizeof(*this)
+			+ m_vertex_buffer.get_size()
+			+ m_index_buffer.get_size()
+			+ m_primitives.size() * sizeof(primitive);
+	}
+
     mesh::mesh(const tinygltf::Model& model, const tinygltf::Mesh& mesh) : asset{asset_category::mesh, asset_source::memory} {
-    	std::vector<vertex> vertices {};
-    	std::vector<index> indices {};
-    	m_primitives.reserve(mesh.primitives.size());
-    	for (const tinygltf::Primitive& prim : mesh.primitives) {
-    		primitive prim_info {};
-    		if (load_primitive(vertices, indices, prim, model, prim_info)) {
-    			m_primitives.emplace_back(prim_info);
-    		}
-    	}
-    	m_primitives.shrink_to_fit();
-    	recompute_bounds(vertices);
-    	create_buffers(vertices, indices);
-    	m_approx_byte_size = sizeof(*this)
-    		+ m_vertex_buffer.get_size()
-    		+ m_index_buffer.get_size()
-    		+ m_primitives.size() * sizeof(primitive);
+		create_from_gltf(model, mesh);
     }
 
     auto mesh::recompute_bounds(const std::span<const vertex> vertices) -> void {
@@ -48,6 +82,25 @@ namespace graphics {
     		DirectX::BoundingBox::CreateFromPoints(prim.aabb, min, max);
     		m_aabb.CreateMerged(m_aabb, m_aabb, prim.aabb);
     	}
+    }
+
+    auto mesh::create_from_gltf(const tinygltf::Model& model, const tinygltf::Mesh& mesh) -> void {
+		std::vector<vertex> vertices {};
+		std::vector<index> indices {};
+		m_primitives.reserve(mesh.primitives.size());
+		for (const tinygltf::Primitive& prim : mesh.primitives) {
+			primitive prim_info {};
+			if (load_primitive(vertices, indices, prim, model, prim_info)) {
+				m_primitives.emplace_back(prim_info);
+			}
+		}
+		m_primitives.shrink_to_fit();
+		recompute_bounds(vertices);
+		create_buffers(vertices, indices);
+		m_approx_byte_size = sizeof(*this)
+			+ m_vertex_buffer.get_size()
+			+ m_index_buffer.get_size()
+			+ m_primitives.size() * sizeof(primitive);
     }
 
     auto mesh::create_buffers(std::span<const vertex> vertices, std::span<const index> indices) -> void {

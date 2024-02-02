@@ -4,6 +4,9 @@
 
 #include "base.hpp"
 
+#include <Jolt/Jolt.h>
+#include <Jolt/Physics/Body/Body.h>
+
 namespace graphics {
     class mesh;
     class texture;
@@ -89,4 +92,8 @@ struct c_mesh_renderer final {
     graphics::mesh* mesh = nullptr;
     std::vector<graphics::material*> materials {};
     std::underlying_type_t<render_flags::$> flags = render_flags::none;
+};
+
+struct c_rigidbody final {
+    JPH::BodyID body_id {};
 };
