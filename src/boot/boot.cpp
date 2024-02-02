@@ -5,12 +5,14 @@
 #include "../platform/platform_subsystem.hpp"
 #include "../graphics/graphics_subsystem.hpp"
 #include "../scripting/scripting_subsystem.hpp"
+#include "../physics/physics_subsystem.hpp"
 
 static auto lunam_entry() -> void {
     kernel kernel {};
     kernel.install<scripting::scripting_subsystem>();
     kernel.install<platform::platform_subsystem>();
     kernel.install<graphics::graphics_subsystem>();
+    kernel.install<physics::physics_subsystem>();
     kernel.run();
 }
 
