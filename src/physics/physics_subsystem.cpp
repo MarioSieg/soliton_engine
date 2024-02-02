@@ -1,6 +1,7 @@
 // Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "physics_subsystem.hpp"
+#include "../core/kernel.hpp"
 
 #include <mimalloc.h>
 #include <Jolt/RegisterTypes.h>
@@ -57,31 +58,15 @@ namespace physics {
 		}
 	};
 
-	// An example contact listener
-	class MyContactListener : public JPH::ContactListener {
+	/// Class that determines if two object layers can collide
+	class ObjectLayerPairFilterImpl : public JPH::ObjectLayerPairFilter {
 	public:
-		// See: ContactListener
-		virtual JPH::ValidateResult	OnContactValidate(const JPH::Body &inBody1, const JPH::Body &inBody2, JPH::RVec3Arg inBaseOffset, const JPH::CollideShapeResult &inCollisionResult) override {
-			// Allows you to ignore a contact before it is created (using layers to not make objects collide is cheaper!)
-			return JPH::ValidateResult::AcceptAllContactsForThisBodyPair;
-		}
-		virtual void OnContactAdded(const JPH::Body &inBody1, const JPH::Body &inBody2, const JPH::ContactManifold &inManifold, JPH::ContactSettings &ioSettings) override {
-
-		}
-		virtual void OnContactPersisted(const JPH::Body &inBody1, const JPH::Body &inBody2, const JPH::ContactManifold &inManifold, JPH::ContactSettings &ioSettings) override {
-
-		}
-		virtual void OnContactRemoved(const JPH::SubShapeIDPair &inSubShapePair) override {
-
-		}
-	};
-
-	// An example activation listener
-	class MyBodyActivationListener : public JPH::BodyActivationListener {
-	public:
-		virtual void OnBodyActivated(const JPH::BodyID &inBodyID, std::uint64_t inBodyUserData) override {
-		}
-		virtual void OnBodyDeactivated(const JPH::BodyID &inBodyID, std::uint64_t inBodyUserData) override {
+		virtual bool ShouldCollide(JPH::ObjectLayer inObject1, JPH::ObjectLayer inObject2) const override {
+			switch (inObject1) {
+				case Layers::NON_MOVING: return inObject2 == Layers::MOVING; // Non moving only collides with moving
+				case Layers::MOVING: return true; // Moving collides with everything
+				default: return false;
+			}
 		}
 	};
 
@@ -115,25 +100,36 @@ namespace physics {
         m_job_system = std::make_unique<JPH::JobSystemThreadPool>(JPH::cMaxPhysicsJobs, JPH::cMaxPhysicsBarriers, k_num_threads);
     	m_broad_phase = std::make_unique<BPLayerInterfaceImpl>();
 		m_broad_phase_filter = std::make_unique<ObjectVsBroadPhaseLayerFilterImpl>();
-		m_contact_listener = std::make_unique<MyContactListener>();
-		m_body_activation_listener = std::make_unique<MyBodyActivationListener>();
+    	m_object_layer_pair_filter = std::make_unique<ObjectLayerPairFilterImpl>();
+
+    	m_physics_system.Init(
+    		k_max_bodies,
+    		k_num_mutexes,
+    		k_max_body_pairs,
+    		k_max_contacts,
+    		*m_broad_phase,
+    		*m_broad_phase_filter,
+    		*m_object_layer_pair_filter
+    	);
     }
 
     physics_subsystem::~physics_subsystem() {
-    	m_body_activation_listener.reset();
-    	m_contact_listener.reset();
+    	m_object_layer_pair_filter.reset();
     	m_broad_phase_filter.reset();
     	m_broad_phase.reset();
         m_job_system.reset();
         m_temp_allocator.reset();
+    	JPH::UnregisterTypes();
         delete JPH::Factory::sInstance;
     }
 
     void physics_subsystem::on_start(scene& scene) {
-        subsystem::on_start(scene);
+    	m_physics_system.OptimizeBroadPhase();
     }
 
     void physics_subsystem::on_post_tick() {
-
+    	const double delta = kernel::get().get_delta_time();
+    	const int n_steps = 1;
+    	m_physics_system.Update(delta, n_steps, &*m_temp_allocator, &*m_job_system);
     }
 }

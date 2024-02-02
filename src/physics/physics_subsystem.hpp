@@ -46,8 +46,7 @@ namespace physics {
         std::unique_ptr<JPH::JobSystemThreadPool> m_job_system {};
         std::unique_ptr<JPH::BroadPhaseLayerInterface> m_broad_phase {};
         std::unique_ptr<JPH::ObjectVsBroadPhaseLayerFilter> m_broad_phase_filter {};
-        std::unique_ptr<JPH::ContactListener> m_contact_listener {};
-        std::unique_ptr<JPH::BodyActivationListener> m_body_activation_listener {};
+        std::unique_ptr<JPH::ObjectLayerPairFilter> m_object_layer_pair_filter {};
         JPH::PhysicsSystem m_physics_system {};
     };
 }
