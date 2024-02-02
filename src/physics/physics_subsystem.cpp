@@ -189,11 +189,11 @@ namespace physics {
 				Layers::MOVING
 			};
     		// make sphere bouncy:
-    		sphere_settings.mRestitution = 0.8f;
+    		sphere_settings.mRestitution = 0.4f;
     		// make sphere heavy:
-    		sphere_settings.mMassPropertiesOverride = JPH::MassProperties{30.5f};
+    		sphere_settings.mMassPropertiesOverride = JPH::MassProperties{10.5f};
     		// make sphere have some friction:
-    		sphere_settings.mFriction = 0.5f;
+    		sphere_settings.mFriction = 0.9f;
     		JPH::BodyID sphere_body = bi.CreateAndAddBody(sphere_settings, JPH::EActivation::Activate);
     		sphere.get_mut<c_rigidbody>()->body_id = sphere_body;
     		// add minimal random velocity to the sphere:
