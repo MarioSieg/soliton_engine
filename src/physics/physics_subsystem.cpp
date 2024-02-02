@@ -202,9 +202,9 @@ namespace physics {
     		bi.SetLinearVelocity(sphere_body, JPH::Vec3{xx*10.0f, -5.0f, zz*10.0f});
     	};
 
-    	for (int i = 0; i < 32; i++) {
-			for (int j = 0; j < 32; j++) {
-				make_sphere(-30.0f + i * 8.0f, -30.0f + j * 8.0f);
+    	for (int i = 0; i < 64; i++) {
+			for (int j = 0; j < 64; j++) {
+				make_sphere(-64.0f + i * 4.0f, -64.0f + j * 4.0f);
 			}
 		}
 
