@@ -2,10 +2,10 @@
 
 #include "_prelude.hpp"
 #include "../../core/kernel.hpp"
-#include "../../platform/subsystem.hpp"
+#include "../../graphics/vulkancore/context.hpp"
+#include "../../platform/platform_subsystem.hpp"
 
 #include <infoware/infoware.hpp>
-#include <bgfx/bgfx.h>
 
 using platform::platform_subsystem;
 
@@ -101,11 +101,15 @@ LUA_INTEROP_API auto __lu_app_host_get_cpu_name() -> const char* {
 }
 
 LUA_INTEROP_API auto __lu_app_host_get_gpu_name() -> const char* {
-    // TODO
-    return "NVidia GeForce RTX 4090";
+    return vkb::context::s_instance->get_device().get_physical_device_props().deviceName;
 }
 
 LUA_INTEROP_API auto __lu_app_host_get_gapi_name() -> const char* {
-    return bgfx::getRendererName(bgfx::getRendererType());
+    const std::uint32_t api = vkb::context::s_instance->get_device().get_physical_device_props().apiVersion;
+    const std::uint32_t major = VK_API_VERSION_MAJOR(api);
+    const std::uint32_t minor = VK_API_VERSION_MINOR(api);
+    const std::uint32_t patch = VK_API_VERSION_PATCH(api);
+    tmp = fmt::format("Vulkan v.{}.{}.{}", major, minor, patch);
+    return tmp.c_str();
 }
 

@@ -1,0 +1,25 @@
+{
+  "commits" : [
+    {
+      "name" : "spirv-tools",
+      "site" : "github",
+      "subrepo" : "KhronosGroup/SPIRV-Tools",
+      "subdir" : "External/spirv-tools",
+      "commit": "de3d5acc04fd203e3e5120a00f168465ecb2e4e4"
+    },
+    {
+      "name" : "spirv-tools/external/spirv-headers",
+      "site" : "github",
+      "subrepo" : "KhronosGroup/SPIRV-Headers",
+      "subdir" : "External/spirv-tools/external/spirv-headers",
+      "commit" : "ae6a8b39717523d96683bc0d20b541944e28072f"
+    },
+    {
+      "name": "googletest",
+      "site": "github",
+      "subrepo": "google/googletest",
+      "subdir": "External/googletest",
+      "commit": "v1.14.0"
+    }
+  ]
+}

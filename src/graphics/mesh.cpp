@@ -1,165 +1,261 @@
 // Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "mesh.hpp"
+#include "vulkancore/context.hpp"
 
-#include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
-#include <assimp/cimport.h>
+#include <tiny_gltf.h>
 
-using namespace DirectX;
+#include "material.hpp"
 
-static_assert(sizeof(DirectX::XMFLOAT3) == sizeof(aiVector3D));
-static_assert(alignof(DirectX::XMFLOAT3) == alignof(aiVector3D));
+namespace graphics {
+	[[nodiscard]] static auto load_primitive(
+		std::vector<mesh::vertex>& vertices,
+		std::vector<mesh::index>& indices,
+		const tinygltf::Primitive& prim,
+		const tinygltf::Model& model,
+		mesh::primitive& prim_info
+	) -> bool;
 
-auto compute_aabb(const aiMesh& mesh) noexcept -> BoundingBox {
-    XMVECTOR min { XMVectorReplicate(1E10F) };
-    XMVECTOR max { XMVectorReplicate(-1E10F) };
-    XMVECTOR tmp;
-    for (const aiVector3D* __restrict__ vertex = mesh.mVertices, *__restrict__ const end = vertex + mesh.mNumVertices; vertex < end; ++vertex) {
-        tmp = XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(vertex));
-        min = XMVectorMin(min, tmp);
-        max = XMVectorMax(max, tmp);
+    mesh::mesh(const tinygltf::Model& model, const tinygltf::Mesh& mesh) : asset{asset_category::mesh, asset_source::memory} {
+    	std::vector<vertex> vertices {};
+    	std::vector<index> indices {};
+    	m_primitives.reserve(mesh.primitives.size());
+    	for (const tinygltf::Primitive& prim : mesh.primitives) {
+    		primitive prim_info {};
+    		if (load_primitive(vertices, indices, prim, model, prim_info)) {
+    			m_primitives.emplace_back(prim_info);
+    		}
+    	}
+    	m_primitives.shrink_to_fit();
+    	recompute_bounds(vertices);
+    	create_buffers(vertices, indices);
+    	m_approx_byte_size = sizeof(*this)
+    		+ m_vertex_buffer.get_size()
+    		+ m_index_buffer.get_size()
+    		+ m_primitives.size() * sizeof(primitive);
     }
-    BoundingBox r { };
-    BoundingBox::CreateFromPoints(r, min, max);
-    return r;
-}
 
-auto compute_aabb(const aiMesh& mesh, FXMMATRIX transform) noexcept -> BoundingBox {
-    XMVECTOR min { XMVectorReplicate(1E10F) };
-    XMVECTOR max { XMVectorReplicate(-1E10F) };
-    XMVECTOR tmp;
-    for (const aiVector3D* __restrict__ vertex = mesh.mVertices, *__restrict__ const end = vertex + mesh.mNumVertices; vertex < end; ++vertex) {
-        tmp = XMVector3Transform(XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(vertex)), transform);
-        min = XMVectorMin(min, tmp);
-        max = XMVectorMax(max, tmp);
+    auto mesh::recompute_bounds(const std::span<const vertex> vertices) -> void {
+    	for (primitive& prim : m_primitives) {
+    		DirectX::XMVECTOR min = DirectX::XMVectorReplicate(std::numeric_limits<float>::max());
+    		DirectX::XMVECTOR max = DirectX::XMVectorReplicate(std::numeric_limits<float>::lowest());
+    		for (std::size_t i = prim.vertex_start; i < prim.vertex_count; ++i) {
+    			const vertex& v = vertices[i];
+    			DirectX::XMVECTOR pos = XMLoadFloat3(&v.position);
+    			min = DirectX::XMVectorMin(min, pos);
+    			max = DirectX::XMVectorMax(max, pos);
+    		}
+    		DirectX::BoundingBox::CreateFromPoints(prim.aabb, min, max);
+    		m_aabb.CreateMerged(m_aabb, m_aabb, prim.aabb);
+    	}
     }
-    BoundingBox r { };
-    BoundingBox::CreateFromPoints(r, min, max);
-    return r;
-}
 
-auto compute_aabb(const std::span<const vertex> vertices) noexcept -> BoundingBox {
-    XMVECTOR min { XMVectorReplicate(1e10f) };
-    XMVECTOR max { XMVectorReplicate(-1e10f) };
-    XMVECTOR tmp;
-    for (const vertex* __restrict__ vertex = vertices.data(), *__restrict__ const end = vertex + vertices.size(); vertex < end; ++vertex) {
-        tmp = XMLoadFloat3(&vertex->position);
-        min = XMVectorMin(min, tmp);
-        max = XMVectorMax(max, tmp);
+    auto mesh::create_buffers(std::span<const vertex> vertices, std::span<const index> indices) -> void {
+    	passert(indices.size() <= std::numeric_limits<index>::max());
+
+    	m_vertex_buffer.create(
+			vertices.size() * sizeof(vertices[0]),
+			0,
+			vk::BufferUsageFlagBits::eVertexBuffer,
+			VMA_MEMORY_USAGE_GPU_ONLY,
+			0,
+			vertices.data()
+		);
+
+    	if (indices.size() <= std::numeric_limits<std::uint16_t>::max()) { // 16 bit indices
+    		std::vector<std::uint16_t> indices16 {};
+    		indices16.reserve(indices.size());
+    		for (const index idx : indices) {
+    			indices16.emplace_back(static_cast<std::uint16_t>(idx));
+    		}
+    		m_index_32bit = false;
+    		m_index_count = static_cast<std::uint32_t>(indices16.size());
+    		m_index_buffer.create(
+				indices16.size() * sizeof(indices16[0]),
+				0,
+				vk::BufferUsageFlagBits::eIndexBuffer,
+				VMA_MEMORY_USAGE_GPU_ONLY,
+				0,
+				indices16.data()
+			);
+    	} else {
+    		m_index_32bit = true;
+    		m_index_count = static_cast<std::uint32_t>(indices.size());
+    		m_index_buffer.create(
+				indices.size() * sizeof(indices[0]),
+				0,
+				vk::BufferUsageFlagBits::eIndexBuffer,
+				VMA_MEMORY_USAGE_GPU_ONLY,
+				0,
+				indices.data()
+			);
+    	}
     }
-    BoundingBox r { };
-    BoundingBox::CreateFromPoints(r, min, max);
-    return r;
-}
 
-static const bgfx::VertexLayout k_vertex_layout = [] {
-    bgfx::VertexLayout layout { };
-    layout
-    .begin()
-    .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
-    .add(bgfx::Attrib::Normal, 3, bgfx::AttribType::Float)
-    .add(bgfx::Attrib::TexCoord0, 2, bgfx::AttribType::Float)
-    .add(bgfx::Attrib::Tangent, 3, bgfx::AttribType::Float)
-    .add(bgfx::Attrib::TexCoord1, 3, bgfx::AttribType::Float) // BiTangent leads to a crash, so we use TEXCPPRD1 instead, idk why
-    .end();
-    passert(layout.getStride() == sizeof(vertex));
-    passert(layout.getOffset(bgfx::Attrib::Position) == offsetof(vertex, position));
-    passert(layout.getOffset(bgfx::Attrib::Normal) == offsetof(vertex, normal));
-    passert(layout.getOffset(bgfx::Attrib::TexCoord0) == offsetof(vertex, uv));
-    passert(layout.getOffset(bgfx::Attrib::Tangent) == offsetof(vertex, tangent));
-    passert(layout.getOffset(bgfx::Attrib::TexCoord1) == offsetof(vertex, bitangent));
-    return layout;
-}();
+    static auto load_primitive(
+		std::vector<mesh::vertex>& vertices,
+		std::vector<mesh::index>& indices,
+		const tinygltf::Primitive& prim,
+		const tinygltf::Model& model,
+		mesh::primitive& prim_info
+	) -> bool {
+		const std::size_t vertex_start = vertices.size();
+        const std::size_t index_start = indices.size();
+        std::size_t num_vertices = 0;
+        std::size_t num_indices = 0;
 
-mesh::mesh(const std::span<const vertex> vertices, const std::span<const vertex_index> indices, const index_format format) {
-    passert(!vertices.empty());
-    passert(!indices.empty());
-    const bgfx::VertexBufferHandle vb = [&vertices]{
-        const bgfx::Memory* const vbmem = bgfx::alloc(vertices.size()*sizeof(vertex));
-        passert(vbmem != nullptr);
-        const vertex* __restrict__ const begin = &*vertices.begin();
-        const vertex* __restrict__ const end = begin + vertices.size();
-        auto* __restrict__ const dst = reinterpret_cast<vertex*>(vbmem->data);
-        std::copy(begin, end, dst);
-        const bgfx::VertexBufferHandle vb = bgfx::createVertexBuffer(vbmem, k_vertex_layout);
-        passert(bgfx::isValid(vb));
-        return vb;
-    }();
-    const bgfx::IndexBufferHandle ib = [&indices, format]{
-        const bgfx::Memory* const ibmem { bgfx::alloc(indices.size()*sizeof(vertex_index)) };
-        passert(ibmem != nullptr);
-        const vertex_index* __restrict__ const begin = &*indices.begin();
-        const vertex_index* __restrict__ const end = begin + indices.size();
-        auto* __restrict__ const dst = reinterpret_cast<vertex_index*>(ibmem->data);
-        std::copy(begin, end, dst);
-        const auto indexFormat { format == index_format::i32 ? BGFX_BUFFER_INDEX32 : BGFX_BUFFER_NONE };
-        const bgfx::IndexBufferHandle ib = bgfx::createIndexBuffer(ibmem, indexFormat);
-        passert(bgfx::isValid(ib));
-        return ib;
-    }();
-    vertex_buffer = handle{vb};
-    index_buffer = handle{ib};
-    vertex_count = vertices.size();
-    index_count = indices.size();
-    aabb = compute_aabb(vertices);
-}
-
-mesh::mesh(std::string&& path, const std::underlying_type_t<aiPostProcessSteps> post_process_steps) {
-    static constinit std::atomic_uint32_t num;
-    log_info("Loading mesh #{} from '{}'", num.fetch_add(1, std::memory_order_relaxed), path);
-    Assimp::Importer importer { };
-    const aiScene* const scene = importer.ReadFile(path, post_process_steps);
-    passert(scene && scene->mNumMeshes > 0);
-    const aiMesh& assimpMesh = **scene->mMeshes;
-    passert(assimpMesh.mNumFaces > 0);
-    passert(assimpMesh.mNumVertices > 0);
-    passert(assimpMesh.HasPositions());
-    const bgfx::Memory* const ibmem = bgfx::alloc(static_cast<std::size_t>(assimpMesh.mNumFaces)*3*sizeof(vertex_index));
-    passert(ibmem != nullptr);
-    auto* idst = reinterpret_cast<vertex_index*>(ibmem->data);
-    for (const aiFace* i = assimpMesh.mFaces, *const e = assimpMesh.mFaces + assimpMesh.mNumFaces; i < e; ++i) {
-        if (i->mNumIndices != 3) [[unlikely]] continue;
-        const std::uint32_t* j = i->mIndices;
-        *idst++ = static_cast<vertex_index>(*j);
-        *idst++ = static_cast<vertex_index>(*++j);
-        *idst++ = static_cast<vertex_index>(*++j);
-        assert(idst <= reinterpret_cast<vertex_index*>(ibmem->data) + ibmem->size/sizeof(vertex_index));
-    }
-    const bgfx::Memory* const vbmem = bgfx::alloc(assimpMesh.mNumVertices*sizeof(vertex));
-    passert(vbmem != nullptr);
-    std::span outVertices { reinterpret_cast<vertex*>(vbmem->data), assimpMesh.mNumVertices };
-    for (const aiVector3D* vt = assimpMesh.mVertices; vertex& v : outVertices) {
-        v.position = std::bit_cast<XMFLOAT3>(*vt++);
-    }
-    static constexpr auto channel_uv = 0;
-    if (assimpMesh.HasTextureCoords(channel_uv)) [[likely]] {
-        for (const aiVector3D* vt = &assimpMesh.mTextureCoords[channel_uv][0]; vertex& v : outVertices) {
-            std::memcpy(&v.uv, vt, sizeof(XMFLOAT2)); // only copy first 2 floats
-            ++vt;
+        if (prim.indices < 0) [[unlikely]] {
+            log_error("GLTF import: Mesh has no indices");
+            return false;
         }
-    }
-    if (assimpMesh.HasNormals()) [[likely]] {
-        for (const aiVector3D* vt = assimpMesh.mNormals; vertex& v : outVertices) {
-            v.normal = std::bit_cast<XMFLOAT3>(*vt++);
-        }
-    }
-    if (assimpMesh.HasTangentsAndBitangents()) [[likely]] {
-        const aiVector3D* vt = assimpMesh.mTangents;
-        const aiVector3D* vt2 = assimpMesh.mBitangents;
-        for (vertex& v : outVertices) {
-            v.tangent = std::bit_cast<XMFLOAT3>(*vt++);
-            v.bitangent = std::bit_cast<XMFLOAT3>(*vt2++);
-        }
-    }
-    vertex_buffer = handle{bgfx::createVertexBuffer(vbmem, k_vertex_layout)};
-    index_buffer = handle{bgfx::createIndexBuffer(ibmem, BGFX_BUFFER_INDEX32)};
-    file_path = std::move(path);
-}
+		// Position attribute is required
+		if (!prim.attributes.contains("POSITION")) [[unlikely]] {
+			log_error("GLTF import: Mesh has no position attribute");
+			return false;
+		}
 
-auto mesh::render(const bgfx::ViewId view, const bgfx::ProgramHandle program) const -> void {
-    bgfx::setVertexBuffer(0, *vertex_buffer);
-    bgfx::setIndexBuffer(*index_buffer);
-    bgfx::submit(view, program);
+    	if (prim.material > -1) {
+    		prim_info.src_material_index = prim.material;
+    	}
+
+    	// Indices
+	    {
+			const tinygltf::Accessor& accessor = model.accessors[prim.indices];
+			num_indices = accessor.count;
+			const tinygltf::BufferView& bufferView = model.bufferViews[accessor.bufferView];
+			const tinygltf::Buffer& buffer = model.buffers[bufferView.buffer];
+			switch (accessor.componentType) {
+				case TINYGLTF_PARAMETER_TYPE_UNSIGNED_INT: {
+					std::unique_ptr<std::uint32_t[]> buf {new std::uint32_t[accessor.count]};
+					std::memcpy(buf.get(), &buffer.data[accessor.byteOffset + bufferView.byteOffset], accessor.count * sizeof(uint32_t));
+					for (std::size_t i = 0; i < accessor.count; ++i) {
+						indices.emplace_back(buf[i] + vertex_start);
+					}
+				} break;
+				case TINYGLTF_PARAMETER_TYPE_UNSIGNED_SHORT: {
+					std::unique_ptr<std::uint16_t[]> buf {new std::uint16_t[accessor.count]};
+					std::memcpy(buf.get(), &buffer.data[accessor.byteOffset + bufferView.byteOffset], accessor.count * sizeof(uint16_t));
+					for (std::size_t i = 0; i < accessor.count; ++i) {
+						indices.emplace_back(buf[i] + vertex_start);
+					}
+				} break;
+				case TINYGLTF_PARAMETER_TYPE_UNSIGNED_BYTE: {
+					std::unique_ptr<std::uint8_t[]> buf {new std::uint8_t[accessor.count]};
+					std::memcpy(buf.get(), &buffer.data[accessor.byteOffset + bufferView.byteOffset], accessor.count * sizeof(uint8_t));
+					for (std::size_t i = 0; i < accessor.count; ++i) {
+						indices.emplace_back(buf[i] + vertex_start);
+					}
+				} break;
+				default:
+					log_error("GLTF import: Index component type {} not supported", accessor.componentType);
+			}
+	    }
+
+        // Vertices
+		{
+			const tinygltf::Accessor& pos_accessor = model.accessors[prim.attributes.find("POSITION")->second];
+			num_vertices = pos_accessor.count;
+			const tinygltf::BufferView& pos_view = model.bufferViews[pos_accessor.bufferView];
+
+            const float* buffer_pos = nullptr;
+            const float* buffer_normals = nullptr;
+            const float* buffer_tex_coords = nullptr;
+            const float* buffer_tangents = nullptr;
+			buffer_pos = reinterpret_cast<const float*>(&model.buffers[pos_view.buffer].data[pos_accessor.byteOffset + pos_view.byteOffset]);
+
+			if (prim.attributes.contains("NORMAL")) {
+				const tinygltf::Accessor& norm_accessor = model.accessors[prim.attributes.find("NORMAL")->second];
+				const tinygltf::BufferView& norm_view = model.bufferViews[norm_accessor.bufferView];
+				buffer_normals = reinterpret_cast<const float*>(&(model.buffers[norm_view.buffer].data[norm_accessor.byteOffset + norm_view.byteOffset]));
+			}
+			if (prim.attributes.contains("TEXCOORD_0")) {
+				const tinygltf::Accessor& uv_accessor = model.accessors[prim.attributes.find("TEXCOORD_0")->second];
+				const tinygltf::BufferView& uv_view = model.bufferViews[uv_accessor.bufferView];
+				buffer_tex_coords = reinterpret_cast<const float*>(&(model.buffers[uv_view.buffer].data[uv_accessor.byteOffset + uv_view.byteOffset]));
+			}
+			if (prim.attributes.contains("TANGENT")) {
+				const tinygltf::Accessor& tangent_accessor = model.accessors[prim.attributes.find("TANGENT")->second];
+				const tinygltf::BufferView& tangent_view = model.bufferViews[tangent_accessor.bufferView];
+				buffer_tangents = reinterpret_cast<const float*>(&(model.buffers[tangent_view.buffer].data[tangent_accessor.byteOffset + tangent_view.byteOffset]));
+			}
+
+            num_vertices = pos_accessor.count;
+            for (std::size_t i = 0; i < num_vertices; ++i) {
+            	mesh::vertex vv {
+            		.position = *reinterpret_cast<const DirectX::XMFLOAT3*>(buffer_pos + i * 3),
+            		.normal = buffer_normals ? *reinterpret_cast<const DirectX::XMFLOAT3*>(buffer_normals + i * 3) : DirectX::XMFLOAT3{0.0f, 0.0f, 0.0f},
+            		.uv = buffer_tex_coords ? *reinterpret_cast<const DirectX::XMFLOAT2*>(buffer_tex_coords + i * 2) : DirectX::XMFLOAT2{0.0f, 0.0f},
+            		.tangent = buffer_tangents ? *reinterpret_cast<const DirectX::XMFLOAT3*>(buffer_tangents + i * 3) : DirectX::XMFLOAT3{0.0f, 0.0f, 0.0f},
+            		.bitangent = DirectX::XMFLOAT3{0.0f, 0.0f, 0.0f} // TODO
+            	};
+            	vertices.emplace_back(vv);
+            }
+			if (!buffer_tangents) {
+				for (std::size_t i = 0; i < indices.size(); i += 3) {
+					mesh::vertex& v0 = vertices[indices[i]];
+					mesh::vertex& v1 = vertices[indices[i + 1]];
+					mesh::vertex& v2 = vertices[indices[i + 2]];
+
+					const DirectX::XMVECTOR pos0 = DirectX::XMLoadFloat3(&v0.position);
+					const DirectX::XMVECTOR pos1 = DirectX::XMLoadFloat3(&v1.position);
+					const DirectX::XMVECTOR pos2 = DirectX::XMLoadFloat3(&v2.position);
+					const DirectX::XMVECTOR uv0 = DirectX::XMLoadFloat2(&v0.uv);
+					const DirectX::XMVECTOR uv1 = DirectX::XMLoadFloat2(&v1.uv);
+					const DirectX::XMVECTOR uv2 = DirectX::XMLoadFloat2(&v2.uv);
+
+					const DirectX::XMVECTOR edge1 = DirectX::XMVectorSubtract(pos1, pos0);
+					const DirectX::XMVECTOR edge2 = DirectX::XMVectorSubtract(pos2, pos0);
+					const DirectX::XMVECTOR deltaUV1 = DirectX::XMVectorSubtract(uv1, uv0);
+					const DirectX::XMVECTOR deltaUV2 = DirectX::XMVectorSubtract(uv2, uv0);
+
+					const float f = 1.0f / DirectX::XMVectorGetX(DirectX::XMVector2Cross(deltaUV1, deltaUV2));
+
+					DirectX::XMVECTOR tangent = DirectX::XMVectorSet(
+						f * (DirectX::XMVectorGetY(deltaUV2) * DirectX::XMVectorGetX(edge1) - DirectX::XMVectorGetY(deltaUV1) * DirectX::XMVectorGetX(edge2)),
+						f * (DirectX::XMVectorGetY(deltaUV2) * DirectX::XMVectorGetY(edge1) - DirectX::XMVectorGetY(deltaUV1) * DirectX::XMVectorGetY(edge2)),
+						f * (DirectX::XMVectorGetY(deltaUV2) * DirectX::XMVectorGetZ(edge1) - DirectX::XMVectorGetY(deltaUV1) * DirectX::XMVectorGetZ(edge2)),
+						0.0f
+					);
+
+					DirectX::XMVECTOR bitangent = DirectX::XMVectorSet(
+						f * (-DirectX::XMVectorGetX(deltaUV2) * DirectX::XMVectorGetX(edge1) + DirectX::XMVectorGetX(deltaUV1) * DirectX::XMVectorGetX(edge2)),
+						f * (-DirectX::XMVectorGetX(deltaUV2) * DirectX::XMVectorGetY(edge1) + DirectX::XMVectorGetX(deltaUV1) * DirectX::XMVectorGetY(edge2)),
+						f * (-DirectX::XMVectorGetX(deltaUV2) * DirectX::XMVectorGetZ(edge1) + DirectX::XMVectorGetX(deltaUV1) * DirectX::XMVectorGetZ(edge2)),
+						0.0f
+					);
+
+					// Adding the computed tangent to each vertex of the triangle
+					DirectX::XMStoreFloat3(&v0.tangent, tangent);
+					DirectX::XMStoreFloat3(&v1.tangent, tangent);
+					DirectX::XMStoreFloat3(&v2.tangent, tangent);
+					DirectX::XMStoreFloat3(&v0.bitangent, bitangent);
+					DirectX::XMStoreFloat3(&v1.bitangent, bitangent);
+					DirectX::XMStoreFloat3(&v2.bitangent, bitangent);
+				}
+
+				// Normalize the tangents
+				for (auto& vertex : vertices) {
+					// Make it orthogonal to the normal
+					DirectX::XMVECTOR normal = XMLoadFloat3(&vertex.normal);
+					DirectX::XMVECTOR tangent = XMLoadFloat3(&vertex.tangent);
+
+					// Gram-Schmidt orthogonalize
+					tangent = DirectX::XMVector3Normalize(tangent - normal * DirectX::XMVector3Dot(normal, tangent));
+
+					// Compute handedness
+					DirectX::XMVECTOR handedness = DirectX::XMVector3Dot(DirectX::XMVector3Cross(normal, tangent), XMLoadFloat3(&vertex.bitangent));
+					const float sign = DirectX::XMVectorGetX(handedness) < 0.0f ? -1.0f : 1.0f;
+					tangent = DirectX::XMVectorMultiply(tangent, DirectX::XMVectorReplicate(sign));
+
+					DirectX::XMStoreFloat3(&vertex.tangent, tangent);
+				}
+			}
+		}
+
+        prim_info.index_start = index_start;
+        prim_info.index_count = num_indices;
+        prim_info.vertex_start = vertex_start;
+        prim_info.vertex_count = num_vertices;
+    	return true;
+	}
 }

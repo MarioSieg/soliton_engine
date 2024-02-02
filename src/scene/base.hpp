@@ -2,12 +2,8 @@
 
 #include "../core/core.hpp"
 
-#include "../ecs/flecs.h"
-
-using namespace flecs;
-
-#include "../math/DirectXMath.h"
-
-using namespace DirectX;
+#include <flecs.h>
+#include <DirectXMath.h>
+#include <DirectXCollision.h>
 
 static_assert(sizeof(flecs::id_t) == 8);

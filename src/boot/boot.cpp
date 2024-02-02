@@ -2,9 +2,9 @@
 
 #include "../core/kernel.hpp"
 
-#include "../platform/subsystem.hpp"
-#include "../graphics/subsystem.hpp"
-#include "../scripting/subsystem.hpp"
+#include "../platform/platform_subsystem.hpp"
+#include "../graphics/graphics_subsystem.hpp"
+#include "../scripting/scripting_subsystem.hpp"
 
 static auto lunam_entry() -> void {
     kernel kernel {};

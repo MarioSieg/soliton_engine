@@ -4,9 +4,6 @@
 
 #include "../../core/core.hpp"
 #include "../../scene/scene.hpp"
-#include "../../math/DirectXMath.h"
-
-#include <../../rendercore/bx/include/bx/math.h>
 
 #if PLATFORM_WINDOWS
 #define LUA_INTEROP_API extern "C" __cdecl __declspec(dllexport)
@@ -22,20 +19,20 @@ struct lua_vec2 {
     double x;
     double y;
 
-    constexpr __attribute__((always_inline)) lua_vec2() noexcept = default;
-    constexpr __attribute__((always_inline)) lua_vec2(const double x, const double y) noexcept : x{x}, y{y} {}
-    constexpr __attribute__((always_inline)) lua_vec2(const XMFLOAT2& vec) noexcept
+    constexpr lua_vec2() noexcept = default;
+    constexpr lua_vec2(const double x, const double y) noexcept : x{x}, y{y} {}
+    constexpr lua_vec2(const DirectX::XMFLOAT2& vec) noexcept
         : x{static_cast<float>(vec.x)}, y{static_cast<float>(vec.y)} {}
 
-    [[nodiscard]] constexpr __attribute__((always_inline)) operator XMFLOAT2 () const noexcept {
+    [[nodiscard]] constexpr operator DirectX::XMFLOAT2 () const noexcept {
         return {
             static_cast<float>(x),
             static_cast<float>(y)
         };
     }
-    [[nodiscard]] __attribute__((always_inline)) operator XMVECTOR() const noexcept {
-        const XMFLOAT2 tmp = *this;
-        return XMLoadFloat2(&tmp);
+    [[nodiscard]] operator DirectX::XMVECTOR() const noexcept {
+        const DirectX::XMFLOAT2 tmp = *this;
+        return DirectX::XMLoadFloat2(&tmp);
     }
 };
 static_assert(sizeof(lua_vec2) == sizeof(double) * 2 && std::is_standard_layout_v<lua_vec2>);
@@ -48,41 +45,42 @@ struct lua_vec3 {
     double y;
     double z;
 
-    constexpr __attribute__((always_inline)) lua_vec3() noexcept = default;
-    constexpr __attribute__((always_inline)) lua_vec3(const double x, const double y, const double z) noexcept
+    constexpr lua_vec3() noexcept = default;
+    constexpr lua_vec3(const double x, const double y, const double z) noexcept
         : x{x}, y{y}, z{z} {}
-    constexpr __attribute__((always_inline)) lua_vec3(const XMFLOAT3& vec) noexcept
+    constexpr lua_vec3(const DirectX::XMFLOAT3& vec) noexcept
         : x{static_cast<float>(vec.x)}
         , y{static_cast<float>(vec.y)}
         , z{static_cast<float>(vec.z)} {}
-    constexpr __attribute__((always_inline)) lua_vec3(const bx::Vec3& vec) noexcept
-        : x{static_cast<float>(vec.x)}
-        , y{static_cast<float>(vec.y)}
-        , z{static_cast<float>(vec.z)} {}
+    constexpr lua_vec3(const DirectX::XMFLOAT4& vec) noexcept
+       : x{static_cast<float>(vec.x)}
+    , y{static_cast<float>(vec.y)}
+    , z{static_cast<float>(vec.z)} {}
 
-    [[nodiscard]] constexpr __attribute__((always_inline)) operator XMFLOAT2 () const noexcept {
+    [[nodiscard]] constexpr operator DirectX::XMFLOAT2 () const noexcept {
         return {
             static_cast<float>(x),
             static_cast<float>(y)
         };
     }
-    [[nodiscard]] constexpr __attribute__((always_inline)) operator XMFLOAT3 () const noexcept {
+    [[nodiscard]] constexpr operator DirectX::XMFLOAT3 () const noexcept {
         return {
             static_cast<float>(x),
             static_cast<float>(y),
             static_cast<float>(z)
         };
     }
-    [[nodiscard]] constexpr __attribute__((always_inline)) operator bx::Vec3 () const noexcept {
+    [[nodiscard]] constexpr operator DirectX::XMFLOAT4 () const noexcept {
         return {
             static_cast<float>(x),
             static_cast<float>(y),
-            static_cast<float>(z)
+            static_cast<float>(z),
+            0.0f
         };
     }
-    [[nodiscard]] __attribute__((always_inline)) operator XMVECTOR() const noexcept {
-        const XMFLOAT3 tmp = *this;
-        return XMLoadFloat3(&tmp);
+    [[nodiscard]] operator DirectX::XMVECTOR() const noexcept {
+        const DirectX::XMFLOAT3 tmp = *this;
+        return DirectX::XMLoadFloat3(&tmp);
     }
 };
 static_assert(sizeof(lua_vec3) == sizeof(double) * 3 && std::is_standard_layout_v<lua_vec3>);
@@ -96,16 +94,16 @@ struct lua_vec4 {
     double z;
     double w;
 
-    constexpr __attribute__((always_inline)) lua_vec4() noexcept = default;
-    constexpr __attribute__((always_inline)) lua_vec4(const double x, const double y, const double z, const double w) noexcept
+    constexpr lua_vec4() noexcept = default;
+    constexpr lua_vec4(const double x, const double y, const double z, const double w) noexcept
         : x{x}, y{y}, z{z}, w{w} {}
-    constexpr __attribute__((always_inline)) lua_vec4(const XMFLOAT4& vec) noexcept
+    constexpr lua_vec4(const DirectX::XMFLOAT4& vec) noexcept
     : x{static_cast<float>(vec.x)}
     , y{static_cast<float>(vec.y)}
     , z{static_cast<float>(vec.z)}
     , w{static_cast<float>(vec.w)} {}
 
-    [[nodiscard]] constexpr __attribute__((always_inline)) operator XMFLOAT4() const noexcept {
+    [[nodiscard]] constexpr operator DirectX::XMFLOAT4() const noexcept {
         return {
             static_cast<float>(x),
             static_cast<float>(y),
@@ -113,9 +111,9 @@ struct lua_vec4 {
             static_cast<float>(w)
         };
     }
-    [[nodiscard]] __attribute__((always_inline)) operator XMVECTOR() const noexcept{
-        const XMFLOAT4 tmp = *this;
-        return XMLoadFloat4(&tmp);
+    [[nodiscard]] operator DirectX::XMVECTOR() const noexcept{
+        const DirectX::XMFLOAT4 tmp = *this;
+        return DirectX::XMLoadFloat4(&tmp);
     }
 };
 static_assert(sizeof(lua_vec4) == sizeof(double) * 4 && std::is_standard_layout_v<lua_vec4>);

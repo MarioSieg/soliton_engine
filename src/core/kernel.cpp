@@ -110,8 +110,8 @@ kernel::kernel() {
 #endif
     std::ostream::sync_with_stdio(false);
     spdlog::init_thread_pool(k_log_queue_size, k_log_threads);
-    std::shared_ptr<spdlog::logger> engineLogger = create_logger("Engine", "%H:%M:%S:%e %s:%# %^[%l]%$ T:%t %v");
-    std::shared_ptr<spdlog::logger> scriptLogger = create_logger("App", "%H:%M:%S:%e %v");
+    std::shared_ptr<spdlog::logger> engineLogger = create_logger("engine", "%H:%M:%S:%e %s:%# %^[%l]%$ T:%t %v");
+    std::shared_ptr<spdlog::logger> scriptLogger = create_logger("app", "%H:%M:%S:%e %v");
     spdlog::set_default_logger(engineLogger);
     log_info("LunamEngine v0.0.1");
     log_info("Copyright (c) 2022-2023 Mario \"Neo\" Sieg. All Rights Reserved.");
@@ -123,10 +123,16 @@ kernel::kernel() {
 
 kernel::~kernel() {
     log_info("Shutting down...");
+    log_info("Killing active scene...");
     // Kill active scene before other subsystems are shut down
     auto& active = const_cast<std::unique_ptr<scene>&>(scene::get_active());
     active.reset();
+    log_info("Killing subsystems...");
     m_subsystems.clear();
+    // Print asset manager infos
+    log_info("Asset manager stats:");
+    log_info("  Total assets requests: {}", assetmgr::get_asset_request_count());
+    log_info("  Total data loaded: {:.03f} MiB", static_cast<double>(assetmgr::get_total_bytes_loaded()) / (1024.0*1024.0));
     log_info("System offline");
     std::cout.flush();
     std::fflush(stdout);
