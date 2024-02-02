@@ -191,7 +191,6 @@ namespace graphics {
             	vertices.emplace_back(vv);
             }
 			if (!buffer_tangents) {
-				log_warn("GLTF import: Mesh has no tangents, recomputing");
 				for (std::size_t i = 0; i < indices.size(); i += 3) {
 					mesh::vertex& v0 = vertices[indices[i]];
 					mesh::vertex& v1 = vertices[indices[i + 1]];

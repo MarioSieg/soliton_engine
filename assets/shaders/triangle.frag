@@ -28,7 +28,7 @@ void main() {
   float diff = max(dot(normal, lightDir), 0.0);
 
   // add ambient lighting:
-  vec4 ambient = vec4(0.1, 0.1, 0.1, 1.0);
+  const vec4 ambient = vec4(0.1, 0.1, 0.15, 1.0);
   outFragColor = texColor * (ambient + diff * lightColor);
 
   // gamma correction
