@@ -53,6 +53,11 @@ add_subdirectory(extern/shaderc)
 include_directories(extern/shaderc/libshaderc/include)
 target_link_libraries(lunam vulkan)
 target_link_libraries(lunam shaderc)
+
 add_subdirectory(extern/bgfx)
 include_directories(extern/bgfx/include)
 target_link_libraries(lunam bx bimg bimg_decode) # we only borrow bgfx's bx and bimg
+
+add_subdirectory(extern/JoltPhysics/Build)
+include_directories(extern/JoltPhysics/Source)
+target_link_libraries(lunam Jolt)
