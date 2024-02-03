@@ -132,44 +132,40 @@ namespace physics {
         delete JPH::Factory::sInstance;
     }
 
+	[[nodiscard]] static inline auto lunam_vec3_to_jbh_vec3(const DirectX::XMFLOAT3& v) noexcept -> JPH::RVec3 {
+    	return JPH::Vec3{v.x, v.y, v.z};
+    }
+
 	[[nodiscard]] static inline auto lunam_vec4_to_jbh_vec3(const DirectX::XMFLOAT4& v) noexcept -> JPH::RVec3 {
     	return JPH::Vec3{v.x, v.y, v.z};
     }
 
-    void physics_subsystem::on_start(scene& scene) {
+    auto physics_subsystem::on_start(scene& scene) -> void {
     	auto& bi = m_physics_system.GetBodyInterface();
 
-		auto* cube = new graphics::mesh("assets/meshes/cube.obj");
-    	auto* sphere_mesh = new graphics::mesh("/home/neo/Documents/lunam/assets/meshes/DamagedHelmet.gltf");
+    	auto* sphere_mesh = new graphics::mesh("assets/meshes/fussball/fussball.fbx");
     	auto* mat = new graphics::material{};
-    	auto* albedo = new graphics::texture("assets/textures/proto/dark/texture_01.png");
-    	auto* normal = new graphics::texture("assets/textures/wall/normal.png");
+    	auto* albedo = new graphics::texture("assets/meshes/fussball/albedo.png");
+    	auto* normal = new graphics::texture("assets/meshes/fussball/normal.png");
     	mat->albedo_map = albedo;
     	mat->normal_map = normal;
     	mat->flush_property_updates();
 
-    	flecs::entity floor = scene.spawn("floor");
-
-		{
-			c_transform* transform = floor.get_mut<c_transform>();
-			transform->position.y = -1.0f;
-    		transform->position.x = -500.0f;
-    		transform->position.z = -500.0f;
-			transform->scale.x = 1000.0f;
-			transform->scale.y = 1.0f;
-			transform->scale.z = 1000.0f;
-		}
-
-    	JPH::BodyCreationSettings floor_settings {
-		    new JPH::BoxShape{lunam_vec4_to_jbh_vec3(floor.get<c_transform>()->scale)},
-			lunam_vec4_to_jbh_vec3(floor.get<c_transform>()->position),
-			std::bit_cast<JPH::Quat>(floor.get<c_transform>()->rotation),
-			JPH::EMotionType::Static,
-			Layers::NON_MOVING
-		};
-
-    	JPH::BodyID floor_body = bi.CreateAndAddBody(floor_settings, JPH::EActivation::DontActivate);
-    	floor.get_mut<c_rigidbody>()->body_id = floor_body;
+    	scene.filter<const c_transform, const c_mesh_renderer>().each([&](const c_transform& transform, const c_mesh_renderer& renderer) {
+    		if (renderer.meshes.empty()) {
+    			return;
+    		}
+    		const auto& mesh = renderer.meshes.front();
+    		JPH::Shape::ShapeResult result {};
+		    const JPH::BodyCreationSettings static_object {
+				 new JPH::MeshShape(JPH::MeshShapeSettings{mesh->verts, mesh->triangles}, result),
+				lunam_vec4_to_jbh_vec3(transform.position),
+				std::bit_cast<JPH::Quat>(transform.rotation),
+				JPH::EMotionType::Static,
+				Layers::NON_MOVING
+			};
+			bi.CreateAndAddBody(static_object, JPH::EActivation::DontActivate);
+    	});
 
     	const auto make_sphere = [&](float x, float z) {
     		flecs::entity sphere = scene.spawn(nullptr);
@@ -177,35 +173,33 @@ namespace physics {
     		transform->position.x = x;
     		transform->position.z = z;
     		transform->position.y = 150.0f;
-    		transform->scale.x = 0.25f;
-    		transform->scale.y = 0.25f;
-    		transform->scale.z = 0.25f;
+    		transform->scale.x = -0.00075f;
+    		transform->scale.y = -0.00075f;
+    		transform->scale.z = -0.00075f;
     		c_mesh_renderer* renderer = sphere.get_mut<c_mesh_renderer>();
     		renderer->meshes.emplace_back(sphere_mesh);
     		renderer->materials.emplace_back(mat);
     		JPH::BodyCreationSettings sphere_settings {
-    			new JPH::BoxShape{lunam_vec4_to_jbh_vec3(sphere.get<c_transform>()->scale)},
+    			new JPH::SphereShape{1.0f*0.25f},
 				lunam_vec4_to_jbh_vec3(sphere.get<c_transform>()->position),
 				std::bit_cast<JPH::Quat>(sphere.get<c_transform>()->rotation),
 				JPH::EMotionType::Dynamic,
 				Layers::MOVING
 			};
-    		sphere_settings.mRestitution = 0.05f;
-    		sphere_settings.mMassPropertiesOverride = JPH::MassProperties{100.5f};
-    		sphere_settings.mFriction = 0.9f;
+    		// set realistic soccer ball properties like mass, friction, etc.
+    		sphere_settings.mMassPropertiesOverride = JPH::MassProperties{1.0f};
     		sphere_settings.mLinearDamping = 0.1f;
     		sphere_settings.mAngularDamping = 0.1f;
+    		sphere_settings.mRestitution = 0.5f;
+    		sphere_settings.mFriction = 0.5f;
+
     		JPH::BodyID sphere_body = bi.CreateAndAddBody(sphere_settings, JPH::EActivation::Activate);
     		sphere.get_mut<c_rigidbody>()->body_id = sphere_body;
-    		// add minimal random velocity to the sphere:
-    		float xx = -static_cast<float>(rand() % 100) / 100.0f;
-    		float zz = -static_cast<float>(rand() % 100) / 100.0f;
-    		bi.SetLinearVelocity(sphere_body, JPH::Vec3{xx*10.0f, -5.0f, zz*10.0f});
     	};
 
     	for (int i = 0; i < 64; i++) {
 			for (int j = 0; j < 64; j++) {
-				make_sphere(-64.0f + i * 4.0f, -64.0f + j * 4.0f);
+				make_sphere(-64.0f + i * 2.0f, -64.0f + j * 2.0f);
 			}
 		}
 
@@ -215,7 +209,7 @@ namespace physics {
     	m_physics_system.OptimizeBroadPhase();
     }
 
-    void physics_subsystem::on_post_tick() {
+    auto physics_subsystem::on_post_tick() -> void {
     	const double delta = kernel::get().get_delta_time();
     	const int n_steps = 1;
     	m_physics_system.Update(static_cast<float>(delta), n_steps, &*m_temp_allocator, &*m_job_system);

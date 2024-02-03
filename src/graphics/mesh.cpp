@@ -6,6 +6,7 @@
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
+#include <Jolt/Physics/Collision/Shape/Shape.h>
 
 #include "material.hpp"
 
@@ -88,6 +89,7 @@ namespace graphics {
 			m_primitives.emplace_back(prim_info);
 		}
 		m_primitives.shrink_to_fit();
+		create_collision_mesh(vertices, indices);
 		create_buffers(vertices, indices);
 		m_approx_byte_size = sizeof(*this)
 			+ m_vertex_buffer.get_size()
@@ -136,4 +138,18 @@ namespace graphics {
 			);
     	}
     }
+
+    auto mesh::create_collision_mesh(const std::span<const vertex> vertices, const std::span<const index> indices) -> void {
+		for (const vertex& v : vertices) {
+			verts.emplace_back(std::bit_cast<JPH::Float3>(v.position));
+		}
+		triangles.reserve(indices.size() / 3);
+		for (std::size_t i = 0; i < indices.size(); i += 3) {
+			JPH::IndexedTriangle tri {};
+			tri.mIdx[0] = indices[i];
+			tri.mIdx[1] = indices[i + 1];
+			tri.mIdx[2] = indices[i + 2];
+			triangles.emplace_back(tri);
+		}
+	}
 }
