@@ -45,10 +45,9 @@ namespace graphics {
 		prim_info.index_count = indices.size() - prim_info.index_start;
 		prim_info.vertex_count = vertices.size() - prim_info.vertex_start;
 		const aiAABB& aabb = mesh->mAABB;
-		prim_info.aabb = DirectX::BoundingBox{
-			std::bit_cast<DirectX::XMFLOAT3>(aabb.mMin),
-			std::bit_cast<DirectX::XMFLOAT3>(aabb.mMax)
-		};
+		static_assert(sizeof(DirectX::XMFLOAT3) == sizeof(aiVector3D));
+		static_assert(alignof(DirectX::XMFLOAT3) == alignof(aiVector3D));
+		prim_info.aabb.CreateFromPoints(prim_info.aabb, DirectX::XMLoadFloat3(reinterpret_cast<const DirectX::XMFLOAT3*>(&aabb.mMin)), DirectX::XMLoadFloat3(reinterpret_cast<const DirectX::XMFLOAT3*>(&aabb.mMax)));
 		full_aabb.CreateMerged(full_aabb, full_aabb, prim_info.aabb);
 	}
 

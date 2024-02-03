@@ -387,7 +387,7 @@ namespace graphics {
         // Rasterization state
         vk::PipelineRasterizationStateCreateInfo rasterization_state {};
         rasterization_state.polygonMode = vk::PolygonMode::eFill;
-        rasterization_state.cullMode = vk::CullModeFlagBits::eNone; // TODO No culling because of trees
+        rasterization_state.cullMode = vk::CullModeFlagBits::eBack; // TODO No culling because of trees
         rasterization_state.frontFace = vk::FrontFace::eClockwise;
         rasterization_state.depthClampEnable = vk::False;
         rasterization_state.rasterizerDiscardEnable = vk::False;
