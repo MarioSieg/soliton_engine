@@ -14,6 +14,7 @@
 #include <Jolt/Physics/PhysicsSystem.h>
 #include <Jolt/Physics/Collision/Shape/BoxShape.h>
 #include <Jolt/Physics/Body/BodyCreationSettings.h>
+#include <Jolt/Physics/Collision/PhysicsMaterialSimple.h>
 #include <Jolt/Physics/Collision/Shape/SphereShape.h>
 
 #include "../graphics/graphics_subsystem.hpp"
@@ -79,6 +80,26 @@ namespace physics {
 		}
 	};
 
+	static std::random_device rd;
+	static thread_local std::mt19937 gen {rd()};
+
+	class ContactListenerImpl : public JPH::ContactListener {
+		virtual auto OnContactAdded(const JPH::Body& inBody1, const JPH::Body& inBody2,
+		                            const JPH::ContactManifold& inManifold,
+		                            JPH::ContactSettings& ioSettings) -> void override {
+
+			std::uniform_real_distribution<float> dis {0.01f, 0.1f};
+			JPH::Vec3 offset {dis(gen), dis(gen), dis(gen)};
+			ioSettings.mRelativeAngularSurfaceVelocity = offset;
+			ioSettings.mCombinedFriction = std::sqrt(inBody1.GetFriction() * inBody2.GetFriction());
+			ioSettings.mCombinedRestitution = std::max(inBody1.GetRestitution(), inBody2.GetRestitution());
+		}
+		virtual auto OnContactPersisted(const JPH::Body& inBody1, const JPH::Body& inBody2,
+		                                const JPH::ContactManifold& inManifold,
+		                                JPH::ContactSettings& ioSettings) -> void override {
+		}
+	};
+
     static auto trace_proc(const char* msg, ...) -> void {
         va_list list;
         va_start(list, msg);
@@ -110,6 +131,7 @@ namespace physics {
     	m_broad_phase = std::make_unique<BPLayerInterfaceImpl>();
 		m_broad_phase_filter = std::make_unique<ObjectVsBroadPhaseLayerFilterImpl>();
     	m_object_layer_pair_filter = std::make_unique<ObjectLayerPairFilterImpl>();
+    	m_contact_listener = std::make_unique<ContactListenerImpl>();
 
     	m_physics_system.Init(
     		k_max_bodies,
@@ -120,9 +142,12 @@ namespace physics {
     		*m_broad_phase_filter,
     		*m_object_layer_pair_filter
     	);
+    	m_physics_system.SetGravity(JPH::Vec3{0.0f, -9.81f, 0.0f}); // set gravity to earth's gravity
+    	m_physics_system.SetContactListener(&*m_contact_listener);
     }
 
     physics_subsystem::~physics_subsystem() {
+    	m_contact_listener.reset();
     	m_object_layer_pair_filter.reset();
     	m_broad_phase_filter.reset();
     	m_broad_phase.reset();
@@ -157,13 +182,16 @@ namespace physics {
     		}
     		const auto& mesh = renderer.meshes.front();
     		JPH::Shape::ShapeResult result {};
-		    const JPH::BodyCreationSettings static_object {
+		    JPH::BodyCreationSettings static_object {
 				 new JPH::MeshShape(JPH::MeshShapeSettings{mesh->verts, mesh->triangles}, result),
 				lunam_vec4_to_jbh_vec3(transform.position),
 				std::bit_cast<JPH::Quat>(transform.rotation),
 				JPH::EMotionType::Static,
 				Layers::NON_MOVING
 			};
+    		// make static objects concrete like:
+    		static_object.mFriction = 0.9f;
+    		static_object.mRestitution = 0.0f;
 			bi.CreateAndAddBody(static_object, JPH::EActivation::DontActivate);
     	});
 
