@@ -173,9 +173,9 @@ namespace physics {
     		transform->position.x = x;
     		transform->position.z = z;
     		transform->position.y = 150.0f;
-    		transform->scale.x = -0.00075f;
-    		transform->scale.y = -0.00075f;
-    		transform->scale.z = -0.00075f;
+    		transform->scale.x = 0.00075f;
+    		transform->scale.y = 0.00075f;
+    		transform->scale.z = 0.00075f;
     		c_mesh_renderer* renderer = sphere.get_mut<c_mesh_renderer>();
     		renderer->meshes.emplace_back(sphere_mesh);
     		renderer->materials.emplace_back(mat);
