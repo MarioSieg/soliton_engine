@@ -143,7 +143,9 @@ namespace physics {
     	auto* sphere_mesh = new graphics::mesh("assets/meshes/sphere.obj");
     	auto* mat = new graphics::material{};
     	auto* albedo = new graphics::texture("proto/dark/texture_01.png");
+    	auto* normal = new graphics::texture("wall/normal.png");
     	mat->albedo_map = albedo;
+    	mat->normal_map = normal;
     	mat->flush_property_updates();
 
     	flecs::entity floor = scene.spawn("floor");
