@@ -21,8 +21,8 @@ namespace graphics {
     };
 
     struct gpu_vertex_push_constants final {
-        DirectX::XMFLOAT4X4 model_view_proj;
-        DirectX::XMFLOAT4X4 normal_matrix;
+        DirectX::XMFLOAT4X4A model_view_proj;
+        DirectX::XMFLOAT4X4A normal_matrix;
     };
     static_assert(sizeof(gpu_vertex_push_constants) <= 128);
 

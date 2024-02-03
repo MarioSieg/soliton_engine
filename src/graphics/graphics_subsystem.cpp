@@ -180,8 +180,8 @@ namespace graphics {
 
             // Uniforms
             gpu_vertex_push_constants push_constants {};
-            DirectX::XMStoreFloat4x4(&push_constants.model_view_proj, DirectX::XMMatrixMultiply(model, vp));
-            DirectX::XMStoreFloat4x4(&push_constants.normal_matrix, DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(nullptr, model)));
+            DirectX::XMStoreFloat4x4A(&push_constants.model_view_proj, DirectX::XMMatrixMultiply(model, vp));
+            DirectX::XMStoreFloat4x4A(&push_constants.normal_matrix, DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(nullptr, model)));
             cmd_buf.pushConstants(
                 m_pipeline_layout,
                 vk::ShaderStageFlagBits::eVertex,
