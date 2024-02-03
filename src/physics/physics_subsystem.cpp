@@ -140,7 +140,7 @@ namespace physics {
     	auto& bi = m_physics_system.GetBodyInterface();
 
 		auto* cube = new graphics::mesh("assets/meshes/cube.obj");
-    	auto* sphere_mesh = new graphics::mesh("assets/meshes/cube.obj");
+    	auto* sphere_mesh = new graphics::mesh("/home/neo/Documents/lunam/assets/meshes/DamagedHelmet.gltf");
     	auto* mat = new graphics::material{};
     	auto* albedo = new graphics::texture("assets/textures/proto/dark/texture_01.png");
     	auto* normal = new graphics::texture("assets/textures/wall/normal.png");
