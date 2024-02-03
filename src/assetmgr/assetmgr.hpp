@@ -81,7 +81,7 @@ public:
    [[nodiscard]] auto load_from_memory(Args&&... args) -> T* {
         std::unique_ptr<T> ptr = std::make_unique<T>(std::forward<Args>(args)...);
         ++m_cache_misses;
-        return &*m_registry.emplace(fmt::format("mem_{#:X}", ++m_id_gen), std::move(ptr)).first->second;
+        return &*m_registry.emplace(fmt::format("mem_{:#X}", ++m_id_gen), std::move(ptr)).first->second;
     }
 
     template <typename... Args>

@@ -30,9 +30,6 @@ add_subdirectory(extern/flecs)
 target_include_directories(lunam PRIVATE extern/flecs/include)
 target_link_libraries(lunam flecs_static)
 
-add_subdirectory(extern/tinygltf)
-target_include_directories(lunam PRIVATE extern/tinygltf)
-
 add_subdirectory(extern/DirectXMath)
 target_include_directories(lunam PRIVATE extern/DirectXMath/Inc)
 

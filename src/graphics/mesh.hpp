@@ -7,7 +7,6 @@
 
 #include <DirectXMath.h>
 #include <DirectXCollision.h>
-#include <tiny_gltf.h>
 #include <assimp/mesh.h>
 
 namespace graphics {
