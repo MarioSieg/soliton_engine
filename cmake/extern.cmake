@@ -2,10 +2,6 @@ add_subdirectory(extern/spdlog)
 target_include_directories(lunam PRIVATE extern/spdlog/include)
 target_link_libraries(lunam spdlog)
 
-add_subdirectory(extern/assimp)
-target_include_directories(lunam PRIVATE extern/assimp/include)
-target_link_libraries(lunam assimp)
-
 add_subdirectory(extern/Boxer)
 target_include_directories(lunam PRIVATE extern/Boxer/include)
 target_link_libraries(lunam Boxer)
@@ -57,6 +53,7 @@ add_subdirectory(extern/shaderc)
 target_include_directories(lunam PRIVATE extern/shaderc/libshaderc/include)
 target_link_libraries(lunam vulkan)
 target_link_libraries(lunam shaderc)
+target_link_libraries(lunam vulkan)
 
 add_subdirectory(extern/bgfx)
 target_include_directories(lunam PRIVATE extern/bgfx/include)
@@ -65,3 +62,7 @@ target_link_libraries(lunam bx bimg bimg_decode) # we only borrow bgfx's bx and 
 add_subdirectory(extern/JoltPhysics/Build)
 target_include_directories(lunam PRIVATE extern/JoltPhysics/Source)
 target_link_libraries(lunam Jolt)
+
+add_subdirectory(extern/assimp)
+target_include_directories(lunam PRIVATE extern/assimp/include)
+target_link_libraries(lunam assimp)
