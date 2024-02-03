@@ -124,6 +124,7 @@ auto scene::import_from_file(const std::string& path, const float scale) -> void
             auto* renderer = e.get_mut<c_mesh_renderer>();
 
             std::vector<const aiMesh*> meshes {};
+            meshes.reserve(node->mNumMeshes);
             for (unsigned i = 0; i < node->mNumMeshes; ++i) {
                 const aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
                 meshes.emplace_back(mesh);

@@ -47,8 +47,8 @@ namespace graphics {
 		const aiAABB& aabb = mesh->mAABB;
 		static_assert(sizeof(DirectX::XMFLOAT3) == sizeof(aiVector3D));
 		static_assert(alignof(DirectX::XMFLOAT3) == alignof(aiVector3D));
-		prim_info.aabb.CreateFromPoints(prim_info.aabb, DirectX::XMLoadFloat3(reinterpret_cast<const DirectX::XMFLOAT3*>(&aabb.mMin)), DirectX::XMLoadFloat3(reinterpret_cast<const DirectX::XMFLOAT3*>(&aabb.mMax)));
-		full_aabb.CreateMerged(full_aabb, full_aabb, prim_info.aabb);
+		DirectX::BoundingBox::CreateFromPoints(prim_info.aabb, DirectX::XMLoadFloat3(reinterpret_cast<const DirectX::XMFLOAT3*>(&aabb.mMin)), DirectX::XMLoadFloat3(reinterpret_cast<const DirectX::XMFLOAT3*>(&aabb.mMax)));
+		DirectX::BoundingBox::CreateMerged(full_aabb, full_aabb, prim_info.aabb);
 	}
 
 	mesh::mesh(std::string&& path) : asset{asset_category::mesh, asset_source::filesystem, std::move(path)} {
@@ -57,10 +57,12 @@ namespace graphics {
 		if (!scene || !scene->mNumMeshes) [[unlikely]] {
 			panic("Failed to load mesh from file '{}': {}", get_asset_path(), importer.GetErrorString());
 		}
+		const aiNode* node = scene->mRootNode;
 		std::vector<const aiMesh*> meshes {};
-		meshes.reserve(scene->mNumMeshes);
-		for (std::size_t i = 0; i < scene->mNumMeshes; ++i) {
-			meshes.emplace_back(scene->mMeshes[i]);
+		meshes.reserve(node->mNumMeshes);
+		for (unsigned i = 0; i < node->mNumMeshes; ++i) {
+			const aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+			meshes.emplace_back(mesh);
 		}
 		create_from_assimp(meshes);
 	}
