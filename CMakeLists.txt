@@ -18,7 +18,7 @@ add_link_options(-fuse-ld=lld)
 add_link_options("-Wl,--thinlto-cache-dir=${PROJECT_BINARY_DIR}/LTO.cache")
 add_link_options("-Wl,--thinlto-jobs=64")
 
-# add_compile_options(-fno-exceptions -fno-rtti)
+add_compile_options(-fno-exceptions -fno-rtti)
 
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
     add_compile_options(-Ofast -flto=thin)

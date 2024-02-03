@@ -14,7 +14,8 @@ namespace graphics {
 		std::vector<mesh::vertex>& vertices,
 		std::vector<mesh::index>& indices,
 		const aiMesh* mesh,
-		mesh::primitive& prim_info
+		mesh::primitive& prim_info,
+		DirectX::BoundingBox& full_aabb
 	) -> void {
 		prim_info.vertex_start = vertices.size();
 		prim_info.index_start = indices.size();
@@ -43,12 +44,16 @@ namespace graphics {
 		}
 		prim_info.index_count = indices.size() - prim_info.index_start;
 		prim_info.vertex_count = vertices.size() - prim_info.vertex_start;
+		const aiAABB& aabb = mesh->mAABB;
+		prim_info.aabb = DirectX::BoundingBox{
+			std::bit_cast<DirectX::XMFLOAT3>(aabb.mMin),
+			std::bit_cast<DirectX::XMFLOAT3>(aabb.mMax)
+		};
+		full_aabb.CreateMerged(full_aabb, full_aabb, prim_info.aabb);
 	}
 
 	mesh::mesh(std::string&& path) : asset{asset_category::mesh, asset_source::filesystem, std::move(path)} {
 		Assimp::Importer importer {};
-		unsigned k_import_flags = aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_ConvertToLeftHanded;
-		k_import_flags &= ~(aiProcess_ValidateDataStructure | aiProcess_SplitLargeMeshes);
 		const aiScene* scene = importer.ReadFile(get_asset_path().c_str(), k_import_flags);
 		if (!scene || !scene->mNumMeshes) [[unlikely]] {
 			panic("Failed to load mesh from file '{}': {}", get_asset_path(), importer.GetErrorString());
@@ -65,23 +70,7 @@ namespace graphics {
 		create_from_assimp(meshes);
     }
 
-    auto mesh::recompute_bounds(const std::span<const vertex> vertices) -> void {
-    	for (primitive& prim : m_primitives) {
-    		DirectX::XMVECTOR min = DirectX::XMVectorReplicate(std::numeric_limits<float>::max());
-    		DirectX::XMVECTOR max = DirectX::XMVectorReplicate(std::numeric_limits<float>::lowest());
-    		for (std::size_t i = prim.vertex_start; i < prim.vertex_count; ++i) {
-    			const vertex& v = vertices[i];
-    			DirectX::XMVECTOR pos = XMLoadFloat3(&v.position);
-    			min = DirectX::XMVectorMin(min, pos);
-    			max = DirectX::XMVectorMax(max, pos);
-    		}
-    		DirectX::BoundingBox::CreateFromPoints(prim.aabb, min, max);
-    		m_aabb.CreateMerged(m_aabb, m_aabb, prim.aabb);
-    	}
-    }
-
     auto mesh::create_from_assimp(const std::span<const aiMesh*> meshes) -> void {
-		m_primitives.reserve(meshes.size());
 		std::size_t num_vertices = 0, num_indices = 0;
 		for (const aiMesh* mesh : meshes) {
 			num_vertices += mesh->mNumVertices;
@@ -91,13 +80,13 @@ namespace graphics {
 		std::vector<index> indices {};
 		vertices.reserve(num_vertices);
 		indices.reserve(num_indices);
+		m_primitives.reserve(meshes.size());
 		for (const aiMesh* mesh : meshes) {
 			primitive prim_info {};
-			load_primitive(vertices, indices, mesh, prim_info);
+			load_primitive(vertices, indices, mesh, prim_info, m_aabb);
 			m_primitives.emplace_back(prim_info);
 		}
 		m_primitives.shrink_to_fit();
-		recompute_bounds(vertices);
 		create_buffers(vertices, indices);
 		m_approx_byte_size = sizeof(*this)
 			+ m_vertex_buffer.get_size()

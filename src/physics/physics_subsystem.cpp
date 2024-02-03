@@ -140,7 +140,7 @@ namespace physics {
     	auto& bi = m_physics_system.GetBodyInterface();
 
 		auto* cube = new graphics::mesh("assets/meshes/cube.obj");
-    	auto* sphere_mesh = new graphics::mesh("assets/meshes/sphere.obj");
+    	auto* sphere_mesh = new graphics::mesh("assets/meshes/cube.obj");
     	auto* mat = new graphics::material{};
     	auto* albedo = new graphics::texture("assets/textures/proto/dark/texture_01.png");
     	auto* normal = new graphics::texture("assets/textures/wall/normal.png");
@@ -184,7 +184,7 @@ namespace physics {
     		renderer->meshes.emplace_back(sphere_mesh);
     		renderer->materials.emplace_back(mat);
     		JPH::BodyCreationSettings sphere_settings {
-    			new JPH::SphereShape{3.5*0.25f},
+    			new JPH::BoxShape{lunam_vec4_to_jbh_vec3(sphere.get<c_transform>()->scale)},
 				lunam_vec4_to_jbh_vec3(sphere.get<c_transform>()->position),
 				std::bit_cast<JPH::Quat>(sphere.get<c_transform>()->rotation),
 				JPH::EMotionType::Dynamic,
@@ -205,7 +205,7 @@ namespace physics {
 
     	for (int i = 0; i < 64; i++) {
 			for (int j = 0; j < 64; j++) {
-				make_sphere(-64.0f + i * 2.0f, -64.0f + j * 2.0f);
+				make_sphere(-64.0f + i * 4.0f, -64.0f + j * 4.0f);
 			}
 		}
 

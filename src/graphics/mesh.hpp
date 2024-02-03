@@ -8,6 +8,7 @@
 #include <DirectXMath.h>
 #include <DirectXCollision.h>
 #include <assimp/mesh.h>
+#include <assimp/postprocess.h>
 
 namespace graphics {
     class material;
@@ -43,10 +44,18 @@ namespace graphics {
         [[nodiscard]] auto get_index_count() const noexcept -> std::uint32_t { return m_index_count; }
         [[nodiscard]] auto is_index_32bit() const noexcept -> bool { return m_index_32bit; }
 
+        static constexpr std::uint32_t k_import_flags = []()noexcept -> std::uint32_t {
+            std::uint32_t k_import_flags = aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_ConvertToLeftHanded;
+            k_import_flags |= aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_GenBoundingBoxes;
+            k_import_flags |= aiProcess_FixInfacingNormals;
+            k_import_flags |= aiProcess_PreTransformVertices; // do we need this?
+            k_import_flags &= ~(aiProcess_ValidateDataStructure | aiProcess_SplitLargeMeshes);
+            return k_import_flags;
+        }();
+
     private:
         auto create_from_assimp(std::span<const aiMesh*> meshes) -> void;
         auto create_buffers(std::span<const vertex> vertices, std::span<const index> indices) -> void;
-        auto recompute_bounds(std::span<const vertex> vertices) -> void;
 
         vkb::buffer m_vertex_buffer {};
         vkb::buffer m_index_buffer {};

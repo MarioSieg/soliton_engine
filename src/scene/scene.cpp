@@ -86,9 +86,7 @@ auto scene::import_from_file(const std::string& path, const float scale) -> void
     const auto start = std::chrono::high_resolution_clock::now();
 
     Assimp::Importer importer {};
-    unsigned k_import_flags = aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_ConvertToLeftHanded;
-    k_import_flags &= ~(aiProcess_ValidateDataStructure | aiProcess_SplitLargeMeshes);
-    const aiScene* scene = importer.ReadFile(path.c_str(), k_import_flags);
+    const aiScene* scene = importer.ReadFile(path.c_str(), graphics::mesh::k_import_flags);
     if (!scene || !scene->mNumMeshes) [[unlikely]] {
         panic("Failed to load scene from file '{}': {}", path, importer.GetErrorString());
     }
@@ -128,30 +126,30 @@ auto scene::import_from_file(const std::string& path, const float scale) -> void
             std::vector<const aiMesh*> meshes {};
             for (unsigned i = 0; i < node->mNumMeshes; ++i) {
                 const aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-                meshes.emplace_back(const_cast<aiMesh*>(mesh));
+                meshes.emplace_back(mesh);
+                const aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
+
+                const auto load_tex = [&](const std::initializer_list<aiTextureType> types) -> graphics::texture* {
+                    for (auto textureType = types.begin(); textureType != types.end(); std::advance(textureType, 1)) {
+                        if (!mat->GetTextureCount(*textureType)) [[unlikely]] { continue; }
+                        aiString name {};
+                        mat->Get(AI_MATKEY_TEXTURE(*textureType, 0), name);
+                        std::string tex_path = asset_root + name.C_Str();
+                        return get_asset_registry<graphics::texture>().load(std::move(tex_path));
+                    }
+                    return nullptr;
+                };
+
+                auto* material = get_asset_registry<graphics::material>().load_from_memory();
+                material->albedo_map = load_tex({aiTextureType_DIFFUSE, aiTextureType_BASE_COLOR});
+                material->normal_map = load_tex({aiTextureType_NORMALS, aiTextureType_NORMAL_CAMERA});
+                material->flush_property_updates();
+
+                renderer->materials.emplace_back(material);
             }
 
             std::span span {meshes};
             renderer->meshes.emplace_back(get_asset_registry<graphics::mesh>().load_from_memory(span));
-
-            //const aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
-
-            //const auto load_tex = [&](const std::initializer_list<aiTextureType> types) -> graphics::texture* {
-            //    for (auto textureType = types.begin(); textureType != types.end(); std::advance(textureType, 1)) {
-            //        if (!mat->GetTextureCount(*textureType)) [[unlikely]] { continue; }
-            //        aiString name {};
-            //        mat->Get(AI_MATKEY_TEXTURE(*textureType, 0), name);
-            //        std::string tex_path = asset_root + name.C_Str();
-            //        return get_asset_registry<graphics::texture>().load(std::move(tex_path));
-            //    }
-            //    return nullptr;
-            //};
-
-            auto* material = get_asset_registry<graphics::material>().load_from_memory();
-            //material->albedo_map = load_tex({aiTextureType_DIFFUSE, aiTextureType_BASE_COLOR});
-            //material->normal_map = load_tex({aiTextureType_NORMALS, aiTextureType_NORMAL_CAMERA});
-            //material->flush_property_updates();
-            renderer->materials.emplace_back(missing_material);
         }
         for (unsigned i = 0; i < node->mNumChildren; ++i) {
             visitor(node->mChildren[i]);

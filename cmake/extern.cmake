@@ -63,3 +63,4 @@ target_link_libraries(lunam Jolt)
 add_subdirectory(extern/assimp)
 target_include_directories(lunam PRIVATE extern/assimp/include)
 target_link_libraries(lunam assimp)
+target_compile_options(assimp PRIVATE -fexceptions -frtti) # fuck u assimp

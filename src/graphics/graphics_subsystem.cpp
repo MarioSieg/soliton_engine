@@ -121,8 +121,8 @@ namespace graphics {
         const vk::PipelineLayout layout
     ) -> void {
         constexpr vk::DeviceSize offsets = 0;
-        cmd.bindVertexBuffers(0, 1, &mesh.get_vertex_buffer().get_buffer(), &offsets);
         cmd.bindIndexBuffer(mesh.get_index_buffer().get_buffer(), 0, mesh.is_index_32bit() ? vk::IndexType::eUint32 : vk::IndexType::eUint16);
+        cmd.bindVertexBuffers(0, 1, &mesh.get_vertex_buffer().get_buffer(), &offsets);
         if (mesh.get_primitives().size() <= mats.size()) { // we have at least one material for each primitive
             for (std::size_t idx = 0; const mesh::primitive& prim : mesh.get_primitives()) {
                 cmd.bindDescriptorSets(
@@ -388,7 +388,7 @@ namespace graphics {
         vk::PipelineRasterizationStateCreateInfo rasterization_state {};
         rasterization_state.polygonMode = vk::PolygonMode::eFill;
         rasterization_state.cullMode = vk::CullModeFlagBits::eNone; // TODO No culling because of trees
-        rasterization_state.frontFace = vk::FrontFace::eCounterClockwise;
+        rasterization_state.frontFace = vk::FrontFace::eClockwise;
         rasterization_state.depthClampEnable = vk::False;
         rasterization_state.rasterizerDiscardEnable = vk::False;
         rasterization_state.depthBiasEnable = vk::False;
