@@ -79,20 +79,16 @@ auto scene::import_from_file(const std::string& path, const float scale) -> void
     };
 
     log_info("Importing scene from file '{}'", path);
-    
+
     Assimp::DefaultLogger::create("", Assimp::Logger::NORMAL);
     Assimp::DefaultLogger::get()->attachStream(new assimp_logger {}, Assimp::Logger::Info | Assimp::Logger::Err | Assimp::Logger::Warn);
 
     const auto start = std::chrono::high_resolution_clock::now();
 
     Assimp::Importer importer {};
-    std::vector<std::uint8_t> blob {};
-    assetmgr::load_asset_blob_raw_or_panic(path, blob);
-    const std::string ext = std::filesystem::path{path}.extension();
-    const aiScene* scene = importer.ReadFileFromMemory(blob.data(), blob.size(), graphics::mesh::k_import_flags, ext.c_str());
-    decltype(blob){}.swap(blob);
+    const aiScene* scene = importer.ReadFile(path.c_str(), graphics::mesh::k_import_flags);
     if (!scene || !scene->mNumMeshes) [[unlikely]] {
-        panic("Failed to load mesh from file '{}': {}", path, importer.GetErrorString());
+        panic("Failed to load scene from file '{}': {}", path, importer.GetErrorString());
     }
 
     const std::string asset_root = std::filesystem::path {path}.parent_path().string() + "/";
