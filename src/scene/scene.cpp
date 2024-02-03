@@ -88,7 +88,6 @@ auto scene::import_from_file(const std::string& path, const float scale) -> void
     Assimp::Importer importer {};
     unsigned k_import_flags = aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_ConvertToLeftHanded;
     k_import_flags &= ~(aiProcess_ValidateDataStructure | aiProcess_SplitLargeMeshes);
-    importer.SetExtraVerbose(true);
     const aiScene* scene = importer.ReadFile(path.c_str(), k_import_flags);
     if (!scene || !scene->mNumMeshes) [[unlikely]] {
         panic("Failed to load scene from file '{}': {}", path, importer.GetErrorString());
