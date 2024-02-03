@@ -53,7 +53,11 @@ namespace graphics {
 
 	mesh::mesh(std::string&& path) : asset{asset_category::mesh, asset_source::filesystem, std::move(path)} {
 		Assimp::Importer importer {};
-		const aiScene* scene = importer.ReadFile(get_asset_path().c_str(), k_import_flags);
+		std::vector<std::uint8_t> blob {};
+		assetmgr::load_asset_blob_raw_or_panic(get_asset_path(), blob);
+		const std::string ext = std::filesystem::path{get_asset_path()}.extension();
+		const aiScene* scene = importer.ReadFileFromMemory(blob.data(), blob.size(), k_import_flags, ext.c_str());
+		decltype(blob){}.swap(blob);
 		if (!scene || !scene->mNumMeshes) [[unlikely]] {
 			panic("Failed to load mesh from file '{}': {}", get_asset_path(), importer.GetErrorString());
 		}
