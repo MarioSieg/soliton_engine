@@ -5,16 +5,15 @@
 #include "../graphics/mesh.hpp"
 #include "../graphics/vulkancore/context.hpp"
 
+#include <assimp/scene.h>
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
 #include <ankerl/unordered_dense.h>
 #include <DirectXMath.h>
+#include <assimp/DefaultLogger.hpp>
+#include <assimp/LogStream.hpp>
 #include <bimg/bimg.h>
 #include <bimg/decode.h>
-
-#define STB_IMAGE_IMPLEMENTATION
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#define TINYGLTF_IMPLEMENTATION
-#define TINYGLTF_ENABLE_DRACO
-#include <tiny_gltf.h>
 
 struct proxy final : scene {
     template <typename... Ts>
@@ -38,12 +37,12 @@ scene::~scene() {
 	log_info("Destroyed scene '{}', id: {}", name, id);
 }
 
-auto scene::new_active(std::string&& name, std::string&& gltf_file, const float scale) -> void {
+auto scene::new_active(std::string&& name, std::string&& file, const float scale) -> void {
     auto scene = std::make_unique<proxy>();
     scene->name = std::move(name);
     log_info("Created scene '{}', id: {}", scene->name, scene->id);
-	if (!gltf_file.empty()) {
-		scene->load_from_gltf(gltf_file, scale);
+	if (!file.empty()) {
+		scene->import_from_file(file, scale);
 	}
     m_active = std::move(scene);
 }
@@ -68,161 +67,101 @@ auto scene::spawn(const char* name, lua_entity* l_id) -> flecs::entity {
     return ent;
 }
 
-auto scene::load_from_gltf(const std::string& path, const float scale) -> void {
-	tinygltf::Model model {};
-	tinygltf::TinyGLTF loader {};
+auto scene::import_from_file(const std::string& path, const float scale) -> void {
+    class assimp_logger final : public Assimp::LogStream {
+        auto write(const char* message) -> void override {
+            const auto len = std::strlen(message);
+            auto* copy = static_cast<char*>(alloca(len));
+            std::memcpy(copy, message, len);
+            copy[len - 1] = '\0'; // replace \n with \0
+            log_info("[WorldImporter]: {}", copy);
+        }
+    };
 
-	tinygltf::FsCallbacks fs {};
-	fs.FileExists = &tinygltf::FileExists;
-	fs.ExpandFilePath = &tinygltf::ExpandFilePath;
-	fs.ReadWholeFile = +[](std::vector<unsigned char>* out, [[maybe_unused]] std::string* err, const std::string& path, [[maybe_unused]] void* usr) -> bool {
-		return assetmgr::load_asset_blob_raw(path, *out);
-	};
-	fs.WriteWholeFile = &tinygltf::WriteWholeFile;
-	fs.GetFileSizeInBytes = &tinygltf::GetFileSizeInBytes;
-	loader.SetFsCallbacks(fs);
+    log_info("Importing scene from file '{}'", path);
 
-	struct tex_ctx_struct {
-		scene* self;
-		ankerl::unordered_dense::map<std::string, graphics::texture*> map;
-	} tex_ctx {
-		.self = this,
-		.map = {}
-	};
+    Assimp::DefaultLogger::create("", Assimp::Logger::NORMAL);
+    Assimp::DefaultLogger::get()->attachStream(new assimp_logger {}, Assimp::Logger::Info | Assimp::Logger::Err | Assimp::Logger::Warn);
 
-	static constexpr auto image_loader = [](
-		tinygltf::Image* image,
-		const int image_idx,
-		std::string* err,
-		std::string* warn,
-		const int req_width,
-		const int req_height,
-		const unsigned char* bytes,
-		const int size,
-		void* usr
-	) -> bool {
-		tex_ctx_struct& ctx = *static_cast<tex_ctx_struct*>(usr);
-		const std::span<const std::uint8_t> data {bytes, static_cast<std::size_t>(size)};
-		graphics::texture* tex = ctx.self->m_textures.load(image_idx, data);
-		ctx.map.emplace(image->uri, tex);
-		return true;
-	};
-	loader.SetImageLoader(image_loader, &tex_ctx);
+    const auto start = std::chrono::high_resolution_clock::now();
 
-	std::string err {};
-	std::string warn {};
-	const bool is_bin = std::filesystem::path{path}.extension() == ".glb";
-	bool result;
-	if (is_bin) {
-		result = loader.LoadBinaryFromFile(&model, &err, &warn, path);
-	} else {
-		result = loader.LoadASCIIFromFile(&model, &err, &warn, path);
-	}
-	if (!warn.empty()) [[unlikely]] {
-		printf("Warn: %s\n", warn.c_str());
-		log_warn("GLTF import: {}", warn);
-	}
-	if (!err.empty()) [[unlikely]] {
-		log_error("GLTF import: {}", err);
-	}
-	passert(result);
-	passert(!model.scenes.empty());
+    Assimp::Importer importer {};
+    unsigned k_import_flags = aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_ConvertToLeftHanded;
+    k_import_flags &= ~(aiProcess_ValidateDataStructure | aiProcess_SplitLargeMeshes);
+    importer.SetExtraVerbose(true);
+    const aiScene* scene = importer.ReadFile(path.c_str(), k_import_flags);
+    if (!scene || !scene->mNumMeshes) [[unlikely]] {
+        panic("Failed to load scene from file '{}': {}", path, importer.GetErrorString());
+    }
 
-	DirectX::XMMATRIX scale_mtx = DirectX::XMMatrixScalingFromVector(DirectX::XMVectorSet(-scale, scale, scale, 0.0f));
-	std::uint32_t num_nodes, num_meshes = 0;
-	std::function<auto (const tinygltf::Node&) -> void> visitor = [&](const tinygltf::Node& node) {
-		if (node.mesh > -1) [[likely]] {
-			++num_nodes;
-			const flecs::entity ent = this->spawn(nullptr);
-			const std::string name = node.name.empty() ? "unnamed" : node.name;
-			auto* metadata = ent.get_mut<c_metadata>();
-			metadata->name = name;
+    const std::string asset_root = std::filesystem::path {path}.parent_path().string() + "/";
 
-			DirectX::XMMATRIX local = DirectX::XMMatrixIdentity();
-			if (node.matrix.size() == 16) {
-				auto* dst = reinterpret_cast<float*>(&local);
-				for (int i = 0; i < 16; ++i) {
-					dst[i] = static_cast<float>(node.matrix[i]);
-				}
-			} else {
-				if (node.translation.size() == 3) {
-					const DirectX::XMMATRIX mm = DirectX::XMMatrixTranslation(
-						static_cast<float>(node.translation[0]),
-						static_cast<float>(node.translation[1]),
-						static_cast<float>(node.translation[2])
-					);
-					local = XMMatrixMultiply(mm, local);
-				}
-				if (node.rotation.size() == 4) {
-					const DirectX::XMMATRIX mm = DirectX::XMMatrixRotationQuaternion(DirectX::XMVectorSet(
-						static_cast<float>(node.rotation[0]),
-						static_cast<float>(node.rotation[1]),
-						static_cast<float>(node.rotation[2]),
-						static_cast<float>(node.rotation[3])
-					));
-					local = XMMatrixMultiply(mm, local);
-				}
-				if (node.scale.size() == 3) {
-					const DirectX::XMMATRIX mm = DirectX::XMMatrixScaling(
-						static_cast<float>(node.scale[0]),
-						static_cast<float>(node.scale[1]),
-						static_cast<float>(node.scale[2])
-					);
-					local = XMMatrixMultiply(mm, local);
-				}
-			}
-			local = XMMatrixMultiply(local, scale_mtx);
-			local = XMMatrixMultiply(local, DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(90.0f)));
+    auto* missing_material = get_asset_registry<graphics::material>().load_from_memory();
+    missing_material->albedo_map = get_asset_registry<graphics::texture>().load("assets/textures/system/error.png");
+    missing_material->flush_property_updates();
 
-			DirectX::XMVECTOR scale, rotation, translation;
-			XMMatrixDecompose(&scale, &rotation, &translation, local);
-			auto* transform = ent.get_mut<c_transform>();
-			XMStoreFloat4(&transform->position, translation);
-			XMStoreFloat4(&transform->rotation, rotation);
-			XMStoreFloat4(&transform->scale, scale);
+    std::uint32_t num_nodes = 0;
+    std::function<auto (aiNode*) -> void> visitor = [&](aiNode* node) -> void {
+        if (!node) [[unlikely]] {
+            return;
+        }
+        if (node->mParent) {
+            node->mTransformation = node->mParent->mTransformation * node->mTransformation;
+        }
 
-			const int idx = node.mesh;
-			graphics::mesh* mesh = m_meshes.load(idx, model, model.meshes[idx]);
+        ++num_nodes;
 
-			std::vector<graphics::material*> mats {};
-			mats.reserve(model.materials.size());
-			for (std::uint32_t dst_max_idx = 0; const auto& prim : mesh->get_primitives()) {
-				const int mat_idx = prim.src_material_index;
-				const tinygltf::Material& mat = model.materials[mat_idx];
+        const flecs::entity e = spawn(nullptr);
+        auto* metadata = e.get_mut<c_metadata>();
+        metadata->name = node->mName.C_Str();
 
-				graphics::texture* albedo = nullptr;
-				if (mat.pbrMetallicRoughness.baseColorTexture.index > -1) {
-					albedo = tex_ctx.map[model.images[model.textures[mat.pbrMetallicRoughness.baseColorTexture.index].source].uri];
-				}
+        auto* transform = e.get_mut<c_transform>();
+        aiVector3D scaling, position;
+        aiQuaternion rotation;
+        node->mTransformation.Decompose(scaling, rotation, position);
+        transform->position = {position.x, position.y, position.z, 0.0f};
+        transform->rotation = {rotation.x, rotation.y, rotation.z, rotation.w};
+        transform->scale = {scaling.x, scaling.y, scaling.z, 0.0f};
 
-				graphics::texture* normal = nullptr;
-				if (mat.normalTexture.index > -1) {
-					normal = tex_ctx.map[model.images[model.textures[mat.normalTexture.index].source].uri];
-				}
+        if (node->mNumMeshes > 0) {
+            auto* renderer = e.get_mut<c_mesh_renderer>();
 
-				const_cast<graphics::mesh::primitive&>(prim).dst_material_index = dst_max_idx++;
-				graphics::material* material = m_materials.load(mat_idx);
-				material->albedo_map = albedo;
-				material->normal_map = normal;
-				material->flush_property_updates();
-				mats.emplace_back(material);
-			}
+            std::vector<const aiMesh*> meshes {};
+            for (unsigned i = 0; i < node->mNumMeshes; ++i) {
+                const aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+                meshes.emplace_back(const_cast<aiMesh*>(mesh));
+            }
 
-			auto* renderer = ent.get_mut<c_mesh_renderer>();
-			renderer->mesh = mesh;
-			renderer->materials = std::move(mats);
-			++num_meshes;
-		}
-		for (const int child : node.children) {
-			visitor(model.nodes[child]);
-		}
-	};
+            std::span span {meshes};
+            renderer->meshes.emplace_back(get_asset_registry<graphics::mesh>().load_from_memory(span));
 
-	const int scene_idx = model.defaultScene > -1 ? model.defaultScene : 0;
-	const auto& scene = model.scenes[scene_idx];
-	for (const int node : scene.nodes) {
-		visitor(model.nodes[node]);
-	}
+            //const aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
 
-	log_info("Loaded GLTF scene '{}', {} nodes, {} meshes", path, num_nodes, num_meshes);
+            //const auto load_tex = [&](const std::initializer_list<aiTextureType> types) -> graphics::texture* {
+            //    for (auto textureType = types.begin(); textureType != types.end(); std::advance(textureType, 1)) {
+            //        if (!mat->GetTextureCount(*textureType)) [[unlikely]] { continue; }
+            //        aiString name {};
+            //        mat->Get(AI_MATKEY_TEXTURE(*textureType, 0), name);
+            //        std::string tex_path = asset_root + name.C_Str();
+            //        return get_asset_registry<graphics::texture>().load(std::move(tex_path));
+            //    }
+            //    return nullptr;
+            //};
+
+            auto* material = get_asset_registry<graphics::material>().load_from_memory();
+            //material->albedo_map = load_tex({aiTextureType_DIFFUSE, aiTextureType_BASE_COLOR});
+            //material->normal_map = load_tex({aiTextureType_NORMALS, aiTextureType_NORMAL_CAMERA});
+            //material->flush_property_updates();
+            renderer->materials.emplace_back(missing_material);
+        }
+        for (unsigned i = 0; i < node->mNumChildren; ++i) {
+            visitor(node->mChildren[i]);
+        }
+    };
+
+    visitor(scene->mRootNode);
+
+    Assimp::DefaultLogger::kill();
+
+    log_info("Imported scene from file '{}', {} nodes in {:.03}s", path, num_nodes, std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - start).count());
 }

@@ -16,7 +16,7 @@ const vec3 VGAMMA = vec3(1.0 / GAMMA);
 
 void main() {
   // Hardcoded light properties
-  vec3 lightDir = normalize(vec3(-0.3, -0.8, 0.0)); // Example direction
+  vec3 lightDir = normalize(vec3(0.3, 0.8, 0.0)); // Example direction
   vec4 lightColor = vec4(1.0, 0.95, 0.8, 1.0); // Slightly yellowish white
 
   // Combine texture color with light effect with normal map

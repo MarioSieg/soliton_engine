@@ -160,9 +160,9 @@ namespace graphics {
 
     constinit texture_allocator s_texture_allocator {};
 
-    texture::texture(std::string&& asset_path) : asset { asset_category::texture, asset_source::filesystem, std::move(asset_path) } {
+    texture::texture(std::string&& asset_path) : asset {asset_category::texture, asset_source::filesystem, std::move(asset_path)} {
         std::vector<std::uint8_t> texels {};
-        assetmgr::load_asset_blob_or_panic(asset_category::texture, get_asset_path(), texels);
+        assetmgr::load_asset_blob_raw_or_panic(get_asset_path(), texels);
         parse_from_raw_memory(texels);
     }
 

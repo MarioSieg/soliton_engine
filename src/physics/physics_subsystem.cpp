@@ -142,8 +142,8 @@ namespace physics {
 		auto* cube = new graphics::mesh("assets/meshes/cube.obj");
     	auto* sphere_mesh = new graphics::mesh("assets/meshes/sphere.obj");
     	auto* mat = new graphics::material{};
-    	auto* albedo = new graphics::texture("proto/dark/texture_01.png");
-    	auto* normal = new graphics::texture("wall/normal.png");
+    	auto* albedo = new graphics::texture("assets/textures/proto/dark/texture_01.png");
+    	auto* normal = new graphics::texture("assets/textures/wall/normal.png");
     	mat->albedo_map = albedo;
     	mat->normal_map = normal;
     	mat->flush_property_updates();
@@ -181,7 +181,7 @@ namespace physics {
     		transform->scale.y = 0.25f;
     		transform->scale.z = 0.25f;
     		c_mesh_renderer* renderer = sphere.get_mut<c_mesh_renderer>();
-    		renderer->mesh = sphere_mesh;
+    		renderer->meshes.emplace_back(sphere_mesh);
     		renderer->materials.emplace_back(mat);
     		JPH::BodyCreationSettings sphere_settings {
     			new JPH::SphereShape{3.5*0.25f},

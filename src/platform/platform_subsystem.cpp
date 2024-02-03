@@ -21,8 +21,8 @@
 #endif
 #include <mimalloc.h>
 #include <infoware/infoware.hpp>
-#include "../stb/stb_image.h"
-#include <DirectXMath.h>
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 namespace platform {
 [[maybe_unused]]

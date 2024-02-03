@@ -8,6 +8,7 @@
 #include <DirectXMath.h>
 #include <DirectXCollision.h>
 #include <tiny_gltf.h>
+#include <assimp/mesh.h>
 
 namespace graphics {
     class material;
@@ -29,13 +30,11 @@ namespace graphics {
             std::uint32_t index_count = 0;
             std::uint32_t vertex_start = 0;
             std::uint32_t vertex_count = 0;
-            std::int32_t src_material_index = 0;
-            std::uint32_t dst_material_index = 0;
             DirectX::BoundingBox aabb {};
         };
 
-        explicit mesh(const std::string& path);
-        mesh(const tinygltf::Model& model, const tinygltf::Mesh& mesh);
+        explicit mesh(std::string&& path);
+        mesh(std::span<const aiMesh*> meshes);
         ~mesh() override = default;
 
         [[nodiscard]] auto get_primitives() const noexcept -> std::span<const primitive> { return m_primitives; }
@@ -46,7 +45,7 @@ namespace graphics {
         [[nodiscard]] auto is_index_32bit() const noexcept -> bool { return m_index_32bit; }
 
     private:
-        auto create_from_gltf(const tinygltf::Model& mode, const tinygltf::Mesh& mesh) -> void;
+        auto create_from_assimp(std::span<const aiMesh*> meshes) -> void;
         auto create_buffers(std::span<const vertex> vertices, std::span<const index> indices) -> void;
         auto recompute_bounds(std::span<const vertex> vertices) -> void;
 

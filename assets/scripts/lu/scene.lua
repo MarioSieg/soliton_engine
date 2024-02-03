@@ -45,7 +45,7 @@ function Scene.new(scene_name, gltf_file, scale)
         if not lfs.attributes(gltf_file) then
             panic(string.format('gltf file %s does not exist', gltf_file))
         end
-        scene_name = scene_name or gltf_file:match("[^/]*.gltf$")
+        scene_name = scene_name or gltf_file:match("[^/]*.gltf$") -- TODO fix
     else
         scene_name = scene_name or 'untitled'
         gltf_file = ''
@@ -60,6 +60,6 @@ function Scene.new(scene_name, gltf_file, scale)
     print(string.format('Created new scene: %s, id: %x', scene_name, id))
 end
 
-Scene.new(nil, '/home/neo/Documents/AssetLibrary/EmeraldSquare/EmeraldSquare_Day.gltf', 0.025)
+Scene.new('EmeraldSquare', '/home/neo/Documents/AssetLibrary/EmeraldSquare/EmeraldSquare_Day.gltf', 0.025)
 
 return Scene

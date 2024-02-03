@@ -77,29 +77,21 @@ public:
         return false;
     }
 
-    template <typename Path, typename... Args>
-    [[nodiscard]] auto load(Path&& asset_path_or_id, Args&&... args) -> T* {
-        if constexpr (std::is_same_v<std::decay_t<Path>, std::string>) {
-            if (m_registry.contains(asset_path_or_id)) {
-                ++m_cache_hits;
-                return &*m_registry[asset_path_or_id];
-            }
-        } else {
-            const std::string key = asset_id_from_scalar(asset_path_or_id);
-            if (m_registry.contains(key)) {
-                ++m_cache_hits;
-                return &*m_registry[key];
-            }
+    template <typename... Args>
+   [[nodiscard]] auto load_from_memory(Args&&... args) -> T* {
+        std::unique_ptr<T> ptr = std::make_unique<T>(std::forward<Args>(args)...);
+        ++m_cache_misses;
+        return &*m_registry.emplace(fmt::format("mem_{#:X}", ++m_id_gen), std::move(ptr)).first->second;
+    }
+
+    template <typename... Args>
+    [[nodiscard]] auto load(std::string&& path, Args&&... args) -> T* {
+        if (m_registry.contains(path)) {
+            ++m_cache_hits;
+            return &*m_registry[path];
         }
-        std::string key {};
-        std::unique_ptr<T> ptr = nullptr;
-        if constexpr (std::is_same_v<std::decay_t<Path>, std::string>) {
-            key = std::string{asset_path_or_id};
-            ptr = std::make_unique<T>(std::forward<Path>(asset_path_or_id), std::forward<Args>(args)...);
-        } else {
-            key = asset_id_from_scalar(asset_path_or_id);
-            ptr = std::make_unique<T>(std::forward<Args>(args)...);
-        }
+        std::string key = path;
+        std::unique_ptr<T> ptr = std::make_unique<T>(std::move(path), std::forward<Args>(args)...);
         ++m_cache_misses;
         return &*m_registry.emplace(std::move(key), std::move(ptr)).first->second;
     }
@@ -122,6 +114,7 @@ private:
     ankerl::unordered_dense::map<std::string, std::unique_ptr<T>> m_registry {};
     std::uint32_t m_cache_hits = 0;
     std::uint32_t m_cache_misses = 0;
+    std::uint32_t m_id_gen = 0;
 };
 
 namespace assetmgr {
@@ -130,16 +123,26 @@ namespace assetmgr {
     [[nodiscard]] extern auto get_asset_path(asset_category category, const std::string& name) -> std::string;
     [[nodiscard]] extern auto load_asset_blob_raw(const std::string& path, std::vector<std::uint8_t>& out) -> bool;
     [[nodiscard]] extern auto load_asset_text_raw(const std::string& path, std::string& out) -> bool;
+    inline auto load_asset_blob_raw_or_panic(const std::string& name, std::vector<std::uint8_t>& out) -> void {
+        if (!load_asset_blob_raw(name, out)) [[unlikely]] {
+            panic("Failed to load asset '{}'", name);
+        }
+    }
+    inline auto load_asset_text_raw_or_panic(const std::string& name, std::string& out) -> void {
+        if (!load_asset_text_raw(name, out)) [[unlikely]] {
+            panic("Failed to load asset '{}'", name);
+        }
+    }
     [[nodiscard]] extern auto load_asset_blob(asset_category category, const std::string& name, std::vector<std::uint8_t>& out) -> bool;
     [[nodiscard]] extern auto load_asset_text(asset_category category, const std::string& name, std::string& out) -> bool;
     inline auto load_asset_blob_or_panic(asset_category category, const std::string& name, std::vector<std::uint8_t>& out) -> void {
         if (!load_asset_blob(category, name, out)) [[unlikely]] {
-            panic("Failed to load asset {} from category {}", name, static_cast<std::size_t>(category));
+            panic("Failed to load asset '{}' from category {}", name, static_cast<std::size_t>(category));
         }
     }
     inline auto load_asset_text_or_panic(asset_category category, const std::string& name, std::string& out) -> void {
         if (!load_asset_text(category, name, out)) [[unlikely]] {
-            panic("Failed to load asset {} from category {}", name, static_cast<std::size_t>(category));
+            panic("Failed to load asset '{}' from category {}", name, static_cast<std::size_t>(category));
         }
     }
     [[nodiscard]] extern auto get_asset_request_count() noexcept -> std::uint64_t;
