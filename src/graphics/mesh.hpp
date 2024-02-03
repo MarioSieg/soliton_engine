@@ -44,7 +44,7 @@ namespace graphics {
         [[nodiscard]] auto get_index_count() const noexcept -> std::uint32_t { return m_index_count; }
         [[nodiscard]] auto is_index_32bit() const noexcept -> bool { return m_index_32bit; }
 
-        static constexpr std::uint32_t k_import_flags = []()noexcept -> std::uint32_t {
+        static constexpr std::uint32_t k_import_flags = []() noexcept -> std::uint32_t {
             std::uint32_t k_import_flags = aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_ConvertToLeftHanded;
             k_import_flags |= aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_GenBoundingBoxes;
             k_import_flags |= aiProcess_FixInfacingNormals;
