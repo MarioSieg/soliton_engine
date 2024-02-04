@@ -43,7 +43,7 @@ namespace graphics {
             if (!begin_thread_frame()) [[unlikely]] {
                 break;
             }
-            (*m_shared_ctx.render_callback)(m_active_command_buffer, m_thread_id + 1, m_num_threads, m_shared_ctx.usr);
+            (*m_shared_ctx.render_callback)(m_active_command_buffer, m_thread_id, m_num_threads, m_shared_ctx.usr);
             end_thread_frame();
             if (m_token.stop_requested()) [[unlikely]] {
                 break;

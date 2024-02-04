@@ -47,11 +47,11 @@ namespace graphics {
         create_descriptor_sets();
         create_pipeline();
 
-        m_render_thread_pool.emplace(&render_scene_bucket, this, std::thread::hardware_concurrency() / 4);
+        m_render_thread_pool.emplace(&render_scene_bucket, this, 4);
     }
 
     [[nodiscard]] static auto compute_render_bucket_range(const std::size_t id, const std::size_t num, const std::size_t num_threads) noexcept -> std::array<std::size_t, 2> {
-       const std::size_t bucket_count = num_threads + 1;
+       const std::size_t bucket_count = num_threads;
        const std::size_t bucket_size = num / bucket_count;
        const std::size_t begin = bucket_size * id;
        const std::size_t end = id < bucket_count - 1 ? bucket_size * (1 + id) : num;
@@ -226,6 +226,9 @@ namespace graphics {
         for (std::size_t i = start; i < end; ++i) {
             render_mesh(cmd_buf, self.get_pipeline_layout(), transforms[i], renderers[i], vp);
         }
+        if (bucket_id == num_threads - 1) { // Last thread
+            vkb_context().render_imgui(ImGui::GetDrawData(), cmd_buf); // thread safe?!
+        }
     }
 
     HOTPROC auto graphics_subsystem::on_pre_tick() -> bool {
@@ -245,7 +248,7 @@ namespace graphics {
         const auto w = static_cast<float>(context::s_instance->get_width());
         const auto h = static_cast<float>(context::s_instance->get_height());
         update_main_camera(w, h);
-
+        ImGui::Render();
         const auto& scene = scene::get_active();
         if (scene) [[likely]] {
             if (!m_render_query.scene || &*scene != m_render_query.scene) [[unlikely]] { // Scene changed
@@ -270,10 +273,6 @@ namespace graphics {
             }
         }
 
-        //render_scene(m_cmd_buf);
-
-        ImGui::Render();
-        //vkb_context().render_imgui(ImGui::GetDrawData(), m_cmd_buf);
         vkb_context().end_frame(m_cmd_buf);
 
         c_camera::active_camera = flecs::entity::null();

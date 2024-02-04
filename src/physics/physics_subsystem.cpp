@@ -184,6 +184,8 @@ namespace physics {
     	mat->normal_map = normal;
     	mat->flush_property_updates();
 
+#if 0
+
     	scene.filter<const c_transform, const c_mesh_renderer>().each([&](const c_transform& transform, const c_mesh_renderer& renderer) {
     		if (renderer.meshes.empty()) {
     			return;
@@ -243,6 +245,7 @@ namespace physics {
 		}
 
     	log_info("Balls: {}", 26*26*26);
+#endif
 
     	// Optional step: Before starting the physics simulation you can optimize the broad phase. This improves collision detection performance (it's pointless here because we only have 2 bodies).
     	// You should definitely not call this every frame or when e.g. streaming in a new level section as it is an expensive operation.
@@ -259,6 +262,7 @@ namespace physics {
     		return;
     	}
     	auto& bi = m_physics_system.GetBodyInterface();
+#if 0
     	bool is_key_down = ImGui::IsKeyPressed(ImGuiKey_Space, false);
     	active->filter<c_rigidbody, c_transform>().each([&](c_rigidbody& rb, c_transform& transform) {
 			JPH::BodyID body_id = rb.body_id;
@@ -271,5 +275,6 @@ namespace physics {
     		transform.position.z = pos.GetZ();
     		transform.rotation = std::bit_cast<DirectX::XMFLOAT4>(bi.GetRotation(body_id));
 		});
+#endif
     }
 }
