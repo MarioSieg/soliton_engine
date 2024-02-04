@@ -272,7 +272,7 @@ namespace graphics {
 
         //render_scene(m_cmd_buf);
 
-        //ImGui::Render();
+        ImGui::Render();
         //vkb_context().render_imgui(ImGui::GetDrawData(), m_cmd_buf);
         vkb_context().end_frame(m_cmd_buf);
 

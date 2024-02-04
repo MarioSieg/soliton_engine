@@ -50,8 +50,6 @@ namespace graphics {
         vk::CommandPool m_command_pool {};
         std::array<vk::CommandBuffer, vkb::context::k_max_concurrent_frames> m_command_buffers {};
         vk::CommandBuffer m_active_command_buffer {};
-        std::uint32_t m_active_frame {};
-        std::uint32_t m_current_frame {};
     };
 
     class render_thread_pool final : public no_copy, public no_move {
