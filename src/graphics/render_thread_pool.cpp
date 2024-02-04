@@ -54,7 +54,10 @@ namespace graphics {
     }
 
     auto render_thread::begin_thread_frame() -> bool {
-        m_active_command_buffer = m_command_buffers[vkb_context().get_current_frame_index()];
+        static thread_local  int frame = 0;
+        frame++;
+        int frame_idx = (frame + 1) % vkb::context::k_max_concurrent_frames;
+        m_active_command_buffer = m_command_buffers[frame_idx];
         const std::int32_t signaled = m_shared_ctx.m_sig_render_subset.wait(true, m_num_threads);
         if (signaled < 0) [[unlikely]] {
             return false;
