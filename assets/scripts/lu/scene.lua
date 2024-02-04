@@ -60,6 +60,6 @@ function Scene.new(scene_name, gltf_file, scale)
     print(string.format('Created new scene: %s, id: %x', scene_name, id))
 end
 
-Scene.new('EmeraldSquare', '/home/neo/Documents/AssetLibrary/EmeraldSquare/EmeraldSquare_Day.gltf', 0.025)
+Scene.new('EmeraldSquare', '/home/neo/Documents/AssetLibrary/A_EmeraldSquare/EmeraldSquare_Day.gltf', 0.025)
 
 return Scene
