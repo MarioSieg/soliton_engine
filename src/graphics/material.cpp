@@ -31,10 +31,6 @@ namespace graphics {
     material::~material() = default;
 
     auto material::flush_property_updates() const -> void {
-        if (!albedo_map) { // TODO: This is a temporary fix for the missing albedo map.
-            return;
-        }
-
         std::array<vk::DescriptorImageInfo, 4> image_infos {};
         auto make_write_tex_info = [i = 0u, this, &image_infos](const texture* tex) mutable -> vk::WriteDescriptorSet {
             image_infos[i].imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;

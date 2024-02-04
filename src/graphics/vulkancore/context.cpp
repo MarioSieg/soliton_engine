@@ -209,7 +209,7 @@ namespace vkb {
     }
 
     auto context::boot_vulkan_core() -> void {
-        m_device.emplace(true);
+        m_device.emplace(k_enable_validation_layers);
         m_swapchain.emplace(m_device->get_instance(), m_device->get_physical_device(), m_device->get_logical_device());
         m_swapchain->init_surface(m_window);
         recreate_swapchain();
