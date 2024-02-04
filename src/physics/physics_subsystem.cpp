@@ -209,14 +209,14 @@ namespace physics {
     		transform->position.x = x;
     		transform->position.y = y;
     		transform->position.z = z;
-    		transform->scale.x = 0.0005f;
-    		transform->scale.y = 0.0005f;
-    		transform->scale.z = 0.0005f;
+    		transform->scale.x = 0.01f;
+    		transform->scale.y = 0.01f;
+    		transform->scale.z = 0.01f;
     		c_mesh_renderer* renderer = sphere.get_mut<c_mesh_renderer>();
     		renderer->meshes.emplace_back(sphere_mesh);
     		renderer->materials.emplace_back(mat);
     		JPH::BodyCreationSettings sphere_settings {
-    			new JPH::SphereShape{1.0f*0.25f},
+    			new JPH::SphereShape{1.0f*0.15f},
 				lunam_vec4_to_jbh_vec3(sphere.get<c_transform>()->position),
 				std::bit_cast<JPH::Quat>(sphere.get<c_transform>()->rotation),
 				JPH::EMotionType::Kinematic,
