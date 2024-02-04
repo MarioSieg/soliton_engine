@@ -208,15 +208,15 @@ namespace graphics {
         passert(usr != nullptr);
         const auto& self = *static_cast<graphics_subsystem*>(usr);
 
-        cmd_buf.bindDescriptorSets(
-            vk::PipelineBindPoint::eGraphics,
-            self.get_pipeline_layout(),
-            0,
-            1,
-            &self.get_uniforms()[context::s_instance->get_current_frame()].descriptor_set,
-            0,
-            nullptr
-        );
+        //cmd_buf.bindDescriptorSets(
+        //    vk::PipelineBindPoint::eGraphics,
+        //    self.get_pipeline_layout(),
+        //    0,
+        //    1,
+        //    &self.get_uniforms()[context::s_instance->get_current_frame()].descriptor_set,
+        //    0,
+        //    nullptr
+        //);
         cmd_buf.bindPipeline(vk::PipelineBindPoint::eGraphics, self.get_pipeline());
         const DirectX::XMMATRIX vp = XMLoadFloat4x4A(&s_view_proj_mtx);
         const std::span<const c_transform> transforms = self.get_transforms();
