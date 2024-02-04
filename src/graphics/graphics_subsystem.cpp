@@ -440,7 +440,7 @@ namespace graphics {
         // We need one blend attachment state per color attachment (even if blending is not used)
         vk::PipelineColorBlendAttachmentState blend_attachment_state {};
         blend_attachment_state.colorWriteMask = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA;
-        blend_attachment_state.blendEnable = vk::True;
+        blend_attachment_state.blendEnable = vk::False;
         blend_attachment_state.srcColorBlendFactor = vk::BlendFactor::eSrcAlpha;
         blend_attachment_state.dstColorBlendFactor = vk::BlendFactor::eOneMinusSrcAlpha;
         blend_attachment_state.colorBlendOp = vk::BlendOp::eAdd;
@@ -487,7 +487,7 @@ namespace graphics {
         // This example does not make use of multi sampling (for anti-aliasing), the state must still be set and passed to the pipeline
         vk::PipelineMultisampleStateCreateInfo multisample_state {};
         multisample_state.rasterizationSamples = vkb::k_msaa_sample_count;
-        multisample_state.alphaToCoverageEnable = vk::True;
+        multisample_state.alphaToCoverageEnable = vk::False;
         multisample_state.pSampleMask = nullptr;
 
         // Specifies the vertex input parameters for a pipeline
