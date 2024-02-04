@@ -22,7 +22,7 @@ public:
     std::string name = {};
     virtual ~scene();
 
-    static auto new_active(std::string&& name, std::string&& gltf_file, float scale = 1.0f) -> void;
+    static auto new_active(std::string&& name, std::string&& file, float scale = 1.0f) -> void;
     [[nodiscard]] static auto get_active() noexcept -> const std::unique_ptr<scene>& { passert(m_active != nullptr); return m_active; }
 
     virtual auto on_tick() -> void;
@@ -47,7 +47,7 @@ public:
     }
 
 private:
-    auto load_from_gltf(const std::string& path, float scale) -> void;
+    auto import_from_file(const std::string& path, float scale) -> void;
 
     asset_registry<graphics::mesh> m_meshes {};
     asset_registry<graphics::texture> m_textures {};

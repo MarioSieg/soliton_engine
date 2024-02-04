@@ -121,26 +121,31 @@ namespace graphics {
         const vk::PipelineLayout layout
     ) -> void {
         constexpr vk::DeviceSize offsets = 0;
-        cmd.bindVertexBuffers(0, 1, &mesh.get_vertex_buffer().get_buffer(), &offsets);
         cmd.bindIndexBuffer(mesh.get_index_buffer().get_buffer(), 0, mesh.is_index_32bit() ? vk::IndexType::eUint32 : vk::IndexType::eUint16);
+        cmd.bindVertexBuffers(0, 1, &mesh.get_vertex_buffer().get_buffer(), &offsets);
         if (mesh.get_primitives().size() <= mats.size()) { // we have at least one material for each primitive
-            for (const mesh::primitive& prim : mesh.get_primitives()) {
-                if (prim.dst_material_index >= mats.size()) [[unlikely]] {
-                    log_error("Mesh has invalid material index");
-                    continue;
-                }
+            for (std::size_t idx = 0; const mesh::primitive& prim : mesh.get_primitives()) {
                 cmd.bindDescriptorSets(
                     vk::PipelineBindPoint::eGraphics,
                     layout,
                     1,
                     1,
-                    &mats[prim.dst_material_index]->get_descriptor_set(),
+                    &mats[idx++]->get_descriptor_set(),
                     0,
                     nullptr
                 );
                 cmd.drawIndexed(prim.index_count, 1, prim.index_start, 0, 1);
             }
         } else {
+            cmd.bindDescriptorSets(
+                vk::PipelineBindPoint::eGraphics,
+                layout,
+                1,
+                1,
+                &mats[0]->get_descriptor_set(),
+                0,
+                nullptr
+            );
             cmd.drawIndexed(mesh.get_index_count(), 1, 0, 0, 0);
         }
     }
@@ -159,38 +164,47 @@ namespace graphics {
         const auto& query = m_render_query.query;
         const DirectX::XMMATRIX vp = XMLoadFloat4x4A(&s_view_proj_mtx);
         const auto render = [&](const c_transform& transform, const c_mesh_renderer& renderer) {
-            // Checks
-            if (!renderer.mesh || renderer.materials.empty() || renderer.flags & render_flags::skip_rendering) [[unlikely]] {
+            if (renderer.meshes.empty() || renderer.materials.empty()) [[unlikely]] {
+                log_warn("Mesh renderer has no meshes or materials");
                 return;
             }
 
-            const mesh& mesh = *renderer.mesh;
+            if (renderer.flags & render_flags::skip_rendering) [[unlikely]] {
+                return;
+            }
 
             const DirectX::XMMATRIX model = transform.compute_matrix();
 
-            // Frustum Culling
-            DirectX::BoundingOrientedBox obb {};
-            obb.CreateFromBoundingBox(obb, mesh.get_aabb());
-            obb.Transform(obb, model);
-            if ((renderer.flags & render_flags::skip_frustum_culling) == 0) [[likely]] {
-                if (s_frustum.Contains(obb) == DirectX::ContainmentType::DISJOINT) { // Object is culled
-                    return;
+            for (const mesh* mesh : renderer.meshes) {
+                if (!mesh) [[unlikely]] {
+                    log_warn("Mesh renderer has a null mesh");
+                    continue;
                 }
+
+                // Frustum Culling
+                DirectX::BoundingOrientedBox obb {};
+                obb.CreateFromBoundingBox(obb, mesh->get_aabb());
+                obb.Transform(obb, model);
+                if ((renderer.flags & render_flags::skip_frustum_culling) == 0) [[likely]] {
+                    if (s_frustum.Contains(obb) == DirectX::ContainmentType::DISJOINT) { // Object is culled
+                        return;
+                    }
+                }
+
+                // Uniforms
+                gpu_vertex_push_constants push_constants {};
+                DirectX::XMStoreFloat4x4A(&push_constants.model_view_proj, DirectX::XMMatrixMultiply(model, vp));
+                DirectX::XMStoreFloat4x4A(&push_constants.normal_matrix, DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(nullptr, model)));
+                cmd_buf.pushConstants(
+                    m_pipeline_layout,
+                    vk::ShaderStageFlagBits::eVertex,
+                    0,
+                    sizeof(gpu_vertex_push_constants),
+                    &push_constants
+                );
+
+                draw_mesh(*mesh, cmd_buf, renderer.materials, m_pipeline_layout);
             }
-
-            // Uniforms
-            gpu_vertex_push_constants push_constants {};
-            DirectX::XMStoreFloat4x4A(&push_constants.model_view_proj, DirectX::XMMatrixMultiply(model, vp));
-            DirectX::XMStoreFloat4x4A(&push_constants.normal_matrix, DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(nullptr, model)));
-            cmd_buf.pushConstants(
-                m_pipeline_layout,
-                vk::ShaderStageFlagBits::eVertex,
-                0,
-                sizeof(gpu_vertex_push_constants),
-                &push_constants
-            );
-
-            draw_mesh(mesh, cmd_buf, renderer.materials, m_pipeline_layout);
         };
         query.iter().each(render);
     }
@@ -373,8 +387,8 @@ namespace graphics {
         // Rasterization state
         vk::PipelineRasterizationStateCreateInfo rasterization_state {};
         rasterization_state.polygonMode = vk::PolygonMode::eFill;
-        rasterization_state.cullMode = vk::CullModeFlagBits::eNone; // TODO No culling because of trees
-        rasterization_state.frontFace = vk::FrontFace::eCounterClockwise;
+        rasterization_state.cullMode = vk::CullModeFlagBits::eBack; // TODO No culling because of trees
+        rasterization_state.frontFace = vk::FrontFace::eClockwise;
         rasterization_state.depthClampEnable = vk::False;
         rasterization_state.rasterizerDiscardEnable = vk::False;
         rasterization_state.depthBiasEnable = vk::False;

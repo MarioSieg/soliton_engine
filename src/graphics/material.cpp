@@ -67,7 +67,7 @@ namespace graphics {
     }
 
     auto material::init_static_resources() -> void {
-        s_default_texture.emplace("system/error.png");
+        s_default_texture.emplace("assets/textures/system/error.png");
 
         constexpr unsigned lim = 8192u;
         std::array<vk::DescriptorPoolSize, 1> pool_sizes = {

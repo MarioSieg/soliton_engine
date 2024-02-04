@@ -10,11 +10,12 @@ class scene;
 class subsystem : public no_copy, public no_move {
 private:
     friend class kernel;
-    static inline std::mt19937_64 prng;
+    static inline std::mt19937_64 m_prng;
     [[nodiscard]] static auto gen_id() noexcept -> std::uint64_t {
         std::uniform_int_distribution<std::uint64_t> dist{0, std::numeric_limits<std::uint64_t>::max()};
-        return dist(prng);
+        return dist(m_prng);
     }
+
 protected:
     explicit subsystem(std::string&& name) noexcept
         : name{std::move(name)}, id{gen_id()} {}

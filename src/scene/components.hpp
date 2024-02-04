@@ -89,7 +89,7 @@ struct render_flags final {
 };
 
 struct c_mesh_renderer final {
-    graphics::mesh* mesh = nullptr;
+    std::vector<graphics::mesh*> meshes {};
     std::vector<graphics::material*> materials {};
     std::underlying_type_t<render_flags::$> flags = render_flags::none;
 };

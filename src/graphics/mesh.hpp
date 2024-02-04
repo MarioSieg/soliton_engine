@@ -7,7 +7,11 @@
 
 #include <DirectXMath.h>
 #include <DirectXCollision.h>
-#include <tiny_gltf.h>
+#include <assimp/mesh.h>
+#include <assimp/postprocess.h>
+
+#include <Jolt/Jolt.h>
+#include <Jolt/Physics/Collision/Shape/MeshShape.h>
 
 namespace graphics {
     class material;
@@ -29,13 +33,11 @@ namespace graphics {
             std::uint32_t index_count = 0;
             std::uint32_t vertex_start = 0;
             std::uint32_t vertex_count = 0;
-            std::int32_t src_material_index = 0;
-            std::uint32_t dst_material_index = 0;
             DirectX::BoundingBox aabb {};
         };
 
-        explicit mesh(const std::string& path);
-        mesh(const tinygltf::Model& model, const tinygltf::Mesh& mesh);
+        explicit mesh(std::string&& path);
+        mesh(std::span<const aiMesh*> meshes);
         ~mesh() override = default;
 
         [[nodiscard]] auto get_primitives() const noexcept -> std::span<const primitive> { return m_primitives; }
@@ -44,11 +46,24 @@ namespace graphics {
         [[nodiscard]] auto get_index_buffer() const noexcept -> const vkb::buffer& { return m_index_buffer; }
         [[nodiscard]] auto get_index_count() const noexcept -> std::uint32_t { return m_index_count; }
         [[nodiscard]] auto is_index_32bit() const noexcept -> bool { return m_index_32bit; }
+        [[nodiscard]] auto get_collision_mesh() const noexcept -> const JPH::MeshShape* { return m_collision_mesh; }
+
+        static constexpr std::uint32_t k_import_flags = []() noexcept -> std::uint32_t {
+            std::uint32_t k_import_flags = aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_ConvertToLeftHanded;
+            k_import_flags |= aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_GenBoundingBoxes;
+            k_import_flags |= aiProcess_FixInfacingNormals;
+            k_import_flags |= aiProcess_PreTransformVertices; // do we need this?
+            k_import_flags &= ~(aiProcess_ValidateDataStructure | aiProcess_SplitLargeMeshes);
+            return k_import_flags;
+        }();
+
+        std::vector<JPH::Float3, JPH::STLAllocator<JPH::Float3>> verts {};
+        std::vector<JPH::IndexedTriangle, JPH::STLAllocator<JPH::IndexedTriangle>> triangles {};
 
     private:
-        auto create_from_gltf(const tinygltf::Model& mode, const tinygltf::Mesh& mesh) -> void;
+        auto create_from_assimp(std::span<const aiMesh*> meshes) -> void;
         auto create_buffers(std::span<const vertex> vertices, std::span<const index> indices) -> void;
-        auto recompute_bounds(std::span<const vertex> vertices) -> void;
+        auto create_collision_mesh(std::span<const vertex> vertices, std::span<const index> indices) -> void;
 
         vkb::buffer m_vertex_buffer {};
         vkb::buffer m_index_buffer {};
@@ -56,5 +71,6 @@ namespace graphics {
         bool m_index_32bit = false;
         std::vector<primitive> m_primitives {};
         DirectX::BoundingBox m_aabb {};
+        JPH::MeshShape* m_collision_mesh {};
     };
 }
