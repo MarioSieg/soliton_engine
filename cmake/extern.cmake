@@ -60,6 +60,9 @@ add_subdirectory(extern/JoltPhysics/Build)
 target_include_directories(lunam PRIVATE extern/JoltPhysics/Source)
 target_link_libraries(lunam Jolt)
 
+target_include_directories(lunam PRIVATE extern/libs)
+
+# Assimp must be last
 add_subdirectory(extern/assimp)
 target_include_directories(lunam PRIVATE extern/assimp/include)
 target_link_libraries(lunam assimp)

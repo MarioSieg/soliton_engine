@@ -417,15 +417,15 @@ namespace vkb {
         std::vector<vk::Format> formats {};
         if (stencil_required) {
             formats = {
-                vk::Format::eD32SfloatS8Uint,
                 vk::Format::eD24UnormS8Uint,
+                vk::Format::eD32SfloatS8Uint,
                 vk::Format::eD16UnormS8Uint
             };
         } else {
             formats = {
+                vk::Format::eD24UnormS8Uint,
                 vk::Format::eD32SfloatS8Uint,
                 vk::Format::eD32Sfloat,
-                vk::Format::eD24UnormS8Uint,
                 vk::Format::eD16UnormS8Uint,
                 vk::Format::eD16Unorm
             };

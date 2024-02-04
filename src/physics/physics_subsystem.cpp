@@ -4,6 +4,8 @@
 #include "../core/kernel.hpp"
 
 #include <mimalloc.h>
+#define RND_IMPLEMENTATION
+#include <rnd.h>
 #include <Jolt/Jolt.h>
 #include <Jolt/RegisterTypes.h>
 #include <Jolt/Core/Factory.h>
@@ -80,17 +82,22 @@ namespace physics {
 		}
 	};
 
-	static std::random_device rd;
-	static thread_local std::mt19937 gen {rd()};
+	static thread_local rnd_gamerand_t prng;
+
+	static inline auto next_f32_in_range(const float min, const float max) noexcept -> float {
+		return min + (max - min) * rnd_gamerand_nextf(&prng);
+	}
 
 	class ContactListenerImpl : public JPH::ContactListener {
 		virtual auto OnContactAdded(const JPH::Body& inBody1, const JPH::Body& inBody2,
 		                            const JPH::ContactManifold& inManifold,
 		                            JPH::ContactSettings& ioSettings) -> void override {
-
-			std::uniform_real_distribution<float> dis {0.01f, 0.1f};
-			JPH::Vec3 offset {dis(gen), dis(gen), dis(gen)};
-			ioSettings.mRelativeAngularSurfaceVelocity = offset;
+			//const JPH::Vec3 offset {
+			//	next_f32_in_range(0.01f, 0.1f),
+			//	next_f32_in_range(0.01f, 0.1f),
+			//	next_f32_in_range(0.01f, 0.1f)
+			//};
+			//ioSettings.mRelativeAngularSurfaceVelocity = offset;
 			ioSettings.mCombinedFriction = std::sqrt(inBody1.GetFriction() * inBody2.GetFriction());
 			ioSettings.mCombinedRestitution = std::max(inBody1.GetRestitution(), inBody2.GetRestitution());
 		}
@@ -144,6 +151,7 @@ namespace physics {
     	);
     	m_physics_system.SetGravity(JPH::Vec3{0.0f, -9.81f, 0.0f}); // set gravity to earth's gravity
     	m_physics_system.SetContactListener(&*m_contact_listener);
+    	rnd_gamerand_seed(&prng, 0xdeadbeef);
     }
 
     physics_subsystem::~physics_subsystem() {
@@ -195,12 +203,12 @@ namespace physics {
 			bi.CreateAndAddBody(static_object, JPH::EActivation::DontActivate);
     	});
 
-    	const auto make_sphere = [&](float x, float z) {
+    	const auto make_sphere = [&](float x, float y, float z) {
     		flecs::entity sphere = scene.spawn(nullptr);
     		c_transform* transform = sphere.get_mut<c_transform>();
     		transform->position.x = x;
+    		transform->position.y = y;
     		transform->position.z = z;
-    		transform->position.y = 150.0f;
     		transform->scale.x = 0.0005f;
     		transform->scale.y = 0.0005f;
     		transform->scale.z = 0.0005f;
@@ -211,7 +219,7 @@ namespace physics {
     			new JPH::SphereShape{1.0f*0.25f},
 				lunam_vec4_to_jbh_vec3(sphere.get<c_transform>()->position),
 				std::bit_cast<JPH::Quat>(sphere.get<c_transform>()->rotation),
-				JPH::EMotionType::Dynamic,
+				JPH::EMotionType::Kinematic,
 				Layers::MOVING
 			};
     		// set realistic soccer ball properties like mass, friction, etc.
@@ -220,16 +228,21 @@ namespace physics {
     		sphere_settings.mAngularDamping = 0.1f;
     		sphere_settings.mRestitution = 0.5f;
     		sphere_settings.mFriction = 0.5f;
+    		sphere_settings.mAllowDynamicOrKinematic = true;
 
     		JPH::BodyID sphere_body = bi.CreateAndAddBody(sphere_settings, JPH::EActivation::Activate);
     		sphere.get_mut<c_rigidbody>()->body_id = sphere_body;
     	};
 
-    	for (int i = 0; i < 64; i++) {
-			for (int j = 0; j < 64; j++) {
-				make_sphere(-64.0f + i * 2.0f, -64.0f + j * 2.0f);
+    	for (int i = 0; i < 26; i++) {
+			for (int j = 0; j < 26; j++) {
+				for (int k = 0; k < 26; k++) {
+					make_sphere(-30.0f+i, 20.0f+j, -30.0f+k);
+				}
 			}
 		}
+
+    	log_info("Balls: {}", 26*26*26);
 
     	// Optional step: Before starting the physics simulation you can optimize the broad phase. This improves collision detection performance (it's pointless here because we only have 2 bodies).
     	// You should definitely not call this every frame or when e.g. streaming in a new level section as it is an expensive operation.
@@ -237,7 +250,7 @@ namespace physics {
     	m_physics_system.OptimizeBroadPhase();
     }
 
-    auto physics_subsystem::on_post_tick() -> void {
+    HOTPROC auto physics_subsystem::on_post_tick() -> void {
     	const double delta = kernel::get().get_delta_time();
     	const int n_steps = 1;
     	m_physics_system.Update(static_cast<float>(delta), n_steps, &*m_temp_allocator, &*m_job_system);
@@ -246,8 +259,12 @@ namespace physics {
     		return;
     	}
     	auto& bi = m_physics_system.GetBodyInterface();
+    	bool is_key_down = ImGui::IsKeyPressed(ImGuiKey_Space, false);
     	active->filter<c_rigidbody, c_transform>().each([&](c_rigidbody& rb, c_transform& transform) {
 			JPH::BodyID body_id = rb.body_id;
+    		if (is_key_down) [[unlikely]] {
+				bi.SetMotionType(body_id, JPH::EMotionType::Dynamic, JPH::EActivation::Activate);
+			}
     		JPH::Vec3 pos = bi.GetPosition(body_id);
 			transform.position.x = pos.GetX();
     		transform.position.y = pos.GetY();
