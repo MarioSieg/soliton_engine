@@ -47,7 +47,7 @@ namespace graphics {
         create_descriptor_sets();
         create_pipeline();
 
-        m_render_thread_pool.emplace(&render_scene_bucket, this, std::thread::hardware_concurrency()/4);
+        m_render_thread_pool.emplace(&render_scene_bucket, this, 8);
     }
 
     [[nodiscard]] static auto compute_render_bucket_range(const std::size_t id, const std::size_t num, const std::size_t num_threads) noexcept -> std::array<std::size_t, 2> {
