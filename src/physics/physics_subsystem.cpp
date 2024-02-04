@@ -176,10 +176,10 @@ namespace physics {
     auto physics_subsystem::on_start(scene& scene) -> void {
     	auto& bi = m_physics_system.GetBodyInterface();
 
-    	auto* sphere_mesh = new graphics::mesh("assets/meshes/fussball/fussball.fbx");
+    	auto* sphere_mesh = new graphics::mesh("assets/meshes/melon/melon.obj");
     	auto* mat = new graphics::material{};
-    	auto* albedo = new graphics::texture("assets/meshes/fussball/albedo.png");
-    	auto* normal = new graphics::texture("assets/meshes/fussball/normal.png");
+    	auto* albedo = new graphics::texture("assets/meshes/melon/albedo.jpg");
+    	auto* normal = new graphics::texture("assets/meshes/melon/normal.jpg");
     	mat->albedo_map = albedo;
     	mat->normal_map = normal;
     	mat->flush_property_updates();
