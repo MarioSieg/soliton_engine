@@ -57,7 +57,7 @@ namespace vkb {
         m_device.reset();
     }
 
-    auto context::begin_frame(const DirectX::XMFLOAT4& clear_color) -> vk::CommandBuffer {
+    auto context::begin_frame(const DirectX::XMFLOAT4& clear_color, vk::CommandBufferInheritanceInfo* out_inheritance_info) -> vk::CommandBuffer {
 
         // Use a fence to wait until the command buffer has finished execution before using it again
         vkcheck(m_device->get_logical_device().waitForFences(1, &m_wait_fences[m_current_frame], vk::True, std::numeric_limits<std::uint64_t>::max()));
@@ -90,6 +90,12 @@ namespace vkb {
         render_pass_begin_info.clearValueCount = static_cast<std::uint32_t>(clear_values.size());
         render_pass_begin_info.pClearValues = clear_values.data();
 
+        if (out_inheritance_info) {
+            *out_inheritance_info = vk::CommandBufferInheritanceInfo {};
+            out_inheritance_info->renderPass = m_render_pass;
+            out_inheritance_info->framebuffer = m_framebuffers[m_image_index];
+        }
+
         const vk::CommandBuffer cmd_buf = m_command_buffers[m_current_frame];
         vkcheck(cmd_buf.reset({}));
         constexpr vk::CommandBufferBeginInfo command_buffer_begin_info {};
@@ -97,8 +103,9 @@ namespace vkb {
 
         // Start the first sub pass specified in our default render pass setup by the base class
         // This will clear the color and depth attachment
-        cmd_buf.beginRenderPass(&render_pass_begin_info, vk::SubpassContents::eInline);
+        cmd_buf.beginRenderPass(&render_pass_begin_info, vk::SubpassContents::eSecondaryCommandBuffers);
 
+#if 0
         const auto w = static_cast<float>(m_width);
         const auto h = static_cast<float>(m_height);
 
@@ -114,11 +121,12 @@ namespace vkb {
 
         // Update dynamic scissor state
         vk::Rect2D scissor {};
-        scissor.extent.width = m_width;
-        scissor.extent.height = m_height;
+        scissor.extent.width = w;
+        scissor.extent.height = h;
         scissor.offset.x = 0.0f;
         scissor.offset.y = 0.0f;
         cmd_buf.setScissor(0, 1, &scissor);
+        #endif
 
         ImGui_ImplGlfw_NewFrame();
         ImGui_ImplVulkan_NewFrame();
@@ -126,7 +134,7 @@ namespace vkb {
         return cmd_buf;
     }
 
-    auto context::end_frame(vk::CommandBuffer cmd_buf) -> void {
+    auto context::end_frame(const vk::CommandBuffer cmd_buf) -> void {
         passert(cmd_buf);
 
         cmd_buf.endRenderPass();

@@ -16,6 +16,8 @@ using platform::platform_subsystem;
 namespace graphics {
     using vkb::context;
 
+    static auto render_scene_bucket(const vk::CommandBuffer cmd_buf, const std::int32_t bucket_id, const std::int32_t num_threads, void* usr) -> void;
+
     graphics_subsystem::graphics_subsystem() : subsystem{"Graphics"} {
         log_info("Initializing graphics subsystem");
 
@@ -44,9 +46,22 @@ namespace graphics {
         create_descriptor_pool();
         create_descriptor_sets();
         create_pipeline();
+
+        m_render_thread_pool.emplace(&render_scene_bucket, this, std::thread::hardware_concurrency() / 4);
+    }
+
+    [[nodiscard]] static auto compute_render_bucket_range(const std::size_t id, const std::size_t num, const std::size_t num_threads) noexcept -> std::array<std::size_t, 2> {
+       const std::size_t bucket_count = num_threads + 1;
+       const std::size_t bucket_size = num / bucket_count;
+       const std::size_t begin = bucket_size * id;
+       const std::size_t end = id < bucket_count - 1 ? bucket_size * (1 + id) : num;
+       passert(begin <= end);
+       return {begin, end};
     }
 
     graphics_subsystem::~graphics_subsystem() {
+        m_render_thread_pool.reset();
+
         vkcheck(context::s_instance->get_device().get_logical_device().waitIdle());
 
         for (auto& [buffer, descriptor_set] : m_uniforms) {
@@ -103,17 +118,7 @@ namespace graphics {
         s_frustum.Transform(s_frustum, XMMatrixInverse(nullptr, view));
     }
 
-    HOTPROC auto graphics_subsystem::on_pre_tick() -> bool {
-        ImGui::NewFrame();
-        auto& io = ImGui::GetIO();
-        io.DisplaySize.x = static_cast<float>(context::s_instance->get_width());
-        io.DisplaySize.y = static_cast<float>(context::s_instance->get_height());
-
-        m_cmd_buf = context::s_instance->begin_frame(DirectX::XMFLOAT4{0.53f, 0.81f, 0.92f, 1.0f});
-
-        return true;
-    }
-
+    // WARNING! RENDER THREAD LOCAL
     HOTPROC static auto draw_mesh(
         const mesh& mesh,
         const vk::CommandBuffer cmd,
@@ -150,63 +155,88 @@ namespace graphics {
         }
     }
 
-    HOTPROC auto graphics_subsystem::render_scene(const vk::CommandBuffer cmd_buf) -> void {
-        const auto& scene = scene::get_active();
-        if (!scene) [[unlikely]] return;
-        if (!m_render_query.scene || &*scene != m_render_query.scene) [[unlikely]] { // Scene changed
-            if (m_render_query.query) {
-                m_render_query.query.destruct();
-            }
-            m_render_query.scene = &*scene;
-            m_render_query.query = scene->query<const c_transform, const c_mesh_renderer>();
+    // WARNING! RENDER THREAD LOCAL
+    HOTPROC static auto render_mesh(
+        const vk::CommandBuffer cmd_buf,
+        const vk::PipelineLayout layout,
+        const c_transform& transform,
+        const c_mesh_renderer& renderer,
+        DirectX::FXMMATRIX vp
+    ) -> void {
+        if (renderer.meshes.empty() || renderer.materials.empty()) [[unlikely]] {
+            log_warn("Mesh renderer has no meshes or materials");
+            return;
         }
+        if (renderer.flags & render_flags::skip_rendering) [[unlikely]] {
+            return;
+        }
+        const DirectX::XMMATRIX model = transform.compute_matrix();
+        for (const mesh* mesh : renderer.meshes) {
+            if (!mesh) [[unlikely]] {
+                log_warn("Mesh renderer has a null mesh");
+                continue;
+            }
 
-        const auto& query = m_render_query.query;
+            // Frustum Culling
+            DirectX::BoundingOrientedBox obb {};
+            obb.CreateFromBoundingBox(obb, mesh->get_aabb());
+            obb.Transform(obb, model);
+            if ((renderer.flags & render_flags::skip_frustum_culling) == 0) [[likely]] {
+                if (s_frustum.Contains(obb) == DirectX::ContainmentType::DISJOINT) { // Object is culled
+                    return;
+                }
+            }
+
+            // Uniforms
+            gpu_vertex_push_constants push_constants {};
+            DirectX::XMStoreFloat4x4A(&push_constants.model_view_proj, DirectX::XMMatrixMultiply(model, vp));
+            DirectX::XMStoreFloat4x4A(&push_constants.normal_matrix, DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(nullptr, model)));
+            cmd_buf.pushConstants(
+                layout,
+                vk::ShaderStageFlagBits::eVertex,
+                0,
+                sizeof(gpu_vertex_push_constants),
+                &push_constants
+            );
+
+            draw_mesh(*mesh, cmd_buf, renderer.materials, layout);
+        }
+    }
+
+    // WARNING! RENDER THREAD LOCAL
+    HOTPROC static auto render_scene_bucket(const vk::CommandBuffer cmd_buf, const std::int32_t bucket_id, const std::int32_t num_threads, void* usr) -> void {
+        passert(usr != nullptr);
+        const auto& self = *static_cast<graphics_subsystem*>(usr);
+
+        cmd_buf.bindDescriptorSets(
+            vk::PipelineBindPoint::eGraphics,
+            self.get_pipeline_layout(),
+            0,
+            1,
+            &self.get_uniforms()[context::s_instance->get_current_frame()].descriptor_set,
+            0,
+            nullptr
+        );
+        cmd_buf.bindPipeline(vk::PipelineBindPoint::eGraphics, self.get_pipeline());
         const DirectX::XMMATRIX vp = XMLoadFloat4x4A(&s_view_proj_mtx);
-        const auto render = [&](const c_transform& transform, const c_mesh_renderer& renderer) {
-            if (renderer.meshes.empty() || renderer.materials.empty()) [[unlikely]] {
-                log_warn("Mesh renderer has no meshes or materials");
-                return;
-            }
+        const std::span<const c_transform> transforms = self.get_transforms();
+        const std::span<const c_mesh_renderer> renderers = self.get_renderers();
+        passert(transforms.size() == renderers.size());
+        const auto [start, end] = compute_render_bucket_range(bucket_id, transforms.size(), num_threads);
+        for (std::size_t i = start; i < end; ++i) {
+            render_mesh(cmd_buf, self.get_pipeline_layout(), transforms[i], renderers[i], vp);
+        }
+    }
 
-            if (renderer.flags & render_flags::skip_rendering) [[unlikely]] {
-                return;
-            }
+    HOTPROC auto graphics_subsystem::on_pre_tick() -> bool {
+        ImGui::NewFrame();
+        auto& io = ImGui::GetIO();
+        io.DisplaySize.x = static_cast<float>(context::s_instance->get_width());
+        io.DisplaySize.y = static_cast<float>(context::s_instance->get_height());
 
-            const DirectX::XMMATRIX model = transform.compute_matrix();
+        m_cmd_buf = vkb_context().begin_frame(DirectX::XMFLOAT4{0.53f, 0.81f, 0.92f, 1.0f}, &m_inheritance_info);
 
-            for (const mesh* mesh : renderer.meshes) {
-                if (!mesh) [[unlikely]] {
-                    log_warn("Mesh renderer has a null mesh");
-                    continue;
-                }
-
-                // Frustum Culling
-                DirectX::BoundingOrientedBox obb {};
-                obb.CreateFromBoundingBox(obb, mesh->get_aabb());
-                obb.Transform(obb, model);
-                if ((renderer.flags & render_flags::skip_frustum_culling) == 0) [[likely]] {
-                    if (s_frustum.Contains(obb) == DirectX::ContainmentType::DISJOINT) { // Object is culled
-                        return;
-                    }
-                }
-
-                // Uniforms
-                gpu_vertex_push_constants push_constants {};
-                DirectX::XMStoreFloat4x4A(&push_constants.model_view_proj, DirectX::XMMatrixMultiply(model, vp));
-                DirectX::XMStoreFloat4x4A(&push_constants.normal_matrix, DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(nullptr, model)));
-                cmd_buf.pushConstants(
-                    m_pipeline_layout,
-                    vk::ShaderStageFlagBits::eVertex,
-                    0,
-                    sizeof(gpu_vertex_push_constants),
-                    &push_constants
-                );
-
-                draw_mesh(*mesh, cmd_buf, renderer.materials, m_pipeline_layout);
-            }
-        };
-        query.iter().each(render);
+        return true;
     }
 
     HOTPROC auto graphics_subsystem::on_post_tick() -> void {
@@ -216,22 +246,35 @@ namespace graphics {
         const auto h = static_cast<float>(context::s_instance->get_height());
         update_main_camera(w, h);
 
-        m_cmd_buf.bindDescriptorSets(
-            vk::PipelineBindPoint::eGraphics,
-            m_pipeline_layout,
-            0,
-            1,
-            &m_uniforms[context::s_instance->get_current_frame()].descriptor_set,
-            0,
-            nullptr
-        );
-        m_cmd_buf.bindPipeline(vk::PipelineBindPoint::eGraphics, m_pipeline);
+        const auto& scene = scene::get_active();
+        if (scene) [[likely]] {
+            if (!m_render_query.scene || &*scene != m_render_query.scene) [[unlikely]] { // Scene changed
+                if (m_render_query.query) {
+                    m_render_query.query.destruct();
+                }
+                m_render_query.scene = &*scene;
+                m_render_query.query = scene->query<const c_transform, const c_mesh_renderer>();
+            }
+            m_render_query.query.iter([this](flecs::iter i, const c_transform* transforms, const c_mesh_renderer* renderers) {
+                const std::size_t n = i.count();
+                m_transforms = std::span{transforms, n};
+                m_renderers = std::span{renderers, n};
+            });
+            if (!m_renderers.empty()) {
+                scene->readonly_begin();
+                m_render_thread_pool->begin_frame(&m_inheritance_info);
+                m_render_thread_pool->process_frame(m_cmd_buf);
+                scene->readonly_end();
+                m_renderers = {};
+                m_transforms = {};
+            }
+        }
 
-        render_scene(m_cmd_buf);
+        //render_scene(m_cmd_buf);
 
-        ImGui::Render();
-        context::s_instance->render_imgui(ImGui::GetDrawData(), m_cmd_buf);
-        context::s_instance->end_frame(m_cmd_buf);
+        //ImGui::Render();
+        //vkb_context().render_imgui(ImGui::GetDrawData(), m_cmd_buf);
+        vkb_context().end_frame(m_cmd_buf);
 
         c_camera::active_camera = flecs::entity::null();
     }
