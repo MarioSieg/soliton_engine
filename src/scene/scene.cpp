@@ -128,7 +128,7 @@ auto scene::import_from_file(const std::string& path, const float scale) -> void
                         mat->Get(AI_MATKEY_TEXTURE(*textureType, 0), name);
                         std::string tex_path = asset_root + name.C_Str();
                         if (!std::filesystem::exists(tex_path)) [[unlikely]] {
-                            log_warn("Texture not found: '{}'", tex_path);
+                            log_warn("Texture not found: '{}'", tex_path); // TODO: fix, bypasses asset mgr path cleanup
                             return nullptr;
                         }
                         return get_asset_registry<graphics::texture>().load(std::move(tex_path));
