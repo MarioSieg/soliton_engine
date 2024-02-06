@@ -11,6 +11,7 @@
 #define LUA_INTEROP_API extern "C" __attribute__((visibility("default")))
 #endif
 
+static_assert(sizeof(flecs::id_t) == sizeof(std::uint64_t));
 
 // Vector2 for LUA interop
 // Only a proxy type holding the data and allowing implicit conversions to other vector types.

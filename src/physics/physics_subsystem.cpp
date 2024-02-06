@@ -175,7 +175,7 @@ namespace physics {
 
     auto physics_subsystem::on_start(scene& scene) -> void {
     	auto& bi = m_physics_system.GetBodyInterface();
-
+#if 0
     	auto* sphere_mesh = new graphics::mesh("assets/meshes/melon/melon.obj");
     	auto* mat = new graphics::material{};
     	auto* albedo = new graphics::texture("assets/meshes/melon/albedo.jpg");
@@ -183,8 +183,6 @@ namespace physics {
     	mat->albedo_map = albedo;
     	mat->normal_map = normal;
     	mat->flush_property_updates();
-
-#if 0
 
     	scene.filter<const c_transform, const c_mesh_renderer>().each([&](const c_transform& transform, const c_mesh_renderer& renderer) {
     		if (renderer.meshes.empty()) {

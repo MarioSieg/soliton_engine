@@ -232,29 +232,22 @@ namespace graphics {
     }
 
     HOTPROC auto graphics_subsystem::on_pre_tick() -> bool {
+        const float w = static_cast<float>(context::s_instance->get_width());
+        const float h = static_cast<float>(context::s_instance->get_height());
         ImGui::NewFrame();
         auto& io = ImGui::GetIO();
-        io.DisplaySize.x = static_cast<float>(context::s_instance->get_width());
-        io.DisplaySize.y = static_cast<float>(context::s_instance->get_height());
-
+        io.DisplaySize.x = w;
+        io.DisplaySize.y = h;
+        update_main_camera(w, h);
         m_cmd_buf = vkb_context().begin_frame(DirectX::XMFLOAT4{0.53f, 0.81f, 0.92f, 1.0f}, &m_inheritance_info);
-
         return true;
     }
 
     HOTPROC auto graphics_subsystem::on_post_tick() -> void {
-        if (!m_cmd_buf) [[unlikely]] return;
-
-        const auto w = static_cast<float>(context::s_instance->get_width());
-        const auto h = static_cast<float>(context::s_instance->get_height());
-        update_main_camera(w, h);
         ImGui::Render();
         const auto& scene = scene::get_active();
         if (scene) [[likely]] {
             if (!m_render_query.scene || &*scene != m_render_query.scene) [[unlikely]] { // Scene changed
-                if (m_render_query.query) {
-                    m_render_query.query.destruct();
-                }
                 m_render_query.scene = &*scene;
                 m_render_query.query = scene->query<const c_transform, const c_mesh_renderer>();
             }
@@ -263,7 +256,7 @@ namespace graphics {
                 m_transforms = std::span{transforms, n};
                 m_renderers = std::span{renderers, n};
             });
-            if (!m_renderers.empty()) {
+            if (m_cmd_buf) [[likely]] {
                 scene->readonly_begin();
                 m_render_thread_pool->begin_frame(&m_inheritance_info);
                 m_render_thread_pool->process_frame(m_cmd_buf);
@@ -273,8 +266,9 @@ namespace graphics {
             }
         }
 
-        vkb_context().end_frame(m_cmd_buf);
-
+        if (m_cmd_buf) [[likely]] {
+            vkb_context().end_frame(m_cmd_buf);
+        }
         c_camera::active_camera = flecs::entity::null();
     }
 

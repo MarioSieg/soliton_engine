@@ -23,6 +23,7 @@
 #include <infoware/infoware.hpp>
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+#include <nfd.hpp>
 
 namespace platform {
 [[maybe_unused]]
@@ -378,7 +379,7 @@ auto dump_loaded_dylibs() -> void {
 
         // set window icon
         int w, h;
-        stbi_uc *pixels = stbi_load_from_memory(pixel_buf.data(), pixel_buf.size(), &w, &h, nullptr, STBI_rgb_alpha);
+        stbi_uc *pixels = stbi_load_from_memory(pixel_buf.data(), static_cast<int>(pixel_buf.size()), &w, &h, nullptr, STBI_rgb_alpha);
         passert(pixels != nullptr);
         const GLFWimage icon {
             .width = w,
@@ -387,9 +388,11 @@ auto dump_loaded_dylibs() -> void {
         };
         glfwSetWindowIcon(s_window, 1, &icon);
         stbi_image_free(pixels);
+        NFD_Init();
     }
 
     platform_subsystem::~platform_subsystem() {
+        NFD_Quit();
         s_window = nullptr;
         glfwDestroyWindow(s_window);
         glfwTerminate();

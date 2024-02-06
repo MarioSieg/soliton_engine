@@ -1,6 +1,7 @@
 -- Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 local ffi = require 'ffi'
+local istype = ffi.istype
 
 ffi.cdef[[
     bool __lu_entity_is_valid(lua_entity_id id);
@@ -16,11 +17,13 @@ ffi.cdef[[
 local C = ffi.C
 local istype = ffi.istype
 
-local Entity = {id=0}
+local Entity = {
+    id = nil
+}
 
 -- creates a new entity
 function Entity:new(id)
-    assert(type(id) == 'number')
+    assert(istype('lua_entity_id', id))
     local o = {}
     setmetatable(o, {__index = self})   
     o.id = id
@@ -28,11 +31,7 @@ function Entity:new(id)
 end
 
 function Entity:isValid()
-    return self.id ~= 0xffffffff and C.__lu_entity_is_valid(self.id)
-end
-
-function Entity:isAlive()
-    return C.__lu_entity_is_alive(self.id)
+    return C.__lu_entity_is_valid(self.id) and C.__lu_entity_is_alive(self.id)
 end
 
 function Entity:setPosition(pos)

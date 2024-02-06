@@ -39,20 +39,24 @@ function Scene.getEntityByName(name)
     return Entity:new(C.__lu_scene_get_entity_by_name(name))
 end
 
-function Scene.new(scene_name, gltf_file, scale)
-    assert(scene_name or gltf_file, 'scene name or gltf file must be provided')
-    if gltf_file and type(gltf_file) == 'string' then
-        if not lfs.attributes(gltf_file) then
-            panic(string.format('gltf file %s does not exist', gltf_file))
+function Scene.load(scene_name, file, scale)
+    scale = scale or 1.0
+    assert(scene_name or file, 'scene name or gltf file must be provided')
+    if file and type(file) == 'string' then
+        if not lfs.attributes(file) then
+            panic(string.format('gltf file %s does not exist', file))
         end
-        scene_name = scene_name or gltf_file:match("[^/]*.gltf$") -- TODO fix
+        if not scene_name then
+            scene_name = file:match("^.+/(.+)$")
+            scene_name = scene_name:match("(.+)%..+")
+        end
     else
         scene_name = scene_name or 'untitled'
-        gltf_file = ''
+        file = ''
     end
     Scene.name = scene_name
     assert(type(scene_name) == 'string')
-    local id = C.__lu_scene_new(scene_name, gltf_file, scale) -- create native scene
+    local id = C.__lu_scene_new(scene_name, file, scale) -- create native scene
     assert(type(id) == 'number' and id ~= 0, 'failed to create scene')
     Scene.id = id
     Scene.__onStart() -- invoke start hook
@@ -60,6 +64,6 @@ function Scene.new(scene_name, gltf_file, scale)
     print(string.format('Created new scene: %s, id: %x', scene_name, id))
 end
 
-Scene.new('EmeraldSquare', '/home/neo/Documents/AssetLibrary/A_EmeraldSquare/EmeraldSquare_Day.gltf', 0.025)
+Scene.load('Default', nil)
 
 return Scene

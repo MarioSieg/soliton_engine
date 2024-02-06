@@ -62,6 +62,10 @@ target_link_libraries(lunam Jolt)
 
 target_include_directories(lunam PRIVATE extern/libs)
 
+add_subdirectory(extern/nativefiledialog-extended)
+target_include_directories(lunam PRIVATE extern/nativefiledialog-extended/src/include)
+target_link_libraries(lunam nfd)
+
 # Assimp must be last
 add_subdirectory(extern/assimp)
 target_include_directories(lunam PRIVATE extern/assimp/include)

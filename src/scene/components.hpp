@@ -18,14 +18,14 @@ struct c_metadata final {
 };
 
 struct c_transform final {
-    DirectX::XMFLOAT4 position;
+    DirectX::XMFLOAT3 position;
     DirectX::XMFLOAT4 rotation;
-    DirectX::XMFLOAT4 scale;
+    DirectX::XMFLOAT3 scale;
 
     c_transform() noexcept {
-        XMStoreFloat4(&this->position, DirectX::XMVectorZero());
+        XMStoreFloat3(&this->position, DirectX::XMVectorZero());
         XMStoreFloat4(&this->rotation, DirectX::XMQuaternionIdentity());
-        XMStoreFloat4(&this->scale, DirectX::XMVectorSplatOne());
+        XMStoreFloat3(&this->scale, DirectX::XMVectorSplatOne());
     }
 
     [[nodiscard]] auto XM_CALLCONV compute_matrix() const noexcept -> DirectX::XMMATRIX {
@@ -33,10 +33,10 @@ struct c_transform final {
         return DirectX::XMMatrixTransformation(
             zero,
             DirectX::XMQuaternionIdentity(),
-            XMLoadFloat4(&this->scale),
+            XMLoadFloat3(&this->scale),
             zero,
             XMLoadFloat4(&this->rotation),
-            XMLoadFloat4(&this->position)
+            XMLoadFloat3(&this->position)
         );
     }
     [[nodiscard]] auto XM_CALLCONV forward_vec() const noexcept -> DirectX::XMVECTOR {
@@ -69,7 +69,7 @@ struct c_camera final {
     static inline flecs::entity active_camera = flecs::entity::null(); // main camera, resetted every frame
 
    [[nodiscard]] static auto XM_CALLCONV compute_view(const c_transform& transform) noexcept -> DirectX::XMMATRIX {
-       const DirectX::XMVECTOR eyePos { XMLoadFloat4(&transform.position) };
+       const DirectX::XMVECTOR eyePos { XMLoadFloat3(&transform.position) };
        const DirectX::XMVECTOR focusPos { DirectX::XMVectorAdd(eyePos, transform.forward_vec()) };
        return DirectX::XMMatrixLookAtLH(eyePos, focusPos, DirectX::XMVectorSet(.0F, 1.F, .0F, .0F));
    }

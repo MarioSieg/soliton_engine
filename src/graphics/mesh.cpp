@@ -118,7 +118,7 @@ namespace graphics {
     		m_index_32bit = false;
     		m_index_count = static_cast<std::uint32_t>(indices16.size());
     		m_index_buffer.create(
-				indices16.size() * sizeof(indices16[0]),
+				indices16.size() * sizeof(std::uint16_t),
 				0,
 				vk::BufferUsageFlagBits::eIndexBuffer,
 				VMA_MEMORY_USAGE_GPU_ONLY,
@@ -129,7 +129,7 @@ namespace graphics {
     		m_index_32bit = true;
     		m_index_count = static_cast<std::uint32_t>(indices.size());
     		m_index_buffer.create(
-				indices.size() * sizeof(indices[0]),
+				indices.size() * sizeof(index),
 				0,
 				vk::BufferUsageFlagBits::eIndexBuffer,
 				VMA_MEMORY_USAGE_GPU_ONLY,

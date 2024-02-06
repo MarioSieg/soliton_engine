@@ -21,6 +21,7 @@ ffi.cdef [[
     const char* __lu_app_host_get_cpu_name(void);
     const char* __lu_app_host_get_gpu_name(void);
     const char* __lu_app_host_get_gapi_name(void);
+    const char* __lu_app_open_file_dialog(const char *file_type, const char* filters, const char* default_path);
 ]]
 
 local C = ffi.C
@@ -44,7 +45,8 @@ local App = {
         GPU_NAME = ffi.string(C.__lu_app_host_get_gpu_name()),
         GRAPHICS_API = ffi.string(C.__lu_app_host_get_gapi_name()),
         HOST = jit.os..' '..jit.arch
-    }
+    },
+    Utils = {}
 }
 
 function App.Window.maximize()
@@ -107,6 +109,10 @@ end
 
 function App.exit()
     C.__lu_app_exit()
+end
+
+function App.Utils.openFileDialog(fileTypes, filters, defaultPath)
+    return ffi.string(C.__lu_app_open_file_dialog(fileTypes, filters, defaultPath))
 end
 
 App.Window.setTitle(string.format('Lunam Engine v.%s - %s %s', App.engineVersion, jit.os, jit.arch))

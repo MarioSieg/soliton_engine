@@ -50,6 +50,9 @@ Camera._velocity = Vec3.ZERO
 
 -- invoked every frame
 function Camera:tick()
+    if not self.targetEntity:isValid() then
+        print('Camera has no target entity')
+    end
     if self.enableMouseLook then -- TODO focus
         self:_computeCameraRotation()
     end
@@ -133,5 +136,4 @@ function Camera:_computeMovement()
     self.targetEntity:setPosition(self._position)
 end
 
-Camera.targetEntity = Scene.getEntityByName('MainCamera')
 return Camera

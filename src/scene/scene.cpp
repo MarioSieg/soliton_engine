@@ -25,15 +25,12 @@ static constinit std::atomic_uint32_t id_gen = 1;
 scene::scene() : id{id_gen.fetch_add(1, std::memory_order_relaxed)} {
     static const auto main_tid = std::this_thread::get_id();
     passert(main_tid == std::this_thread::get_id());
-    m_eitbl.reserve(256);
-
-	m_meshes.invalidate();
-	m_textures.invalidate();
 }
 
 scene::~scene() {
+    m_meshes.invalidate();
+    m_textures.invalidate();
 	vkcheck(vkb_vk_device().waitIdle());
-	m_eitbl.clear();
 	log_info("Destroyed scene '{}', id: {}", name, id);
 }
 
@@ -55,15 +52,9 @@ auto scene::on_start() -> void {
     kernel::get().on_new_scene_start(*this);
 }
 
-auto scene::spawn(const char* name, lua_entity* l_id) -> flecs::entity {
+auto scene::spawn(const char* name) const -> flecs::entity {
     flecs::entity ent = this->entity(name);
     ent.add<c_metadata>();
-    ent.add<c_transform>();
-    if (l_id) {
-    	*l_id = m_eitbl.size() & ~0u;
-    }
-    m_eitbl.emplace_back(ent);
-    passert(m_eitbl.size() <= k_max_entities);
     return ent;
 }
 
@@ -116,9 +107,9 @@ auto scene::import_from_file(const std::string& path, const float scale) -> void
         aiVector3D scaling, position;
         aiQuaternion rotation;
         node->mTransformation.Decompose(scaling, rotation, position);
-        transform->position = {position.x, position.y, position.z, 0.0f};
+        transform->position = {position.x, position.y, position.z};
         transform->rotation = {rotation.x, rotation.y, rotation.z, rotation.w};
-        transform->scale = {scaling.x, scaling.y, scaling.z, 0.0f};
+        transform->scale = {scaling.x, scaling.y, scaling.z};
 
         if (node->mNumMeshes > 0) {
             auto* renderer = e.get_mut<c_mesh_renderer>();

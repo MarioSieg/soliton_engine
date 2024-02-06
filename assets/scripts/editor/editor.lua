@@ -14,13 +14,12 @@ local Time = require 'Time'
 local Debug = require 'Debug'
 local Vec3 = require 'Vec3'
 local Quat = require 'Quat'
+local Scene = require 'Scene'
 
 local ICONS = require 'editor.icons'
 local Terminal = require 'editor.tools.terminal'
 local Profiler = require 'editor.tools.profiler'
 local ScriptEditor = require 'editor.tools.scripteditor'
-local Camera = require 'editor.camera'
-Camera._position = Vec3(0, 1, -6)
 
 WINDOW_SIZE = UI.ImVec2(800, 600)
 
@@ -36,7 +35,7 @@ local Editor = {
         showGrid = true,
         showCenterAxis = true
     },
-    camera = Camera
+    camera = require 'editor.camera'
 }
 
 for _, tool in ipairs(Editor.tools) do -- hide all tools by default
@@ -56,9 +55,21 @@ function Editor.gizmos:drawGizmos()
     Debug.finish()
 end
 
+function Editor:onSceneChanged()
+    self.camera.targetEntity = Scene.getEntityByName('MainCamera')
+end
+Editor:onSceneChanged()
+
 function Editor:renderMainMenu()
     if UI.BeginMainMenuBar() then
         if UI.BeginMenu('File') then
+            if UI.MenuItem(ICONS.FILE_IMPORT..' Import') then
+                local selectedFile = App.Utils.openFileDialog('3D Scenes', 'gltf,fbx,obj,dae', '')
+                if selectedFile and lfs.attributes(selectedFile) then
+                    Scene.load('Default', selectedFile)
+                    self:onSceneChanged()
+                end
+            end
             if UI.MenuItem(ICONS.PORTAL_EXIT..' Exit') then
                 App.exit()
             end
