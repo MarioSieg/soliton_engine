@@ -34,8 +34,8 @@ namespace graphics {
         std::array<vk::DescriptorImageInfo, 4> image_infos {};
         auto make_write_tex_info = [i = 0u, this, &image_infos](const texture* tex) mutable -> vk::WriteDescriptorSet {
             image_infos[i].imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-            image_infos[i].imageView = tex ? tex->get_view() : s_default_texture->get_view();
-            image_infos[i].sampler = tex ? tex->get_sampler() : s_default_texture->get_sampler();
+            image_infos[i].imageView = tex ? tex->get_view() : s_error_texture->get_view();
+            image_infos[i].sampler = tex ? tex->get_sampler() : s_error_texture->get_sampler();
             const vk::WriteDescriptorSet result {
                 .dstSet = m_descriptor_set,
                 .dstBinding = i,
@@ -63,7 +63,7 @@ namespace graphics {
     }
 
     auto material::init_static_resources() -> void {
-        s_default_texture.emplace("assets/textures/system/error.png");
+        s_error_texture.emplace("assets/textures/system/error.png");
 
         constexpr unsigned lim = 8192u;
         std::array<vk::DescriptorPoolSize, 1> pool_sizes = {
@@ -104,6 +104,6 @@ namespace graphics {
     auto material::free_static_resources() -> void {
         vkb_vk_device().destroyDescriptorSetLayout(s_descriptor_set_layout, &vkb::s_allocator);
         vkb_vk_device().destroyDescriptorPool(s_descriptor_pool, &vkb::s_allocator);
-        s_default_texture.reset();
+        s_error_texture.reset();
     }
 }
