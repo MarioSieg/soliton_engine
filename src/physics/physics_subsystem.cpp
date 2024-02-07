@@ -198,7 +198,7 @@ namespace physics {
 
     HOTPROC auto physics_subsystem::on_post_tick() -> void {
     	const double delta = kernel::get().get_delta_time();
-    	const int n_steps = 1;
+    	const int n_steps = 8;
     	m_physics_system.Update(static_cast<float>(delta), n_steps, &*m_temp_allocator, &*m_job_system);
     	const auto& active = scene::get_active();
     	if (!active) [[unlikely]] {
