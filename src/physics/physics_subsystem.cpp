@@ -264,15 +264,13 @@ namespace physics {
     		e.get_mut<com::rigidbody>()->body_id = sphere_body;
     	};
 
-    	for (int i = 0; i < 26; i++) {
-			for (int j = 0; j < 26; j++) {
-				for (int k = 0; k < 26; k++) {
+    	for (int i = 0; i < 15; i++) {
+			for (int j = 0; j < 15; j++) {
+				for (int k = 0; k < 15; k++) {
 					make_sphere(-30.0f+i, 20.0f+j, -30.0f+k);
 				}
 			}
 		}
-
-    	log_info("Melons: {}", 26*26*26);
 
     	// Optional step: Before starting the physics simulation you can optimize the broad phase. This improves collision detection performance (it's pointless here because we only have 2 bodies).
     	// You should definitely not call this every frame or when e.g. streaming in a new level section as it is an expensive operation.
