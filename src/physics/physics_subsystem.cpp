@@ -175,7 +175,7 @@ namespace physics {
 
     auto physics_subsystem::on_start(scene& scene) -> void {
     	auto& bi = m_physics_system.GetBodyInterface();
-
+		log_info("Creating static collision hulls...");
     	scene.filter<const c_mesh_renderer>().each([&](const c_mesh_renderer& renderer) {
     		if (renderer.meshes.empty()) {
     			return;
@@ -233,16 +233,16 @@ namespace physics {
     	mat->normal_map = normal;
     	mat->flush_property_updates();
 
-    	const auto make_sphere = [&](const float x, const float y, const float z) {
+    	const auto make_sphere = [&](const float x, const float y, const float z) -> void {
 		    const flecs::entity e = scene.spawn(nullptr);
-    		c_transform* transform = e.get_mut<c_transform>();
+    		auto* transform = e.get_mut<c_transform>();
     		transform->position.x = x;
     		transform->position.y = y;
     		transform->position.z = z;
     		transform->scale.x = 0.01f;
     		transform->scale.y = 0.01f;
     		transform->scale.z = 0.01f;
-    		c_mesh_renderer* renderer = e.get_mut<c_mesh_renderer>();
+    		auto* renderer = e.get_mut<c_mesh_renderer>();
     		renderer->meshes.emplace_back(sphere_mesh);
     		renderer->materials.emplace_back(mat);
     		JPH::BodyCreationSettings sphere_settings {

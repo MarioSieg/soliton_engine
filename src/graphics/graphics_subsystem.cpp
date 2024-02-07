@@ -50,13 +50,13 @@ namespace graphics {
         m_render_thread_pool.emplace(&render_scene_bucket, this, 8);
     }
 
-    [[nodiscard]] static auto compute_render_bucket_range(const std::size_t id, const std::size_t num, const std::size_t num_threads) noexcept -> std::array<std::size_t, 2> {
-       const std::size_t bucket_count = num_threads;
-       const std::size_t bucket_size = num / bucket_count;
-       const std::size_t begin = bucket_size * id;
-       const std::size_t end = id < bucket_count - 1 ? bucket_size * (1 + id) : num;
-       passert(begin <= end);
-       return {begin, end};
+    [[nodiscard]] static auto compute_render_bucket_range(const std::size_t id, const std::size_t num_entities, const std::size_t num_threads) noexcept -> std::array<std::size_t, 2> {
+        const std::size_t base_bucket_size = num_entities / num_threads;
+        const std::size_t num_extra_entities = num_entities % num_threads;
+        const std::size_t begin = base_bucket_size * id + std::min(id, num_extra_entities);
+        const std::size_t end = begin + base_bucket_size + (id < num_extra_entities ? 1 : 0);
+        passert(begin <= end && end <= num_entities);
+        return {begin, end};
     }
 
     graphics_subsystem::~graphics_subsystem() {
