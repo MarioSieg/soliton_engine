@@ -178,7 +178,7 @@ struct world {
         return *this;
     }
 
-    ~world() {
+    virtual ~world() {
         if (m_owned && ecs_stage_is_async(m_world)) {
             ecs_async_stage_free(m_world);
         } else

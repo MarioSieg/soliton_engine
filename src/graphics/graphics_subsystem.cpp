@@ -82,7 +82,7 @@ namespace graphics {
 
     [[nodiscard]] static auto get_main_camera() -> flecs::entity {
         if (const auto& scene = scene::get_active()) [[likely]] {
-            const auto filter = scene->filter<const c_transform, c_camera>();
+            const auto filter = scene->filter<const com::transform, com::camera>();
             if (filter.count() > 0) {
                 return filter.first();
             }
@@ -93,8 +93,9 @@ namespace graphics {
     static constinit DirectX::XMFLOAT4X4A s_view_mtx;
     static constinit DirectX::XMFLOAT4X4A s_proj_mtx;
     static constinit DirectX::XMFLOAT4X4A s_view_proj_mtx;
+    static DirectX::XMFLOAT4A s_clear_color;
     static DirectX::BoundingFrustum s_frustum;
-    static c_transform s_camera_transform;
+    static com::transform s_camera_transform;
 
     static auto update_main_camera(const float width, const float height) -> void {
         const flecs::entity main_cam = get_main_camera();
@@ -102,20 +103,21 @@ namespace graphics {
             log_warn("No camera found in scene");
             return;
         }
-        c_camera::active_camera = main_cam;
-        s_camera_transform = *main_cam.get<c_transform>();
-        c_camera& cam = *main_cam.get_mut<c_camera>();
+        com::camera::active_camera = main_cam;
+        s_camera_transform = *main_cam.get<com::transform>();
+        com::camera& cam = *main_cam.get_mut<com::camera>();
         if (cam.auto_viewport) {
             cam.viewport.x = width;
             cam.viewport.y = height;
         }
+        DirectX::XMStoreFloat4A(&s_clear_color, DirectX::XMVectorSetW(DirectX::XMLoadFloat3(&cam.clear_color), 1.0f));
         const DirectX::XMMATRIX view = cam.compute_view(s_camera_transform);
         const DirectX::XMMATRIX proj = cam.compute_projection();
-        XMStoreFloat4x4A(&s_view_mtx, view);
-        XMStoreFloat4x4A(&s_proj_mtx, proj);
-        XMStoreFloat4x4A(&s_view_proj_mtx, XMMatrixMultiply(view, proj));
+        DirectX::XMStoreFloat4x4A(&s_view_mtx, view);
+        DirectX::XMStoreFloat4x4A(&s_proj_mtx, proj);
+        DirectX::XMStoreFloat4x4A(&s_view_proj_mtx, DirectX::XMMatrixMultiply(view, proj));
         DirectX::BoundingFrustum::CreateFromMatrix(s_frustum, proj);
-        s_frustum.Transform(s_frustum, XMMatrixInverse(nullptr, view));
+        s_frustum.Transform(s_frustum, DirectX::XMMatrixInverse(nullptr, view));
     }
 
     // WARNING! RENDER THREAD LOCAL
@@ -159,15 +161,15 @@ namespace graphics {
     HOTPROC static auto render_mesh(
         const vk::CommandBuffer cmd_buf,
         const vk::PipelineLayout layout,
-        const c_transform& transform,
-        const c_mesh_renderer& renderer,
+        const com::transform& transform,
+        const com::mesh_renderer& renderer,
         DirectX::FXMMATRIX vp
     ) -> void {
         if (renderer.meshes.empty() || renderer.materials.empty()) [[unlikely]] {
             log_warn("Mesh renderer has no meshes or materials");
             return;
         }
-        if (renderer.flags & render_flags::skip_rendering) [[unlikely]] {
+        if (renderer.flags & com::render_flags::skip_rendering) [[unlikely]] {
             return;
         }
         const DirectX::XMMATRIX model = transform.compute_matrix();
@@ -181,7 +183,7 @@ namespace graphics {
             DirectX::BoundingOrientedBox obb {};
             obb.CreateFromBoundingBox(obb, mesh->get_aabb());
             obb.Transform(obb, model);
-            if ((renderer.flags & render_flags::skip_frustum_culling) == 0) [[likely]] {
+            if ((renderer.flags & com::render_flags::skip_frustum_culling) == 0) [[likely]] {
                 if (s_frustum.Contains(obb) == DirectX::ContainmentType::DISJOINT) { // Object is culled
                     return;
                 }
@@ -219,8 +221,8 @@ namespace graphics {
         //);
         cmd_buf.bindPipeline(vk::PipelineBindPoint::eGraphics, self.get_pipeline());
         const DirectX::XMMATRIX vp = XMLoadFloat4x4A(&s_view_proj_mtx);
-        const std::span<const c_transform> transforms = self.get_transforms();
-        const std::span<const c_mesh_renderer> renderers = self.get_renderers();
+        const std::span<const com::transform> transforms = self.get_transforms();
+        const std::span<const com::mesh_renderer> renderers = self.get_renderers();
         passert(transforms.size() == renderers.size());
         const auto [start, end] = compute_render_bucket_range(bucket_id, transforms.size(), num_threads);
         for (std::size_t i = start; i < end; ++i) {
@@ -232,26 +234,25 @@ namespace graphics {
     }
 
     HOTPROC auto graphics_subsystem::on_pre_tick() -> bool {
-        const float w = static_cast<float>(context::s_instance->get_width());
-        const float h = static_cast<float>(context::s_instance->get_height());
+        const auto w = static_cast<float>(context::s_instance->get_width());
+        const auto h = static_cast<float>(context::s_instance->get_height());
         ImGui::NewFrame();
         auto& io = ImGui::GetIO();
         io.DisplaySize.x = w;
         io.DisplaySize.y = h;
         update_main_camera(w, h);
-        m_cmd_buf = vkb_context().begin_frame(DirectX::XMFLOAT4{0.53f, 0.81f, 0.92f, 1.0f}, &m_inheritance_info);
+        m_cmd_buf = vkb_context().begin_frame(s_clear_color, &m_inheritance_info);
         return true;
     }
 
     HOTPROC auto graphics_subsystem::on_post_tick() -> void {
         ImGui::Render();
-        const auto& scene = scene::get_active();
-        if (scene) [[likely]] {
-            if (!m_render_query.scene || &*scene != m_render_query.scene) [[unlikely]] { // Scene changed
+        if (const auto& scene = scene::get_active()) [[likely]] {
+            if (!m_render_query.scene || &*scene != m_render_query.scene || m_render_query.query.changed()) [[unlikely]] { // Scene changed
                 m_render_query.scene = &*scene;
-                m_render_query.query = scene->query<const c_transform, const c_mesh_renderer>();
+                m_render_query.query = scene->query<const com::transform, const com::mesh_renderer>();
             }
-            m_render_query.query.iter([this](flecs::iter i, const c_transform* transforms, const c_mesh_renderer* renderers) {
+            m_render_query.query.iter([this](const flecs::iter& i, const com::transform* transforms, const com::mesh_renderer* renderers) {
                 const std::size_t n = i.count();
                 m_transforms = std::span{transforms, n};
                 m_renderers = std::span{renderers, n};
@@ -269,7 +270,7 @@ namespace graphics {
         if (m_cmd_buf) [[likely]] {
             vkb_context().end_frame(m_cmd_buf);
         }
-        c_camera::active_camera = flecs::entity::null();
+        com::camera::active_camera = flecs::entity::null();
     }
 
     auto graphics_subsystem::on_resize() -> void {
@@ -278,7 +279,7 @@ namespace graphics {
 
     auto graphics_subsystem::on_start(scene& scene) -> void {
         flecs::entity camera = scene.spawn("MainCamera");
-        camera.add<c_camera>();
+        camera.add<com::camera>();
     }
 
     auto graphics_subsystem::create_uniform_buffers() -> void {
@@ -300,7 +301,7 @@ namespace graphics {
 
     auto graphics_subsystem::create_descriptor_set_layout() -> void {
         const vkb::device& vkb_device = context::s_instance->get_device();
-        vk::Device device = vkb_device.get_logical_device();
+        const vk::Device device = vkb_device.get_logical_device();
 
         // Binding 0: Uniform buffer (Vertex shader)
         vk::DescriptorSetLayoutBinding layout_binding {};

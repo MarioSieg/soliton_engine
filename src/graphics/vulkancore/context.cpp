@@ -57,7 +57,7 @@ namespace vkb {
         m_device.reset();
     }
 
-    auto context::begin_frame(const DirectX::XMFLOAT4& clear_color, vk::CommandBufferInheritanceInfo* out_inheritance_info) -> vk::CommandBuffer {
+    auto context::begin_frame(const DirectX::XMFLOAT4A& clear_color, vk::CommandBufferInheritanceInfo* out_inheritance_info) -> vk::CommandBuffer {
 
         // Use a fence to wait until the command buffer has finished execution before using it again
         vkcheck(m_device->get_logical_device().waitForFences(1, &m_wait_fences[m_current_frame], vk::True, std::numeric_limits<std::uint64_t>::max()));

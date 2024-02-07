@@ -28,9 +28,9 @@ scene::scene() : id{id_gen.fetch_add(1, std::memory_order_relaxed)} {
 }
 
 scene::~scene() {
+    vkcheck(vkb_vk_device().waitIdle());
     m_meshes.invalidate();
     m_textures.invalidate();
-	vkcheck(vkb_vk_device().waitIdle());
 	log_info("Destroyed scene '{}', id: {}", name, id);
 }
 
@@ -54,7 +54,7 @@ auto scene::on_start() -> void {
 
 auto scene::spawn(const char* name) const -> flecs::entity {
     flecs::entity ent = this->entity(name);
-    ent.add<c_metadata>();
+    ent.add<com::metadata>();
     return ent;
 }
 
@@ -64,7 +64,7 @@ auto scene::import_from_file(const std::string& path, const float scale) -> void
             const auto len = std::strlen(message);
             auto* copy = static_cast<char*>(alloca(len));
             std::memcpy(copy, message, len);
-            copy[len - 1] = '\0'; // replace \n with \0
+            copy[len-1] = '\0'; // replace \n with \0
             log_info("[WorldImporter]: {}", copy);
         }
     };
@@ -100,10 +100,10 @@ auto scene::import_from_file(const std::string& path, const float scale) -> void
         ++num_nodes;
 
         const flecs::entity e = spawn(nullptr);
-        auto* metadata = e.get_mut<c_metadata>();
+        auto* metadata = e.get_mut<com::metadata>();
         metadata->name = node->mName.C_Str();
 
-        auto* transform = e.get_mut<c_transform>();
+        auto* transform = e.get_mut<com::transform>();
         aiVector3D scaling, position;
         aiQuaternion rotation;
         node->mTransformation.Decompose(scaling, rotation, position);
@@ -112,7 +112,7 @@ auto scene::import_from_file(const std::string& path, const float scale) -> void
         transform->scale = {scaling.x, scaling.y, scaling.z};
 
         if (node->mNumMeshes > 0) {
-            auto* renderer = e.get_mut<c_mesh_renderer>();
+            auto* renderer = e.get_mut<com::mesh_renderer>();
 
             std::vector<const aiMesh*> meshes {};
             meshes.reserve(node->mNumMeshes);

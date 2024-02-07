@@ -11,8 +11,8 @@ static auto lunam_entry() -> void {
     kernel kernel {};
     kernel.install<scripting::scripting_subsystem>();
     kernel.install<platform::platform_subsystem>();
-    kernel.install<graphics::graphics_subsystem>();
     kernel.install<physics::physics_subsystem>();
+    kernel.install<graphics::graphics_subsystem>();
     kernel.run();
 }
 

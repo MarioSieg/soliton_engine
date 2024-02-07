@@ -113,7 +113,7 @@ kernel::kernel() {
     std::shared_ptr<spdlog::logger> engineLogger = create_logger("engine", "%H:%M:%S:%e %s:%# %^[%l]%$ T:%t %v");
     std::shared_ptr<spdlog::logger> scriptLogger = create_logger("app", "%H:%M:%S:%e %v");
     spdlog::set_default_logger(engineLogger);
-    log_info("LunamEngine v0.0.1");
+    log_info("LunamEngine v0.0.1"); // TODO: version
     log_info("Copyright (c) 2022-2023 Mario \"Neo\" Sieg. All Rights Reserved.");
     log_info("Booting Engine Kernel...");
     log_info("Build date: {}", __DATE__);

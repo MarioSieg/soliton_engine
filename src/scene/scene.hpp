@@ -15,7 +15,7 @@ class scene : public flecs::world, public no_copy, public no_move {
 public:
     const std::uint32_t id;
     std::string name = {};
-    virtual ~scene();
+    virtual ~scene() override;
 
     static auto new_active(std::string&& name, std::string&& file, float scale = 1.0f) -> void;
     [[nodiscard]] static auto get_active() noexcept -> const std::unique_ptr<scene>& { passert(m_active != nullptr); return m_active; }

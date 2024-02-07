@@ -29,7 +29,7 @@ LUA_INTEROP_API auto __lu_entity_set_pos(const flecs::id_t id, const double x, c
     if (!ent) [[unlikely]] {
         return;
     }
-    auto* transform = ent.get_mut<c_transform>();
+    auto* transform = ent.get_mut<com::transform>();
     transform->position = {
         static_cast<float>(x),
         static_cast<float>(y),
@@ -46,7 +46,7 @@ LUA_INTEROP_API auto __lu_entity_get_pos(const flecs::id_t id) -> lua_vec3 {
     if (!ent) [[unlikely]] {
         return {};
     }
-    if (const auto* transform = ent.get<const c_transform>(); transform) [[likely]] {
+    if (const auto* transform = ent.get<const com::transform>(); transform) [[likely]] {
         return lua_vec3{transform->position};
     }
     return {};
@@ -61,7 +61,7 @@ LUA_INTEROP_API auto __lu_entity_set_rot(const flecs::id_t id, const double x, c
     if (!ent) [[unlikely]] {
         return;
     }
-    auto* transform = ent.get_mut<c_transform>();
+    auto* transform = ent.get_mut<com::transform>();
     transform->rotation = {
         static_cast<float>(x),
         static_cast<float>(y),
@@ -79,7 +79,7 @@ LUA_INTEROP_API auto __lu_entity_get_rot(const flecs::id_t id) -> lua_vec4 {
     if (!ent) [[unlikely]] {
         return {};
     }
-    if (const auto* transform = ent.get<const c_transform>(); transform) [[likely]] {
+    if (const auto* transform = ent.get<const com::transform>(); transform) [[likely]] {
         return lua_vec4{transform->rotation};
     }
     return {};
@@ -94,7 +94,7 @@ LUA_INTEROP_API auto __lu_entity_set_scale(const flecs::id_t id, const double x,
     if (!ent) [[unlikely]] {
         return;
     }
-    auto* transform = ent.get_mut<c_transform>();
+    auto* transform = ent.get_mut<com::transform>();
     transform->scale = {
         static_cast<float>(x),
         static_cast<float>(y),
@@ -111,7 +111,7 @@ LUA_INTEROP_API auto __lu_entity_get_scale(const flecs::id_t id) -> lua_vec3 {
     if (!ent) [[unlikely]] {
         return {};
     }
-    if (const auto* transform = ent.get<const c_transform>(); transform) [[likely]] {
+    if (const auto* transform = ent.get<const com::transform>(); transform) [[likely]] {
         return lua_vec3{transform->scale};
     }
     return {};

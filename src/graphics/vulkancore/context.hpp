@@ -119,7 +119,7 @@ namespace vkb {
         [[nodiscard]] auto get_swapchain_image_scissor() const noexcept -> vk::Rect2D { return { { 0, 0 }, { m_width, m_height } }; }
         [[nodiscard]] auto get_swapchain_image_depth_stencil_view() const noexcept -> vk::ImageView { return m_depth_stencil.view; }
 
-        HOTPROC auto begin_frame(const DirectX::XMFLOAT4& clear_color, vk::CommandBufferInheritanceInfo* out_inheritance_info = nullptr) -> vk::CommandBuffer;
+        HOTPROC auto begin_frame(const DirectX::XMFLOAT4A& clear_color, vk::CommandBufferInheritanceInfo* out_inheritance_info = nullptr) -> vk::CommandBuffer;
         HOTPROC auto end_frame(vk::CommandBuffer cmd_buf) -> void;
         auto render_imgui(ImDrawData* data, vk::CommandBuffer cmd_buf) -> void;
         auto on_resize() -> void;

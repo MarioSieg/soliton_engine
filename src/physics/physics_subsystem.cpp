@@ -176,7 +176,7 @@ namespace physics {
     auto physics_subsystem::on_start(scene& scene) -> void {
     	auto& bi = m_physics_system.GetBodyInterface();
 		log_info("Creating static collision hulls...");
-    	scene.filter<const c_mesh_renderer>().each([&](const c_mesh_renderer& renderer) {
+    	scene.filter<const com::mesh_renderer>().each([&](const com::mesh_renderer& renderer) {
     		if (renderer.meshes.empty()) {
     			return;
     		}
@@ -209,7 +209,7 @@ namespace physics {
     	}
     	auto& bi = m_physics_system.GetBodyInterface();
 	    const bool is_key_down = ImGui::IsKeyPressed(ImGuiKey_Space, false);
-    	active->filter<c_rigidbody, c_transform>().each([&](c_rigidbody& rb, c_transform& transform) {
+    	active->filter<com::rigidbody, com::transform>().each([&](com::rigidbody& rb, com::transform& transform) {
 			JPH::BodyID body_id = rb.body_id;
     		if (is_key_down) [[unlikely]] {
 				bi.SetMotionType(body_id, JPH::EMotionType::Dynamic, JPH::EActivation::Activate);
@@ -235,20 +235,20 @@ namespace physics {
 
     	const auto make_sphere = [&](const float x, const float y, const float z) -> void {
 		    const flecs::entity e = scene.spawn(nullptr);
-    		auto* transform = e.get_mut<c_transform>();
+    		auto* transform = e.get_mut<com::transform>();
     		transform->position.x = x;
     		transform->position.y = y;
     		transform->position.z = z;
     		transform->scale.x = 0.01f;
     		transform->scale.y = 0.01f;
     		transform->scale.z = 0.01f;
-    		auto* renderer = e.get_mut<c_mesh_renderer>();
+    		auto* renderer = e.get_mut<com::mesh_renderer>();
     		renderer->meshes.emplace_back(sphere_mesh);
     		renderer->materials.emplace_back(mat);
     		JPH::BodyCreationSettings sphere_settings {
     			new JPH::SphereShape{1.0f*0.15f},
-				lunam_vec3_to_jbh_vec3(e.get<c_transform>()->position),
-				std::bit_cast<JPH::Quat>(e.get<c_transform>()->rotation),
+				lunam_vec3_to_jbh_vec3(transform->position),
+				std::bit_cast<JPH::Quat>(transform->rotation),
 				JPH::EMotionType::Kinematic,
 				Layers::MOVING
 			};
@@ -261,7 +261,7 @@ namespace physics {
     		sphere_settings.mAllowDynamicOrKinematic = true;
 
     		JPH::BodyID sphere_body = bi.CreateAndAddBody(sphere_settings, JPH::EActivation::Activate);
-    		e.get_mut<c_rigidbody>()->body_id = sphere_body;
+    		e.get_mut<com::rigidbody>()->body_id = sphere_body;
     	};
 
     	for (int i = 0; i < 26; i++) {
