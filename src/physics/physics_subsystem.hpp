@@ -21,6 +21,7 @@ namespace physics {
         HOTPROC auto on_post_tick() -> void override;
 
     private:
+        auto create_melons(scene& scene) -> void;
         // This is the size of the temporary allocator that the physics system will use. This is used for temporary allocations.
         static constexpr std::uint32_t k_temp_allocator_size = 16ull << 20; // 16 MiB
 

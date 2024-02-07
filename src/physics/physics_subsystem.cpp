@@ -175,16 +175,8 @@ namespace physics {
 
     auto physics_subsystem::on_start(scene& scene) -> void {
     	auto& bi = m_physics_system.GetBodyInterface();
-#if 0
-    	auto* sphere_mesh = new graphics::mesh("assets/meshes/melon/melon.obj");
-    	auto* mat = new graphics::material{};
-    	auto* albedo = new graphics::texture("assets/meshes/melon/albedo.jpg");
-    	auto* normal = new graphics::texture("assets/meshes/melon/normal.jpg");
-    	mat->albedo_map = albedo;
-    	mat->normal_map = normal;
-    	mat->flush_property_updates();
 
-    	scene.filter<const c_transform, const c_mesh_renderer>().each([&](const c_transform& transform, const c_mesh_renderer& renderer) {
+    	scene.filter<const c_mesh_renderer>().each([&](const c_mesh_renderer& renderer) {
     		if (renderer.meshes.empty()) {
     			return;
     		}
@@ -192,8 +184,8 @@ namespace physics {
     		JPH::Shape::ShapeResult result {};
 		    JPH::BodyCreationSettings static_object {
 				 new JPH::MeshShape(JPH::MeshShapeSettings{mesh->verts, mesh->triangles}, result),
-				lunam_vec4_to_jbh_vec3(transform.position),
-				std::bit_cast<JPH::Quat>(transform.rotation),
+				{},
+				{},
 				JPH::EMotionType::Static,
 				Layers::NON_MOVING
 			};
@@ -202,23 +194,61 @@ namespace physics {
     		static_object.mRestitution = 0.0f;
 			bi.CreateAndAddBody(static_object, JPH::EActivation::DontActivate);
     	});
+    }
 
-    	const auto make_sphere = [&](float x, float y, float z) {
-    		flecs::entity sphere = scene.spawn(nullptr);
-    		c_transform* transform = sphere.get_mut<c_transform>();
+    HOTPROC auto physics_subsystem::on_post_tick() -> void {
+    	const double delta = kernel::get().get_delta_time();
+    	const int n_steps = 1;
+    	m_physics_system.Update(static_cast<float>(delta), n_steps, &*m_temp_allocator, &*m_job_system);
+    	const auto& active = scene::get_active();
+    	if (!active) [[unlikely]] {
+    		return;
+    	}
+    	if (ImGui::IsKeyPressed(ImGuiKey_M)) {
+    		create_melons(*active);
+    	}
+    	auto& bi = m_physics_system.GetBodyInterface();
+	    const bool is_key_down = ImGui::IsKeyPressed(ImGuiKey_Space, false);
+    	active->filter<c_rigidbody, c_transform>().each([&](c_rigidbody& rb, c_transform& transform) {
+			JPH::BodyID body_id = rb.body_id;
+    		if (is_key_down) [[unlikely]] {
+				bi.SetMotionType(body_id, JPH::EMotionType::Dynamic, JPH::EActivation::Activate);
+			}
+    		JPH::Vec3 pos = bi.GetPosition(body_id);
+			transform.position.x = pos.GetX();
+    		transform.position.y = pos.GetY();
+    		transform.position.z = pos.GetZ();
+    		transform.rotation = std::bit_cast<DirectX::XMFLOAT4>(bi.GetRotation(body_id));
+		});
+    }
+
+    auto physics_subsystem::create_melons(scene& scene) -> void {
+    	auto& bi = m_physics_system.GetBodyInterface();
+
+    	auto* sphere_mesh = scene.get_asset_registry<graphics::mesh>().load("assets/meshes/melon/melon.obj");
+    	auto* mat = scene.get_asset_registry<graphics::material>().load_from_memory();
+    	auto* albedo = scene.get_asset_registry<graphics::texture>().load("assets/meshes/melon/albedo.jpg");
+    	auto* normal = scene.get_asset_registry<graphics::texture>().load("assets/meshes/melon/normal.jpg");
+    	mat->albedo_map = albedo;
+    	mat->normal_map = normal;
+    	mat->flush_property_updates();
+
+    	const auto make_sphere = [&](const float x, const float y, const float z) {
+		    const flecs::entity e = scene.spawn(nullptr);
+    		c_transform* transform = e.get_mut<c_transform>();
     		transform->position.x = x;
     		transform->position.y = y;
     		transform->position.z = z;
     		transform->scale.x = 0.01f;
     		transform->scale.y = 0.01f;
     		transform->scale.z = 0.01f;
-    		c_mesh_renderer* renderer = sphere.get_mut<c_mesh_renderer>();
+    		c_mesh_renderer* renderer = e.get_mut<c_mesh_renderer>();
     		renderer->meshes.emplace_back(sphere_mesh);
     		renderer->materials.emplace_back(mat);
     		JPH::BodyCreationSettings sphere_settings {
     			new JPH::SphereShape{1.0f*0.15f},
-				lunam_vec4_to_jbh_vec3(sphere.get<c_transform>()->position),
-				std::bit_cast<JPH::Quat>(sphere.get<c_transform>()->rotation),
+				lunam_vec3_to_jbh_vec3(e.get<c_transform>()->position),
+				std::bit_cast<JPH::Quat>(e.get<c_transform>()->rotation),
 				JPH::EMotionType::Kinematic,
 				Layers::MOVING
 			};
@@ -231,7 +261,7 @@ namespace physics {
     		sphere_settings.mAllowDynamicOrKinematic = true;
 
     		JPH::BodyID sphere_body = bi.CreateAndAddBody(sphere_settings, JPH::EActivation::Activate);
-    		sphere.get_mut<c_rigidbody>()->body_id = sphere_body;
+    		e.get_mut<c_rigidbody>()->body_id = sphere_body;
     	};
 
     	for (int i = 0; i < 26; i++) {
@@ -242,37 +272,11 @@ namespace physics {
 			}
 		}
 
-    	log_info("Balls: {}", 26*26*26);
-#endif
+    	log_info("Melons: {}", 26*26*26);
 
     	// Optional step: Before starting the physics simulation you can optimize the broad phase. This improves collision detection performance (it's pointless here because we only have 2 bodies).
     	// You should definitely not call this every frame or when e.g. streaming in a new level section as it is an expensive operation.
     	// Instead insert all new objects in batches instead of 1 at a time to keep the broad phase efficient.
     	m_physics_system.OptimizeBroadPhase();
-    }
-
-    HOTPROC auto physics_subsystem::on_post_tick() -> void {
-    	const double delta = kernel::get().get_delta_time();
-    	const int n_steps = 1;
-    	m_physics_system.Update(static_cast<float>(delta), n_steps, &*m_temp_allocator, &*m_job_system);
-    	const auto& active = scene::get_active();
-    	if (!active) [[unlikely]] {
-    		return;
-    	}
-    	auto& bi = m_physics_system.GetBodyInterface();
-#if 0
-    	bool is_key_down = ImGui::IsKeyPressed(ImGuiKey_Space, false);
-    	active->filter<c_rigidbody, c_transform>().each([&](c_rigidbody& rb, c_transform& transform) {
-			JPH::BodyID body_id = rb.body_id;
-    		if (is_key_down) [[unlikely]] {
-				bi.SetMotionType(body_id, JPH::EMotionType::Dynamic, JPH::EActivation::Activate);
-			}
-    		JPH::Vec3 pos = bi.GetPosition(body_id);
-			transform.position.x = pos.GetX();
-    		transform.position.y = pos.GetY();
-    		transform.position.z = pos.GetZ();
-    		transform.rotation = std::bit_cast<DirectX::XMFLOAT4>(bi.GetRotation(body_id));
-		});
-#endif
     }
 }
