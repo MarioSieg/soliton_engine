@@ -244,7 +244,7 @@ namespace physics {
     		renderer->meshes.emplace_back(sphere_mesh);
     		renderer->materials.emplace_back(mat);
     		JPH::BodyCreationSettings sphere_settings {
-    			new JPH::SphereShape{1.0f*0.15f},
+    			new JPH::SphereShape{1.0f*0.12f},
 				lunam_vec3_to_jbh_vec3(transform->position),
 				std::bit_cast<JPH::Quat>(transform->rotation),
 				JPH::EMotionType::Kinematic,
