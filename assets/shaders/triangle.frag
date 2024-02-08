@@ -23,7 +23,7 @@ const vec4 ambient = vec4(0.1, 0.1, 0.15, 1.0);
 void main() {
   vec4 texColor = texture(samplerAlbedoMap, outUV);
   // vec3 normalMap = normalize(texture(samplerNormalMap, outUV).xyz * 2.0 - 1.0);
-  vec3 normal = normalize(outTBN * outNormal);
+  vec3 normal = normalize(outNormal);
   float diff = max(dot(normal, lightDir), 0.0);
   outFragColor = texColor * (ambient + diff * lightColor);
 
