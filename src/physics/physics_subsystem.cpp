@@ -260,13 +260,13 @@ namespace physics {
     		sphere_settings.mFriction = 0.5f;
     		sphere_settings.mAllowDynamicOrKinematic = true;
 
-    		JPH::BodyID sphere_body = bi.CreateAndAddBody(sphere_settings, JPH::EActivation::Activate);
-    		e.get_mut<com::rigidbody>()->body_id = sphere_body;
+    		//JPH::BodyID sphere_body = bi.CreateAndAddBody(sphere_settings, JPH::EActivation::Activate);
+    		//e.get_mut<com::rigidbody>()->body_id = sphere_body;
     	};
 
-    	for (int i = 0; i < 15; i++) {
-			for (int j = 0; j < 15; j++) {
-				for (int k = 0; k < 15; k++) {
+    	for (int i = 0; i < 32; i++) {
+			for (int j = 0; j < 32; j++) {
+				for (int k = 0; k < 32; k++) {
 					make_sphere(-30.0f+i, 20.0f+j, -30.0f+k);
 				}
 			}
