@@ -199,7 +199,7 @@ namespace physics {
 
     HOTPROC auto physics_subsystem::on_post_tick() -> void {
     	const double delta = kernel::get().get_delta_time();
-    	const int n_steps = 2;
+    	const int n_steps = 4;
     	m_physics_system.Update(static_cast<float>(delta), n_steps, &*m_temp_allocator, &*m_job_system);
     	auto& active = scene::get_active();
     	if (ImGui::IsKeyPressed(ImGuiKey_M)) {
@@ -262,9 +262,9 @@ namespace physics {
     		e.get_mut<com::rigidbody>()->body_id = sphere_body;
     	};
 
-    	for (int i = 0; i < 32; i++) {
-			for (int j = 0; j < 32; j++) {
-				for (int k = 0; k < 32; k++) {
+    	for (int i = 0; i < 20; i++) {
+			for (int j = 0; j < 20; j++) {
+				for (int k = 0; k < 20; k++) {
 					make_sphere(-30.0f+i, 20.0f+j, -30.0f+k);
 				}
 			}

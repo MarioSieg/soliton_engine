@@ -23,7 +23,7 @@ namespace physics {
     private:
         auto create_melons(scene& scene) -> void;
         // This is the size of the temporary allocator that the physics system will use. This is used for temporary allocations.
-        static constexpr std::uint32_t k_temp_allocator_size = 16ull << 20; // 16 MiB
+        static constexpr std::uint32_t k_temp_allocator_size = 32ull << 20; // 32 MiB
 
         // This is the max amount of rigid bodies that you can add to the physics system. If you try to add more you'll get an error.
         static constexpr std::uint32_t k_max_bodies = 0xffff;
@@ -38,7 +38,7 @@ namespace physics {
 
         // This is the maximum size of the contact constraint buffer. If more contacts (collisions between bodies) are detected than this
         // number then these contacts will be ignored and bodies will start interpenetrating / fall through the world.
-        static constexpr std::uint32_t k_max_contacts = 0x4000;
+        static constexpr std::uint32_t k_max_contacts = 0x8000;
 
         // Max amount of threads that the physics system will use. This is set to 1/4 of the hardware concurrency.
         static inline const std::uint32_t k_num_threads = std::max(std::thread::hardware_concurrency() / 2, 2u);
