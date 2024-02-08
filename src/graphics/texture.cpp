@@ -336,6 +336,7 @@ namespace graphics {
         constexpr vk::ImageTiling tiling = vk::ImageTiling::eOptimal;
 
         auto format = static_cast<vk::Format>(k_texture_format_map[image->m_format].fmt);
+        log_info("Texture format: {}", string_VkFormat(static_cast<VkFormat>(format)));
         if (!vkb_device().is_image_format_supported(vk::ImageType::e2D, format, create_flags, usage, tiling)) [[unlikely]] {
             log_warn("Texture format not supported: {}, converting...", string_VkFormat(static_cast<VkFormat>(format)));
             bimg::ImageContainer* original = image;

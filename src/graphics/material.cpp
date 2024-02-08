@@ -32,10 +32,11 @@ namespace graphics {
 
     auto material::flush_property_updates() const -> void {
         std::array<vk::DescriptorImageInfo, 4> image_infos {};
-        auto make_write_tex_info = [i = 0u, this, &image_infos](const texture* tex) mutable -> vk::WriteDescriptorSet {
+        auto make_write_tex_info = [i = 0u, this, &image_infos](const texture* tex, const texture* fallback) mutable -> vk::WriteDescriptorSet {
+            passert(fallback != nullptr);
             image_infos[i].imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-            image_infos[i].imageView = tex ? tex->get_view() : s_error_texture->get_view();
-            image_infos[i].sampler = tex ? tex->get_sampler() : s_error_texture->get_sampler();
+            image_infos[i].imageView = tex ? tex->get_view() : fallback->get_view();
+            image_infos[i].sampler = tex ? tex->get_sampler() : fallback->get_sampler();
             const vk::WriteDescriptorSet result {
                 .dstSet = m_descriptor_set,
                 .dstBinding = i,
@@ -49,10 +50,10 @@ namespace graphics {
             return result;
         };
         const std::array<vk::WriteDescriptorSet, 4> write_descriptor_sets = {
-            make_write_tex_info(albedo_map),
-            make_write_tex_info(normal_map),
-            make_write_tex_info(metallic_roughness_map),
-            make_write_tex_info(ambient_occlusion_map)
+            make_write_tex_info(albedo_map, &*s_error_texture),
+            make_write_tex_info(normal_map, &*s_flat_normal),
+            make_write_tex_info(metallic_roughness_map, &*s_error_texture),
+            make_write_tex_info(ambient_occlusion_map, &*s_error_texture)
         };
         vkb_vk_device().updateDescriptorSets(
             static_cast<std::uint32_t>(write_descriptor_sets.size()),
@@ -64,6 +65,7 @@ namespace graphics {
 
     auto material::init_static_resources() -> void {
         s_error_texture.emplace("assets/textures/system/error.png");
+        s_flat_normal.emplace("assets/textures/system/flatnormal.png");
 
         constexpr unsigned lim = 8192u;
         std::array<vk::DescriptorPoolSize, 1> pool_sizes = {
@@ -105,5 +107,6 @@ namespace graphics {
         vkb_vk_device().destroyDescriptorSetLayout(s_descriptor_set_layout, &vkb::s_allocator);
         vkb_vk_device().destroyDescriptorPool(s_descriptor_pool, &vkb::s_allocator);
         s_error_texture.reset();
+        s_flat_normal.reset();
     }
 }

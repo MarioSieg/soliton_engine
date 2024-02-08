@@ -28,8 +28,13 @@ namespace graphics {
         auto flush_property_updates() const -> void;
 
         [[nodiscard]] static auto get_error_texture() noexcept -> graphics::texture* {
-            passert(s_error_texture.has_value());
+            assert(s_error_texture.has_value());
             return &*s_error_texture;
+        }
+
+        [[nodiscard]] static auto get_flat_normal_map() noexcept -> graphics::texture* {
+            assert(s_flat_normal.has_value());
+            return &*s_flat_normal;
         }
 
     private:
@@ -42,6 +47,7 @@ namespace graphics {
         }
 
         static inline constinit std::optional<graphics::texture> s_error_texture {};
+        static inline constinit std::optional<graphics::texture> s_flat_normal {};
         static inline constinit vk::DescriptorPool s_descriptor_pool {};
         static inline constinit vk::DescriptorSetLayout s_descriptor_set_layout {};
         vk::DescriptorSet m_descriptor_set {};
