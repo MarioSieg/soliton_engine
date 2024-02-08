@@ -18,7 +18,10 @@ public:
     virtual ~scene() override;
 
     static auto new_active(std::string&& name, std::string&& file, float scale = 1.0f) -> void;
-    [[nodiscard]] static auto get_active() noexcept -> const std::unique_ptr<scene>& { passert(m_active != nullptr); return m_active; }
+    [[nodiscard]] static auto get_active() noexcept -> scene& {
+        assert(s_active != nullptr);
+        return *s_active;
+    }
 
     virtual auto on_tick() -> void;
     virtual auto on_start() -> void;
@@ -26,14 +29,15 @@ public:
     auto spawn(const char* name) const -> flecs::entity;
 
     template <typename A>
-    [[nodiscard]] auto get_asset_registry() -> asset_registry<A>& {
-        if constexpr (std::is_same_v<A, graphics::mesh>) { return m_meshes; }
-        else if constexpr (std::is_same_v<A, graphics::texture>) { return m_textures; }
-        else if constexpr (std::is_same_v<A, graphics::material>) { return m_materials; }
+    [[nodiscard]] auto get_asset_registry() -> asset_registry<std::decay_t<A>>& {
+        if constexpr (std::is_same_v<std::decay_t<A>, graphics::mesh>) { return m_meshes; }
+        else if constexpr (std::is_same_v<std::decay_t<A>, graphics::texture>) { return m_textures; }
+        else if constexpr (std::is_same_v<std::decay_t<A>, graphics::material>) { return m_materials; }
         else { panic("Unknown asset type!"); }
     }
 
 private:
+    friend class kernel;
     auto import_from_file(const std::string& path, float scale) -> void;
 
     asset_registry<graphics::mesh> m_meshes {};
@@ -41,6 +45,6 @@ private:
     asset_registry<graphics::material> m_materials {};
 
     friend struct proxy;
-    static inline constinit std::unique_ptr<scene> m_active {};
+    static inline constinit std::unique_ptr<scene> s_active {};
     scene();
 };

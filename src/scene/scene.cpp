@@ -41,7 +41,7 @@ auto scene::new_active(std::string&& name, std::string&& file, const float scale
 	if (!file.empty()) {
 		scene->import_from_file(file, scale);
 	}
-    m_active = std::move(scene);
+    s_active = std::move(scene);
 }
 
 auto scene::on_tick() -> void {

@@ -12,6 +12,7 @@
 #include <Jolt/Math/Vec3.h>
 #include <Jolt/Core/TempAllocator.h>
 #include <Jolt/Core/JobSystemThreadPool.h>
+#include <Jolt/Math/Quat.h>
 #include <Jolt/Physics/PhysicsSettings.h>
 #include <Jolt/Physics/PhysicsSystem.h>
 #include <Jolt/Physics/Collision/Shape/BoxShape.h>
@@ -185,7 +186,7 @@ namespace physics {
 		    JPH::BodyCreationSettings static_object {
 				 new JPH::MeshShape(JPH::MeshShapeSettings{mesh->verts, mesh->triangles}, result),
 				{},
-				{},
+				JPH::Quat::sIdentity(),
 				JPH::EMotionType::Static,
 				Layers::NON_MOVING
 			};
@@ -200,16 +201,13 @@ namespace physics {
     	const double delta = kernel::get().get_delta_time();
     	const int n_steps = 2;
     	m_physics_system.Update(static_cast<float>(delta), n_steps, &*m_temp_allocator, &*m_job_system);
-    	const auto& active = scene::get_active();
-    	if (!active) [[unlikely]] {
-    		return;
-    	}
+    	auto& active = scene::get_active();
     	if (ImGui::IsKeyPressed(ImGuiKey_M)) {
-    		create_melons(*active);
+    		create_melons(active);
     	}
     	auto& bi = m_physics_system.GetBodyInterface();
 	    const bool is_key_down = ImGui::IsKeyPressed(ImGuiKey_Space, false);
-    	active->filter<com::rigidbody, com::transform>().each([&](com::rigidbody& rb, com::transform& transform) {
+    	active.filter<com::rigidbody, com::transform>().each([&](com::rigidbody& rb, com::transform& transform) {
 			JPH::BodyID body_id = rb.body_id;
     		if (is_key_down) [[unlikely]] {
 				bi.SetMotionType(body_id, JPH::EMotionType::Dynamic, JPH::EActivation::Activate);

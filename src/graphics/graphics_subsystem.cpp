@@ -81,11 +81,9 @@ namespace graphics {
     }
 
     [[nodiscard]] static auto get_main_camera() -> flecs::entity {
-        if (const auto& scene = scene::get_active()) [[likely]] {
-            const auto filter = scene->filter<const com::transform, com::camera>();
-            if (filter.count() > 0) {
-                return filter.first();
-            }
+        const auto filter = scene::get_active().filter<const com::transform, const com::camera>();
+        if (filter.count() > 0) {
+            return filter.first();
         }
         return flecs::entity::null();
     }
@@ -247,25 +245,24 @@ namespace graphics {
 
     HOTPROC auto graphics_subsystem::on_post_tick() -> void {
         ImGui::Render();
-        if (const auto& scene = scene::get_active()) [[likely]] {
-            if (!m_render_query.scene || &*scene != m_render_query.scene || m_render_query.query.changed()) [[unlikely]] { // Scene changed
-                m_render_query.scene = &*scene;
-                m_render_query.query = scene->query<const com::transform, const com::mesh_renderer>();
-            }
-            m_render_query.query.iter([this](const flecs::iter& i, const com::transform* transforms, const com::mesh_renderer* renderers) {
-                const std::size_t n = i.count();
-                m_transforms = std::span{transforms, n};
-                m_renderers = std::span{renderers, n};
-            });
-            if (m_cmd_buf) [[likely]] {
-                scene->readonly_begin();
-                m_render_thread_pool->begin_frame(&m_inheritance_info);
-                m_render_thread_pool->process_frame(m_cmd_buf);
-                scene->readonly_end();
-                m_renderers = {};
-                m_transforms = {};
-            }
+        auto& scene = scene::get_active();
+        if (!m_render_query.scene || &scene != m_render_query.scene || m_render_query.query.changed()) [[unlikely]] { // Scene changed
+            m_render_query.scene = &scene;
+            m_render_query.query = scene.query<const com::transform, const com::mesh_renderer>();
         }
+        scene.readonly_begin();
+        m_render_query.query.iter([this](const flecs::iter& i, const com::transform* transforms, const com::mesh_renderer* renderers) {
+            const std::size_t n = i.count();
+            m_transforms = std::span{transforms, n};
+            m_renderers = std::span{renderers, n};
+        });
+        if (m_cmd_buf) [[likely]] {
+            m_render_thread_pool->begin_frame(&m_inheritance_info);
+            m_render_thread_pool->process_frame(m_cmd_buf);
+            m_renderers = {};
+            m_transforms = {};
+        }
+        scene.readonly_end();
 
         if (m_cmd_buf) [[likely]] {
             vkb_context().end_frame(m_cmd_buf);

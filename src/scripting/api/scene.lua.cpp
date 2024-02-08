@@ -11,36 +11,23 @@ LUA_INTEROP_API auto __lu_scene_new(const char* name, const char* file, const do
         sfile = file;
     }
     scene::new_active(std::move(sname), std::move(sfile), static_cast<float>(scale));
-    return scene::get_active()->id;
+    return scene::get_active().id;
 }
 
 LUA_INTEROP_API auto __lu_scene_tick() -> void {
-    if (!scene::get_active()) [[unlikely]] {
-        return;
-    }
-    scene::get_active()->on_tick();
+    scene::get_active().on_tick();
 }
 
 LUA_INTEROP_API auto __lu_scene_start() -> void {
-    if (!scene::get_active()) [[unlikely]] {
-        return;
-    }
-    scene::get_active()->on_start();
+    scene::get_active().on_start();
 }
 
 LUA_INTEROP_API auto __lu_scene_spawn_entity(const char* const name) -> flecs::id_t {
-    if (!scene::get_active()) [[unlikely]] {
-        return 0;
-    }
-    return scene::get_active()->spawn(name).raw_id();
+    return scene::get_active().spawn(name).raw_id();
 }
 
 LUA_INTEROP_API auto __lu_scene_get_entity_by_name(const char* const name) -> flecs::id_t {
-    const auto& active = scene::get_active();
-    if (!scene::get_active()) [[unlikely]] {
-        return 0;
-    }
-    const flecs::entity entity = scene::get_active()->lookup(name);
+    const flecs::entity entity = scene::get_active().lookup(name);
     if (!entity) [[unlikely]] {
         return 0;
     }

@@ -125,8 +125,7 @@ kernel::~kernel() {
     log_info("Shutting down...");
     log_info("Killing active scene...");
     // Kill active scene before other subsystems are shut down
-    auto& active = const_cast<std::unique_ptr<scene>&>(scene::get_active());
-    active.reset();
+    scene::s_active.reset();
     log_info("Killing subsystems...");
     m_subsystems.clear();
     // Print asset manager infos

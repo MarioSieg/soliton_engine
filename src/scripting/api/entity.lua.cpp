@@ -4,28 +4,19 @@
 
 LUA_INTEROP_API auto __lu_entity_is_valid(const flecs::id_t id) -> bool {
     const auto& active = scene::get_active();
-    if (!active) [[unlikely]] {
-        return false;
-    }
-    const flecs::entity ent {*active, id};
+    const flecs::entity ent {active, id};
     return ent && ent.is_valid();
 }
 
 LUA_INTEROP_API auto __lu_entity_is_alive(const flecs::id_t id) -> bool {
     const auto& active = scene::get_active();
-    if (!active) [[unlikely]] {
-        return false;
-    }
-    const flecs::entity ent {*active, id};
+    const flecs::entity ent {active, id};
     return ent && ent.is_alive();
 }
 
 LUA_INTEROP_API auto __lu_entity_set_pos(const flecs::id_t id, const double x, const double y, const double z) -> void {
     const auto& active = scene::get_active();
-    if (!active) [[unlikely]] {
-        return;
-    }
-    const flecs::entity ent {*active, id};
+    const flecs::entity ent {active, id};
     if (!ent) [[unlikely]] {
         return;
     }
@@ -39,10 +30,7 @@ LUA_INTEROP_API auto __lu_entity_set_pos(const flecs::id_t id, const double x, c
 
 LUA_INTEROP_API auto __lu_entity_get_pos(const flecs::id_t id) -> lua_vec3 {
     const auto& active = scene::get_active();
-    if (!active) [[unlikely]] {
-        return {};
-    }
-    const flecs::entity ent {*active, id};
+    const flecs::entity ent {active, id};
     if (!ent) [[unlikely]] {
         return {};
     }
@@ -54,10 +42,7 @@ LUA_INTEROP_API auto __lu_entity_get_pos(const flecs::id_t id) -> lua_vec3 {
 
 LUA_INTEROP_API auto __lu_entity_set_rot(const flecs::id_t id, const double x, const double y, const double z, double w) -> void {
     const auto& active = scene::get_active();
-    if (!active) [[unlikely]] {
-        return;
-    }
-    const flecs::entity ent {*active, id};
+    const flecs::entity ent {active, id};
     if (!ent) [[unlikely]] {
         return;
     }
@@ -72,10 +57,7 @@ LUA_INTEROP_API auto __lu_entity_set_rot(const flecs::id_t id, const double x, c
 
 LUA_INTEROP_API auto __lu_entity_get_rot(const flecs::id_t id) -> lua_vec4 {
     const auto& active = scene::get_active();
-    if (!active) [[unlikely]] {
-        return {};
-    }
-    const flecs::entity ent {*active, id};
+    const flecs::entity ent {active, id};
     if (!ent) [[unlikely]] {
         return {};
     }
@@ -87,10 +69,7 @@ LUA_INTEROP_API auto __lu_entity_get_rot(const flecs::id_t id) -> lua_vec4 {
 
 LUA_INTEROP_API auto __lu_entity_set_scale(const flecs::id_t id, const double x, const double y, const double z) -> void {
     const auto& active = scene::get_active();
-    if (!active) [[unlikely]] {
-        return;
-    }
-    const flecs::entity ent {*active, id};
+    const flecs::entity ent {active, id};
     if (!ent) [[unlikely]] {
         return;
     }
@@ -104,10 +83,7 @@ LUA_INTEROP_API auto __lu_entity_set_scale(const flecs::id_t id, const double x,
 
 LUA_INTEROP_API auto __lu_entity_get_scale(const flecs::id_t id) -> lua_vec3 {
     const auto& active = scene::get_active();
-    if (!active) [[unlikely]] {
-        return {};
-    }
-    const flecs::entity ent {*active, id};
+    const flecs::entity ent {active, id};
     if (!ent) [[unlikely]] {
         return {};
     }
