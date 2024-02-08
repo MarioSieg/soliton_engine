@@ -262,9 +262,9 @@ namespace physics {
     		e.get_mut<com::rigidbody>()->body_id = sphere_body;
     	};
 
-    	for (int i = 0; i < 30; i++) {
-			for (int j = 0; j < 30; j++) {
-				for (int k = 0; k < 30; k++) {
+    	for (int i = 0; i < 20; i++) {
+			for (int j = 0; j < 20; j++) {
+				for (int k = 0; k < 20; k++) {
 					make_sphere(-30.0f+i, 20.0f+j, -30.0f+k);
 				}
 			}
