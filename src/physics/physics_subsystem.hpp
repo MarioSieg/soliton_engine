@@ -41,7 +41,7 @@ namespace physics {
         static constexpr std::uint32_t k_max_contacts = 0xffff;
 
         // Max amount of threads that the physics system will use. This is set to 1/4 of the hardware concurrency.
-        static inline const std::uint32_t k_num_threads = std::max(std::thread::hardware_concurrency() / 2, 2u);
+        static inline const std::uint32_t k_num_threads = std::max(std::thread::hardware_concurrency() - 10, 2u);
 
         std::unique_ptr<JPH::TempAllocatorImpl> m_temp_allocator {};
         std::unique_ptr<JPH::JobSystemThreadPool> m_job_system {};
