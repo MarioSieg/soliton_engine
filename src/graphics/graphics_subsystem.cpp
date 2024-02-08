@@ -48,6 +48,7 @@ namespace graphics {
         create_pipeline();
 
         m_render_thread_pool.emplace(&render_scene_bucket, this, 8);
+        m_render_data.reserve(32);
     }
 
     [[nodiscard]] static auto compute_render_bucket_range(const std::size_t id, const std::size_t num_entities, const std::size_t num_threads) noexcept -> std::array<std::size_t, 2> {
@@ -219,13 +220,33 @@ namespace graphics {
         //);
         cmd_buf.bindPipeline(vk::PipelineBindPoint::eGraphics, self.get_pipeline());
         const DirectX::XMMATRIX vp = XMLoadFloat4x4A(&s_view_proj_mtx);
-        const std::span<const com::transform> transforms = self.get_transforms();
-        const std::span<const com::mesh_renderer> renderers = self.get_renderers();
-        passert(transforms.size() == renderers.size());
-        const auto [start, end] = compute_render_bucket_range(bucket_id, transforms.size(), num_threads);
-        for (std::size_t i = start; i < end; ++i) {
-            render_mesh(cmd_buf, self.get_pipeline_layout(), transforms[i], renderers[i], vp);
+
+        // thread workload distribution
+        const std::vector<std::pair<std::span<const com::transform>, std::span<const com::mesh_renderer>>>& render_data = self.get_render_data();
+        const std::size_t total_entities = std::accumulate(render_data.cbegin(), render_data.cend(), 0, [](const std::size_t acc, const auto& pair) noexcept {
+            passert(pair.first.size() == pair.second.size());
+            return acc + pair.first.size();
+        });
+
+        // Compute start and end for this thread across all entities
+        const auto [global_start, global_end] = compute_render_bucket_range(bucket_id, total_entities, num_threads);
+        std::size_t processed_entities = 0;
+        for (const auto& [transforms, renderers] : render_data) {
+            if (processed_entities >= global_end) break; // Already processed all entities this thread is responsible for
+            std::size_t local_start = 0;
+            std::size_t local_end = transforms.size();
+            if (processed_entities < global_start) {
+                local_start = std::min(transforms.size(), global_start - processed_entities);
+            }
+            if (processed_entities + transforms.size() > global_end) {
+                local_end = std::min(transforms.size(), global_end - processed_entities);
+            }
+            for (std::size_t i = local_start; i < local_end; ++i) {
+                render_mesh(cmd_buf, self.get_pipeline_layout(), transforms[i], renderers[i], vp);
+            }
+            processed_entities += transforms.size();
         }
+
         if (bucket_id == num_threads - 1) { // Last thread
             vkb_context().render_imgui(ImGui::GetDrawData(), cmd_buf); // thread safe?!
         }
@@ -251,16 +272,15 @@ namespace graphics {
             m_render_query.query = scene.query<const com::transform, const com::mesh_renderer>();
         }
         scene.readonly_begin();
+        m_render_data.clear();
         m_render_query.query.iter([this](const flecs::iter& i, const com::transform* transforms, const com::mesh_renderer* renderers) {
             const std::size_t n = i.count();
-            m_transforms = std::span{transforms, n};
-            m_renderers = std::span{renderers, n};
+            m_render_data.emplace_back(std::make_pair(std::span{transforms, n}, std::span{renderers, n}));
         });
         if (m_cmd_buf) [[likely]] {
             m_render_thread_pool->begin_frame(&m_inheritance_info);
             m_render_thread_pool->process_frame(m_cmd_buf);
-            m_renderers = {};
-            m_transforms = {};
+            m_render_data.clear();
         }
         scene.readonly_end();
 

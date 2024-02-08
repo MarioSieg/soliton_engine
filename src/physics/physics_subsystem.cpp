@@ -258,8 +258,8 @@ namespace physics {
     		sphere_settings.mFriction = 0.5f;
     		sphere_settings.mAllowDynamicOrKinematic = true;
 
-    		//JPH::BodyID sphere_body = bi.CreateAndAddBody(sphere_settings, JPH::EActivation::Activate);
-    		//e.get_mut<com::rigidbody>()->body_id = sphere_body;
+    		JPH::BodyID sphere_body = bi.CreateAndAddBody(sphere_settings, JPH::EActivation::Activate);
+    		e.get_mut<com::rigidbody>()->body_id = sphere_body;
     	};
 
     	for (int i = 0; i < 32; i++) {

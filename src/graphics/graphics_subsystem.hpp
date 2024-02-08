@@ -52,8 +52,7 @@ namespace graphics {
         [[nodiscard]] auto get_render_thread_pool() const noexcept -> const render_thread_pool& { return *m_render_thread_pool; }
 
         [[nodiscard]] auto get_uniforms() const noexcept -> std::span<const uniform_buffer> { return m_uniforms; }
-        [[nodiscard]] auto get_transforms() const noexcept -> std::span<const com::transform> { return m_transforms; }
-        [[nodiscard]] auto get_renderers() const noexcept -> std::span<const com::mesh_renderer> { return m_renderers; }
+        [[nodiscard]] auto get_render_data() const noexcept -> const std::vector<std::pair<std::span<const com::transform>, std::span<const com::mesh_renderer>>>& { return m_render_data; }
 
     private:
         auto create_uniform_buffers() -> void;
@@ -70,8 +69,7 @@ namespace graphics {
         vk::Pipeline m_pipeline {};
         vk::CommandBufferInheritanceInfo m_inheritance_info {};
         std::optional<render_thread_pool> m_render_thread_pool {};
-        std::span<const com::transform> m_transforms {};
-        std::span<const com::mesh_renderer> m_renderers {};
+        std::vector<std::pair<std::span<const com::transform>, std::span<const com::mesh_renderer>>> m_render_data {};
 
         struct {
             flecs::query<const com::transform, const com::mesh_renderer> query {};
