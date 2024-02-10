@@ -9,7 +9,7 @@
 
 namespace assetmgr {
     auto get_asset_root() -> const std::string& {
-        static const std::string asset_root = std::filesystem::current_path() / "assets";
+        static const std::string asset_root = (std::filesystem::current_path() / "assets").string();
         return asset_root;
     }
 

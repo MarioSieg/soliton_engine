@@ -18,7 +18,7 @@
 # ~~~
 cmake_minimum_required(VERSION 3.17.2)
 
-project(VULKAN_LOADER VERSION 1.3.276 LANGUAGES C)
+project(VULKAN_LOADER VERSION 1.3.277 LANGUAGES C)
 
 # This variable enables downstream users to customize the target API
 # variant (e.g. Vulkan SC)
@@ -161,6 +161,13 @@ endif()
 
 if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(loader_common_options INTERFACE -Wno-missing-field-initializers)
+
+    # need to prepend /clang: to compiler arguments when using clang-cl
+    if (CMAKE_C_COMPILER_ID STREQUAL "Clang" AND "${CMAKE_CXX_SIMULATE_ID}" MATCHES "MSVC")
+        target_compile_options(loader_common_options INTERFACE /clang:-fno-strict-aliasing)
+    else()
+        target_compile_options(loader_common_options INTERFACE -fno-strict-aliasing)
+    endif()
 
     if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
         target_compile_options(loader_common_options INTERFACE -Wno-stringop-truncation -Wno-stringop-overflow)

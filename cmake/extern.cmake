@@ -33,7 +33,10 @@ target_link_libraries(lunam flecs_static)
 add_subdirectory(extern/DirectXMath)
 target_include_directories(lunam PRIVATE extern/DirectXMath/Inc)
 
-target_include_directories(lunam PRIVATE extern/salieri)
+if (NOT WIN32)
+    target_include_directories(lunam PRIVATE extern/salieri)
+endif()
+
 target_include_directories(lunam PRIVATE extern/stb)
 
 add_subdirectory(extern/draco)
@@ -65,6 +68,9 @@ target_include_directories(lunam PRIVATE extern/libs)
 add_subdirectory(extern/nativefiledialog-extended)
 target_include_directories(lunam PRIVATE extern/nativefiledialog-extended/src/include)
 target_link_libraries(lunam nfd)
+
+add_subdirectory(extern/Vulkan-Utility-Libraries)
+target_include_directories(lunam PRIVATE extern/Vulkan-Utility-Libraries/include)
 
 # Assimp must be last
 add_subdirectory(extern/assimp)
