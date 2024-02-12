@@ -18,7 +18,10 @@ add_link_options(-fuse-ld=lld)
 add_link_options("-Wl,--thinlto-cache-dir=${PROJECT_BINARY_DIR}/LTO.cache")
 add_link_options("-Wl,--thinlto-jobs=64")
 
-if (NOT WIN32)
+if (WIN32)
+    add_compile_options(/MT)
+    add_compile_options(/D_ITERATOR_DEBUG_LEVEL=0)
+else()
     add_compile_options(-fno-exceptions -fno-rtti)
 endif()
 
@@ -33,3 +36,4 @@ endif()
 
 include(src/CMakeLists.txt)
 include(cmake/extern.cmake)
+target_compile_options(lunam PUBLIC /MT)

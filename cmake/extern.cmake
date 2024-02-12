@@ -1,6 +1,6 @@
 add_subdirectory(extern/spdlog)
 target_include_directories(lunam PRIVATE extern/spdlog/include)
-target_link_libraries(lunam spdlog)
+target_link_libraries(lunam spdlog::spdlog_header_only)
 
 add_subdirectory(extern/Boxer)
 target_include_directories(lunam PRIVATE extern/Boxer/include)
@@ -39,10 +39,6 @@ endif()
 
 target_include_directories(lunam PRIVATE extern/stb)
 
-add_subdirectory(extern/draco)
-target_include_directories(lunam PRIVATE extern/draco/src)
-target_link_libraries(lunam draco_static)
-
 add_subdirectory(extern/Vulkan-Headers)
 target_include_directories(lunam PRIVATE extern/Vulkan-Headers/include)
 add_subdirectory(extern/Vulkan-Loader)
@@ -76,4 +72,6 @@ target_include_directories(lunam PRIVATE extern/Vulkan-Utility-Libraries/include
 add_subdirectory(extern/assimp)
 target_include_directories(lunam PRIVATE extern/assimp/include)
 target_link_libraries(lunam assimp)
-target_compile_options(assimp PRIVATE -fexceptions -frtti) # fuck u assimp
+if (NOT WIN32)
+    target_compile_options(assimp PRIVATE -fexceptions -frtti) # fuck u assimp
+endif()

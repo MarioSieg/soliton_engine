@@ -267,8 +267,9 @@ namespace graphics {
     HOTPROC auto graphics_subsystem::on_post_tick() -> void {
         ImGui::Render();
         auto& scene = scene::get_active();
-        if (!m_render_query.scene || &scene != m_render_query.scene || m_render_query.query.changed()) [[unlikely]] { // Scene changed
+        if (!m_render_query.scene || &scene != m_render_query.scene) [[unlikely]] { // Scene changed
             m_render_query.scene = &scene;
+            m_render_query.query.destruct();
             m_render_query.query = scene.query<const com::transform, const com::mesh_renderer>();
         }
         scene.readonly_begin();
