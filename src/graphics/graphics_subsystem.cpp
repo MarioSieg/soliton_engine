@@ -269,7 +269,9 @@ namespace graphics {
         auto& scene = scene::get_active();
         if (!m_render_query.scene || &scene != m_render_query.scene) [[unlikely]] { // Scene changed
             m_render_query.scene = &scene;
-            m_render_query.query.destruct();
+            if (m_render_query.query) {
+                m_render_query.query.destruct();
+            }
             m_render_query.query = scene.query<const com::transform, const com::mesh_renderer>();
         }
         scene.readonly_begin();
