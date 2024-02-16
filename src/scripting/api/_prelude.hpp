@@ -118,3 +118,17 @@ struct lua_vec4 {
     }
 };
 static_assert(sizeof(lua_vec4) == sizeof(double) * 4 && std::is_standard_layout_v<lua_vec4>);
+
+#define impl_component_core(name) \
+    LUA_INTEROP_API auto __lu_com_##name##_exists(const flecs::id_t id) -> bool { \
+        const flecs::entity ent {scene::get_active(), id}; \
+        return ent.has<com::name>(); \
+    } \
+    LUA_INTEROP_API auto __lu_com_##name##_add(const flecs::id_t id) -> void { \
+        flecs::entity ent {scene::get_active(), id}; \
+        ent.add<com::name>(); \
+    } \
+    LUA_INTEROP_API auto __lu_com_##name##_remove(const flecs::id_t id) -> void { \
+        flecs::entity ent {scene::get_active(), id}; \
+        ent.remove<com::name>(); \
+    }

@@ -10,6 +10,10 @@ ffi.cdef[[
     void __lu_scene_start(void);
     lua_entity_id __lu_scene_spawn_entity(const char* name);
     lua_entity_id __lu_scene_get_entity_by_name(const char* name);
+    void __lu_scene_full_entity_query_start(void);
+    int32_t __lu_scene_full_entity_query_next_table(void);
+    lua_entity_id __lu_scene_full_entity_query_get(int32_t i);
+    void __lu_scene_full_entity_query_end(void);
 ]]
 
 local C = ffi.C
@@ -34,11 +38,27 @@ function Scene.__onTick()
 end
 
 function Scene.spawn(name)
-    return Entity:new(C.__lu_scene_spawn_entity(name))
+    return Entity:fromId(C.__lu_scene_spawn_entity(name))
 end
 
 function Scene.getEntityByName(name)
-    return Entity:new(C.__lu_scene_get_entity_by_name(name))
+    return Entity:fromId(C.__lu_scene_get_entity_by_name(name))
+end
+
+function Scene.fullEntityQueryStart()
+    C.__lu_scene_full_entity_query_start()
+end
+
+function Scene.fullEntityQueryNextTable()
+    return C.__lu_scene_full_entity_query_next_table()
+end
+
+function Scene.fullEntityQueryGet(i)
+    return Entity:fromId(C.__lu_scene_full_entity_query_get(i))
+end
+
+function Scene.fullEntityQueryEnd()
+    C.__lu_scene_full_entity_query_end()
 end
 
 function Scene.load(scene_name, file, scale)

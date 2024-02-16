@@ -88,6 +88,8 @@ auto scene::import_from_file(const std::string& path, const float scale) -> void
     missing_material->albedo_map = get_asset_registry<graphics::texture>().load("assets/textures/system/error.png");
     missing_material->flush_property_updates();
 
+    ankerl::unordered_dense::map<std::string, std::uint32_t> resolved_names {};
+
     std::uint32_t num_nodes = 0;
     std::function<auto (aiNode*) -> void> visitor = [&](aiNode* node) -> void {
         if (!node) [[unlikely]] {
@@ -99,9 +101,15 @@ auto scene::import_from_file(const std::string& path, const float scale) -> void
 
         ++num_nodes;
 
-        const flecs::entity e = spawn(nullptr);
+        std::string name {node->mName.C_Str()};
+        if (resolved_names.contains(name)) {
+            name += '_';
+            name += std::to_string(++resolved_names[name]);
+        } else {
+            resolved_names[name] = 0;
+        }
+        const flecs::entity e = spawn(name.c_str());
         auto* metadata = e.get_mut<com::metadata>();
-        metadata->name = node->mName.C_Str();
 
         auto* transform = e.get_mut<com::transform>();
         aiVector3D scaling, position;

@@ -2,15 +2,7 @@
 
 #include "../_prelude.hpp"
 
-LUA_INTEROP_API auto __lu_com_camera_add(const flecs::id_t id) -> void {
-    flecs::entity ent {scene::get_active(), id};
-    ent.add<com::camera>();
-}
-
-LUA_INTEROP_API auto __lu_com_camera_remove(const flecs::id_t id) -> void {
-    flecs::entity ent {scene::get_active(), id};
-    ent.remove<com::camera>();
-}
+impl_component_core(camera)
 
 LUA_INTEROP_API auto __lu_com_camera_get_fov(const flecs::id_t id) -> double {
     const flecs::entity ent {scene::get_active(), id};

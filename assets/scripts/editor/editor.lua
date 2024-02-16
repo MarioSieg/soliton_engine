@@ -21,6 +21,7 @@ local ICONS = require 'editor.icons'
 local Terminal = require 'editor.tools.terminal'
 local Profiler = require 'editor.tools.profiler'
 local ScriptEditor = require 'editor.tools.scripteditor'
+local EntityListView = require 'editor.tools.entity_list_view'
 
 WINDOW_SIZE = UI.ImVec2(800, 600)
 
@@ -30,7 +31,8 @@ local Editor = {
     tools = {
         Terminal,
         Profiler,
-        ScriptEditor
+        ScriptEditor,
+        EntityListView
     },
     gizmos = {
         gridSize = 25,
@@ -60,8 +62,9 @@ end
 function Editor:loadScene(file)
     Scene.load('Default', file)
     local mainCamera = Scene.spawn('__editorCamera') -- spawn editor camera
-    mainCamera:component(Components.CAMERA):setFov(80)
+    mainCamera:component(Components.Camera):setFov(80)
     self.camera.targetEntity = mainCamera
+    EntityListView:buildEntityList()
 end
 Editor:loadScene(nil)
 
