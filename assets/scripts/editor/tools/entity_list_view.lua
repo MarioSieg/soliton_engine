@@ -12,7 +12,8 @@ local EntityListView = {
     name = ICONS.CUBES..' Entities',
     isVisible = ffi.new('bool[1]', true),
     selectedEntity = nil,
-    entityList = {}
+    entityList = {},
+    entityCounter = 0
 }
 
 function EntityListView:buildEntityList()
@@ -39,9 +40,18 @@ end
 function EntityListView:render()
     UI.SetNextWindowSize(WINDOW_SIZE, ffi.C.ImGuiCond_FirstUseEver)
     if UI.Begin(self.name, self.isVisible) then
+        if UI.Button(ICONS.PLUS..' Create') then
+            local ent = Scene.spawn('New Entity '..self.entityCounter)
+            self.entityCounter = self.entityCounter + 1
+            self.selectedEntity = ent
+            self:buildEntityList()
+        end
+        UI.SameLine()
         if UI.Button(ICONS.REDO_ALT..' Refresh') then
             self:buildEntityList()
         end
+        UI.SameLine()
+        UI.Text('Entities: '..#self.entityList)
         UI.Separator()
         local size = UI.ImVec2(0, 0)
         if UI.BeginChild('EntityScrollingRegion', UI.ImVec2(0, -UI.GetFrameHeightWithSpacing()), false, ffi.C.ImGuiWindowFlags_HorizontalScrollbar) then
