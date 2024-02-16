@@ -29,10 +29,15 @@ function Terminal:render()
     if UI.Begin(self.name, self.isVisible, ffi.C.ImGuiWindowFlags_NoScrollbar) then
         if UI.BeginChild('TerminalScrollingRegion', UI.ImVec2(0, -UI.GetFrameHeightWithSpacing()), false, ffi.C.ImGuiWindowFlags_HorizontalScrollbar) then
             UI.PushStyleVar(ffi.C.ImGuiStyleVar_ItemSpacing, UI.ImVec2(4.0, 1.0))
-            for i = 1, #protocol do
-                UI.TextUnformatted(protocol[i])
-                UI.Separator()
+            local clipper = UI.ImGuiListClipper()
+            clipper:Begin(#protocol, UI.GetTextLineHeightWithSpacing())
+            while clipper:Step() do -- HOT LOOP
+                for i=clipper.DisplayStart+1, clipper.DisplayEnd do
+                    UI.TextUnformatted(protocol[i])
+                    UI.Separator()
+                end
             end
+            clipper:End()
             UI.PopStyleVar()
             if self.mustAutoScroll then
                 UI.SetScrollHereY(1.0)
