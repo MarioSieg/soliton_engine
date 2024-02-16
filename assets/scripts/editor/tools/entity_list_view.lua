@@ -39,6 +39,10 @@ end
 function EntityListView:render()
     UI.SetNextWindowSize(WINDOW_SIZE, ffi.C.ImGuiCond_FirstUseEver)
     if UI.Begin(self.name, self.isVisible) then
+        if UI.Button(ICONS.REDO_ALT..' Refresh') then
+            self:buildEntityList()
+        end
+        UI.Separator()
         local size = UI.ImVec2(0, 0)
         if UI.BeginChild('EntityScrollingRegion', UI.ImVec2(0, -UI.GetFrameHeightWithSpacing()), false, ffi.C.ImGuiWindowFlags_HorizontalScrollbar) then
             UI.PushStyleVar(ffi.C.ImGuiStyleVar_ItemSpacing, UI.ImVec2(4.0, 1.0))
