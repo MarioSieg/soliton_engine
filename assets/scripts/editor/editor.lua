@@ -24,6 +24,9 @@ local ScriptEditor = require 'editor.tools.scripteditor'
 local EntityListView = require 'editor.tools.entity_list_view'
 
 WINDOW_SIZE = UI.ImVec2(800, 600)
+local DOCK_LEFT_RATIO = 0.50
+local DOCK_RIGHT_RATIO = 0.20
+local DOCK_BOTTOM_RATIO = 0.50
 
 local Editor = {
     isVisible = ffi.new('bool[1]', true),
@@ -39,11 +42,12 @@ local Editor = {
         showGrid = true,
         showCenterAxis = true
     },
-    camera = require 'editor.camera'
+    camera = require 'editor.camera',
+    dockID = nil
 }
 
-for _, tool in ipairs(Editor.tools) do -- hide all tools by default
-    tool.isVisible[0] = false
+for _, tool in ipairs(Editor.tools) do
+    tool.isVisible[0] = true
 end
 
 Style.setupDarkStyle()
@@ -59,6 +63,23 @@ function Editor.gizmos:drawGizmos()
     Debug.finish()
 end
 
+function Editor:defaultDockLayout()
+    if self.dockID then
+        UI.DockBuilderRemoveNode(self.dockID)
+        UI.DockBuilderAddNode(self.dockID, ffi.C.ImGuiDockNodeFlags_DockSpace)
+        UI.DockBuilderSetNodeSize(self.dockID, UI.GetMainViewport().Size)
+        local dock_main_id = ffi.new('ImGuiID[1]') -- cursed
+        dock_main_id[0] = self.dockID
+        local dock_left_id = UI.DockBuilderSplitNode(self.dockID, ffi.C.ImGuiDir_Left, DOCK_LEFT_RATIO, nil, dock_main_id)
+        local dock_right_id = UI.DockBuilderSplitNode(self.dockID, ffi.C.ImGuiDir_Right, DOCK_RIGHT_RATIO, nil, dock_main_id)
+        local dock_bottom_id = UI.DockBuilderSplitNode(self.dockID, ffi.C.ImGuiDir_Down, DOCK_BOTTOM_RATIO, nil, dock_main_id)
+        UI.DockBuilderDockWindow(Terminal.name, dock_bottom_id)
+        UI.DockBuilderDockWindow(Profiler.name, dock_bottom_id)
+        UI.DockBuilderDockWindow(ScriptEditor.name, dock_bottom_id)
+        UI.DockBuilderDockWindow(EntityListView.name, dock_left_id)
+    end
+end
+
 function Editor:loadScene(file)
     Scene.load('Default', file)
     local mainCamera = Scene.spawn('__editorCamera') -- spawn editor camera
@@ -66,7 +87,15 @@ function Editor:loadScene(file)
     self.camera.targetEntity = mainCamera
     EntityListView:buildEntityList()
 end
-Editor:loadScene(nil)
+
+local restoreLayout = true
+function Editor:renderDockSpace()
+    self.dockID = UI.DockSpaceOverViewport(UI.GetMainViewport(), ffi.C.ImGuiDockNodeFlags_PassthruCentralNode)
+    if restoreLayout then
+        restoreLayout = false
+        self:defaultDockLayout()
+    end
+end
 
 function Editor:renderMainMenu()
     if UI.BeginMainMenuBar() then
@@ -220,9 +249,12 @@ function Editor:__onTick()
     self.camera:tick()
     if not Editor.isVisible[0] then return end
     self.gizmos:drawGizmos()
+    self:renderDockSpace()
     self:drawTools()
     self:renderMainMenu()
     self:renderOverlay()
 end
+
+Editor:loadScene(nil)
 
 return Editor
