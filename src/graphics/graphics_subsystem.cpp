@@ -34,6 +34,7 @@ namespace graphics {
         auto& io = ImGui::GetIO();
         io.DisplaySize.x = 800.0f;
         io.DisplaySize.y = 600.0f;
+        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
         io.IniFilename = nullptr;
 
         GLFWwindow* window = platform_subsystem::get_glfw_window();
