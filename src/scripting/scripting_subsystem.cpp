@@ -70,16 +70,14 @@ namespace scripting {
     }
 
     void scripting_subsystem::on_prepare() {
-        luabridge::LuaResult r = (*m_on_prepare)();
-        if (r.hasFailed()) [[unlikely]] {
-            lua_log_error("Error in __boot.lua in __on_prepare__: {}", r.errorMessage());
+        if (const luabridge::LuaResult r = (*m_on_prepare)(); r.hasFailed()) [[unlikely]] {
+            lua_log_error("{}: Error in {}: {}", k_boot_script, k_prepare_hook, r.errorMessage());
         }
     }
 
     HOTPROC void scripting_subsystem::on_tick() {
-        luabridge::LuaResult r = (*m_on_tick)();
-        if (r.hasFailed()) [[unlikely]] {
-            lua_log_error("Error in __boot.lua in __on_tick__: {}", r.errorMessage());
+        if (const luabridge::LuaResult r = (*m_on_tick)(); r.hasFailed()) [[unlikely]] {
+            lua_log_error("{}: Error in {}: {}", k_boot_script, k_tick_hook, r.errorMessage());
         }
     }
 

@@ -15,6 +15,7 @@ local Debug = require 'Debug'
 local Vec3 = require 'Vec3'
 local Quat = require 'Quat'
 local Scene = require 'Scene'
+local Components = require 'Components'
 
 local ICONS = require 'editor.icons'
 local Terminal = require 'editor.tools.terminal'
@@ -25,6 +26,7 @@ WINDOW_SIZE = UI.ImVec2(800, 600)
 
 local Editor = {
     isVisible = ffi.new('bool[1]', true),
+    isPlaying = false,
     tools = {
         Terminal,
         Profiler,
@@ -55,10 +57,13 @@ function Editor.gizmos:drawGizmos()
     Debug.finish()
 end
 
-function Editor:onSceneChanged()
-    self.camera.targetEntity = Scene.getEntityByName('MainCamera')
+function Editor:loadScene(file)
+    Scene.load('Default', file)
+    local mainCamera = Scene.spawn('__editorCamera') -- spawn editor camera
+    mainCamera:component(Components.CAMERA):setFov(80)
+    self.camera.targetEntity = mainCamera
 end
-Editor:onSceneChanged()
+Editor:loadScene(nil)
 
 function Editor:renderMainMenu()
     if UI.BeginMainMenuBar() then
@@ -66,8 +71,7 @@ function Editor:renderMainMenu()
             if UI.MenuItem(ICONS.FILE_IMPORT..' Import') then
                 local selectedFile = App.Utils.openFileDialog('3D Scenes', 'gltf,fbx,obj,dae', '')
                 if selectedFile and lfs.attributes(selectedFile) then
-                    Scene.load('Default', selectedFile)
-                    self:onSceneChanged()
+                    Editor:loadScene(selectedFile)
                 end
             end
             if UI.MenuItem(ICONS.PORTAL_EXIT..' Exit') then
@@ -103,6 +107,20 @@ function Editor:renderMainMenu()
         if UI.BeginMenu('Help') then
             UI.EndMenu()
         end
+        UI.Separator()
+        UI.PushStyleColor_U32(ffi.C.ImGuiCol_Text, self.isPlaying and 0xff000088 or 0xff008800)
+        UI.PushStyleColor_U32(ffi.C.ImGuiCol_Button, 0)
+        UI.PushStyleColor_U32(ffi.C.ImGuiCol_BorderShadow, 0)
+        UI.PushStyleColor_U32(ffi.C.ImGuiCol_Border, 0)
+        if UI.SmallButton(self.isPlaying and ICONS.STOP_CIRCLE or ICONS.PLAY_CIRCLE) then
+            self.isPlaying = not self.isPlaying
+            if self.isPlaying then
+
+            else
+
+            end
+        end
+        UI.PopStyleColor(4)
         if Profiler.isProfilerRunning then
             UI.Separator()
             UI.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff0000ff)

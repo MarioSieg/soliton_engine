@@ -83,8 +83,10 @@ namespace physics {
 		}
 	};
 
+	[[maybe_unused]]
 	static thread_local rnd_gamerand_t prng;
 
+	[[maybe_unused]]
 	static inline auto next_f32_in_range(const float min, const float max) noexcept -> float {
 		return min + (max - min) * rnd_gamerand_nextf(&prng);
 	}

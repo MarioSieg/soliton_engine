@@ -2,6 +2,7 @@
 
 local ffi = require 'ffi'
 local Entity = require 'lu.entity'
+local Components = require 'lu.components'
 
 ffi.cdef[[
     uint32_t __lu_scene_new(const char* name, const char* gltf_file, double scale);
@@ -16,7 +17,8 @@ local C = ffi.C
 local activeScene = nil
 local Scene = {
     name = 'untitled',
-    id = 0
+    id = 0,
+    load_hooks = {}
 }
 
 function Scene.getActive()
@@ -60,6 +62,10 @@ function Scene.load(scene_name, file, scale)
     assert(type(id) == 'number' and id ~= 0, 'failed to create scene')
     Scene.id = id
     Scene.__onStart() -- invoke start hook
+    -- Invoke load hooks
+    for i=1, #Scene.load_hooks do
+        Scene.load_hooks[i](scene_name, id)
+    end
     collectgarbage('collect') -- collect garbage after new scene is created
     print(string.format('Created new scene: %s, id: %x', scene_name, id))
 end

@@ -17,5 +17,9 @@ namespace platform {
         [[nodiscard]] static auto get_glfw_window() -> GLFWwindow*;
 
         static constexpr const char* k_window_icon_file = "logo.png";
+        static constexpr int default_width = 1280;
+        static constexpr int default_height = 720;
+        static constexpr int min_width = 1280;
+        static constexpr int min_height = 720;
     };
 }

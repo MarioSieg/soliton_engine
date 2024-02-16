@@ -2,6 +2,11 @@
 
 #include "render_thread_pool.hpp"
 
+#if PLATFORM_WINDOWS
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#endif
+
 namespace graphics {
     render_thread::render_thread(
         const std::stop_token& token,
@@ -26,7 +31,7 @@ namespace graphics {
         vkcheck(device.allocateCommandBuffers(&alloc_info, m_command_buffers.data()));
 
         // start thread
-        m_thread = std::jthread { [=] { thread_routine(); }};
+        m_thread = std::jthread { [=, this] { thread_routine(); }};
     }
 
     render_thread::~render_thread() {
@@ -38,6 +43,10 @@ namespace graphics {
     HOTPROC auto render_thread::thread_routine() -> void {
         log_info("Render thread {} started", m_thread_id);
         passert(m_shared_ctx.render_callback != nullptr);
+
+#if PLATFORM_WINDOWS
+        SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
+#endif
 
         for (;;) {
             if (!begin_thread_frame()) [[unlikely]] {

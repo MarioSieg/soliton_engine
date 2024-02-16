@@ -334,10 +334,10 @@ auto dump_loaded_dylibs() -> void {
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // window is hidden by default
-        s_window = glfwCreateWindow(1280, 720, "LunamEngine", nullptr, nullptr);
+        s_window = glfwCreateWindow(default_width, default_height, "LunamEngine", nullptr, nullptr);
         passert(s_window != nullptr);
         glfwSetWindowUserPointer(s_window, this);
-        glfwSetWindowSizeLimits(s_window, 800, 600, GLFW_DONT_CARE, GLFW_DONT_CARE);
+        glfwSetWindowSizeLimits(s_window, min_width, min_height, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
         // setup hooks
         glfwSetFramebufferSizeCallback(s_window, &proxy_resize_hook);
@@ -362,6 +362,10 @@ auto dump_loaded_dylibs() -> void {
         GLFWmonitor* mon = glfwGetPrimaryMonitor();
         if (mon != nullptr) [[likely]] {
             printMonitorInfo(mon);
+            if (const GLFWvidmode* mode = glfwGetVideoMode(mon); mode) {
+                glfwSetWindowPos(s_window, std::max((mode->width>>1)-default_width, min_width),
+                    std::max((mode->height>>1)-default_height, min_height));
+            }
         } else {
             log_warn("No primary monitor found");
         }

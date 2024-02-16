@@ -13,6 +13,7 @@ local Scene = require 'Scene'
 local Time = require 'Time'
 local Vec2 = require 'Vec2'
 local Vec3 = require 'Vec3'
+local Components = require 'Components'
 
 local Camera = {}
 
@@ -86,7 +87,7 @@ function Camera:_computeCameraRotation()
     self._mouseAngles = self._mouseAngles + delta
     self._mouseAngles.y = Math.clamp(self._mouseAngles.y, -clampYRad, clampYRad)
     self._rotation = Quat.fromYawPitchRoll(self._mouseAngles.x, self._mouseAngles.y, 0.0)
-    self.targetEntity:setRotation(self._rotation)
+    self.targetEntity:component(Components.TRANSFORM):setRotation(self._rotation)
 end
 
 function Camera:_computeMovement()
@@ -133,7 +134,7 @@ function Camera:_computeMovement()
     end
 
     self._position = self._position * self.lockAxisMovement -- apply axis lock
-    self.targetEntity:setPosition(self._position)
+    self.targetEntity:component(Components.TRANSFORM):setPosition(self._position)
 end
 
 return Camera

@@ -65,8 +65,13 @@ namespace com {
         float z_clip_near = 0.1f;
         float z_clip_far = 1000.0f;
         bool auto_viewport = true;
-        DirectX::XMFLOAT2 viewport {};
-        DirectX::XMFLOAT3 clear_color {};
+        DirectX::XMFLOAT2 viewport;
+        DirectX::XMFLOAT3 clear_color;
+
+        camera() noexcept {
+            DirectX::XMStoreFloat2(&viewport, DirectX::XMVectorZero());
+            DirectX::XMStoreFloat3(&clear_color, DirectX::XMVectorSplatOne());
+        }
 
         static inline flecs::entity active_camera = flecs::entity::null(); // main camera, resetted every frame
 

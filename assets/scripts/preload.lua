@@ -6,6 +6,7 @@ local MODULES = {
     ['Color'] = 'lu/color',
     ['Debug'] = 'lu/debug',
     ['Entity'] = 'lu/entity',
+    ['Components'] = 'lu/components',
     ['Input'] = 'lu/input',
     ['Math'] = 'lu/math',
     ['Quat'] = 'lu/quat',
