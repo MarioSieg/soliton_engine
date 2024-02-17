@@ -34,7 +34,6 @@ function Terminal:render()
             while clipper:Step() do -- HOT LOOP
                 for i=clipper.DisplayStart+1, clipper.DisplayEnd do
                     UI.TextUnformatted(protocol[i])
-                    UI.Separator()
                 end
             end
             clipper:End()
