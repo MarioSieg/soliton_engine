@@ -4,6 +4,8 @@ local jit = require 'jit'
 local ffi = require 'ffi'
 
 ffi.cdef [[
+    bool __lu_app_is_focused(void);
+    bool __lu_app_is_ui_hovered(void);
     void __lu_window_maximize(void);
     void __lu_window_minimize(void);
     void __lu_window_enter_fullscreen(void);
@@ -48,6 +50,14 @@ local App = {
     },
     Utils = {}
 }
+
+function App.isFocused()
+    return C.__lu_app_is_focused()
+end
+
+function App.isUIHovered()
+    return C.__lu_app_is_ui_hovered()
+end
 
 function App.Window.maximize()
     C.__lu_window_maximize()

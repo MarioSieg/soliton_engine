@@ -48,13 +48,15 @@ Camera._smoothAngles = Vec2.ZERO
 Camera._rotation = Quat.IDENTITY
 Camera._position = Vec3.ZERO
 Camera._velocity = Vec3.ZERO
+Camera._isFocused = true
 
 -- invoked every frame
 function Camera:tick()
+    self._isFocused = App.isFocused() and not App.isUIHovered()
     if not self.targetEntity:isValid() then
         print('Camera has no target entity')
     end
-    if self.enableMouseLook then -- TODO focus
+    if self.enableMouseLook and self._isFocused then
         self:_computeCameraRotation()
     end
     if self.enableMovement then
@@ -110,7 +112,7 @@ function Camera:_computeMovement()
         target = target + (dir * self._rotation) * movSpeed
     end
 
-    if true then -- TODO focus
+    if self._isFocused then
         if Input.isKeyPressed(self.movementKeys.forward) then
             computePos(Vec3.FORWARD)
         end

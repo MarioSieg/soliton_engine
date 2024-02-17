@@ -40,6 +40,10 @@ function Entity:component(component)
     return component:_new(self.id)
 end
 
+function Entity:hasComponent(component)
+    return component._exists(self.id)
+end
+
 function Entity:__eq(other)
     return self.id == other.id
 end

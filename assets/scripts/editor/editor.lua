@@ -22,10 +22,11 @@ local Terminal = require 'editor.tools.terminal'
 local Profiler = require 'editor.tools.profiler'
 local ScriptEditor = require 'editor.tools.scripteditor'
 local EntityListView = require 'editor.tools.entity_list_view'
+local Inspector = require 'editor.tools.inspector'
 
 WINDOW_SIZE = UI.ImVec2(800, 600)
 local DOCK_LEFT_RATIO = 0.50
-local DOCK_RIGHT_RATIO = 0.20
+local DOCK_RIGHT_RATIO = 0.40
 local DOCK_BOTTOM_RATIO = 0.50
 
 local Editor = {
@@ -35,7 +36,8 @@ local Editor = {
         Terminal,
         Profiler,
         ScriptEditor,
-        EntityListView
+        EntityListView,
+        Inspector
     },
     gizmos = {
         gridSize = 25,
@@ -49,8 +51,6 @@ local Editor = {
 for _, tool in ipairs(Editor.tools) do
     tool.isVisible[0] = true
 end
-
-Style.setupDarkStyle()
 
 function Editor.gizmos:drawGizmos()
     Debug.start()
@@ -70,13 +70,14 @@ function Editor:defaultDockLayout()
         UI.DockBuilderSetNodeSize(self.dockID, UI.GetMainViewport().Size)
         local dock_main_id = ffi.new('ImGuiID[1]') -- cursed
         dock_main_id[0] = self.dockID
-        local dock_left_id = UI.DockBuilderSplitNode(self.dockID, ffi.C.ImGuiDir_Left, DOCK_LEFT_RATIO, nil, dock_main_id)
-        local dock_right_id = UI.DockBuilderSplitNode(self.dockID, ffi.C.ImGuiDir_Right, DOCK_RIGHT_RATIO, nil, dock_main_id)
-        local dock_bottom_id = UI.DockBuilderSplitNode(self.dockID, ffi.C.ImGuiDir_Down, DOCK_BOTTOM_RATIO, nil, dock_main_id)
-        UI.DockBuilderDockWindow(Terminal.name, dock_bottom_id)
-        UI.DockBuilderDockWindow(Profiler.name, dock_bottom_id)
-        UI.DockBuilderDockWindow(ScriptEditor.name, dock_bottom_id)
-        UI.DockBuilderDockWindow(EntityListView.name, dock_left_id)
+        local dockLeft = UI.DockBuilderSplitNode(self.dockID, ffi.C.ImGuiDir_Left, DOCK_LEFT_RATIO, nil, dock_main_id)
+        local dockRight = UI.DockBuilderSplitNode(self.dockID, ffi.C.ImGuiDir_Right, DOCK_RIGHT_RATIO, nil, dock_main_id)
+        local dockBot = UI.DockBuilderSplitNode(self.dockID, ffi.C.ImGuiDir_Down, DOCK_BOTTOM_RATIO, nil, dock_main_id)
+        UI.DockBuilderDockWindow(Terminal.name, dockBot)
+        UI.DockBuilderDockWindow(Profiler.name, dockBot)
+        UI.DockBuilderDockWindow(ScriptEditor.name, dockBot)
+        UI.DockBuilderDockWindow(EntityListView.name, dockLeft)
+        UI.DockBuilderDockWindow(Inspector.name, dockRight)
     end
 end
 
@@ -86,15 +87,6 @@ function Editor:loadScene(file)
     mainCamera:component(Components.Camera):setFov(80)
     self.camera.targetEntity = mainCamera
     EntityListView:buildEntityList()
-end
-
-local restoreLayout = true
-function Editor:renderDockSpace()
-    self.dockID = UI.DockSpaceOverViewport(UI.GetMainViewport(), ffi.C.ImGuiDockNodeFlags_PassthruCentralNode)
-    if restoreLayout then
-        restoreLayout = false
-        self:defaultDockLayout()
-    end
 end
 
 function Editor:renderMainMenu()
@@ -235,8 +227,13 @@ function Editor:renderOverlay()
     UI.End()
 end
 
+local restoreLayout = true
 function Editor:drawTools()
-    UI.DockSpaceOverViewport(UI.GetMainViewport(), ffi.C.ImGuiDockNodeFlags_PassthruCentralNode)
+    self.dockID = UI.DockSpaceOverViewport(UI.GetMainViewport(), ffi.C.ImGuiDockNodeFlags_PassthruCentralNode)
+    if restoreLayout then
+        restoreLayout = false
+        self:defaultDockLayout()
+    end
     for i=1, #self.tools do
         local tool = self.tools[i]
         if tool.isVisible[0] then
@@ -247,14 +244,20 @@ end
 
 function Editor:__onTick()
     self.camera:tick()
-    if not Editor.isVisible[0] then return end
+    if not Editor.isVisible[0] then
+        return
+    end
+    Inspector.selectedEntity = EntityListView.selectedEntity
+    if Inspector.propertiesChanged then
+        EntityListView:buildEntityList()
+    end
     self.gizmos:drawGizmos()
-    self:renderDockSpace()
     self:drawTools()
     self:renderMainMenu()
     self:renderOverlay()
 end
 
+Style.setupDarkStyle()
 Editor:loadScene(nil)
 
 return Editor

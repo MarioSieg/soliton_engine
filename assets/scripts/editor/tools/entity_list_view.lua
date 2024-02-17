@@ -26,11 +26,12 @@ function EntityListView:buildEntityList()
             local entity = Scene.fullEntityQueryGet(i)
             if entity:isValid() then
                 local name = entity:getName()
-                if name == '' then
+                local isUnnamed = name == ''
+                if isUnnamed then
                     name = 'Unnamed'
                 end
-                name = ICONS.CUBE..' '..name
-                table.insert(self.entityList, {entity, name})
+                name = ICONS.DATABASE..' '..name
+                table.insert(self.entityList, {entity, name, isUnnamed})
             end
         end
     end
@@ -60,8 +61,20 @@ function EntityListView:render()
             clipper:Begin(#self.entityList, UI.GetTextLineHeightWithSpacing())
             while clipper:Step() do -- HOT LOOP
                 for i=clipper.DisplayStart+1, clipper.DisplayEnd do
-                    if UI.Selectable(self.entityList[i][2], self.selectedEntity == self.entityList[i][1], 0, size) then
-                        self.selectedEntity = self.entityList[i][1]
+                    local data = self.entityList[i]
+                    local isUnnamed = data[3]
+                    if isUnnamed then
+                        -- make them slight red every entity should have a name:
+                        UI.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff8888ff)
+                    end
+                    if UI.Selectable(data[2], self.selectedEntity == data[1], 0, size) then
+                        self.selectedEntity = data[1]
+                    end
+                    if isUnnamed then
+                        UI.PopStyleColor()
+                    end
+                    if UI.IsItemHovered() then
+                        UI.SetTooltip(isUnnamed and 'This entity has no name' or 'Entity ID: 0x'..string.format('%x', tonumber(data[1].id)))
                     end
                 end
             end

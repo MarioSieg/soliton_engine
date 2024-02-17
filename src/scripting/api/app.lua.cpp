@@ -24,6 +24,14 @@ LUA_INTEROP_API auto __lu_ffi_cookie() -> std::uint32_t  {
     return 0xfefec0c0;
 }
 
+LUA_INTEROP_API auto __lu_app_is_focused() -> bool {
+    return glfwGetWindowAttrib(platform_subsystem::get_glfw_window(), GLFW_FOCUSED) == GLFW_TRUE;
+}
+
+LUA_INTEROP_API auto __lu_app_is_ui_hovered() -> bool {
+    return ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow);
+}
+
 LUA_INTEROP_API auto __lu_window_maximize() -> void {
     glfwMaximizeWindow(platform_subsystem::get_glfw_window());
 }
