@@ -14,8 +14,17 @@ namespace graphics {
 }
 
 namespace com {
+    struct entity_flags final {
+        enum $ : std::uint32_t {
+            none = 0,
+            hidden = 1 << 0,
+            transient = 1 << 1,
+            static_object = 1 << 2
+        };
+    };
+
     struct metadata final {
-        std::string name {};
+        std::underlying_type_t<entity_flags::$> flags = entity_flags::none;
     };
 
     struct transform final {
@@ -88,7 +97,7 @@ namespace com {
     };
 
     struct render_flags final {
-        enum $ {
+        enum $ : std::uint32_t {
             none = 0,
             skip_rendering = 1 << 0,
             skip_frustum_culling = 1 << 1,

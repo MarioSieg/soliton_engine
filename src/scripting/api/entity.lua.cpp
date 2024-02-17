@@ -22,3 +22,13 @@ LUA_INTEROP_API auto __lu_entity_set_name(const flecs::id_t id, const char* name
     ent.set_name(name);
 }
 
+LUA_INTEROP_API auto __lu_entity_get_flags(const flecs::id_t id) -> std::uint32_t {
+    const flecs::entity ent {scene::get_active(), id};
+    return ent.get<com::metadata>()->flags;
+}
+
+LUA_INTEROP_API auto __lu_entity_set_flags(const flecs::id_t id, const std::uint32_t flags) -> void {
+    const flecs::entity ent {scene::get_active(), id};
+    ent.get_mut<com::metadata>()->flags = flags;
+}
+

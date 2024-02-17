@@ -1,7 +1,8 @@
 -- Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 local ffi = require 'ffi'
-local profile = require 'jit.p'
+local bit = require 'bit'
+local bxor = bit.bxor
 
 local UI = require 'editor.imgui'
 local ICONS = require 'editor.icons'
@@ -17,24 +18,25 @@ local Inspector = {
     isVisible = ffi.new('bool[1]', true),
     selectedEntity = nil,
     inputTextBuffer = ffi.new('char[?]', 1+MAX_TEXT_INPUT_SIZE),
-    manpitBuf3 = ffi.new('float[3]'),
+    manipBuf3 = ffi.new('float[3]'),
+    manipBufBool = ffi.new('bool[1]'),
     propertiesChanged = false
 }
 
 function Inspector:_setFloatManpitBufferFromVec3(vec3)
-    self.manpitBuf3[0] = vec3.x
-    self.manpitBuf3[1] = vec3.y
-    self.manpitBuf3[2] = vec3.z
+    self.manipBuf3[0] = vec3.x
+    self.manipBuf3[1] = vec3.y
+    self.manipBuf3[2] = vec3.z
 end
 
 function Inspector:_getFloatManipBufferAsVec3()
-    return Vec3(self.manpitBuf3[0], self.manpitBuf3[1], self.manpitBuf3[2])
+    return Vec3(self.manipBuf3[0], self.manipBuf3[1], self.manipBuf3[2])
 end
 
 function Inspector:_inspectVec3(name, vec3, step)
     step = step or 0.1
     self:_setFloatManpitBufferFromVec3(vec3)
-    local changed = UI.DragFloat3(name, self.manpitBuf3, step)
+    local changed = UI.DragFloat3(name, self.manipBuf3, step)
     if changed then
         return changed, self:_getFloatManipBufferAsVec3()
     end
@@ -81,10 +83,33 @@ function Inspector:render()
         else
             if UI.CollapsingHeader(ICONS.INFO_CIRCLE..' General', ffi.C.ImGuiTreeNodeFlags_DefaultOpen) then
                 local name = entity:getName()
-                local len = math.min(#name, MAX_TEXT_INPUT_SIZE)
-                ffi.copy(self.inputTextBuffer, name, len)
+                if #name >= MAX_TEXT_INPUT_SIZE then
+                    name = name:sub(1, MAX_TEXT_INPUT_SIZE-1)
+                end
+                ffi.copy(self.inputTextBuffer, name)
                 if UI.InputText('Name', self.inputTextBuffer, MAX_TEXT_INPUT_SIZE) then
                     entity:setName(ffi.string(self.inputTextBuffer))
+                    self.propertiesChanged = true
+                end
+                local hidden = entity:hasFlag(ENTITY_FLAGS.HIDDEN)
+                self.manipBufBool[0] = hidden
+                UI.Checkbox(ICONS.EYE_SLASH..' Hidden', self.manipBufBool)
+                if hidden ~= self.manipBufBool[0] then
+                    entity:setFlags(bxor(entity:getFlags(), ENTITY_FLAGS.HIDDEN))
+                    self.propertiesChanged = true
+                end
+                local static = entity:hasFlag(ENTITY_FLAGS.STATIC)
+                self.manipBufBool[0] = static
+                UI.Checkbox(ICONS.DO_NOT_ENTER..' Static', self.manipBufBool)
+                if static ~= self.manipBufBool[0] then
+                    entity:setFlags(bxor(entity:getFlags(), ENTITY_FLAGS.STATIC))
+                    self.propertiesChanged = true
+                end
+                local transient = entity:hasFlag(ENTITY_FLAGS.TRANSIENT)
+                self.manipBufBool[0] = transient
+                UI.Checkbox(ICONS.ALARM_CLOCK..' Transient', self.manipBufBool)
+                if transient ~= self.manipBufBool[0] then
+                    entity:setFlags(bxor(entity:getFlags(), ENTITY_FLAGS.TRANSIENT))
                     self.propertiesChanged = true
                 end
                 UI.Separator()

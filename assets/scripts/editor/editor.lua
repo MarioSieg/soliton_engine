@@ -70,9 +70,9 @@ function Editor:defaultDockLayout()
         UI.DockBuilderSetNodeSize(self.dockID, UI.GetMainViewport().Size)
         local dock_main_id = ffi.new('ImGuiID[1]') -- cursed
         dock_main_id[0] = self.dockID
+        local dockBot = UI.DockBuilderSplitNode(self.dockID, ffi.C.ImGuiDir_Down, DOCK_BOTTOM_RATIO, nil, dock_main_id)
         local dockLeft = UI.DockBuilderSplitNode(self.dockID, ffi.C.ImGuiDir_Left, DOCK_LEFT_RATIO, nil, dock_main_id)
         local dockRight = UI.DockBuilderSplitNode(self.dockID, ffi.C.ImGuiDir_Right, DOCK_RIGHT_RATIO, nil, dock_main_id)
-        local dockBot = UI.DockBuilderSplitNode(self.dockID, ffi.C.ImGuiDir_Down, DOCK_BOTTOM_RATIO, nil, dock_main_id)
         UI.DockBuilderDockWindow(Terminal.name, dockBot)
         UI.DockBuilderDockWindow(Profiler.name, dockBot)
         UI.DockBuilderDockWindow(ScriptEditor.name, dockBot)
@@ -84,6 +84,7 @@ end
 function Editor:loadScene(file)
     Scene.load('Default', file)
     local mainCamera = Scene.spawn('__editorCamera') -- spawn editor camera
+    mainCamera:addFlag(ENTITY_FLAGS.HIDDEN + ENTITY_FLAGS.TRANSIENT) -- hide and don't save
     mainCamera:component(Components.Camera):setFov(80)
     self.camera.targetEntity = mainCamera
     EntityListView:buildEntityList()

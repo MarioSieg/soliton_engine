@@ -63,16 +63,15 @@ function EntityListView:render()
                 for i=clipper.DisplayStart+1, clipper.DisplayEnd do
                     local data = self.entityList[i]
                     local isUnnamed = data[3]
-                    if isUnnamed then
-                        -- make them slight red every entity should have a name:
-                        UI.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff8888ff)
-                    end
+                    local isHidden = data[1]:hasFlag(ENTITY_FLAGS.HIDDEN)
+                    local isStatic = data[1]:hasFlag(ENTITY_FLAGS.STATIC)
+                    local isTransient = data[1]:hasFlag(ENTITY_FLAGS.TRANSIENT)
+                    local color = isHidden and 0xff888888 or isStatic and 0xffff8888 or isTransient and 0xff88ff88 or 0xffffffff
+                    UI.PushStyleColor_U32(ffi.C.ImGuiCol_Text, color)
                     if UI.Selectable(data[2], self.selectedEntity == data[1], 0, size) then
                         self.selectedEntity = data[1]
                     end
-                    if isUnnamed then
-                        UI.PopStyleColor()
-                    end
+                    UI.PopStyleColor()
                     if UI.IsItemHovered() then
                         UI.SetTooltip(isUnnamed and 'This entity has no name' or 'Entity ID: 0x'..string.format('%x', tonumber(data[1].id)))
                     end
