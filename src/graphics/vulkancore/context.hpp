@@ -21,13 +21,6 @@ namespace vkb {
 
     class context final : public no_copy, public no_move {
     public:
-        static constexpr bool k_enable_validation_layers = [] {
-#if DEBUG
-            return true;
-#else
-            return false;
-#endif
-        }();
         static constexpr std::uint32_t k_max_concurrent_frames = 3;
         inline constinit static std::unique_ptr<context> s_instance {};
         explicit context(

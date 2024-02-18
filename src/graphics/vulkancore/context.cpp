@@ -8,6 +8,10 @@
 #include "../imgui/jetbrains_mono.ttf.inl"
 #include "../imgui/font_awesome_pro_5.hpp"
 
+#include "../../scripting/scripting_subsystem.hpp"
+
+using scripting::scripting_subsystem;
+
 namespace vkb {
     context::context(GLFWwindow* window) : m_window{window} {
         passert(m_window != nullptr);
@@ -105,29 +109,6 @@ namespace vkb {
         // This will clear the color and depth attachment
         cmd_buf.beginRenderPass(&render_pass_begin_info, vk::SubpassContents::eSecondaryCommandBuffers);
 
-#if 0
-        const auto w = static_cast<float>(m_width);
-        const auto h = static_cast<float>(m_height);
-
-        // Update dynamic viewport state
-        vk::Viewport viewport {};
-        viewport.width = w;
-        viewport.height = -h;
-        viewport.x = 0.0f;
-        viewport.y = h;
-        viewport.minDepth = 0.0f;
-        viewport.maxDepth = 1.0f;
-        cmd_buf.setViewport(0, 1, &viewport);
-
-        // Update dynamic scissor state
-        vk::Rect2D scissor {};
-        scissor.extent.width = w;
-        scissor.extent.height = h;
-        scissor.offset.x = 0.0f;
-        scissor.offset.y = 0.0f;
-        cmd_buf.setScissor(0, 1, &scissor);
-        #endif
-
         ImGui_ImplGlfw_NewFrame();
         ImGui_ImplVulkan_NewFrame();
 
@@ -209,7 +190,8 @@ namespace vkb {
     }
 
     auto context::boot_vulkan_core() -> void {
-        m_device.emplace(k_enable_validation_layers);
+        const bool enable_validation = scripting_subsystem::get_config_table()["Renderer"]["enableVulkanValidationLayers"].cast<bool>().valueOr(false);
+        m_device.emplace(enable_validation);
         m_swapchain.emplace(m_device->get_instance(), m_device->get_physical_device(), m_device->get_logical_device());
         m_swapchain->init_surface(m_window);
         recreate_swapchain();

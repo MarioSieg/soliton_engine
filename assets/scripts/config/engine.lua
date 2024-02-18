@@ -47,6 +47,7 @@ ENGINE_CONFIG = {
     },
     Renderer = {
         -- TODO tripleBuffering = true, -- Enable triple buffering.
+        enableVulkanValidationLayers = false, -- Enable Vulkan validation layers.
     },
     Physics = {
         tempAllocatorBufferSize = 1024 * 1024 * 64, -- 64 MB
