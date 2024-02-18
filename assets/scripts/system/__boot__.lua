@@ -40,6 +40,8 @@ end
 -- Everything is now set up to load the engine context
 
 local engineContext = require 'system.setup' -- Lazy load the setup script
+assert(engineContext ~= nil)
+assert(ENGINE_CONFIG ~= nil)
 
 -- DO NOT Rename - Invoked from native code
 -- This function is called before the main tick loop starts.
@@ -48,8 +50,12 @@ local engineContext = require 'system.setup' -- Lazy load the setup script
 function __on_prepare__()
     engineContext:hookModules() -- Load all start/tick hooks
 
-    jit.on() -- Enable JIT
-    jit.opt.start('+fma') -- enable FMA for better performance
+    if ENGINE_CONFIG.General.enableJit then
+        jit.on() -- Enable JIT
+        jit.opt.start('+fma') -- enable FMA for better performance
+    else
+        log_info('! JIT is disabled')
+    end
 
     -- Print some debug info
     print(string.format('%s %s %s', jit.version, jit.os, jit.arch))
@@ -60,12 +66,31 @@ function __on_prepare__()
     collectgarbage('stop') -- stop the GC, we run it manually every frame
 end
 
+local clock = os.clock
+local gcStartTime = clock()
+local gcfg = ENGINE_CONFIG.General
+
 -- DO NOT Rename - Invoked from native code
 function __on_tick__()
     if not engineContext then
         panic('Setup script not loaded!')
     end
     engineContext:tick()
-    collectgarbage('step') -- manually execute GC cycle every frame TODO: use step function
-    collectgarbage('stop') -- stop the GC, we run it manually every frame
+    if gcfg.smartFramerateDependentGCStepping then
+        local diff = clock() - gcStartTime
+        local gcFpsTarget = 1.0/gcfg.targetFramerate
+        local timeLeft = gcFpsTarget - diff
+        local collectionLim = gcfg.smartFramerateDependentGCSteppingCollectionLimit
+        if timeLeft > collectionLim then
+            local done = false
+            -- -- until garbage is all collected or further collection would exceed the threshold
+            while not done and gcFpsTarget - diff > collectionLim do
+                done = collectgarbage('step', 1)
+                diff = clock() - gcStartTime
+            end
+        end
+    else
+        collectgarbage('step') -- manually execute one GC step every frame
+    end
+    collectgarbage('stop') -- stop the GC because on step resumes it -> we run it manually every frame
 end

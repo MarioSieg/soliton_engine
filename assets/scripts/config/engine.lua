@@ -15,8 +15,19 @@ if not lfs.attributes('config', 'mode') then
 end
 
 -- Default engine config:
--- Do NOT rename any variable in here, as these are accessed from C++ code.
+-- Do NOT rename any variables in here, as some these are accessed from C++ code.
 ENGINE_CONFIG = {
+    General = {
+        enableEditor = true, -- Enable the editor.
+        enableDebug = true, -- Enable debug mode.
+        enableJit = true, -- Enable Just-In-Time compilation.
+        enableJitAssemblyDump = false, -- Enable JIT assembly dump.
+        enableFilesystemValidation = true, -- Enable filesystem validation.
+        loadLuaStdlibExtensions = true, -- Load Lua standard library extensions.
+        smartFramerateDependentGCStepping = false, -- Enable smart garbage collection stepping based on framerate.
+        smartFramerateDependentGCSteppingCollectionLimit = 0.01, -- Variable number of seconds to reserve for other things that won’t be caught in diff (experimented with everywhere from 0.002 to 0.01).
+        targetFramerate = 0, -- Target framerate. Set to 0 to set to the display refresh rate.
+    },
     Threads = {
         -- Lunam gives 1/4 of the CPU threads to rendering, 1/4 to physics and 1/4 to simulation (ECS).
         -- The rest is used for audio and scene loading threads and for other software running on the system.
@@ -32,12 +43,6 @@ ENGINE_CONFIG = {
         physicsThreads = 8, -- Number of physics threads.
         simThreads = 8, -- Number of simulation threads.
     },
-    General = {
-        enableEditor = true, -- Enable the editor.
-        enableDebug = true, -- Enable debug mode.
-        enableJit = true, -- Enable Just-In-Time compilation.
-        enableJitAssemblyDump = false, -- Enable JIT assembly dump.
-    },
     Window = {
         defaultWidth = 1920, -- Default window width.
         defaultHeight = 1080, -- Default window height.
@@ -46,7 +51,6 @@ ENGINE_CONFIG = {
         icon = 'logo.png' -- Window icon image file.
     },
     Renderer = {
-        -- TODO tripleBuffering = true, -- Enable triple buffering.
         enableVulkanValidationLayers = false, -- Enable Vulkan validation layers.
     },
     Physics = {
@@ -64,14 +68,6 @@ ENGINE_CONFIG = {
         maxContacts = 65535, 
     }
 }
-
--- Create engine config file if not exists
-if not lfs.attributes('config/engine.xml', 'mode') then
-    local xml = require 'ext.xml'
-    local file = io.open('config/engine.xml', 'w')
-    file:write(xml.toXml(ENGINE_CONFIG, 'engine'))
-    file:close()
-end
 
 if ENGINE_CONFIG.Threads.autoPartitionEngineThreadCount then
     local function clamp(x, min, max)

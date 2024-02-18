@@ -42,10 +42,13 @@ end
 
 -- Init misc
 
--- Init extensions
-require 'system.stdextend'
 -- Load global engine config
 require 'config.engine'
+
+if ENGINE_CONFIG.General.loadLuaStdlibExtensions then
+    -- Init extensions
+    require 'system.stdextend'
+end
 
 -- Print package paths
 print('Working dir: '..lfs.currentdir())
@@ -54,25 +57,26 @@ for _, path in ipairs(INCLUDE_DIRS) do
 end
 
 -- Verify filesystem
--- TODO must be done before any imports!
-print('Verifying filesystem...')
-local numchecks = 0
-local function checkFsEntry(path)
-    numchecks = numchecks + 1
-    if not lfs.attributes(path) then
-        panic('Broken installation! Required file or directory not found: '..path)
-    end
-end
-checkFsEntry('assets')
-if lfs.attributes('assets/scripts/system/fsregistry.lua') then -- check if the fsregistry file exists
-    local REQUIRED_FILES = require 'system.fsregistry' -- load the list of required files
-    if type(REQUIRED_FILES) == 'table' then
-        for _, path in ipairs(REQUIRED_FILES) do
-            checkFsEntry(path)
+if ENGINE_CONFIG.General.enableFilesystemValidation then
+    print('Verifying filesystem...')
+    local numchecks = 0
+    local function checkFsEntry(path)
+        numchecks = numchecks + 1
+        if not lfs.attributes(path) then
+            panic('Broken installation! Required file or directory not found: '..path)
         end
     end
-    print('Filesystem OK, '..numchecks..' entries checked.')
-    dofile('assets/scripts/tools/fsregistry_gen.lua') -- regenerate the fsregistry file
+    checkFsEntry('assets')
+    if lfs.attributes('assets/scripts/system/fsregistry.lua') then -- check if the fsregistry file exists
+        local REQUIRED_FILES = require 'system.fsregistry' -- load the list of required files
+        if type(REQUIRED_FILES) == 'table' then
+            for _, path in ipairs(REQUIRED_FILES) do
+                checkFsEntry(path)
+            end
+        end
+        print('Filesystem OK, '..numchecks..' entries checked.')
+        dofile('assets/scripts/tools/fsregistry_gen.lua') -- regenerate the fsregistry file
+    end
 end
 
 -- Load CDEFS
