@@ -24,6 +24,7 @@ ffi.cdef [[
     const char* __lu_app_host_get_gpu_name(void);
     const char* __lu_app_host_get_gapi_name(void);
     const char* __lu_app_open_file_dialog(const char *file_type, const char* filters, const char* default_path);
+    const char* __lu_app_open_folder_dialog(const char* default_path);
     uint32_t __lu_app_host_get_num_cpus(void);
 ]]
 
@@ -124,7 +125,14 @@ function App.exit()
 end
 
 function App.Utils.openFileDialog(fileTypes, filters, defaultPath)
+    filters = filters or ''
+    defaultPath = defaultPath or ''
     return ffi.string(C.__lu_app_open_file_dialog(fileTypes, filters, defaultPath))
+end
+
+function App.Utils.openFolderDialog(defaultPath)
+    defaultPath = defaultPath or ''
+    return ffi.string(C.__lu_app_open_folder_dialog(defaultPath))
 end
 
 App.Window.setTitle(string.format('Lunam Engine v.%s - %s %s', App.engineVersion, jit.os, jit.arch))

@@ -130,7 +130,18 @@ LUA_INTEROP_API auto __lu_app_open_file_dialog(const char *file_type, const char
     nfdchar_t *out;
     const nfdfilteritem_t filter = {file_type, filters};
     const nfdresult_t result = NFD_OpenDialog(&out, &filter, 1, default_path);
-    if (result == NFD_OKAY) {
+    if (result == NFD_OKAY) [[likely]] {
+        s_tmp_proxy = out;
+        NFD_FreePath(out);
+        return s_tmp_proxy.c_str();
+    }
+    return "";
+}
+
+LUA_INTEROP_API auto __lu_app_open_folder_dialog(const char* default_path) -> const char* {
+    nfdchar_t *out;
+    const nfdresult_t result = NFD_PickFolder(&out, default_path);
+    if (result == NFD_OKAY) [[likely]] {
         s_tmp_proxy = out;
         NFD_FreePath(out);
         return s_tmp_proxy.c_str();

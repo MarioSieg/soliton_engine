@@ -1,4 +1,4 @@
--- Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+-- Copyright (c) 2022-2023 Mario 'Neo' Sieg. All Rights Reserved.
 -- This file implements the editor GUI.
 -- The ImGui LuaJIT bindings are useable but somewhat dirty, which makes this file a bit messy - but hey it works!
 
@@ -18,6 +18,8 @@ local Scene = require 'Scene'
 local Components = require 'Components'
 
 local ICONS = require 'editor.icons'
+local Project = require 'editor.project'
+
 local Terminal = require 'editor.tools.terminal'
 local Profiler = require 'editor.tools.profiler'
 local ScriptEditor = require 'editor.tools.scripteditor'
@@ -45,7 +47,8 @@ local Editor = {
         showCenterAxis = true
     },
     camera = require 'editor.camera',
-    dockID = nil
+    dockID = nil,
+    activeProject = nil
 }
 
 for _, tool in ipairs(Editor.tools) do
@@ -93,6 +96,18 @@ end
 function Editor:renderMainMenu()
     if UI.BeginMainMenuBar() then
         if UI.BeginMenu('File') then
+            if UI.MenuItem(ICONS.FOLDER_PLUS..' New Project') then
+                local dir = App.Utils.openFolderDialog(nil)
+                local project = Project:new(dir)
+                print('Creating project on disk: '..project.transientRootDir)
+                local success = project:createOnDisk()
+                if success then
+                    self.activeProject = project
+                    print('Project created and open: '..project.transientRootDir)
+                else
+                    error('Failed to create project on disk :(')
+                end
+            end
             if UI.MenuItem(ICONS.FILE_IMPORT..' Import') then
                 local selectedFile = App.Utils.openFileDialog('3D Scenes', 'gltf,fbx,obj,dae', '')
                 if selectedFile and lfs.attributes(selectedFile) then

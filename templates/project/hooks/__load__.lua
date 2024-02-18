@@ -1,0 +1,1 @@
+-- This script hook is executed when the project is loaded into the editor.

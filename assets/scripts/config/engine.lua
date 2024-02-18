@@ -7,12 +7,7 @@ ffi.cdef[[
     uint32_t __lu_app_host_get_num_cpus(void);
 ]]
 
-print('Loading engine config...')
-
--- Create config dir if not exists
-if not lfs.attributes('config', 'mode') then
-    lfs.mkdir('config')
-end
+print('Loading internal engine config...')
 
 -- Default engine config:
 -- Do NOT rename any variables in here, as some these are accessed from C++ code.
