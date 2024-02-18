@@ -9,7 +9,7 @@ local Project = { -- Project structure, NO tables allowed in this class because 
         version = '0.0.1',
         type = 'game',
         author = 'Unknown',
-        description = 'No description available',
+        description = 'Default',
         license = 'MIT',
         copyright = '',
         url = 'www.example.com',
@@ -25,10 +25,12 @@ local Project = { -- Project structure, NO tables allowed in this class because 
     transientFullPath = nil
 }
 
-function Project:new(dir)
+function Project:new(dir, name)
     if dir then assert(type(dir) == 'string') end
+    if name then assert(type(name) == 'string') end
     local o = {}
     setmetatable(o, {__index = self})   
+    o.serialized.name = name or 'Unnamed Project'
     o.transientRootDir = dir
     o.serialized.id = os.time()
     local timeStampString = os.date('%Y-%m-%d %H:%M:%S')
@@ -112,6 +114,10 @@ function Project:createOnDisk()
         return false
     end
     copyDir(PROJECT_TEMPLATE_DIR, fullPath)
+    if not lfs.attributes(fullPath) then
+        error('Failed to copy project template to: '..fullPath)
+        return false
+    end
     self.transientFullPath = fullPath
     return self:saveMetaDataToFile()
 end

@@ -30,6 +30,8 @@ WINDOW_SIZE = UI.ImVec2(800, 600)
 local DOCK_LEFT_RATIO = 0.50
 local DOCK_RIGHT_RATIO = 0.40
 local DOCK_BOTTOM_RATIO = 0.50
+local MAX_TEXT_INPUT_SIZE = 128
+local POPUP_ID_NEW_PROJECT = 0xffffffff-1
 
 local Editor = {
     isVisible = ffi.new('bool[1]', true),
@@ -48,7 +50,7 @@ local Editor = {
     },
     camera = require 'editor.camera',
     dockID = nil,
-    activeProject = nil
+    inputTextBuffer = ffi.new('char[?]', 1+MAX_TEXT_INPUT_SIZE),
 }
 
 for _, tool in ipairs(Editor.tools) do
@@ -97,16 +99,9 @@ function Editor:renderMainMenu()
     if UI.BeginMainMenuBar() then
         if UI.BeginMenu('File') then
             if UI.MenuItem(ICONS.FOLDER_PLUS..' New Project') then
-                local dir = App.Utils.openFolderDialog(nil)
-                local project = Project:new(dir)
-                print('Creating project on disk: '..project.transientRootDir)
-                local success = project:createOnDisk()
-                if success then
-                    self.activeProject = project
-                    print('Project created and open: '..project.transientRootDir)
-                else
-                    error('Failed to create project on disk :(')
-                end
+                UI.PushOverrideID(POPUP_ID_NEW_PROJECT)
+                UI.OpenPopup('New Project')
+                UI.PopID()
             end
             if UI.MenuItem(ICONS.FILE_IMPORT..' Import') then
                 local selectedFile = App.Utils.openFileDialog('3D Scenes', 'gltf,fbx,obj,dae', '')
@@ -173,6 +168,64 @@ function Editor:renderMainMenu()
         end
         UI.EndMainMenuBar()
     end
+end
+
+local DEFAULT_PROJECT_DIRS = ''
+if jit.os == 'Windows' then
+    DEFAULT_PROJECT_DIRS = os.getenv('USERPROFILE')..'/Documents/'
+    DEFAULT_PROJECT_DIRS = string.gsub(DEFAULT_PROJECT_DIRS, '\\', '/')
+else -- Linux, MacOS
+    DEFAULT_PROJECT_DIRS = os.getenv('HOME')..'/Documents/'
+end
+
+if not lfs.attributes(DEFAULT_PROJECT_DIRS) then
+    DEFAULT_PROJECT_DIRS = ''
+end
+
+DEFAULT_PROJECT_DIRS = DEFAULT_PROJECT_DIRS..'Lunam Projects/'
+if not lfs.attributes(DEFAULT_PROJECT_DIRS) then
+    lfs.mkdir(DEFAULT_PROJECT_DIRS)
+end
+
+local tmpProjName = ''
+local tmpDir = ''
+function Editor:renderPopups()
+    UI.PushOverrideID(POPUP_ID_NEW_PROJECT)
+    if UI.BeginPopupModal('New Project') then
+        if self.inputTextBuffer[0] == 0 then -- Init
+            tmpProjName = 'New Project'
+            tmpDir = DEFAULT_PROJECT_DIRS..tmpProjName
+            ffi.copy(self.inputTextBuffer, tmpProjName)
+        end
+        if UI.InputText('Name', self.inputTextBuffer, MAX_TEXT_INPUT_SIZE) then
+            tmpProjName = ffi.string(self.inputTextBuffer)
+            tmpDir = DEFAULT_PROJECT_DIRS..tmpProjName
+        end
+        if UI.Button('...') then
+            tmpDir = App.Utils.openFolderDialog(nil)..tmpProjName
+        end
+        UI.SameLine()
+        UI.Text(tmpDir)
+        if UI.Button('Create') then
+            local name = tmpProjName
+            local dir = tmpDir
+            if not dir or not name or #name == 0 then
+                error('Invalid project name or directory')
+            end
+            local project = Project:new(dir, name)
+            print('Creating project on disk: '..project.transientRootDir)
+            local success = project:createOnDisk()
+            if success then
+                print('Project created: '..project.transientRootDir)
+            else
+                error('Failed to create project on disk :(')
+            end
+            UI.CloseCurrentPopup()
+            self.inputTextBuffer[0] = 0
+        end
+        UI.EndPopup()
+    end
+    UI.PopID()
 end
 
 local overlayLocation = 1 -- Top right is default
@@ -270,6 +323,7 @@ function Editor:__onTick()
     self.gizmos:drawGizmos()
     self:drawTools()
     self:renderMainMenu()
+    self:renderPopups()
     self:renderOverlay()
 end
 

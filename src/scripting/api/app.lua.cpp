@@ -133,6 +133,7 @@ LUA_INTEROP_API auto __lu_app_open_file_dialog(const char *file_type, const char
     if (result == NFD_OKAY) [[likely]] {
         s_tmp_proxy = out;
         NFD_FreePath(out);
+        std::ranges::replace(s_tmp_proxy, '\\', '/');
         return s_tmp_proxy.c_str();
     }
     return "";
@@ -144,6 +145,8 @@ LUA_INTEROP_API auto __lu_app_open_folder_dialog(const char* default_path) -> co
     if (result == NFD_OKAY) [[likely]] {
         s_tmp_proxy = out;
         NFD_FreePath(out);
+        std::ranges::replace(s_tmp_proxy, '\\', '/');
+        s_tmp_proxy.push_back('/');
         return s_tmp_proxy.c_str();
     }
     return "";

@@ -12,7 +12,7 @@ local Components = require 'Components'
 local Vec3 = require 'Vec3'
 local Quat = require 'Quat'
 
-local MAX_TEXT_INPUT_SIZE = 512
+local MAX_TEXT_INPUT_SIZE = 128
 local Inspector = {
     name = ICONS.COGS..' Inspector',
     isVisible = ffi.new('bool[1]', true),
