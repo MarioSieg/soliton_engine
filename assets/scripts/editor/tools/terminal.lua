@@ -24,16 +24,20 @@ local Terminal = {
     autoScrollOn = ffi.new('bool[1]', true),
 }
 
+local log = PROTOCOL
 function Terminal:render()
     UI.SetNextWindowSize(WINDOW_SIZE, ffi.C.ImGuiCond_FirstUseEver)
     if UI.Begin(self.name, self.isVisible, ffi.C.ImGuiWindowFlags_NoScrollbar) then
         if UI.BeginChild('TerminalScrollingRegion', UI.ImVec2(0, -UI.GetFrameHeightWithSpacing()), false, ffi.C.ImGuiWindowFlags_HorizontalScrollbar) then
             UI.PushStyleVar(ffi.C.ImGuiStyleVar_ItemSpacing, UI.ImVec2(4.0, 1.0))
             local clipper = UI.ImGuiListClipper()
-            clipper:Begin(#protocol, UI.GetTextLineHeightWithSpacing())
+            clipper:Begin(#log, UI.GetTextLineHeightWithSpacing())
             while clipper:Step() do -- HOT LOOP
                 for i=clipper.DisplayStart+1, clipper.DisplayEnd do
-                    UI.TextUnformatted(protocol[i])
+                    local isError = log[i][2]
+                    UI.PushStyleColor_U32(ffi.C.ImGuiCol_Text, isError and 0xff4444ff or 0xffffffff)
+                    UI.TextUnformatted(log[i][1])
+                    UI.PopStyleColor()
                 end
             end
             clipper:End()
@@ -44,7 +48,11 @@ function Terminal:render()
             end
             UI.EndChild()
             UI.Separator()
-            UI.TextUnformatted(string.format('%s %d', ICONS.ENVELOPE, #protocol))
+            UI.TextUnformatted(string.format('%s %d', ICONS.ENVELOPE, #log))
+            UI.SameLine()
+            UI.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff4444ff)
+            UI.TextUnformatted(string.format('%s %d', ICONS.EXCLAMATION_TRIANGLE, PROTOCOL_ERRORS))
+            UI.PopStyleColor()
             UI.SameLine()
             if UI.InputTextEx(ICONS.ARROW_LEFT, 'Enter command...', self.cmdBuf, self.cmdBufLen, UI.ImVec2(0, 0), ffi.C.ImGuiInputTextFlags_EnterReturnsTrue) then
                 if self.cmdBuf[0] ~= 0 then

@@ -98,9 +98,9 @@ end
 function Editor:renderMainMenu()
     if UI.BeginMainMenuBar() then
         if UI.BeginMenu('File') then
-            if UI.MenuItem(ICONS.FOLDER_PLUS..' New Project') then
+            if UI.MenuItem(ICONS.FOLDER_PLUS..' New Project...') then
                 UI.PushOverrideID(POPUP_ID_NEW_PROJECT)
-                UI.OpenPopup('New Project')
+                UI.OpenPopup(ICONS.FOLDER_PLUS..' New Project')
                 UI.PopID()
             end
             if UI.MenuItem(ICONS.FILE_IMPORT..' Import') then
@@ -191,7 +191,7 @@ local tmpProjName = ''
 local tmpDir = ''
 function Editor:renderPopups()
     UI.PushOverrideID(POPUP_ID_NEW_PROJECT)
-    if UI.BeginPopupModal('New Project') then
+    if UI.BeginPopupModal(ICONS.FOLDER_PLUS..' New Project') then
         if self.inputTextBuffer[0] == 0 then -- Init
             tmpProjName = 'New Project'
             tmpDir = DEFAULT_PROJECT_DIRS..tmpProjName
@@ -206,7 +206,7 @@ function Editor:renderPopups()
         end
         UI.SameLine()
         UI.Text(tmpDir)
-        if UI.Button('Create') then
+        if UI.Button('Create ') then
             local name = tmpProjName
             local dir = tmpDir
             if not dir or not name or #name == 0 then
@@ -214,12 +214,17 @@ function Editor:renderPopups()
             end
             local project = Project:new(dir, name)
             print('Creating project on disk: '..project.transientRootDir)
-            local success = project:createOnDisk()
-            if success then
+            if pcall(function() project:createOnDisk() end) then
                 print('Project created: '..project.transientRootDir)
             else
-                error('Failed to create project on disk :(')
+                UI.CloseCurrentPopup()
+                error('Failed to create project')
             end
+            UI.CloseCurrentPopup()
+            self.inputTextBuffer[0] = 0
+        end
+        UI.SameLine()
+        if UI.Button('Cancel') then
             UI.CloseCurrentPopup()
             self.inputTextBuffer[0] = 0
         end

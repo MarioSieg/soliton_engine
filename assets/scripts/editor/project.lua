@@ -102,24 +102,22 @@ function Project:createOnDisk()
     local fullPath = self.transientRootDir..'/'..self.serialized.name
     if lfs.attributes(fullPath) then
         error('Project already exists: '..fullPath)
-        return false
     end
     lfs.mkdir(fullPath)
     if not lfs.attributes(fullPath) then
         error('Failed to create project directory: '..fullPath)
-        return false
     end
     if not lfs.attributes(PROJECT_TEMPLATE_DIR) then
         error('Project template directory not found: '..PROJECT_TEMPLATE_DIR)
-        return false
     end
     copyDir(PROJECT_TEMPLATE_DIR, fullPath)
     if not lfs.attributes(fullPath) then
         error('Failed to copy project template to: '..fullPath)
-        return false
     end
     self.transientFullPath = fullPath
-    return self:saveMetaDataToFile()
+    if not self:saveMetaDataToFile() then
+        error('Failed to save project metadata to: '..fullPath)
+    end
 end
 
 function Project:getProjectFile()

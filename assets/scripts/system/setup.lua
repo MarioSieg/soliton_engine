@@ -6,7 +6,8 @@ local stp = require 'ext.stack_trace_plus'
 debug.traceback = stp.stacktrace
 
 -- Init protocol logger.
-protocol = {}
+PROTOCOL = {}
+PROTOCOL_ERRORS = 0
 
 local printProxy = _G.print
 function _G.print(...)
@@ -18,8 +19,8 @@ function _G.print(...)
         end
         str = str..tostring(arg)
     end
+    table.insert(PROTOCOL, {str, false})
     printProxy(str)
-    table.insert(protocol, str)
 end
 
 local errorProxy = _G.error
@@ -32,8 +33,9 @@ function _G.error(...)
         end
         str = str..tostring(arg)
     end
+    table.insert(PROTOCOL, {str, true})
+    PROTOCOL_ERRORS = PROTOCOL_ERRORS + 1
     errorProxy(str)
-    table.insert(protocol, str)
 end
 
 function printsep()
