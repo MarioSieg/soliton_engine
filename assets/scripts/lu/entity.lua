@@ -21,9 +21,9 @@ ffi.cdef[[
 
 ENTITY_FLAGS = { -- Keep in Sync with com::entity_flags::$ in components.hpp
     NONE = 0,
-    HIDDEN = lshift(1, 0),
-    TRANSIENT = lshift(1, 1),
-    STATIC = lshift(1, 2),
+    HIDDEN = 0x1,
+    TRANSIENT = 0x2,
+    STATIC = 0x4,
 }
 
 local Entity = {
