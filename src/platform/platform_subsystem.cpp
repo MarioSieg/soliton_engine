@@ -24,6 +24,9 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 #include <nfd.hpp>
+#include "../scripting/scripting_subsystem.hpp"
+
+using scripting::scripting_subsystem;
 
 namespace platform {
 [[maybe_unused]]
@@ -330,6 +333,11 @@ auto dump_loaded_dylibs() -> void {
             passert(is_glfw_online);
         }
 
+        const int default_width = scripting_subsystem::get_config_table()["Window"]["defaultWidth"].cast<int>().valueOr(1280);
+        const int default_height = scripting_subsystem::get_config_table()["Window"]["defaultHeight"].cast<int>().valueOr(720);
+        const int min_width = scripting_subsystem::get_config_table()["Window"]["minWidth"].cast<int>().valueOr(640);
+        const int min_height = scripting_subsystem::get_config_table()["Window"]["minHeight"].cast<int>().valueOr(480);
+
         // create window
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
@@ -379,6 +387,7 @@ auto dump_loaded_dylibs() -> void {
         }
 
         std::vector<std::uint8_t> pixel_buf {};
+        const std::string k_window_icon_file = scripting_subsystem::get_config_table()["Window"]["icon"].cast<std::string>().valueOr("icon.png");
         assetmgr::load_asset_blob_or_panic(asset_category::icon, k_window_icon_file, pixel_buf);
 
         // set window icon

@@ -24,6 +24,7 @@ ffi.cdef [[
     const char* __lu_app_host_get_gpu_name(void);
     const char* __lu_app_host_get_gapi_name(void);
     const char* __lu_app_open_file_dialog(const char *file_type, const char* filters, const char* default_path);
+    uint32_t __lu_app_host_get_num_cpus(void);
 ]]
 
 local C = ffi.C
@@ -46,7 +47,8 @@ local App = {
         CPU_NAME = ffi.string(C.__lu_app_host_get_cpu_name()),
         GPU_NAME = ffi.string(C.__lu_app_host_get_gpu_name()),
         GRAPHICS_API = ffi.string(C.__lu_app_host_get_gapi_name()),
-        HOST = jit.os..' '..jit.arch
+        HOST = jit.os..' '..jit.arch,
+        NUM_CPUS = math.max(1, C.__lu_app_host_get_num_cpus()),
     },
     Utils = {}
 }

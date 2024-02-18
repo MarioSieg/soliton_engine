@@ -21,6 +21,9 @@
 #include <Jolt/Physics/Collision/Shape/SphereShape.h>
 
 #include "../graphics/graphics_subsystem.hpp"
+#include "../scripting/scripting_subsystem.hpp"
+
+using scripting::scripting_subsystem;
 
 namespace physics {
 	namespace Layers {
@@ -136,18 +139,25 @@ namespace physics {
         JPH::Trace = &trace_proc;
         JPH::Factory::sInstance = new JPH::Factory();
         JPH::RegisterTypes();
-        m_temp_allocator = std::make_unique<JPH::TempAllocatorImpl>(k_temp_allocator_size);
-        m_job_system = std::make_unique<JPH::JobSystemThreadPool>(JPH::cMaxPhysicsJobs, JPH::cMaxPhysicsBarriers, k_num_threads);
+        m_temp_allocator = std::make_unique<JPH::TempAllocatorImpl>(
+			scripting_subsystem::get_config_table()["Physics"]["tempAllocatorBufferSize"].cast<std::size_t>().valueOr(32ull << 20)
+        );
+    	const auto num_threads = scripting_subsystem::get_config_table()["Threads"]["physicsThreads"].cast<std::uint32_t>().valueOr(1);
+        m_job_system = std::make_unique<JPH::JobSystemThreadPool>(
+        	JPH::cMaxPhysicsJobs,
+        	JPH::cMaxPhysicsBarriers,
+        	num_threads
+        );
     	m_broad_phase = std::make_unique<BPLayerInterfaceImpl>();
 		m_broad_phase_filter = std::make_unique<ObjectVsBroadPhaseLayerFilterImpl>();
     	m_object_layer_pair_filter = std::make_unique<ObjectLayerPairFilterImpl>();
     	m_contact_listener = std::make_unique<ContactListenerImpl>();
 
     	m_physics_system.Init(
-    		k_max_bodies,
-    		k_num_mutexes,
-    		k_max_body_pairs,
-    		k_max_contacts,
+    		scripting_subsystem::get_config_table()["Physics"]["maxRigidBodies"].cast<std::uint32_t>().valueOr(0x1000),
+    		scripting_subsystem::get_config_table()["Physics"]["numMutexes"].cast<std::uint32_t>().valueOr(0x1000),
+    		scripting_subsystem::get_config_table()["Physics"]["maxBodyPairs"].cast<std::uint32_t>().valueOr(0x1000),
+    		scripting_subsystem::get_config_table()["Physics"]["maxContacts"].cast<std::uint32_t>().valueOr(0x1000),
     		*m_broad_phase,
     		*m_broad_phase_filter,
     		*m_object_layer_pair_filter

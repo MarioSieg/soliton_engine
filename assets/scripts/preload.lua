@@ -31,7 +31,7 @@ for key, module in pairs(MODULES) do
     loadMod(key, module)
 end
 
-if SYSTEM_CFG.editor_enable then
+if ENGINE_CONFIG.General.enableEditor then
     loadMod('Editor', 'editor/editor')
 end
 

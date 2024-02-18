@@ -1,0 +1,34 @@
+<engine>
+  <Renderer/>
+  <Window>
+    <icon>logo.png</icon>
+    <defaultWidth>1920</defaultWidth>
+    <defaultHeight>1080</defaultHeight>
+    <minWidth>640</minWidth>
+    <minHeight>480</minHeight>
+  </Window>
+  <Threads>
+    <maxRenderThreads>8</maxRenderThreads>
+    <maxPhysicsThreads>8</maxPhysicsThreads>
+    <maxSimThreads>8</maxSimThreads>
+    <renderThreads>8</renderThreads>
+    <physicsThreads>8</physicsThreads>
+    <simThreads>8</simThreads>
+    <autoPartitionEngineThreadCount>true</autoPartitionEngineThreadCount>
+    <maxTotalEngineThreads>16</maxTotalEngineThreads>
+    <partitionRatio>4</partitionRatio>
+  </Threads>
+  <General>
+    <enableDebug>true</enableDebug>
+    <enableJit>true</enableJit>
+    <enableJitAssemblyDump>false</enableJitAssemblyDump>
+    <enableEditor>true</enableEditor>
+  </General>
+  <Physics>
+    <maxContacts>65535</maxContacts>
+    <tempAllocatorBufferSize>67108864</tempAllocatorBufferSize>
+    <maxRigidBodies>65535</maxRigidBodies>
+    <numMutexes>0</numMutexes>
+    <maxBodyPairs>65535</maxBodyPairs>
+  </Physics>
+</engine>

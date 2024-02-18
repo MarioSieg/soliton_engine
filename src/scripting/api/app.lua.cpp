@@ -121,6 +121,11 @@ LUA_INTEROP_API auto __lu_app_host_get_gapi_name() -> const char* {
     return s_tmp_proxy.c_str();
 }
 
+LUA_INTEROP_API auto __lu_app_host_get_num_cpus() -> std::uint32_t {
+    static const std::uint32_t s_num_cpus = std::max(1u, std::thread::hardware_concurrency());
+    return s_num_cpus;
+}
+
 LUA_INTEROP_API auto __lu_app_open_file_dialog(const char *file_type, const char* filters, const char* default_path) -> const char* {
     nfdchar_t *out;
     const nfdfilteritem_t filter = {file_type, filters};

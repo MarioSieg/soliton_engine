@@ -5,14 +5,6 @@
 local stp = require 'ext.stack_trace_plus'
 debug.traceback = stp.stacktrace
 
--- Init extensions
-require 'system.stdextend'
-
-SYSTEM_CFG = require 'system.config' -- Load config
-if SYSTEM_CFG.jit_asm_dump then -- Enable JIT ASM dump if requested
-    require('jit.dump').on('m')
-end
-
 -- Init protocol logger.
 protocol = {}
 
@@ -47,6 +39,13 @@ end
 function printsep()
     print('------------------------------------------------------------')
 end
+
+-- Init misc
+
+-- Init extensions
+require 'system.stdextend'
+-- Load global engine config
+require 'config.engine'
 
 -- Print package paths
 print('Working dir: '..lfs.currentdir())

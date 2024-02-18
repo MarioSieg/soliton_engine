@@ -3,6 +3,7 @@
 #include "graphics_subsystem.hpp"
 
 #include "../platform/platform_subsystem.hpp"
+#include "../scripting/scripting_subsystem.hpp"
 
 #include <execution>
 #include <mimalloc.h>
@@ -12,6 +13,7 @@
 #include "material.hpp"
 
 using platform::platform_subsystem;
+using scripting::scripting_subsystem;
 
 namespace graphics {
     using vkb::context;
@@ -49,7 +51,8 @@ namespace graphics {
         create_descriptor_sets();
         create_pipeline();
 
-        m_render_thread_pool.emplace(&render_scene_bucket, this, 4);
+        const auto num_render_threads = scripting_subsystem::get_config_table()["Threads"]["renderThreads"].cast<std::int32_t>().valueOr(2);
+        m_render_thread_pool.emplace(&render_scene_bucket, this, num_render_threads);
         m_render_data.reserve(32);
     }
 

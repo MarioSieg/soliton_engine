@@ -36,6 +36,9 @@ for _, path in ipairs(INCLUDE_DIRS) do
     package.path = string.format('%s;%s/?.lua', package.path, path)
 end
 
+-- ###################### SYSTEM BOOTSTRAP ######################
+-- Everything is now set up to load the engine context
+
 local engineContext = require 'system.setup' -- Lazy load the setup script
 
 -- DO NOT Rename - Invoked from native code
