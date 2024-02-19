@@ -120,6 +120,14 @@ function App.Window.getPos()
     return C.__lu_window_get_pos()
 end
 
+function App.Window.setPlatformTitle(suffix)
+    if suffix and type(suffix) == 'string' then
+        App.Window.setTitle(string.format('Lunam Engine v.%s - %s %s - %s', App.engineVersion, jit.os, jit.arch, suffix))
+    else
+        App.Window.setTitle(string.format('Lunam Engine v.%s - %s %s', App.engineVersion, jit.os, jit.arch))
+    end
+end
+
 function App.exit()
     C.__lu_app_exit()
 end
@@ -135,7 +143,6 @@ function App.Utils.openFolderDialog(defaultPath)
     return ffi.string(C.__lu_app_open_folder_dialog(defaultPath))
 end
 
-App.Window.setTitle(string.format('Lunam Engine v.%s - %s %s', App.engineVersion, jit.os, jit.arch))
--- App.Window.maximize()
+App.Window.setPlatformTitle()
 
 return App

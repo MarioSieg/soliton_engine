@@ -33,6 +33,23 @@ local DOCK_BOTTOM_RATIO = 0.50
 local MAX_TEXT_INPUT_SIZE = 128
 local POPUP_ID_NEW_PROJECT = 0xffffffff-1
 
+local DEFAULT_PROJECT_DIR = ''
+if jit.os == 'Windows' then
+    DEFAULT_PROJECT_DIR = os.getenv('USERPROFILE')..'/Documents/'
+    DEFAULT_PROJECT_DIR = string.gsub(DEFAULT_PROJECT_DIR, '\\', '/')
+else -- Linux, MacOS
+    DEFAULT_PROJECT_DIR = os.getenv('HOME')..'/Documents/'
+end
+
+if not lfs.attributes(DEFAULT_PROJECT_DIR) then
+    DEFAULT_PROJECT_DIR = ''
+end
+
+DEFAULT_PROJECT_DIR = DEFAULT_PROJECT_DIR..'Lunam Projects/'
+if not lfs.attributes(DEFAULT_PROJECT_DIR) then
+    lfs.mkdir(DEFAULT_PROJECT_DIR)
+end
+
 local Editor = {
     isVisible = ffi.new('bool[1]', true),
     isPlaying = false,
@@ -51,6 +68,7 @@ local Editor = {
     camera = require 'editor.camera',
     dockID = nil,
     inputTextBuffer = ffi.new('char[?]', 1+MAX_TEXT_INPUT_SIZE),
+    activeProject = nil
 }
 
 for _, tool in ipairs(Editor.tools) do
@@ -103,6 +121,16 @@ function Editor:renderMainMenu()
                 UI.OpenPopup(ICONS.FOLDER_PLUS..' New Project')
                 UI.PopID()
             end
+            if UI.MenuItem(ICONS.FOLDER_OPEN..' Open Project...') then
+                local selectedFile = App.Utils.openFileDialog('Lunam Projects', 'lupro', DEFAULT_PROJECT_DIR)
+                if selectedFile and lfs.attributes(selectedFile) then
+                    local project = Project:open(selectedFile)
+                    print('Opened project: '..project.transientFullPath)
+                    self.activeProject = project
+                    App.Window.setPlatformTitle(string.format('Project: %s', project.serialized.name))
+                    collectgarbage('collect')
+                end
+            end
             if UI.MenuItem(ICONS.FILE_IMPORT..' Import') then
                 local selectedFile = App.Utils.openFileDialog('3D Scenes', 'gltf,fbx,obj,dae', '')
                 if selectedFile and lfs.attributes(selectedFile) then
@@ -140,6 +168,9 @@ function Editor:renderMainMenu()
             UI.EndMenu()
         end
         if UI.BeginMenu('Help') then
+            if UI.MenuItem('Perform Full GC Cycle') then
+                collectgarbage('collect')
+            end
             UI.EndMenu()
         end
         UI.Separator()
@@ -170,23 +201,6 @@ function Editor:renderMainMenu()
     end
 end
 
-local DEFAULT_PROJECT_DIRS = ''
-if jit.os == 'Windows' then
-    DEFAULT_PROJECT_DIRS = os.getenv('USERPROFILE')..'/Documents/'
-    DEFAULT_PROJECT_DIRS = string.gsub(DEFAULT_PROJECT_DIRS, '\\', '/')
-else -- Linux, MacOS
-    DEFAULT_PROJECT_DIRS = os.getenv('HOME')..'/Documents/'
-end
-
-if not lfs.attributes(DEFAULT_PROJECT_DIRS) then
-    DEFAULT_PROJECT_DIRS = ''
-end
-
-DEFAULT_PROJECT_DIRS = DEFAULT_PROJECT_DIRS..'Lunam Projects/'
-if not lfs.attributes(DEFAULT_PROJECT_DIRS) then
-    lfs.mkdir(DEFAULT_PROJECT_DIRS)
-end
-
 local tmpProjName = ''
 local tmpDir = ''
 function Editor:renderPopups()
@@ -194,12 +208,12 @@ function Editor:renderPopups()
     if UI.BeginPopupModal(ICONS.FOLDER_PLUS..' New Project') then
         if self.inputTextBuffer[0] == 0 then -- Init
             tmpProjName = 'New Project'
-            tmpDir = DEFAULT_PROJECT_DIRS..tmpProjName
+            tmpDir = DEFAULT_PROJECT_DIR..tmpProjName
             ffi.copy(self.inputTextBuffer, tmpProjName)
         end
         if UI.InputText('Name', self.inputTextBuffer, MAX_TEXT_INPUT_SIZE) then
             tmpProjName = ffi.string(self.inputTextBuffer)
-            tmpDir = DEFAULT_PROJECT_DIRS..tmpProjName
+            tmpDir = DEFAULT_PROJECT_DIR..tmpProjName
         end
         if UI.Button('...') then
             tmpDir = App.Utils.openFolderDialog(nil)..tmpProjName
@@ -213,9 +227,9 @@ function Editor:renderPopups()
                 error('Invalid project name or directory')
             end
             local project = Project:new(dir, name)
-            print('Creating project on disk: '..project.transientRootDir)
-            if pcall(function() project:createOnDisk() end) then
-                print('Project created: '..project.transientRootDir)
+            print('Creating project on disk: '..dir)
+            if pcall(function() project:createOnDisk(dir) end) then
+                print('Project created: '..dir)
             else
                 UI.CloseCurrentPopup()
                 error('Failed to create project')
