@@ -9,6 +9,7 @@ add_compile_options(-march=haswell)
 
 if (WIN32)
     add_compile_options(-Xclang -fvisibility=hidden -Wno-defaulted-function-deleted)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 else()
     add_compile_options(-fvisibility=hidden)
     add_link_options(-rdynamic)
@@ -38,4 +39,3 @@ endif()
 
 include(src/CMakeLists.txt)
 include(cmake/extern.cmake)
-target_compile_options(lunam PUBLIC /MT)

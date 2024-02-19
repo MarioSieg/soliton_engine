@@ -435,7 +435,7 @@ namespace vkb {
         image_view_ci.subresourceRange.layerCount = 1;
         image_view_ci.image = m_msaa_target.color.image;
 
-        m_device->get_logical_device().createImageView(&image_view_ci, &s_allocator, &m_msaa_target.color.view);
+        vkcheck(m_device->get_logical_device().createImageView(&image_view_ci, &s_allocator, &m_msaa_target.color.view));
 
         // depth target
         image_ci.format = m_device->get_depth_format();
@@ -456,7 +456,7 @@ namespace vkb {
             image_view_ci.subresourceRange.aspectMask |= vk::ImageAspectFlagBits::eStencil;
         }
 
-        m_device->get_logical_device().createImageView(&image_view_ci, &s_allocator, &m_msaa_target.depth.view);
+        vkcheck(m_device->get_logical_device().createImageView(&image_view_ci, &s_allocator, &m_msaa_target.depth.view));
     }
 
     auto context::create_imgui_renderer() -> void {
