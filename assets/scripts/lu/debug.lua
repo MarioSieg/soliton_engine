@@ -13,7 +13,7 @@ ffi.cdef[[
     void __lu_dd_aabb(lua_vec3 min, lua_vec3 max);
     void __lu_dd_sphere(lua_vec3 center, float radius);
     void __lu_dd_end(void);
-    void __lu_dd_gizmo_manipulator(lua_entity_id id);
+    void __lu_dd_gizmo_manipulator(lua_entity_id id, int op, int mode);
 ]]
 
 local C = ffi.C
@@ -67,8 +67,8 @@ function Debug.finish()
     C.__lu_dd_end()
 end
 
-function Debug.gizmoManipulator(entity)
-    C.__lu_dd_gizmo_manipulator(entity.id)
+function Debug.gizmoManipulator(entity, op, mode)
+    C.__lu_dd_gizmo_manipulator(entity.id, op, mode)
 end
 
 return Debug

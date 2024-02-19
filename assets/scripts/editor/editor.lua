@@ -51,6 +51,44 @@ if not lfs.attributes(DEFAULT_PROJECT_DIR) then
 end
 
 local MESH_FILE_FILTER = '3d,3ds,3mf,ac,ac3d,acc,amj,ase,ask,b3d,bvh,csm,cob,dae,dxf,enff,fbx,gltf,glb,hmb,ifc,irr,lwo,lws,lxo,m3d,md2,md3,md5,mdc,mdl,mesh,mot,ms3d,ndo,nff,obj,off,ogex,ply,pmx,prj,q3o,q3s,raw,scn,sib,smd,stp,stl,ter,uc,vta,x,x3d,xgl,zgl'
+local GIZMO_OPERATIONS = {
+    TRANSLATE_X = 0x01,
+    TRANSLATE_Y = 0x02,
+    TRANSLATE_Z = 0x04,
+    ROTATE_X = 0x08,
+    ROTATE_Y = 0x10,
+    ROTATE_Z = 0x20,
+    ROTATE_SCREEN = 0x40,
+    SCALE_X = 0x80,
+    SCALE_Y = 0x100,
+    SCALE_Z = 0x200,
+    BOUNDS = 0x400,
+    SCALE_XU = 0x800,
+    SCALE_YU = 0x1000,
+    SCALE_ZU = 0x2000,
+}
+
+GIZMO_OPERATIONS.TRANSLATE = GIZMO_OPERATIONS.TRANSLATE_X
+    + GIZMO_OPERATIONS.TRANSLATE_Y
+    + GIZMO_OPERATIONS.TRANSLATE_Z
+GIZMO_OPERATIONS.ROTATE = GIZMO_OPERATIONS.ROTATE_X
+    + GIZMO_OPERATIONS.ROTATE_Y
+    + GIZMO_OPERATIONS.ROTATE_Z
+    + GIZMO_OPERATIONS.ROTATE_SCREEN
+GIZMO_OPERATIONS.SCALE = GIZMO_OPERATIONS.SCALE_X 
+    + GIZMO_OPERATIONS.SCALE_Y
+    + GIZMO_OPERATIONS.SCALE_Z
+GIZMO_OPERATIONS.SCALEU = GIZMO_OPERATIONS.SCALE_XU 
+    + GIZMO_OPERATIONS.SCALE_YU
+    + GIZMO_OPERATIONS.SCALE_ZU
+GIZMO_OPERATIONS.UNIVERSAL = GIZMO_OPERATIONS.TRANSLATE 
+    + GIZMO_OPERATIONS.ROTATE 
+    + GIZMO_OPERATIONS.SCALEU
+
+local GIZMO_MODE = {
+    LOCAL = 0,
+    WORLD = 1
+}
 
 local Editor = {
     isVisible = ffi.new('bool[1]', true),
@@ -65,7 +103,9 @@ local Editor = {
     gizmos = {
         gridSize = 25,
         showGrid = true,
-        showCenterAxis = true
+        showCenterAxis = true,
+        gizmoOperation = GIZMO_OPERATIONS.UNIVERSAL,
+        gizmoMode = GIZMO_MODE.LOCAL
     },
     camera = require 'editor.camera',
     dockID = nil,
@@ -81,7 +121,7 @@ function Editor.gizmos:drawGizmos()
     Debug.start()
     local selected = EntityListView.selectedEntity
     if selected and selected:isValid() then
-        Debug.gizmoManipulator(selected) 
+        Debug.gizmoManipulator(selected, self.gizmoOperation, self.gizmoMode) 
     end
     if self.showGrid then
         Debug.drawGrid(Debug.AXIS.Y, Vec3.ZERO, self.gridSize)

@@ -43,18 +43,18 @@ LUA_INTEROP_API auto __lu_dd_sphere(const lua_vec3 center, const float radius) -
 
 }
 
-LUA_INTEROP_API auto __lu_dd_end()-> void  {
+LUA_INTEROP_API auto __lu_dd_end() -> void  {
 
 }
 
-LUA_INTEROP_API auto __lu_dd_gizmo_manipulator(const flecs::id_t id) -> void {
+LUA_INTEROP_API auto __lu_dd_gizmo_manipulator(const flecs::id_t id, const int op, const int mode) -> void {
     const flecs::entity ent {scene::get_active(), id};
     if (auto* transform = ent.get_mut<com::transform>(); transform) [[likely]] {
         const auto* view = reinterpret_cast<const float*>(&graphics_subsystem::s_view_mtx);
         const auto* proj = reinterpret_cast<const float*>(&graphics_subsystem::s_proj_mtx);
         DirectX::XMFLOAT4X4A model_mtx {};
         DirectX::XMStoreFloat4x4A(&model_mtx, transform->compute_matrix());
-        ImGuizmo::Manipulate(view, proj, ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::MODE::WORLD, reinterpret_cast<float*>(&model_mtx), nullptr, nullptr);
+        ImGuizmo::Manipulate(view, proj, static_cast<ImGuizmo::OPERATION>(op), static_cast<ImGuizmo::MODE>(mode), reinterpret_cast<float*>(&model_mtx), nullptr, nullptr);
         DirectX::XMVECTOR pos {}, rot {}, scale {};
         DirectX::XMMatrixDecompose(&scale, &rot, &pos, DirectX::XMLoadFloat4x4A(&model_mtx));
         DirectX::XMStoreFloat3(&transform->position, pos);
