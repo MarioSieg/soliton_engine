@@ -58,9 +58,14 @@ function EntityListView:render()
             self:buildEntityList()
         end
         UI.SameLine()
-        if UI.Checkbox(ICONS.EYE..' Hidden', self.showHiddenEntities) then
+        if UI.Checkbox((self.showHiddenEntities[0] and ICONS.EYE or ICONS.EYE_SLASH), self.showHiddenEntities) then
             self:buildEntityList()
         end
+        if UI.IsItemHovered() then
+            UI.SetTooltip('Show hidden entities')
+        end
+        UI.SameLine()
+        UI.Spacing()
         UI.SameLine()
         UI.Text('Entities: '..#self.entityList)
         UI.Separator()
