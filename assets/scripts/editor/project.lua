@@ -11,7 +11,7 @@ local Project = { -- Project structure, NO tables allowed in this class because 
         type = 'game',
         author = 'Unknown',
         description = 'Default',
-        license = 'MIT',
+        license = '',
         copyright = '',
         url = 'www.example.com',
         assetDir = 'assets',
@@ -76,9 +76,6 @@ function Project:loadMetaDataFromFile()
     local target = handler.root.LunamProject
     if not target or type(target) ~= 'table' then
         error('Failed to parse XML project file: '..target)
-    end
-    if #target ~= #Project.serialized then
-        error('Invalid XML project file: '..target)
     end
     self.serialized = target
 end
