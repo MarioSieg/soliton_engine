@@ -33,7 +33,8 @@ local Camera = {
     getNearClip = function(self) return C.__lu_com_camera_get_near_clip(self._entity_id) end,
     setNearClip = function(self, near) C.__lu_com_camera_set_near_clip(self._entity_id, near) end,
     getFarClip = function(self) return C.__lu_com_camera_get_far_clip(self._entity_id) end,
-    setFarClip = function(self, far) C.__lu_com_camera_set_far_clip(self._entity_id, far) end
+    setFarClip = function(self, far) C.__lu_com_camera_set_far_clip(self._entity_id, far) end,
+    getMatrices = function(self, view, proj) C.__lu_com_camera_get_matrices(view, proj) end
 }
 
 return Camera

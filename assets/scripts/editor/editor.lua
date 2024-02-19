@@ -79,8 +79,12 @@ end
 
 function Editor.gizmos:drawGizmos()
     Debug.start()
+    local selected = EntityListView.selectedEntity
+    if selected and selected:isValid() then
+        Debug.gizmoManipulator(selected) 
+    end
     if self.showGrid then
-        Debug.drawGrid(Debug.AXIS.Y, Vec3.ZERO, self.gridSize, 1)
+        Debug.drawGrid(Debug.AXIS.Y, Vec3.ZERO, self.gridSize)
     end
     if self.showCenterAxis then
         Debug.drawAxis(Vec3.ZERO, 1, Debug.AXIS.Y, 0.02)

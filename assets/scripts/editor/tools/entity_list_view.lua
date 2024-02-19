@@ -50,7 +50,7 @@ function EntityListView:render()
         if UI.Button(ICONS.PLUS..' Create') then
             self.entityCounter = self.entityCounter + 1
             local ent = Scene.spawn('New Entity '..self.entityCounter)
-            --self.selectedEntity = ent
+            self.selectedEntity = ent
             self:buildEntityList()
         end
         UI.SameLine()
@@ -85,7 +85,7 @@ function EntityListView:render()
                         local color = isHidden and 0xff888888 or isStatic and 0xffff8888 or isTransient and 0xff88ff88 or 0xffffffff
                         UI.PushStyleColor_U32(ffi.C.ImGuiCol_Text, color)
                         if UI.Selectable(data[2], self.selectedEntity == data[1], 0, size) then
-                            --self.selectedEntity = data[1]
+                            self.selectedEntity = data[1]
                         end
                         UI.PopStyleColor()
                         if UI.IsItemHovered() then

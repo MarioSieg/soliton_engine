@@ -94,13 +94,6 @@ namespace graphics {
         return flecs::entity::null();
     }
 
-    static constinit DirectX::XMFLOAT4X4A s_view_mtx;
-    static constinit DirectX::XMFLOAT4X4A s_proj_mtx;
-    static constinit DirectX::XMFLOAT4X4A s_view_proj_mtx;
-    static DirectX::XMFLOAT4A s_clear_color;
-    static DirectX::BoundingFrustum s_frustum;
-    static com::transform s_camera_transform;
-
     static auto update_main_camera(const float width, const float height) -> void {
         const flecs::entity main_cam = get_main_camera();
         if (!main_cam.is_valid() || !main_cam.is_alive()) [[unlikely]] {
@@ -108,20 +101,20 @@ namespace graphics {
             return;
         }
         com::camera::active_camera = main_cam;
-        s_camera_transform = *main_cam.get<com::transform>();
+        graphics_subsystem::s_camera_transform = *main_cam.get<com::transform>();
         com::camera& cam = *main_cam.get_mut<com::camera>();
         if (cam.auto_viewport) {
             cam.viewport.x = width;
             cam.viewport.y = height;
         }
-        DirectX::XMStoreFloat4A(&s_clear_color, DirectX::XMVectorSetW(DirectX::XMLoadFloat3(&cam.clear_color), 1.0f));
-        const DirectX::XMMATRIX view = cam.compute_view(s_camera_transform);
+        DirectX::XMStoreFloat4A(&graphics_subsystem::s_clear_color, DirectX::XMVectorSetW(DirectX::XMLoadFloat3(&cam.clear_color), 1.0f));
+        const DirectX::XMMATRIX view = cam.compute_view(graphics_subsystem::s_camera_transform);
         const DirectX::XMMATRIX proj = cam.compute_projection();
-        DirectX::XMStoreFloat4x4A(&s_view_mtx, view);
-        DirectX::XMStoreFloat4x4A(&s_proj_mtx, proj);
-        DirectX::XMStoreFloat4x4A(&s_view_proj_mtx, DirectX::XMMatrixMultiply(view, proj));
-        DirectX::BoundingFrustum::CreateFromMatrix(s_frustum, proj);
-        s_frustum.Transform(s_frustum, DirectX::XMMatrixInverse(nullptr, view));
+        DirectX::XMStoreFloat4x4A(&graphics_subsystem::s_view_mtx, view);
+        DirectX::XMStoreFloat4x4A(&graphics_subsystem::s_proj_mtx, proj);
+        DirectX::XMStoreFloat4x4A(&graphics_subsystem::s_view_proj_mtx, DirectX::XMMatrixMultiply(view, proj));
+        DirectX::BoundingFrustum::CreateFromMatrix(graphics_subsystem::s_frustum, proj);
+        graphics_subsystem::s_frustum.Transform(graphics_subsystem::s_frustum, DirectX::XMMatrixInverse(nullptr, view));
     }
 
     // WARNING! RENDER THREAD LOCAL
@@ -188,7 +181,7 @@ namespace graphics {
             obb.CreateFromBoundingBox(obb, mesh->get_aabb());
             obb.Transform(obb, model);
             if ((renderer.flags & com::render_flags::skip_frustum_culling) == 0) [[likely]] {
-                if (s_frustum.Contains(obb) == DirectX::ContainmentType::DISJOINT) { // Object is culled
+                if (graphics_subsystem::s_frustum.Contains(obb) == DirectX::ContainmentType::DISJOINT) { // Object is culled
                     return;
                 }
             }
@@ -224,7 +217,7 @@ namespace graphics {
         //    nullptr
         //);
         cmd_buf.bindPipeline(vk::PipelineBindPoint::eGraphics, self.get_pipeline());
-        const DirectX::XMMATRIX vp = XMLoadFloat4x4A(&s_view_proj_mtx);
+        const DirectX::XMMATRIX vp = DirectX::XMLoadFloat4x4A(&graphics_subsystem::s_view_proj_mtx);
 
         // thread workload distribution
         const std::vector<std::pair<std::span<const com::transform>, std::span<const com::mesh_renderer>>>& render_data = self.get_render_data();

@@ -8,11 +8,12 @@ ffi.cdef[[
     void __lu_dd_begin(void);
     void __lu_dd_set_wireframe(bool wireframe);
     void __lu_dd_set_color(uint32_t abgr);
-    void __lu_dd_grid(int axis, lua_vec3 pos, uint32_t size, float step);
+    void __lu_dd_grid(int axis, lua_vec3 pos, float size);
     void __lu_dd_axis(lua_vec3 pos, float len, int axis_highlight, float thickness);
     void __lu_dd_aabb(lua_vec3 min, lua_vec3 max);
     void __lu_dd_sphere(lua_vec3 center, float radius);
     void __lu_dd_end(void);
+    void __lu_dd_gizmo_manipulator(lua_entity_id id);
 ]]
 
 local C = ffi.C
@@ -46,8 +47,8 @@ function Debug.setColor(rgb)
     C.__lu_dd_set_color(abgr)
 end
 
-function Debug.drawGrid(axis, pos, size, step)
-    C.__lu_dd_grid(axis, pos, size, step)
+function Debug.drawGrid(axis, pos, size)
+    C.__lu_dd_grid(axis, pos, size)
 end
 
 function Debug.drawAxis(pos, len, axisHighlight, thickness)
@@ -64,6 +65,10 @@ end
 
 function Debug.finish()
     C.__lu_dd_end()
+end
+
+function Debug.gizmoManipulator(entity)
+    C.__lu_dd_gizmo_manipulator(entity.id)
 end
 
 return Debug

@@ -54,6 +54,13 @@ namespace graphics {
         [[nodiscard]] auto get_uniforms() const noexcept -> std::span<const uniform_buffer> { return m_uniforms; }
         [[nodiscard]] auto get_render_data() const noexcept -> const std::vector<std::pair<std::span<const com::transform>, std::span<const com::mesh_renderer>>>& { return m_render_data; }
 
+        static inline constinit DirectX::XMFLOAT4X4A s_view_mtx;
+        static inline constinit DirectX::XMFLOAT4X4A s_proj_mtx;
+        static inline constinit DirectX::XMFLOAT4X4A s_view_proj_mtx;
+        static inline DirectX::XMFLOAT4A s_clear_color;
+        static inline DirectX::BoundingFrustum s_frustum;
+        static inline com::transform s_camera_transform;
+
     private:
         auto create_uniform_buffers() -> void;
         auto create_descriptor_set_layout() -> void;
