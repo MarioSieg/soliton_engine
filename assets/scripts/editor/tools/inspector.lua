@@ -11,6 +11,7 @@ local Scene = require 'Scene'
 local Components = require 'Components'
 local Vec3 = require 'Vec3'
 local Quat = require 'Quat'
+local EFLAGS = ENTITY_FLAGS
 
 local MAX_TEXT_INPUT_SIZE = 128
 local Inspector = {
@@ -78,7 +79,7 @@ function Inspector:render()
     UI.SetNextWindowSize(WINDOW_SIZE, ffi.C.ImGuiCond_FirstUseEver)
     if UI.Begin(self.name, self.isVisible) then
         local entity = self.selectedEntity
-        if not entity then
+        if not entity or not entity:isValid() then
             UI.TextUnformatted('No entity selected')
         else
             if UI.CollapsingHeader(ICONS.INFO_CIRCLE..' General', ffi.C.ImGuiTreeNodeFlags_DefaultOpen) then
@@ -91,25 +92,25 @@ function Inspector:render()
                     entity:setName(ffi.string(self.inputTextBuffer))
                     self.propertiesChanged = true
                 end
-                local hidden = entity:hasFlag(ENTITY_FLAGS.HIDDEN)
+                local hidden = entity:hasFlag(EFLAGS.HIDDEN)
                 self.manipBufBool[0] = hidden
                 UI.Checkbox(ICONS.EYE_SLASH..' Hidden', self.manipBufBool)
                 if hidden ~= self.manipBufBool[0] then
-                    entity:setFlags(bxor(entity:getFlags(), ENTITY_FLAGS.HIDDEN))
+                    entity:setFlags(bxor(entity:getFlags(), EFLAGS.HIDDEN))
                     self.propertiesChanged = true
                 end
-                local static = entity:hasFlag(ENTITY_FLAGS.STATIC)
+                local static = entity:hasFlag(EFLAGS.STATIC)
                 self.manipBufBool[0] = static
                 UI.Checkbox(ICONS.DO_NOT_ENTER..' Static', self.manipBufBool)
                 if static ~= self.manipBufBool[0] then
-                    entity:setFlags(bxor(entity:getFlags(), ENTITY_FLAGS.STATIC))
+                    entity:setFlags(bxor(entity:getFlags(), EFLAGS.STATIC))
                     self.propertiesChanged = true
                 end
-                local transient = entity:hasFlag(ENTITY_FLAGS.TRANSIENT)
+                local transient = entity:hasFlag(EFLAGS.TRANSIENT)
                 self.manipBufBool[0] = transient
                 UI.Checkbox(ICONS.ALARM_CLOCK..' Transient', self.manipBufBool)
                 if transient ~= self.manipBufBool[0] then
-                    entity:setFlags(bxor(entity:getFlags(), ENTITY_FLAGS.TRANSIENT))
+                    entity:setFlags(bxor(entity:getFlags(), EFLAGS.TRANSIENT))
                     self.propertiesChanged = true
                 end
                 UI.Separator()
@@ -119,10 +120,8 @@ function Inspector:render()
                 UI.TextUnformatted(string.format('ID Address: %p', entity.id))
                 UI.PopStyleColor()
             end
-            if entity:isValid() then
-                if entity:hasComponent(Components.Transform) then
-                    self:_inspectTransform()
-                end
+            if entity:hasComponent(Components.Transform) then
+                self:_inspectTransform()
             end
         end
     end
