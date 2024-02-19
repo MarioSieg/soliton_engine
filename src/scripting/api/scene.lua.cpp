@@ -2,7 +2,7 @@
 
 #include "_prelude.hpp"
 
-LUA_INTEROP_API auto __lu_scene_new(const char* name, const char* file, const double scale) -> std::uint32_t {
+LUA_INTEROP_API auto __lu_scene_import(const char* name, const char* file, const double scale, const std::uint32_t load_flags) -> std::uint32_t {
     std::string sname {}, sfile {};
     if (name) {
         sname = name;
@@ -10,7 +10,7 @@ LUA_INTEROP_API auto __lu_scene_new(const char* name, const char* file, const do
     if (file) {
         sfile = file;
     }
-    scene::new_active(std::move(sname), std::move(sfile), static_cast<float>(scale));
+    scene::new_active(std::move(sname), std::move(sfile), static_cast<float>(scale), load_flags);
     return scene::get_active().id;
 }
 

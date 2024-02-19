@@ -17,7 +17,7 @@ public:
     std::string name = {};
     virtual ~scene() override;
 
-    static auto new_active(std::string&& name, std::string&& file, float scale = 1.0f) -> void;
+    static auto new_active(std::string&& name, std::string&& file, float scale, std::uint32_t load_flags) -> void;
     [[nodiscard]] static auto get_active() noexcept -> scene& {
         assert(s_active != nullptr);
         return *s_active;
@@ -38,7 +38,7 @@ public:
 
 private:
     friend class kernel;
-    auto import_from_file(const std::string& path, float scale) -> void;
+    auto import_from_file(const std::string& path, float scale, std::uint32_t load_flags) -> void;
 
     asset_registry<graphics::mesh> m_meshes {};
     asset_registry<graphics::texture> m_textures {};

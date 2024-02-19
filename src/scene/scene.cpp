@@ -34,12 +34,12 @@ scene::~scene() {
 	log_info("Destroyed scene '{}', id: {}", name, id);
 }
 
-auto scene::new_active(std::string&& name, std::string&& file, const float scale) -> void {
+auto scene::new_active(std::string&& name, std::string&& file, const float scale, const std::uint32_t load_flags) -> void {
     auto scene = std::make_unique<proxy>();
     scene->name = std::move(name);
     log_info("Created scene '{}', id: {}", scene->name, scene->id);
 	if (!file.empty()) {
-		scene->import_from_file(file, scale);
+		scene->import_from_file(file, scale, load_flags);
 	}
     s_active = std::move(scene);
 }
@@ -58,7 +58,7 @@ auto scene::spawn(const char* name) const -> flecs::entity {
     return ent;
 }
 
-auto scene::import_from_file(const std::string& path, const float scale) -> void {
+auto scene::import_from_file(const std::string& path, const float scale, const std::uint32_t load_flags) -> void {
     class assimp_logger final : public Assimp::LogStream {
         auto write(const char* message) -> void override {
             const auto len = std::strlen(message);
@@ -77,7 +77,8 @@ auto scene::import_from_file(const std::string& path, const float scale) -> void
     const auto start = std::chrono::high_resolution_clock::now();
 
     Assimp::Importer importer {};
-    const aiScene* scene = importer.ReadFile(path.c_str(), graphics::mesh::k_import_flags);
+    passert(importer.ValidateFlags(load_flags));
+    const aiScene* scene = importer.ReadFile(path.c_str(), load_flags);
     if (!scene || !scene->mNumMeshes) [[unlikely]] {
         panic("Failed to load scene from file '{}': {}", path, importer.GetErrorString());
     }
@@ -101,54 +102,50 @@ auto scene::import_from_file(const std::string& path, const float scale) -> void
 
         ++num_nodes;
 
-        std::string name {node->mName.C_Str()};
-        if (resolved_names.contains(name)) {
-            name += '_';
-            name += std::to_string(++resolved_names[name]);
-        } else {
-            resolved_names[name] = 0;
-        }
-        const flecs::entity e = spawn(name.c_str());
-        auto* metadata = e.get_mut<com::metadata>();
+        for (unsigned i = 0; i < node->mNumMeshes; ++i) {
+            std::string name {node->mName.C_Str()};
+            if (resolved_names.contains(name)) {
+                name += '_';
+                name += std::to_string(++resolved_names[name]);
+            } else {
+                resolved_names[name] = 0;
+            }
+            const flecs::entity e = spawn(name.c_str());
+            auto* metadata = e.get_mut<com::metadata>();
+            metadata->flags |= com::entity_flags::static_object; // make everything static by default
 
-        auto* transform = e.get_mut<com::transform>();
-        aiVector3D scaling, position;
-        aiQuaternion rotation;
-        node->mTransformation.Decompose(scaling, rotation, position);
-        transform->position = {position.x, position.y, position.z};
-        transform->rotation = {rotation.x, rotation.y, rotation.z, rotation.w};
-        transform->scale = {scaling.x, scaling.y, scaling.z};
+            auto* transform = e.get_mut<com::transform>();
+            aiVector3D scaling, position;
+            aiQuaternion rotation;
+            node->mTransformation.Decompose(scaling, rotation, position);
+            transform->position = {position.x, position.y, position.z};
+            transform->rotation = {rotation.x, rotation.y, rotation.z, rotation.w};
+            transform->scale = {scaling.x, scaling.y, scaling.z};
 
-        if (node->mNumMeshes > 0) {
             auto* renderer = e.get_mut<com::mesh_renderer>();
 
-            std::vector<const aiMesh*> meshes {};
-            meshes.reserve(node->mNumMeshes);
-            for (unsigned i = 0; i < node->mNumMeshes; ++i) {
-                const aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-                meshes.emplace_back(mesh);
-                const aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
+            const aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+            const aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
 
-                const auto load_tex = [&](const std::initializer_list<aiTextureType> types) -> graphics::texture* {
-                    for (auto textureType = types.begin(); textureType != types.end(); std::advance(textureType, 1)) {
-                        if (!mat->GetTextureCount(*textureType)) [[unlikely]] { continue; }
-                        aiString name {};
-                        mat->Get(AI_MATKEY_TEXTURE(*textureType, 0), name);
-                        std::string tex_path = asset_root + name.C_Str();
-                        return get_asset_registry<graphics::texture>().load(std::move(tex_path));
-                    }
-                    return nullptr;
-                };
+            const auto load_tex = [&](const std::initializer_list<aiTextureType> types) -> graphics::texture* {
+                for (auto textureType = types.begin(); textureType != types.end(); std::advance(textureType, 1)) {
+                    if (!mat->GetTextureCount(*textureType)) [[unlikely]] { continue; }
+                    aiString name {};
+                    mat->Get(AI_MATKEY_TEXTURE(*textureType, 0), name);
+                    std::string tex_path = asset_root + name.C_Str();
+                    return get_asset_registry<graphics::texture>().load(std::move(tex_path));
+                }
+                return nullptr;
+            };
 
-                auto* material = get_asset_registry<graphics::material>().load_from_memory();
-                material->albedo_map = load_tex({aiTextureType_DIFFUSE, aiTextureType_BASE_COLOR});
-                material->normal_map = load_tex({aiTextureType_NORMALS, aiTextureType_NORMAL_CAMERA});
-                material->flush_property_updates();
+            auto* material = get_asset_registry<graphics::material>().load_from_memory();
+            material->albedo_map = load_tex({aiTextureType_DIFFUSE, aiTextureType_BASE_COLOR});
+            material->normal_map = load_tex({aiTextureType_NORMALS, aiTextureType_NORMAL_CAMERA});
+            material->flush_property_updates();
 
-                renderer->materials.emplace_back(material);
-            }
+            renderer->materials.emplace_back(material);
 
-            std::span span {meshes};
+            std::span span {&mesh, 1};
             renderer->meshes.emplace_back(get_asset_registry<graphics::mesh>().load_from_memory(span));
         }
         for (unsigned i = 0; i < node->mNumChildren; ++i) {

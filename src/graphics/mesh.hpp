@@ -48,10 +48,10 @@ namespace graphics {
         [[nodiscard]] auto is_index_32bit() const noexcept -> bool { return m_index_32bit; }
         [[nodiscard]] auto get_collision_mesh() const noexcept -> const JPH::MeshShape* { return m_collision_mesh; }
 
-        static constexpr std::uint32_t k_import_flags = []() noexcept -> std::uint32_t {
+        static constexpr std::uint32_t k_import_flags = []() noexcept -> std::uint32_t { // TODO use flags from lua
             std::uint32_t k_import_flags = aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_ConvertToLeftHanded;
             k_import_flags |= aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_GenBoundingBoxes;
-            k_import_flags |= aiProcess_FixInfacingNormals;
+            //k_import_flags |= aiProcess_FixInfacingNormals;
             //k_import_flags |= aiProcess_PreTransformVertices; // do we need this?
             k_import_flags &= ~(aiProcess_ValidateDataStructure | aiProcess_SplitLargeMeshes);
             return k_import_flags;
