@@ -13,11 +13,13 @@ ffi.cdef[[
     void __lu_scene_tick(void);
     void __lu_scene_start(void);
     lua_entity_id __lu_scene_spawn_entity(const char* name);
+    void __lu_scene_despawn_entity(lua_entity_id id);
     lua_entity_id __lu_scene_get_entity_by_name(const char* name);
     void __lu_scene_full_entity_query_start(void);
     int32_t __lu_scene_full_entity_query_next_table(void);
     lua_entity_id __lu_scene_full_entity_query_get(int32_t i);
     void __lu_scene_full_entity_query_end(void);
+    void __lu_scene_set_active_camera_entity(lua_entity_id id);
 ]]
 
 local function mergeFlags(flags)
@@ -111,6 +113,11 @@ function Scene.spawn(name)
     return Entity:fromId(C.__lu_scene_spawn_entity(name))
 end
 
+function Scene.despawn(entity)
+    C.__lu_scene_despawn_entity(entity.id)
+    entity.id = nil
+end
+
 function Scene.getEntityByName(name)
     return Entity:fromId(C.__lu_scene_get_entity_by_name(name))
 end
@@ -129,6 +136,11 @@ end
 
 function Scene.fullEntityQueryEnd()
     C.__lu_scene_full_entity_query_end()
+end
+
+function Scene.setActiveCameraEntity(entity)
+    assert(entity:hasComponent(Components.Transform) and entity:hasComponent(Components.Camera))
+    C.__lu_scene_set_active_camera_entity(entity.id)
 end
 
 function Scene.load(scene_name, file, scale, flags)
@@ -155,6 +167,7 @@ function Scene.load(scene_name, file, scale, flags)
     Scene.__onStart() -- invoke start hook
     print(string.format('Created new scene: %s, id: %x', scene_name, id))
     collectgarbage('collect') -- collect garbage after new scene is created
+    collectgarbage('stop')
 end
 
 Scene.load('Default', nil)

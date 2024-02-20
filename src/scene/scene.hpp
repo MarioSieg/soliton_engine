@@ -36,6 +36,8 @@ public:
         else { panic("Unknown asset type!"); }
     }
 
+    flecs::entity active_camera {};
+
 private:
     friend class kernel;
     auto import_from_file(const std::string& path, float scale, std::uint32_t load_flags) -> void;

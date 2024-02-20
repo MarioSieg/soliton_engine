@@ -26,12 +26,22 @@ LUA_INTEROP_API auto __lu_scene_spawn_entity(const char* const name) -> flecs::i
     return scene::get_active().spawn(name).raw_id();
 }
 
+LUA_INTEROP_API auto __lu_scene_despawn_entity(const flecs::id_t id) -> void {
+    const flecs::entity ent {scene::get_active(), id};
+    ent.destruct();
+}
+
 LUA_INTEROP_API auto __lu_scene_get_entity_by_name(const char* const name) -> flecs::id_t {
     const flecs::entity entity = scene::get_active().lookup(name);
     if (!entity) [[unlikely]] {
         return 0;
     }
     return entity.raw_id();
+}
+
+LUA_INTEROP_API auto __lu_scene_set_active_camera_entity(const flecs::id_t id) -> void {
+    const flecs::entity ent {scene::get_active(), id};
+    scene::get_active().active_camera = ent;
 }
 
 // TODO: Convert to FLECS C++ API

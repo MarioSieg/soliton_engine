@@ -40,7 +40,7 @@ function Entity:fromId(id)
 end
 
 function Entity:isValid()
-    return C.__lu_entity_is_valid(self.id) and C.__lu_entity_is_alive(self.id)
+    return self.id and C.__lu_entity_is_valid(self.id) and C.__lu_entity_is_alive(self.id)
 end
 
 function Entity:getName()

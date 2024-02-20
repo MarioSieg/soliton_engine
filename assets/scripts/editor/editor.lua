@@ -158,8 +158,28 @@ function Editor:loadScene(file)
     EntityListView:buildEntityList()
 end
 
+local player
+function Editor:playScene()
+    player = Scene.spawn('__player')
+    player:addFlag(EFLAGS.HIDDEN + EFLAGS.TRANSIENT)
+    player:component(Components.Camera)
+    player:component(Components.Transform):setPosition(Vec3.ZERO)
+    Scene.setActiveCameraEntity(player)
+end
+
+function Editor:stopScene()
+    Scene.despawn(player)
+    Scene.setActiveCameraEntity(self.camera.targetEntity)
+end
+
 function Editor:renderMainMenu()
+    if self.isPlaying then
+        UI.PushStyleColor_U32(ffi.C.ImGuiCol_MenuBarBg, 0xff000077)
+    end
     if UI.BeginMainMenuBar() then
+        if self.isPlaying then
+            UI.PopStyleColor()
+        end
         if UI.BeginMenu('File') then
             if UI.MenuItem(ICONS.FOLDER_PLUS..' New Project...') then
                 UI.PushOverrideID(POPUP_ID_NEW_PROJECT)
@@ -252,9 +272,9 @@ function Editor:renderMainMenu()
         if UI.SmallButton(self.isPlaying and ICONS.STOP_CIRCLE or ICONS.PLAY_CIRCLE) then
             self.isPlaying = not self.isPlaying
             if self.isPlaying then
-
+                self:playScene()
             else
-
+                self:stopScene()
             end
         end
         if UI.IsItemHovered() then

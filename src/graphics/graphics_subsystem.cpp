@@ -86,7 +86,7 @@ namespace graphics {
         ImGui::DestroyContext();
     }
 
-    [[nodiscard]] static auto get_main_camera() -> flecs::entity {
+    [[nodiscard]] static auto find_main_camera() -> flecs::entity {
         const auto filter = scene::get_active().filter<const com::transform, const com::camera>();
         if (filter.count() > 0) {
             return filter.first();
@@ -95,8 +95,18 @@ namespace graphics {
     }
 
     static auto update_main_camera(const float width, const float height) -> void {
-        const flecs::entity main_cam = get_main_camera();
-        if (!main_cam.is_valid() || !main_cam.is_alive()) [[unlikely]] {
+        flecs::entity main_cam;
+        auto& active = scene::get_active().active_camera;
+        if (!active.is_valid() || !active.is_alive()) {
+            active = flecs::entity::null();
+            main_cam = find_main_camera();
+        } else {
+            main_cam = active;
+        }
+        if (!main_cam.is_valid()
+            || !main_cam.is_alive()
+            || !main_cam.has<const com::camera>()
+            || !main_cam.has<const com::transform>()) [[unlikely]] {
             log_warn("No camera found in scene");
             return;
         }
