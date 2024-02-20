@@ -6,6 +6,7 @@
 
 #include <Jolt/Jolt.h>
 #include <Jolt/Physics/Body/Body.h>
+#include <Jolt/Physics/Character/Character.h>
 
 namespace graphics {
     class mesh;
@@ -112,5 +113,9 @@ namespace com {
 
     struct rigidbody final {
         JPH::BodyID body_id {};
+    };
+
+    struct character_controller final {
+        JPH::Ref<JPH::Character> characer {};
     };
 }

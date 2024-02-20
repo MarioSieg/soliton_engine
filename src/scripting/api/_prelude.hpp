@@ -57,6 +57,10 @@ struct lua_vec3 {
        : x{static_cast<float>(vec.x)}
     , y{static_cast<float>(vec.y)}
     , z{static_cast<float>(vec.z)} {}
+    lua_vec3(const JPH::Vec3& vec) noexcept
+        : x{static_cast<float>(vec.GetX())}
+    , y{static_cast<float>(vec.GetY())}
+    , z{static_cast<float>(vec.GetZ())} {}
 
     [[nodiscard]] constexpr operator DirectX::XMFLOAT2 () const noexcept {
         return {
@@ -65,6 +69,13 @@ struct lua_vec3 {
         };
     }
     [[nodiscard]] constexpr operator DirectX::XMFLOAT3 () const noexcept {
+        return {
+            static_cast<float>(x),
+            static_cast<float>(y),
+            static_cast<float>(z)
+        };
+    }
+    [[nodiscard]] operator JPH::Vec3 () const noexcept {
         return {
             static_cast<float>(x),
             static_cast<float>(y),

@@ -22,6 +22,7 @@ local Transform = {
         local o = {}
         setmetatable(o, {__index = self})
         o._entity_id = entity_id
+        C.__lu_com_transform_add(entity_id)
         return o
     end,
     _exists = function(entity_id) return C.__lu_com_transform_exists(entity_id) end,

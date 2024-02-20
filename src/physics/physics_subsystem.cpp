@@ -17,7 +17,11 @@
 #include <Jolt/Physics/PhysicsSystem.h>
 #include <Jolt/Physics/Collision/Shape/BoxShape.h>
 #include <Jolt/Physics/Body/BodyCreationSettings.h>
+#include <Jolt/Physics/Character/Character.h>
 #include <Jolt/Physics/Collision/PhysicsMaterialSimple.h>
+#include <Jolt/Physics/Collision/Shape/CapsuleShape.h>
+#include <Jolt/Physics/Collision/Shape/ConvexHullShape.h>
+#include <Jolt/Physics/Collision/Shape/RotatedTranslatedShape.h>
 #include <Jolt/Physics/Collision/Shape/SphereShape.h>
 
 #include "../graphics/graphics_subsystem.hpp"
@@ -188,7 +192,31 @@ namespace physics {
 
     auto physics_subsystem::on_start(scene& scene) -> void {
     	auto& bi = m_physics_system.GetBodyInterface();
-		log_info("Creating static collision hulls...");
+
+    	scene.observer<com::character_controller>().event(flecs::OnAdd).each([&](com::character_controller& cc) {
+			static constexpr float	cCharacterHeightStanding = 1.35f*0.1f;
+			static constexpr float	cCharacterRadiusStanding = 0.3f*0.1f;
+			const JPH::Ref<JPH::Shape> capsule = JPH::RotatedTranslatedShapeSettings{
+				JPH::Vec3{},
+				JPH::Quat::sIdentity(),
+				new JPH::CapsuleShape(0.5f * cCharacterHeightStanding, cCharacterRadiusStanding)
+			}.Create().Get();
+			JPH::Ref<JPH::CharacterSettings> settings = new JPH::CharacterSettings();
+			settings->mMaxSlopeAngle = JPH::DegreesToRadians(95.0f);
+			settings->mLayer = Layers::MOVING;
+			settings->mShape = capsule;
+			settings->mFriction = 0.5f;
+			settings->mSupportingVolume = JPH::Plane(JPH::Vec3::sAxisY(), -cCharacterRadiusStanding); // Accept contacts that touch the lower sphere of the capsule
+			JPH::Ref<JPH::Character> character = new JPH::Character(settings, {}, JPH::Quat::sIdentity(), 0, &m_physics_system);
+			character->AddToPhysicsSystem(JPH::EActivation::Activate);
+			cc.characer = character;
+		});
+
+    	scene.observer<com::character_controller>().event(flecs::OnRemove).each([&](com::character_controller& cc) {
+    		cc.characer->RemoveFromPhysicsSystem();
+		});
+
+		log_info("Creating static colliders...");
     	scene.filter<const com::mesh_renderer>().each([&](const com::mesh_renderer& renderer) {
     		if (renderer.meshes.empty()) {
     			return;
@@ -197,6 +225,7 @@ namespace physics {
     		JPH::Shape::ShapeResult result {};
 		    JPH::BodyCreationSettings static_object {
 				 new JPH::MeshShape(JPH::MeshShapeSettings{mesh->verts, mesh->triangles}, result),
+		    	//new JPH::ConvexHullShape{JPH::ConvexHullShapeSettings{mesh->verts.data(), static_cast<int>(mesh->verts.size())}, result},
 				{},
 				JPH::Quat::sIdentity(),
 				JPH::EMotionType::Static,
@@ -207,84 +236,35 @@ namespace physics {
     		static_object.mRestitution = 0.0f;
 			bi.CreateAndAddBody(static_object, JPH::EActivation::DontActivate);
     	});
+
+    	m_physics_system.OptimizeBroadPhase();
     }
 
     HOTPROC auto physics_subsystem::on_post_tick() -> void {
-    	const double delta = kernel::get().get_delta_time();
-    	const int n_steps = 1;
-    	m_physics_system.Update(static_cast<float>(delta), n_steps, &*m_temp_allocator, &*m_job_system);
     	auto& active = scene::get_active();
-    	if (ImGui::IsKeyPressed(ImGuiKey_M)) {
-    		create_melons(active);
-    	}
     	auto& bi = m_physics_system.GetBodyInterface();
-	    const bool is_key_down = ImGui::IsKeyPressed(ImGuiKey_Space, false);
+
+    	// sync loop 1 (rigidbody <-> transform)
     	active.filter<com::rigidbody, com::transform>().each([&](com::rigidbody& rb, com::transform& transform) {
-			JPH::BodyID body_id = rb.body_id;
-    		if (is_key_down) [[unlikely]] {
-				bi.SetMotionType(body_id, JPH::EMotionType::Dynamic, JPH::EActivation::Activate);
-			}
-    		JPH::Vec3 pos = bi.GetPosition(body_id);
+		    const JPH::BodyID body_id = rb.body_id;
+		    const JPH::Vec3 pos = bi.GetPosition(body_id);
 			transform.position.x = pos.GetX();
     		transform.position.y = pos.GetY();
     		transform.position.z = pos.GetZ();
     		transform.rotation = std::bit_cast<DirectX::XMFLOAT4>(bi.GetRotation(body_id));
 		});
-    }
 
-    auto physics_subsystem::create_melons(scene& scene) -> void {
-    	auto& bi = m_physics_system.GetBodyInterface();
+    	// sync loop 2 (character controller <-> transform)
+    	active.filter<com::character_controller, com::transform>().each([&](com::character_controller& cc, com::transform& transform) {
+			const JPH::Vec3 pos = cc.characer->GetPosition();
+			transform.position.x = pos.GetX();
+			transform.position.y = pos.GetY();
+			transform.position.z = pos.GetZ();
+			transform.rotation = std::bit_cast<DirectX::XMFLOAT4>(cc.characer->GetRotation());
+		});
 
-    	auto* sphere_mesh = scene.get_asset_registry<graphics::mesh>().load("assets/meshes/melon/melon.obj");
-    	auto* mat = scene.get_asset_registry<graphics::material>().load_from_memory();
-    	auto* albedo = scene.get_asset_registry<graphics::texture>().load("assets/meshes/melon/albedo.jpg");
-    	auto* normal = scene.get_asset_registry<graphics::texture>().load("assets/meshes/melon/normal.jpg");
-    	mat->albedo_map = albedo;
-    	mat->normal_map = normal;
-    	mat->flush_property_updates();
-
-    	const auto make_sphere = [&](const float x, const float y, const float z) -> void {
-		    const flecs::entity e = scene.spawn(nullptr);
-    		auto* transform = e.get_mut<com::transform>();
-    		transform->position.x = x;
-    		transform->position.y = y;
-    		transform->position.z = z;
-    		transform->scale.x = 0.01f;
-    		transform->scale.y = 0.01f;
-    		transform->scale.z = 0.01f;
-    		auto* renderer = e.get_mut<com::mesh_renderer>();
-    		renderer->meshes.emplace_back(sphere_mesh);
-    		renderer->materials.emplace_back(mat);
-    		JPH::BodyCreationSettings sphere_settings {
-    			new JPH::SphereShape{1.0f*0.12f},
-				lunam_vec3_to_jbh_vec3(transform->position),
-				std::bit_cast<JPH::Quat>(transform->rotation),
-				JPH::EMotionType::Kinematic,
-				Layers::MOVING
-			};
-    		// set realistic soccer ball properties like mass, friction, etc.
-    		sphere_settings.mMassPropertiesOverride = JPH::MassProperties{1.0f};
-    		sphere_settings.mLinearDamping = 0.1f;
-    		sphere_settings.mAngularDamping = 0.1f;
-    		sphere_settings.mRestitution = 0.5f;
-    		sphere_settings.mFriction = 0.5f;
-    		sphere_settings.mAllowDynamicOrKinematic = true;
-
-    		JPH::BodyID sphere_body = bi.CreateAndAddBody(sphere_settings, JPH::EActivation::Activate);
-    		e.get_mut<com::rigidbody>()->body_id = sphere_body;
-    	};
-
-    	for (int i = 0; i < 20; i++) {
-			for (int j = 0; j < 20; j++) {
-				for (int k = 0; k < 20; k++) {
-					make_sphere(-30.0f+i, 20.0f+j, -30.0f+k);
-				}
-			}
-		}
-
-    	// Optional step: Before starting the physics simulation you can optimize the broad phase. This improves collision detection performance (it's pointless here because we only have 2 bodies).
-    	// You should definitely not call this every frame or when e.g. streaming in a new level section as it is an expensive operation.
-    	// Instead insert all new objects in batches instead of 1 at a time to keep the broad phase efficient.
-    	m_physics_system.OptimizeBroadPhase();
+    	const double delta = kernel::get().get_delta_time();
+    	const int n_steps = 1;
+    	m_physics_system.Update(static_cast<float>(delta), n_steps, &*m_temp_allocator, &*m_job_system);
     }
 }
