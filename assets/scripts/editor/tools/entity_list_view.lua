@@ -15,7 +15,8 @@ local EntityListView = {
     selectedEntity = nil,
     entityList = {},
     entityCounter = 0,
-    showHiddenEntities = ffi.new('bool[1]', false)
+    showHiddenEntities = ffi.new('bool[1]', false),
+    selectedWantsFocus = false
 }
 
 function EntityListView:buildEntityList()
@@ -86,6 +87,10 @@ function EntityListView:render()
                         UI.PushStyleColor_U32(ffi.C.ImGuiCol_Text, color)
                         if UI.Selectable(data[2], self.selectedEntity == data[1], 0, size) then
                             self.selectedEntity = data[1]
+                        end
+                        if UI.IsItemHovered() and UI.IsMouseDoubleClicked(0) then
+                            self.selectedEntity = data[1]
+                            self.selectedWantsFocus = true
                         end
                         UI.PopStyleColor()
                         if UI.IsItemHovered() then

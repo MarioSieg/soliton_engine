@@ -89,6 +89,7 @@ local GIZMO_MODE = {
     LOCAL = 0,
     WORLD = 1
 }
+local EFLAGS = ENTITY_FLAGS
 
 local Editor = {
     isVisible = ffi.new('bool[1]', true),
@@ -103,9 +104,10 @@ local Editor = {
     gizmos = {
         gridSize = 25,
         showGrid = true,
-        showCenterAxis = true,
         gizmoOperation = GIZMO_OPERATIONS.UNIVERSAL,
-        gizmoMode = GIZMO_MODE.LOCAL
+        gizmoMode = GIZMO_MODE.LOCAL,
+        gizmoSnap = ffi.new('bool[1]', true),
+        gizmoSnapStep = ffi.new('float[1]', 0.2)
     },
     camera = require 'editor.camera',
     dockID = nil,
@@ -121,15 +123,12 @@ function Editor.gizmos:drawGizmos()
     Debug.start()
     local selected = EntityListView.selectedEntity
     if selected and selected:isValid() then
-        Debug.gizmoManipulator(selected, self.gizmoOperation, self.gizmoMode) 
+        Debug.gizmoEnable(not selected:hasFlag(EFLAGS.STATIC))
+        Debug.gizmoManipulator(selected, self.gizmoOperation, self.gizmoMode, self.gizmoSnap[0], self.gizmoSnapStep[0]) 
     end
     if self.showGrid then
-        Debug.drawGrid(Debug.AXIS.Y, Vec3.ZERO, self.gridSize)
+        Debug.drawGrid(Vec3.ZERO, self.gridSize)
     end
-    if self.showCenterAxis then
-        Debug.drawAxis(Vec3.ZERO, 1, Debug.AXIS.Y, 0.02)
-    end
-    Debug.finish()
 end
 
 function Editor:defaultDockLayout()
@@ -153,7 +152,7 @@ end
 function Editor:loadScene(file)
     Scene.load('Default', file)
     local mainCamera = Scene.spawn('__editorCamera') -- spawn editor camera
-    mainCamera:addFlag(ENTITY_FLAGS.HIDDEN + ENTITY_FLAGS.TRANSIENT) -- hide and don't save
+    mainCamera:addFlag(EFLAGS.HIDDEN + EFLAGS.TRANSIENT) -- hide and don't save
     mainCamera:component(Components.Camera):setFov(80)
     self.camera.targetEntity = mainCamera
     EntityListView:buildEntityList()
@@ -222,7 +221,31 @@ function Editor:renderMainMenu()
             UI.EndMenu()
         end
         UI.Separator()
-        UI.PushStyleColor_U32(ffi.C.ImGuiCol_Text, self.isPlaying and 0xff000088 or 0xff008800)
+        UI.SameLine()
+        UI.PushStyleColor_U32(ffi.C.ImGuiCol_Button, 0)
+        UI.PushStyleColor_U32(ffi.C.ImGuiCol_BorderShadow, 0)
+        UI.PushStyleColor_U32(ffi.C.ImGuiCol_Border, 0)
+        if UI.SmallButton(self.gizmos.gizmoMode == GIZMO_MODE.LOCAL and ICONS.HOUSE or ICONS.GLOBE) then
+            self.gizmos.gizmoMode = band(self.gizmos.gizmoMode + 1, 1)
+        end
+        UI.PopStyleColor(3)
+        if UI.IsItemHovered() then
+            UI.SetTooltip('Gizmo Mode: '..(self.gizmos.gizmoMode == GIZMO_MODE.LOCAL and 'Local' or 'World'))
+        end
+        UI.SameLine()
+        UI.Checkbox(ICONS.RULER, self.gizmos.gizmoSnap)
+        if UI.IsItemHovered() then
+            UI.SetTooltip('Enable/Disable Gizmo Snap')
+        end
+        UI.SameLine()
+        UI.PushItemWidth(100)
+        UI.SliderFloat('##SnapStep', self.gizmos.gizmoSnapStep, 0.1, 10.0, '%.1f', 1.0)
+        if UI.IsItemHovered() then
+            UI.SetTooltip('Gizmo Snap Step')
+        end
+        UI.PopItemWidth()
+        UI.SameLine()
+        UI.Separator()
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_Button, 0)
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_BorderShadow, 0)
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_Border, 0)
@@ -234,7 +257,10 @@ function Editor:renderMainMenu()
 
             end
         end
-        UI.PopStyleColor(4)
+        if UI.IsItemHovered() then
+            UI.SetTooltip(self.isPlaying and 'Stop' or 'Play Scene')
+        end
+        UI.PopStyleColor(3)
         if Profiler.isProfilerRunning then
             UI.Separator()
             UI.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff0000ff)
@@ -383,7 +409,19 @@ function Editor:__onTick()
     if not Editor.isVisible[0] then
         return
     end
-    Inspector.selectedEntity = EntityListView.selectedEntity
+    local selectedE = EntityListView.selectedEntity
+    if EntityListView.selectedWantsFocus and selectedE and selectedE:isValid() then
+        if selectedE:hasComponent(Components.Transform) then
+            local pos = selectedE:component(Components.Transform):getPosition()
+            pos.z = pos.z - 1.0
+            if pos then
+                self.camera._position = pos
+                self.camera._rotation = Quat.IDENTITY
+            end
+        end
+        EntityListView.selectedWantsFocus = false
+    end
+    Inspector.selectedEntity = selectedE
     if Inspector.propertiesChanged then
         EntityListView:buildEntityList()
     end
