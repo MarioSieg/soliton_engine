@@ -48,14 +48,22 @@ end
 function EntityListView:render()
     UI.SetNextWindowSize(WINDOW_SIZE, ffi.C.ImGuiCond_FirstUseEver)
     if UI.Begin(self.name, self.isVisible) then
-        if UI.Button(ICONS.PLUS..' Create') then
+        if UI.Button(ICONS.PLUS) then
             self.entityCounter = self.entityCounter + 1
             local ent = Scene.spawn('New Entity '..self.entityCounter)
             self.selectedEntity = ent
             self:buildEntityList()
         end
         UI.SameLine()
-        if UI.Button(ICONS.REDO_ALT..' Refresh') then
+        if UI.Button(ICONS.TRASH) then
+            if self.selectedEntity then
+                Scene.despawn(self.selectedEntity)
+                self.selectedEntity = nil
+                self:buildEntityList()
+            end
+        end
+        UI.SameLine()
+        if UI.Button(ICONS.REDO_ALT) then
             self:buildEntityList()
         end
         UI.SameLine()

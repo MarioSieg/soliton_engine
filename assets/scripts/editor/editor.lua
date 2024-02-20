@@ -151,7 +151,7 @@ end
 
 function Editor:loadScene(file)
     Scene.load('Default', file)
-    local mainCamera = Scene.spawn('__editorCamera') -- spawn editor camera
+    local mainCamera = Scene.spawn('__EditorCamera') -- spawn editor camera
     mainCamera:addFlag(EFLAGS.HIDDEN + EFLAGS.TRANSIENT) -- hide and don't save
     mainCamera:component(Components.Camera):setFov(80)
     self.camera.targetEntity = mainCamera
@@ -160,11 +160,12 @@ end
 
 local player
 function Editor:playScene()
-    player = Scene.spawn('__player')
-    player:addFlag(EFLAGS.HIDDEN + EFLAGS.TRANSIENT)
+    player = Scene.spawn('Player')
+    player:addFlag(EFLAGS.TRANSIENT)
     player:component(Components.Camera)
     player:component(Components.Transform):setPosition(Vec3.ZERO)
     Scene.setActiveCameraEntity(player)
+    EntityListView:buildEntityList()
 end
 
 function Editor:stopScene()
