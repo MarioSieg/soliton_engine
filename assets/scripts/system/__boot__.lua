@@ -53,6 +53,9 @@ function __on_prepare__()
     if ENGINE_CONFIG.General.enableJit then
         jit.on() -- Enable JIT
         jit.opt.start('+fma') -- enable FMA for better performance
+        if ENGINE_CONFIG.General.enableJitAssemblyDump then
+            require('jit.dump').on('m', 'jit.log')
+        end
     else
         log_info('! JIT is disabled')
     end

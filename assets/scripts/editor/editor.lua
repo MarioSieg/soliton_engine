@@ -175,6 +175,7 @@ function Editor:renderMainMenu()
                     self.activeProject = project
                     App.Window.setPlatformTitle(string.format('Project: %s', project.serialized.name))
                     collectgarbage('collect')
+                    collectgarbage('stop')
                 end
             end
             if UI.MenuItem(ICONS.FILE_IMPORT..' Import Scene') then
@@ -216,6 +217,7 @@ function Editor:renderMainMenu()
         if UI.BeginMenu('Help') then
             if UI.MenuItem('Perform Full GC Cycle') then
                 collectgarbage('collect')
+                collectgarbage('stop')
             end
             UI.EndMenu()
         end
