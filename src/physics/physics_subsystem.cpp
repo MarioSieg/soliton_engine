@@ -194,8 +194,8 @@ namespace physics {
     	auto& bi = m_physics_system.GetBodyInterface();
 
     	scene.observer<com::character_controller>().event(flecs::OnAdd).each([&](com::character_controller& cc) {
-			static constexpr float	cCharacterHeightStanding = 1.35f*0.1f;
-			static constexpr float	cCharacterRadiusStanding = 0.3f*0.1f;
+			static constexpr float cCharacterHeightStanding = 1.35f*0.0025;
+			static constexpr float cCharacterRadiusStanding = 0.3f*0.0025;
 			const JPH::Ref<JPH::Shape> capsule = JPH::RotatedTranslatedShapeSettings{
 				JPH::Vec3{},
 				JPH::Quat::sIdentity(),
@@ -244,6 +244,10 @@ namespace physics {
     	auto& active = scene::get_active();
     	auto& bi = m_physics_system.GetBodyInterface();
 
+    	const double delta = kernel::get().get_delta_time();
+    	const int n_steps = 1;
+    	m_physics_system.Update(static_cast<float>(delta), n_steps, &*m_temp_allocator, &*m_job_system);
+
     	// sync loop 1 (rigidbody <-> transform)
     	active.filter<com::rigidbody, com::transform>().each([&](com::rigidbody& rb, com::transform& transform) {
 		    const JPH::BodyID body_id = rb.body_id;
@@ -256,15 +260,12 @@ namespace physics {
 
     	// sync loop 2 (character controller <-> transform)
     	active.filter<com::character_controller, com::transform>().each([&](com::character_controller& cc, com::transform& transform) {
+    		cc.characer->PostSimulation(0.05f);
 			const JPH::Vec3 pos = cc.characer->GetPosition();
 			transform.position.x = pos.GetX();
 			transform.position.y = pos.GetY();
 			transform.position.z = pos.GetZ();
 			transform.rotation = std::bit_cast<DirectX::XMFLOAT4>(cc.characer->GetRotation());
 		});
-
-    	const double delta = kernel::get().get_delta_time();
-    	const int n_steps = 1;
-    	m_physics_system.Update(static_cast<float>(delta), n_steps, &*m_temp_allocator, &*m_job_system);
     }
 }

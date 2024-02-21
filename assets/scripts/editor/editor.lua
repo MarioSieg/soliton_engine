@@ -165,8 +165,8 @@ function Editor:playScene()
     player:addFlag(EFLAGS.TRANSIENT)
     player:component(Components.Camera)
     player:component(Components.Transform)
-    player:component(Components.CharacterController)
-    Scene.setActiveCameraEntity(player)
+    player:component(Components.CharacterController):setLinearVelocity(Vec3(0, 30, 0))
+    --Scene.setActiveCameraEntity(player)
     EntityListView:buildEntityList()
 end
 
