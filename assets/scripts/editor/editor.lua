@@ -107,10 +107,11 @@ local Editor = {
         gridStep = 1.0,
         gridDims = Vec3(100, 0, 100),
         gridColor = Vec3(0.5, 0.5, 0.5),
+        gizmoObbColor = Vec3(0, 1, 0),
         gizmoOperation = GIZMO_OPERATIONS.UNIVERSAL,
         gizmoMode = GIZMO_MODE.LOCAL,
         gizmoSnap = ffi.new('bool[1]', true),
-        gizmoSnapStep = ffi.new('float[1]', 0.2)
+        gizmoSnapStep = ffi.new('float[1]', 0.1)
     },
     camera = require 'editor.camera',
     dockID = nil,
@@ -127,7 +128,7 @@ function Editor.gizmos:drawGizmos()
     local selected = EntityListView.selectedEntity
     if selected and selected:isValid() then
         Debug.gizmoEnable(not selected:hasFlag(EFLAGS.STATIC))
-        Debug.gizmoManipulator(selected, self.gizmoOperation, self.gizmoMode, self.gizmoSnap[0], self.gizmoSnapStep[0]) 
+        Debug.gizmoManipulator(selected, self.gizmoOperation, self.gizmoMode, self.gizmoSnap[0], self.gizmoSnapStep[0], self.gizmoObbColor) 
     end
     if self.showGrid then
         Debug.drawGrid(self.gridDims, self.gridStep, self.gridColor)

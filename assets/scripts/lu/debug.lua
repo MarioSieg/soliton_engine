@@ -9,7 +9,7 @@ ffi.cdef[[
     void __lu_dd_begin(void);
     void __lu_dd_grid(lua_vec3 dims, double step, lua_vec3 color);
     void __lu_dd_gizmo_enable(bool enable);
-    void __lu_dd_gizmo_manipulator(lua_entity_id id, int op, int mode, bool enable_snap, double snap_x);
+    void __lu_dd_gizmo_manipulator(lua_entity_id id, int op, int mode, bool enable_snap, double snap_x, lua_vec3 color);
 ]]
 
 local Debug = {}
@@ -26,8 +26,8 @@ function Debug.gizmoEnable(enable)
     C.__lu_dd_gizmo_enable(enable)
 end
 
-function Debug.gizmoManipulator(entity, op, mode, enable_snap, snap_x)
-    C.__lu_dd_gizmo_manipulator(entity.id, op, mode, enable_snap, snap_x)
+function Debug.gizmoManipulator(entity, op, mode, enable_snap, snap_x, obb_color)
+    C.__lu_dd_gizmo_manipulator(entity.id, op, mode, enable_snap, snap_x, obb_color)
 end
 
 return Debug

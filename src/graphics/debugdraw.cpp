@@ -978,18 +978,10 @@ namespace graphics {
     }
 
     auto debugdraw::draw_aabb(
-        const DirectX::XMFLOAT3& min_,
-        const DirectX::XMFLOAT3& max_,
+        const DirectX::XMFLOAT3& min,
+        const DirectX::XMFLOAT3& max,
         const DirectX::XMFLOAT3& color
     ) -> void {
-        DirectX::XMFLOAT3A min, max;
-        const auto vpos = DirectX::XMVectorScale(
-            DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&min_),
-            DirectX::XMLoadFloat3(&max_)),
-            0.5f
-        );
-        DirectX::XMStoreFloat3A(&min, DirectX::XMVectorAdd(vpos, DirectX::XMLoadFloat3(&min_)));
-        DirectX::XMStoreFloat3A(&max, DirectX::XMVectorAdd(vpos, DirectX::XMLoadFloat3(&max_)));
         begin_batch();
         draw_line(min, DirectX::XMFLOAT3(max.x, min.y, min.z), color);
         draw_line(DirectX::XMFLOAT3(max.x, min.y, min.z), DirectX::XMFLOAT3(max.x, min.y, max.z), color);
@@ -1013,11 +1005,33 @@ namespace graphics {
         draw_aabb(min, max, color);
     }
 
-    auto debugdraw::draw_obb(const DirectX::BoundingOrientedBox& obb, const DirectX::XMFLOAT3& color) -> void {
+    auto debugdraw::draw_obb(const DirectX::BoundingOrientedBox& obb, DirectX::FXMMATRIX model, const DirectX::XMFLOAT3& color) -> void {
         DirectX::XMFLOAT3A min, max;
         DirectX::XMStoreFloat3A(&min, DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&obb.Center), DirectX::XMLoadFloat3(&obb.Extents)));
         DirectX::XMStoreFloat3A(&max, DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&obb.Center), DirectX::XMLoadFloat3(&obb.Extents)));
-        draw_aabb(min, max, color);
+        std::array<DirectX::XMFLOAT3, 8> verts {};
+        DirectX::XMFLOAT3A size;
+        DirectX::XMStoreFloat3A(&size, DirectX::XMVectorSubtract(DirectX::XMLoadFloat3A(&max), DirectX::XMLoadFloat3A(&min)));
+        int idx = 0;
+        for (float x = min.x; x <= max.x; x += size.x) {
+            for (float y = min.y; y <= max.y; y += size.y) {
+                for (float z = min.z; z <= max.z; z += size.z) {
+                    DirectX::XMStoreFloat3(&verts[idx++], DirectX::XMVector3Transform(DirectX::XMVectorSet(x, y, z, 1.0f), model));
+                }
+            }
+        }
+        draw_line(verts[0], verts[1], color);
+        draw_line(verts[1], verts[5], color);
+        draw_line(verts[5], verts[4], color);
+        draw_line(verts[4], verts[0], color);
+        draw_line(verts[2], verts[3], color);
+        draw_line(verts[3], verts[7], color);
+        draw_line(verts[7], verts[6], color);
+        draw_line(verts[6], verts[2], color);
+        draw_line(verts[2], verts[0], color);
+        draw_line(verts[6], verts[4], color);
+        draw_line(verts[3], verts[1], color);
+        draw_line(verts[7], verts[5], color);
     }
 
     auto debugdraw::create_descriptor_set_layout(const vk::Device device) -> void {
@@ -1247,5 +1261,8 @@ namespace graphics {
         input_assembly_state.topology = vk::PrimitiveTopology::eLineStrip;
         rasterization_state.cullMode = vk::CullModeFlagBits::eNone;
         vkcheck(device.createGraphicsPipelines(nullptr, 1, &pipeline_info, &vkb::s_allocator, &m_line_strip_no_depth_pipeline));
+
+        device.destroyShaderModule(vs, &vkb::s_allocator);
+        device.destroyShaderModule(fs, &vkb::s_allocator);
     }
 }

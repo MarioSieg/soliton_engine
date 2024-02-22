@@ -22,7 +22,7 @@ LUA_INTEROP_API auto __lu_dd_gizmo_enable(const bool enable) -> void {
     ImGuizmo::Enable(enable);
 }
 
-LUA_INTEROP_API auto __lu_dd_gizmo_manipulator(const flecs::id_t id, const int op, const int mode, const bool enable_snap, const double snap_x) -> void {
+LUA_INTEROP_API auto __lu_dd_gizmo_manipulator(const flecs::id_t id, const int op, const int mode, const bool enable_snap, const double snap_x, const lua_vec3 color) -> void {
     const flecs::entity ent {scene::get_active(), id};
     if (!ent.has<const com::transform>()) [[unlikely]] {
         return;
@@ -51,9 +51,10 @@ LUA_INTEROP_API auto __lu_dd_gizmo_manipulator(const flecs::id_t id, const int o
     if (auto* renderer = ent.get<com::mesh_renderer>(); renderer) {
         for (const auto* mesh : renderer->meshes) {
             if (mesh) [[likely]] {
-                DirectX::BoundingBox aabb {mesh->get_aabb()};
-                aabb.Transform(aabb, transform->compute_matrix());
-                graphics_subsystem::s_instance->get_debug_draw().draw_aabb(aabb, {0.0f, 1.0f, 0.0f});
+                DirectX::BoundingOrientedBox obb {};
+                DirectX::BoundingOrientedBox::CreateFromBoundingBox(obb, mesh->get_aabb());
+                const auto model = DirectX::XMLoadFloat4x4A(&model_mtx);
+                graphics_subsystem::s_instance->get_debug_draw().draw_obb(obb, model, color);
             }
         }
     }

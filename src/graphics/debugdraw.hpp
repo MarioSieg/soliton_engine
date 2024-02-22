@@ -57,7 +57,7 @@ namespace graphics {
         auto draw_grid(const DirectX::XMFLOAT3& pos, float step, const DirectX::XMFLOAT3& color) -> void;
         auto draw_aabb(const DirectX::XMFLOAT3& min, const DirectX::XMFLOAT3& max, const DirectX::XMFLOAT3& color) -> void;
         auto draw_aabb(const DirectX::BoundingBox& aabb, const DirectX::XMFLOAT3& color) -> void;
-        auto draw_obb(const DirectX::BoundingOrientedBox& obb, const DirectX::XMFLOAT3& color) -> void;
+        auto draw_obb(const DirectX::BoundingOrientedBox& obb, DirectX::FXMMATRIX model, const DirectX::XMFLOAT3& color) -> void;
         auto render(vk::CommandBuffer cmd, DirectX::FXMMATRIX view_proj, DirectX::FXMVECTOR view_pos) -> void;
 
     private:
