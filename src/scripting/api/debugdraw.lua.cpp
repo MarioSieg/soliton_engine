@@ -14,40 +14,47 @@ LUA_INTEROP_API auto __lu_dd_begin() -> void {
     ImGuizmo::SetDrawlist(ImGui::GetBackgroundDrawList());
 }
 
-LUA_INTEROP_API auto __lu_dd_grid(const lua_vec3 pos, const float size) -> void {
-    const auto* view = reinterpret_cast<const float*>(&graphics_subsystem::s_view_mtx);
-    const auto* proj = reinterpret_cast<const float*>(&graphics_subsystem::s_proj_mtx);
-    DirectX::XMFLOAT4X4A mtx {};
-    DirectX::XMStoreFloat4x4A(&mtx, DirectX::XMMatrixTranslation(static_cast<float>(pos.x), static_cast<float>(pos.y), static_cast<float>(pos.z)));
-    ImGuizmo::DrawGrid(view, proj, reinterpret_cast<const float*>(&mtx), 10);
+LUA_INTEROP_API auto __lu_dd_grid(const lua_vec3 pos, const double step, const lua_vec3 color) -> void {
+    graphics_subsystem::s_instance->get_debug_draw().draw_grid(pos, static_cast<float>(step), color);
 }
 
 LUA_INTEROP_API auto __lu_dd_gizmo_enable(const bool enable) -> void {
     ImGuizmo::Enable(enable);
 }
 
-LUA_INTEROP_API auto __lu_dd_gizmo_manipulator(const flecs::id_t id, const int op, const int mode, const bool enable_snap, const float snap_x) -> void {
+LUA_INTEROP_API auto __lu_dd_gizmo_manipulator(const flecs::id_t id, const int op, const int mode, const bool enable_snap, const double snap_x) -> void {
     const flecs::entity ent {scene::get_active(), id};
-    if (auto* transform = ent.get_mut<com::transform>(); transform) [[likely]] {
-        const auto* view = reinterpret_cast<const float*>(&graphics_subsystem::s_view_mtx);
-        const auto* proj = reinterpret_cast<const float*>(&graphics_subsystem::s_proj_mtx);
-        DirectX::XMFLOAT4X4A model_mtx;
-        DirectX::XMStoreFloat4x4A(&model_mtx, transform->compute_matrix());
-        DirectX::XMFLOAT3A snap;
-        DirectX::XMStoreFloat3A(&snap, DirectX::XMVectorReplicate(snap_x));
-        ImGuizmo::Manipulate(
-            view,
-            proj,
-            static_cast<ImGuizmo::OPERATION>(op),
-            static_cast<ImGuizmo::MODE>(mode),
-            reinterpret_cast<float*>(&model_mtx),
-            nullptr,
-            enable_snap ? reinterpret_cast<const float*>(&snap) : nullptr
-        );
-        DirectX::XMVECTOR pos {}, rot {}, scale {};
-        DirectX::XMMatrixDecompose(&scale, &rot, &pos, DirectX::XMLoadFloat4x4A(&model_mtx));
-        DirectX::XMStoreFloat3(&transform->position, pos);
-        DirectX::XMStoreFloat4(&transform->rotation, rot);
-        DirectX::XMStoreFloat3(&transform->scale, scale);
+    if (!ent.has<const com::transform>()) [[unlikely]] {
+        return;
+    }
+    auto* transform = ent.get_mut<com::transform>();
+    const auto* view = reinterpret_cast<const float*>(&graphics_subsystem::s_view_mtx);
+    const auto* proj = reinterpret_cast<const float*>(&graphics_subsystem::s_proj_mtx);
+    DirectX::XMFLOAT4X4A model_mtx;
+    DirectX::XMStoreFloat4x4A(&model_mtx, transform->compute_matrix());
+    DirectX::XMFLOAT3A snap;
+    DirectX::XMStoreFloat3A(&snap, DirectX::XMVectorReplicate(static_cast<float>(snap_x)));
+    ImGuizmo::Manipulate(
+        view,
+        proj,
+        static_cast<ImGuizmo::OPERATION>(op),
+        static_cast<ImGuizmo::MODE>(mode),
+        reinterpret_cast<float*>(&model_mtx),
+        nullptr,
+        enable_snap ? reinterpret_cast<const float*>(&snap) : nullptr
+    );
+    DirectX::XMVECTOR pos {}, rot {}, scale {};
+    DirectX::XMMatrixDecompose(&scale, &rot, &pos, DirectX::XMLoadFloat4x4A(&model_mtx));
+    DirectX::XMStoreFloat3(&transform->position, pos);
+    DirectX::XMStoreFloat4(&transform->rotation, rot);
+    DirectX::XMStoreFloat3(&transform->scale, scale);
+    if (auto* renderer = ent.get<com::mesh_renderer>(); renderer) {
+        for (const auto* mesh : renderer->meshes) {
+            if (mesh) [[likely]] {
+                DirectX::BoundingBox aabb {mesh->get_aabb()};
+                aabb.Transform(aabb, transform->compute_matrix());
+                graphics_subsystem::s_instance->get_debug_draw().draw_aabb(aabb, {0.0f, 1.0f, 0.0f});
+            }
+        }
     }
 }

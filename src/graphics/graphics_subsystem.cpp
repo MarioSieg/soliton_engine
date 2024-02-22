@@ -23,6 +23,7 @@ namespace graphics {
     graphics_subsystem::graphics_subsystem() : subsystem{"Graphics"} {
         log_info("Initializing graphics subsystem");
 
+        s_instance = this;
         ImGui::SetAllocatorFunctions(
             +[](size_t size, [[maybe_unused]] void* usr) -> void* {
                 return mi_malloc(size);
@@ -66,9 +67,14 @@ namespace graphics {
     }
 
     graphics_subsystem::~graphics_subsystem() {
+        s_instance = nullptr;
         m_render_thread_pool.reset();
 
         vkcheck(context::s_instance->get_device().get_logical_device().waitIdle());
+
+        if (m_debugdraw) {
+            m_debugdraw.reset();
+        }
 
         for (auto& [buffer, descriptor_set] : m_uniforms) {
             buffer.~buffer();
@@ -107,9 +113,9 @@ namespace graphics {
             || !main_cam.is_alive()
             || !main_cam.has<const com::camera>()
             || !main_cam.has<const com::transform>()) [[unlikely]] {
-            log_warn("No camera found in scene");
-            return;
-        }
+                log_warn("No camera found in scene");
+                return;
+            }
         com::camera::active_camera = main_cam;
         graphics_subsystem::s_camera_transform = *main_cam.get<com::transform>();
         com::camera& cam = *main_cam.get_mut<com::camera>();
@@ -215,7 +221,7 @@ namespace graphics {
     // WARNING! RENDER THREAD LOCAL
     HOTPROC static auto render_scene_bucket(const vk::CommandBuffer cmd_buf, const std::int32_t bucket_id, const std::int32_t num_threads, void* usr) -> void {
         passert(usr != nullptr);
-        const auto& self = *static_cast<graphics_subsystem*>(usr);
+        auto& self = *static_cast<graphics_subsystem*>(usr);
 
         //cmd_buf.bindDescriptorSets(
         //    vk::PipelineBindPoint::eGraphics,
@@ -256,6 +262,13 @@ namespace graphics {
         }
 
         if (bucket_id == num_threads - 1) { // Last thread
+            if (std::optional<debugdraw>& dd = self.get_debug_draw_opt(); dd) {
+                dd->render(
+                    cmd_buf,
+                    DirectX::XMLoadFloat4x4A(&graphics_subsystem::s_view_proj_mtx),
+                    DirectX::XMLoadFloat3(&graphics_subsystem::s_camera_transform.position)
+                );
+            }
             vkb_context().render_imgui(ImGui::GetDrawData(), cmd_buf); // thread safe?!
         }
     }
@@ -374,10 +387,14 @@ namespace graphics {
         const vkb::device& vkb_device = context::s_instance->get_device();
         const vk::Device device = vkb_device.get_logical_device();
 
-        const std::array<vk::DescriptorPoolSize, 1> sizes {
+        const std::array<vk::DescriptorPoolSize, 2> sizes {
             vk::DescriptorPoolSize {
                 .type = vk::DescriptorType::eUniformBuffer,
                 .descriptorCount = static_cast<std::uint32_t>(m_uniforms.size())
+            },
+            vk::DescriptorPoolSize {
+                .type = vk::DescriptorType::eUniformBufferDynamic,
+                .descriptorCount = 128u
             },
         };
 
@@ -386,7 +403,7 @@ namespace graphics {
         vk::DescriptorPoolCreateInfo descriptor_pool_ci {};
         descriptor_pool_ci.poolSizeCount = static_cast<std::uint32_t>(sizes.size());
         descriptor_pool_ci.pPoolSizes = sizes.data();
-        descriptor_pool_ci.maxSets = static_cast<std::uint32_t>(m_uniforms.size()); // Allocate one set for each frame
+        descriptor_pool_ci.maxSets = 32 + static_cast<std::uint32_t>(m_uniforms.size()); // TODO max sets Allocate one set for each frame
         vkcheck(device.createDescriptorPool(&descriptor_pool_ci, &vkb::s_allocator, &m_descriptor_pool));
     }
 
@@ -511,8 +528,6 @@ namespace graphics {
         multisample_state.pSampleMask = nullptr;
 
         // Specifies the vertex input parameters for a pipeline
-
-
         vkb::shader vs{"triangle.vert"};
         vkb::shader fs{"triangle.frag"};
 

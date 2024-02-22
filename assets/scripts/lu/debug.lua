@@ -7,9 +7,9 @@ local bor, band, lshift = bit.bor, bit.band, bit.lshift
 
 ffi.cdef[[
     void __lu_dd_begin(void);
-    void __lu_dd_grid(lua_vec3 pos, float size);
+    void __lu_dd_grid(lua_vec3 dims, double step, lua_vec3 color);
     void __lu_dd_gizmo_enable(bool enable);
-    void __lu_dd_gizmo_manipulator(lua_entity_id id, int op, int mode, bool enable_snap, float snap_x);
+    void __lu_dd_gizmo_manipulator(lua_entity_id id, int op, int mode, bool enable_snap, double snap_x);
 ]]
 
 local Debug = {}
@@ -18,8 +18,8 @@ function Debug.start()
     C.__lu_dd_begin()
 end
 
-function Debug.drawGrid(pos, size)
-    C.__lu_dd_grid(pos, size)
+function Debug.drawGrid(dims, size, color)
+    C.__lu_dd_grid(dims, size, color)
 end
 
 function Debug.gizmoEnable(enable)

@@ -15,6 +15,7 @@
 
 #include "mesh.hpp"
 #include "texture.hpp"
+#include "debugdraw.hpp"
 
 namespace graphics {
     struct uniform_buffer final {
@@ -53,6 +54,16 @@ namespace graphics {
 
         [[nodiscard]] auto get_uniforms() const noexcept -> std::span<const uniform_buffer> { return m_uniforms; }
         [[nodiscard]] auto get_render_data() const noexcept -> const std::vector<std::pair<std::span<const com::transform>, std::span<const com::mesh_renderer>>>& { return m_render_data; }
+        [[nodiscard]] auto get_debug_draw() -> debugdraw& {
+            if (!m_debugdraw.has_value()) {
+                m_debugdraw.emplace(m_descriptor_pool);
+            }
+            return *m_debugdraw;
+        }
+
+        [[nodiscard]] auto get_debug_draw_opt() noexcept -> std::optional<debugdraw>& {
+            return m_debugdraw;
+        }
 
         static inline constinit DirectX::XMFLOAT4X4A s_view_mtx;
         static inline constinit DirectX::XMFLOAT4X4A s_proj_mtx;
@@ -60,6 +71,7 @@ namespace graphics {
         static inline DirectX::XMFLOAT4A s_clear_color;
         static inline DirectX::BoundingFrustum s_frustum;
         static inline com::transform s_camera_transform;
+        static inline constinit graphics_subsystem* s_instance;
 
     private:
         auto create_uniform_buffers() -> void;
@@ -77,6 +89,7 @@ namespace graphics {
         vk::CommandBufferInheritanceInfo m_inheritance_info {};
         std::optional<render_thread_pool> m_render_thread_pool {};
         std::vector<std::pair<std::span<const com::transform>, std::span<const com::mesh_renderer>>> m_render_data {};
+        std::optional<debugdraw> m_debugdraw {};
 
         struct {
             flecs::query<const com::transform, const com::mesh_renderer> query {};

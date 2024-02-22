@@ -103,8 +103,10 @@ local Editor = {
         Inspector
     },
     gizmos = {
-        gridSize = 25,
         showGrid = true,
+        gridStep = 1.0,
+        gridDims = Vec3(100, 0, 100),
+        gridColor = Vec3(0.5, 0.5, 0.5),
         gizmoOperation = GIZMO_OPERATIONS.UNIVERSAL,
         gizmoMode = GIZMO_MODE.LOCAL,
         gizmoSnap = ffi.new('bool[1]', true),
@@ -128,7 +130,7 @@ function Editor.gizmos:drawGizmos()
         Debug.gizmoManipulator(selected, self.gizmoOperation, self.gizmoMode, self.gizmoSnap[0], self.gizmoSnapStep[0]) 
     end
     if self.showGrid then
-        Debug.drawGrid(Vec3.ZERO, self.gridSize)
+        Debug.drawGrid(self.gridDims, self.gridStep, self.gridColor)
     end
 end
 
