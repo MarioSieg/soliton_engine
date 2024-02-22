@@ -116,7 +116,8 @@ local Editor = {
     camera = require 'editor.camera',
     dockID = nil,
     inputTextBuffer = ffi.new('char[?]', 1+MAX_TEXT_INPUT_SIZE),
-    activeProject = nil
+    activeProject = nil,
+    showDemoWindow = false
 }
 
 for _, tool in ipairs(Editor.tools) do
@@ -292,6 +293,9 @@ function Editor:renderMainMenu()
             if UI.MenuItem('Perform Full GC Cycle') then
                 collectgarbage('collect')
                 collectgarbage('stop')
+            end
+            if UI.MenuItem('Show UI Demo Window', nil, self.showDemoWindow) then
+                self.showDemoWindow = not self.showDemoWindow
             end
             UI.EndMenu()
         end
@@ -476,6 +480,9 @@ function Editor:drawTools()
         if tool.isVisible[0] then
             tool:render()
         end
+    end
+    if self.showDemoWindow then 
+        UI.ShowDemoWindow()
     end
 end
 

@@ -21,8 +21,19 @@ local Inspector = {
     inputTextBuffer = ffi.new('char[?]', 1+MAX_TEXT_INPUT_SIZE),
     manipBuf3 = ffi.new('float[3]'),
     manipBufBool = ffi.new('bool[1]'),
-    propertiesChanged = false
+    propertiesChanged = false,
 }
+
+local COM_NAMES = {}
+for k, v in pairs(Components) do
+    table.insert(COM_NAMES, k)
+end
+table.sort(COM_NAMES)
+local COM_NAMES_C = ffi.new("const char*[?]", #COM_NAMES)
+for i=1, #COM_NAMES do
+    COM_NAMES_C[i-1] = ffi.cast("const char*", COM_NAMES[i])
+end
+local selectedComponent = ffi.new('int[1]', 0)
 
 function Inspector:_setFloatManpitBufferFromVec3(vec3)
     self.manipBuf3[0] = vec3.x
@@ -44,9 +55,31 @@ function Inspector:_inspectVec3(name, vec3, step)
     return changed, vec3
 end
 
+function Inspector:_perComponentBaseTools(instance, id)
+    if UI.Button(ICONS.TRASH) then
+        instance:remove()
+        self.propertiesChanged = true
+        return
+    end
+    if UI.IsItemHovered() then
+        UI.SetTooltip('Remove component')
+    end
+    UI.SameLine()
+    if UI.Button(ICONS.TRASH_RESTORE..' Reset') then
+        instance:remove()
+        self.selectedEntity:component(id)
+        self.propertiesChanged = true
+        return
+    end
+    if UI.IsItemHovered() then
+        UI.SetTooltip('Reset component')
+    end
+end
+
 function Inspector:_inspectTransform()
     local transform = self.selectedEntity:component(Components.Transform)
     if UI.CollapsingHeader(ICONS.ARROWS_ALT..' Transform', ffi.C.ImGuiTreeNodeFlags_DefaultOpen) then
+        self._perComponentBaseTools(transform, Components.Transform)
         local pos = transform:getPosition()
         local rot = transform:getRotation()
         local scale = transform:getScale()
@@ -82,6 +115,21 @@ function Inspector:render()
         if not entity or not entity:isValid() then
             UI.TextUnformatted('No entity selected')
         else
+            UI.Combo('##ComponentType', selectedComponent, COM_NAMES_C, #COM_NAMES)
+            if UI.IsItemHovered() then
+                UI.SetTooltip('New component type to add')
+            end
+            UI.SameLine()
+            if UI.Button(ICONS.PLUS..' Add') then
+                entity:component(Components[COM_NAMES[selectedComponent[0]+1]])
+                self.propertiesChanged = true
+            end
+            if UI.IsItemHovered() then
+                UI.SetTooltip('Add new component')
+            end
+            UI.Spacing()
+            UI.Separator()
+            UI.Spacing()
             if UI.CollapsingHeader(ICONS.INFO_CIRCLE..' General', ffi.C.ImGuiTreeNodeFlags_DefaultOpen) then
                 local name = entity:getName()
                 if #name >= MAX_TEXT_INPUT_SIZE then
