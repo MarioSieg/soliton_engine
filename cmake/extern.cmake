@@ -72,6 +72,8 @@ target_include_directories(lunam PRIVATE extern/Vulkan-Utility-Libraries/include
 add_subdirectory(extern/assimp)
 target_include_directories(lunam PRIVATE extern/assimp/include)
 target_link_libraries(lunam assimp)
-if (NOT WIN32)
+if (WIN32)
+    target_compile_options(assimp PRIVATE /GR) # fuck u assimp
+else()
     target_compile_options(assimp PRIVATE -fexceptions -frtti) # fuck u assimp
 endif()
