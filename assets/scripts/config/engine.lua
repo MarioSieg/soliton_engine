@@ -46,7 +46,7 @@ ENGINE_CONFIG = {
         icon = 'logo.png' -- Window icon image file.
     },
     Renderer = {
-        enableVulkanValidationLayers = false, -- Enable Vulkan validation layers.
+        enableVulkanValidationLayers = true, -- Enable Vulkan validation layers.
     },
     Physics = {
         tempAllocatorBufferSize = 1024 * 1024 * 64, -- 64 MB

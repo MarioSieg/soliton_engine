@@ -37,14 +37,15 @@ namespace graphics {
             return &*s_flat_normal;
         }
 
+        [[nodiscard]] static auto get_descriptor_set_layout() noexcept -> const vk::DescriptorSetLayout& {
+            return s_descriptor_set_layout;
+        }
+
+
     private:
         friend class graphics_subsystem;
         static auto init_static_resources() -> void;
         static auto free_static_resources() -> void;
-
-        [[nodiscard]] static auto get_descriptor_set_layout() noexcept -> const vk::DescriptorSetLayout& {
-            return s_descriptor_set_layout;
-        }
 
         static inline constinit std::optional<graphics::texture> s_error_texture {};
         static inline constinit std::optional<graphics::texture> s_flat_normal {};
