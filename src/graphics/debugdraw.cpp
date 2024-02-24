@@ -1010,7 +1010,7 @@ namespace graphics {
     }
 
     auto debugdraw::draw_obb(const BoundingOrientedBox& obb, FXMMATRIX model, const XMFLOAT3& color) -> void {
-        std::array<XMFLOAT3, 8> verts;
+        std::array<XMFLOAT3, 8> verts {};
         for (int i = 0; i < 2; ++i) {
             for (int j = 0; j < 2; ++j) {
                 for (int k = 0; k < 2; ++k) {

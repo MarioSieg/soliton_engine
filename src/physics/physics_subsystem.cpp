@@ -236,9 +236,16 @@ namespace physics {
 				transform.rotation.z,
     			transform.rotation.w,
     		};
+    		auto verts = mesh->verts;
+    		const auto scale = DirectX::XMLoadFloat3(&transform.scale);
+    		for (JPH::Float3& vert : verts) {
+    			static_assert(sizeof(JPH::Float3) == sizeof(DirectX::XMFLOAT3));
+    			static_assert(alignof(JPH::Float3) == alignof(DirectX::XMFLOAT3));
+    			auto* punned = reinterpret_cast<DirectX::XMFLOAT3*>(&vert);
+				DirectX::XMStoreFloat3(punned, DirectX::XMVectorMultiply(DirectX::XMLoadFloat3(punned), scale));
+			}
 		    JPH::BodyCreationSettings static_object {
-				 new JPH::MeshShape(JPH::MeshShapeSettings{mesh->verts, mesh->triangles}, result),
-		    	//new JPH::ConvexHullShape{JPH::ConvexHullShapeSettings{mesh->verts.data(), static_cast<int>(mesh->verts.size())}, result},
+		    	new JPH::MeshShape(JPH::MeshShapeSettings{verts, mesh->triangles}, result),
 				pos,
 				rot,
 				JPH::EMotionType::Static,
