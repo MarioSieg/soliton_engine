@@ -70,7 +70,7 @@ namespace graphics {
         }
 
         [[nodiscard]] static auto get() -> pipeline_registry& {
-            assert(s_instance.has_value());
+            assert(s_instance);
             return *s_instance;
         }
 
