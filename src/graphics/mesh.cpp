@@ -5,7 +5,6 @@
 
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
 #include <Jolt/Physics/Collision/Shape/Shape.h>
 
 #include "material.hpp"
@@ -14,8 +13,8 @@ namespace graphics {
 	using namespace DirectX;
 
 	static auto compute_aabb(BoundingBox& aabb, const std::span<const mesh::vertex> vertices) noexcept -> void {
-		auto min = XMVectorReplicate(std::numeric_limits<float>::max());
-		auto max = XMVectorReplicate(-std::numeric_limits<float>::max());
+		auto min = XMVectorReplicate(1e10f);
+		auto max = XMVectorReplicate(-1e10f);
 		for (const auto& v : vertices) {
 			const auto pos = XMLoadFloat3(&v.position);
 			min = XMVectorMin(min, pos);

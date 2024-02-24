@@ -6,6 +6,8 @@
 #include "vulkancore/context.hpp"
 
 namespace graphics {
+    using namespace DirectX;
+
     static constexpr std::array<const std::uint32_t, 1532 / 4> k_debug_draw_vs_spirv {
         0x07230203,
         0x00010000,
@@ -896,13 +898,13 @@ namespace graphics {
 
     auto debugdraw::render(
         const vk::CommandBuffer cmd,
-        const DirectX::FXMMATRIX view_proj,
-        const DirectX::FXMVECTOR view_pos
+        const FXMMATRIX view_proj,
+        const FXMVECTOR view_pos
     ) -> void {
         if (!m_vertices.empty()) {
             const std::uint32_t frameidx = vkb_context().get_current_frame();
             uniform uniform_data {};
-            DirectX::XMStoreFloat4x4A(&uniform_data.view_proj, view_proj);
+            XMStoreFloat4x4A(&uniform_data.view_proj, view_proj);
             auto* uptr = static_cast<std::uint8_t*>(m_uniform.get_mapped_ptr());
             std::memcpy(uptr + sizeof(uniform_data) * frameidx, &uniform_data, sizeof(uniform_data));
             if (m_vertices.size() > k_max_vertices) [[unlikely]] {
@@ -923,10 +925,10 @@ namespace graphics {
                     pipe = draw_cmd.depth_test ? m_line_strip_depth_pipeline : m_line_strip_no_depth_pipeline;
                 }
                 cmd.bindPipeline(vk::PipelineBindPoint::eGraphics, pipe);
-                std::array<DirectX::XMFLOAT4A, 2> params {};
+                std::array<XMFLOAT4A, 2> params {};
                 static_assert(sizeof(params) == sizeof(float) * 4 * 2);
-                DirectX::XMStoreFloat4A(&params[0], view_pos);
-                DirectX::XMStoreFloat4A(&params[1], DirectX::XMVectorSet(draw_cmd.distance_fade ? draw_cmd.fade_start : -1.0f, draw_cmd.fade_end, 0.0f, 0.0f));
+                XMStoreFloat4A(&params[0], view_pos);
+                XMStoreFloat4A(&params[1], XMVectorSet(draw_cmd.distance_fade ? draw_cmd.fade_start : -1.0f, draw_cmd.fade_end, 0.0f, 0.0f));
                 cmd.pushConstants(m_pipeline_layout, vk::ShaderStageFlagBits::eFragment, 0, sizeof(params), params.data());
                 cmd.draw(draw_cmd.num_vertices, 1, v, 0);
                 v += draw_cmd.num_vertices;
@@ -937,9 +939,9 @@ namespace graphics {
     }
 
     auto debugdraw::draw_line(
-        const DirectX::XMFLOAT3& from,
-        const DirectX::XMFLOAT3& to,
-        const DirectX::XMFLOAT3& color
+        const XMFLOAT3& from,
+        const XMFLOAT3& to,
+        const XMFLOAT3& color
     ) -> void {
         vertex vw0 {}, vw1 {};
         vw0.pos = from;
@@ -966,91 +968,92 @@ namespace graphics {
         }
     }
 
-    auto debugdraw::draw_grid(const DirectX::XMFLOAT3& pos, const float step, const DirectX::XMFLOAT3& color) -> void {
+    auto debugdraw::draw_grid(const XMFLOAT3& pos, const float step, const XMFLOAT3& color) -> void {
         begin_batch();
         const float offset_x = std::floor(pos.x * step / 2.0f);
         const float offset_z = std::floor(pos.z * step / 2.0f);
         for (int x = static_cast<int>(-offset_x); x <= static_cast<int>(offset_x); x += static_cast<int>(step)) {
-            draw_line(DirectX::XMFLOAT3{static_cast<float>(x), pos.y, -offset_z}, DirectX::XMFLOAT3{static_cast<float>(x), pos.y, offset_z}, color);
+            draw_line(XMFLOAT3{static_cast<float>(x), pos.y, -offset_z}, XMFLOAT3{static_cast<float>(x), pos.y, offset_z}, color);
         }
         for (int z = static_cast<int>(-offset_z); z <= static_cast<int>(offset_z); z += static_cast<int>(step)) {
-            draw_line(DirectX::XMFLOAT3{-offset_x, pos.y, static_cast<float>(z)}, DirectX::XMFLOAT3{offset_x, pos.y, static_cast<float>(z)}, color);
+            draw_line(XMFLOAT3{-offset_x, pos.y, static_cast<float>(z)}, XMFLOAT3{offset_x, pos.y, static_cast<float>(z)}, color);
         }
         end_batch();
     }
 
     auto debugdraw::draw_aabb(
-        const DirectX::XMFLOAT3& min,
-        const DirectX::XMFLOAT3& max,
-        const DirectX::XMFLOAT3& color
+        const XMFLOAT3& min,
+        const XMFLOAT3& max,
+        const XMFLOAT3& color
     ) -> void {
         begin_batch();
-        draw_line(min, DirectX::XMFLOAT3(max.x, min.y, min.z), color);
-        draw_line(DirectX::XMFLOAT3(max.x, min.y, min.z), DirectX::XMFLOAT3(max.x, min.y, max.z), color);
-        draw_line(DirectX::XMFLOAT3(max.x, min.y, max.z), DirectX::XMFLOAT3(min.x, min.y, max.z), color);
-        draw_line(DirectX::XMFLOAT3(min.x, min.y, max.z), min, color);
-        draw_line(DirectX::XMFLOAT3(min.x, max.y, min.z), DirectX::XMFLOAT3(max.x, max.y, min.z), color);
-        draw_line(DirectX::XMFLOAT3(max.x, max.y, min.z), max, color);
-        draw_line(max, DirectX::XMFLOAT3(min.x, max.y, max.z), color);
-        draw_line(DirectX::XMFLOAT3(min.x, max.y, max.z), DirectX::XMFLOAT3(min.x, max.y, min.z), color);
-        draw_line(min, DirectX::XMFLOAT3(min.x, max.y, min.z), color);
-        draw_line(DirectX::XMFLOAT3(max.x, min.y, min.z), DirectX::XMFLOAT3(max.x, max.y, min.z), color);
-        draw_line(DirectX::XMFLOAT3(max.x, min.y, max.z), max, color);
-        draw_line(DirectX::XMFLOAT3(min.x, min.y, max.z), DirectX::XMFLOAT3(min.x, max.y, max.z), color);
+        draw_line(min, XMFLOAT3(max.x, min.y, min.z), color);
+        draw_line(XMFLOAT3(max.x, min.y, min.z), XMFLOAT3(max.x, min.y, max.z), color);
+        draw_line(XMFLOAT3(max.x, min.y, max.z), XMFLOAT3(min.x, min.y, max.z), color);
+        draw_line(XMFLOAT3(min.x, min.y, max.z), min, color);
+        draw_line(XMFLOAT3(min.x, max.y, min.z), XMFLOAT3(max.x, max.y, min.z), color);
+        draw_line(XMFLOAT3(max.x, max.y, min.z), max, color);
+        draw_line(max, XMFLOAT3(min.x, max.y, max.z), color);
+        draw_line(XMFLOAT3(min.x, max.y, max.z), XMFLOAT3(min.x, max.y, min.z), color);
+        draw_line(min, XMFLOAT3(min.x, max.y, min.z), color);
+        draw_line(XMFLOAT3(max.x, min.y, min.z), XMFLOAT3(max.x, max.y, min.z), color);
+        draw_line(XMFLOAT3(max.x, min.y, max.z), max, color);
+        draw_line(XMFLOAT3(min.x, min.y, max.z), XMFLOAT3(min.x, max.y, max.z), color);
         end_batch();
     }
 
-    auto debugdraw::draw_aabb(const DirectX::BoundingBox& aabb, const DirectX::XMFLOAT3& color) -> void {
-        DirectX::XMFLOAT3A min, max;
-        DirectX::XMStoreFloat3A(&min, DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&aabb.Center), DirectX::XMLoadFloat3(&aabb.Extents)));
-        DirectX::XMStoreFloat3A(&max, DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&aabb.Center), DirectX::XMLoadFloat3(&aabb.Extents)));
+    auto debugdraw::draw_aabb(const BoundingBox& aabb, const XMFLOAT3& color) -> void {
+        XMFLOAT3A min, max;
+        XMStoreFloat3A(&min, XMVectorSubtract(XMLoadFloat3(&aabb.Center), XMLoadFloat3(&aabb.Extents)));
+        XMStoreFloat3A(&max, XMVectorAdd(XMLoadFloat3(&aabb.Center), XMLoadFloat3(&aabb.Extents)));
         draw_aabb(min, max, color);
     }
 
-    auto debugdraw::draw_obb(const DirectX::BoundingOrientedBox& obb, DirectX::FXMMATRIX model, const DirectX::XMFLOAT3& color) -> void {
-        DirectX::XMFLOAT3A min, max;
-        DirectX::XMStoreFloat3A(&min, DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&obb.Center), DirectX::XMLoadFloat3(&obb.Extents)));
-        DirectX::XMStoreFloat3A(&max, DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&obb.Center), DirectX::XMLoadFloat3(&obb.Extents)));
-        std::array<DirectX::XMFLOAT3, 8> verts {};
-        DirectX::XMFLOAT3A size;
-        DirectX::XMStoreFloat3A(&size, DirectX::XMVectorSubtract(DirectX::XMLoadFloat3A(&max), DirectX::XMLoadFloat3A(&min)));
-        int idx = 0;
-        for (float x = min.x; x <= max.x; x += size.x) {
-            for (float y = min.y; y <= max.y; y += size.y) {
-                for (float z = min.z; z <= max.z; z += size.z) {
-                    DirectX::XMStoreFloat3(&verts[idx++], DirectX::XMVector3Transform(DirectX::XMVectorSet(x, y, z, 1.0f), model));
+    auto debugdraw::draw_obb(const BoundingOrientedBox& obb, FXMMATRIX model, const XMFLOAT3& color) -> void {
+        std::array<XMFLOAT3, 8> verts;
+        for (int i = 0; i < 2; ++i) {
+            for (int j = 0; j < 2; ++j) {
+                for (int k = 0; k < 2; ++k) {
+                    XMFLOAT3 corner = {
+                        obb.Center.x + (i == 0 ? -obb.Extents.x : obb.Extents.x),
+                        obb.Center.y + (j == 0 ? -obb.Extents.y : obb.Extents.y),
+                        obb.Center.z + (k == 0 ? -obb.Extents.z : obb.Extents.z)
+                    };
+                    XMVECTOR cornerVec = XMVector3Transform(XMLoadFloat3(&corner), model);
+                   XMStoreFloat3(&verts[i * 4 + j * 2 + k], cornerVec);
                 }
             }
         }
         draw_line(verts[0], verts[1], color);
-        draw_line(verts[1], verts[5], color);
-        draw_line(verts[5], verts[4], color);
-        draw_line(verts[4], verts[0], color);
-        draw_line(verts[2], verts[3], color);
-        draw_line(verts[3], verts[7], color);
-        draw_line(verts[7], verts[6], color);
-        draw_line(verts[6], verts[2], color);
+        draw_line(verts[1], verts[3], color);
+        draw_line(verts[3], verts[2], color);
         draw_line(verts[2], verts[0], color);
+        draw_line(verts[4], verts[5], color);
+        draw_line(verts[5], verts[7], color);
+        draw_line(verts[7], verts[6], color);
         draw_line(verts[6], verts[4], color);
-        draw_line(verts[3], verts[1], color);
-        draw_line(verts[7], verts[5], color);
+        draw_line(verts[0], verts[4], color);
+        draw_line(verts[1], verts[5], color);
+        draw_line(verts[2], verts[6], color);
+        draw_line(verts[3], verts[7], color);
     }
 
-    auto debugdraw::draw_transform(DirectX::FXMMATRIX mtx, const float axis_len) -> void {
-        DirectX::XMVECTOR scale, rotation, translation;
-        DirectX::XMMatrixDecompose(&scale, &rotation, &translation, mtx);
-        DirectX::XMFLOAT3A p;
-        DirectX::XMStoreFloat3A(&p, translation);
-        DirectX::XMVECTOR x_dir = DirectX::XMVector3Rotate(DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f), rotation);
-        DirectX::XMVECTOR y_dir = DirectX::XMVector3Rotate(DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), rotation);
-        DirectX::XMVECTOR z_dir = DirectX::XMVector3Rotate(DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), rotation);
-        DirectX::XMFLOAT3A x_end, y_end, z_end;
-        DirectX::XMStoreFloat3A(&x_end, DirectX::XMVectorAdd(XMLoadFloat3(&p), DirectX::XMVectorScale(x_dir, axis_len)));
-        DirectX::XMStoreFloat3A(&y_end, DirectX::XMVectorAdd(XMLoadFloat3(&p), DirectX::XMVectorScale(y_dir, axis_len)));
-        DirectX::XMStoreFloat3A(&z_end, DirectX::XMVectorAdd(XMLoadFloat3(&p), DirectX::XMVectorScale(z_dir, axis_len)));
-        draw_line(p, x_end, DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f));
-        draw_line(p, y_end, DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
-        draw_line(p, z_end, DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f));
+
+    auto debugdraw::draw_transform(FXMMATRIX mtx, const float axis_len) -> void {
+        XMVECTOR scale, rotation, translation;
+        XMMatrixDecompose(&scale, &rotation, &translation, mtx);
+        XMFLOAT3A p;
+        XMStoreFloat3A(&p, translation);
+        XMVECTOR x_dir = XMVector3Rotate(XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f), rotation);
+        XMVECTOR y_dir = XMVector3Rotate(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), rotation);
+        XMVECTOR z_dir = XMVector3Rotate(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), rotation);
+        XMFLOAT3A x_end, y_end, z_end;
+        XMStoreFloat3A(&x_end, XMVectorAdd(XMLoadFloat3(&p), XMVectorScale(x_dir, axis_len)));
+        XMStoreFloat3A(&y_end, XMVectorAdd(XMLoadFloat3(&p), XMVectorScale(y_dir, axis_len)));
+        XMStoreFloat3A(&z_end, XMVectorAdd(XMLoadFloat3(&p), XMVectorScale(z_dir, axis_len)));
+        draw_line(p, x_end, XMFLOAT3(1.0f, 0.0f, 0.0f));
+        draw_line(p, y_end, XMFLOAT3(0.0f, 1.0f, 0.0f));
+        draw_line(p, z_end, XMFLOAT3(0.0f, 0.0f, 1.0f));
     }
 
     auto debugdraw::create_descriptor_set_layout(const vk::Device device) -> void {
@@ -1244,7 +1247,7 @@ namespace graphics {
         vk::PushConstantRange push_constant_range {};
         push_constant_range.stageFlags = vk::ShaderStageFlagBits::eFragment;
         push_constant_range.offset = 0;
-        push_constant_range.size = sizeof(DirectX::XMFLOAT4) * 2;
+        push_constant_range.size = sizeof(XMFLOAT4) * 2;
         pipeline_layout_create_info.pushConstantRangeCount = 1;
         pipeline_layout_create_info.pPushConstantRanges = &push_constant_range;
         vkcheck(device.createPipelineLayout(&pipeline_layout_create_info, &vkb::s_allocator, &m_pipeline_layout));
