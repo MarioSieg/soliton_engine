@@ -169,9 +169,11 @@ namespace physics {
     	m_physics_system.SetGravity(JPH::Vec3{0.0f, -9.81f, 0.0f}); // set gravity to earth's gravity
     	m_physics_system.SetContactListener(&*m_contact_listener);
     	rnd_gamerand_seed(&prng, 0xdeadbeef);
+    	m_debug_renderer = std::make_unique<debug_renderer>();
     }
 
     physics_subsystem::~physics_subsystem() {
+    	m_debug_renderer.reset();
     	m_contact_listener.reset();
     	m_object_layer_pair_filter.reset();
     	m_broad_phase_filter.reset();
@@ -217,17 +219,28 @@ namespace physics {
 		});
 
 		log_info("Creating static colliders...");
-    	scene.filter<const com::mesh_renderer>().each([&](const com::mesh_renderer& renderer) {
+    	scene.filter<const com::transform, const com::mesh_renderer>().each([&](const com::transform& transform, const com::mesh_renderer& renderer) {
     		if (renderer.meshes.empty()) {
     			return;
     		}
     		const auto& mesh = renderer.meshes.front();
     		JPH::Shape::ShapeResult result {};
+    		const JPH::Vec3 pos {
+				transform.position.x,
+    			transform.position.y,
+    			transform.position.z
+    		};
+    		const JPH::Quat rot {
+    			transform.rotation.x,
+				transform.rotation.y,
+				transform.rotation.z,
+    			transform.rotation.w,
+    		};
 		    JPH::BodyCreationSettings static_object {
 				 new JPH::MeshShape(JPH::MeshShapeSettings{mesh->verts, mesh->triangles}, result),
 		    	//new JPH::ConvexHullShape{JPH::ConvexHullShapeSettings{mesh->verts.data(), static_cast<int>(mesh->verts.size())}, result},
-				{},
-				JPH::Quat::sIdentity(),
+				pos,
+				rot,
 				JPH::EMotionType::Static,
 				Layers::NON_MOVING
 			};

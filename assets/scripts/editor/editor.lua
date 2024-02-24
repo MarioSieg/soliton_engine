@@ -91,6 +91,20 @@ local GIZMO_MODE = {
     WORLD = 1
 }
 local EFLAGS = ENTITY_FLAGS
+local DEBUG_MODE = {
+    NONE = 0,
+    SCENE = 1,
+    PHYSICS = 2
+}
+local DEBUG_MODE_NAMES = {
+    'None',
+    ICONS.GLOBE_EUROPE..' Scene',
+    ICONS.CAR..' Physics'
+}
+local DEBUG_MODE_NAMES_C = ffi.new("const char*[?]", #DEBUG_MODE_NAMES)
+for i=1, #DEBUG_MODE_NAMES do
+    DEBUG_MODE_NAMES_C[i-1] = ffi.cast("const char*", DEBUG_MODE_NAMES[i])
+end
 
 local Editor = {
     isVisible = ffi.new('bool[1]', true),
@@ -113,13 +127,14 @@ local Editor = {
         gizmoOperation = GIZMO_OPERATIONS.UNIVERSAL,
         gizmoMode = GIZMO_MODE.LOCAL,
         gizmoSnap = ffi.new('bool[1]', true),
-        gizmoSnapStep = ffi.new('float[1]', 0.1)
+        gizmoSnapStep = ffi.new('float[1]', 0.1),
+        currentDebugMode = ffi.new('int[1]', DEBUG_MODE.NONE)
     },
     camera = require 'editor.camera',
     dockID = nil,
     inputTextBuffer = ffi.new('char[?]', 1+MAX_TEXT_INPUT_SIZE),
     activeProject = nil,
-    showDemoWindow = false
+    showDemoWindow = false,
 }
 
 for _, tool in ipairs(Editor.tools) do
@@ -139,6 +154,11 @@ function Editor.gizmos:drawGizmos()
         Debug.drawGrid(self.gridDims, self.gridStep, self.gridColor)
         Debug.enableFade(false)
     end
+    if self.currentDebugMode[0] == DEBUG_MODE.SCENE then
+        Debug.drawSceneDebug(Vec3(0, 1, 0))
+    elseif self.currentDebugMode[0] == DEBUG_MODE.PHYSICS then
+        Debug.drawPhysicsDebug()
+    end
 end
 
 function Editor:defaultDockLayout()
@@ -148,9 +168,9 @@ function Editor:defaultDockLayout()
         UI.DockBuilderSetNodeSize(self.dockID, UI.GetMainViewport().Size)
         local dock_main_id = ffi.new('ImGuiID[1]') -- cursed
         dock_main_id[0] = self.dockID
-        local dockBot = UI.DockBuilderSplitNode(self.dockID, ffi.C.ImGuiDir_Down, DOCK_BOTTOM_RATIO, nil, dock_main_id)
-        local dockLeft = UI.DockBuilderSplitNode(self.dockID, ffi.C.ImGuiDir_Left, DOCK_LEFT_RATIO, nil, dock_main_id)
-        local dockRight = UI.DockBuilderSplitNode(self.dockID, ffi.C.ImGuiDir_Right, DOCK_RIGHT_RATIO, nil, dock_main_id)
+        local dockBot = UI.DockBuilderSplitNode(dock_main_id[0], ffi.C.ImGuiDir_Down, DOCK_BOTTOM_RATIO, nil, dock_main_id)
+        local dockLeft = UI.DockBuilderSplitNode(dock_main_id[0], ffi.C.ImGuiDir_Left, DOCK_LEFT_RATIO, nil, dock_main_id)
+        local dockRight = UI.DockBuilderSplitNode(dock_main_id[0], ffi.C.ImGuiDir_Right, DOCK_RIGHT_RATIO, nil, dock_main_id)
         UI.DockBuilderDockWindow(Terminal.name, dockBot)
         UI.DockBuilderDockWindow(Profiler.name, dockBot)
         UI.DockBuilderDockWindow(ScriptEditor.name, dockBot)
@@ -163,7 +183,7 @@ function Editor:loadScene(file)
     Scene.load('Default', file)
     local mainCamera = Scene.spawn('__EditorCamera') -- spawn editor camera
     mainCamera:addFlag(EFLAGS.HIDDEN + EFLAGS.TRANSIENT) -- hide and don't save
-    mainCamera:component(Components.Camera):setFov(80)
+    mainCamera:getComponent(Components.Camera):setFov(80)
     self.camera.targetEntity = mainCamera
     EntityListView:buildEntityList()
 end
@@ -172,9 +192,9 @@ local player = nil
 function Editor:playScene()
     player = Scene.spawn('Player')
     player:addFlag(EFLAGS.TRANSIENT)
-    player:component(Components.Camera)
-    player:component(Components.Transform)
-    player:component(Components.CharacterController):setLinearVelocity(Vec3(0, 30, 0))
+    player:getComponent(Components.Camera)
+    player:getComponent(Components.Transform)
+    player:getComponent(Components.CharacterController):setLinearVelocity(Vec3(0, 30, 0))
     --Scene.setActiveCameraEntity(player)
     EntityListView:buildEntityList()
 end
@@ -197,7 +217,7 @@ function Editor:tickScene()
         if Input.isKeyPressed(Input.KEYS.SPACE) then
             movementDir = Vec3(0, 5, 0)
         end
-        local cc = player:component(Components.CharacterController)
+        local cc = player:getComponent(Components.CharacterController)
         local groundState = cc:getGroundState()
 
         --  Cancel movement in opposite direction of normal when touching something we can't walk up
@@ -219,8 +239,6 @@ function Editor:tickScene()
         if groundState == CHARACTER_GROUND_STATE.ON_GROUND and Input.isKeyPressed(Input.KEYS.SPACE) then
             new.y = 5.0
         end
-
-        print(groundState)
 
         cc:setLinearVelocity(new)
     end
@@ -328,6 +346,13 @@ function Editor:renderMainMenu()
             UI.SetTooltip('Gizmo Snap Step')
         end
         UI.PopItemWidth()
+        UI.SameLine()
+        UI.PushItemWidth(120)
+        UI.Combo(ICONS.GLASSES, self.gizmos.currentDebugMode, DEBUG_MODE_NAMES_C, #DEBUG_MODE_NAMES)
+        UI.PopItemWidth()
+        if UI.IsItemHovered() then
+            UI.SetTooltip('Debug rendering mode')
+        end
         UI.SameLine()
         UI.Separator()
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_Button, 0)
@@ -442,8 +467,8 @@ function Editor:renderOverlay()
         local time = os.date('*t')
         UI.Text(string.format(' | %02d.%02d.%02d %02d:%02d', time.day, time.month, time.year, time.hour, time.min))
         UI.Separator()
-        UI.Text(string.format('Pos: %s', self.camera._position))
-        UI.Text(string.format('Rot: %s', self.camera._rotation))
+        UI.Text(string.format('Pos: %s', self.camera.position))
+        UI.Text(string.format('Rot: %s', self.camera.rotation))
         UI.Separator()
         UI.Text(App.Host.GRAPHICS_API..' | '..App.Host.HOST)
         UI.Text(App.Host.CPU_NAME)
@@ -499,11 +524,11 @@ function Editor:__onTick()
     local selectedE = EntityListView.selectedEntity
     if EntityListView.selectedWantsFocus and selectedE and selectedE:isValid() then
         if selectedE:hasComponent(Components.Transform) then
-            local pos = selectedE:component(Components.Transform):getPosition()
+            local pos = selectedE:getComponent(Components.Transform):getPosition()
             pos.z = pos.z - 1.0
             if pos then
-                self.camera._position = pos
-                self.camera._rotation = Quat.IDENTITY
+                self.camera.position = pos
+                self.camera.rotation = Quat.IDENTITY
             end
         end
         EntityListView.selectedWantsFocus = false

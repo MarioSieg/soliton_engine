@@ -3,9 +3,11 @@
 #include "_prelude.hpp"
 #include "../../graphics/graphics_subsystem.hpp"
 #include "../../graphics/imgui/ImGuizmo.h"
+#include "../../physics/physics_subsystem.hpp"
 
 using graphics::graphics_subsystem;
 
+#define dd (graphics_subsystem::s_instance->get_debug_draw())
 
 LUA_INTEROP_API auto __lu_dd_begin() -> void {
     ImGuizmo::BeginFrame();
@@ -15,7 +17,7 @@ LUA_INTEROP_API auto __lu_dd_begin() -> void {
 }
 
 LUA_INTEROP_API auto __lu_dd_grid(const lua_vec3 pos, const double step, const lua_vec3 color) -> void {
-    graphics_subsystem::s_instance->get_debug_draw().draw_grid(pos, static_cast<float>(step), color);
+    dd.draw_grid(pos, static_cast<float>(step), color);
 }
 
 LUA_INTEROP_API auto __lu_dd_gizmo_enable(const bool enable) -> void {
@@ -54,21 +56,54 @@ LUA_INTEROP_API auto __lu_dd_gizmo_manipulator(const flecs::id_t id, const int o
                 DirectX::BoundingOrientedBox obb {};
                 DirectX::BoundingOrientedBox::CreateFromBoundingBox(obb, mesh->get_aabb());
                 const auto model = DirectX::XMLoadFloat4x4A(&model_mtx);
-                graphics_subsystem::s_instance->get_debug_draw().draw_obb(obb, model, color);
+                dd.draw_obb(obb, model, color);
             }
         }
     }
 }
 
 LUA_INTEROP_API auto __lu_dd_enable_depth_test(const bool enable) -> void {
-    graphics_subsystem::s_instance->get_debug_draw().set_depth_test(enable);
+    dd.set_depth_test(enable);
 }
 
 LUA_INTEROP_API auto __lu_dd_enable_fade(const bool enable) -> void {
-    graphics_subsystem::s_instance->get_debug_draw().set_distance_fade_enable(enable);
+    dd.set_distance_fade_enable(enable);
 }
 
 LUA_INTEROP_API auto __lu_dd_set_fade_distance(const double $near, const double $far) -> void {
-    graphics_subsystem::s_instance->get_debug_draw().set_fade_start(static_cast<float>($near));
-    graphics_subsystem::s_instance->get_debug_draw().set_fade_end(static_cast<float>($far));
+    dd.set_fade_start(static_cast<float>($near));
+    dd.set_fade_end(static_cast<float>($far));
+}
+
+LUA_INTEROP_API auto __lu_dd_draw_scene_with_aabbs(const lua_vec3 color) -> void {
+    const DirectX::XMFLOAT3 ccolor = color;
+    dd.begin_batch();
+    scene::get_active().filter<const com::transform, const com::mesh_renderer>().each([&ccolor](const com::transform& transform, const com::mesh_renderer& renderer) {
+        for (const auto* mesh : renderer.meshes) {
+           if (mesh) [[likely]] {
+               DirectX::BoundingOrientedBox obb {};
+               DirectX::BoundingOrientedBox::CreateFromBoundingBox(obb, mesh->get_aabb());
+               const DirectX::XMMATRIX model = transform.compute_matrix();
+               dd.draw_obb(obb, model, ccolor);
+               dd.draw_transform(model, 1.0f);
+           }
+       }
+    });
+    dd.end_batch();
+}
+
+LUA_INTEROP_API auto __lu_dd_draw_physics_debug() -> void {
+    physics::debug_renderer::begin();
+    static constexpr auto draw_settings = [] {
+        JPH::BodyManager::DrawSettings settings {};
+        settings.mDrawVelocity = true;
+        settings.mDrawWorldTransform = true;
+        settings.mDrawBoundingBox = true;
+        settings.mDrawMassAndInertia = true;
+        settings.mDrawShape = true;
+        settings.mDrawShapeColor = JPH::BodyManager::EShapeColor::MaterialColor;
+        return settings;
+    }();
+    physics::physics_subsystem::get_physics_system().DrawBodies(draw_settings, &physics::physics_subsystem::get_debug_renderer());
+    physics::debug_renderer::end();
 }

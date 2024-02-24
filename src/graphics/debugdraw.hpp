@@ -11,8 +11,6 @@
 namespace graphics {
     class debugdraw final : public no_copy, public no_move {
     public:
-        static constexpr std::size_t k_max_vertices = 100'000;
-
         struct uniform final {
             DirectX::XMFLOAT4X4A view_proj {};
         };
@@ -58,6 +56,7 @@ namespace graphics {
         auto draw_aabb(const DirectX::XMFLOAT3& min, const DirectX::XMFLOAT3& max, const DirectX::XMFLOAT3& color) -> void;
         auto draw_aabb(const DirectX::BoundingBox& aabb, const DirectX::XMFLOAT3& color) -> void;
         auto draw_obb(const DirectX::BoundingOrientedBox& obb, DirectX::FXMMATRIX model, const DirectX::XMFLOAT3& color) -> void;
+        auto draw_transform(DirectX::FXMMATRIX mtx, float axis_len) -> void;
         auto render(vk::CommandBuffer cmd, DirectX::FXMMATRIX view_proj, DirectX::FXMVECTOR view_pos) -> void;
 
     private:
@@ -67,6 +66,7 @@ namespace graphics {
         auto create_vertex_buffer() -> void;
         auto create_pipeline_states(vk::Device device, vk::RenderPass pass) -> void;
 
+        const std::uint32_t k_max_vertices;
         std::vector<vertex> m_vertices {};
         std::vector<draw_command> m_draw_commands {};
         bool m_depth_test = false;

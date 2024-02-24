@@ -46,7 +46,8 @@ ENGINE_CONFIG = {
         icon = 'logo.png' -- Window icon image file.
     },
     Renderer = {
-        enableVulkanValidationLayers = true, -- Enable Vulkan validation layers.
+        enableVulkanValidationLayers = false, -- Enable Vulkan validation layers.
+        maxDebugDrawVertices = 1000000, -- Maximum amount of debug draw vertices.
     },
     Physics = {
         tempAllocatorBufferSize = 1024 * 1024 * 64, -- 64 MB

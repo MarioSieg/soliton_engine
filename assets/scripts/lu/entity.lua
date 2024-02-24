@@ -51,7 +51,7 @@ function Entity:setName(name)
     C.__lu_entity_set_name(self.id, name)
 end
 
-function Entity:component(component)
+function Entity:getComponent(component)
     return component:_new(self.id)
 end
 

@@ -2,6 +2,7 @@
 
 #include "debugdraw.hpp"
 
+#include "../scripting/scripting_subsystem.hpp"
 #include "vulkancore/context.hpp"
 
 namespace graphics {
@@ -870,7 +871,8 @@ namespace graphics {
         0x00010038,
     };
 
-    debugdraw::debugdraw(const vk::DescriptorPool pool) {
+    debugdraw::debugdraw(const vk::DescriptorPool pool)
+        : k_max_vertices{scripting::scripting_subsystem::get_config_table()["Renderer"]["maxDebugDrawVertices"].cast<std::uint32_t>().valueOr(250'000)} {
         m_vertices.reserve(k_max_vertices);
         m_draw_commands.reserve(k_max_vertices / 2);
         const vk::Device device = vkb_context().get_device();
@@ -1032,6 +1034,23 @@ namespace graphics {
         draw_line(verts[6], verts[4], color);
         draw_line(verts[3], verts[1], color);
         draw_line(verts[7], verts[5], color);
+    }
+
+    auto debugdraw::draw_transform(DirectX::FXMMATRIX mtx, const float axis_len) -> void {
+        DirectX::XMVECTOR scale, rotation, translation;
+        DirectX::XMMatrixDecompose(&scale, &rotation, &translation, mtx);
+        DirectX::XMFLOAT3A p;
+        DirectX::XMStoreFloat3A(&p, translation);
+        DirectX::XMVECTOR x_dir = DirectX::XMVector3Rotate(DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f), rotation);
+        DirectX::XMVECTOR y_dir = DirectX::XMVector3Rotate(DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), rotation);
+        DirectX::XMVECTOR z_dir = DirectX::XMVector3Rotate(DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), rotation);
+        DirectX::XMFLOAT3A x_end, y_end, z_end;
+        DirectX::XMStoreFloat3A(&x_end, DirectX::XMVectorAdd(XMLoadFloat3(&p), DirectX::XMVectorScale(x_dir, axis_len)));
+        DirectX::XMStoreFloat3A(&y_end, DirectX::XMVectorAdd(XMLoadFloat3(&p), DirectX::XMVectorScale(y_dir, axis_len)));
+        DirectX::XMStoreFloat3A(&z_end, DirectX::XMVectorAdd(XMLoadFloat3(&p), DirectX::XMVectorScale(z_dir, axis_len)));
+        draw_line(p, x_end, DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f));
+        draw_line(p, y_end, DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
+        draw_line(p, z_end, DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f));
     }
 
     auto debugdraw::create_descriptor_set_layout(const vk::Device device) -> void {

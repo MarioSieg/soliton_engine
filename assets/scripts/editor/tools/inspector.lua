@@ -59,7 +59,7 @@ function Inspector:_perComponentBaseTools(instance, id)
     if UI.Button(ICONS.TRASH) then
         instance:remove()
         self.propertiesChanged = true
-        return
+        return false
     end
     if UI.IsItemHovered() then
         UI.SetTooltip('Remove component')
@@ -67,19 +67,22 @@ function Inspector:_perComponentBaseTools(instance, id)
     UI.SameLine()
     if UI.Button(ICONS.TRASH_RESTORE..' Reset') then
         instance:remove()
-        self.selectedEntity:component(id)
+        self.selectedEntity:getComponent(id)
         self.propertiesChanged = true
-        return
+        return false
     end
     if UI.IsItemHovered() then
         UI.SetTooltip('Reset component')
     end
+    return true
 end
 
 function Inspector:_inspectTransform()
-    local transform = self.selectedEntity:component(Components.Transform)
+    local transform = self.selectedEntity:getComponent(Components.Transform)
     if UI.CollapsingHeader(ICONS.ARROWS_ALT..' Transform', ffi.C.ImGuiTreeNodeFlags_DefaultOpen) then
-        self._perComponentBaseTools(transform, Components.Transform)
+        if not self._perComponentBaseTools(transform, Components.Transform) then
+            return
+        end
         local pos = transform:getPosition()
         local rot = transform:getRotation()
         local scale = transform:getScale()
@@ -121,7 +124,7 @@ function Inspector:render()
             end
             UI.SameLine()
             if UI.Button(ICONS.PLUS..' Add') then
-                entity:component(Components[COM_NAMES[selectedComponent[0]+1]])
+                entity:getComponent(Components[COM_NAMES[selectedComponent[0]+1]])
                 self.propertiesChanged = true
             end
             if UI.IsItemHovered() then

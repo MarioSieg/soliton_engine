@@ -11,27 +11,40 @@
 #include "material.hpp"
 
 namespace graphics {
+	using namespace DirectX;
+
+	static auto compute_aabb(BoundingBox& aabb, const std::span<const mesh::vertex> vertices) noexcept -> void {
+		auto min = XMVectorReplicate(std::numeric_limits<float>::max());
+		auto max = XMVectorReplicate(-std::numeric_limits<float>::max());
+		for (const auto& v : vertices) {
+			const auto pos = XMLoadFloat3(&v.position);
+			min = XMVectorMin(min, pos);
+			max = XMVectorMax(max, pos);
+		}
+		aabb.CreateFromPoints(aabb, min, max);
+	}
+
 	static auto load_primitive(
 		std::vector<mesh::vertex>& vertices,
 		std::vector<mesh::index>& indices,
 		const aiMesh* mesh,
 		mesh::primitive& prim_info,
-		DirectX::BoundingBox& full_aabb
+		BoundingBox& full_aabb
 	) -> void {
 		prim_info.vertex_start = vertices.size();
 		prim_info.index_start = indices.size();
 		for (unsigned i = 0; i < mesh->mNumVertices; ++i) {
 			mesh::vertex v {};
-			v.position = std::bit_cast<DirectX::XMFLOAT3>(mesh->mVertices[i]);
+			v.position = std::bit_cast<XMFLOAT3>(mesh->mVertices[i]);
 			if (mesh->HasNormals()) {
-				v.normal = std::bit_cast<DirectX::XMFLOAT3>(mesh->mNormals[i]);
+				v.normal = std::bit_cast<XMFLOAT3>(mesh->mNormals[i]);
 			}
 			if (mesh->HasTextureCoords(0)) {
-				v.uv = DirectX::XMFLOAT2{mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
+				v.uv = XMFLOAT2{mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
 			}
 			if (mesh->HasTangentsAndBitangents()) {
-				v.tangent = std::bit_cast<DirectX::XMFLOAT3>(mesh->mTangents[i]);
-				v.bitangent = std::bit_cast<DirectX::XMFLOAT3>(mesh->mBitangents[i]);
+				v.tangent = std::bit_cast<XMFLOAT3>(mesh->mTangents[i]);
+				v.bitangent = std::bit_cast<XMFLOAT3>(mesh->mBitangents[i]);
 			}
 			vertices.emplace_back(v);
 		}
@@ -45,11 +58,7 @@ namespace graphics {
 		}
 		prim_info.index_count = indices.size() - prim_info.index_start;
 		prim_info.vertex_count = vertices.size() - prim_info.vertex_start;
-		const aiAABB& aabb = mesh->mAABB;
-		static_assert(sizeof(DirectX::XMFLOAT3) == sizeof(aiVector3D));
-		static_assert(alignof(DirectX::XMFLOAT3) == alignof(aiVector3D));
-		DirectX::BoundingBox::CreateFromPoints(prim_info.aabb, DirectX::XMLoadFloat3(reinterpret_cast<const DirectX::XMFLOAT3*>(&aabb.mMin)), DirectX::XMLoadFloat3(reinterpret_cast<const DirectX::XMFLOAT3*>(&aabb.mMax)));
-		DirectX::BoundingBox::CreateMerged(full_aabb, full_aabb, prim_info.aabb);
+		compute_aabb(prim_info.aabb, {vertices.data() + prim_info.vertex_start, prim_info.vertex_count});
 	}
 
 	mesh::mesh(std::string&& path) : asset{asset_category::mesh, asset_source::filesystem, std::move(path)} {
@@ -89,6 +98,7 @@ namespace graphics {
 			m_primitives.emplace_back(prim_info);
 		}
 		m_primitives.shrink_to_fit();
+		compute_aabb(m_aabb, vertices);
 		create_collision_mesh(vertices, indices);
 		create_buffers(vertices, indices);
 		m_approx_byte_size = sizeof(*this)

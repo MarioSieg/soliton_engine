@@ -52,6 +52,7 @@ static struct {
 } s_scene_iter_context;
 
 LUA_INTEROP_API auto __lu_scene_full_entity_query_start() -> void {
+    return;
     scene& active = scene::get_active();
     s_scene_iter_context.assoc = &active;
     std::array<flecs::iter_t, 2> iters {};
@@ -67,16 +68,19 @@ LUA_INTEROP_API auto __lu_scene_full_entity_query_start() -> void {
 }
 
 LUA_INTEROP_API auto __lu_scene_full_entity_query_next_table() -> std::int32_t {
+    return 0;
     passert(&scene::get_active() == s_scene_iter_context.assoc);
     return ecs_iter_next(&s_scene_iter_context.iter) ? s_scene_iter_context.iter.count : 0;
 }
 
 LUA_INTEROP_API auto __lu_scene_full_entity_query_get(const std::int32_t i) -> flecs::id_t {
+    return 0;
     passert(&scene::get_active() == s_scene_iter_context.assoc);
     return s_scene_iter_context.iter.entities[i];
 }
 
 LUA_INTEROP_API auto __lu_scene_full_entity_query_end() -> void {
+    return;
     passert(&scene::get_active() == s_scene_iter_context.assoc);
     ecs_iter_fini(&s_scene_iter_context.iter);
     s_scene_iter_context.iter = {};

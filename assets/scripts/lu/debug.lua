@@ -13,6 +13,8 @@ ffi.cdef[[
     void __lu_dd_enable_depth_test(bool enable);
     void __lu_dd_enable_fade(bool enable);
     void __lu_dd_set_fade_distance(double near, double far);
+    void __lu_dd_draw_scene_with_aabbs(lua_vec3 color);
+    void __lu_dd_draw_physics_debug(void);
 ]]
 
 local Debug = {}
@@ -43,6 +45,14 @@ end
 
 function Debug.setFadeDistance(near, far)
     C.__lu_dd_set_fade_distance(near, far)
+end
+
+function Debug.drawSceneDebug(color)
+    C.__lu_dd_draw_scene_with_aabbs(color)
+end
+
+function Debug.drawPhysicsDebug()
+    C.__lu_dd_draw_physics_debug()
 end
 
 return Debug
