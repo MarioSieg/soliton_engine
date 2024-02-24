@@ -102,9 +102,9 @@ namespace assetmgr {
         log_info("Asset load request [{}]: {}", s_asset_requests.fetch_add(1, std::memory_order_relaxed), path);
         std::string corrected_path {};
         const std::string* valid_path;
-        if (std::find(path.cbegin(), path.cend(), '\\') != path.cend()) { // Windows path
+        if (std::ranges::find(path, '\\') != path.cend()) { // Windows path
             corrected_path = path;
-            std::replace(corrected_path.begin(), corrected_path.end(), '\\', '/'); // Convert to Unix path
+            std::ranges::replace(corrected_path, '\\', '/'); // Convert to Unix path
             valid_path = &corrected_path;
         } else {
             valid_path = &path;
