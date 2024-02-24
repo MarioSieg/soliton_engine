@@ -10,6 +10,9 @@ ffi.cdef[[
     void __lu_dd_grid(lua_vec3 dims, double step, lua_vec3 color);
     void __lu_dd_gizmo_enable(bool enable);
     void __lu_dd_gizmo_manipulator(lua_entity_id id, int op, int mode, bool enable_snap, double snap_x, lua_vec3 color);
+    void __lu_dd_enable_depth_test(bool enable);
+    void __lu_dd_enable_fade(bool enable);
+    void __lu_dd_set_fade_distance(double near, double far);
 ]]
 
 local Debug = {}
@@ -28,6 +31,18 @@ end
 
 function Debug.gizmoManipulator(entity, op, mode, enable_snap, snap_x, obb_color)
     C.__lu_dd_gizmo_manipulator(entity.id, op, mode, enable_snap, snap_x, obb_color)
+end
+
+function Debug.enableDepthTest(enable)
+    C.__lu_dd_enable_depth_test(enable)
+end
+
+function Debug.enableFade(enable)
+    C.__lu_dd_enable_fade(enable)
+end
+
+function Debug.setFadeDistance(near, far)
+    C.__lu_dd_set_fade_distance(near, far)
 end
 
 return Debug

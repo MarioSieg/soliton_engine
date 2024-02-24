@@ -105,8 +105,10 @@ local Editor = {
     gizmos = {
         showGrid = true,
         gridStep = 1.0,
-        gridDims = Vec3(100, 0, 100),
+        gridDims = Vec3(512, 0, 512),
         gridColor = Vec3(0.5, 0.5, 0.5),
+        gridFadeStart = 32,
+        gridFadeRange = 4,
         gizmoObbColor = Vec3(0, 1, 0),
         gizmoOperation = GIZMO_OPERATIONS.UNIVERSAL,
         gizmoMode = GIZMO_MODE.LOCAL,
@@ -132,7 +134,10 @@ function Editor.gizmos:drawGizmos()
         Debug.gizmoManipulator(selected, self.gizmoOperation, self.gizmoMode, self.gizmoSnap[0], self.gizmoSnapStep[0], self.gizmoObbColor) 
     end
     if self.showGrid then
+        Debug.enableFade(true)
+        Debug.setFadeDistance(self.gridFadeStart, self.gridFadeStart+self.gridFadeRange)
         Debug.drawGrid(self.gridDims, self.gridStep, self.gridColor)
+        Debug.enableFade(false)
     end
 end
 

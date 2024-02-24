@@ -59,3 +59,16 @@ LUA_INTEROP_API auto __lu_dd_gizmo_manipulator(const flecs::id_t id, const int o
         }
     }
 }
+
+LUA_INTEROP_API auto __lu_dd_enable_depth_test(const bool enable) -> void {
+    graphics_subsystem::s_instance->get_debug_draw().set_depth_test(enable);
+}
+
+LUA_INTEROP_API auto __lu_dd_enable_fade(const bool enable) -> void {
+    graphics_subsystem::s_instance->get_debug_draw().set_distance_fade_enable(enable);
+}
+
+LUA_INTEROP_API auto __lu_dd_set_fade_distance(const double $near, const double $far) -> void {
+    graphics_subsystem::s_instance->get_debug_draw().set_fade_start(static_cast<float>($near));
+    graphics_subsystem::s_instance->get_debug_draw().set_fade_end(static_cast<float>($far));
+}
