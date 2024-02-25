@@ -135,12 +135,12 @@ namespace physics {
         JPH::Free = +[](void* ptr) -> void {
             mi_free(ptr);
         };
-        //JPH::AlignedAllocate = +[](const std::size_t size, const std::size_t align) -> void* {
-        //    return mi_malloc_aligned(size, align);
-        //};
-        //JPH::AlignedFree = +[](void* ptr) -> void {
-        //    mi_free_aligned(ptr, 0);
-        //};
+        JPH::AlignedAllocate = +[](const std::size_t size, const std::size_t align) -> void* {
+            return mi_malloc_aligned(size, align);
+        };
+        JPH::AlignedFree = +[](void* ptr) -> void {
+            mi_free(ptr);
+        };
         JPH::Trace = &trace_proc;
         JPH::Factory::sInstance = new JPH::Factory();
         JPH::RegisterTypes();
@@ -183,14 +183,6 @@ namespace physics {
         m_temp_allocator.reset();
     	JPH::UnregisterTypes();
         delete JPH::Factory::sInstance;
-    }
-
-	[[nodiscard]] static inline auto lunam_vec3_to_jbh_vec3(const DirectX::XMFLOAT3& v) noexcept -> JPH::RVec3 {
-    	return JPH::Vec3{v.x, v.y, v.z};
-    }
-
-	[[nodiscard]] static inline auto lunam_vec4_to_jbh_vec3(const DirectX::XMFLOAT4& v) noexcept -> JPH::RVec3 {
-    	return JPH::Vec3{v.x, v.y, v.z};
     }
 
     auto physics_subsystem::on_start(scene& scene) -> void {
