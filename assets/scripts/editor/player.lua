@@ -18,9 +18,9 @@ local Player = {
     clampY = 80,
     enableSmoothLook = true,
     lookSnappiness = 15.0,
-    walkSpeed = 5,
-    runSpeed = 10,
-    jumpSpeed = 5,
+    walkSpeed = 2.5,
+    runSpeed = 5,
+    jumpSpeed = 3,
     _isRunning = false,
     _prevMousePos = Vec2.ZERO,
     _mouseAngles = Vec2.ZERO,
@@ -31,18 +31,18 @@ function Player:spawn()
     self.controller = Scene.spawn('PlayerController')
     self.controller:addFlag(EFLAGS.TRANSIENT)
     self.controller:getComponent(Components.Transform)
-    self.controller:getComponent(Components.CharacterController):setLinearVelocity(Vec3(0, 30, 0))
+    self.controller:getComponent(Components.CharacterController):setLinearVelocity(Vec3(0, 5, 0))
 
     self.camera = Scene.spawn('PlayerCamera')
     self.camera:addFlag(EFLAGS.TRANSIENT)
     self.camera:getComponent(Components.Transform)
-    self.camera:getComponent(Components.Camera)
+    self.camera:getComponent(Components.Camera):setFov(85)
 end
 
 function Player:updateCamera()
     local transform = self.camera:getComponent(Components.Transform)
     local newPos = self.controller:getComponent(Components.Transform):getPosition()
-    newPos.y = newPos.y + (1.35*0.5) - 0.05
+    newPos.y = newPos.y + 1.35 * 0.5
     transform:setPosition(newPos) -- sync pos
 
     local sens = Math.abs(self.sensitivity) * 0.01
