@@ -117,7 +117,7 @@ local Editor = {
         Inspector
     },
     gizmos = {
-        showGrid = true,
+        showGrid = false,
         gridStep = 1.0,
         gridDims = Vec3(512, 0, 512),
         gridColor = Vec3(0.5, 0.5, 0.5),
