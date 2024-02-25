@@ -196,8 +196,8 @@ namespace physics {
     	auto& bi = m_physics_system.GetBodyInterface();
 
     	scene.observer<com::character_controller>().event(flecs::OnAdd).each([&](com::character_controller& cc) {
-			static constexpr float cCharacterHeightStanding = 1.35f*0.0025;
-			static constexpr float cCharacterRadiusStanding = 0.3f*0.0025;
+			static constexpr float cCharacterHeightStanding = 1.35f;
+			static constexpr float cCharacterRadiusStanding = 0.3f;
 			const JPH::Ref<JPH::Shape> capsule = JPH::RotatedTranslatedShapeSettings{
 				JPH::Vec3{},
 				JPH::Quat::sIdentity(),

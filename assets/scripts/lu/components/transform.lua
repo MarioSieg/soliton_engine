@@ -14,6 +14,12 @@ ffi.cdef[[
     lua_vec4 __lu_com_transform_get_rot(lua_entity_id id);
     void __lu_com_transform_set_scale(lua_entity_id id, double x, double y, double z);
     lua_vec3 __lu_com_transform_get_scale(lua_entity_id id);
+    lua_vec3 __lu_com_transform_get_forward(lua_entity_id id);
+    lua_vec3 __lu_com_transform_get_backward(lua_entity_id id);
+    lua_vec3 __lu_com_transform_get_up(lua_entity_id id);
+    lua_vec3 __lu_com_transform_get_down(lua_entity_id id);
+    lua_vec3 __lu_com_transform_get_right(lua_entity_id id);
+    lua_vec3 __lu_com_transform_get_left(lua_entity_id id);
 ]]
 
 local Transform = {
@@ -33,7 +39,13 @@ local Transform = {
     setRotation = function(self, rot) C.__lu_com_transform_set_rot(self._entity_id, rot.x, rot.y, rot.z, rot.w) end,
     getRotation = function(self) return C.__lu_com_transform_get_rot(self._entity_id) end,
     setScale = function(self, scale) C.__lu_com_transform_set_scale(self._entity_id, scale.x, scale.y, scale.z) end,
-    getScale = function(self) return C.__lu_com_transform_get_scale(self._entity_id) end
+    getScale = function(self) return C.__lu_com_transform_get_scale(self._entity_id) end,
+    getForwardDir = function(self) return C.__lu_com_transform_get_forward(self._entity_id) end,
+    getBackwardDir = function(self) return C.__lu_com_transform_get_backward(self._entity_id) end,
+    getUpDir = function(self) return C.__lu_com_transform_get_up(self._entity_id) end,
+    getDownDir = function(self) return C.__lu_com_transform_get_down(self._entity_id) end,
+    getRightDir = function(self) return C.__lu_com_transform_get_right(self._entity_id) end,
+    getLeftDir = function(self) return C.__lu_com_transform_get_left(self._entity_id) end,
 }
 
 return Transform

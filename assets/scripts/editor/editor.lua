@@ -188,66 +188,21 @@ function Editor:loadScene(file)
     EntityListView:buildEntityList()
 end
 
-local player = nil
+local Player = require 'editor.player'
+
 function Editor:playScene()
-    player = Scene.spawn('Player')
-    player:addFlag(EFLAGS.TRANSIENT)
-    player:getComponent(Components.Camera)
-    player:getComponent(Components.Transform)
-    player:getComponent(Components.CharacterController):setLinearVelocity(Vec3(0, 30, 0))
-    --Scene.setActiveCameraEntity(player)
+    Player:spawn()
+    Scene.setActiveCameraEntity(Player.camera)
     EntityListView:buildEntityList()
 end
 
 function Editor:tickScene()
-    local movementDir = Vec3(0)
-    if player then
-        if Input.isKeyPressed(Input.KEYS.W) then
-            movementDir = Vec3(0, 0, 1)
-        end
-        if Input.isKeyPressed(Input.KEYS.S) then
-            movementDir = Vec3(0, 0, -1)
-        end
-        if Input.isKeyPressed(Input.KEYS.A) then
-            movementDir = Vec3(-1, 0, 0)
-        end
-        if Input.isKeyPressed(Input.KEYS.D) then
-            movementDir = Vec3(1, 0, 0)
-        end
-        if Input.isKeyPressed(Input.KEYS.SPACE) then
-            movementDir = Vec3(0, 5, 0)
-        end
-        local cc = player:getComponent(Components.CharacterController)
-        local groundState = cc:getGroundState()
-
-        --  Cancel movement in opposite direction of normal when touching something we can't walk up
-        if groundState == CHARACTER_GROUND_STATE.ON_STEEP_GROUND or groundState == CHARACTER_GROUND_STATE.NOT_SUPPORTED then
-            local normal = cc:getGroundNormal()
-            local dot = Vec3.dot(normal, movementDir)
-            if dot < 0 then
-                movementDir = movementDir - (dot * normal) / Vec3.magSqr(normal)
-            end
-        end
-
-        -- Update velocity
-        local current = cc:getLinearVelocity()
-        local desired = movementDir * 2.0
-        desired.y = current.y
-        local new = 0.75 * current + 0.25 * desired
-
-        -- Jump
-        if groundState == CHARACTER_GROUND_STATE.ON_GROUND and Input.isKeyPressed(Input.KEYS.SPACE) then
-            new.y = 5.0
-        end
-
-        cc:setLinearVelocity(new)
-    end
+    Player:tick()
 end
 
 function Editor:stopScene()
+    Player:despawn()
     Scene.setActiveCameraEntity(self.camera.targetEntity)
-    Scene.despawn(player)
-    player = nil
     EntityListView:buildEntityList()
 end
 
