@@ -204,7 +204,8 @@ namespace physics {
 				new JPH::CapsuleShape(0.5f * cCharacterHeightStanding, cCharacterRadiusStanding)
 			}.Create().Get();
 			JPH::Ref<JPH::CharacterSettings> settings = new JPH::CharacterSettings();
-			settings->mMaxSlopeAngle = JPH::DegreesToRadians(95.0f);
+			settings->mMaxSlopeAngle = JPH::DegreesToRadians(55.0f);
+    		settings->mMass = 10.0f;
 			settings->mLayer = Layers::MOVING;
 			settings->mShape = capsule;
 			settings->mFriction = 0.5f;
