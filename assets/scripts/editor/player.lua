@@ -41,7 +41,9 @@ end
 
 function Player:updateCamera()
     local transform = self.camera:getComponent(Components.Transform)
-    transform:setPosition(self.controller:getComponent(Components.Transform):getPosition()) -- sync pos
+    local newPos = self.controller:getComponent(Components.Transform):getPosition()
+    newPos.y = newPos.y + (1.35*0.5) - 0.05
+    transform:setPosition(newPos) -- sync pos
 
     local sens = Math.abs(self.sensitivity) * 0.01
     local clampYRad = Math.rad(Math.abs(self.clampY))

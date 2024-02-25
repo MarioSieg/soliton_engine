@@ -19,6 +19,7 @@ ffi.cdef [[
     lua_vec2 __lu_window_get_size(void);
     lua_vec2 __lu_window_get_framebuf_size(void);
     lua_vec2 __lu_window_get_pos(void);
+    void __lu_window_enable_cursor(bool enable);
     void __lu_app_exit(void);
     const char* __lu_app_host_get_cpu_name(void);
     const char* __lu_app_host_get_gpu_name(void);
@@ -126,6 +127,10 @@ function App.Window.setPlatformTitle(suffix)
     else
         App.Window.setTitle(string.format('Lunam Engine v.%s - %s %s', App.engineVersion, jit.os, jit.arch))
     end
+end
+
+function App.Window.enableCursor(enable)
+    C.__lu_window_enable_cursor(enable)
 end
 
 function App.exit()

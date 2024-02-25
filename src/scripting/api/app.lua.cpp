@@ -99,6 +99,10 @@ LUA_INTEROP_API auto __lu_window_get_pos() -> lua_vec2 {
     return lua_vec2 { static_cast<float>(x), static_cast<float>(y) };
 }
 
+LUA_INTEROP_API auto __lu_window_enable_cursor(const bool enable) -> void {
+    glfwSetInputMode(platform_subsystem::get_glfw_window(), GLFW_CURSOR, enable ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+}
+
 LUA_INTEROP_API auto __lu_app_exit() -> void {
     kernel::get().request_exit();
 }

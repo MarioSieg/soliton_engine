@@ -194,6 +194,7 @@ function Editor:playScene()
     Player:spawn()
     Scene.setActiveCameraEntity(Player.camera)
     EntityListView:buildEntityList()
+    App.Window.enableCursor(false)
 end
 
 function Editor:tickScene()
@@ -204,6 +205,7 @@ function Editor:stopScene()
     Player:despawn()
     Scene.setActiveCameraEntity(self.camera.targetEntity)
     EntityListView:buildEntityList()
+    App.Window.enableCursor(true)
 end
 
 function Editor:renderMainMenu()
@@ -313,7 +315,7 @@ function Editor:renderMainMenu()
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_Button, 0)
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_BorderShadow, 0)
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_Border, 0)
-        if UI.SmallButton(self.isPlaying and ICONS.STOP_CIRCLE or ICONS.PLAY_CIRCLE) then
+        if (self.isPlaying and Input.isKeyPressed(Input.KEYS.ESCAPE)) or UI.SmallButton(self.isPlaying and ICONS.STOP_CIRCLE or ICONS.PLAY_CIRCLE) then
             self.isPlaying = not self.isPlaying
             if self.isPlaying then
                 self:playScene()
