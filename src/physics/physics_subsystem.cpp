@@ -274,11 +274,16 @@ namespace physics {
 				}
     		});
     	}
+    	for (auto old_body : m_static_bodies) {
+    		bi.RemoveBody(old_body);
+    	}
+    	m_static_bodies.reserve(bodies.size());
     	for (const auto& body : bodies) {
 			if (body) [[likely]] {
-				bi.CreateAndAddBody(*body, JPH::EActivation::DontActivate);
+				m_static_bodies.emplace_back(bi.CreateAndAddBody(*body, JPH::EActivation::DontActivate));
 			}
     	}
+    	m_static_bodies.shrink_to_fit();
 
     	m_physics_system.OptimizeBroadPhase();
     }
@@ -286,7 +291,6 @@ namespace physics {
     HOTPROC auto physics_subsystem::on_post_tick() -> void {
     	auto& active = scene::get_active();
     	auto& bi = m_physics_system.GetBodyInterface();
-
     	const double delta = kernel::get().get_delta_time();
     	const int n_steps = 1;
     	m_physics_system.Update(static_cast<float>(delta), n_steps, &*m_temp_allocator, &*m_job_system);
