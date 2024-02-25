@@ -191,12 +191,14 @@ end
 local Player = require 'editor.player'
 
 function Editor:playScene()
+    EntityListView:buildEntityList()
+    App.Window.enableCursor(false)
+    self.camera.enableMovement = false
+    self.camera.enableMouseLook = false
     local spawnPos = self.camera.position
     spawnPos.y = spawnPos.y + 2.0
     Player:spawn(nil) -- todo
     Scene.setActiveCameraEntity(Player.camera)
-    EntityListView:buildEntityList()
-    App.Window.enableCursor(false)
 end
 
 function Editor:tickScene()
@@ -208,6 +210,8 @@ function Editor:stopScene()
     Scene.setActiveCameraEntity(self.camera.targetEntity)
     EntityListView:buildEntityList()
     App.Window.enableCursor(true)
+    self.camera.enableMovement = true
+    self.camera.enableMouseLook = true
 end
 
 function Editor:renderMainMenu()
