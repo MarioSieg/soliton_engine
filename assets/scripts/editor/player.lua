@@ -18,20 +18,22 @@ local Player = {
     clampY = 80,
     enableSmoothLook = true,
     lookSnappiness = 15.0,
-    walkSpeed = 2.5,
+    walkSpeed = 2,
     runSpeed = 5,
-    jumpSpeed = 3,
+    jumpSpeed = 2,
     _isRunning = false,
     _prevMousePos = Vec2.ZERO,
     _mouseAngles = Vec2.ZERO,
     _smoothAngles = Vec2.ZERO
 }
 
-function Player:spawn()
+function Player:spawn(spawnPos)
+    spawnPos = spawnPos or Vec3(0, 10, 0)
+
     self.controller = Scene.spawn('PlayerController')
     self.controller:addFlag(EFLAGS.TRANSIENT)
     self.controller:getComponent(Components.Transform)
-    self.controller:getComponent(Components.CharacterController):setLinearVelocity(Vec3(0, 5, 0))
+    self.controller:getComponent(Components.CharacterController):setLinearVelocity(spawnPos)
 
     self.camera = Scene.spawn('PlayerCamera')
     self.camera:addFlag(EFLAGS.TRANSIENT)
