@@ -193,7 +193,7 @@ local Player = require 'editor.player'
 function Editor:playScene()
     local spawnPos = self.camera.position
     spawnPos.y = spawnPos.y + 2.0
-    Player:spawn(spawnPos)
+    Player:spawn(nil) -- todo
     Scene.setActiveCameraEntity(Player.camera)
     EntityListView:buildEntityList()
     App.Window.enableCursor(false)
