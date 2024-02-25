@@ -135,7 +135,7 @@ namespace graphics {
 	static_assert(bimg::TextureFormat::Count == std::size(k_texture_format_map));
 
     static constexpr std::size_t k_natural_align = 8;
-    auto texture_allocator::realloc(void* p, std::size_t size, std::size_t align, const char*, std::uint32_t) -> void* {
+    auto texture_allocator::realloc(void* p, const std::size_t size, const std::size_t align, const char*, std::uint32_t) -> void* {
         if (0 == size) {
             if (nullptr != p) {
                 if (k_natural_align >= align) {
@@ -338,7 +338,7 @@ namespace graphics {
         auto format = static_cast<vk::Format>(k_texture_format_map[image->m_format].fmt);
         log_info("Texture format: {}", string_VkFormat(static_cast<VkFormat>(format)));
         if (!vkb_device().is_image_format_supported(vk::ImageType::e2D, format, create_flags, usage, tiling)) [[unlikely]] {
-            log_warn("Texture format not supported: {}, converting...", string_VkFormat(static_cast<VkFormat>(format)));
+            log_warn("Texture format not supported: {} converting -> {}", string_VkFormat(static_cast<VkFormat>(format)), string_VkFormat(k_texture_format_map[k_fallback_format].fmt));
             bimg::ImageContainer* original = image;
             image = bimg::imageConvert(&s_texture_allocator, k_fallback_format, *original, true);
             bimg::imageFree(original);
