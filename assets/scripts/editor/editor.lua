@@ -29,7 +29,7 @@ local Inspector = require 'editor.tools.inspector'
 
 WINDOW_SIZE = UI.ImVec2(800, 600)
 local DOCK_LEFT_RATIO = 0.50
-local DOCK_RIGHT_RATIO = 0.40
+local DOCK_RIGHT_RATIO = 1.0
 local DOCK_BOTTOM_RATIO = 0.50
 local MAX_TEXT_INPUT_SIZE = 128
 local POPUP_ID_NEW_PROJECT = 0xffffffff-1
@@ -107,7 +107,7 @@ for i=1, #DEBUG_MODE_NAMES do
 end
 
 local Editor = {
-    isVisible = ffi.new('bool[1]', true),
+    isVisible = true,
     isPlaying = false,
     tools = {
         Terminal,
@@ -199,6 +199,7 @@ function Editor:playScene()
     spawnPos.y = spawnPos.y + 2.0
     Player:spawn(nil) -- todo
     Scene.setActiveCameraEntity(Player.camera)
+    self.isVisible = false
 end
 
 function Editor:tickScene()
@@ -212,6 +213,16 @@ function Editor:stopScene()
     App.Window.enableCursor(true)
     self.camera.enableMovement = true
     self.camera.enableMouseLook = true
+    self.isVisible = true
+end
+
+function Editor:switchGameMode()
+    self.isPlaying = not self.isPlaying
+    if self.isPlaying then
+        self:playScene()
+    else
+        self:stopScene()
+    end
 end
 
 function Editor:renderMainMenu()
@@ -321,13 +332,8 @@ function Editor:renderMainMenu()
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_Button, 0)
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_BorderShadow, 0)
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_Border, 0)
-        if (self.isPlaying and Input.isKeyPressed(Input.KEYS.ESCAPE)) or UI.SmallButton(self.isPlaying and ICONS.STOP_CIRCLE or ICONS.PLAY_CIRCLE) then
-            self.isPlaying = not self.isPlaying
-            if self.isPlaying then
-                self:playScene()
-            else
-                self:stopScene()
-            end
+        if UI.SmallButton(self.isPlaying and ICONS.STOP_CIRCLE or ICONS.PLAY_CIRCLE) then
+            self:switchGameMode()
         end
         if UI.IsItemHovered() then
             UI.SetTooltip(self.isPlaying and 'Stop' or 'Play Scene')
@@ -480,10 +486,18 @@ function Editor:drawTools()
 end
 
 function Editor:__onTick()
-    self.camera:tick()
-    if not Editor.isVisible[0] then
+    if self.isPlaying then
+        self:tickScene()
+        self:renderOverlay()
+        if Input.isKeyPressed(Input.KEYS.ESCAPE) then
+            self:switchGameMode()
+        end
+    end
+    self.gizmos:drawGizmos()
+    if not self.isVisible then
         return
     end
+    self.camera:tick()
     local selectedE = EntityListView.selectedEntity
     if EntityListView.selectedWantsFocus and selectedE and selectedE:isValid() then
         if selectedE:hasComponent(Components.Transform) then
@@ -500,14 +514,9 @@ function Editor:__onTick()
     if Inspector.propertiesChanged then
         EntityListView:buildEntityList()
     end
-    if self.isPlaying then
-        self:tickScene()
-    end
-    self.gizmos:drawGizmos()
     self:drawTools()
     self:renderMainMenu()
     self:renderPopups()
-    self:renderOverlay()
 end
 
 Style.setupDarkStyle()
