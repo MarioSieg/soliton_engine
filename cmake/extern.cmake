@@ -1,3 +1,13 @@
+if (WIN32)
+    target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/win_amd64/lua51.lib)
+elseif(APPLE)
+    target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/mac_aarch64/libluajit.a)
+    target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/mac_aarch64/libMoltenVK.dylib)
+else()
+    target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/linux_amd64/lua51.a)
+    target_link_libraries(lunam tbb)
+endif()
+
 add_subdirectory(extern/spdlog)
 target_include_directories(lunam PRIVATE extern/spdlog/include)
 target_link_libraries(lunam spdlog::spdlog_header_only)
