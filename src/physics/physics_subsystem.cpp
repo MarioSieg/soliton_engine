@@ -265,7 +265,7 @@ namespace physics {
     	bodies.resize(total);
     	for (std::size_t base_idx = 0; auto&& [transforms, renderers] : targets) {
 			passert(transforms.size() == renderers.size());
-    		std::for_each(std::execution::par_unseq, std::begin(transforms), std::end(transforms), [&](const com::transform& transform) {
+    		std::for_each(std::begin(transforms), std::end(transforms), [&](const com::transform& transform) {
     			const auto index = &transform - &transforms.front();
     			const auto& renderer = renderers[index];
     			const auto body = create_static_body(transform, renderer);

@@ -16,7 +16,7 @@
 #include <fcntl.h>
 #include <io.h>
 #include <psapi.h>
-#else
+#elif PLATFORM_LINUX
 #include <link.h>
 #endif
 #include <mimalloc.h>
@@ -275,7 +275,7 @@ auto dump_loaded_dylibs() -> void {
             }
         }
     }
-#else
+#elif PLATFORM_LINUX
     dl_iterate_phdr(+[](dl_phdr_info* info, std::size_t, void*) -> int {
         log_info("{}", info->dlpi_name);
         return 0;

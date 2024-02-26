@@ -16,7 +16,7 @@ target_link_libraries(lunam freetype)
 
 add_subdirectory(extern/mimalloc)
 target_include_directories(lunam PRIVATE extern/mimalloc/include)
-target_link_libraries(lunam mimalloc-static)
+target_link_libraries(lunam mimalloc)
 
 add_subdirectory(extern/infoware)
 target_include_directories(lunam PRIVATE extern/infoware/include)
@@ -49,7 +49,6 @@ add_subdirectory(extern/shaderc)
 target_include_directories(lunam PRIVATE extern/shaderc/libshaderc/include)
 target_link_libraries(lunam vulkan)
 target_link_libraries(lunam shaderc)
-target_link_libraries(lunam vulkan)
 
 add_subdirectory(extern/bgfx)
 target_include_directories(lunam PRIVATE extern/bgfx/include)

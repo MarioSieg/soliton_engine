@@ -5,7 +5,9 @@ project(lunam LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_compile_options(-march=haswell)
+if (NOT APPLE)
+    add_compile_options(-march=haswell)
+endif()
 
 # disable LTO for now
 # add_link_options(-fuse-ld=lld)

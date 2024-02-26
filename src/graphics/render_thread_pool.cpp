@@ -9,7 +9,7 @@
 
 namespace graphics {
     render_thread::render_thread(
-        const std::stop_token& token,
+        std::atomic_bool& token,
         const std::int32_t num_threads,
         const std::int32_t thread_id,
         thread_shared_ctx& shared_ctx
@@ -31,7 +31,7 @@ namespace graphics {
         vkcheck(device.allocateCommandBuffers(&alloc_info, m_command_buffers.data()));
 
         // start thread
-        m_thread = std::jthread { [=, this] { thread_routine(); }};
+        m_thread = std::thread { [=, this] { thread_routine(); }};
     }
 
     render_thread::~render_thread() {
@@ -54,7 +54,7 @@ namespace graphics {
             }
             (*m_shared_ctx.render_callback)(m_active_command_buffer, m_thread_id, m_num_threads, m_shared_ctx.usr);
             end_thread_frame();
-            if (m_token.stop_requested()) [[unlikely]] {
+            if (m_token.load(std::memory_order_relaxed)) [[unlikely]] {
                 break;
             }
         }
@@ -128,13 +128,13 @@ namespace graphics {
         log_info("Creating render thread pool with {} threads", m_num_threads);
         m_threads = std::make_unique<std::optional<render_thread>[]>(m_num_threads);
         for (std::int32_t i = 0; i < m_num_threads; ++i) {
-            m_threads[i].emplace(m_stop_source.get_token(), m_num_threads, i, m_shared_ctx);
+            m_threads[i].emplace(m_stop_source, m_num_threads, i, m_shared_ctx);
         }
         std::this_thread::sleep_for(std::chrono::milliseconds{100}); // wait for all threads to spin some frames
     }
 
     render_thread_pool::~render_thread_pool() {
-        while(!m_stop_source.request_stop());
+        m_stop_source.store(true, std::memory_order_relaxed);
         m_shared_ctx.m_sig_render_subset.trigger(true, -1);
         m_threads.reset();
     }

@@ -26,7 +26,7 @@ namespace graphics {
     class render_thread final : public no_copy, public no_move {
     public:
         render_thread(
-            const std::stop_token& token,
+            std::atomic_bool& token,
             std::int32_t num_threads,
             std::int32_t thread_id,
             thread_shared_ctx& shared_ctx
@@ -42,11 +42,11 @@ namespace graphics {
         [[nodiscard]] auto begin_thread_frame() -> bool;
         auto end_thread_frame() const -> void;
 
-        const std::stop_token m_token;
+        std::atomic_bool& m_token;
         const std::int32_t m_num_threads;
         const std::int32_t m_thread_id;
         thread_shared_ctx& m_shared_ctx;
-        std::jthread m_thread {};
+        std::thread m_thread {};
         vk::CommandPool m_command_pool {};
         std::array<vk::CommandBuffer, vkb::context::k_max_concurrent_frames> m_command_buffers {};
         vk::CommandBuffer m_active_command_buffer {};
@@ -64,6 +64,6 @@ namespace graphics {
         const std::int32_t m_num_threads {};
         thread_shared_ctx m_shared_ctx {};
         std::unique_ptr<std::optional<render_thread>[]> m_threads {};
-        std::stop_source m_stop_source {};
+        std::atomic_bool m_stop_source {};
     };
 }
