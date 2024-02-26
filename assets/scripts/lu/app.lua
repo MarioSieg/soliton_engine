@@ -123,9 +123,9 @@ end
 
 function App.Window.setPlatformTitle(suffix)
     if suffix and type(suffix) == 'string' then
-        App.Window.setTitle(string.format('Lunam Engine v.%s - %s %s - %s', App.engineVersion, jit.os, jit.arch, suffix))
+        App.Window.setTitle(string.format('Lunam Engine v.%s - %s %s - %s', App.engineVersion, jit.os, jit.arch:upper(), suffix))
     else
-        App.Window.setTitle(string.format('Lunam Engine v.%s - %s %s', App.engineVersion, jit.os, jit.arch))
+        App.Window.setTitle(string.format('Lunam Engine v.%s - %s %s', App.engineVersion, jit.os, jit.arch:upper()))
     end
 end
 

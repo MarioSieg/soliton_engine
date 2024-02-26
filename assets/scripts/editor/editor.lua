@@ -27,6 +27,9 @@ local ScriptEditor = require 'editor.tools.scripteditor'
 local EntityListView = require 'editor.tools.entity_list_view'
 local Inspector = require 'editor.tools.inspector'
 
+local HOST_INFO = App.Host.GRAPHICS_API..' | '..(App.Host.HOST:upper())
+local CPU_NAME = 'CPU: '..App.Host.CPU_NAME
+local GPU_NAME = 'GPU: '..App.Host.GPU_NAME
 WINDOW_SIZE = UI.ImVec2(800, 600)
 local DOCK_LEFT_RATIO = 0.50
 local DOCK_RIGHT_RATIO = 1.0
@@ -439,9 +442,9 @@ function Editor:renderOverlay()
         UI.Text(string.format('Pos: %s', self.camera.position))
         UI.Text(string.format('Rot: %s', self.camera.rotation))
         UI.Separator()
-        UI.Text(App.Host.GRAPHICS_API..' | '..App.Host.HOST)
-        UI.Text(App.Host.CPU_NAME)
-        UI.Text(App.Host.GPU_NAME)
+        UI.Text(HOST_INFO)
+        UI.Text(CPU_NAME)
+        UI.Text(GPU_NAME)
         if UI.BeginPopupContextWindow() then
             if UI.MenuItem('Custom', nil, overlayLocation == -1) then
                 overlayLocation = -1

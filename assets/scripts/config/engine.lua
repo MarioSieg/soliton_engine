@@ -75,8 +75,8 @@ if ENGINE_CONFIG.Threads.autoPartitionEngineThreadCount then
         cpus = math.min(cpus, ENGINE_CONFIG.Threads.maxTotalEngineThreads)
     end
     local ratio = math.max(1, ENGINE_CONFIG.Threads.partitionRatio)
-    ENGINE_CONFIG.Threads.renderThreads = clamp(cpus / ratio, 1, ENGINE_CONFIG.Threads.maxRenderThreads)
-    ENGINE_CONFIG.Threads.physicsThreads = clamp(cpus / ratio, 1, ENGINE_CONFIG.Threads.maxPhysicsThreads)
-    ENGINE_CONFIG.Threads.simThreads = clamp(cpus / ratio, 1, ENGINE_CONFIG.Threads.maxSimThreads)
+    ENGINE_CONFIG.Threads.renderThreads = clamp(math.ceil(cpus / ratio), 1, ENGINE_CONFIG.Threads.maxRenderThreads)
+    ENGINE_CONFIG.Threads.physicsThreads = clamp(math.ceil(cpus / ratio), 1, ENGINE_CONFIG.Threads.maxPhysicsThreads)
+    ENGINE_CONFIG.Threads.simThreads = clamp(math.ceil(cpus / ratio), 1, ENGINE_CONFIG.Threads.maxSimThreads)
     print('Auto-partitioned engine thread count: ' .. cpus .. ' threads, ' .. ENGINE_CONFIG.Threads.renderThreads .. ' render threads, ' .. ENGINE_CONFIG.Threads.physicsThreads .. ' physics threads, ' .. ENGINE_CONFIG.Threads.simThreads .. ' ECS threads.')
 end
