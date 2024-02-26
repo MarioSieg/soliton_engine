@@ -11,7 +11,6 @@
 namespace vkb {
     static constinit std::optional<shaderc::Compiler> s_compiler;
     static constinit std::atomic_bool s_initialized;
-    static std::mutex s_mutex;
 
     // Returns GLSL shader source text after preprocessing.
     static auto preprocess_shader(
@@ -75,7 +74,6 @@ namespace vkb {
     ) {
         if (!s_initialized) {
             log_info("Initializing online shader compiler...");
-            std::lock_guard<std::mutex> lock{s_mutex};
             s_compiler.emplace();
             s_initialized = true;
         }
@@ -143,9 +141,10 @@ namespace vkb {
     }
 
     auto shader::shutdown_online_compiler() -> void {
-        std::lock_guard<std::mutex> lock{s_mutex};
-        log_info("Shutting down online shader compiler...");
-        s_compiler.reset();
-        s_initialized = false;
+        if (s_initialized) {
+            log_info("Shutting down online shader compiler...");
+            s_compiler.reset();
+            s_initialized = false;
+        }
     }
 }

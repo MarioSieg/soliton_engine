@@ -35,6 +35,10 @@ namespace graphics {
     }
 
     render_thread::~render_thread() {
+        std::this_thread::sleep_for(std::chrono::milliseconds{100}); // wait for thread to finish (if it's still running
+        if (m_thread.joinable()) {
+            m_thread.join();
+        }
         const vk::Device device = vkb_vk_device();
         device.freeCommandBuffers(m_command_pool, vkb::context::k_max_concurrent_frames, m_command_buffers.data());
         device.destroyCommandPool(m_command_pool, &vkb::s_allocator);
@@ -48,15 +52,12 @@ namespace graphics {
         SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
 #endif
 
-        for (;;) {
+        while (!m_token.load(std::memory_order_relaxed)) [[likely]] {
             if (!begin_thread_frame()) [[unlikely]] {
                 break;
             }
             (*m_shared_ctx.render_callback)(m_active_command_buffer, m_thread_id, m_num_threads, m_shared_ctx.usr);
             end_thread_frame();
-            if (m_token.load(std::memory_order_relaxed)) [[unlikely]] {
-                break;
-            }
         }
 
         log_info("Render thread {} stopped", m_thread_id);
