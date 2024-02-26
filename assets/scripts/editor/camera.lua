@@ -67,7 +67,6 @@ function Camera:_computeCameraRotation()
     local sens = Math.abs(self.sensitivity) * 0.01
     local clampYRad = Math.rad(Math.abs(self.clampY))
     local mousePos = Input.getMousePos()
-    --mousePos.y = -mousePos.y -- invert Y-axis because of Vulkan idk why
 
     local delta = mousePos
     delta = delta - self.prevMousePos
