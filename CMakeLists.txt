@@ -5,7 +5,9 @@ project(lunam LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-if (NOT APPLE)
+if (APPLE)
+    add_compile_options(-march=native)
+else()
     add_compile_options(-march=haswell)
 endif()
 

@@ -100,7 +100,7 @@ static auto redirect_io() -> void {
 
 static constinit kernel* g_kernel = nullptr;
 
-kernel::kernel() {
+kernel::kernel(const int argc, const char** argv, const char** environ) {
     passert(g_kernel == nullptr);
     g_kernel = this;
 #if PLATFORM_WINDOWS
@@ -119,6 +119,14 @@ kernel::kernel() {
     log_info("Build date: {}", __DATE__);
     log_info("Build time: {}", __TIME__);
     log_info("MIMAL version: {:#X}", mi_version());
+    log_info("ARG VEC");
+    for (int i = 0; i < argc; ++i) {
+        log_info("  {}: {}", i, argv[i]);
+    }
+    log_info("ENVIRON VEC");
+    for (int i = 0; environ[i] != nullptr; ++i) {
+        log_info("  {}: {}", i, environ[i]);
+    }
 }
 
 kernel::~kernel() {

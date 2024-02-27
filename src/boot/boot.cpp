@@ -7,8 +7,8 @@
 #include "../scripting/scripting_subsystem.hpp"
 #include "../physics/physics_subsystem.hpp"
 
-static auto lunam_entry() -> void {
-    kernel kernel {};
+static auto lunam_entry(const int argc, const char** argv, const char** environ) -> void {
+    kernel kernel {argc, argv, environ};
     kernel.install<scripting::scripting_subsystem>();
     kernel.install<platform::platform_subsystem>();
     kernel.install<physics::physics_subsystem>();
@@ -21,8 +21,8 @@ static auto lunam_entry() -> void {
 #include <Windows.h>
 auto __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int) -> int {
 #else
-auto main(int, const char**) -> int {
+auto main(const int argc, const char** argv, const char** environ) -> int {
 #endif
-    lunam_entry();
+    lunam_entry(argc, argv, environ);
     return EXIT_SUCCESS;
 }
