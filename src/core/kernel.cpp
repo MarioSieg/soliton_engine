@@ -119,6 +119,7 @@ kernel::kernel(const int argc, const char** argv, const char** environ) {
     log_info("Build date: {}", __DATE__);
     log_info("Build time: {}", __TIME__);
     log_info("MIMAL version: {:#X}", mi_version());
+    log_info("Working dir: {}", std::filesystem::current_path().string());
     log_info("ARG VEC");
     for (int i = 0; i < argc; ++i) {
         log_info("  {}: {}", i, argv[i]);
