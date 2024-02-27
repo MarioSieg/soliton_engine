@@ -304,7 +304,7 @@ namespace graphics {
 
             upload(img, 0, 0, data, size, vk::ImageLayout::eTransferDstOptimal);
 
-            if (m_mip_levels > 1) {
+            if (0&&m_mip_levels > 1) {
                 // if mip_levels == 1, we can just use the image as-is and not generate mipmaps but only barrier them
                 const bool transfer_only = mip_levels > 1;
                 generate_mips(transfer_only);

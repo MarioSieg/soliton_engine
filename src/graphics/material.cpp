@@ -67,7 +67,7 @@ namespace graphics {
         s_error_texture.emplace("assets/textures/system/error.png");
         s_flat_normal.emplace("assets/textures/system/flatnormal.png");
 
-        constexpr unsigned lim = 8192u;
+        constexpr unsigned lim = 16384u;
         std::array<vk::DescriptorPoolSize, 1> pool_sizes = {
             vk::DescriptorPoolSize {
                 .type = vk::DescriptorType::eCombinedImageSampler,
