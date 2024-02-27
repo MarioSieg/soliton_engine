@@ -148,6 +148,14 @@ end
 
 function Editor.gizmos:drawGizmos()
     Debug.start()
+    if self.currentDebugMode[0] == DEBUG_MODE.SCENE then
+        Debug.drawSceneDebug(Vec3(0, 1, 0))
+    elseif self.currentDebugMode[0] == DEBUG_MODE.PHYSICS then
+        Debug.drawPhysicsDebug()
+    end
+    if Editor.isPlaying then
+        return 
+    end
     local selected = EntityListView.selectedEntity
     if selected and selected:isValid() then
         Debug.gizmoEnable(not selected:hasFlag(EFLAGS.STATIC))
@@ -158,11 +166,6 @@ function Editor.gizmos:drawGizmos()
         Debug.setFadeDistance(self.gridFadeStart, self.gridFadeStart+self.gridFadeRange)
         Debug.drawGrid(self.gridDims, self.gridStep, self.gridColor)
         Debug.enableFade(false)
-    end
-    if self.currentDebugMode[0] == DEBUG_MODE.SCENE then
-        Debug.drawSceneDebug(Vec3(0, 1, 0))
-    elseif self.currentDebugMode[0] == DEBUG_MODE.PHYSICS then
-        Debug.drawPhysicsDebug()
     end
 end
 
