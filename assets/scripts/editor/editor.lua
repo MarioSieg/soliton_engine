@@ -431,21 +431,25 @@ function Editor:renderOverlay()
     end
     UI.SetNextWindowBgAlpha(0.35)
     if UI.Begin('Overlay', nil, overlayFlags) then
-        UI.Text(string.format('Sim Hz: %d, T: %.01f, %sT: %f', Time.fpsAvg, Time.time, ICONS.TRIANGLE, Time.deltaTime))
+        UI.TextUnformatted(string.format('Sim Hz: %d, T: %.01f, %sT: %f', Time.fpsAvg, Time.time, ICONS.TRIANGLE, Time.deltaTime))
         UI.SameLine()
         local size = App.Window.getFrameBufSize()
-        UI.Text(string.format(' | %d X %d', size.x, size.y))
-        UI.Text(string.format('GC Mem: %.03f MB', collectgarbage('count')/1000.0))
+        UI.TextUnformatted(string.format(' | %d X %d', size.x, size.y))
+        UI.TextUnformatted(string.format('GC Mem: %.03f MB', collectgarbage('count')/1000.0))
         UI.SameLine()
         local time = os.date('*t')
-        UI.Text(string.format(' | %02d.%02d.%02d %02d:%02d', time.day, time.month, time.year, time.hour, time.min))
+        UI.TextUnformatted(string.format(' | %02d.%02d.%02d %02d:%02d', time.day, time.month, time.year, time.hour, time.min))
         UI.Separator()
-        UI.Text(string.format('Pos: %s', self.camera.position))
-        UI.Text(string.format('Rot: %s', self.camera.rotation))
+        local camera = Scene.getActiveCameraEntity()
+        if camera:isValid() and camera:hasComponent(Components.Transform) then
+            local transform = camera:getComponent(Components.Transform)
+            UI.TextUnformatted(string.format('Pos: %s', transform:getPosition()))
+            UI.TextUnformatted(string.format('Dir: %s', transform:getForwardDir()))
+        end
         UI.Separator()
-        UI.Text(HOST_INFO)
-        UI.Text(CPU_NAME)
-        UI.Text(GPU_NAME)
+        UI.TextUnformatted(HOST_INFO)
+        UI.TextUnformatted(CPU_NAME)
+        UI.TextUnformatted(GPU_NAME)
         if UI.BeginPopupContextWindow() then
             if UI.MenuItem('Custom', nil, overlayLocation == -1) then
                 overlayLocation = -1

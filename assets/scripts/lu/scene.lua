@@ -20,6 +20,7 @@ ffi.cdef[[
     lua_entity_id __lu_scene_full_entity_query_get(int32_t i);
     void __lu_scene_full_entity_query_end(void);
     void __lu_scene_set_active_camera_entity(lua_entity_id id);
+    lua_entity_id __lu_scene_get_active_camera_entity(void);
 ]]
 
 local function mergeFlags(flags)
@@ -138,8 +139,11 @@ function Scene.fullEntityQueryEnd()
 end
 
 function Scene.setActiveCameraEntity(entity)
-    assert(entity:hasComponent(Components.Transform) and entity:hasComponent(Components.Camera))
     C.__lu_scene_set_active_camera_entity(entity.id)
+end
+
+function Scene.getActiveCameraEntity()
+    return Entity:fromId(C.__lu_scene_get_active_camera_entity())
 end
 
 function Scene.load(scene_name, file, scale, flags)

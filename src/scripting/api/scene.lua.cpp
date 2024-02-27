@@ -44,6 +44,10 @@ LUA_INTEROP_API auto __lu_scene_set_active_camera_entity(const flecs::id_t id) -
     scene::get_active().active_camera = ent;
 }
 
+LUA_INTEROP_API auto __lu_scene_get_active_camera_entity() -> flecs::id_t {
+    return scene::get_active().active_camera.raw_id();
+}
+
 // TODO: Convert to FLECS C++ API
 
 static struct {
