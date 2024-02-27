@@ -1,6 +1,7 @@
 // Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "context.hpp"
+#include "shader.hpp"
 #include "imgui_impl_vulkan.h"
 
 #include "../imgui/imgui_impl_glfw.h"
@@ -29,6 +30,8 @@ namespace vkb {
 
     context::~context() {
         vkcheck(m_device->get_logical_device().waitIdle());
+
+        shader::shutdown_online_compiler();
 
         ImGui_ImplVulkan_Shutdown();
         ImGui_ImplGlfw_Shutdown();
