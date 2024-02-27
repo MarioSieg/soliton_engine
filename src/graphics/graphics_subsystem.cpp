@@ -47,6 +47,18 @@ namespace graphics {
         GLFWwindow* window = platform_subsystem::get_glfw_window();
         context::s_instance = std::make_unique<context>(window); // Create Vulkan context
 
+        // Apply DPI scaling
+        float scale = 1.0f;
+        float xscale;
+        float yscale;
+        glfwGetWindowContentScale(window, &xscale, &yscale);
+        scale = (xscale + yscale) * 0.5f;
+        if constexpr (PLATFORM_OSX) {
+            io.FontGlobalScale = 1.0f / scale;
+        } else {
+            ImGui::GetStyle().ScaleAllSizes(scale);
+        }
+
         material::init_static_resources();
 
         create_descriptor_pool();

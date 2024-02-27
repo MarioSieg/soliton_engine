@@ -2,6 +2,7 @@
 
 -- Default internal engine config, hidden from end user
 
+local jit = require 'jit'
 local ffi = require 'ffi'
 ffi.cdef[[
     uint32_t __lu_app_host_get_num_cpus(void);
@@ -48,6 +49,7 @@ ENGINE_CONFIG = {
     Renderer = {
         enableVulkanValidationLayers = false, -- Enable Vulkan validation layers.
         maxDebugDrawVertices = 1000000, -- Maximum amount of debug draw vertices.
+        uiFontSize = 18, -- UI font size (ImGui).
     },
     Physics = {
         tempAllocatorBufferSize = 1024 * 1024 * 64, -- 64 MB
@@ -64,6 +66,11 @@ ENGINE_CONFIG = {
         maxContacts = 65535, 
     }
 }
+
+if jit.os == 'OSX' then
+    print('Detected macOS, increasing UI font size...')
+    ENGINE_CONFIG.Renderer.uiFontSize = ENGINE_CONFIG.Renderer.uiFontSize * 2
+end
 
 if ENGINE_CONFIG.Threads.autoPartitionEngineThreadCount then
     local function clamp(x, min, max)

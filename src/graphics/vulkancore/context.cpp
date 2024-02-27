@@ -505,7 +505,7 @@ namespace vkb {
         };
         passert(ImGui_ImplVulkan_Init(&init_info, m_render_pass));
 
-        float font_size = 18.0f;
+        const float font_size = scripting_subsystem::get_config_table()["Renderer"]["uiFontSize"].cast<float>().valueOr(18.0f);
 
         // add primary text font:
         ImFontConfig config { };
