@@ -531,7 +531,7 @@ namespace vkb {
         ImGui::GetIO().Fonts->AddFontFromMemoryTTF(
             const_cast<void*>(static_cast<const void*>(range.data.data())),
             static_cast<int>(range.data.size()),
-            font_size-3.0f,
+            font_size-5.0f,
             &config,
             reinterpret_cast<const ImWchar*>(range.ranges.data())
         );

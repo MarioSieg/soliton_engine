@@ -130,9 +130,6 @@ function Inspector:render()
             if UI.IsItemHovered() then
                 UI.SetTooltip('Add new component')
             end
-            UI.Spacing()
-            UI.Separator()
-            UI.Spacing()
             if UI.CollapsingHeader(ICONS.INFO_CIRCLE..' General', ffi.C.ImGuiTreeNodeFlags_DefaultOpen) then
                 local name = entity:getName()
                 if #name >= MAX_TEXT_INPUT_SIZE then
@@ -164,12 +161,12 @@ function Inspector:render()
                     entity:setFlags(bxor(entity:getFlags(), EFLAGS.TRANSIENT))
                     self.propertiesChanged = true
                 end
-                UI.Separator()
-                UI.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff888888)
-                UI.TextUnformatted(string.format('ID: 0x%x', tonumber(entity.id)))
-                UI.TextUnformatted(string.format('Valid: %s', entity:isValid() and 'yes' or 'no'))
-                UI.TextUnformatted(string.format('ID Address: %p', entity.id))
-                UI.PopStyleColor()
+                -- UI.Separator()
+                -- UI.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff888888)
+                -- UI.TextUnformatted(string.format('ID: 0x%x', tonumber(entity.id)))
+                -- UI.TextUnformatted(string.format('Valid: %s', entity:isValid() and 'yes' or 'no'))
+                -- UI.TextUnformatted(string.format('ID Address: %p', entity.id))
+                -- UI.PopStyleColor()
             end
             if entity:hasComponent(Components.Transform) then
                 self:_inspectTransform()

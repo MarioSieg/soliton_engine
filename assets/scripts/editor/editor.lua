@@ -31,11 +31,13 @@ local HOST_INFO = App.Host.GRAPHICS_API..' | '..(App.Host.HOST:upper())
 local CPU_NAME = 'CPU: '..App.Host.CPU_NAME
 local GPU_NAME = 'GPU: '..App.Host.GPU_NAME
 WINDOW_SIZE = UI.ImVec2(800, 600)
-local DOCK_LEFT_RATIO = 0.50
-local DOCK_RIGHT_RATIO = 1.0
-local DOCK_BOTTOM_RATIO = 0.50
+local DOCK_LEFT_RATIO = 0.4
+local DOCK_RIGHT_RATIO = 0.7
+local DOCK_BOTTOM_RATIO = 0.5
 local MAX_TEXT_INPUT_SIZE = 128
 local POPUP_ID_NEW_PROJECT = 0xffffffff-1
+local MAIN_MENU_PADDING = UI.GetStyle().FramePadding
+--MAIN_MENU_PADDING = MAIN_MENU_PADDING + UI.ImVec2(0.005, 0.005)
 
 local DEFAULT_PROJECT_DIR = ''
 if jit.os == 'Windows' then
@@ -100,8 +102,8 @@ local DEBUG_MODE = {
     PHYSICS = 2
 }
 local DEBUG_MODE_NAMES = {
-    'None',
-    ICONS.GLOBE_EUROPE..' Scene',
+    ICONS.ADJUST..' PBR',
+    ICONS.GLOBE_EUROPE..' Entities',
     ICONS.CAR..' Physics'
 }
 local DEBUG_MODE_NAMES_C = ffi.new("const char*[?]", #DEBUG_MODE_NAMES)
@@ -120,12 +122,12 @@ local Editor = {
         Inspector
     },
     gizmos = {
-        showGrid = false,
+        showGrid = true,
         gridStep = 1.0,
         gridDims = Vec3(512, 0, 512),
         gridColor = Vec3(0.5, 0.5, 0.5),
-        gridFadeStart = 32,
-        gridFadeRange = 4,
+        gridFadeStart = 45,
+        gridFadeRange = 15,
         gizmoObbColor = Vec3(0, 1, 0),
         gizmoOperation = GIZMO_OPERATIONS.UNIVERSAL,
         gizmoMode = GIZMO_MODE.LOCAL,
@@ -229,13 +231,9 @@ function Editor:switchGameMode()
 end
 
 function Editor:renderMainMenu()
-    if self.isPlaying then
-        UI.PushStyleColor_U32(ffi.C.ImGuiCol_MenuBarBg, 0xff000077)
-    end
+    UI.PushStyleVar(ffi.C.ImGuiStyleVar_FramePadding, MAIN_MENU_PADDING)
     if UI.BeginMainMenuBar() then
-        if self.isPlaying then
-            UI.PopStyleColor()
-        end
+        UI.PopStyleVar(1)
         if UI.BeginMenu('File') then
             if UI.MenuItem(ICONS.FOLDER_PLUS..' New Project...') then
                 UI.PushOverrideID(POPUP_ID_NEW_PROJECT)
@@ -317,15 +315,15 @@ function Editor:renderMainMenu()
             UI.SetTooltip('Enable/Disable Gizmo Snap')
         end
         UI.SameLine()
-        UI.PushItemWidth(100)
-        UI.SliderFloat('##SnapStep', self.gizmos.gizmoSnapStep, 0.1, 10.0, '%.1f', 1.0)
+        UI.PushItemWidth(75)
+        UI.SliderFloat('##SnapStep', self.gizmos.gizmoSnapStep, 0.1, 5.0, '%.1f', 1.0)
         if UI.IsItemHovered() then
             UI.SetTooltip('Gizmo Snap Step')
         end
         UI.PopItemWidth()
         UI.SameLine()
         UI.PushItemWidth(120)
-        UI.Combo(ICONS.GLASSES, self.gizmos.currentDebugMode, DEBUG_MODE_NAMES_C, #DEBUG_MODE_NAMES)
+        UI.Combo('##DebugRenderingMode', self.gizmos.currentDebugMode, DEBUG_MODE_NAMES_C, #DEBUG_MODE_NAMES)
         UI.PopItemWidth()
         if UI.IsItemHovered() then
             UI.SetTooltip('Debug rendering mode')
@@ -522,7 +520,7 @@ function Editor:__onTick()
     self:renderPopups()
 end
 
-Style.setupDarkStyle()
+Style.setupDarkStyleNoRounding()
 Editor:loadScene(nil)
 
 return Editor
