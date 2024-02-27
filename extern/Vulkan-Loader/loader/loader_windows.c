@@ -77,9 +77,11 @@ void windows_initialization(void) {
         loader_log(NULL, VULKAN_LOADER_INFO_BIT, 0, "Using Vulkan Loader %s", dll_location);
     }
 
+    SetDllDirectory("");  // Remove current directory from default DLL search order
     // This is needed to ensure that newer APIs are available right away
     // and not after the first call that has been statically linked
     LoadLibrary("gdi32.dll");
+    SetDllDirectory(NULL);  // Restores the default search order
 
     wchar_t systemPath[MAX_PATH] = L"";
     GetSystemDirectoryW(systemPath, MAX_PATH);
@@ -860,6 +862,11 @@ VkResult enumerate_adapter_physical_devices(struct loader_instance *inst, struct
         next_icd_phys_devs->icd_term = icd_term;
         next_icd_phys_devs->windows_adapter_luid = luid;
         (*icd_phys_devs_array_count)++;
+    } else {
+        // Avoid memory leak in case of the already_enumerated hitting true
+        // at the last enumerate_adapter_physical_devices call in the outer loop
+        loader_instance_heap_free(inst, next_icd_phys_devs->physical_devices);
+        next_icd_phys_devs->physical_devices = NULL;
     }
 
     return VK_SUCCESS;

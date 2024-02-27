@@ -31,7 +31,7 @@
 
 /* TODO: figure out when <sal.h> first appeared. */
 #if defined(_MSC_VER)
-#  include <sal.h>
+//#  include <sal.h>
 #endif
 
 /* The main concern for the implementation is that we don't want to

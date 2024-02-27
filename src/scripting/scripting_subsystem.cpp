@@ -59,9 +59,14 @@ namespace scripting {
         passert(m_on_prepare && m_on_prepare->isFunction());
         m_on_tick = luabridge::getGlobal(m_L, k_tick_hook);
         passert(m_on_tick && m_on_tick->isFunction());
+
+        // init config table
+        m_config_table = luabridge::getGlobal(m_L, k_engine_config_tab);
+        passert(m_config_table && m_config_table->isTable());
     }
 
     scripting_subsystem::~scripting_subsystem() {
+        m_config_table.reset();
         m_on_tick.reset();
         m_on_prepare.reset();
         spdlog::get("app")->flush();
@@ -70,16 +75,14 @@ namespace scripting {
     }
 
     void scripting_subsystem::on_prepare() {
-        luabridge::LuaResult r = (*m_on_prepare)();
-        if (r.hasFailed()) [[unlikely]] {
-            lua_log_error("Error in __boot.lua in __on_prepare__: {}", r.errorMessage());
+        if (const luabridge::LuaResult r = (*m_on_prepare)(); r.hasFailed()) [[unlikely]] {
+            lua_log_error("{}: Error in {}: {}", k_boot_script, k_prepare_hook, r.errorMessage());
         }
     }
 
     HOTPROC void scripting_subsystem::on_tick() {
-        luabridge::LuaResult r = (*m_on_tick)();
-        if (r.hasFailed()) [[unlikely]] {
-            lua_log_error("Error in __boot.lua in __on_tick__: {}", r.errorMessage());
+        if (const luabridge::LuaResult r = (*m_on_tick)(); r.hasFailed()) [[unlikely]] {
+            lua_log_error("{}: Error in {}: {}", k_boot_script, k_tick_hook, r.errorMessage());
         }
     }
 

@@ -11,27 +11,13 @@
 #include "vulkancore/shader.hpp"
 #include "vulkancore/buffer.hpp"
 
+#include "render_thread_pool.hpp"
+
 #include "mesh.hpp"
 #include "texture.hpp"
+#include "debugdraw.hpp"
 
 namespace graphics {
-    struct uniform_buffer final {
-        vkb::buffer buffer {};
-        vk::DescriptorSet descriptor_set {};
-    };
-
-    struct gpu_vertex_push_constants final {
-        DirectX::XMMATRIX model_view_proj;
-        DirectX::XMMATRIX normal_matrix;
-    };
-    static_assert(sizeof(gpu_vertex_push_constants) <= 256); // TODO: Check AMD has 256 byte limit too.
-
-    struct gpu_uniform_buffer final {
-        DirectX::XMMATRIX model_view_proj;
-        DirectX::XMMATRIX normal_matrix;
-    };
-    static_assert(sizeof(gpu_uniform_buffer) % 4 == 0);
-
     class graphics_subsystem final : public subsystem {
     public:
         static constexpr std::uint32_t k_max_concurrent_frames = 3;
@@ -43,24 +29,41 @@ namespace graphics {
         auto on_resize() -> void override;
         auto on_start(scene& scene) -> void override;
 
-    private:
-        auto create_uniform_buffers() -> void;
-        auto create_descriptor_set_layout() -> void;
-        auto create_descriptor_pool() -> void;
-        auto create_descriptor_sets() -> void;
-        auto create_pipeline() -> void;
+        [[nodiscard]] auto get_descriptor_pool() const noexcept -> vk::DescriptorPool { return m_descriptor_pool; }
+        [[nodiscard]] auto get_render_thread_pool() const noexcept -> const render_thread_pool& { return *m_render_thread_pool; }
 
-        auto render_scene(vk::CommandBuffer cmd_buf) -> void;
+        [[nodiscard]] auto get_render_data() const noexcept -> const std::vector<std::pair<std::span<const com::transform>, std::span<const com::mesh_renderer>>>& { return m_render_data; }
+        [[nodiscard]] auto get_debug_draw() -> debugdraw& {
+            if (!m_debugdraw.has_value()) {
+                m_debugdraw.emplace(m_descriptor_pool);
+            }
+            return *m_debugdraw;
+        }
+
+        [[nodiscard]] auto get_debug_draw_opt() noexcept -> std::optional<debugdraw>& {
+            return m_debugdraw;
+        }
+
+        static inline constinit DirectX::XMFLOAT4X4A s_view_mtx;
+        static inline constinit DirectX::XMFLOAT4X4A s_proj_mtx;
+        static inline constinit DirectX::XMFLOAT4X4A s_view_proj_mtx;
+        static inline DirectX::XMFLOAT4A s_clear_color;
+        static inline DirectX::BoundingFrustum s_frustum;
+        static inline com::transform s_camera_transform;
+        static inline constinit graphics_subsystem* s_instance;
+
+    private:
+        auto create_descriptor_pool() -> void;
 
         vk::CommandBuffer m_cmd_buf = nullptr;
-        std::array<uniform_buffer, vkb::context::k_max_concurrent_frames> m_uniforms {};
-        vk::DescriptorSetLayout m_descriptor_set_layout {};
-        vk::PipelineLayout m_pipeline_layout {};
         vk::DescriptorPool m_descriptor_pool {};
-        vk::Pipeline m_pipeline {};
+        vk::CommandBufferInheritanceInfo m_inheritance_info {};
+        std::optional<render_thread_pool> m_render_thread_pool {};
+        std::vector<std::pair<std::span<const com::transform>, std::span<const com::mesh_renderer>>> m_render_data {};
+        std::optional<debugdraw> m_debugdraw {};
 
         struct {
-            flecs::query<const c_transform, const c_mesh_renderer> query {};
+            flecs::query<const com::transform, const com::mesh_renderer> query {};
             scene* scene {};
         } m_render_query {};
     };

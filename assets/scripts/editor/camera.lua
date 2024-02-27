@@ -13,6 +13,7 @@ local Scene = require 'Scene'
 local Time = require 'Time'
 local Vec2 = require 'Vec2'
 local Vec3 = require 'Vec3'
+local Components = require 'Components'
 
 local Camera = {}
 
@@ -40,17 +41,21 @@ Camera.enableSmoothMovement = false
 Camera.smoothMovementTime = 1.0
 Camera.enableSmoothLook = true
 Camera.lookSnappiness = 15.0
-
-Camera._prevMousePos = Vec2.ZERO
-Camera._mouseAngles = Vec2.ZERO
-Camera._smoothAngles = Vec2.ZERO
-Camera._rotation = Quat.IDENTITY
-Camera._position = Vec3.ZERO
-Camera._velocity = Vec3.ZERO
+Camera.prevMousePos = Vec2.ZERO
+Camera.mouseAngles = Vec2.ZERO
+Camera.smoothAngles = Vec2.ZERO
+Camera.rotation = Quat.IDENTITY
+Camera.position = Vec3.ZERO
+Camera.velocity = Vec3.ZERO
+Camera.isFocused = true
 
 -- invoked every frame
 function Camera:tick()
-    if self.enableMouseLook then -- TODO focus
+    self.isFocused = App.isFocused() and not App.isUIHovered()
+    if not self.targetEntity:isValid() then
+        print('Camera has no target entity')
+    end
+    if self.enableMouseLook and self.isFocused then
         self:_computeCameraRotation()
     end
     if self.enableMovement then
@@ -62,11 +67,10 @@ function Camera:_computeCameraRotation()
     local sens = Math.abs(self.sensitivity) * 0.01
     local clampYRad = Math.rad(Math.abs(self.clampY))
     local mousePos = Input.getMousePos()
-    --mousePos.y = -mousePos.y -- invert Y-axis because of Vulkan idk why
 
     local delta = mousePos
-    delta = delta - self._prevMousePos
-    self._prevMousePos = mousePos
+    delta = delta - self.prevMousePos
+    self.prevMousePos = mousePos
 
     if self.enableMouseButtonLook and not Input.isMouseButtonPressed(self.lookMouseButton) then
         return
@@ -74,16 +78,16 @@ function Camera:_computeCameraRotation()
 
     if self.enableSmoothLook then
         local factor = self.lookSnappiness * Time.deltaTime
-        self._smoothAngles.x = Math.lerp(self._smoothAngles.x, delta.x, factor)
-        self._smoothAngles.y = Math.lerp(self._smoothAngles.y, delta.y, factor)
-        delta = self._smoothAngles
+        self.smoothAngles.x = Math.lerp(self.smoothAngles.x, delta.x, factor)
+        self.smoothAngles.y = Math.lerp(self.smoothAngles.y, delta.y, factor)
+        delta = self.smoothAngles
     end
 
     delta = delta * Vec2(sens, sens)
-    self._mouseAngles = self._mouseAngles + delta
-    self._mouseAngles.y = Math.clamp(self._mouseAngles.y, -clampYRad, clampYRad)
-    self._rotation = Quat.fromYawPitchRoll(self._mouseAngles.x, self._mouseAngles.y, 0.0)
-    self.targetEntity:setRotation(self._rotation)
+    self.mouseAngles = self.mouseAngles + delta
+    self.mouseAngles.y = Math.clamp(self.mouseAngles.y, -clampYRad, clampYRad)
+    self.rotation = Quat.fromYawPitchRoll(self.mouseAngles.x, self.mouseAngles.y, 0.0)
+    self.targetEntity:getComponent(Components.Transform):setRotation(self.rotation)
 end
 
 function Camera:_computeMovement()
@@ -96,17 +100,17 @@ function Camera:_computeMovement()
         end
     end
 
-    local target = self._position
+    local target = self.position
 
     local function computePos(dir)
         local movSpeed = speed
         if not self.enableSmoothMovement then -- if we use raw movement, we have to apply the delta time here
             movSpeed = movSpeed * delta
         end
-        target = target + (dir * self._rotation) * movSpeed
+        target = target + (dir * self.rotation) * movSpeed
     end
 
-    if true then -- TODO focus
+    if self.isFocused then
         if Input.isKeyPressed(self.movementKeys.forward) then
             computePos(Vec3.FORWARD)
         end
@@ -122,16 +126,15 @@ function Camera:_computeMovement()
     end
 
     if self.enableSmoothMovement then -- smooth movement
-        local position, velocity = Vec3.smoothDamp(self._position, target, self._velocity, self.smoothMovementTime, Math.INFINITY, delta) -- smooth damp and apply delta time
-        self._position = position
+        local position, velocity = Vec3.smoothDamp(self.position, target, self.velocity, self.smoothMovementTime, Math.INFINITY, delta) -- smooth damp and apply delta time
+        self.position = position
         -- self._velocity = Vec3.clamp(self._velocity, -speed, speed)
     else -- raw movement
-        self._position = target
+        self.position = target
     end
 
-    self._position = self._position * self.lockAxisMovement -- apply axis lock
-    self.targetEntity:setPosition(self._position)
+    self.position = self.position * self.lockAxisMovement -- apply axis lock
+    self.targetEntity:getComponent(Components.Transform):setPosition(self.position)
 end
 
-Camera.targetEntity = Scene.getEntityByName('MainCamera')
 return Camera

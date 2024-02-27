@@ -1,12 +1,17 @@
 // Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "context.hpp"
+#include "shader.hpp"
 #include "imgui_impl_vulkan.h"
 
 #include "../imgui/imgui_impl_glfw.h"
 #include "../imgui/font_awesome.ttf.inl"
 #include "../imgui/jetbrains_mono.ttf.inl"
 #include "../imgui/font_awesome_pro_5.hpp"
+
+#include "../../scripting/scripting_subsystem.hpp"
+
+using scripting::scripting_subsystem;
 
 namespace vkb {
     context::context(GLFWwindow* window) : m_window{window} {
@@ -25,6 +30,8 @@ namespace vkb {
 
     context::~context() {
         vkcheck(m_device->get_logical_device().waitIdle());
+
+        shader::shutdown_online_compiler();
 
         ImGui_ImplVulkan_Shutdown();
         ImGui_ImplGlfw_Shutdown();
@@ -57,7 +64,7 @@ namespace vkb {
         m_device.reset();
     }
 
-    auto context::begin_frame(const DirectX::XMFLOAT4& clear_color) -> vk::CommandBuffer {
+    auto context::begin_frame(const DirectX::XMFLOAT4A& clear_color, vk::CommandBufferInheritanceInfo* out_inheritance_info) -> vk::CommandBuffer {
 
         // Use a fence to wait until the command buffer has finished execution before using it again
         vkcheck(m_device->get_logical_device().waitForFences(1, &m_wait_fences[m_current_frame], vk::True, std::numeric_limits<std::uint64_t>::max()));
@@ -90,6 +97,12 @@ namespace vkb {
         render_pass_begin_info.clearValueCount = static_cast<std::uint32_t>(clear_values.size());
         render_pass_begin_info.pClearValues = clear_values.data();
 
+        if (out_inheritance_info) {
+            *out_inheritance_info = vk::CommandBufferInheritanceInfo {};
+            out_inheritance_info->renderPass = m_render_pass;
+            out_inheritance_info->framebuffer = m_framebuffers[m_image_index];
+        }
+
         const vk::CommandBuffer cmd_buf = m_command_buffers[m_current_frame];
         vkcheck(cmd_buf.reset({}));
         constexpr vk::CommandBufferBeginInfo command_buffer_begin_info {};
@@ -97,28 +110,7 @@ namespace vkb {
 
         // Start the first sub pass specified in our default render pass setup by the base class
         // This will clear the color and depth attachment
-        cmd_buf.beginRenderPass(&render_pass_begin_info, vk::SubpassContents::eInline);
-
-        const auto w = static_cast<float>(m_width);
-        const auto h = static_cast<float>(m_height);
-
-        // Update dynamic viewport state
-        vk::Viewport viewport {};
-        viewport.width = w;
-        viewport.height = -h;
-        viewport.x = 0.0f;
-        viewport.y = h;
-        viewport.minDepth = 0.0f;
-        viewport.maxDepth = 1.0f;
-        cmd_buf.setViewport(0, 1, &viewport);
-
-        // Update dynamic scissor state
-        vk::Rect2D scissor {};
-        scissor.extent.width = m_width;
-        scissor.extent.height = m_height;
-        scissor.offset.x = 0.0f;
-        scissor.offset.y = 0.0f;
-        cmd_buf.setScissor(0, 1, &scissor);
+        cmd_buf.beginRenderPass(&render_pass_begin_info, vk::SubpassContents::eSecondaryCommandBuffers);
 
         ImGui_ImplGlfw_NewFrame();
         ImGui_ImplVulkan_NewFrame();
@@ -126,7 +118,7 @@ namespace vkb {
         return cmd_buf;
     }
 
-    auto context::end_frame(vk::CommandBuffer cmd_buf) -> void {
+    auto context::end_frame(const vk::CommandBuffer cmd_buf) -> void {
         passert(cmd_buf);
 
         cmd_buf.endRenderPass();
@@ -201,7 +193,8 @@ namespace vkb {
     }
 
     auto context::boot_vulkan_core() -> void {
-        m_device.emplace(true);
+        const bool enable_validation = scripting_subsystem::get_config_table()["Renderer"]["enableVulkanValidationLayers"].cast<bool>().valueOr(false);
+        m_device.emplace(enable_validation);
         m_swapchain.emplace(m_device->get_instance(), m_device->get_physical_device(), m_device->get_logical_device());
         m_swapchain->init_surface(m_window);
         recreate_swapchain();
@@ -445,7 +438,7 @@ namespace vkb {
         image_view_ci.subresourceRange.layerCount = 1;
         image_view_ci.image = m_msaa_target.color.image;
 
-        m_device->get_logical_device().createImageView(&image_view_ci, &s_allocator, &m_msaa_target.color.view);
+        vkcheck(m_device->get_logical_device().createImageView(&image_view_ci, &s_allocator, &m_msaa_target.color.view));
 
         // depth target
         image_ci.format = m_device->get_depth_format();
@@ -466,7 +459,7 @@ namespace vkb {
             image_view_ci.subresourceRange.aspectMask |= vk::ImageAspectFlagBits::eStencil;
         }
 
-        m_device->get_logical_device().createImageView(&image_view_ci, &s_allocator, &m_msaa_target.depth.view);
+        vkcheck(m_device->get_logical_device().createImageView(&image_view_ci, &s_allocator, &m_msaa_target.depth.view));
     }
 
     auto context::create_imgui_renderer() -> void {
@@ -512,7 +505,7 @@ namespace vkb {
         };
         passert(ImGui_ImplVulkan_Init(&init_info, m_render_pass));
 
-        float font_size = 18.0f;
+        const float font_size = scripting_subsystem::get_config_table()["Renderer"]["uiFontSize"].cast<float>().valueOr(18.0f);
 
         // add primary text font:
         ImFontConfig config { };

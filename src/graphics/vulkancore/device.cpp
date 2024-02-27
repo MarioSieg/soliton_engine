@@ -2,6 +2,7 @@
 
 #include "device.hpp"
 
+#include <unordered_set>
 #include <GLFW/glfw3.h>
 
 namespace vkb {
@@ -56,6 +57,19 @@ namespace vkb {
         return vk::False;
     }
 
+    auto device::is_device_extension_supported(const char* extension) const -> bool {
+        for (const vk::ExtensionProperties& ext : m_supported_device_extensions) {
+            if (std::strcmp(ext.extensionName, extension) == 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    auto device::is_instance_extension_supported(const char* extension) const -> bool {
+        return std::ranges::find(m_supported_instance_extensions, extension) != m_supported_instance_extensions.end();
+    }
+
     auto device::get_mem_type_idx(
         std::uint32_t type_bits,
         vk::MemoryPropertyFlags properties,
@@ -102,23 +116,24 @@ namespace vkb {
         app_info.engineVersion = VK_MAKE_VERSION(0, 1, 0);
         app_info.apiVersion = m_api_version;
 
-        std::vector<const char*> instance_extensions = {
-            VK_KHR_SURFACE_EXTENSION_NAME
+        std::unordered_set<std::string> instance_extensions = {
+            VK_KHR_SURFACE_EXTENSION_NAME,
         };
 
         passert(glfwVulkanSupported());
 
         std::uint32_t glfw_extension_count = 0;
         const char** glfw_extensions = glfwGetRequiredInstanceExtensions(&glfw_extension_count);
-        if (glfw_extensions && glfw_extension_count) {
-            for (std::uint32_t i = 0; i < glfw_extension_count; i++) {
-                instance_extensions.emplace_back(glfw_extensions[i]);
-            }
+        if (!glfw_extension_count || glfw_extensions == nullptr) [[unlikely]] {
+            panic("GLFW failed to retrieve required Vulkan instance extensions");
+        }
+        for (std::uint32_t i = 0; i < glfw_extension_count; ++i) {
+            log_info("GLFW required instance extension: {}", glfw_extensions[i]);
+            instance_extensions.insert(glfw_extensions[i]);
         }
 
         // Enumerate supported instance extensions
         uint32_t extCount = 0;
-        vkcheck(vk::enumerateInstanceExtensionProperties(nullptr, &extCount, nullptr));
         vkcheck(vk::enumerateInstanceExtensionProperties(nullptr, &extCount, nullptr));
         if (extCount > 0) {
             std::vector<vk::ExtensionProperties> extensions {extCount};
@@ -127,6 +142,17 @@ namespace vkb {
                     m_supported_instance_extensions.emplace_back(extension.extensionName);
                     log_info("Supported instance extension: {}", extension.extensionName);
                 }
+            }
+        }
+
+        if constexpr (PLATFORM_OSX) {
+            // When running on iOS/macOS with MoltenVK and VK_KHR_portability_subset is defined and supported by the device, enable the extension
+            if (is_device_extension_supported(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME)) {
+                instance_extensions.insert(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
+            }
+            // When running on iOS/macOS with MoltenVK, enable VK_KHR_get_physical_device_properties2 if not already enabled by the example (required by VK_KHR_portability_subset)
+            if (is_device_extension_supported(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME)) {
+                instance_extensions.insert(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
             }
         }
 
@@ -145,22 +171,25 @@ namespace vkb {
                 m_debug_utils_messenger_ci.pfnUserCallback = &vulkan_debug_message_callback;
                 m_debug_utils_messenger_ci.pNext = instance_create_info.pNext;
                 instance_create_info.pNext = &m_debug_utils_messenger_ci;
-                instance_extensions.emplace_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+                instance_extensions.insert(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
             } else {
                 log_warn("Vulkan debug utils extension not supported");
             }
         }
 
         // Setup enabled instance extensions
+        std::vector<const char*> vk_instance_extensions {};
         if (!instance_extensions.empty()) [[likely]] {
-            for (const char* ext : instance_extensions) {
+            vk_instance_extensions.reserve(instance_extensions.size());
+            for (const auto& ext : instance_extensions) {
                 log_info("Enabling instance extension: {}", ext);
-                if (std::ranges::find(m_supported_instance_extensions, ext) == m_supported_instance_extensions.end()) {
+                if (std::ranges::find(m_supported_instance_extensions, ext) == m_supported_instance_extensions.end()) [[unlikely]] {
                     panic("Instance extension {} not supported", ext);
                 }
+                vk_instance_extensions.emplace_back(ext.c_str());
             }
-            instance_create_info.enabledExtensionCount = static_cast<std::uint32_t>(instance_extensions.size());
-            instance_create_info.ppEnabledExtensionNames = instance_extensions.data();
+            instance_create_info.enabledExtensionCount = static_cast<std::uint32_t>(vk_instance_extensions.size());
+            instance_create_info.ppEnabledExtensionNames = vk_instance_extensions.data();
         }
 
         // Setup VK_LAYER_KHRONOS_validation layer
@@ -187,12 +216,6 @@ namespace vkb {
         }
 
         vkcheck(vk::createInstance(&instance_create_info, &s_allocator, &m_instance));
-
-#if 0
-        if (std::ranges::find(m_supported_instance_extensions, VK_EXT_DEBUG_UTILS_EXTENSION_NAME) != m_supported_instance_extensions.end()) {
-            vks::debugutils::setup(instance);
-        }
-#endif
 
         if (m_enable_validation) {
             m_create_debug_utils_messenger_ext = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(m_instance.getProcAddr("vkCreateDebugUtilsMessengerEXT"));
@@ -417,15 +440,15 @@ namespace vkb {
         std::vector<vk::Format> formats {};
         if (stencil_required) {
             formats = {
-                vk::Format::eD32SfloatS8Uint,
                 vk::Format::eD24UnormS8Uint,
+                vk::Format::eD32SfloatS8Uint,
                 vk::Format::eD16UnormS8Uint
             };
         } else {
             formats = {
+                vk::Format::eD24UnormS8Uint,
                 vk::Format::eD32SfloatS8Uint,
                 vk::Format::eD32Sfloat,
-                vk::Format::eD24UnormS8Uint,
                 vk::Format::eD16UnormS8Uint,
                 vk::Format::eD16Unorm
             };

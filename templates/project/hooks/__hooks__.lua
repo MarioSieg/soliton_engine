@@ -1,0 +1,1 @@
+-- This script hook contains other hooks that are called at specific times during the project's lifetime.

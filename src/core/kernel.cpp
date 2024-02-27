@@ -100,7 +100,7 @@ static auto redirect_io() -> void {
 
 static constinit kernel* g_kernel = nullptr;
 
-kernel::kernel() {
+kernel::kernel(const int argc, const char** argv, const char** environ) {
     passert(g_kernel == nullptr);
     g_kernel = this;
 #if PLATFORM_WINDOWS
@@ -113,20 +113,27 @@ kernel::kernel() {
     std::shared_ptr<spdlog::logger> engineLogger = create_logger("engine", "%H:%M:%S:%e %s:%# %^[%l]%$ T:%t %v");
     std::shared_ptr<spdlog::logger> scriptLogger = create_logger("app", "%H:%M:%S:%e %v");
     spdlog::set_default_logger(engineLogger);
-    log_info("LunamEngine v0.0.1");
+    log_info("LunamEngine v0.0.1"); // TODO: version
     log_info("Copyright (c) 2022-2023 Mario \"Neo\" Sieg. All Rights Reserved.");
     log_info("Booting Engine Kernel...");
     log_info("Build date: {}", __DATE__);
     log_info("Build time: {}", __TIME__);
     log_info("MIMAL version: {:#X}", mi_version());
+    log_info("ARG VEC");
+    for (int i = 0; i < argc; ++i) {
+        log_info("  {}: {}", i, argv[i]);
+    }
+    log_info("ENVIRON VEC");
+    for (int i = 0; environ[i] != nullptr; ++i) {
+        log_info("  {}: {}", i, environ[i]);
+    }
 }
 
 kernel::~kernel() {
     log_info("Shutting down...");
     log_info("Killing active scene...");
     // Kill active scene before other subsystems are shut down
-    auto& active = const_cast<std::unique_ptr<scene>&>(scene::get_active());
-    active.reset();
+    scene::s_active.reset();
     log_info("Killing subsystems...");
     m_subsystems.clear();
     // Print asset manager infos

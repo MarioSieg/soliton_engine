@@ -1,69 +1,58 @@
 -- Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 local ffi = require 'ffi'
+local C = ffi.C
 local bit = require 'bit'
 local bor, band, lshift = bit.bor, bit.band, bit.lshift
 
 ffi.cdef[[
     void __lu_dd_begin(void);
-    void __lu_dd_set_wireframe(bool wireframe);
-    void __lu_dd_set_color(uint32_t abgr);
-    void __lu_dd_grid(int axis, lua_vec3 pos, uint32_t size, float step);
-    void __lu_dd_axis(lua_vec3 pos, float len, int axis_highlight, float thickness);
-    void __lu_dd_aabb(lua_vec3 min, lua_vec3 max);
-    void __lu_dd_sphere(lua_vec3 center, float radius);
-    void __lu_dd_end(void);
+    void __lu_dd_grid(lua_vec3 dims, double step, lua_vec3 color);
+    void __lu_dd_gizmo_enable(bool enable);
+    void __lu_dd_gizmo_manipulator(lua_entity_id id, int op, int mode, bool enable_snap, double snap_x, lua_vec3 color);
+    void __lu_dd_enable_depth_test(bool enable);
+    void __lu_dd_enable_fade(bool enable);
+    void __lu_dd_set_fade_distance(double near, double far);
+    void __lu_dd_draw_scene_with_aabbs(lua_vec3 color);
+    void __lu_dd_draw_physics_debug(void);
 ]]
 
-local C = ffi.C
-local istype = ffi.istype
-
-local Debug = {
-    AXIS = {
-        X = 0,
-        Y = 1,
-        Z = 2
-    }
-}
+local Debug = {}
 
 function Debug.start()
     C.__lu_dd_begin()
 end
 
-function Debug.setWireframe(isWireframe)
-    C.__lu_dd_set_wireframe(isWireframe)
+function Debug.drawGrid(dims, size, color)
+    C.__lu_dd_grid(dims, size, color)
 end
 
-function Debug.setColor(rgb)
-    local r = bit.band(rgb.x*255.0, 0xff) -- normalized [0,1] to u8[0,0xff]
-    local g = bit.band(rgb.y*255.0, 0xff)
-    local b = bit.band(rgb.z*255.0, 0xff)
-    local abgr = 0xff -- alpha
-    abgr = bor(lshift(abgr, 8), b) -- abgr = (abgr << 8) | x
-    abgr = bor(lshift(abgr, 8), g) -- abgr = (abgr << 8) | x
-    abgr = bor(lshift(abgr, 8), r) -- abgr = (abgr << 8) | x
-    abgr = band(abgr, 0xffffffff)
-    C.__lu_dd_set_color(abgr)
+function Debug.gizmoEnable(enable)
+    C.__lu_dd_gizmo_enable(enable)
 end
 
-function Debug.drawGrid(axis, pos, size, step)
-    C.__lu_dd_grid(axis, pos, size, step)
+function Debug.gizmoManipulator(entity, op, mode, enable_snap, snap_x, obb_color)
+    C.__lu_dd_gizmo_manipulator(entity.id, op, mode, enable_snap, snap_x, obb_color)
 end
 
-function Debug.drawAxis(pos, len, axisHighlight, thickness)
-    C.__lu_dd_axis(pos, len, axisHighlight, thickness)
+function Debug.enableDepthTest(enable)
+    C.__lu_dd_enable_depth_test(enable)
 end
 
-function Debug.drawAABB(min, max)
-    C.__lu_dd_aabb(min, max)
+function Debug.enableFade(enable)
+    C.__lu_dd_enable_fade(enable)
 end
 
-function Debug.drawSphere(center, radius)
-    C.__lu_dd_sphere(center, radius)
+function Debug.setFadeDistance(near, far)
+    C.__lu_dd_set_fade_distance(near, far)
 end
 
-function Debug.finish()
-    C.__lu_dd_end()
+function Debug.drawSceneDebug(color)
+    C.__lu_dd_draw_scene_with_aabbs(color)
+end
+
+function Debug.drawPhysicsDebug()
+    C.__lu_dd_draw_physics_debug()
 end
 
 return Debug

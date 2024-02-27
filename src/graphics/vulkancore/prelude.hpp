@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "../../core/core.hpp"
+
 // Keep Vulkan's C++ source code clean and remove some magic
 // Useful when tutorials or other stuff use plain C, so its easier to compare
 #define VULKAN_HPP_DISABLE_ENHANCED_MODE
@@ -12,10 +14,12 @@
 #include <vulkan/vk_enum_string_helper.h>
 #include <mimalloc.h>
 
-#include "../../core/core.hpp"
+#if PLATFORM_OSX
+#   include <vulkan/vulkan_beta.h>
+#endif
 
 namespace vkb {
-    constexpr vk::SampleCountFlagBits k_msaa_sample_count = vk::SampleCountFlagBits::e8;
+    constexpr vk::SampleCountFlagBits k_msaa_sample_count = vk::SampleCountFlagBits::e2;
 
     extern auto dump_physical_device_props(const vk::PhysicalDeviceProperties& props) -> void;
 

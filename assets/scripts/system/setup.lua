@@ -5,16 +5,9 @@
 local stp = require 'ext.stack_trace_plus'
 debug.traceback = stp.stacktrace
 
--- Init extensions
-require 'system.stdextend'
-
-SYSTEM_CFG = require 'system.config' -- Load config
-if SYSTEM_CFG.jit_asm_dump then -- Enable JIT ASM dump if requested
-    require('jit.dump').on('m')
-end
-
 -- Init protocol logger.
-protocol = {}
+PROTOCOL = {}
+PROTOCOL_ERRORS = 0
 
 local printProxy = _G.print
 function _G.print(...)
@@ -26,8 +19,8 @@ function _G.print(...)
         end
         str = str..tostring(arg)
     end
+    table.insert(PROTOCOL, {str, false})
     printProxy(str)
-    table.insert(protocol, str)
 end
 
 local errorProxy = _G.error
@@ -40,12 +33,23 @@ function _G.error(...)
         end
         str = str..tostring(arg)
     end
+    table.insert(PROTOCOL, {str, true})
+    PROTOCOL_ERRORS = PROTOCOL_ERRORS + 1
     errorProxy(str)
-    table.insert(protocol, str)
 end
 
 function printsep()
     print('------------------------------------------------------------')
+end
+
+-- Init misc
+
+-- Load global engine config
+require 'config.engine'
+
+if ENGINE_CONFIG.General.loadLuaStdlibExtensions then
+    -- Init extensions
+    require 'system.stdextend'
 end
 
 -- Print package paths
@@ -55,25 +59,26 @@ for _, path in ipairs(INCLUDE_DIRS) do
 end
 
 -- Verify filesystem
--- TODO must be done before any imports!
-print('Verifying filesystem...')
-local numchecks = 0
-local function checkFsEntry(path)
-    numchecks = numchecks + 1
-    if not lfs.attributes(path) then
-        panic('Broken installation! Required file or directory not found: '..path)
-    end
-end
-checkFsEntry('assets')
-if lfs.attributes('assets/scripts/system/fsregistry.lua') then -- check if the fsregistry file exists
-    local REQUIRED_FILES = require 'system.fsregistry' -- load the list of required files
-    if type(REQUIRED_FILES) == 'table' then
-        for _, path in ipairs(REQUIRED_FILES) do
-            checkFsEntry(path)
+if ENGINE_CONFIG.General.enableFilesystemValidation then
+    print('Verifying filesystem...')
+    local numchecks = 0
+    local function checkFsEntry(path)
+        numchecks = numchecks + 1
+        if not lfs.attributes(path) then
+            panic('Broken installation! Required file or directory not found: '..path)
         end
     end
-    print('Filesystem OK, '..numchecks..' entries checked.')
-    dofile('assets/scripts/tools/fsregistry_gen.lua') -- regenerate the fsregistry file
+    checkFsEntry('assets')
+    if lfs.attributes('assets/scripts/system/fsregistry.lua') then -- check if the fsregistry file exists
+        local REQUIRED_FILES = require 'system.fsregistry' -- load the list of required files
+        if type(REQUIRED_FILES) == 'table' then
+            for _, path in ipairs(REQUIRED_FILES) do
+                checkFsEntry(path)
+            end
+        end
+        print('Filesystem OK, '..numchecks..' entries checked.')
+        dofile('assets/scripts/tools/fsregistry_gen.lua') -- regenerate the fsregistry file
+    end
 end
 
 -- Load CDEFS

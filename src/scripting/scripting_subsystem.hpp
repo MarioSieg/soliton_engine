@@ -22,6 +22,13 @@ namespace scripting {
         HOTPROC auto on_tick() -> void override;
 
         [[nodiscard]] static auto get_lua_state() noexcept -> lua_State* { return m_L; }
+        [[nodiscard]] static auto get_config_table() noexcept -> const luabridge::LuaRef& {
+            passert(m_config_table.has_value());
+            return *m_config_table;
+        }
+
+        [[nodiscard]] static auto exec_string(const std::string& str) -> bool;
+        [[nodiscard]]
 
         static auto exec_file(const std::string& file) -> bool;
 
@@ -29,8 +36,10 @@ namespace scripting {
         static constexpr const char* k_boot_script = "system/__boot__.lua";
         static constexpr const char* k_prepare_hook = "__on_prepare__";
         static constexpr const char* k_tick_hook = "__on_tick__";
+        static constexpr const char* k_engine_config_tab = "ENGINE_CONFIG";
         static inline constinit lua_State* m_L = nullptr;
-        std::optional<luabridge::LuaRef> m_on_prepare = {}; // Reference to __boot__.lua's on_prepare function
-        std::optional<luabridge::LuaRef> m_on_tick = {}; // Reference to __boot__.lua's on_tick function
+        static inline constinit std::optional<luabridge::LuaRef> m_config_table {};
+        std::optional<luabridge::LuaRef> m_on_prepare {}; // Reference to __boot__.lua's on_prepare function
+        std::optional<luabridge::LuaRef> m_on_tick {}; // Reference to __boot__.lua's on_tick function
     };
 }

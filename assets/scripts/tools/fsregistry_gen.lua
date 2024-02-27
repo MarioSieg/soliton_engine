@@ -5,7 +5,7 @@ local TARGET = 'assets/scripts/system/fsregistry.lua'
 
 print('Generating fsregistry file: '..TARGET)
 
--- Create list of ALL file and directories within ../media/*
+-- Create list of ALL file and directories within ../assets/*
 
 local function dirtree(dir)
     local dirs = {}
@@ -27,7 +27,7 @@ local function dirtree(dir)
 end
 
 local files = {
-    'media'
+    'assets'
 }
 
 for filename, _ in dirtree(SOURCE) do

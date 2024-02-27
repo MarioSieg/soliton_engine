@@ -9,7 +9,7 @@
 
 namespace assetmgr {
     auto get_asset_root() -> const std::string& {
-        static const std::string asset_root = std::filesystem::current_path() / "assets";
+        static const std::string asset_root = (std::filesystem::current_path() / "assets").string();
         return asset_root;
     }
 
@@ -100,10 +100,19 @@ namespace assetmgr {
             is_fs_validated.store(true, std::memory_order_relaxed);
         }
         log_info("Asset load request [{}]: {}", s_asset_requests.fetch_add(1, std::memory_order_relaxed), path);
-        if (!validate_path(path)) [[unlikely]] {
+        std::string corrected_path {};
+        const std::string* valid_path;
+        if (std::ranges::find(path, '\\') != path.cend()) { // Windows path
+            corrected_path = path;
+            std::ranges::replace(corrected_path, '\\', '/'); // Convert to Unix path
+            valid_path = &corrected_path;
+        } else {
+            valid_path = &path;
+        }
+        if (!validate_path(*valid_path)) [[unlikely]] {
             return false;
         }
-        std::ifstream file {path, std::ios::binary | std::ios::ate | std::ios::in};
+        std::ifstream file {*valid_path, std::ios::binary | std::ios::ate | std::ios::in};
         if (!file.is_open() || !file.good()) [[unlikely]] {
             log_error("Failed to open asset: {}", path);
             return false;

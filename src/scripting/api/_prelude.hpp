@@ -11,6 +11,7 @@
 #define LUA_INTEROP_API extern "C" __attribute__((visibility("default")))
 #endif
 
+static_assert(sizeof(flecs::id_t) == sizeof(std::uint64_t));
 
 // Vector2 for LUA interop
 // Only a proxy type holding the data and allowing implicit conversions to other vector types.
@@ -56,6 +57,10 @@ struct lua_vec3 {
        : x{static_cast<float>(vec.x)}
     , y{static_cast<float>(vec.y)}
     , z{static_cast<float>(vec.z)} {}
+    lua_vec3(const JPH::Vec3& vec) noexcept
+        : x{static_cast<float>(vec.GetX())}
+    , y{static_cast<float>(vec.GetY())}
+    , z{static_cast<float>(vec.GetZ())} {}
 
     [[nodiscard]] constexpr operator DirectX::XMFLOAT2 () const noexcept {
         return {
@@ -64,6 +69,13 @@ struct lua_vec3 {
         };
     }
     [[nodiscard]] constexpr operator DirectX::XMFLOAT3 () const noexcept {
+        return {
+            static_cast<float>(x),
+            static_cast<float>(y),
+            static_cast<float>(z)
+        };
+    }
+    [[nodiscard]] operator JPH::Vec3 () const noexcept {
         return {
             static_cast<float>(x),
             static_cast<float>(y),
@@ -117,3 +129,17 @@ struct lua_vec4 {
     }
 };
 static_assert(sizeof(lua_vec4) == sizeof(double) * 4 && std::is_standard_layout_v<lua_vec4>);
+
+#define impl_component_core(name) \
+    LUA_INTEROP_API auto __lu_com_##name##_exists(const flecs::id_t id) -> bool { \
+        const flecs::entity ent {scene::get_active(), id}; \
+        return ent.has<com::name>(); \
+    } \
+    LUA_INTEROP_API auto __lu_com_##name##_add(const flecs::id_t id) -> void { \
+        flecs::entity ent {scene::get_active(), id}; \
+        ent.add<com::name>(); \
+    } \
+    LUA_INTEROP_API auto __lu_com_##name##_remove(const flecs::id_t id) -> void { \
+        flecs::entity ent {scene::get_active(), id}; \
+        ent.remove<com::name>(); \
+    }

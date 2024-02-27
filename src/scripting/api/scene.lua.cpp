@@ -2,48 +2,87 @@
 
 #include "_prelude.hpp"
 
-LUA_INTEROP_API auto __lu_scene_new(const char* name, const char* gltf_file, const double scale) -> std::uint32_t {
-    std::string sname {}, sgltf_file {};
-    if (name) sname = name;
-    if (gltf_file) sgltf_file = gltf_file;
-    scene::new_active(std::move(sname), std::move(sgltf_file), static_cast<float>(scale));
-    return scene::get_active()->id;
+LUA_INTEROP_API auto __lu_scene_import(const char* name, const char* file, const double scale, const std::uint32_t load_flags) -> std::uint32_t {
+    std::string sname {}, sfile {};
+    if (name) {
+        sname = name;
+    }
+    if (file) {
+        sfile = file;
+    }
+    scene::new_active(std::move(sname), std::move(sfile), static_cast<float>(scale), load_flags);
+    return scene::get_active().id;
 }
 
 LUA_INTEROP_API auto __lu_scene_tick() -> void {
-    if (!scene::get_active()) [[unlikely]]
-        return;
-    scene::get_active()->on_tick();
+    scene::get_active().on_tick();
 }
 
 LUA_INTEROP_API auto __lu_scene_start() -> void {
-    if (!scene::get_active()) [[unlikely]]
-        return;
-    scene::get_active()->on_start();
+    scene::get_active().on_start();
 }
 
-LUA_INTEROP_API auto __lu_scene_spawn_entity(const char* const name) -> lua_entity {
-    if (!scene::get_active()) [[unlikely]]
-        return scene::k_invalid_entity;
-    lua_entity id = 0;
-    scene::get_active()->spawn(name, &id);
-    return id;
+LUA_INTEROP_API auto __lu_scene_spawn_entity(const char* const name) -> flecs::id_t {
+    return scene::get_active().spawn(name).raw_id();
 }
 
-LUA_INTEROP_API auto __lu_scene_get_entity_by_name(const char* const name) -> lua_entity {
-    const auto& active = scene::get_active();
-    if (!active) [[unlikely]]
-       return scene::k_invalid_entity;
-    const flecs::entity entity = scene::get_active()->lookup(name);
-    if (!entity) [[unlikely]]
-        return scene::k_invalid_entity;
-    const std::span<const flecs::entity> entities = active->get_eitbl();
-    const auto entry = std::find(entities.begin(), entities.end(), entity); // TODO: Smarter way to handle this?
-    if (entry != entities.end()) [[likely]] {
-        const std::ptrdiff_t id = std::distance(entities.begin(), entry);
-        passert(id <= scene::k_max_entities);
-        return static_cast<lua_entity>(id);
+LUA_INTEROP_API auto __lu_scene_despawn_entity(const flecs::id_t id) -> void {
+    const flecs::entity ent {scene::get_active(), id};
+    ent.destruct();
+}
+
+LUA_INTEROP_API auto __lu_scene_get_entity_by_name(const char* const name) -> flecs::id_t {
+    const flecs::entity entity = scene::get_active().lookup(name);
+    if (!entity) [[unlikely]] {
+        return 0;
     }
-    return scene::k_invalid_entity;
+    return entity.raw_id();
 }
 
+LUA_INTEROP_API auto __lu_scene_set_active_camera_entity(const flecs::id_t id) -> void {
+    const flecs::entity ent {scene::get_active(), id};
+    scene::get_active().active_camera = ent;
+}
+
+// TODO: Convert to FLECS C++ API
+
+static struct {
+    flecs::iter_t iter{};
+    scene* assoc {};
+} s_scene_iter_context;
+
+LUA_INTEROP_API auto __lu_scene_full_entity_query_start() -> void {
+    return;
+    scene& active = scene::get_active();
+    s_scene_iter_context.assoc = &active;
+    std::array<flecs::iter_t, 2> iters {};
+    // search for objects with com::metadata assigned
+    ecs_term_t term = {
+        .id = flecs::type_id<com::metadata>(),
+        .inout = EcsIn,
+        .oper = EcsOptional
+    };
+    ecs_iter_poly(active.m_world, active.m_world, iters.data(), &term);
+    s_scene_iter_context.iter = iters[0];
+    ecs_iter_fini(&iters[1]);
+}
+
+LUA_INTEROP_API auto __lu_scene_full_entity_query_next_table() -> std::int32_t {
+    return 0;
+    passert(&scene::get_active() == s_scene_iter_context.assoc);
+    return ecs_iter_next(&s_scene_iter_context.iter) ? s_scene_iter_context.iter.count : 0;
+}
+
+LUA_INTEROP_API auto __lu_scene_full_entity_query_get(const std::int32_t i) -> flecs::id_t {
+    return 0;
+    passert(&scene::get_active() == s_scene_iter_context.assoc);
+    return s_scene_iter_context.iter.entities[i];
+}
+
+LUA_INTEROP_API auto __lu_scene_full_entity_query_end() -> void {
+    return;
+    passert(&scene::get_active() == s_scene_iter_context.assoc);
+    ecs_iter_fini(&s_scene_iter_context.iter);
+    s_scene_iter_context.iter = {};
+    s_scene_iter_context.assoc = nullptr;
+}

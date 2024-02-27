@@ -38,7 +38,7 @@ end
 function fileProxy:close() end
 
 function Profiler:render()
-    if UI.Begin(Profiler.name, Profiler.isVisible) then
+    if UI.Begin(self.name, self.isVisible) then
         if UI.BeginTabBar('##profiler_tabs') then
             if UI.BeginTabItem(ICONS.ALARM_CLOCK..' General') then
                 if UI.CollapsingHeader(ICONS.CHART_AREA..' Histogram', ffi.C.ImGuiTreeNodeFlags_DefaultOpen) then
@@ -58,7 +58,7 @@ function Profiler:render()
                 UI.EndTabItem()
             end
             if UI.BeginTabItem(ICONS.CODE..' Scripting') then
-                if Profiler.isProfilerRunning then
+                if self.isProfilerRunning then
                     table.insert(fpsPlot, Time.fps)
                     startTime = startTime + Time.deltaTime
                     if startTime >= timeLimit then
@@ -70,13 +70,13 @@ function Profiler:render()
                         fpsAvg = sum / #fpsPlot
                         fpsPlot = {}
                         profile.stop()
-                        Profiler.isProfilerRunning = false
+                        self.isProfilerRunning = false
                     end
                 end
-                local title = Profiler.isProfilerRunning and ICONS.STOP_CIRCLE..' Stop' or ICONS.PLAY_CIRCLE..' Record'
-                UI.PushStyleColor_U32(ffi.C.ImGuiCol_Button, Profiler.isProfilerRunning and 0xff000088 or 0xff008800)
+                local title = self.isProfilerRunning and ICONS.STOP_CIRCLE..' Stop' or ICONS.PLAY_CIRCLE..' Record'
+                UI.PushStyleColor_U32(ffi.C.ImGuiCol_Button, self.isProfilerRunning and 0xff000088 or 0xff008800)
                 if UI.Button(title) then
-                    if Profiler.isProfilerRunning then
+                    if self.isProfilerRunning then
                         print('Stopped profiling')
                         profile.stop()
                     else
@@ -85,7 +85,7 @@ function Profiler:render()
                         profileDataRoutines = {}
                         print('Started profiling')
                     end
-                    Profiler.isProfilerRunning = not Profiler.isProfilerRunning
+                    self.isProfilerRunning = not self.isProfilerRunning
                 end
                 UI.PopStyleColor()
                 UI.SameLine()

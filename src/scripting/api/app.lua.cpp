@@ -6,8 +6,15 @@
 #include "../../platform/platform_subsystem.hpp"
 
 #include <infoware/infoware.hpp>
+#include <nfd.hpp>
 
 using platform::platform_subsystem;
+
+static constinit int s_window_pos_x = 0;
+static constinit int s_window_pos_y = 0;
+static constinit int s_window_width = 1280;
+static constinit int s_window_height = 720;
+static std::string s_tmp_proxy;
 
 LUA_INTEROP_API auto __lu_panic(const char* const msg) -> void {
     panic(msg ? msg : "unknown error");
@@ -17,6 +24,14 @@ LUA_INTEROP_API auto __lu_ffi_cookie() -> std::uint32_t  {
     return 0xfefec0c0;
 }
 
+LUA_INTEROP_API auto __lu_app_is_focused() -> bool {
+    return glfwGetWindowAttrib(platform_subsystem::get_glfw_window(), GLFW_FOCUSED) == GLFW_TRUE;
+}
+
+LUA_INTEROP_API auto __lu_app_is_ui_hovered() -> bool {
+    return ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow);
+}
+
 LUA_INTEROP_API auto __lu_window_maximize() -> void {
     glfwMaximizeWindow(platform_subsystem::get_glfw_window());
 }
@@ -24,11 +39,6 @@ LUA_INTEROP_API auto __lu_window_maximize() -> void {
 LUA_INTEROP_API auto __lu_window_minimize() -> void {
     glfwIconifyWindow(platform_subsystem::get_glfw_window());
 }
-
-static constinit int s_window_pos_x = 0;
-static constinit int s_window_pos_y = 0;
-static constinit int s_window_width = 1280;
-static constinit int s_window_height = 720;
 
 LUA_INTEROP_API auto __lu_window_enter_fullscreen() -> void {
     GLFWmonitor* mon = glfwGetPrimaryMonitor();
@@ -89,15 +99,17 @@ LUA_INTEROP_API auto __lu_window_get_pos() -> lua_vec2 {
     return lua_vec2 { static_cast<float>(x), static_cast<float>(y) };
 }
 
+LUA_INTEROP_API auto __lu_window_enable_cursor(const bool enable) -> void {
+    glfwSetInputMode(platform_subsystem::get_glfw_window(), GLFW_CURSOR, enable ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+}
+
 LUA_INTEROP_API auto __lu_app_exit() -> void {
     kernel::get().request_exit();
 }
 
-static std::string tmp;
-
 LUA_INTEROP_API auto __lu_app_host_get_cpu_name() -> const char* {
-    tmp = iware::cpu::model_name();
-    return tmp.c_str();
+    s_tmp_proxy = iware::cpu::model_name();
+    return s_tmp_proxy.c_str();
 }
 
 LUA_INTEROP_API auto __lu_app_host_get_gpu_name() -> const char* {
@@ -109,7 +121,37 @@ LUA_INTEROP_API auto __lu_app_host_get_gapi_name() -> const char* {
     const std::uint32_t major = VK_API_VERSION_MAJOR(api);
     const std::uint32_t minor = VK_API_VERSION_MINOR(api);
     const std::uint32_t patch = VK_API_VERSION_PATCH(api);
-    tmp = fmt::format("Vulkan v.{}.{}.{}", major, minor, patch);
-    return tmp.c_str();
+    s_tmp_proxy = fmt::format("Vulkan v.{}.{}.{}", major, minor, patch);
+    return s_tmp_proxy.c_str();
 }
 
+LUA_INTEROP_API auto __lu_app_host_get_num_cpus() -> std::uint32_t {
+    static const std::uint32_t s_num_cpus = std::max(1u, std::thread::hardware_concurrency());
+    return s_num_cpus;
+}
+
+LUA_INTEROP_API auto __lu_app_open_file_dialog(const char *file_type, const char* filters, const char* default_path) -> const char* {
+    nfdchar_t *out;
+    const nfdfilteritem_t filter = {file_type, filters};
+    const nfdresult_t result = NFD_OpenDialog(&out, &filter, 1, default_path);
+    if (result == NFD_OKAY) [[likely]] {
+        s_tmp_proxy = out;
+        NFD_FreePath(out);
+        std::ranges::replace(s_tmp_proxy, '\\', '/');
+        return s_tmp_proxy.c_str();
+    }
+    return "";
+}
+
+LUA_INTEROP_API auto __lu_app_open_folder_dialog(const char* default_path) -> const char* {
+    nfdchar_t *out;
+    const nfdresult_t result = NFD_PickFolder(&out, default_path);
+    if (result == NFD_OKAY) [[likely]] {
+        s_tmp_proxy = out;
+        NFD_FreePath(out);
+        std::ranges::replace(s_tmp_proxy, '\\', '/');
+        s_tmp_proxy.push_back('/');
+        return s_tmp_proxy.c_str();
+    }
+    return "";
+}

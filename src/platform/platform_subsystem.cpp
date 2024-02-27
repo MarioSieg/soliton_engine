@@ -16,13 +16,17 @@
 #include <fcntl.h>
 #include <io.h>
 #include <psapi.h>
-#else
+#elif PLATFORM_LINUX
 #include <link.h>
 #endif
 #include <mimalloc.h>
 #include <infoware/infoware.hpp>
-#include "../stb/stb_image.h"
-#include <DirectXMath.h>
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+#include <nfd.hpp>
+#include "../scripting/scripting_subsystem.hpp"
+
+using scripting::scripting_subsystem;
 
 namespace platform {
 [[maybe_unused]]
@@ -271,7 +275,7 @@ auto dump_loaded_dylibs() -> void {
             }
         }
     }
-#else
+#elif PLATFORM_LINUX
     dl_iterate_phdr(+[](dl_phdr_info* info, std::size_t, void*) -> int {
         log_info("{}", info->dlpi_name);
         return 0;
@@ -329,14 +333,19 @@ auto dump_loaded_dylibs() -> void {
             passert(is_glfw_online);
         }
 
+        const int default_width = scripting_subsystem::get_config_table()["Window"]["defaultWidth"].cast<int>().valueOr(1280);
+        const int default_height = scripting_subsystem::get_config_table()["Window"]["defaultHeight"].cast<int>().valueOr(720);
+        const int min_width = scripting_subsystem::get_config_table()["Window"]["minWidth"].cast<int>().valueOr(640);
+        const int min_height = scripting_subsystem::get_config_table()["Window"]["minHeight"].cast<int>().valueOr(480);
+
         // create window
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // window is hidden by default
-        s_window = glfwCreateWindow(1280, 720, "LunamEngine", nullptr, nullptr);
+        s_window = glfwCreateWindow(default_width, default_height, "LunamEngine", nullptr, nullptr);
         passert(s_window != nullptr);
         glfwSetWindowUserPointer(s_window, this);
-        glfwSetWindowSizeLimits(s_window, 800, 600, GLFW_DONT_CARE, GLFW_DONT_CARE);
+        glfwSetWindowSizeLimits(s_window, min_width, min_height, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
         // setup hooks
         glfwSetFramebufferSizeCallback(s_window, &proxy_resize_hook);
@@ -361,6 +370,10 @@ auto dump_loaded_dylibs() -> void {
         GLFWmonitor* mon = glfwGetPrimaryMonitor();
         if (mon != nullptr) [[likely]] {
             printMonitorInfo(mon);
+            if (const GLFWvidmode* mode = glfwGetVideoMode(mon); mode) {
+                glfwSetWindowPos(s_window, std::max((mode->width>>1)-default_width, min_width),
+                    std::max((mode->height>>1)-default_height, min_height));
+            }
         } else {
             log_warn("No primary monitor found");
         }
@@ -373,23 +386,27 @@ auto dump_loaded_dylibs() -> void {
             }
         }
 
-        std::vector<std::uint8_t> pixel_buf {};
-        assetmgr::load_asset_blob_or_panic(asset_category::icon, k_window_icon_file, pixel_buf);
-
         // set window icon
-        int w, h;
-        stbi_uc *pixels = stbi_load_from_memory(pixel_buf.data(), pixel_buf.size(), &w, &h, nullptr, STBI_rgb_alpha);
-        passert(pixels != nullptr);
-        const GLFWimage icon {
-            .width = w,
-            .height = h,
-            .pixels = pixels
-        };
-        glfwSetWindowIcon(s_window, 1, &icon);
-        stbi_image_free(pixels);
+        if constexpr (!PLATFORM_OSX) { // Cocoa - regular windows do not have icons on macOS
+            std::vector<std::uint8_t> pixel_buf {};
+            const std::string k_window_icon_file = scripting_subsystem::get_config_table()["Window"]["icon"].cast<std::string>().valueOr("icon.png");
+            assetmgr::load_asset_blob_or_panic(asset_category::icon, k_window_icon_file, pixel_buf);
+            int w, h;
+            stbi_uc *pixels = stbi_load_from_memory(pixel_buf.data(), static_cast<int>(pixel_buf.size()), &w, &h, nullptr, STBI_rgb_alpha);
+            passert(pixels != nullptr);
+            const GLFWimage icon {
+                .width = w,
+                .height = h,
+                .pixels = pixels
+            };
+            glfwSetWindowIcon(s_window, 1, &icon);
+            stbi_image_free(pixels);
+        }
+        NFD_Init();
     }
 
     platform_subsystem::~platform_subsystem() {
+        NFD_Quit();
         s_window = nullptr;
         glfwDestroyWindow(s_window);
         glfwTerminate();
