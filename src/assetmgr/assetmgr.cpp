@@ -8,8 +8,10 @@
 #include <fstream>
 
 namespace assetmgr {
+    using namespace std::filesystem;
+
     auto get_asset_root() -> const std::string& {
-        static const std::string asset_root = (std::filesystem::current_path() / "assets").string();
+        static const std::string asset_root = ("/Users/mario/Documents/lunam/assets");
         return asset_root;
     }
 
@@ -46,12 +48,12 @@ namespace assetmgr {
     }();
 
     [[nodiscard]] static auto is_fs_valid() -> bool {
-        if (!std::filesystem::exists(get_asset_root())) [[unlikely]] {
+        if (!exists(get_asset_root())) [[unlikely]] {
             log_error("Asset directory not found: {}", get_asset_root());
             return false;
         }
         for (const std::string& dir : k_asset_dirs) {
-            if (!std::filesystem::exists(dir)) [[unlikely]] {
+            if (!exists(dir)) [[unlikely]] {
                 log_error("Asset directory not found: {}", dir);
                 return false;
             }
@@ -76,15 +78,15 @@ namespace assetmgr {
     [[nodiscard]] static auto validate_path(const std::string& full_path) -> bool {
         const int encoding = simdutf::autodetect_encoding(full_path.c_str(), full_path.size());
         if (encoding != simdutf::encoding_type::UTF8) [[unlikely]] { /* UTF8 != ASCII but UTF8 can store ASCII */
-            log_error("Asset {} is not ASCII encoded", full_path);
+            log_warn("Asset path {} is not ASCII encoded", full_path);
             return false;
         }
         if (!simdutf::validate_ascii(full_path.c_str(), full_path.size())) [[unlikely]] {
-            log_error("Asset {} contains non-ASCII characters", full_path);
+            log_warn("Asset path {} contains non-ASCII characters", full_path);
             return false;
         }
-        if (!std::filesystem::exists(full_path)) [[unlikely]] {
-            log_error("Asset not found: {}", full_path);
+        if (!exists(full_path)) [[unlikely]] {
+            log_warn("Asset path not found: {}", full_path);
             return false;
         }
         return true;
@@ -99,20 +101,15 @@ namespace assetmgr {
             }
             is_fs_validated.store(true, std::memory_order_relaxed);
         }
-        log_info("Asset load request [{}]: {}", s_asset_requests.fetch_add(1, std::memory_order_relaxed), path);
-        std::string corrected_path {};
-        const std::string* valid_path;
-        if (std::ranges::find(path, '\\') != path.cend()) { // Windows path
-            corrected_path = path;
-            std::ranges::replace(corrected_path, '\\', '/'); // Convert to Unix path
-            valid_path = &corrected_path;
-        } else {
-            valid_path = &path;
+        log_info("Asset load request #{}: {}", s_asset_requests.fetch_add(1, std::memory_order_relaxed), path);
+        std::string abs = absolute(path).string();
+        if (std::ranges::find(abs, '\\') != abs.cend()) { // Windows path
+            std::ranges::replace(abs, '\\', '/'); // Convert to Unix path
         }
-        if (!validate_path(*valid_path)) [[unlikely]] {
+        if (!validate_path(abs)) [[unlikely]] {
             return false;
         }
-        std::ifstream file {*valid_path, std::ios::binary | std::ios::ate | std::ios::in};
+        std::ifstream file {abs, std::ios::binary | std::ios::ate | std::ios::in};
         if (!file.is_open() || !file.good()) [[unlikely]] {
             log_error("Failed to open asset: {}", path);
             return false;
