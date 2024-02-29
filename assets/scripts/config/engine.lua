@@ -70,7 +70,13 @@ ENGINE_CONFIG = {
 if jit.os == 'OSX' then
     print('Detected macOS, increasing UI font size...')
     ENGINE_CONFIG.Renderer.uiFontSize = ENGINE_CONFIG.Renderer.uiFontSize * 2
-    ENGINE_CONFIG.General.enableJit = false -- Disable JIT on macOS because LuaJIT fails to allocate machine code memory (TODO fix)
+    if jit.arch == 'arm64' then
+        -- Disable JIT on macOS because LuaJIT fails to allocate machine code memory,
+        -- because the jump range is very low.
+        -- See: https://github.com/LuaJIT/LuaJIT/issues/285
+        ENGINE_CONFIG.General.enableJit = false
+        print('JIT disabled on macOS aarch64, see engine.lua for more info.')
+    end
 end
 
 if ENGINE_CONFIG.Threads.autoPartitionEngineThreadCount then
