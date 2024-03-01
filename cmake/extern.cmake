@@ -26,7 +26,11 @@ target_link_libraries(lunam freetype)
 
 add_subdirectory(extern/mimalloc)
 target_include_directories(lunam PRIVATE extern/mimalloc/include)
-target_link_libraries(lunam mimalloc)
+if (WIN32)
+    target_link_libraries(lunam mimalloc-static)
+else()
+    target_link_libraries(lunam mimalloc)
+endif()
 
 add_subdirectory(extern/infoware)
 target_include_directories(lunam PRIVATE extern/infoware/include)
