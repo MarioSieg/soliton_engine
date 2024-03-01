@@ -9,7 +9,7 @@ concept is_subsystem = std::conjunction_v<std::is_base_of<subsystem, T>, std::is
 
 class kernel final : public no_copy, public no_move {
 public:
-    kernel(int argc, const char** argv, const char** environ);
+    kernel(int argc, const char** argv, const char** $environ);
     ~kernel();
 
     template <typename T, typename... Ar> requires is_subsystem<T, Ar...>

@@ -100,7 +100,7 @@ static auto redirect_io() -> void {
 
 static constinit kernel* g_kernel = nullptr;
 
-kernel::kernel(const int argc, const char** argv, const char** environ) {
+kernel::kernel(const int argc, const char** argv, const char** $environ) {
     passert(g_kernel == nullptr);
     g_kernel = this;
 #if PLATFORM_WINDOWS
@@ -125,7 +125,7 @@ kernel::kernel(const int argc, const char** argv, const char** environ) {
         log_info("  {}: {}", i, argv[i]);
     }
     log_info("ENVIRON VEC");
-    for (int i = 0; environ[i] != nullptr; ++i) {
+    for (int i = 0; $environ[i] != nullptr; ++i) {
         log_info("  {}: {}", i, environ[i]);
     }
 }

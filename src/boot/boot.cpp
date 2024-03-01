@@ -7,8 +7,8 @@
 #include "../scripting/scripting_subsystem.hpp"
 #include "../physics/physics_subsystem.hpp"
 
-static auto lunam_entry(const int argc, const char** argv, const char** environ) -> void {
-    kernel kernel {argc, argv, environ};
+static auto lunam_entry(const int argc, const char** argv, const char** $environ) -> void {
+    kernel kernel {argc, argv, $environ};
     kernel.install<scripting::scripting_subsystem>();
     kernel.install<platform::platform_subsystem>();
     kernel.install<physics::physics_subsystem>();
@@ -19,10 +19,14 @@ static auto lunam_entry(const int argc, const char** argv, const char** environ)
 #if PLATFORM_WINDOWS
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+extern int __argc;
+extern char** __argv;
 auto __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int) -> int {
+    const auto argc = __argc;
+    const auto** argv = const_cast<const char**>(__argv);
 #else
 auto main(const int argc, const char** argv, const char** environ) -> int {
 #endif
-    lunam_entry(argc, argv, environ);
+    lunam_entry(argc, argv,  const_cast<const char**>(_environ));
     return EXIT_SUCCESS;
 }
