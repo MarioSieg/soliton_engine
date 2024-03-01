@@ -345,7 +345,7 @@ function Editor:renderMainMenu()
         UI.PopStyleColor(3)
         UI.SameLine()
         if UI.Button(ICONS.FLAME) then
-            fullHotReload()
+            App.hotreloadFull()
         end
         if UI.IsItemHovered() then
             UI.SetTooltip('Full Hot Reload')
