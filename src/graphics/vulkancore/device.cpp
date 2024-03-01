@@ -145,7 +145,7 @@ namespace vkb {
             }
         }
 
-        if constexpr (PLATFORM_OSX) {
+#if PLATFORM_OSX
             // When running on iOS/macOS with MoltenVK and VK_KHR_portability_subset is defined and supported by the device, enable the extension
             if (is_device_extension_supported(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME)) {
                 instance_extensions.insert(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
@@ -154,7 +154,7 @@ namespace vkb {
             if (is_device_extension_supported(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME)) {
                 instance_extensions.insert(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
             }
-        }
+#endif
 
         // Setup instance create info
         vk::InstanceCreateInfo instance_create_info {};
