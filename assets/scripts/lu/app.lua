@@ -6,7 +6,6 @@ local ffi = require 'ffi'
 ffi.cdef [[
     void __lu_panic(const char* msg);
     uint32_t __lu_ffi_cookie(void);
-    void __lu_hotreload_full(void);
     bool __lu_app_is_focused(void);
     bool __lu_app_is_ui_hovered(void);
     void __lu_window_maximize(void);
@@ -64,10 +63,6 @@ end
 
 function App.ffiCookie()
     return C.__lu_ffi_cookie()
-end
-
-function App.hotreloadFull()
-    C.__lu_hotreload_full()
 end
 
 function App.isFocused()

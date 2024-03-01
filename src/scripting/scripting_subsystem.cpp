@@ -20,7 +20,6 @@ namespace scripting {
         log_info("Initializing scripting subsystem");
         log_info(LUAJIT_VERSION);
         lua_host_connect();
-        instance = this;
     }
 
     scripting_subsystem::~scripting_subsystem() {
@@ -39,14 +38,6 @@ namespace scripting {
         if (const luabridge::LuaResult r = (*m_on_tick)(); r.hasFailed()) [[unlikely]] {
             lua_log_error("{}: Error in {}: {}", k_boot_script, k_tick_hook, r.errorMessage());
         }
-        if (m_reconnect) {
-            reconnect_lua_host_impl();
-            m_reconnect = false;
-        }
-    }
-
-    auto scripting_subsystem::reconnect_lua_host() -> void {
-        m_reconnect = true;
     }
 
     auto scripting_subsystem::exec_file(const std::string& file) -> bool {
@@ -67,7 +58,6 @@ namespace scripting {
             lua_host_disconnect();
         }
         lua_host_connect();
-        on_prepare();
         const auto elapsed = std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(std::chrono::high_resolution_clock::now() - now).count();
         log_info("Reconnected to Lua host in {}ms", elapsed);
     }
