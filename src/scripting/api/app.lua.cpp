@@ -8,6 +8,8 @@
 #include <infoware/infoware.hpp>
 #include <nfd.hpp>
 
+#include "../scripting_subsystem.hpp"
+
 using platform::platform_subsystem;
 
 static constinit int s_window_pos_x = 0;
@@ -22,6 +24,10 @@ LUA_INTEROP_API auto __lu_panic(const char* const msg) -> void {
 
 LUA_INTEROP_API auto __lu_ffi_cookie() -> std::uint32_t  {
     return 0xfefec0c0;
+}
+
+LUA_INTEROP_API auto __lu_hotreload_full() -> void {
+    scripting::scripting_subsystem::instance->reconnect_lua_host();
 }
 
 LUA_INTEROP_API auto __lu_app_is_focused() -> bool {

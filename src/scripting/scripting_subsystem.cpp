@@ -19,6 +19,66 @@ namespace scripting {
     scripting_subsystem::scripting_subsystem() : subsystem{"Scripting"} {
         log_info("Initializing scripting subsystem");
         log_info(LUAJIT_VERSION);
+        lua_host_connect();
+        instance = this;
+    }
+
+    scripting_subsystem::~scripting_subsystem() {
+        lua_host_disconnect();
+    }
+
+    void scripting_subsystem::on_prepare() {
+        passert(m_is_lua_host_online);
+        if (const luabridge::LuaResult r = (*m_on_prepare)(); r.hasFailed()) [[unlikely]] {
+            lua_log_error("{}: Error in {}: {}", k_boot_script, k_prepare_hook, r.errorMessage());
+        }
+    }
+
+    HOTPROC void scripting_subsystem::on_tick() {
+        passert(m_is_lua_host_online);
+        if (const luabridge::LuaResult r = (*m_on_tick)(); r.hasFailed()) [[unlikely]] {
+            lua_log_error("{}: Error in {}: {}", k_boot_script, k_tick_hook, r.errorMessage());
+        }
+        if (m_reconnect) {
+            reconnect_lua_host_impl();
+            m_reconnect = false;
+        }
+    }
+
+    auto scripting_subsystem::reconnect_lua_host() -> void {
+        m_reconnect = true;
+    }
+
+    auto scripting_subsystem::exec_file(const std::string& file) -> bool {
+        std::string source {};
+        assetmgr::load_asset_text_or_panic(asset_category::script, file, source);
+        if (luaL_dostring(m_L, source.c_str()) != LUA_OK) [[unlikely]] {
+            lua_log_error("script error in {}: {}", file, lua_tostring(m_L, -1));
+            lua_pop(m_L, 1);
+            return false;
+        }
+        return true;
+    }
+
+    auto scripting_subsystem::reconnect_lua_host_impl() -> void {
+        const auto now = std::chrono::high_resolution_clock::now();
+        log_info("Reconnecting to Lua host");
+        if (m_is_lua_host_online) {
+            lua_host_disconnect();
+        }
+        lua_host_connect();
+        on_prepare();
+        const auto elapsed = std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(std::chrono::high_resolution_clock::now() - now).count();
+        log_info("Reconnected to Lua host in {}ms", elapsed);
+    }
+
+    auto scripting_subsystem::lua_host_connect() -> void {
+        log_info("Connecting to Lua host");
+
+        if (m_is_lua_host_online) [[unlikely]] {
+            log_warn("Lua host is already online");
+            return;
+        }
 
         // init lua
         passert(m_L == nullptr);
@@ -63,37 +123,24 @@ namespace scripting {
         // init config table
         m_config_table = luabridge::getGlobal(m_L, k_engine_config_tab);
         passert(m_config_table && m_config_table->isTable());
+
+        m_is_lua_host_online = true;
+        log_info("Lua host connected");
     }
 
-    scripting_subsystem::~scripting_subsystem() {
+    auto scripting_subsystem::lua_host_disconnect() -> void {
+        log_info("Shutting down Lua host");
+        if (!m_is_lua_host_online) [[unlikely]] {
+            log_warn("Lua host is already offline");
+            return;
+        }
         m_config_table.reset();
         m_on_tick.reset();
         m_on_prepare.reset();
         spdlog::get("app")->flush();
         lua_close(m_L);
         m_L = nullptr;
-    }
-
-    void scripting_subsystem::on_prepare() {
-        if (const luabridge::LuaResult r = (*m_on_prepare)(); r.hasFailed()) [[unlikely]] {
-            lua_log_error("{}: Error in {}: {}", k_boot_script, k_prepare_hook, r.errorMessage());
-        }
-    }
-
-    HOTPROC void scripting_subsystem::on_tick() {
-        if (const luabridge::LuaResult r = (*m_on_tick)(); r.hasFailed()) [[unlikely]] {
-            lua_log_error("{}: Error in {}: {}", k_boot_script, k_tick_hook, r.errorMessage());
-        }
-    }
-
-    auto scripting_subsystem::exec_file(const std::string& file) -> bool {
-        std::string source {};
-        assetmgr::load_asset_text_or_panic(asset_category::script, file, source);
-        if (luaL_dostring(m_L, source.c_str()) != LUA_OK) [[unlikely]] {
-            lua_log_error("script error in {}: {}", file, lua_tostring(m_L, -1));
-            lua_pop(m_L, 1);
-            return false;
-        }
-        return true;
+        m_is_lua_host_online = false;
+        log_info("Lua host offline");
     }
 }

@@ -343,6 +343,13 @@ function Editor:renderMainMenu()
             UI.SetTooltip(self.isPlaying and 'Stop' or 'Play Scene')
         end
         UI.PopStyleColor(3)
+        UI.SameLine()
+        if UI.Button(ICONS.FLAME) then
+            fullHotReload()
+        end
+        if UI.IsItemHovered() then
+            UI.SetTooltip('Full Hot Reload')
+        end
         if Profiler.isProfilerRunning then
             UI.Separator()
             UI.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff0000ff)

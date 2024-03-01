@@ -20,6 +20,8 @@ namespace scripting {
 
         auto on_prepare() -> void override;
         HOTPROC auto on_tick() -> void override;
+        [[nodiscard]] auto is_lua_host_online() const noexcept -> bool { return m_is_lua_host_online; }
+        auto reconnect_lua_host() -> void;
 
         [[nodiscard]] static auto get_lua_state() noexcept -> lua_State* { return m_L; }
         [[nodiscard]] static auto get_config_table() noexcept -> const luabridge::LuaRef& {
@@ -28,11 +30,16 @@ namespace scripting {
         }
 
         [[nodiscard]] static auto exec_string(const std::string& str) -> bool;
-        [[nodiscard]]
-
         static auto exec_file(const std::string& file) -> bool;
 
+        static inline constinit scripting_subsystem* instance = nullptr;
+
     private:
+        bool m_is_lua_host_online = false;
+        bool m_reconnect = false;
+        auto reconnect_lua_host_impl() -> void;
+        auto lua_host_connect() -> void;
+        auto lua_host_disconnect() -> void;
         static constexpr const char* k_boot_script = "system/__boot__.lua";
         static constexpr const char* k_prepare_hook = "__on_prepare__";
         static constexpr const char* k_tick_hook = "__on_tick__";
