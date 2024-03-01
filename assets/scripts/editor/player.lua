@@ -72,21 +72,23 @@ end
 function Player:updateMovement()
     local cameraTransform = self.camera:getComponent(Components.Transform)
     local controller = self.controller:getComponent(Components.CharacterController)
+    local isRunning = Input.isKeyPressed(Input.KEYS.W) and Input.isKeyPressed(Input.KEYS.LEFT_SHIFT)
+    local speed = isRunning and self.runSpeed or self.walkSpeed
     local dir = Vec3.ZERO
-    self._isRunning = Input.isKeyPressed(Input.KEYS.LEFT_SHIFT)
-    local speed = self._isRunning and self.runSpeed or self.walkSpeed
-    if Input.isKeyPressed(Input.KEYS.W) then
-        dir = dir + cameraTransform:getForwardDir() * speed
+    local move = function(key, tr_dir)
+        if Input.isKeyPressed(key) then
+            tr_dir.y = 0
+            dir = dir + Vec3.norm(tr_dir) * speed
+            return true
+        end
+        return false
     end
-    if Input.isKeyPressed(Input.KEYS.S) then
-        dir = dir + cameraTransform:getBackwardDir() * speed
-    end
-    if Input.isKeyPressed(Input.KEYS.A) then
-        dir = dir + cameraTransform:getLeftDir() * speed
-    end
-    if Input.isKeyPressed(Input.KEYS.D) then
-        dir = dir + cameraTransform:getRightDir() * speed
-    end
+
+    move(Input.KEYS.W, cameraTransform:getForwardDir())
+    move(Input.KEYS.S, cameraTransform:getBackwardDir())
+    move(Input.KEYS.A, cameraTransform:getLeftDir())
+    move(Input.KEYS.D, cameraTransform:getRightDir())
+
     if Input.isKeyPressed(Input.KEYS.SPACE) then
         dir = dir + Vec3(0, self.jumpSpeed, 0)
     end
@@ -113,6 +115,7 @@ function Player:updateMovement()
         new.y = 5.0
     end
 
+    self._isRunning = isRunning
     controller:setLinearVelocity(new)
 end
 
