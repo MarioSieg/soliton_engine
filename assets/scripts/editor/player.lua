@@ -11,6 +11,12 @@ local Quat = require 'Quat'
 local Time = require 'Time'
 local EFLAGS = ENTITY_FLAGS
 
+local MOVEMENT_STATE = {
+    IDLE = 0,
+    WALKING = 1,
+    RUNNING = 2
+}
+
 local Player = {
     controller = nil,
     camera = nil,
@@ -21,7 +27,7 @@ local Player = {
     walkSpeed = 2,
     runSpeed = 5,
     jumpSpeed = 2,
-    _isRunning = false,
+    _movementState = MOVEMENT_STATE.IDLE,
     _prevMousePos = Vec2.ZERO,
     _mouseAngles = Vec2.ZERO,
     _smoothAngles = Vec2.ZERO
@@ -66,6 +72,14 @@ function Player:updateCamera()
     self._mouseAngles = self._mouseAngles + delta
     self._mouseAngles.y = Math.clamp(self._mouseAngles.y, -clampYRad, clampYRad)
     local quat = Quat.fromYawPitchRoll(self._mouseAngles.x, self._mouseAngles.y, 0.0)
+    if self._movementState ~= MOVEMENT_STATE.IDLE then
+        local walkFreq = 9.85
+        local runFreq = 15
+        local freq = self._movementState == MOVEMENT_STATE.RUNNING and runFreq or walkFreq
+        local bob = 0.02 * Math.sin(Time.time * freq)
+        local bobQ = Quat.fromYawPitchRoll(0, bob, 0)
+        quat = quat * bobQ
+    end
     transform:setRotation(quat)
 end
 
@@ -84,10 +98,17 @@ function Player:updateMovement()
         return false
     end
 
-    move(Input.KEYS.W, cameraTransform:getForwardDir())
-    move(Input.KEYS.S, cameraTransform:getBackwardDir())
-    move(Input.KEYS.A, cameraTransform:getLeftDir())
-    move(Input.KEYS.D, cameraTransform:getRightDir())
+    local isMoving = false
+    isMoving = isMoving or move(Input.KEYS.W, cameraTransform:getForwardDir())
+    isMoving = isMoving or move(Input.KEYS.S, cameraTransform:getBackwardDir())
+    isMoving = isMoving or move(Input.KEYS.A, cameraTransform:getLeftDir())
+    isMoving = isMoving or move(Input.KEYS.D, cameraTransform:getRightDir())
+
+    if isMoving then
+        self._movementState = isRunning and MOVEMENT_STATE.RUNNING or MOVEMENT_STATE.WALKING
+    else
+        self._movementState = MOVEMENT_STATE.IDLE
+    end
 
     if Input.isKeyPressed(Input.KEYS.SPACE) then
         dir = dir + Vec3(0, self.jumpSpeed, 0)
@@ -115,7 +136,6 @@ function Player:updateMovement()
         new.y = 5.0
     end
 
-    self._isRunning = isRunning
     controller:setLinearVelocity(new)
 end
 
