@@ -24,9 +24,10 @@ extern char** __argv;
 auto __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int) -> int {
     const auto argc = __argc;
     const auto** argv = const_cast<const char**>(__argv);
+    const auto** $environ = const_cast<const char**>(_environ);
 #else
-auto main(const int argc, const char** argv, const char** environ) -> int {
+auto main(const int argc, const char** argv, const char** $environ) -> int {
 #endif
-    lunam_entry(argc, argv,  const_cast<const char**>(_environ));
+    lunam_entry(argc, argv,  const_cast<const char**>($environ));
     return EXIT_SUCCESS;
 }

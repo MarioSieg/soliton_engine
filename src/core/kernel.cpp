@@ -126,7 +126,7 @@ kernel::kernel(const int argc, const char** argv, const char** $environ) {
     }
     log_info("ENVIRON VEC");
     for (int i = 0; $environ[i] != nullptr; ++i) {
-        log_info("  {}: {}", i, environ[i]);
+        log_info("  {}: {}", i, $environ[i]);
     }
 }
 
