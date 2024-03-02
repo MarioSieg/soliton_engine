@@ -68,6 +68,7 @@ add_subdirectory(extern/bgfx)
 target_include_directories(lunam PRIVATE extern/bgfx/include)
 target_link_libraries(lunam bx bimg bimg_decode) # we only borrow bgfx's bx and bimg
 
+add_compile_definitions(JPH_DEBUG_RENDERER=1)
 add_subdirectory(extern/JoltPhysics/Build)
 target_include_directories(lunam PRIVATE extern/JoltPhysics/Source)
 target_link_libraries(lunam Jolt)

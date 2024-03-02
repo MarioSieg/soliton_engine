@@ -33,7 +33,7 @@ else()
     add_link_options(-rdynamic)
 endif()
 
-if (CMAKE_BUILD_TYPE STREQUAL "Release")
+if (CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
     add_compile_options(-Ofast)
     if (WIN32)
         add_compile_options(/Oy /Oi)
