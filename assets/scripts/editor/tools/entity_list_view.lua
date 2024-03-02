@@ -33,7 +33,7 @@ function EntityListView:buildEntityList()
             if isUnnamed then
                 name = 'Unnamed'
             end
-            name = ICONS.DATABASE..' '..name
+            name = ICONS.CUBE..' '..name
             table.insert(self.entityList, {entity, name, isUnnamed})
             ::continue::
         end
