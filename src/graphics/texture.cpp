@@ -304,7 +304,7 @@ namespace graphics {
 
             upload(img, 0, 0, data, size, vk::ImageLayout::eTransferDstOptimal);
 
-            if (0&&m_mip_levels > 1) {
+            if (m_mip_levels > 1) {
                 // if mip_levels == 1, we can just use the image as-is and not generate mipmaps but only barrier them
                 const bool transfer_only = mip_levels > 1;
                 generate_mips(transfer_only);
@@ -337,7 +337,23 @@ namespace graphics {
 
         auto format = static_cast<vk::Format>(k_texture_format_map[image->m_format].fmt);
         log_info("Texture format: {}", string_VkFormat(static_cast<VkFormat>(format)));
-        if (!vkb_device().is_image_format_supported(vk::ImageType::e2D, format, create_flags, usage, tiling)) [[unlikely]] {
+        bool is_format_supported = false;
+        bool is_format_mipgen_supported = false;
+        vkb_device().is_image_format_supported(
+            vk::ImageType::e2D,
+            format,
+            create_flags,
+            usage,
+            tiling,
+            is_format_supported,
+            is_format_mipgen_supported
+        );
+        bool conversion_required = !is_format_supported; // if the hardware doesn't support the format, we'll convert it to a supported format
+        if (image->m_numMips <= 1 && !is_format_mipgen_supported) { // if the hardware doesn't support mipgen for the format, we'll convert it to a supported format
+            conversion_required = true;
+            log_warn("Texture format mipgen not supported: {}", string_VkFormat(static_cast<VkFormat>(format)));
+        }
+        if (conversion_required) {
             log_warn("Texture format not supported: {} converting -> {}", string_VkFormat(static_cast<VkFormat>(format)), string_VkFormat(k_texture_format_map[k_fallback_format].fmt));
             bimg::ImageContainer* original = image;
             image = bimg::imageConvert(&s_texture_allocator, k_fallback_format, *original, true);

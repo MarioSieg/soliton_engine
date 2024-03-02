@@ -49,8 +49,10 @@ namespace vkb {
             vk::Format format,
             vk::ImageCreateFlags flags,
             vk::ImageUsageFlags usage,
-            vk::ImageTiling tiling
-        ) const -> bool;
+            vk::ImageTiling tiling,
+            bool& is_generally_supported,
+            bool& is_mipgen_supported
+        ) const -> void;
 
     private:
         static inline constinit std::array<const char*, 2> k_device_extensions {
