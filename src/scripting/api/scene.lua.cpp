@@ -51,42 +51,34 @@ LUA_INTEROP_API auto __lu_scene_get_active_camera_entity() -> flecs::id_t {
 // TODO: Convert to FLECS C++ API
 
 static struct {
-    flecs::iter_t iter{};
-    scene* assoc {};
+    flecs::query<const com::metadata> query {};
+    scene* ref {};
+    std::vector<flecs::id_t> data {};
 } s_scene_iter_context;
 
 LUA_INTEROP_API auto __lu_scene_full_entity_query_start() -> void {
-    return;
+    auto& ctx = s_scene_iter_context;
     scene& active = scene::get_active();
-    s_scene_iter_context.assoc = &active;
-    std::array<flecs::iter_t, 2> iters {};
-    // search for objects with com::metadata assigned
-    ecs_term_t term = {
-        .id = flecs::type_id<com::metadata>(),
-        .inout = EcsIn,
-        .oper = EcsOptional
-    };
-    ecs_iter_poly(active.m_world, active.m_world, iters.data(), &term);
-    s_scene_iter_context.iter = iters[0];
-    ecs_iter_fini(&iters[1]);
+    if (&active != ctx.ref || !ctx.query) {
+        ctx.ref = &active;
+        ctx.query = active.query<const com::metadata>();
+    }
+    ctx.query.each([](const flecs::entity& e, const com::metadata& m) {
+        s_scene_iter_context.data.emplace_back(e);
+    });
 }
 
 LUA_INTEROP_API auto __lu_scene_full_entity_query_next_table() -> std::int32_t {
-    return 0;
-    passert(&scene::get_active() == s_scene_iter_context.assoc);
-    return ecs_iter_next(&s_scene_iter_context.iter) ? s_scene_iter_context.iter.count : 0;
+    auto& ctx = s_scene_iter_context;
+    return static_cast<std::int32_t>(ctx.data.size());
 }
 
 LUA_INTEROP_API auto __lu_scene_full_entity_query_get(const std::int32_t i) -> flecs::id_t {
-    return 0;
-    passert(&scene::get_active() == s_scene_iter_context.assoc);
-    return s_scene_iter_context.iter.entities[i];
+    auto& ctx = s_scene_iter_context;
+    return ctx.data[i];
 }
 
 LUA_INTEROP_API auto __lu_scene_full_entity_query_end() -> void {
-    return;
-    passert(&scene::get_active() == s_scene_iter_context.assoc);
-    ecs_iter_fini(&s_scene_iter_context.iter);
-    s_scene_iter_context.iter = {};
-    s_scene_iter_context.assoc = nullptr;
+    auto& ctx = s_scene_iter_context;
+    ctx.data.clear();
 }
