@@ -72,14 +72,16 @@ function Player:updateCamera()
     self._mouseAngles = self._mouseAngles + delta
     self._mouseAngles.y = Math.clamp(self._mouseAngles.y, -clampYRad, clampYRad)
     local quat = Quat.fromYawPitchRoll(self._mouseAngles.x, self._mouseAngles.y, 0.0)
+    --[[
     if self._movementState ~= MOVEMENT_STATE.IDLE then
         local walkFreq = 9.85
         local runFreq = 15
         local freq = self._movementState == MOVEMENT_STATE.RUNNING and runFreq or walkFreq
         local bob = 0.02 * Math.sin(Time.time * freq)
-        local bobQ = Quat.fromYawPitchRoll(0, bob, 0)
+        local bobQ = Quat.fromYawPitchRoll(bob, 0, 0)
         quat = quat * bobQ
     end
+    ]]
     transform:setRotation(quat)
 end
 
