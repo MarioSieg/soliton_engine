@@ -11,7 +11,7 @@ namespace assetmgr {
     using namespace std::filesystem;
 
     auto get_asset_root() -> const std::string& {
-        static const std::string asset_root = ("/Users/mario/Documents/lunam/assets");
+        static const std::string asset_root = (current_path() / "assets").string();
         return asset_root;
     }
 
