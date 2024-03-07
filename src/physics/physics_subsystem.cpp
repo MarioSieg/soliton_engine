@@ -289,7 +289,6 @@ namespace physics {
     }
 
     HOTPROC auto physics_subsystem::on_post_tick() -> void {
-    	pre_sync();
     	const double delta = kernel::get().get_delta_time();
     	const int n_steps = 1;
     	m_physics_system.Update(static_cast<float>(delta), n_steps, &*m_temp_allocator, &*m_job_system);
