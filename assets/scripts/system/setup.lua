@@ -23,6 +23,19 @@ function _G.print(...)
     printProxy(str)
 end
 
+function eprint(...)
+    local args = {...}
+    local str = string.format('[%s] ', os.date('%H:%M:%S'))
+    for i, arg in ipairs(args) do
+        if i > 1 then
+            str = str..' '
+        end
+        str = str..tostring(arg)
+    end
+    table.insert(PROTOCOL, {str, true})
+    PROTOCOL_ERRORS = PROTOCOL_ERRORS + 1
+end
+
 local errorProxy = _G.error
 function _G.error(...)
     local args = {...}

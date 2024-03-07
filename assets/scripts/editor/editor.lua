@@ -34,7 +34,6 @@ WINDOW_SIZE = UI.ImVec2(800, 600)
 local DOCK_LEFT_RATIO = 0.4
 local DOCK_RIGHT_RATIO = 0.7
 local DOCK_BOTTOM_RATIO = 0.5
-local MAX_TEXT_INPUT_SIZE = 128
 local POPUP_ID_NEW_PROJECT = 0xffffffff-1
 local MAIN_MENU_PADDING = UI.GetStyle().FramePadding
 --MAIN_MENU_PADDING = MAIN_MENU_PADDING + UI.ImVec2(0.005, 0.005)
@@ -51,10 +50,7 @@ if not lfs.attributes(DEFAULT_PROJECT_DIR) then
     DEFAULT_PROJECT_DIR = ''
 end
 
-DEFAULT_PROJECT_DIR = DEFAULT_PROJECT_DIR..'Lunam Projects/'
-if not lfs.attributes(DEFAULT_PROJECT_DIR) then
-    lfs.mkdir(DEFAULT_PROJECT_DIR)
-end
+DEFAULT_PROJECT_DIR = DEFAULT_PROJECT_DIR..'lunam projects/'
 
 local MESH_FILE_FILTER = '3d,3ds,3mf,ac,ac3d,acc,amj,ase,ask,b3d,bvh,csm,cob,dae,dxf,enff,fbx,gltf,glb,hmb,ifc,irr,lwo,lws,lxo,m3d,md2,md3,md5,mdc,mdl,mesh,mot,ms3d,ndo,nff,obj,off,ogex,ply,pmx,prj,q3o,q3s,raw,scn,sib,smd,stp,stl,ter,uc,vta,x,x3d,xgl,zgl'
 local GIZMO_OPERATIONS = {
@@ -137,7 +133,6 @@ local Editor = {
     },
     camera = require 'editor.camera',
     dockID = nil,
-    inputTextBuffer = ffi.new('char[?]', 1+MAX_TEXT_INPUT_SIZE),
     activeProject = nil,
     showDemoWindow = false,
 }
@@ -364,46 +359,59 @@ function Editor:renderMainMenu()
     end
 end
 
-local tmpProjName = ''
-local tmpDir = ''
+local CREATE_PROJECT_MAX_PATH = 128
+local createProjectTextBuf = nil
+local creatingProject = false
+local createdProjectDir = ''
 function Editor:renderPopups()
     UI.PushOverrideID(POPUP_ID_NEW_PROJECT)
     if UI.BeginPopupModal(ICONS.FOLDER_PLUS..' New Project') then
-        if self.inputTextBuffer[0] == 0 then -- Init
-            tmpProjName = 'New Project'
-            tmpDir = DEFAULT_PROJECT_DIR..tmpProjName
-            ffi.copy(self.inputTextBuffer, tmpProjName)
+        if not createProjectTextBuf then
+            createProjectTextBuf = ffi.new('char[?]', CREATE_PROJECT_MAX_PATH)
         end
-        if UI.InputText('Name', self.inputTextBuffer, MAX_TEXT_INPUT_SIZE) then
-            tmpProjName = ffi.string(self.inputTextBuffer)
-            tmpDir = DEFAULT_PROJECT_DIR..tmpProjName
+        if not creatingProject then
+            local defaultName = 'new project'
+            createdProjectDir = DEFAULT_PROJECT_DIR..defaultName
+            ffi.copy(createProjectTextBuf, defaultName)
+            creatingProject = true
         end
-        if UI.Button('...') then
-            tmpDir = App.Utils.openFolderDialog(nil)..tmpProjName
+        if UI.InputText('##ProjName', createProjectTextBuf, CREATE_PROJECT_MAX_PATH) then
+            createdProjectDir = DEFAULT_PROJECT_DIR..ffi.string(createProjectTextBuf)
         end
         UI.SameLine()
-        UI.Text(tmpDir)
+        if UI.Button('...') then
+            local dir = App.Utils.openFolderDialog(nil)
+            if dir and lfs.attributes(dir) then
+                DEFAULT_PROJECT_DIR = dir
+                createdProjectDir = DEFAULT_PROJECT_DIR..ffi.string(createProjectTextBuf)
+            end
+        end
+        UI.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff999999)
+        UI.Text('Final path: '..createdProjectDir)
+        UI.PopStyleColor()
         if UI.Button('Create ') then
-            local name = tmpProjName
-            local dir = tmpDir
-            if not dir or not name or #name == 0 then
-                error('Invalid project name or directory')
-            end
-            local project = Project:new(dir, name)
-            print('Creating project on disk: '..dir)
-            if pcall(function() project:createOnDisk(dir) end) then
-                print('Project created: '..dir)
-            else
+            local name = ffi.string(createProjectTextBuf)
+            local dir = DEFAULT_PROJECT_DIR
+            if dir and name and #name ~= 0 then
+                local project = Project:new(dir, name)
+                print('Creating project on disk: '..dir)
+                if pcall(function() project:createOnDisk(dir) end) then
+                    print('Project created: '..dir)
+                else
+                    eprint('Failed to create project')
+                end
                 UI.CloseCurrentPopup()
-                error('Failed to create project')
+                createProjectTextBuf[0] = 0
+                creatingProject = false
+            else
+                eprint('Invalid project name or directory')
             end
-            UI.CloseCurrentPopup()
-            self.inputTextBuffer[0] = 0
         end
         UI.SameLine()
         if UI.Button('Cancel') then
             UI.CloseCurrentPopup()
-            self.inputTextBuffer[0] = 0
+            createProjectTextBuf[0] = 0
+            creatingProject = false
         end
         UI.EndPopup()
     end
