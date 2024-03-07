@@ -1,12 +1,20 @@
 // Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "../_prelude.hpp"
+#include "../../../physics/physics_subsystem.hpp"
 
 impl_component_core(transform)
 
 LUA_INTEROP_API auto __lu_com_transform_set_pos(const flecs::id_t id, const double x, const double y, const double z) -> void {
     const flecs::entity ent {scene::get_active(), id};
-    if (auto* transform = ent.get_mut<com::transform>(); transform) [[likely]] {
+    // If the entity has a rigidbody component, set the position of the rigidbody
+    // as the transform position will be overwritten by the physics system
+    if (const auto* rigidbody = ent.get<const com::rigidbody>(); rigidbody) {
+        auto& bi = physics::physics_subsystem::get_physics_system().GetBodyInterface();
+        bi.SetPosition(rigidbody->body_id, JPH::Vec3{static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)}, JPH::EActivation::Activate);
+    } else if (const auto* cc = ent.get<const com::character_controller>(); cc) {
+        cc->characer->SetPosition(JPH::Vec3{static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)}, JPH::EActivation::Activate);
+    } else if (auto* transform = ent.get_mut<com::transform>(); transform) [[likely]] {
         transform->position = {
             static_cast<float>(x),
             static_cast<float>(y),
@@ -26,7 +34,14 @@ LUA_INTEROP_API auto __lu_com_transform_get_pos(const flecs::id_t id) -> lua_vec
 
 LUA_INTEROP_API auto __lu_com_transform_set_rot(const flecs::id_t id, const double x, const double y, const double z, const double w) -> void {
     const flecs::entity ent {scene::get_active(), id};
-    if (auto* transform = ent.get_mut<com::transform>(); transform) [[likely]] {
+    // If the entity has a rigidbody component, set the position of the rigidbody
+    // as the transform position will be overwritten by the physics system
+    if (const auto* rigidbody = ent.get<const com::rigidbody>(); rigidbody) {
+        auto& bi = physics::physics_subsystem::get_physics_system().GetBodyInterface();
+        bi.SetRotation(rigidbody->body_id, JPH::Quat{static_cast<float>(x), static_cast<float>(y), static_cast<float>(z), static_cast<float>(w)}, JPH::EActivation::Activate);
+    } else if (const auto* cc = ent.get<const com::character_controller>(); cc) {
+        cc->characer->SetRotation(JPH::Quat{static_cast<float>(x), static_cast<float>(y), static_cast<float>(z), static_cast<float>(w)}, JPH::EActivation::Activate);
+    } else if (auto* transform = ent.get_mut<com::transform>(); transform) [[likely]] {
         transform->rotation = {
             static_cast<float>(x),
             static_cast<float>(y),

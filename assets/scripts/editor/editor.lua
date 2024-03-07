@@ -204,7 +204,7 @@ function Editor:playScene()
     self.camera.enableMouseLook = false
     local spawnPos = self.camera.position
     spawnPos.y = spawnPos.y + 2.0
-    Player:spawn(nil) -- todo
+    Player:spawn(spawnPos)
     Scene.setActiveCameraEntity(Player.camera)
     self.isVisible = false
 end

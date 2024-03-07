@@ -39,8 +39,8 @@ function Player:spawn(spawnPos)
 
     self.controller = Scene.spawn('PlayerController')
     self.controller:addFlag(EFLAGS.TRANSIENT)
-    self.controller:getComponent(Components.Transform)
-    self.controller:getComponent(Components.CharacterController):setLinearVelocity(spawnPos)
+    self.controller:getComponent(Components.CharacterController)
+    self.controller:getComponent(Components.Transform):setPosition(spawnPos)
 
     self.camera = Scene.spawn('PlayerCamera')
     self.camera:addFlag(EFLAGS.TRANSIENT)
