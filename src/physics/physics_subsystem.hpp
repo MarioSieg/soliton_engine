@@ -31,6 +31,7 @@ namespace physics {
         }
 
     private:
+        auto post_sync() const -> void;
         std::unique_ptr<JPH::TempAllocatorImpl> m_temp_allocator {};
         std::unique_ptr<JPH::JobSystemThreadPool> m_job_system {};
         std::unique_ptr<JPH::BroadPhaseLayerInterface> m_broad_phase {};

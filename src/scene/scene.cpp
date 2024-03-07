@@ -118,9 +118,9 @@ auto scene::import_from_file(const std::string& path, const float scale, const s
             aiVector3D scaling, position;
             aiQuaternion rotation;
             node->mTransformation.Decompose(scaling, rotation, position);
-            transform->position = {position.x, position.y, position.z};
+            transform->position = {position.x, position.y, position.z, 0.0f};
             transform->rotation = {rotation.x, rotation.y, rotation.z, rotation.w};
-            transform->scale = {scaling.x, scaling.y, scaling.z};
+            transform->scale = {scaling.x, scaling.y, scaling.z, 0.0f};
 
             auto* renderer = e.get_mut<com::mesh_renderer>();
 

@@ -47,9 +47,9 @@ LUA_INTEROP_API auto __lu_dd_gizmo_manipulator(const flecs::id_t id, const int o
     );
     DirectX::XMVECTOR pos {}, rot {}, scale {};
     DirectX::XMMatrixDecompose(&scale, &rot, &pos, DirectX::XMLoadFloat4x4A(&model_mtx));
-    DirectX::XMStoreFloat3(&transform->position, pos);
+    DirectX::XMStoreFloat4(&transform->position, pos);
     DirectX::XMStoreFloat4(&transform->rotation, rot);
-    DirectX::XMStoreFloat3(&transform->scale, scale);
+    DirectX::XMStoreFloat4(&transform->scale, scale);
     if (auto* renderer = ent.get<com::mesh_renderer>(); renderer) {
         for (const auto* mesh : renderer->meshes) {
             if (mesh) [[likely]] {

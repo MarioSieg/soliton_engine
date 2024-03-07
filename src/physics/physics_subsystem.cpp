@@ -233,7 +233,7 @@ namespace physics {
 				transform.rotation.w,
 			};
     		auto verts = mesh->verts;
-    		const auto scale = DirectX::XMLoadFloat3(&transform.scale);
+    		const auto scale = DirectX::XMLoadFloat4(&transform.scale);
     		for (JPH::Float3& vert : verts) {
     			static_assert(sizeof(JPH::Float3) == sizeof(DirectX::XMFLOAT3));
     			static_assert(alignof(JPH::Float3) == alignof(DirectX::XMFLOAT3));
@@ -289,30 +289,30 @@ namespace physics {
     }
 
     HOTPROC auto physics_subsystem::on_post_tick() -> void {
-    	auto& active = scene::get_active();
-    	auto& bi = m_physics_system.GetBodyInterface();
+    	pre_sync();
     	const double delta = kernel::get().get_delta_time();
     	const int n_steps = 1;
     	m_physics_system.Update(static_cast<float>(delta), n_steps, &*m_temp_allocator, &*m_job_system);
+    	post_sync();
+    }
 
-    	// sync loop 1 (rigidbody <-> transform)
-    	active.filter<com::rigidbody, com::transform>().each([&](com::rigidbody& rb, com::transform& transform) {
-		    const JPH::BodyID body_id = rb.body_id;
-		    const JPH::Vec3 pos = bi.GetPosition(body_id);
-			transform.position.x = pos.GetX();
-    		transform.position.y = pos.GetY();
-    		transform.position.z = pos.GetZ();
-    		transform.rotation = std::bit_cast<DirectX::XMFLOAT4>(bi.GetRotation(body_id));
+	// Sync transforms from physics to game objects
+    auto physics_subsystem::post_sync() const -> void {
+    	auto& active = scene::get_active();
+    	JPH::BodyInterface& bi = m_physics_system.GetBodyInterface();
+
+    	// sync loop 1 rigidbody => transform
+    	active.filter<const com::rigidbody, com::transform>().each([&](const com::rigidbody& rb, com::transform& transform) {
+			const JPH::BodyID body_id = rb.body_id;
+			transform.position = std::bit_cast<DirectX::XMFLOAT4>(bi.GetPosition(body_id));
+			transform.rotation = std::bit_cast<DirectX::XMFLOAT4>(bi.GetRotation(body_id));
 		});
 
-    	// sync loop 2 (character controller <-> transform)
-    	active.filter<com::character_controller, com::transform>().each([&](com::character_controller& cc, com::transform& transform) {
-    		cc.characer->PostSimulation(0.05f);
-			const JPH::Vec3 pos = cc.characer->GetPosition();
-			transform.position.x = pos.GetX();
-			transform.position.y = pos.GetY();
-			transform.position.z = pos.GetZ();
-			transform.rotation = std::bit_cast<DirectX::XMFLOAT4>(cc.characer->GetRotation());
+    	// sync loop 2 character controller => transform
+    	active.filter<const com::character_controller, com::transform>().each([&](const com::character_controller& cc, com::transform& transform) {
+			cc.characer->PostSimulation(0.05f);
+    		transform.position = std::bit_cast<DirectX::XMFLOAT4>(cc.characer->GetPosition());
+			transform.rotation = std::bit_cast<DirectX::XMFLOAT4>(cc.characer->GetPosition());
 		});
     }
 }

@@ -269,7 +269,7 @@ namespace graphics {
                 dd->render(
                     cmd_buf,
                     DirectX::XMLoadFloat4x4A(&graphics_subsystem::s_view_proj_mtx),
-                    DirectX::XMLoadFloat3(&graphics_subsystem::s_camera_transform.position)
+                    DirectX::XMLoadFloat4(&graphics_subsystem::s_camera_transform.position)
                 );
             }
             vkb_context().render_imgui(ImGui::GetDrawData(), cmd_buf); // thread safe?!

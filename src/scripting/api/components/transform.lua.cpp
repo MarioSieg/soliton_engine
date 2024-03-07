@@ -10,7 +10,8 @@ LUA_INTEROP_API auto __lu_com_transform_set_pos(const flecs::id_t id, const doub
         transform->position = {
             static_cast<float>(x),
             static_cast<float>(y),
-            static_cast<float>(z)
+            static_cast<float>(z),
+            .0f
         };
     }
 }
@@ -49,7 +50,8 @@ LUA_INTEROP_API auto __lu_com_transform_set_scale(const flecs::id_t id, const do
         transform->scale = {
             static_cast<float>(x),
             static_cast<float>(y),
-            static_cast<float>(z)
+            static_cast<float>(z),
+            .0f
         };
     }
 }
