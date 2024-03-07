@@ -183,7 +183,11 @@ function Editor:defaultDockLayout()
 end
 
 function Editor:loadScene(file)
-    Scene.load('Default', file)
+    if file then
+        Scene.load(file)
+    else
+        Scene.new('Untitled Scene')
+    end
     local mainCamera = Scene.spawn('__EditorCamera') -- spawn editor camera
     mainCamera:addFlag(EFLAGS.HIDDEN + EFLAGS.TRANSIENT) -- hide and don't save
     mainCamera:getComponent(Components.Camera):setFov(80)
@@ -233,7 +237,7 @@ function Editor:renderMainMenu()
     if UI.BeginMainMenuBar() then
         UI.PopStyleVar(1)
         if UI.BeginMenu('File') then
-            if UI.MenuItem(ICONS.FOLDER_PLUS..' New Project...') then
+            if UI.MenuItem(ICONS.FOLDER_PLUS..' Create Project...') then
                 UI.PushOverrideID(POPUP_ID_NEW_PROJECT)
                 UI.OpenPopup(ICONS.FOLDER_PLUS..' New Project')
                 UI.PopID()
@@ -249,10 +253,13 @@ function Editor:renderMainMenu()
                     collectgarbage('stop')
                 end
             end
-            if UI.MenuItem(ICONS.FILE_IMPORT..' Import Scene') then
+            if UI.MenuItem(ICONS.PLUS_CIRCLE..' New Scene') then
+                self:loadScene(nil)
+            end
+            if UI.MenuItem(ICONS.FILE_IMPORT..' Open Scene') then
                 local selectedFile = App.Utils.openFileDialog('3D Scenes', MESH_FILE_FILTER, '')
                 if selectedFile and lfs.attributes(selectedFile) then
-                    Editor:loadScene(selectedFile)
+                    self:loadScene(selectedFile)
                 end
             end
             if UI.MenuItem(ICONS.PORTAL_EXIT..' Exit') then

@@ -9,7 +9,9 @@ local Entity = require 'lu.entity'
 local Components = require 'lu.components'
 
 ffi.cdef[[
-    uint32_t __lu_scene_import(const char* name, const char* model_file, double scale, uint32_t load_flags);
+    typedef int lua_scene_id;
+    lua_scene_id __lu_scene_create(const char* name);
+    lua_scene_id __lu_scene_import(const char* name, const char* model_file, double scale, uint32_t load_flags);
     void __lu_scene_tick(void);
     void __lu_scene_start(void);
     lua_entity_id __lu_scene_spawn_entity(const char* name);
@@ -23,15 +25,20 @@ ffi.cdef[[
     lua_entity_id __lu_scene_get_active_camera_entity(void);
 ]]
 
-local function mergeFlags(flags)
+local function flagSetUnion(flags)
     local result = 0
     for i=1, #flags do
         result = bor(result, flags[i])
     end
-    assert(result <= 0xffffffff)
+    if result > 0xffffffff then
+        eprint('mergeFlags: result is larger than 32 bit: %x', result)
+        return band(result, 0xffffffff)
+    end
     return result
 end
 
+--- Scene import flags for post processing.
+--- Only applies if the scene is not a .lunam file.
 SCENE_IMPORT_FLAGS = {
     NONE = 0x0,
     CALC_TANGENT_SPACE = 0x1,
@@ -68,7 +75,7 @@ SCENE_IMPORT_FLAGS = {
     GEN_BOUNDING_BOXES = 0x80000000,
 }
 
-SCENE_IMPORT_FLAGS.PRESET_REALTIME_QUALITY = mergeFlags({
+SCENE_IMPORT_FLAGS.PRESET_REALTIME_QUALITY = flagSetUnion({
     SCENE_IMPORT_FLAGS.CALC_TANGENT_SPACE,
     SCENE_IMPORT_FLAGS.GEN_SMOOTH_NORMALS,
     SCENE_IMPORT_FLAGS.JOIN_IDENTICAL_VERTICES,
@@ -85,13 +92,13 @@ SCENE_IMPORT_FLAGS.PRESET_REALTIME_QUALITY = mergeFlags({
     -- SCENE_IMPORT_FLAGS.OPTIMIZE_GRAPH
 })
 
-SCENE_IMPORT_FLAGS.PRESET_CONVERT_TO_LH = mergeFlags({
+SCENE_IMPORT_FLAGS.PRESET_CONVERT_TO_LH = flagSetUnion({
     SCENE_IMPORT_FLAGS.MAKE_LEFT_HANDED,
     SCENE_IMPORT_FLAGS.FLIP_UVS,
     SCENE_IMPORT_FLAGS.FLIP_WINDING_ORDER
 })
 
-SCENE_IMPORT_FLAGS.DEFAULT_FLAGS = mergeFlags({
+SCENE_IMPORT_FLAGS.DEFAULT_FLAGS = flagSetUnion({
     SCENE_IMPORT_FLAGS.PRESET_REALTIME_QUALITY ,
     SCENE_IMPORT_FLAGS.PRESET_CONVERT_TO_LH
 })
@@ -146,33 +153,65 @@ function Scene.getActiveCameraEntity()
     return Entity:fromId(C.__lu_scene_get_active_camera_entity())
 end
 
-function Scene.load(scene_name, file, scale, flags)
-    scale = scale or 1.0
-    flags = flags or SCENE_IMPORT_FLAGS.DEFAULT_FLAGS
-    assert(scene_name or file, 'scene name or gltf file must be provided')
-    if file and type(file) == 'string' then
-        if not lfs.attributes(file) then
-            panic(string.format('gltf file %s does not exist', file))
-        end
-        if not scene_name then
-            scene_name = file:match("^.+/(.+)$")
-            scene_name = scene_name:match("(.+)%..+")
-        end
-    else
-        scene_name = scene_name or 'untitled'
-        file = ''
+local function setLocalSceneProps(id, sceneName)
+    -- Check if the id is valid
+    if type(id) ~= 'number' or id == 0 then
+        eprint(string.format('Failed to create scene, invalid id returned: %s', sceneName))
+        return false
     end
-    Scene.name = scene_name
-    assert(type(scene_name) == 'string')
-    local id = C.__lu_scene_import(scene_name, file, scale, band(flags, 0xffffffff)) -- create native scene
-    assert(type(id) == 'number' and id ~= 0, 'failed to create scene')
+
+    assert(sceneName and type(sceneName) == 'string')
+
+    -- Make scene active
+    Scene.name = sceneName
     Scene.id = id
     Scene.__onStart() -- invoke start hook
-    print(string.format('Created new scene: %s, id: %x', scene_name, id))
-    collectgarbage('collect') -- collect garbage after new scene is created
+    print(string.format('Created new scene: %s, id: %x', sceneName, id))
+
+    -- Perform one full GC cycle to clean up any garbage
+    collectgarbage()
     collectgarbage('stop')
+    return true
 end
 
-Scene.load('Default', nil)
+--- Creates a new, empty scene with the given name and makes it the active scene.
+--- @param name: string, name of the new scene
+function Scene.new(sceneName)
+    sceneName = sceneName or 'Untitled Scene'
+    local id = C.__lu_scene_create(sceneName)
+    return setLocalSceneProps(id, sceneName)
+end
+
+--- Loads a scene from a given file and makes it the active scene.
+--- The file can be a 3d mesh file like .gltf, .fbx, .obj etc.. or a .lunam file.
+--- Importing an external file which is not .lunam will take much longer, because conversion is required.
+--- @param file: string, path to the file to load
+--- @param import_scale: number, scale factor to apply to the imported scene. Only applies if the scene is not a .lunam file
+--- @param import_flags: number, flags to control the import process. Only applies if the scene is not a .lunam file
+function Scene.load(file, import_scale, import_flags)
+    if not file or type(file) ~= 'string' then
+        eprint('scene name or source file must be provided')
+        return false
+    end
+    if not import_scale or type(import_scale) ~= 'number' or import_scale == 0 then
+        import_scale = 1
+    end
+    if not import_flags or type(import_flags) ~= 'number' then
+        import_flags = SCENE_IMPORT_FLAGS.DEFAULT_FLAGS
+    end
+    if not lfs.attributes(file) then
+        eprint(string.format('scene file does not exist: %s', file))
+        return false
+    end
+    local sceneName = file:match("^.+/(.+)$"):match("(.+)%..+") -- extract scene name from file path
+    local id = C.__lu_scene_import(sceneName, file, import_scale, band(import_flags, 0xffffffff)) -- create native scene
+    return setLocalSceneProps(id, sceneName)
+end
+
+-- Do NOT remove this
+-- Create a default scene - Lunam requires to always have an active scene
+if not Scene.new('Untitled') then
+    panic('failed to create default scene')
+end
 
 return Scene

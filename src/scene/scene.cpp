@@ -20,9 +20,9 @@ struct proxy final : scene {
     explicit proxy(Ts&&... args) : scene(std::forward<Ts>(args)...) {}
 };
 
-static constinit std::atomic_uint32_t id_gen = 1;
+static constinit std::atomic_int id_gen = 1;
 
-scene::scene() : id{id_gen.fetch_add(1, std::memory_order_relaxed)} {
+scene::scene() : id{id_gen.fetch_add(1, std::memory_order_seq_cst)} {
     static const auto main_tid = std::this_thread::get_id();
     passert(main_tid == std::this_thread::get_id());
 }

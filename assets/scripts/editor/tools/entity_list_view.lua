@@ -16,7 +16,7 @@ local EntityListView = {
     entityList = {},
     entityCounter = 0,
     showHiddenEntities = ffi.new('bool[1]', false),
-    selectedWantsFocus = false
+    selectedWantsFocus = false,
 }
 
 function EntityListView:buildEntityList()

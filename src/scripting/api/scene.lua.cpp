@@ -2,15 +2,17 @@
 
 #include "_prelude.hpp"
 
-LUA_INTEROP_API auto __lu_scene_import(const char* name, const char* file, const double scale, const std::uint32_t load_flags) -> std::uint32_t {
-    std::string sname {}, sfile {};
-    if (name) {
-        sname = name;
-    }
-    if (file) {
-        sfile = file;
-    }
-    scene::new_active(std::move(sname), std::move(sfile), static_cast<float>(scale), load_flags);
+LUA_INTEROP_API auto __lu_scene_create(const char* name) -> int {
+    passert(name != nullptr);
+    // pass empty file name to NOT load a file
+    scene::new_active(name, "", 1.0f, 0);
+    return scene::get_active().id;
+}
+
+LUA_INTEROP_API auto __lu_scene_import(const char* name, const char* file, const double scale, const std::uint32_t load_flags) -> int {
+    passert(name != nullptr);
+    passert(file != nullptr);
+    scene::new_active(name, file, static_cast<float>(scale), load_flags);
     return scene::get_active().id;
 }
 
