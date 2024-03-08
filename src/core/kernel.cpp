@@ -1,6 +1,8 @@
 // Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "kernel.hpp"
+#include "buffered_sink.hpp"
+
 #include "../scene/scene.hpp"
 
 #include <iostream>
@@ -18,34 +20,11 @@
 static constexpr std::size_t k_log_threads = 1;
 static constexpr std::size_t k_log_queue_size = 8192;
 
-class buf_sink final : public spdlog::sinks::base_sink<std::mutex> {
-public:
-    explicit buf_sink(std::size_t cap) { m_Backtrace.reserve(cap); }
-
-    auto get() const noexcept -> std::span<const std::pair<spdlog::level::level_enum, std::string>> {
-        return m_Backtrace;
-    }
-
-    auto clear() noexcept -> void { m_Backtrace.clear(); }
-
-private:
-    std::vector<std::pair<spdlog::level::level_enum, std::string>> m_Backtrace{};
-
-    auto sink_it_(const spdlog::details::log_msg& msg) -> void override {
-        spdlog::memory_buf_t buffer{};
-        formatter_->format(msg, buffer);
-        std::string message = {buffer.data(), buffer.size()};
-        m_Backtrace.emplace_back(std::make_pair(msg.level, std::move(message)));
-    }
-
-    auto flush_() -> void override {}
-};
-
 [[nodiscard]] static auto create_logger(const std::string& name, const std::string& pattern, bool print_stdout = true,
                                        bool enroll = true) -> std::shared_ptr<spdlog::logger> {
     const auto time = fmt::localtime(std::time(nullptr));
     std::vector<std::shared_ptr<spdlog::sinks::sink>> sinks = {
-        //std::make_shared<buf_sink>(k_log_queue_size),
+        std::make_shared<buffered_sink>(k_log_queue_size),
         std::make_shared<spdlog::sinks::basic_file_sink_mt>(
             fmt::format("log/session {:%d-%m-%Y  %H-%M-%S}/{}.log", time, name)),
     };

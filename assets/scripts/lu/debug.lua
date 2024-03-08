@@ -15,6 +15,7 @@ ffi.cdef[[
     void __lu_dd_set_fade_distance(double near, double far);
     void __lu_dd_draw_scene_with_aabbs(lua_vec3 color);
     void __lu_dd_draw_physics_debug(void);
+    void __lu_dd_draw_native_log(bool scroll);
 ]]
 
 local Debug = {}

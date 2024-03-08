@@ -1,7 +1,9 @@
 // Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "_prelude.hpp"
+#include "../../core/buffered_sink.hpp"
 #include "../../graphics/graphics_subsystem.hpp"
+#include "../../graphics/imgui/imgui.h"
 #include "../../graphics/imgui/ImGuizmo.h"
 #include "../../physics/physics_subsystem.hpp"
 
@@ -106,4 +108,39 @@ LUA_INTEROP_API auto __lu_dd_draw_physics_debug() -> void {
     }();
     physics::physics_subsystem::get_physics_system().DrawBodies(draw_settings, &physics::physics_subsystem::get_debug_renderer());
     physics::debug_renderer::end();
+}
+
+LUA_INTEROP_API auto __lu_dd_draw_native_log(const bool scroll) -> void {
+    std::shared_ptr<spdlog::logger> logger = spdlog::get("engine");
+    const auto& sinks = logger->sinks();
+    if (sinks.empty()) [[unlikely]] {
+        return;
+    }
+    const auto& sink = sinks.front();
+    auto* buffered = static_cast<buffered_sink*>(&*sink);
+    if (!buffered) [[unlikely]] {
+        return;
+    }
+    const std::span<const std::pair<spdlog::level::level_enum, std::string>> logs = buffered->get();
+    using namespace ImGui;
+    const float footer = GetStyle().ItemSpacing.y + GetFrameHeightWithSpacing();
+    const auto id = static_cast<ImGuiID>(std::bit_cast<std::uintptr_t>(logs.data()) ^ 0xfefefefe);
+    if (BeginChild(id, { .0F, -footer }, false)) {
+        PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2 { 4.F, 1.F });
+        ImGuiListClipper clipper {};
+        clipper.Begin(static_cast<int>(logs.size()), GetTextLineHeightWithSpacing());
+        while (clipper.Step()) {
+            for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; ++i) {
+                using enum spdlog::level::level_enum;
+                const auto& [level, message] = logs[i];
+                TextUnformatted(message.c_str());
+            }
+        }
+        clipper.End();
+        if (scroll) {
+            SetScrollHereY(1.0);
+        }
+        PopStyleVar();
+    }
+    EndChild();
 }
