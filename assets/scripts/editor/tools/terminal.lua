@@ -23,22 +23,24 @@ local Terminal = {
     scrollFlags = ffi.new('bool[2]', true, false),
 }
 
-local log = PROTOCOL
 function Terminal:render()
     UI.SetNextWindowSize(WINDOW_SIZE, ffi.C.ImGuiCond_FirstUseEver)
+    local isLuaLogTab = false
     if UI.Begin(self.name, self.isVisible, ffi.C.ImGuiWindowFlags_NoScrollbar) then
         if UI.BeginTabBar('TerminalTabBar', ffi.C.ImGuiTabBarFlags_None) then
             if UI.BeginTabItem(ICONS.CODE..' Lua') then
+                isLuaLogTab = true
                 local footer = UI.GetStyle().ItemSpacing.y + UI.GetFrameHeightWithSpacing()
                 if UI.BeginChild('TerminalScrollingRegion', UI.ImVec2(0, -footer), false, ffi.C.ImGuiWindowFlags_HorizontalScrollbar) then
                     UI.PushStyleVar(ffi.C.ImGuiStyleVar_ItemSpacing, UI.ImVec2(4.0, 1.0))
                     local clipper = UI.ImGuiListClipper()
-                    clipper:Begin(#log, UI.GetTextLineHeightWithSpacing())
+                    clipper:Begin(#PROTOCOL, UI.GetTextLineHeightWithSpacing())
                     while clipper:Step() do -- HOT LOOP
                         for i=clipper.DisplayStart+1, clipper.DisplayEnd do
-                            local isError = log[i][2]
+                            local isError = PROTOCOL[i][2]
                             UI.PushStyleColor_U32(ffi.C.ImGuiCol_Text, isError and 0xff4444ff or 0xffffffff)
-                            UI.TextUnformatted(log[i][1])
+                            UI.Separator()
+                            UI.TextUnformatted(PROTOCOL[i][1])
                             UI.PopStyleColor()
                         end
                     end
@@ -83,6 +85,12 @@ function Terminal:render()
             UI.Checkbox(ICONS.MOUSE..' Scroll', self.scrollFlags)
             if self.scrollFlags[0] then
                 self.scrollFlags[1] = true
+            end
+            if isLuaLogTab then
+                UI.SameLine()
+                if UI.Button(ICONS.TRASH..' Clear') then
+                    PROTOCOL = {}
+                end
             end
             UI.EndTabBar()
         end

@@ -133,6 +133,7 @@ LUA_INTEROP_API auto __lu_dd_draw_native_log(const bool scroll) -> void {
             for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; ++i) {
                 using enum spdlog::level::level_enum;
                 const auto& [level, message] = logs[i];
+                Separator();
                 TextUnformatted(message.c_str());
             }
         }
