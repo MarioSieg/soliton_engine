@@ -263,7 +263,9 @@ namespace physics {
 		});
     	std::vector<std::optional<JPH::BodyCreationSettings>> bodies {};
     	bodies.resize(total);
-    	for (std::size_t base_idx = 0; auto&& [transforms, renderers] : targets) {
+    	for (std::size_t base_idx = 0; auto&& target : targets) {
+    		const auto& transforms = target.first;
+    		const auto& renderers = target.second;
 			passert(transforms.size() == renderers.size());
     		std::for_each(std::begin(transforms), std::end(transforms), [&](const com::transform& transform) {
     			const auto index = &transform - &transforms.front();
