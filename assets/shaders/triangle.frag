@@ -26,7 +26,7 @@ void main() {
   vec3 normalMap = normalize((texture(samplerNormalMap, outUV).xyz * 2.0 - 1.0) * normalMapStrength);
   vec3 normal = normalize(outTBN * normalMap);
   float diff = max(dot(normal, lightDir), 0.0);
-  outFragColor = texColor; // * (ambient + diff * lightColor);
+  outFragColor = texColor * (ambient + diff * lightColor);
 
   // gamma correction
   outFragColor.rgb = pow(outFragColor.rgb, VGAMMA);
