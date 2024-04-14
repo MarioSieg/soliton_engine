@@ -30,11 +30,7 @@ local function flagSetUnion(flags)
     for i=1, #flags do
         result = bor(result, flags[i])
     end
-    if result > 0xffffffff then
-        eprint('mergeFlags: result is larger than 32 bit: %x', result)
-        return band(result, 0xffffffff)
-    end
-    return result
+    return band(result, 0xffffffff)
 end
 
 --- Scene import flags for post processing.

@@ -106,6 +106,8 @@ local DEBUG_MODE_NAMES_C = ffi.new("const char*[?]", #DEBUG_MODE_NAMES)
 for i=1, #DEBUG_MODE_NAMES do
     DEBUG_MODE_NAMES_C[i-1] = ffi.cast("const char*", DEBUG_MODE_NAMES[i])
 end
+local PREV_SCENE_PATH = ''
+
 
 local Editor = {
     isVisible = true,
@@ -121,7 +123,7 @@ local Editor = {
         showGrid = true,
         gridStep = 1.0,
         gridDims = Vec3(512, 0, 512),
-        gridColor = Vec3(0.5, 0.5, 0.5),
+        gridColor = Vec3(0.8, 0.8, 0.8),
         gridFadeStart = 45,
         gridFadeRange = 15,
         gizmoObbColor = Vec3(0, 1, 0),
@@ -183,6 +185,7 @@ function Editor:defaultDockLayout()
 end
 
 function Editor:loadScene(file)
+    EntityListView.selectedEntity = nil
     if file then
         Scene.load(file)
     else
@@ -257,8 +260,9 @@ function Editor:renderMainMenu()
                 self:loadScene(nil)
             end
             if UI.MenuItem(ICONS.FILE_IMPORT..' Open Scene') then
-                local selectedFile = App.Utils.openFileDialog('3D Scenes', MESH_FILE_FILTER, '')
+                local selectedFile = App.Utils.openFileDialog('3D Scenes', MESH_FILE_FILTER, PREV_SCENE_PATH)
                 if selectedFile and lfs.attributes(selectedFile) then
+                    PREV_SCENE_PATH = selectedFile
                     self:loadScene(selectedFile)
                 end
             end

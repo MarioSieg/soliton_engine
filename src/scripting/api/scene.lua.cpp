@@ -52,35 +52,39 @@ LUA_INTEROP_API auto __lu_scene_get_active_camera_entity() -> flecs::id_t {
 
 // TODO: Convert to FLECS C++ API
 
-static struct {
+struct scene_iter_context final {
     flecs::query<const com::metadata> query {};
     scene* ref {};
     std::vector<flecs::id_t> data {};
-} s_scene_iter_context;
+};
+
+static constinit std::optional<scene_iter_context> s_scene_iter_context;
 
 LUA_INTEROP_API auto __lu_scene_full_entity_query_start() -> void {
-    auto& ctx = s_scene_iter_context;
+    auto& ctx = s_scene_iter_context.emplace();
     scene& active = scene::get_active();
     if (&active != ctx.ref || !ctx.query) {
         ctx.ref = &active;
         ctx.query = active.query<const com::metadata>();
     }
     ctx.query.each([](const flecs::entity& e, const com::metadata& m) {
-        s_scene_iter_context.data.emplace_back(e);
+        s_scene_iter_context->data.emplace_back(e);
     });
 }
 
 LUA_INTEROP_API auto __lu_scene_full_entity_query_next_table() -> std::int32_t {
     auto& ctx = s_scene_iter_context;
-    return static_cast<std::int32_t>(ctx.data.size());
+    return ctx ? static_cast<std::int32_t>(ctx->data.size()) : 0;
 }
 
 LUA_INTEROP_API auto __lu_scene_full_entity_query_get(const std::int32_t i) -> flecs::id_t {
     auto& ctx = s_scene_iter_context;
-    return ctx.data[i];
+    return ctx ? ctx->data[i] : 0;
 }
 
 LUA_INTEROP_API auto __lu_scene_full_entity_query_end() -> void {
     auto& ctx = s_scene_iter_context;
-    ctx.data.clear();
+    if (ctx) {
+        ctx.reset();
+    }
 }
