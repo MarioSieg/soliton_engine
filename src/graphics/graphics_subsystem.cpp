@@ -12,6 +12,7 @@
 #include "imgui/implot.h"
 #include "material.hpp"
 #include "pipeline.hpp"
+#include "RmlUi/Core.h"
 
 #include "pipelines/pbr_pipeline.hpp"
 
@@ -273,6 +274,10 @@ namespace graphics {
                 );
             }
             vkb_context().render_imgui(ImGui::GetDrawData(), cmd_buf); // thread safe?!
+            vkb_context().m_ui_context->Update();
+            vkb_context().m_rmlui_renderer->SetViewport(1920, 1080);
+            vkb_context().m_rmlui_renderer->m_p_current_command_buffer = cmd_buf;
+            passert(vkb_context().m_ui_context->Render());
         }
     }
 

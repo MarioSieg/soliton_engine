@@ -82,12 +82,14 @@ target_link_libraries(lunam nfd)
 add_subdirectory(extern/Vulkan-Utility-Libraries)
 target_include_directories(lunam PRIVATE extern/Vulkan-Utility-Libraries/include)
 
+add_subdirectory(extern/RmlUi)
+target_include_directories(lunam PRIVATE extern/RmlUi/Include)
+target_link_libraries(lunam RmlCore)
+
 # Assimp must be last
 add_subdirectory(extern/assimp)
 target_include_directories(lunam PRIVATE extern/assimp/include)
 target_link_libraries(lunam assimp)
-if (WIN32)
-    target_compile_options(assimp PRIVATE /GR) # fuck u assimp
-else()
-    target_compile_options(assimp PRIVATE -fexceptions -frtti) # fuck u assimp
+if (NOT WIN32)
+    target_compile_options(assimp PRIVATE -fexceptions)
 endif()

@@ -6,9 +6,11 @@
 
 #include "device.hpp"
 #include "swapchain.hpp"
-
 #include "../imgui/imgui.h"
 #include <DirectXMath.h>
+
+#include "rmlui_system.hpp"
+#include "rmlui_renderer.hpp"
 
 namespace vkb {
     template <const vk::QueueFlagBits QueueType>
@@ -116,7 +118,9 @@ namespace vkb {
         HOTPROC auto end_frame(vk::CommandBuffer cmd_buf) -> void;
         auto render_imgui(ImDrawData* data, vk::CommandBuffer cmd_buf) -> void;
         auto on_resize() -> void;
-
+        Rml::Context* m_ui_context {};
+        std::unique_ptr<SystemInterface_GLFW> m_rmlui_system {};
+        std::unique_ptr<RenderInterface_VK> m_rmlui_renderer {};
     private:
         auto boot_vulkan_core() -> void;
         auto create_sync_prims() -> void;
@@ -145,7 +149,6 @@ namespace vkb {
             std::array<vk::Semaphore, k_max_concurrent_frames> present_complete {}; // Swap chain image presentation
             std::array<vk::Semaphore, k_max_concurrent_frames> render_complete {}; // Command buffer submission and execution
         } m_semaphores {}; // Semaphores are used to coordinate operations within the graphics queue and ensure correct command ordering
-        vk::PipelineStageFlags m_submit_info_wait_stage_mask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
         vk::CommandPool m_graphics_command_pool {};
         vk::CommandPool m_compute_command_pool {};
         vk::CommandPool m_transfer_command_pool {};
