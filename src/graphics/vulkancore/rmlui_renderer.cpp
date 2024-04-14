@@ -96,7 +96,9 @@ RenderInterface_VK::RenderInterface_VK() :
         m_p_sampler_linear{}, m_scissor{}, m_scissor_original{}, m_viewport{}, m_p_queue_graphics{}, m_swapchain_format{}
 {}
 
-RenderInterface_VK::~RenderInterface_VK() {}
+RenderInterface_VK::~RenderInterface_VK() {
+    Shutdown();
+}
 
 Rml::CompiledGeometryHandle RenderInterface_VK::CompileGeometry(Rml::Span<const Rml::Vertex> vertices, Rml::Span<const int> indices)
 {
@@ -664,8 +666,6 @@ void RenderInterface_VK::SetViewport(int width, int height)
 
     VkExtent2D window_extent {(uint32_t)m_width, (uint32_t)m_height};
 
-    //  we need to sync the data from Vulkan so we can't use native Rml's data about width and height so be careful otherwise we create framebuffer
-    //  with Rml's width and height but they're different to what Vulkan determines for our window (e.g. device/swapchain)
     m_width = window_extent.width;
     m_height = window_extent.height;
 
@@ -693,7 +693,6 @@ bool RenderInterface_VK::Initialize(VkPhysicalDevice pd, VkDevice dv, VkSwapchai
     VkPhysicalDeviceProperties physical_device_properties {};
     vkGetPhysicalDeviceProperties(m_p_physical_device, &physical_device_properties);
     Initialize_Resources(physical_device_properties);
-    CreateResourcesDependentOnSize({1920, 1080});
 
     return true;
 }
@@ -797,19 +796,11 @@ void RenderInterface_VK::QueryInstanceExtensions(ExtensionPropertiesList& result
 
                 if (status == VK_SUCCESS)
                 {
-#ifdef RMLUI_VK_DEBUG
-                    Rml::Log::Message(Rml::Log::LT_DEBUG, "[Vulkan] obtained extensions for layer: %s, count: %zu", layer_property.layerName,
-						props.size());
-#endif
 
                     for (const auto& extension : props)
                     {
                         if (IsExtensionPresent(result, extension.extensionName) == false)
                         {
-#ifdef RMLUI_VK_DEBUG
-                            Rml::Log::Message(Rml::Log::LT_DEBUG, "[Vulkan] new extension is added: %s", extension.extensionName);
-#endif
-
                             result.push_back(extension);
                         }
                     }

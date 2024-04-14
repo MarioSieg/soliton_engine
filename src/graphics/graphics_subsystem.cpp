@@ -273,9 +273,10 @@ namespace graphics {
                     DirectX::XMLoadFloat4(&graphics_subsystem::s_camera_transform.position)
                 );
             }
+
             vkb_context().render_imgui(ImGui::GetDrawData(), cmd_buf); // thread safe?!
-            vkb_context().m_ui_context->Update();
-            vkb_context().m_rmlui_renderer->SetViewport(1920, 1080);
+
+            vkb_context().m_ui_context->Update(); // thread safe?!
             vkb_context().m_rmlui_renderer->m_p_current_command_buffer = cmd_buf;
             passert(vkb_context().m_ui_context->Render());
         }

@@ -42,6 +42,7 @@ namespace vkb {
             m_device->get_allocator())
         );
         Rml::SetRenderInterface(&*m_rmlui_renderer);
+        m_rmlui_renderer->SetViewport(1920, 1080);
 
         Rml::Initialise();
 
@@ -218,6 +219,10 @@ namespace vkb {
 
         destroy_sync_prims();
         create_sync_prims();
+
+        if (m_rmlui_renderer) {
+            m_rmlui_renderer->SetViewport(m_width, m_height);
+        }
 
         vkcheck(m_device->get_logical_device().waitIdle());
     }
