@@ -362,7 +362,13 @@ namespace graphics {
         Rml::LoadFontFace("assets/fonts/LatoLatin-Regular.ttf");
         Rml::LoadFontFace("assets/fonts/NotoEmoji-Regular.ttf", true);
 
-        m_ui_context = Rml::CreateContext("main", Rml::Vector2i{1920, 1080});
+        m_ui_context = Rml::CreateContext(
+            "main",
+            Rml::Vector2i{
+                static_cast<int>(vkb_context().get_width()),
+                static_cast<int>(vkb_context().get_height())
+            }
+        );
 
         Rml::ElementDocument* document = m_ui_context->LoadDocument("assets/ui/hello_world.rml");
         document->Show();
