@@ -82,6 +82,7 @@ target_link_libraries(lunam nfd)
 add_subdirectory(extern/Vulkan-Utility-Libraries)
 target_include_directories(lunam PRIVATE extern/Vulkan-Utility-Libraries/include)
 
+add_compile_definitions(RMLUI_STATIC_LIB=1)
 add_subdirectory(extern/RmlUi)
 target_include_directories(lunam PRIVATE extern/RmlUi/Include)
 target_link_libraries(lunam RmlCore)
