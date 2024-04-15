@@ -27,11 +27,11 @@
  */
 
 #include "rmlui_system.hpp"
-#include <RmlUi/Core/Context.h>
-#include <RmlUi/Core/Input.h>
-#include <RmlUi/Core/Math.h>
-#include <RmlUi/Core/StringUtilities.h>
-#include <GLFW/glfw3.h>
+#include "RmlUi/Core/Context.h"
+#include "RmlUi/Core/Input.h"
+#include "RmlUi/Core/Math.h"
+#include "RmlUi/Core/StringUtilities.h"
+#include "GLFW/glfw3.h"
 
 #define GLFW_HAS_EXTRA_CURSORS (GLFW_VERSION_MAJOR >= 3 && GLFW_VERSION_MINOR >= 4)
 

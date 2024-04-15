@@ -28,7 +28,7 @@
 
 #pragma once
 #ifndef IMGUI_DISABLE
-#include "../imgui/imgui.h"      // IMGUI_IMPL_API
+#include "imgui.h"      // IMGUI_IMPL_API
 
 // [Configuration] in order to use a custom Vulkan function loader:
 // (1) You'll need to disable default Vulkan function prototypes.
@@ -50,7 +50,7 @@
 #define NOMINMAX
 #include <vulkan/vulkan.h>
 #else
-#include <vulkan/vulkan.h>
+#include "vulkan/vulkan.h"
 #endif
 
 // Initialization data, for ImGui_ImplVulkan_Init()

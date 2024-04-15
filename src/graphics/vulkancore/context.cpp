@@ -2,7 +2,7 @@
 
 #include "context.hpp"
 #include "shader.hpp"
-#include "imgui_impl_vulkan.h"
+#include "../imgui/imgui_impl_vulkan.h"
 
 #include "../imgui/imgui_impl_glfw.h"
 #include "../imgui/font_awesome.ttf.inl"
@@ -28,39 +28,10 @@ namespace vkb {
         setup_frame_buffer();
         create_pipeline_cache();
         create_imgui_renderer();
-
-        m_rmlui_system = std::make_unique<SystemInterface_GLFW>();
-        Rml::SetSystemInterface(&*m_rmlui_system);
-
-        m_rmlui_renderer = std::make_unique<RenderInterface_VK>();
-        passert(m_rmlui_renderer->Initialize(
-            m_device->get_physical_device(),
-            m_device->get_logical_device(),
-            m_swapchain->get_swapchain(),
-            m_device->get_graphics_queue(),
-            m_render_pass,
-            m_device->get_allocator())
-        );
-        Rml::SetRenderInterface(&*m_rmlui_renderer);
-        m_rmlui_renderer->SetViewport(1920, 1080);
-
-        Rml::Initialise();
-
-        Rml::LoadFontFace("assets/fonts/LatoLatin-Regular.ttf");
-        Rml::LoadFontFace("assets/fonts/NotoEmoji-Regular.ttf", true);
-
-        m_ui_context = Rml::CreateContext("main", Rml::Vector2i{(int)m_width, (int)m_height});
-
-        Rml::ElementDocument* document = m_ui_context->LoadDocument("assets/ui/hello_world.rml");
-        document->Show();
     }
 
     context::~context() {
         vkcheck(m_device->get_logical_device().waitIdle());
-
-        Rml::Shutdown();
-        m_rmlui_renderer.reset();
-        m_rmlui_system.reset();
 
         shader::shutdown_online_compiler();
 
@@ -219,10 +190,6 @@ namespace vkb {
 
         destroy_sync_prims();
         create_sync_prims();
-
-        if (m_rmlui_renderer) {
-            m_rmlui_renderer->SetViewport(m_width, m_height);
-        }
 
         vkcheck(m_device->get_logical_device().waitIdle());
     }

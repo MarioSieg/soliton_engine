@@ -187,7 +187,7 @@ if(SAMPLES_BACKEND STREQUAL "auto")
 	endif()
 endif()
 
-option(MATRIX_ROW_MAJOR "Use row-major matrices. Column-major matrices are used by default." OFF)
+option(MATRIX_ROW_MAJOR "Use row-major matrices. Column-major matrices are used by default." ON)
 
 if(APPLE)
 	if(IOS)

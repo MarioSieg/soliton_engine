@@ -29,14 +29,14 @@
 #ifndef RMLUI_BACKENDS_RENDERER_VK_H
 #define RMLUI_BACKENDS_RENDERER_VK_H
 
-#include <RmlUi/Core/RenderInterface.h>
+#include "RmlUi/Core/RenderInterface.h"
 
 #ifdef RMLUI_PLATFORM_WIN32
 #include "RmlUi_Include_Windows.h"
 	#define VK_USE_PLATFORM_WIN32_KHR
 #endif
 
-#include "prelude.hpp"
+#include "../vulkancore/context.hpp"
 
 #ifdef RMLUI_DEBUG
 #define RMLUI_VK_ASSERTMSG(statement, msg) RMLUI_ASSERTMSG(statement, msg)
@@ -79,7 +79,7 @@ public:
 
     using CreateSurfaceCallback = bool (*)(VkInstance instance, VkSurfaceKHR* out_surface);
 
-    bool Initialize(VkPhysicalDevice pd, VkDevice dv, VkSwapchainKHR sw, VkQueue queue, VkRenderPass pass, VmaAllocator alloc);
+    bool Initialize(const vkb::context& ctx);
     void Shutdown();
 
     void SetViewport(int width, int height);

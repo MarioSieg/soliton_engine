@@ -9,9 +9,6 @@
 #include "../imgui/imgui.h"
 #include <DirectXMath.h>
 
-#include "rmlui_system.hpp"
-#include "rmlui_renderer.hpp"
-
 namespace vkb {
     template <const vk::QueueFlagBits QueueType>
     concept is_queue_type = requires {
@@ -118,9 +115,7 @@ namespace vkb {
         HOTPROC auto end_frame(vk::CommandBuffer cmd_buf) -> void;
         auto render_imgui(ImDrawData* data, vk::CommandBuffer cmd_buf) -> void;
         auto on_resize() -> void;
-        Rml::Context* m_ui_context {};
-        std::unique_ptr<SystemInterface_GLFW> m_rmlui_system {};
-        std::unique_ptr<RenderInterface_VK> m_rmlui_renderer {};
+
     private:
         auto boot_vulkan_core() -> void;
         auto create_sync_prims() -> void;

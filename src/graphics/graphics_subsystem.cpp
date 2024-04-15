@@ -71,6 +71,8 @@ namespace graphics {
         m_render_data.reserve(32);
 
         pipeline_registry::get().register_pipeline<pipelines::pbr_pipeline>();
+
+        init_rmlui();
     }
 
     [[nodiscard]] static auto compute_render_bucket_range(const std::size_t id, const std::size_t num_entities, const std::size_t num_threads) noexcept -> std::array<std::size_t, 2> {
@@ -83,23 +85,17 @@ namespace graphics {
     }
 
     graphics_subsystem::~graphics_subsystem() {
+        shutdown_rmlui();
         pipeline_registry::s_instance.reset();
-
         m_render_thread_pool.reset();
-
         vkcheck(context::s_instance->get_device().get_logical_device().waitIdle());
-
         if (m_debugdraw) {
             m_debugdraw.reset();
         }
-
         material::free_static_resources();
-
         context::s_instance.reset();
-
         ImPlot::DestroyContext();
         ImGui::DestroyContext();
-
         s_instance = nullptr;
     }
 
@@ -274,11 +270,10 @@ namespace graphics {
                 );
             }
 
-            vkb_context().render_imgui(ImGui::GetDrawData(), cmd_buf); // thread safe?!
+            self.get_rmlui_renderer()->m_p_current_command_buffer = cmd_buf;
+            passert(self.get_ui_context()->Render());
 
-            vkb_context().m_ui_context->Update(); // thread safe?!
-            vkb_context().m_rmlui_renderer->m_p_current_command_buffer = cmd_buf;
-            passert(vkb_context().m_ui_context->Render());
+            vkb_context().render_imgui(ImGui::GetDrawData(), cmd_buf);
         }
     }
 
@@ -296,6 +291,7 @@ namespace graphics {
 
     HOTPROC auto graphics_subsystem::on_post_tick() -> void {
         ImGui::Render();
+        m_ui_context->Update();
         auto& scene = scene::get_active();
         if (!m_render_query.scene || &scene != m_render_query.scene) [[unlikely]] { // Scene changed
             m_render_query.scene = &scene;
@@ -323,6 +319,7 @@ namespace graphics {
 
     auto graphics_subsystem::on_resize() -> void {
         vkb_context().on_resize();
+        m_rmlui_renderer->SetViewport(vkb_context().get_width(), vkb_context().get_height());
     }
 
     auto graphics_subsystem::on_start(scene& scene) -> void {
@@ -348,5 +345,31 @@ namespace graphics {
         descriptor_pool_ci.pPoolSizes = sizes.data();
         descriptor_pool_ci.maxSets = 32; // TODO max sets Allocate one set for each frame
         vkcheck(device.createDescriptorPool(&descriptor_pool_ci, &vkb::s_allocator, &m_descriptor_pool));
+    }
+
+    auto graphics_subsystem::init_rmlui() -> void {
+        m_rmlui_system = std::make_unique<SystemInterface_GLFW>();
+        Rml::SetSystemInterface(&*m_rmlui_system);
+
+        m_rmlui_renderer = std::make_unique<RenderInterface_VK>();
+        passert(m_rmlui_renderer->Initialize(vkb_context()));
+        Rml::SetRenderInterface(&*m_rmlui_renderer);
+        m_rmlui_renderer->SetViewport(1920, 1080);
+
+        Rml::Initialise();
+
+        Rml::LoadFontFace("assets/fonts/LatoLatin-Regular.ttf");
+        Rml::LoadFontFace("assets/fonts/NotoEmoji-Regular.ttf", true);
+
+        m_ui_context = Rml::CreateContext("main", Rml::Vector2i{1920, 1080});
+
+        Rml::ElementDocument* document = m_ui_context->LoadDocument("assets/ui/hello_world.rml");
+        document->Show();
+    }
+
+    auto graphics_subsystem::shutdown_rmlui() -> void {
+        Rml::Shutdown();
+        m_rmlui_renderer.reset();
+        m_rmlui_system.reset();
     }
 }

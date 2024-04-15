@@ -29,12 +29,12 @@
 #include <algorithm>
 
 #include "rmlui_renderer.hpp"
-#include <RmlUi/Core/Core.h>
-#include <RmlUi/Core/FileInterface.h>
-#include <RmlUi/Core/Log.h>
-#include <RmlUi/Core/Math.h>
-#include <RmlUi/Core/Platform.h>
-#include <RmlUi/Core/Profiling.h>
+#include "RmlUi/Core/Core.h"
+#include "RmlUi/Core/FileInterface.h"
+#include "RmlUi/Core/Log.h"
+#include "RmlUi/Core/Math.h"
+#include "RmlUi/Core/Platform.h"
+#include "RmlUi/Core/Profiling.h"
 
 #include "rmlui_shaders.hpp"
 
@@ -682,14 +682,14 @@ void RenderInterface_VK::RecreateSwapchain()
     SetViewport(m_width, m_height);
 }
 
-bool RenderInterface_VK::Initialize(VkPhysicalDevice pd, VkDevice dv, VkSwapchainKHR sw, VkQueue queue, VkRenderPass pass, VmaAllocator alloc)
+bool RenderInterface_VK::Initialize(const vkb::context& ctx)
 {
-    m_p_physical_device = pd;
-    m_p_device = dv;
-    m_p_allocator = alloc;
-    m_p_swapchain = sw;
-    m_p_render_pass = pass;
-    m_p_queue_graphics = queue;
+    m_p_physical_device = ctx.get_device().get_physical_device();
+    m_p_device = ctx.get_device().get_logical_device();
+    m_p_allocator = ctx.get_device().get_allocator();
+    m_p_swapchain = ctx.get_swapchain().get_swapchain();
+    m_p_render_pass = ctx.get_render_pass();
+    m_p_queue_graphics = ctx.get_device().get_graphics_queue();
     VkPhysicalDeviceProperties physical_device_properties {};
     vkGetPhysicalDeviceProperties(m_p_physical_device, &physical_device_properties);
     Initialize_Resources(physical_device_properties);
