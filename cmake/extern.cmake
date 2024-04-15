@@ -82,6 +82,10 @@ target_link_libraries(lunam nfd)
 add_subdirectory(extern/Vulkan-Utility-Libraries)
 target_include_directories(lunam PRIVATE extern/Vulkan-Utility-Libraries/include)
 
+add_subdirectory(extern/rlottie)
+target_include_directories(lunam PRIVATE extern/rlottie/src)
+target_link_libraries(lunam rlottie)
+
 add_compile_definitions(RMLUI_STATIC_LIB=1)
 add_subdirectory(extern/RmlUi)
 target_include_directories(lunam PRIVATE extern/RmlUi/Include)

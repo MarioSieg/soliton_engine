@@ -187,7 +187,7 @@ if(SAMPLES_BACKEND STREQUAL "auto")
 	endif()
 endif()
 
-option(MATRIX_ROW_MAJOR "Use row-major matrices. Column-major matrices are used by default." ON)
+option(MATRIX_ROW_MAJOR "Use row-major matrices. Column-major matrices are used by default." OFF)
 
 if(APPLE)
 	if(IOS)
@@ -319,7 +319,7 @@ elseif( CMAKE_CONFIGURATION_TYPES )
 	EnableConfigurationType(Tracy OFF)
 endif()
 
-option(ENABLE_LOTTIE_PLUGIN "Enable plugin for Lottie animations. Requires the rlottie library." OFF)
+option(ENABLE_LOTTIE_PLUGIN "Enable plugin for Lottie animations. Requires the rlottie library." ON)
 option(ENABLE_SVG_PLUGIN "Enable plugin for SVG images. Requires the lunasvg library." OFF)
 
 option(DISABLE_RTTI_AND_EXCEPTIONS "Build with rtti and exceptions disabled." ON)

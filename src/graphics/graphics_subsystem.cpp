@@ -270,10 +270,11 @@ namespace graphics {
                 );
             }
 
+            vkb_context().render_imgui(ImGui::GetDrawData(), cmd_buf);
+
+
             self.get_rmlui_renderer()->m_p_current_command_buffer = cmd_buf;
             passert(self.get_ui_context()->Render());
-
-            vkb_context().render_imgui(ImGui::GetDrawData(), cmd_buf);
         }
     }
 
