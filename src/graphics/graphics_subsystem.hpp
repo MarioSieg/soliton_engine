@@ -19,11 +19,11 @@
 
 #include "rmlui/rmlui_renderer.hpp"
 #include "rmlui/rmlui_system.hpp"
+#include "RmlUi/Core/ElementDocument.h"
 
 namespace graphics {
     class graphics_subsystem final : public subsystem {
     public:
-        static constexpr std::uint32_t k_max_concurrent_frames = 3;
         graphics_subsystem();
         ~graphics_subsystem();
 
@@ -54,8 +54,9 @@ namespace graphics {
         static inline DirectX::BoundingFrustum s_frustum;
         static inline com::transform s_camera_transform;
         static inline constinit graphics_subsystem* s_instance;
+        static inline constinit Rml::ElementDocument* s_ui_doc {};
 
-        [[nodiscard]] auto get_ui_context() const noexcept -> Rml::Context* { return m_ui_context; }
+        [[nodiscard]] static inline auto get_ui_context() noexcept -> Rml::Context* { return m_ui_context; }
         [[nodiscard]] auto get_rmlui_system() const noexcept -> SystemInterface_GLFW* { return &*m_rmlui_system; }
         [[nodiscard]] auto get_rmlui_renderer() const noexcept -> RenderInterface_VK* { return &*m_rmlui_renderer; }
 
@@ -70,7 +71,7 @@ namespace graphics {
         std::optional<render_thread_pool> m_render_thread_pool {};
         std::vector<std::pair<std::span<const com::transform>, std::span<const com::mesh_renderer>>> m_render_data {};
         std::optional<debugdraw> m_debugdraw {};
-        Rml::Context* m_ui_context {};
+        static inline constinit Rml::Context* m_ui_context {};
         std::unique_ptr<SystemInterface_GLFW> m_rmlui_system {};
         std::unique_ptr<RenderInterface_VK> m_rmlui_renderer {};
 

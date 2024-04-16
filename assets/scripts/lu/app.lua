@@ -8,6 +8,7 @@ ffi.cdef [[
     uint32_t __lu_ffi_cookie(void);
     bool __lu_app_is_focused(void);
     bool __lu_app_is_ui_hovered(void);
+    void __lu_app_hot_reload_ui(void);
     void __lu_window_maximize(void);
     void __lu_window_minimize(void);
     void __lu_window_enter_fullscreen(void);
@@ -71,6 +72,10 @@ end
 
 function App.isUIHovered()
     return C.__lu_app_is_ui_hovered()
+end
+
+function App.hotReloadUI()
+    C.__lu_app_hot_reload_ui()
 end
 
 function App.Window.maximize()

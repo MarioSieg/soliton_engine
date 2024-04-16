@@ -1,20 +1,20 @@
 body {
 	font-family: LatoLatin;
 	font-size: 18px;
-	color: #02475e;
-	background: #fefecc;
+	color: #ffffff;
+	background: #000000;
 	text-align: center;
 	padding: 2em 1em;
 	position: absolute;
 	border: 2px #ccc;
-	width: 500px;
-	height: 200px;
+	width: 100%;
+	height: 100%;
 	margin: auto;
 }
 
 h1 {
-	color: #f6470a;
-	font-size: 1.5em;
+	color: #ffffff;
+	font-size: 3.5em;
 	font-weight: bold;
 	margin-bottom: 0.7em;
 }

@@ -370,8 +370,8 @@ namespace graphics {
             }
         );
 
-        Rml::ElementDocument* document = m_ui_context->LoadDocument("assets/ui/hello_world.rml");
-        document->Show();
+        s_ui_doc = m_ui_context->LoadDocument("assets/ui/hello_world.rml");
+        s_ui_doc->Show();
     }
 
     auto graphics_subsystem::shutdown_rmlui() -> void {

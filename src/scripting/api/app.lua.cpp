@@ -8,8 +8,12 @@
 #include <infoware/infoware.hpp>
 #include <nfd.hpp>
 
+#include <RmlUi/Core.h>
+
+#include "../../graphics/graphics_subsystem.hpp"
 #include "../scripting_subsystem.hpp"
 
+using graphics::graphics_subsystem;
 using platform::platform_subsystem;
 
 static constinit int s_window_pos_x = 0;
@@ -32,6 +36,13 @@ LUA_INTEROP_API auto __lu_app_is_focused() -> bool {
 
 LUA_INTEROP_API auto __lu_app_is_ui_hovered() -> bool {
     return ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow);
+}
+
+LUA_INTEROP_API auto __lu_app_hot_reload_ui() -> void {
+    auto* ctx = graphics_subsystem::get_ui_context();
+    graphics_subsystem::s_ui_doc->Close();
+    graphics_subsystem::s_ui_doc = ctx->LoadDocument("assets/ui/hello_world.rml");
+    graphics_subsystem::s_ui_doc->Show();
 }
 
 LUA_INTEROP_API auto __lu_window_maximize() -> void {
