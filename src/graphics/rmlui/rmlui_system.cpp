@@ -32,6 +32,7 @@
 #include "RmlUi/Core/Math.h"
 #include "RmlUi/Core/StringUtilities.h"
 #include "GLFW/glfw3.h"
+#include "../../core/core.hpp"
 
 #define GLFW_HAS_EXTRA_CURSORS (GLFW_VERSION_MAJOR >= 3 && GLFW_VERSION_MINOR >= 4)
 
@@ -108,6 +109,11 @@ void SystemInterface_GLFW::GetClipboardText(Rml::String& text)
 {
     if (window)
         text = Rml::String(glfwGetClipboardString(window));
+}
+
+bool SystemInterface_GLFW::LogMessage(Rml::Log::Type type, const Rml::String &message) {
+    log_info("[UI]: {}", message);
+    return true;
 }
 
 bool RmlGLFW::ProcessKeyCallback(Rml::Context* context, int key, int action, int mods)

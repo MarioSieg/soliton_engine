@@ -87,6 +87,7 @@ target_include_directories(lunam PRIVATE extern/rlottie/src)
 target_link_libraries(lunam rlottie)
 
 add_compile_definitions(RMLUI_STATIC_LIB=1)
+add_compile_definitions(RMLUI_ENABLE_LOTTIE_PLUGIN=1)
 add_subdirectory(extern/RmlUi)
 target_include_directories(lunam PRIVATE extern/RmlUi/Include)
 target_link_libraries(lunam RmlCore)
