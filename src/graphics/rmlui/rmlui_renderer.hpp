@@ -1,53 +1,17 @@
-/*
- * This source file is part of RmlUi, the HTML/CSS Interface Middleware
- *
- * For the latest information, see http://github.com/mikke89/RmlUi
- *
- * Copyright (c) 2008-2010 CodePoint Ltd, Shift Technology Ltd
- * Copyright (c) 2019-2023 The RmlUi Team, and contributors
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- */
-
 #ifndef RMLUI_BACKENDS_RENDERER_VK_H
 #define RMLUI_BACKENDS_RENDERER_VK_H
 
 #include "RmlUi/Core/RenderInterface.h"
-
-#ifdef RMLUI_PLATFORM_WIN32
-#include "RmlUi_Include_Windows.h"
-	#define VK_USE_PLATFORM_WIN32_KHR
-#endif
 
 #include "../vulkancore/context.hpp"
 
 #ifdef RMLUI_DEBUG
 #define RMLUI_VK_ASSERTMSG(statement, msg) RMLUI_ASSERTMSG(statement, msg)
 
-	// Uncomment the following line to enable additional Vulkan debugging.
-	// #define RMLUI_VK_DEBUG
 #else
 #define RMLUI_VK_ASSERTMSG(statement, msg) static_cast<void>(statement)
 #endif
 
-// your specified api version, but in future it will be dynamic ^_^
 #define RMLUI_VK_API_VERSION VK_API_VERSION_1_0
 
 /**
@@ -66,14 +30,12 @@
  * and delete operations every frame (CPU side), on GPU we implemented the pre-allocated buffer with virtual allocs (Vma) so there's no problems and
  * all fine. I wrote all ideas and implementation for that.
  *
- * @author wh1t3lord (https://github.com/wh1t3lord)
- */
+ * @author wh1t3lord (https: */
 
 class RenderInterface_VK : public Rml::RenderInterface {
 public:
     static constexpr uint32_t kSwapchainBackBufferCount = 3;
-    static constexpr VkDeviceSize kVideoMemoryForAllocation = 4 * 1024 * 1024; // [bytes]
-
+    static constexpr VkDeviceSize kVideoMemoryForAllocation = 4 * 1024 * 1024; 
     RenderInterface_VK();
     ~RenderInterface_VK();
 
@@ -88,37 +50,26 @@ public:
 
     VkCommandBuffer m_p_current_command_buffer {};
 
-    // -- Inherited from Rml::RenderInterface --
+    
+        Rml::CompiledGeometryHandle CompileGeometry(Rml::Span<const Rml::Vertex> vertices, Rml::Span<const int> indices) override;
+        void RenderGeometry(Rml::CompiledGeometryHandle handle, Rml::Vector2f translation, Rml::TextureHandle texture) override;
+        void ReleaseGeometry(Rml::CompiledGeometryHandle geometry) override;
 
-    /// Called by RmlUi when it wants to compile geometry it believes will be static for the forseeable future.
-    Rml::CompiledGeometryHandle CompileGeometry(Rml::Span<const Rml::Vertex> vertices, Rml::Span<const int> indices) override;
-    /// Called by RmlUi when it wants to render application-compiled geometry.
-    void RenderGeometry(Rml::CompiledGeometryHandle handle, Rml::Vector2f translation, Rml::TextureHandle texture) override;
-    /// Called by RmlUi when it wants to release application-compiled geometry.
-    void ReleaseGeometry(Rml::CompiledGeometryHandle geometry) override;
+        Rml::TextureHandle LoadTexture(Rml::Vector2i& texture_dimensions, const Rml::String& source) override;
+        Rml::TextureHandle GenerateTexture(Rml::Span<const Rml::byte> source_data, Rml::Vector2i source_dimensions) override;
+        void ReleaseTexture(Rml::TextureHandle texture_handle) override;
 
-    /// Called by RmlUi when a texture is required by the library.
-    Rml::TextureHandle LoadTexture(Rml::Vector2i& texture_dimensions, const Rml::String& source) override;
-    /// Called by RmlUi when a texture is required to be built from an internally-generated sequence of pixels.
-    Rml::TextureHandle GenerateTexture(Rml::Span<const Rml::byte> source_data, Rml::Vector2i source_dimensions) override;
-    /// Called by RmlUi when a loaded texture is no longer required.
-    void ReleaseTexture(Rml::TextureHandle texture_handle) override;
+        void EnableScissorRegion(bool enable) override;
+        void SetScissorRegion(Rml::Rectanglei region) override;
 
-    /// Called by RmlUi when it wants to enable or disable scissoring to clip content.
-    void EnableScissorRegion(bool enable) override;
-    /// Called by RmlUi when it wants to change the scissor region.
-    void SetScissorRegion(Rml::Rectanglei region) override;
-
-    /// Called by RmlUi when it wants to set the current transform matrix to a new matrix.
-    void SetTransform(const Rml::Matrix4f* transform) override;
+        void SetTransform(const Rml::Matrix4f* transform) override;
 
 private:
     enum class shader_type_t : int { Vertex, Fragment, Unknown = -1 };
     enum class shader_id_t : int { Vertex, Fragment_WithoutTextures, Fragment_WithTextures };
 
     struct shader_vertex_user_data_t {
-        // Member objects are order-sensitive to match shader.
-        Rml::Matrix4f m_transform;
+                Rml::Matrix4f m_transform;
         Rml::Vector2f m_translate;
     };
 
@@ -137,9 +88,7 @@ private:
         VkDescriptorBufferInfo m_p_index;
         VkDescriptorBufferInfo m_p_shader;
 
-        // @ this is for freeing our logical blocks for VMA
-        // see https://gpuopen-librariesandsdks.github.io/VulkanMemoryAllocator/html/virtual_allocator.html
-        VmaVirtualAllocation m_p_vertex_allocation;
+                        VmaVirtualAllocation m_p_vertex_allocation;
         VmaVirtualAllocation m_p_index_allocation;
         VmaVirtualAllocation m_p_shader_allocation;
     };
@@ -283,8 +232,7 @@ private:
         VkQueue m_p_graphics_queue;
     };
 
-    // @ main manager for "allocating" vertex, index, uniform stuff
-    class MemoryPool {
+        class MemoryPool {
     public:
         MemoryPool();
         ~MemoryPool();
@@ -481,8 +429,7 @@ private:
     VkSampler m_p_sampler_linear;
     VkRect2D m_scissor;
 
-    // @ means it captures the window size full width and full height, offset equals both x and y to 0
-    VkRect2D m_scissor_original;
+        VkRect2D m_scissor_original;
     VkViewport m_viewport;
 
     VkQueue m_p_queue_graphics;
@@ -492,8 +439,7 @@ private:
     Rml::Matrix4f m_projection;
     Rml::Vector<VkShaderModule> m_shaders;
 
-    // vma handles that thing, so there's no need for frame splitting
-    Rml::Vector<geometry_handle_t*> m_pending_for_deletion_geometries;
+        Rml::Vector<geometry_handle_t*> m_pending_for_deletion_geometries;
 
     MemoryPool m_memory_pool;
     UploadResourceManager m_upload_manager;

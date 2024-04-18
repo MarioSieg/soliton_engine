@@ -1,8 +1,7 @@
 /*
  * This source file is part of RmlUi, the HTML/CSS Interface Middleware
  *
- * For the latest information, see http://github.com/mikke89/RmlUi
- *
+ * For the latest information, see http: *
  * Copyright (c) 2008-2010 CodePoint Ltd, Shift Technology Ltd
  * Copyright (c) 2019-2023 The RmlUi Team, and contributors
  *
@@ -38,7 +37,6 @@
 
 #include "rmlui_shaders.hpp"
 
-// AlignUp(314, 256) = 512
 template <typename T>
 static T AlignUp(T val, T alignment)
 {
@@ -74,8 +72,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL MyDebugReportCallback(VkDebugUtilsMessageS
 	#ifdef RMLUI_PLATFORM_WIN32
 	if (severityFlags & VkDebugUtilsMessageSeverityFlagBitsEXT::VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
 	{
-		// some logs are not passed to our UI, because of early calling for explicity I put native log output
-		OutputDebugString(TEXT("\n"));
+				OutputDebugString(TEXT("\n"));
 		OutputDebugStringA(pCallbackData->pMessage);
 	}
 	#endif
@@ -181,24 +178,13 @@ void RenderInterface_VK::RenderGeometry(Rml::CompiledGeometryHandle geometry, Rm
 
     if (p_casted_compiled_geometry->m_p_shader_allocation == nullptr)
     {
-        // it means it was freed in ReleaseCompiledGeometry method
-        bool status = m_memory_pool.Alloc_GeneralBuffer(sizeof(m_user_data_for_vertex_shader), reinterpret_cast<void**>(&p_data),
+                bool status = m_memory_pool.Alloc_GeneralBuffer(sizeof(m_user_data_for_vertex_shader), reinterpret_cast<void**>(&p_data),
                                                         &p_casted_compiled_geometry->m_p_shader, &p_casted_compiled_geometry->m_p_shader_allocation);
         RMLUI_VK_ASSERTMSG(status, "failed to allocate VkDescriptorBufferInfo for uniform data to shaders");
     }
     else
     {
-        // it means our state is dirty and we need to update data, but it is not right in terms of architecture, for real better experience would
-        // be great to free all "compiled" geometries and "re-build" them in one general way, but here I got only three callings for
-        // font-face-layer textures (loaddocument example) and that shit. So better to think how to make it right, if it is fine okay, if it is
-        // not okay and like we really expect that ReleaseCompiledGeometry for all objects that needs to be rebuilt so better to implement that,
-        // but still it is a big architectural thing (or at least you need to do something big commits here to implement a such feature), so my
-        // implementation doesn't break anything what we had, but still it looks strange. If I get callings for releasing maybe I need to use it
-        // for all objects not separately????? Otherwise it is better to provide method for resizing (or some kind of "resizing" callback) for
-        // recalculating all geometry IDK, so it means you pass the existed geometry that wasn't pass to ReleaseCompiledGeometry, but from another
-        // hand you need to re-build compiled geometry again so we have two kinds of geometry one is compiled and never changes and one is dynamic
-        // and it goes through pipeline InitializationOfProgram...->Compile->Render->Release->Compile->Render->Release...
-
+                                                                                
         m_memory_pool.Free_GeometryHandle_ShaderDataOnly(p_casted_compiled_geometry);
         bool status = m_memory_pool.Alloc_GeneralBuffer(sizeof(m_user_data_for_vertex_shader), reinterpret_cast<void**>(&p_data),
                                                         &p_casted_compiled_geometry->m_p_shader, &p_casted_compiled_geometry->m_p_shader_allocation);
@@ -358,7 +344,6 @@ void RenderInterface_VK::SetScissorRegion(Rml::Rectanglei region)
     }
 }
 
-// Set to byte packing, or the compiler will expand our struct, which means it won't read correctly from file
 #pragma pack(1)
 struct TGAHeader {
     char idLength;
@@ -374,7 +359,6 @@ struct TGAHeader {
     char bitsPerPixel;
     char imageDescriptor;
 };
-// Restore packing
 #pragma pack()
 
 Rml::TextureHandle RenderInterface_VK::LoadTexture(Rml::Vector2i& texture_dimensions, const Rml::String& source)
@@ -406,16 +390,14 @@ Rml::TextureHandle RenderInterface_VK::LoadTexture(Rml::Vector2i& texture_dimens
     memcpy(&header, buffer.get(), sizeof(TGAHeader));
 
     int color_mode = header.bitsPerPixel / 8;
-    const size_t image_size = header.width * header.height * 4; // We always make 32bit textures
-
+    const size_t image_size = header.width * header.height * 4; 
     if (header.dataType != 2)
     {
         Rml::Log::Message(Rml::Log::LT_ERROR, "Only 24/32bit uncompressed TGAs are supported.");
         return false;
     }
 
-    // Ensure we have at least 3 colors
-    if (color_mode < 3)
+        if (color_mode < 3)
     {
         Rml::Log::Message(Rml::Log::LT_ERROR, "Only 24 and 32bit textures are supported.");
         return false;
@@ -425,8 +407,7 @@ Rml::TextureHandle RenderInterface_VK::LoadTexture(Rml::Vector2i& texture_dimens
     Rml::UniquePtr<byte[]> image_dest_buffer(new byte[image_size]);
     byte* image_dest = image_dest_buffer.get();
 
-    // Targa is BGR, swap to RGB, flip Y axis, and convert to premultiplied alpha.
-    for (long y = 0; y < header.height; y++)
+        for (long y = 0; y < header.height; y++)
     {
         long read_index = y * header.width * color_mode;
         long write_index = ((header.imageDescriptor & 32) != 0) ? read_index : (header.height - y - 1) * header.width * 4;
@@ -779,10 +760,7 @@ void RenderInterface_VK::QueryInstanceExtensions(ExtensionPropertiesList& result
 
     uint32_t count = 0;
 
-    // without first argument in vkEnumerateInstanceExtensionProperties
-    // it doesn't collect information well so we need brute-force
-    // and pass through everything what use has
-    for (const auto& layer_property : instance_layer_properties)
+                for (const auto& layer_property : instance_layer_properties)
     {
         status = vkEnumerateInstanceExtensionProperties(layer_property.layerName, &count, nullptr);
 
@@ -1146,8 +1124,7 @@ void RenderInterface_VK::Create_Pipelines() noexcept
     info_vertex.flags = 0;
 
     Rml::Array<VkVertexInputAttributeDescription, 3> info_shader_vertex_attributes;
-    // describe info about our vertex and what is used in vertex shader as "layout(location = X) in"
-
+    
     VkVertexInputBindingDescription info_vertex_input_binding = {};
     info_vertex_input_binding.binding = 0;
     info_vertex_input_binding.stride = sizeof(Rml::Vertex);
@@ -1265,8 +1242,7 @@ void RenderInterface_VK::CreateResourcesDependentOnSize(const VkExtent2D& real_r
 
     m_projection = Rml::Matrix4f::ProjectOrtho(0.0f, static_cast<float>(m_width), static_cast<float>(m_height), 0.0f, -10000, 10000);
 
-    // https://matthewwellings.com/blog/the-new-vulkan-coordinate-system/
-    Rml::Matrix4f correction_matrix;
+        Rml::Matrix4f correction_matrix;
     correction_matrix.SetColumns(Rml::Vector4f(1.0f, 0.0f, 0.0f, 0.0f), Rml::Vector4f(0.0f, -1.0f, 0.0f, 0.0f), Rml::Vector4f(0.0f, 0.0f, 0.5f, 0.0f),
                                  Rml::Vector4f(0.0f, 0.0f, 0.5f, 1.0f));
 
@@ -1585,13 +1561,7 @@ void RenderInterface_VK::MemoryPool::Free_GeometryHandle(geometry_handle_t* p_va
     RMLUI_VK_ASSERTMSG(p_valid_geometry_handle->m_p_vertex_allocation, "you must have a VALID pointer of VmaAllocation for vertex buffer");
     RMLUI_VK_ASSERTMSG(p_valid_geometry_handle->m_p_index_allocation, "you must have a VALID pointer of VmaAllocation for index buffer");
 
-    // TODO: The following assertion is disabled for now. The shader allocation pointer is only set once the geometry
-    // handle is rendered with. However, currently the Vulkan renderer does not handle all draw calls from RmlUi, so
-    // this pointer may never be set if the geometry was only used in a unsupported draw calls. This can then trigger
-    // the following assertion. The free call below gracefully handles zero pointers so this should be safe regardless.
-    // RMLUI_VK_ASSERTMSG(p_valid_geometry_handle->m_p_shader_allocation,
-    //		"you must have a VALID pointer of VmaAllocation for shader operations (like uniforms and etc)");
-
+                        
     RMLUI_VK_ASSERTMSG(m_p_block, "you have to allocate the virtual block before do this operation...");
 
     vmaVirtualFree(m_p_block, p_valid_geometry_handle->m_p_vertex_allocation);
