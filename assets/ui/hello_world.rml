@@ -2,18 +2,8 @@
 <head>
 	<title>Loading</title>
 	<link type="text/rcss" href="rml.rcss"/>
-	<link type="text/rcss" href="window.rcss"/>
-	<style>
-        lottie {
-            display: block;
-            width: 200px;
-            height: 200px;
-            margin: 0 auto;
-        }
-    </style>
 </head>
 <body>
 	<h1 style="margin-top: 40%;">Welcome to Lunam Engine</h1>
-	<lottie src="mountain.json"></lottie>
 </body>
 </rml>
