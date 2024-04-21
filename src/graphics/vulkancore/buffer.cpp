@@ -12,7 +12,7 @@ namespace vkb {
         const VmaAllocationCreateFlags create_flags,
         const void* data
     ) -> void {
-        m_allocator = vkb_device().get_allocator();
+        m_allocator = vkb::dvc().get_allocator();
         vk::BufferCreateInfo buffer_create_info {};
         buffer_create_info.size = size;
         buffer_create_info.sharingMode = vk::SharingMode::eExclusive;
@@ -78,7 +78,7 @@ namespace vkb {
         if ((buffer_usage & vk::BufferUsageFlagBits::eShaderDeviceAddress) != vk::BufferUsageFlagBits {}) {
             vk::BufferDeviceAddressInfo buffer_device_address_info {};
             buffer_device_address_info.buffer = m_buffer;
-            m_device_address = vkb_vk_device().getBufferAddress(&buffer_device_address_info);
+            m_device_address = vkb::vkdvc().getBufferAddress(&buffer_device_address_info);
         }
     }
 
@@ -90,7 +90,7 @@ namespace vkb {
     }
 
     auto buffer::upload_data(const void* data, const std::size_t size, const std::size_t offset) -> void {
-        const vk::Device device = vkb_vk_device();
+        const vk::Device device = vkb::vkdvc();
         if (m_memory_usage == VMA_MEMORY_USAGE_GPU_ONLY) {
             buffer staging_buffer {};
             staging_buffer.create(
@@ -102,14 +102,14 @@ namespace vkb {
                 data
             );
 
-            const vk::CommandBuffer copy_cmd = vkb_context().start_command_buffer<vk::QueueFlagBits::eTransfer>();
+            const vk::CommandBuffer copy_cmd = vkb::ctx().start_command_buffer<vk::QueueFlagBits::eTransfer>();
 
             vk::BufferCopy copy_region {};
             copy_region.size = size;
             copy_region.dstOffset = offset;
             copy_cmd.copyBuffer(staging_buffer.get_buffer(), m_buffer, 1, &copy_region);
 
-            vkb_context().flush_command_buffer<vk::QueueFlagBits::eTransfer>(copy_cmd);
+            vkb::ctx().flush_command_buffer<vk::QueueFlagBits::eTransfer>(copy_cmd);
         } else {
             if (!m_mapped) {
                 vkcheck(device.mapMemory(m_memory, 0, size, {}, &m_mapped));

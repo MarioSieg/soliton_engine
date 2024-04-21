@@ -209,8 +209,8 @@ namespace graphics {
 
     texture::~texture() {
         if (m_image) {
-            vkb_vk_device().destroySampler(m_sampler, &vkb::s_allocator);
-            vkb_vk_device().destroyImageView(m_image_view, &vkb::s_allocator);
+            vkb::vkdvc().destroySampler(m_sampler, &vkb::s_allocator);
+            vkb::vkdvc().destroyImageView(m_image_view, &vkb::s_allocator);
             vmaDestroyImage(m_allocator, m_image, m_allocation);
             m_image = nullptr;
         }
@@ -246,7 +246,7 @@ namespace graphics {
         m_type = type;
         m_flags = flags;
         m_tiling = tiling;
-        m_allocator = vkb_device().get_allocator();
+        m_allocator = vkb::dvc().get_allocator();
 
         vk::ImageCreateInfo image_info {};
         image_info.imageType = m_type;
@@ -281,7 +281,7 @@ namespace graphics {
         m_mapped = alloc_info.pMappedData;
 
         if (data && size) [[likely]] {
-            const vk::CommandBuffer copy_cmd = vkb_context().start_command_buffer<vk::QueueFlagBits::eTransfer>();
+            const vk::CommandBuffer copy_cmd = vkb::ctx().start_command_buffer<vk::QueueFlagBits::eTransfer>();
 
             vk::ImageSubresourceRange subresource_range {};
             subresource_range.aspectMask = vk::ImageAspectFlagBits::eColor;
@@ -300,7 +300,7 @@ namespace graphics {
                 subresource_range
             );
 
-            vkb_context().flush_command_buffer<vk::QueueFlagBits::eTransfer>(copy_cmd);
+            vkb::ctx().flush_command_buffer<vk::QueueFlagBits::eTransfer>(copy_cmd);
 
             upload(img, 0, 0, data, size, vk::ImageLayout::eTransferDstOptimal);
 
@@ -321,7 +321,7 @@ namespace graphics {
         image_view_ci.subresourceRange.layerCount = m_array_size;
         image_view_ci.subresourceRange.levelCount = m_mip_levels;
         image_view_ci.image = m_image;
-        vkcheck(vkb_vk_device().createImageView(&image_view_ci, &vkb::s_allocator, &m_image_view));
+        vkcheck(vkb::vkdvc().createImageView(&image_view_ci, &vkb::s_allocator, &m_image_view));
 
         create_sampler();
     }
@@ -339,7 +339,7 @@ namespace graphics {
         log_info("Texture format: {}", string_VkFormat(static_cast<VkFormat>(format)));
         bool is_format_supported = false;
         bool is_format_mipgen_supported = false;
-        vkb_device().is_image_format_supported(
+        vkb::dvc().is_image_format_supported(
             vk::ImageType::e2D,
             format,
             create_flags,
@@ -405,7 +405,7 @@ namespace graphics {
         subresource_range.layerCount = 1;
         subresource_range.baseArrayLayer = array_idx;
 
-        const vk::CommandBuffer copy_cmd = vkb_context().start_command_buffer<vk::QueueFlagBits::eTransfer>();
+        const vk::CommandBuffer copy_cmd = vkb::ctx().start_command_buffer<vk::QueueFlagBits::eTransfer>();
 
         if (src_layout != vk::ImageLayout::eTransferDstOptimal) {
             set_image_layout_barrier(
@@ -456,7 +456,7 @@ namespace graphics {
             );
         }
 
-        vkb_context().flush_command_buffer<vk::QueueFlagBits::eTransfer>(copy_cmd);
+        vkb::ctx().flush_command_buffer<vk::QueueFlagBits::eTransfer>(copy_cmd);
     }
 
     auto texture::generate_mips(
@@ -466,7 +466,7 @@ namespace graphics {
         const vk::ImageAspectFlags aspect_mask,
         const vk::Filter filter
     ) const -> void {
-        const vk::CommandBuffer blit_cmd = vkb_context().start_command_buffer<vk::QueueFlagBits::eGraphics>();
+        const vk::CommandBuffer blit_cmd = vkb::ctx().start_command_buffer<vk::QueueFlagBits::eGraphics>();
 
         vk::ImageSubresourceRange intial_subresource_range {};
         intial_subresource_range.aspectMask = aspect_mask;
@@ -556,12 +556,12 @@ namespace graphics {
             subresource_range
         );
 
-        vkb_context().flush_command_buffer<vk::QueueFlagBits::eGraphics>(blit_cmd);
+        vkb::ctx().flush_command_buffer<vk::QueueFlagBits::eGraphics>(blit_cmd);
         log_info("{} mipchain with {} maps", transfer_only ? "Loaded" : "Generated", m_mip_levels);
     }
 
     auto texture::create_sampler() -> void {
-        const bool supports_anisotropy = vkb_device().get_physical_device_features().samplerAnisotropy;
+        const bool supports_anisotropy = vkb::dvc().get_physical_device_features().samplerAnisotropy;
 
         vk::SamplerCreateInfo sampler_info {};
         sampler_info.magFilter = vk::Filter::eLinear;
@@ -575,11 +575,11 @@ namespace graphics {
         sampler_info.compareEnable = vk::False;
         sampler_info.minLod = 0.0f;
         sampler_info.maxLod = static_cast<float>(m_mip_levels);
-        sampler_info.maxAnisotropy = supports_anisotropy ? vkb_device().get_physical_device_props().limits.maxSamplerAnisotropy : 1.0f;
+        sampler_info.maxAnisotropy = supports_anisotropy ? vkb::dvc().get_physical_device_props().limits.maxSamplerAnisotropy : 1.0f;
         sampler_info.anisotropyEnable = supports_anisotropy ? vk::True : vk::False;
         sampler_info.borderColor = vk::BorderColor::eFloatOpaqueBlack;
         sampler_info.unnormalizedCoordinates = vk::False;
-        vkcheck(vkb_vk_device().createSampler(&sampler_info, &vkb::s_allocator, &m_sampler));
+        vkcheck(vkb::vkdvc().createSampler(&sampler_info, &vkb::s_allocator, &m_sampler));
     }
 
     auto texture::set_image_layout_barrier(

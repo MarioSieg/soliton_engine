@@ -6,7 +6,7 @@
 
 namespace graphics {
     pipeline_base::~pipeline_base() {
-        const vk::Device device = vkb_context().get_device();
+        const vk::Device device = vkb::ctx().get_device();
         if (m_pipeline && m_layout) { // Destroy old pipeline and layout
             device.destroyPipeline(m_pipeline, &vkb::s_allocator);
             device.destroyPipelineLayout(m_layout, &vkb::s_allocator);
@@ -19,7 +19,7 @@ namespace graphics {
         log_info("Creating graphics pipeline '{}' {}st time", name, ++m_num_creations);
         const auto now = std::chrono::high_resolution_clock::now();
 
-        const vk::Device device = vkb_context().get_device();
+        const vk::Device device = vkb::ctx().get_device();
 
         if (m_pipeline && m_layout) { // Destroy old pipeline and layout
             device.destroyPipeline(m_pipeline, &vkb::s_allocator);
@@ -190,7 +190,7 @@ namespace graphics {
 
     auto pipeline_base::configure_render_pass(vk::RenderPass& pass) -> void {
         passert(type == pipeline_type::graphics);
-        pass = vkb_context().get_render_pass();
+        pass = vkb::ctx().get_render_pass();
     }
 
     auto pipeline_base::post_configure() -> void {

@@ -178,9 +178,12 @@ namespace vkb {
         } m_msaa_target {};
     };
 
-    // Convenience macros hehe
-    #define vkb_context() (*vkb::context::s_instance)
-    #define vkb_device() (vkb_context().get_device())
-    #define vkb_swapchain() (vkb_context().get_swapchain())
-    #define vkb_vk_device() (vkb_device().get_logical_device())
+    // Get global vulkan context wrapper class
+    [[nodiscard]] inline auto ctx() noexcept -> context& { return *context::s_instance; }
+
+    // Get global vulkan device wrapper class
+    [[nodiscard]] inline auto dvc() noexcept -> const device& { return ctx().get_device(); }
+
+    // Get global raw vulkan logical device
+    [[nodiscard]] inline auto vkdvc() noexcept -> vk::Device { return dvc().get_logical_device(); }
 }

@@ -148,15 +148,15 @@ namespace noesis {
         Noesis::GUI::LoadApplicationResources(NoesisApp::Theme::DarkBlue());
 
         const NoesisApp::VKFactory::InstanceInfo instance_info {
-            .instance = vkb_context().get_device().get_instance(),
-            .physicalDevice = vkb_context().get_device().get_physical_device(),
-            .device = vkb_context().get_device().get_logical_device(),
-            .pipelineCache = vkb_context().get_pipeline_cache(),
-            .queueFamilyIndex = vkb_context().get_device().get_graphics_queue_idx(),
+            .instance = vkb::ctx().get_device().get_instance(),
+            .physicalDevice = vkb::ctx().get_device().get_physical_device(),
+            .device = vkb::ctx().get_device().get_logical_device(),
+            .pipelineCache = vkb::ctx().get_pipeline_cache(),
+            .queueFamilyIndex = vkb::ctx().get_device().get_graphics_queue_idx(),
             .vkGetInstanceProcAddr = &vkGetInstanceProcAddr,
             .stereoSupport = false,
             .QueueSubmit = +[](const VkCommandBuffer cmd) noexcept -> void {
-                vkb_context().flush_command_buffer<vk::QueueFlagBits::eGraphics, false>(cmd);
+                vkb::ctx().flush_command_buffer<vk::QueueFlagBits::eGraphics, false>(cmd);
             }
         };
         m_device = NoesisApp::VKFactory::CreateDevice(false, instance_info);
@@ -175,11 +175,11 @@ namespace noesis {
         m_app->GetMainWindow()->GetView()->GetRenderer()->UpdateRenderTree();
         const NoesisApp::VKFactory::RecordingInfo recording_info {
             .commandBuffer = cmd,
-            .frameNumber = vkb_context().get_image_index(),
-            .safeFrameNumber = vkb_context().get_image_index()
+            .frameNumber = vkb::ctx().get_image_index(),
+            .safeFrameNumber = vkb::ctx().get_image_index()
         };
         NoesisApp::VKFactory::SetCommandBuffer(m_device, recording_info);
-        NoesisApp::VKFactory::SetRenderPass(m_device, vkb_context().get_render_pass(), static_cast<std::uint32_t>(vkb::k_msaa_sample_count));
+        NoesisApp::VKFactory::SetRenderPass(m_device, vkb::ctx().get_render_pass(), static_cast<std::uint32_t>(vkb::k_msaa_sample_count));
         m_app->GetMainWindow()->GetView()->GetRenderer()->RenderOffscreen();
         m_app->GetMainWindow()->GetView()->GetRenderer()->Render();
     }
@@ -188,7 +188,7 @@ namespace noesis {
         m_app.Reset();
         m_app = Noesis::DynamicPtrCast<NoesisApp::Application>(Noesis::GUI::LoadXaml(path.c_str()));
         passert(m_app);
-        m_app->Init(m_device, path.c_str(), vkb_context().get_width(), vkb_context().get_height());
+        m_app->Init(m_device, path.c_str(), vkb::ctx().get_width(), vkb::ctx().get_height());
         s_event_proxy = m_app->GetMainWindow()->GetView();
     }
 

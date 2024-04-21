@@ -63,7 +63,7 @@ namespace graphics {
 
         create_descriptor_pool();
 
-        pipeline_registry::s_instance = std::make_unique<pipeline_registry>(vkb_context().get_device().get_logical_device());
+        pipeline_registry::s_instance = std::make_unique<pipeline_registry>(vkb::ctx().get_device().get_logical_device());
 
         const auto num_render_threads = scripting_subsystem::get_config_table()["Threads"]["renderThreads"].cast<std::int32_t>().valueOr(2);
         m_render_thread_pool.emplace(&render_scene_bucket, this, num_render_threads);
@@ -270,7 +270,7 @@ namespace graphics {
                 );
             }
             self.get_noesis_context().render(cmd);
-            vkb_context().render_imgui(ImGui::GetDrawData(), cmd);
+            vkb::ctx().render_imgui(ImGui::GetDrawData(), cmd);
         }
     }
 
@@ -283,7 +283,7 @@ namespace graphics {
         io.DisplaySize.x = w;
         io.DisplaySize.y = h;
         update_main_camera(w, h);
-        m_cmd_buf = vkb_context().begin_frame(s_clear_color, &m_inheritance_info);
+        m_cmd_buf = vkb::ctx().begin_frame(s_clear_color, &m_inheritance_info);
         return true;
     }
 
@@ -309,13 +309,13 @@ namespace graphics {
         scene.readonly_end();
 
         if (m_cmd_buf) [[likely]] {
-            vkb_context().end_frame(m_cmd_buf);
+            vkb::ctx().end_frame(m_cmd_buf);
         }
         com::camera::active_camera = flecs::entity::null();
     }
 
     auto graphics_subsystem::on_resize() -> void {
-        vkb_context().on_resize();
+        vkb::ctx().on_resize();
     }
 
     auto graphics_subsystem::on_start(scene& scene) -> void {
@@ -324,8 +324,8 @@ namespace graphics {
 
     // Descriptors are allocated from a pool, that tells the implementation how many and what types of descriptors we are going to use (at maximum)
     auto graphics_subsystem::create_descriptor_pool() -> void {
-        const vkb::device& vkb_device = context::s_instance->get_device();
-        const vk::Device device = vkb_device.get_logical_device();
+        const vkb::device& dvc = context::s_instance->get_device();
+        const vk::Device device = vkb::dvc().get_logical_device();
 
         const std::array<vk::DescriptorPoolSize, 2> sizes {
             vk::DescriptorPoolSize {

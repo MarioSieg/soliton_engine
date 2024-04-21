@@ -11,13 +11,13 @@ namespace graphics::pipelines {
     }
 
     pbr_pipeline::~pbr_pipeline() {
-        const vk::Device device = vkb_context().get_device();
+        const vk::Device device = vkb::ctx().get_device();
         device.destroyDescriptorSetLayout(m_descriptor_set_layout, &vkb::s_allocator);
 
     }
 
     void pbr_pipeline::pre_configure() {
-        const vk::Device device = vkb_context().get_device();
+        const vk::Device device = vkb::ctx().get_device();
 
         // Binding 0: Uniform buffer (Vertex shader)
         vk::DescriptorSetLayoutBinding layout_binding {};

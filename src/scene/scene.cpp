@@ -20,7 +20,7 @@ scene::scene() : id{id_gen.fetch_add(1, std::memory_order_seq_cst)} {
 }
 
 scene::~scene() {
-    vkcheck(vkb_vk_device().waitIdle());
+    vkcheck(vkb::vkdvc().waitIdle());
     m_meshes.invalidate();
     m_textures.invalidate();
 	log_info("Destroyed scene '{}', id: {}", name, id);
