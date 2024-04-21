@@ -14,7 +14,7 @@ extern auto profiler_submit_ex(std::string&& name, double start, double end, std
 
 class scoped_profiler_sample final {
 public:
-    explicit scoped_profiler_sample(std::string&& name) noexcept : m_id{profiler_start_task(std::move(name))} {
+    explicit scoped_profiler_sample(std::string&& name, std::uint32_t color = ~0u) noexcept : m_id{profiler_start_task(std::move(name), color)} {
     }
 
     ~scoped_profiler_sample() {
