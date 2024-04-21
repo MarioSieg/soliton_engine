@@ -16,6 +16,9 @@ private:
         return dist(m_prng);
     }
 
+    double frame_time_start = 0.0;
+    double frame_time_acc = 0.0;
+
 protected:
     explicit subsystem(std::string&& name) noexcept
         : name{std::move(name)}, id{gen_id()} {}

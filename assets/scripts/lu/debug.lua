@@ -16,6 +16,7 @@ ffi.cdef[[
     void __lu_dd_draw_scene_with_aabbs(lua_vec3 color);
     void __lu_dd_draw_physics_debug(void);
     void __lu_dd_draw_native_log(bool scroll);
+    void __lu_dd_draw_native_profiler(void);
 ]]
 
 local Debug = {}
@@ -54,6 +55,14 @@ end
 
 function Debug.drawPhysicsDebug()
     C.__lu_dd_draw_physics_debug()
+end
+
+function Debug.drawNativeLog(scroll)
+    C.__lu_dd_draw_native_log(scroll)
+end
+
+function Debug.drawNativeProfiler()
+    C.__lu_dd_draw_native_profiler()
 end
 
 return Debug

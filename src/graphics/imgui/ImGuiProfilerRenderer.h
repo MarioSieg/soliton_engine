@@ -5,6 +5,7 @@
 #include <array>
 #include <map>
 #include <vector>
+#include <glm/glm.hpp>
 
 namespace ImGuiUtils
 {
@@ -370,11 +371,7 @@ namespace ImGuiUtils
         }
       }
 
-      std::stringstream title;
-      title.precision(2);
-      title << std::fixed << "Legit profiler [" << 1.0f / avgFrameTime << "fps\t" << avgFrameTime * 1000.0f << "ms]###ProfilerWindow";
-      //###AnimatedTitle
-      ImGui::Begin(title.str().c_str(), 0, ImGuiWindowFlags_NoScrollbar);
+      ImGui::Begin("Native Profiler###ProfilerWindow", 0, ImGuiWindowFlags_NoScrollbar);
       ImVec2 canvasSize = ImGui::GetContentRegionAvail();
 
       int sizeMargin = int(ImGui::GetStyle().ItemSpacing.y);

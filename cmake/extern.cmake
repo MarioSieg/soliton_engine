@@ -93,6 +93,9 @@ target_include_directories(lunam PRIVATE src/graphics/noesis/MediaElement/Includ
 target_include_directories(lunam PRIVATE src/graphics/noesis/VKRenderDevice/Include)
 target_include_directories(lunam PRIVATE src/graphics/noesis/App/Include)
 
+add_subdirectory(extern/glm)
+target_include_directories(lunam PRIVATE extern/glm)
+
 # Assimp must be last
 add_subdirectory(extern/assimp)
 target_include_directories(lunam PRIVATE extern/assimp/include)

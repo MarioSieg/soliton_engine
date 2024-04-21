@@ -33,7 +33,7 @@ public:
     [[nodiscard]] auto get_boot_stamp() const noexcept -> std::chrono::high_resolution_clock::time_point { return boot_stamp; }
 
 private:
-    [[nodiscard]] HOTPROC auto tick() const -> bool;
+    [[nodiscard]] HOTPROC auto tick() -> bool;
     const std::chrono::high_resolution_clock::time_point boot_stamp = std::chrono::high_resolution_clock::now();
     std::vector<std::shared_ptr<subsystem>> m_subsystems {};
 };

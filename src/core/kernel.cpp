@@ -1,6 +1,7 @@
 // Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "kernel.hpp"
+#include "profiler.hpp"
 #include "buffered_sink.hpp"
 
 #include "../scene/scene.hpp"
@@ -180,9 +181,10 @@ HOTPROC auto kernel::run() -> void {
     while(tick()) [[likely]] {}
 }
 
-HOTPROC auto kernel::tick() const -> bool {
+HOTPROC auto kernel::tick() -> bool {
     bool flag = g_kernel_online;
     compute_delta_time();
+    profiler_new_frame();
     std::for_each(m_subsystems.cbegin(), m_subsystems.cend(), [&flag](const std::shared_ptr<subsystem>& sys) {
         if (!sys->on_pre_tick()) [[unlikely]]
             flag = false;
@@ -191,7 +193,8 @@ HOTPROC auto kernel::tick() const -> bool {
         sys->on_tick();
     });
     std::for_each(m_subsystems.crbegin(), m_subsystems.crend(), [](const std::shared_ptr<subsystem>& sys) {
-       sys->on_post_tick();
+        scoped_profiler_sample sample{std::string{sys->name}};
+        sys->on_post_tick();
     });
     return flag;
 }
