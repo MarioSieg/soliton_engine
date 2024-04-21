@@ -10,9 +10,6 @@
     <Window.Resources>
         <local:MultiplierConverter x:Key="MultiplierConverter"/>
         <Storyboard x:Key="BackgroundAnim">
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" Storyboard.TargetName="SkyAndSun" RepeatBehavior="Forever">
-                <EasingDoubleKeyFrame KeyTime="0:5:00" Value="0"/>
-            </DoubleAnimationUsingKeyFrames>
             <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" Storyboard.TargetName="BackClouds" RepeatBehavior="Forever">
                 <EasingDoubleKeyFrame KeyTime="0:3:20" Value="0"/>
             </DoubleAnimationUsingKeyFrames>
@@ -45,14 +42,14 @@
                 <ImageSource x:Key="Image.FrontClouds">Images/FrontClouds.png</ImageSource>
             </Grid.Resources>
             <Grid.RowDefinitions>
-                <RowDefinition Height="15*"/>
-                <RowDefinition Height="135*"/>
-                <RowDefinition Height="10*"/>
-                <RowDefinition Height="24*"/>
-                <RowDefinition Height="40*"/>
-                <RowDefinition Height="80*"/>
-                <RowDefinition Height="190*"/>
-                <RowDefinition Height="221*"/>
+                <RowDefinition Height="850*"/>
+                <RowDefinition Height="435*"/>
+                <RowDefinition Height="180*"/>
+                <RowDefinition Height="184*"/>
+                <RowDefinition Height="180*"/>
+                <RowDefinition Height="380*"/>
+                <RowDefinition Height="490*"/>
+                <RowDefinition Height="521*"/>
             </Grid.RowDefinitions>
             <Decorator x:Name="SkyAndSunRef" Grid.Row="0" Grid.RowSpan="6"/>
             <Canvas Grid.Row="0" Grid.RowSpan="6">
