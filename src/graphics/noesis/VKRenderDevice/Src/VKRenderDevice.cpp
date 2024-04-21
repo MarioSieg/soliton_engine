@@ -298,7 +298,9 @@ public:
     {
         if (device)
         {
-            device->SafeReleaseTexture(this);
+            //device->SafeReleaseTexture(this);
+            vmaDestroyImage(vkb::dvc().get_allocator(), image, alloc);
+            vkDestroyImageView(vkb::vkdvc(), view, nullptr);
         }
     }
 
@@ -308,6 +310,7 @@ public:
     bool IsInverted() const override { return isInverted; }
     bool HasAlpha() const override { return hasAlpha; }
 
+    VmaAllocation alloc {};
     VkImage image = VK_NULL_HANDLE;
     VkImageView view = VK_NULL_HANDLE;
     VkDeviceMemory memory = VK_NULL_HANDLE;
@@ -1228,58 +1231,52 @@ VkFormat VKRenderDevice::FindStencilFormat() const
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 Ptr<Texture> VKRenderDevice::CreateTexture(const char* label, uint32_t width, uint32_t height,
-    uint32_t levels, VkFormat format, VkSampleCountFlagBits samples, VkImageUsageFlags usage,
-    VkMemoryPropertyFlags memFlags, VkImageAspectFlags aspect)
+                                           uint32_t levels, VkFormat format, VkSampleCountFlagBits samples, VkImageUsageFlags usage,
+                                           VkMemoryPropertyFlags memFlags, VkImageAspectFlags aspect)
 {
     Ptr<VKTexture> texture = MakePtr<VKTexture>(mLastTextureHashValue++);
 
     texture->device = this;
-
     texture->format = format;
     texture->width = width;
     texture->height = height;
     texture->levels = levels;
 
     const char* suffix = samples > VK_SAMPLE_COUNT_1_BIT ?
-        (aspect == VK_IMAGE_ASPECT_COLOR_BIT ? "_AA" : "_Stencil_AA") :
-        (aspect == VK_IMAGE_ASPECT_COLOR_BIT ? "" : "_Stencil");
+                         (aspect == VK_IMAGE_ASPECT_COLOR_BIT ? "_AA" : "_Stencil_AA") :
+                         (aspect == VK_IMAGE_ASPECT_COLOR_BIT ? "" : "_Stencil");
 
-    // Create image
-    VkImageCreateInfo createInfo{};
-    createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-    createInfo.imageType = VK_IMAGE_TYPE_2D;
-    createInfo.format = format;
-    createInfo.samples = samples;
-    createInfo.usage = usage;
-    createInfo.extent.width = width;
-    createInfo.extent.height = height;
-    createInfo.mipLevels = levels;
-    createInfo.extent.depth = 1;
-    createInfo.arrayLayers = 1;
-    createInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
-    createInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    // Create image using Vulkan Memory Allocator
+    VkImageCreateInfo imageInfo = {};
+    imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+    imageInfo.imageType = VK_IMAGE_TYPE_2D;
+    imageInfo.format = format;
+    imageInfo.samples = samples;
+    imageInfo.usage = usage;
+    imageInfo.extent.width = width;
+    imageInfo.extent.height = height;
+    imageInfo.mipLevels = levels;
+    imageInfo.extent.depth = 1;
+    imageInfo.arrayLayers = 1;
+    imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+    imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
-    V(vkCreateImage(mDevice, &createInfo, nullptr, &texture->image));
+    VmaAllocationCreateInfo allocCreateInfo = {};
+    allocCreateInfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
+
+    VmaAllocation allocation;
+    VmaAllocationInfo allocationInfo;
+    V(vmaCreateImage(vkb::dvc().get_allocator(), &imageInfo, &allocCreateInfo, &texture->image, &allocation, &allocationInfo));
     VK_NAME(texture->image, IMAGE, "Noesis_%s%s", label, suffix);
 
-    // Allocate memory
-    VkMemoryRequirements memoryRequirements;
-    vkGetImageMemoryRequirements(mDevice, texture->image, &memoryRequirements);
+    texture->memory = allocationInfo.deviceMemory; // Store the VmaAllocation
+    texture->alloc = allocation; // Store the VmaAllocation
 
-    VkMemoryAllocateInfo allocInfo{};
-    allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-    allocInfo.allocationSize = memoryRequirements.size;
-    allocInfo.memoryTypeIndex = FindMemoryType(memoryRequirements.memoryTypeBits, memFlags,
-        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-
-    V(vkAllocateMemory(mDevice, &allocInfo, nullptr, &texture->memory));
-    V(vkBindImageMemory(mDevice, texture->image, texture->memory, 0));
-    VK_NAME(texture->memory, DEVICE_MEMORY, "Noesis_%s%s_Mem", label, suffix);
     NS_LOG_TRACE("Texture '%s' created (%zu KB) (Type %02d)", label,
-        allocInfo.allocationSize / 1024, allocInfo.memoryTypeIndex);
+                 allocationInfo.size / 1024, allocationInfo.memoryType);
 
     // Create View
-    VkImageViewCreateInfo viewInfo{};
+    VkImageViewCreateInfo viewInfo = {};
     viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
     viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
     viewInfo.format = format;
@@ -1287,7 +1284,6 @@ Ptr<Texture> VKRenderDevice::CreateTexture(const char* label, uint32_t width, ui
     viewInfo.subresourceRange.aspectMask = aspect;
     viewInfo.subresourceRange.levelCount = levels;
     viewInfo.subresourceRange.layerCount = 1;
-
     V(vkCreateImageView(mDevice, &viewInfo, nullptr, &texture->view));
     VK_NAME(texture->view, IMAGE_VIEW, "Noesis_%s%s_View", label, suffix);
 

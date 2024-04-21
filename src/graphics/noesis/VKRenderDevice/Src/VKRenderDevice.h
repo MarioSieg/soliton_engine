@@ -14,6 +14,7 @@
 #include <NsCore/Vector.h>
 #include <NsCore/String.h>
 
+#include "../../../vulkancore/context.hpp"
 
 namespace Noesis { template<class T> class Ptr; }
 
