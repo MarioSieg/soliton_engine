@@ -75,9 +75,9 @@ namespace graphics {
     }
 
     [[nodiscard]] static auto compute_render_bucket_range(const std::size_t id, const std::size_t num_entities, const std::size_t num_threads) noexcept -> std::array<std::size_t, 2> {
-        const std::size_t base_bucket_size = num_entities / num_threads;
-        const std::size_t num_extra_entities = num_entities % num_threads;
-        const std::size_t begin = base_bucket_size * id + std::min(id, num_extra_entities);
+        const std::size_t base_bucket_size = num_entities/num_threads;
+        const std::size_t num_extra_entities = num_entities%num_threads;
+        const std::size_t begin = base_bucket_size*id + std::min(id, num_extra_entities);
         const std::size_t end = begin + base_bucket_size + (id < num_extra_entities ? 1 : 0);
         passert(begin <= end && end <= num_entities);
         return {begin, end};
