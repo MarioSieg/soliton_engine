@@ -1,14 +1,15 @@
 // Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "_prelude.hpp"
+
 #include "../../core/kernel.hpp"
 #include "../../graphics/vulkancore/context.hpp"
 #include "../../platform/platform_subsystem.hpp"
+#include "../../graphics/graphics_subsystem.hpp"
 
 #include <infoware/infoware.hpp>
 #include <nfd.hpp>
 
-#include "../../graphics/graphics_subsystem.hpp"
 #include "../scripting_subsystem.hpp"
 
 using graphics::graphics_subsystem;
@@ -37,7 +38,7 @@ LUA_INTEROP_API auto __lu_app_is_ui_hovered() -> bool {
 }
 
 LUA_INTEROP_API auto __lu_app_hot_reload_ui() -> void {
-    log_info("NYI");
+    graphics_subsystem::s_instance->get_noesis_context().load_ui_from_xaml("App.xaml");
 }
 
 LUA_INTEROP_API auto __lu_window_maximize() -> void {

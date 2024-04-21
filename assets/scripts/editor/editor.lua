@@ -307,7 +307,6 @@ function Editor:renderMainMenu()
             UI.EndMenu()
         end
         UI.Separator()
-        UI.SameLine()
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_Button, 0)
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_BorderShadow, 0)
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_Border, 0)
@@ -318,26 +317,22 @@ function Editor:renderMainMenu()
         if UI.IsItemHovered() then
             UI.SetTooltip('Gizmo Mode: '..(self.gizmos.gizmoMode == GIZMO_MODE.LOCAL and 'Local' or 'World'))
         end
-        UI.SameLine()
         UI.Checkbox(ICONS.RULER, self.gizmos.gizmoSnap)
         if UI.IsItemHovered() then
             UI.SetTooltip('Enable/Disable Gizmo Snap')
         end
-        UI.SameLine()
         UI.PushItemWidth(75)
         UI.SliderFloat('##SnapStep', self.gizmos.gizmoSnapStep, 0.1, 5.0, '%.1f', 1.0)
         if UI.IsItemHovered() then
             UI.SetTooltip('Gizmo Snap Step')
         end
         UI.PopItemWidth()
-        UI.SameLine()
         UI.PushItemWidth(120)
         UI.Combo('##DebugRenderingMode', self.gizmos.currentDebugMode, DEBUG_MODE_NAMES_C, #DEBUG_MODE_NAMES)
         UI.PopItemWidth()
         if UI.IsItemHovered() then
             UI.SetTooltip('Debug rendering mode')
         end
-        UI.SameLine()
         UI.Separator()
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_Button, 0)
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_BorderShadow, 0)
@@ -349,13 +344,14 @@ function Editor:renderMainMenu()
             UI.SetTooltip(self.isPlaying and 'Stop' or 'Play Scene')
         end
         UI.PopStyleColor(3)
-        UI.SameLine()
         if UI.Button(ICONS.FLAME) then
             App.hotReloadUI()
         end
         if UI.IsItemHovered() then
             UI.SetTooltip('UI Hot Reload')
         end
+        UI.Separator()
+        UI.Text('FPS: %g', math.floor(Time.fpsAvg))
         if Profiler.isProfilerRunning then
             UI.Separator()
             UI.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff0000ff)
