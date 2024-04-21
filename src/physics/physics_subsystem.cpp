@@ -27,6 +27,7 @@
 
 #include "../graphics/graphics_subsystem.hpp"
 #include "../scripting/scripting_subsystem.hpp"
+#include "Jolt/Physics/Collision/Shape/ScaledShape.h"
 
 using scripting::scripting_subsystem;
 
@@ -290,16 +291,11 @@ namespace physics {
             transform.rotation.z,
             transform.rotation.w,
         };
-        auto verts = mesh->verts;
-        const auto scale = DirectX::XMLoadFloat4(&transform.scale);
-        for (JPH::Float3& vert : verts) {
-            static_assert(sizeof(JPH::Float3) == sizeof(DirectX::XMFLOAT3));
-            static_assert(alignof(JPH::Float3) == alignof(DirectX::XMFLOAT3));
-            auto* punned = reinterpret_cast<DirectX::XMFLOAT3*>(&vert);
-            DirectX::XMStoreFloat3(punned, DirectX::XMVectorMultiply(DirectX::XMLoadFloat3(punned), scale));
-        }
+        auto shape = new JPH::MeshShape{JPH::MeshShapeSettings{mesh->verts, mesh->triangles}, result};
+        DirectX::XMFLOAT3A scale {};
+        DirectX::XMStoreFloat3A(&scale, DirectX::XMLoadFloat4(&transform.scale));
         ci = {
-            new JPH::MeshShape(JPH::MeshShapeSettings{verts, mesh->triangles}, result),
+            new JPH::ScaledShape{shape, std::bit_cast<JPH::Vec3>(scale)},
             pos,
             rot,
             JPH::EMotionType::Static,
