@@ -280,17 +280,12 @@ namespace physics {
         passert(!renderer.meshes.empty());
         const auto& mesh = renderer.meshes.front();
         JPH::Shape::ShapeResult result {};
-        const JPH::Vec3 pos {
-            transform.position.x,
-            transform.position.y,
-            transform.position.z
-        };
-        const JPH::Quat rot {
-            transform.rotation.x,
-            transform.rotation.y,
-            transform.rotation.z,
-            transform.rotation.w,
-        };
+        JPH::Vec3 pos;
+        static_assert(sizeof(pos) == sizeof(DirectX::XMFLOAT3A));
+        DirectX::XMStoreFloat3(reinterpret_cast<DirectX::XMFLOAT3A*>(&pos), DirectX::XMLoadFloat4(&transform.position));
+        JPH::Quat rot;
+        static_assert(sizeof(rot) == sizeof(DirectX::XMFLOAT4));
+        DirectX::XMStoreFloat4(reinterpret_cast<DirectX::XMFLOAT4*>(&rot), DirectX::XMQuaternionNormalize(DirectX::XMLoadFloat4(&transform.rotation)));
         auto shape = new JPH::MeshShape{JPH::MeshShapeSettings{mesh->verts, mesh->triangles}, result};
         DirectX::XMFLOAT3A scale {};
         DirectX::XMStoreFloat3A(&scale, DirectX::XMLoadFloat4(&transform.scale));
