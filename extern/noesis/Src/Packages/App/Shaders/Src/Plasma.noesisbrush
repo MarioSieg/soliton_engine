@@ -1,0 +1,30 @@
+#include "BrushHelpers.h"
+
+uniforms
+{
+    float4 _time_size;
+    float4 _scale;
+    float4 _bias;
+    float4 _freq;
+    float4 _phase;
+};
+
+fixed4 main_brush(float2 uv0)
+{
+    const float PI = 3.1415926;
+    
+    float _time = _time_size.x;
+    float2 _size = _time_size.yz;
+
+    // https://www.bidouille.org/prog/plasma
+    float2 uv = uv0 * _size;
+    float v = sin(uv.x + _time);
+    v += sin((uv.y + _time) / 2.0);
+    v += sin((uv.x + uv.y + _time) / 2.0);
+    uv += _size/2.0 * float2(sin(_time/3.0), cos(_time/2.0));
+    v += sin(sqrt(uv.x * uv.x + uv.y * uv.y + 1.0) + _time);
+    v = v / 2.0;
+
+    float3 col = _scale.xyz + _bias.xyz * cos(PI * (_freq.xyz * v + _phase.xyz));
+    return float4(col, 1.0);
+}

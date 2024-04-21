@@ -1,0 +1,19 @@
+#include "EffectHelpers.h"
+
+uniforms
+{
+    fixed4 _color;
+};
+
+fixed4 main_effect()
+{
+    fixed4 c = GetInput();
+
+    return float4
+    (
+        c.r * _color.r,
+        c.g * _color.g,
+        c.b * _color.b,
+        c.a + _color.a * (1.0f - c.a)
+    );
+}

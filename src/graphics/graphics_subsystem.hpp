@@ -21,6 +21,10 @@
 #include "rmlui/rmlui_system.hpp"
 #include "RmlUi/Core/ElementDocument.h"
 
+#include "NsGui/IView.h"
+#include "NsRender/RenderDevice.h"
+#include "NsCore/Ptr.h"
+
 namespace graphics {
     class graphics_subsystem final : public subsystem {
     public:
@@ -60,6 +64,9 @@ namespace graphics {
         [[nodiscard]] auto get_rmlui_system() const noexcept -> SystemInterface_GLFW* { return &*m_rmlui_system; }
         [[nodiscard]] auto get_rmlui_renderer() const noexcept -> RenderInterface_VK* { return &*m_rmlui_renderer; }
 
+        Noesis::Ptr<Noesis::IView> m_view {};
+        Noesis::Ptr<Noesis::RenderDevice> m_device {};
+
     private:
         auto create_descriptor_pool() -> void;
         auto init_rmlui() -> void;
@@ -74,6 +81,7 @@ namespace graphics {
         static inline constinit Rml::Context* m_ui_context {};
         std::unique_ptr<SystemInterface_GLFW> m_rmlui_system {};
         std::unique_ptr<RenderInterface_VK> m_rmlui_renderer {};
+
 
         struct {
             flecs::query<const com::transform, const com::mesh_renderer> query {};

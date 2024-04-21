@@ -1,0 +1,6 @@
+build/Debug/BounceAnimation.o
+build/Debug/BackAnimation.o
+build/Debug/CircleAnimation.o
+build/Debug/ExponentialAnimation.o
+build/Debug/ElasticAnimation.o
+build/Debug/Main.o

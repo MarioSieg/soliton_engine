@@ -1,0 +1,34 @@
+#include "BrushHelpers.h"
+
+struct Stop
+{
+    float4 t;
+    float4 color;
+};
+
+uniforms
+{
+    int4 _n;
+    Stop _stops[8];
+};
+
+fixed4 main_brush(float2 uv)
+{
+    const float PI = 3.1415926;
+    float2 v = uv - float2(0.5, 0.5);
+    float x = 1.0 - (atan2(v.x, v.y) + PI) / (2.0 * PI);
+
+    // assert(n > 0)
+    // assert(stops[0].t == 0.0f)
+    // assert(stops[n - 1].t == 1.0f)
+
+    for (int i = 0; i < _n.x - 1; i++)
+    {
+        if (x <= _stops[i + 1].t.x)
+        {
+            return lerp(_stops[i].color, _stops[i + 1].color, (x - _stops[i].t.x) / (_stops[i + 1].t.x - _stops[i].t.x));
+        }
+    }
+
+    return lerp(_stops[_n.x - 1].color, _stops[0].color, (x - _stops[_n.x - 1].t.x) / (1.0 - _stops[_n.x - 1].t.x));
+}

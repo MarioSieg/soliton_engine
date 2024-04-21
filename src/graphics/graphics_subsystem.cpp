@@ -19,6 +19,66 @@
 using platform::platform_subsystem;
 using scripting::scripting_subsystem;
 
+#include <NsGui/IntegrationAPI.h>
+#include <NsGui/Uri.h>
+#include <NsGui/IView.h>
+#include <NsGui/IRenderer.h>
+#include <NsGui/FrameworkElement.h>
+#include <NsRender/RenderDevice.h>
+#include <NsCore/RegisterComponent.h>
+#include <NsCore/EnumConverter.h>
+#include "noesis/Providers/Include/NsApp/LocalXamlProvider.h"
+#include "noesis/Providers/Include/NsApp/LocalFontProvider.h"
+#include "noesis/Providers/Include/NsApp/LocalTextureProvider.h"
+#include "noesis/Theme/Include/NsApp/ThemeProviders.h"
+#include "noesis/VKRenderDevice/Include/NsRender/VKFactory.h"
+#include "noesis/UI/MainMenu.xaml.h"
+#include "noesis/UI/MenuDescription.xaml.h"
+#include "noesis/UI/MultiplierConverter.h"
+#include "noesis/UI/OptionSelector.xaml.h"
+#include "noesis/UI/SettingsMenu.xaml.h"
+#include "noesis/UI/StartMenu.xaml.h"
+#include "noesis/UI/ViewModel.h"
+
+#include <NsCore/CompilerSettings.h>
+
+#define PACKAGE_REGISTER(MODULE, PACKAGE) \
+    void NsRegisterReflection##MODULE##PACKAGE(); \
+    NsRegisterReflection##MODULE##PACKAGE()
+
+#define PACKAGE_INIT(MODULE, PACKAGE) \
+    void NsInitPackage##MODULE##PACKAGE(); \
+    NsInitPackage##MODULE##PACKAGE()
+
+#define PACKAGE_SHUTDOWN(MODULE, PACKAGE) \
+    void NsShutdownPackage##MODULE##PACKAGE(); \
+    NsShutdownPackage##MODULE##PACKAGE()
+
+
+extern "C" void NsRegisterReflection_NoesisApp() {
+    PACKAGE_REGISTER(App, Providers);
+    PACKAGE_REGISTER(App, Theme);
+    PACKAGE_REGISTER(App, MediaElement);
+    PACKAGE_REGISTER(App, Interactivity);
+    PACKAGE_REGISTER(Render, VKRenderDevice);
+}
+
+extern "C" void NsInitPackages_NoesisApp() {
+    PACKAGE_INIT(App, Providers);
+    PACKAGE_INIT(App, Theme);
+    PACKAGE_INIT(App, MediaElement);
+    PACKAGE_INIT(App, Interactivity);
+    PACKAGE_INIT(Render, VKRenderDevice);
+}
+
+extern "C" void NsShutdownPackages_NoesisApp() {
+    PACKAGE_INIT(Render, VKRenderDevice);
+    PACKAGE_SHUTDOWN(App, Interactivity);
+    PACKAGE_SHUTDOWN(App, MediaElement);
+    PACKAGE_SHUTDOWN(App, Theme);
+    PACKAGE_SHUTDOWN(App, Providers);
+}
+
 namespace graphics {
     using vkb::context;
 
@@ -272,9 +332,15 @@ namespace graphics {
 
             vkb_context().render_imgui(ImGui::GetDrawData(), cmd_buf);
 
-
-            self.get_rmlui_renderer()->m_p_current_command_buffer = cmd_buf;
-            passert(self.get_ui_context()->Render());
+            const NoesisApp::VKFactory::RecordingInfo recording_info {
+                .commandBuffer = cmd_buf,
+                .frameNumber = vkb_context().get_image_index(),
+                .safeFrameNumber = vkb_context().get_image_index()
+            };
+            NoesisApp::VKFactory::SetCommandBuffer(self.m_device, recording_info);
+            NoesisApp::VKFactory::SetRenderPass(self.m_device, vkb_context().get_render_pass(), static_cast<std::uint32_t>(vkb::k_msaa_sample_count));
+            self.m_view->GetRenderer()->RenderOffscreen();
+            self.m_view->GetRenderer()->Render();
         }
     }
 
@@ -291,6 +357,7 @@ namespace graphics {
     }
 
     HOTPROC auto graphics_subsystem::on_post_tick() -> void {
+        m_view->GetRenderer()->UpdateRenderTree();
         ImGui::Render();
         m_ui_context->Update();
         auto& scene = scene::get_active();
@@ -372,6 +439,50 @@ namespace graphics {
 
         s_ui_doc = m_ui_context->LoadDocument("assets/ui/hello_world.rml");
         s_ui_doc->Show();
+
+        Noesis::SetLogHandler([](const char*, uint32_t, uint32_t level, const char*, const char* msg) {
+            constexpr static const char* prefixes[] = { "T", "D", "I", "W", "E" };
+            log_info("[GUI]: [{}] {}", prefixes[level], msg);
+        });
+        Noesis::GUI::SetLicense(NS_LICENSE_NAME, NS_LICENSE_KEY);
+        Noesis::GUI::Init();
+        NsRegisterReflection_NoesisApp();
+        NsInitPackages_NoesisApp();
+        Noesis::RegisterComponent<Menu3D::MenuDescription>();
+        Noesis::RegisterComponent<Menu3D::MainMenu>();
+        Noesis::RegisterComponent<Menu3D::StartMenu>();
+        Noesis::RegisterComponent<Menu3D::SettingsMenu>();
+        Noesis::RegisterComponent<Menu3D::OptionSelector>();
+        Noesis::RegisterComponent<Noesis::EnumConverter<Menu3D::State>>();
+        Noesis::RegisterComponent<Menu3D::MultiplierConverter>();
+        Noesis::GUI::SetXamlProvider(Noesis::MakePtr<NoesisApp::LocalXamlProvider>("."));
+        Noesis::GUI::SetFontProvider(Noesis::MakePtr<NoesisApp::LocalFontProvider>("."));
+        Noesis::GUI::SetTextureProvider(Noesis::MakePtr<NoesisApp::LocalTextureProvider>("."));
+        const char* fonts[] = { "Fonts/#PT Root UI", "Arial", "Segoe UI Emoji" };
+        Noesis::GUI::SetFontFallbacks(fonts, 3);
+        Noesis::GUI::SetFontDefaultProperties(15.0f, Noesis::FontWeight_Normal, Noesis::FontStretch_Normal, Noesis::FontStyle_Normal);
+        NoesisApp::SetThemeProviders();
+        Noesis::GUI::LoadApplicationResources(NoesisApp::Theme::DarkBlue());
+
+        Noesis::Ptr<Noesis::FrameworkElement> xaml = Noesis::GUI::LoadXaml<Noesis::FrameworkElement>("assets/ui/menu/Data/MainMenu.xaml");
+        m_view = Noesis::GUI::CreateView(xaml);
+        m_view->SetFlags(Noesis::RenderFlags_PPAA | Noesis::RenderFlags_LCD);
+        m_view->SetSize(1920, 1080);
+
+        const NoesisApp::VKFactory::InstanceInfo instance_info {
+            .instance = vkb_context().get_device().get_instance(),
+            .physicalDevice = vkb_context().get_device().get_physical_device(),
+            .device = vkb_context().get_device().get_logical_device(),
+            .pipelineCache = vkb_context().get_pipeline_cache(),
+            .queueFamilyIndex = vkb_context().get_device().get_graphics_queue_idx(),
+            .vkGetInstanceProcAddr = &vkGetInstanceProcAddr,
+            .stereoSupport = false,
+            .QueueSubmit = +[](VkCommandBuffer commandBuffer) {
+
+            }
+        };
+        m_device = NoesisApp::VKFactory::CreateDevice(false, instance_info);
+        m_view->GetRenderer()->Init(m_device);
     }
 
     auto graphics_subsystem::shutdown_rmlui() -> void {

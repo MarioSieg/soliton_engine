@@ -1,0 +1,20 @@
+#include "EffectHelpers.h"
+
+uniforms
+{
+    float _size;
+};
+
+fixed4 main_effect()
+{
+    float2 pos = GetImagePosition();
+
+    if (mod(floor(pos.y / _size), 2.0) >= 1.0)
+    {
+        pos.x += _size / 2.0f;
+    }
+
+    float2 brickNum = floor(pos / _size);
+    float2 centerOfBrick = brickNum * _size + _size / 2.0;
+    return SampleInputAtPosition(centerOfBrick);
+}

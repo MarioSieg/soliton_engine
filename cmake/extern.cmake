@@ -5,6 +5,7 @@ elseif(APPLE)
     target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/mac_aarch64/libMoltenVK.dylib)
 else()
     target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/linux_amd64/libluajit.a)
+    target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/linux_amd64/libNoesis.so)
     target_link_libraries(lunam tbb)
 endif()
 
@@ -91,6 +92,13 @@ add_compile_definitions(RMLUI_ENABLE_LOTTIE_PLUGIN=1)
 add_subdirectory(extern/RmlUi)
 target_include_directories(lunam PRIVATE extern/RmlUi/Include)
 target_link_libraries(lunam RmlCore)
+
+target_include_directories(lunam PRIVATE extern/noesis/Include)
+target_include_directories(lunam PRIVATE src/graphics/noesis/Providers/Include)
+target_include_directories(lunam PRIVATE src/graphics/noesis/Interactivity/Include)
+target_include_directories(lunam PRIVATE src/graphics/noesis/Theme/Include)
+target_include_directories(lunam PRIVATE src/graphics/noesis/MediaElement/Include)
+target_include_directories(lunam PRIVATE src/graphics/noesis/VKRenderDevice/Include)
 
 # Assimp must be last
 add_subdirectory(extern/assimp)

@@ -62,6 +62,7 @@ namespace vkb {
         static constexpr vk::PhysicalDeviceFeatures k_enabled_features = [] {
             vk::PhysicalDeviceFeatures enabled_features {};
             enabled_features.samplerAnisotropy = vk::True;
+            enabled_features.fillModeNonSolid = vk::True;
             return enabled_features;
         }();
 
