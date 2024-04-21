@@ -6,7 +6,7 @@
 
 #include "device.hpp"
 #include "swapchain.hpp"
-#include "../imgui/imgui.h"
+
 #include <DirectXMath.h>
 
 namespace vkb {
@@ -117,7 +117,6 @@ namespace vkb {
 
         HOTPROC auto begin_frame(const DirectX::XMFLOAT4A& clear_color, vk::CommandBufferInheritanceInfo* out_inheritance_info = nullptr) -> vk::CommandBuffer;
         HOTPROC auto end_frame(vk::CommandBuffer cmd_buf) -> void;
-        auto render_imgui(ImDrawData* data, vk::CommandBuffer cmd_buf) -> void;
         auto on_resize() -> void;
 
     private:
@@ -131,7 +130,6 @@ namespace vkb {
         auto create_pipeline_cache() -> void;
         auto recreate_swapchain() -> void;
         auto create_msaa_target() -> void;
-        auto create_imgui_renderer() -> void;
 
         auto destroy_depth_stencil() const -> void;
         auto destroy_msaa_target() const -> void;

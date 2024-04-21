@@ -8,8 +8,6 @@
 #include <execution>
 #include <mimalloc.h>
 
-#include "imgui/text_editor.hpp"
-#include "imgui/implot.h"
 #include "material.hpp"
 #include "pipeline.hpp"
 
@@ -27,37 +25,9 @@ namespace graphics {
         log_info("Initializing graphics subsystem");
 
         s_instance = this;
-        ImGui::SetAllocatorFunctions(
-            +[](size_t size, [[maybe_unused]] void* usr) -> void* {
-                return mi_malloc(size);
-            },
-            +[](void* ptr, [[maybe_unused]] void* usr) -> void {
-                mi_free(ptr);
-            }
-        );
-        ImGui::CreateContext();
-        ImPlot::CreateContext();
-        auto& io = ImGui::GetIO();
-        io.DisplaySize.x = 800.0f;
-        io.DisplaySize.y = 600.0f;
-        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-        io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
-        io.IniFilename = nullptr;
 
         GLFWwindow* window = platform_subsystem::get_glfw_window();
         context::s_instance = std::make_unique<context>(window); // Create Vulkan context
-
-        // Apply DPI scaling
-        float scale = 1.0f;
-        float xscale;
-        float yscale;
-        glfwGetWindowContentScale(window, &xscale, &yscale);
-        scale = (xscale + yscale) * 0.5f;
-        if constexpr (PLATFORM_OSX) {
-            io.FontGlobalScale = 1.0f / scale;
-        } else {
-            ImGui::GetStyle().ScaleAllSizes(scale);
-        }
 
         material::init_static_resources();
 
@@ -71,7 +41,10 @@ namespace graphics {
 
         pipeline_registry::get().register_pipeline<pipelines::pbr_pipeline>();
 
-        init_noesis_ui();
+        m_imgui_context.emplace();
+
+        m_noesis_context.emplace();
+        m_noesis_context->load_ui_from_xaml("App.xaml");
     }
 
     [[nodiscard]] static auto compute_render_bucket_range(const std::size_t id, const std::size_t num_entities, const std::size_t num_threads) noexcept -> std::array<std::size_t, 2> {
@@ -86,7 +59,9 @@ namespace graphics {
     graphics_subsystem::~graphics_subsystem() {
         vkcheck(context::s_instance->get_device().get_logical_device().waitIdle()); // must be first
 
-        shutdown_noesis_ui();
+        m_imgui_context.reset();
+        m_noesis_context.reset();
+
         pipeline_registry::s_instance.reset();
         m_render_thread_pool.reset();
         if (m_debugdraw) {
@@ -94,8 +69,6 @@ namespace graphics {
         }
         material::free_static_resources();
         context::s_instance.reset();
-        ImPlot::DestroyContext();
-        ImGui::DestroyContext();
         s_instance = nullptr;
     }
 
@@ -264,32 +237,29 @@ namespace graphics {
         if (bucket_id == num_threads - 1) { // Last thread
             if (std::optional<debugdraw>& dd = self.get_debug_draw_opt(); dd) {
                 dd->render(
-                        cmd,
-                        DirectX::XMLoadFloat4x4A(&graphics_subsystem::s_view_proj_mtx),
-                        DirectX::XMLoadFloat4(&graphics_subsystem::s_camera_transform.position)
+                    cmd,
+                    DirectX::XMLoadFloat4x4A(&graphics_subsystem::s_view_proj_mtx),
+                    DirectX::XMLoadFloat4(&graphics_subsystem::s_camera_transform.position)
                 );
             }
             self.get_noesis_context().render(cmd);
-            vkb::ctx().render_imgui(ImGui::GetDrawData(), cmd);
+            self.get_imgui_context().submit_imgui(cmd);
         }
     }
 
     HOTPROC auto graphics_subsystem::on_pre_tick() -> bool {
         const auto w = static_cast<float>(context::s_instance->get_width());
         const auto h = static_cast<float>(context::s_instance->get_height());
-        m_noesis_context->tick();
-        ImGui::NewFrame();
-        auto& io = ImGui::GetIO();
-        io.DisplaySize.x = w;
-        io.DisplaySize.y = h;
+        m_imgui_context->begin_frame();
         update_main_camera(w, h);
         m_cmd_buf = vkb::ctx().begin_frame(s_clear_color, &m_inheritance_info);
         return true;
     }
 
     HOTPROC auto graphics_subsystem::on_post_tick() -> void {
-        ImGui::Render();
         auto& scene = scene::get_active();
+        m_noesis_context->tick();
+        m_imgui_context->end_frame();
         if (!m_render_query.scene || &scene != m_render_query.scene) [[unlikely]] { // Scene changed
             m_render_query.scene = &scene;
             // m_render_query.query.destruct(); TODO: leak
@@ -341,14 +311,5 @@ namespace graphics {
         descriptor_pool_ci.pPoolSizes = sizes.data();
         descriptor_pool_ci.maxSets = 32; // TODO max sets Allocate one set for each frame
         vkcheck(device.createDescriptorPool(&descriptor_pool_ci, &vkb::s_allocator, &m_descriptor_pool));
-    }
-
-    auto graphics_subsystem::init_noesis_ui() -> void {
-        m_noesis_context.emplace();
-        m_noesis_context->load_ui_from_xaml("App.xaml");
-    }
-
-    auto graphics_subsystem::shutdown_noesis_ui() -> void {
-        m_noesis_context.reset();
     }
 }

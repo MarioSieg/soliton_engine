@@ -69,6 +69,8 @@ namespace graphics {
             return *static_cast<T*>(&*m_pipelines[m_names.back()]);
         }
 
+        [[nodiscard]] auto get_cache() const -> vk::PipelineCache { return m_cache; }
+
         [[nodiscard]] static auto get() -> pipeline_registry& {
             assert(s_instance);
             return *s_instance;

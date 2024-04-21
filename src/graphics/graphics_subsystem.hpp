@@ -16,6 +16,8 @@
 #include "mesh.hpp"
 #include "texture.hpp"
 #include "debugdraw.hpp"
+
+#include "imgui/context.hpp"
 #include "noesis/context.hpp"
 
 namespace graphics {
@@ -40,11 +42,9 @@ namespace graphics {
             return *m_debugdraw;
         }
 
-        [[nodiscard]] auto get_debug_draw_opt() noexcept -> std::optional<debugdraw>& {
-            return m_debugdraw;
-        }
+        [[nodiscard]] auto get_debug_draw_opt() noexcept -> std::optional<debugdraw>& { return m_debugdraw; }
         [[nodiscard]] auto get_noesis_context() noexcept -> noesis::context& { return *m_noesis_context; }
-
+        [[nodiscard]] auto get_imgui_context() noexcept -> imgui::context& { return *m_imgui_context; }
         static inline constinit DirectX::XMFLOAT4X4A s_view_mtx;
         static inline constinit DirectX::XMFLOAT4X4A s_proj_mtx;
         static inline constinit DirectX::XMFLOAT4X4A s_view_proj_mtx;
@@ -55,8 +55,6 @@ namespace graphics {
 
     private:
         auto create_descriptor_pool() -> void;
-        auto init_noesis_ui() -> void;
-        auto shutdown_noesis_ui() -> void;
 
         vk::CommandBuffer m_cmd_buf = nullptr;
         vk::DescriptorPool m_descriptor_pool {};
@@ -64,6 +62,7 @@ namespace graphics {
         std::optional<render_thread_pool> m_render_thread_pool {};
         std::vector<std::pair<std::span<const com::transform>, std::span<const com::mesh_renderer>>> m_render_data {};
         std::optional<debugdraw> m_debugdraw {};
+        std::optional<imgui::context> m_imgui_context {};
         std::optional<noesis::context> m_noesis_context {};
 
         struct {
