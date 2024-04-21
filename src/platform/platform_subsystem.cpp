@@ -293,6 +293,42 @@ auto dump_loaded_dylibs() -> void {
         log_info("Resizing window to {}x{}", w, h);
     }
 
+    static auto glfw_cursor_pos_callback(GLFWwindow* window, double x, double y) noexcept -> void {
+        for (auto* const cb : platform_subsystem::s_cursor_pos_callbacks) {
+            cb(window, x, y);
+        }
+    }
+    static auto glfw_scroll_callback(GLFWwindow* window, double x, double y) noexcept -> void {
+        for (auto* const cb : platform_subsystem::s_scroll_callbacks) {
+            cb(window, x, y);
+        }
+    }
+    static auto glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) noexcept -> void {
+        for (auto* const cb : platform_subsystem::s_key_callbacks) {
+            cb(window, key, scancode, action, mods);
+        }
+    }
+    static auto glfw_char_callback(GLFWwindow* window, unsigned int codepoint) noexcept -> void {
+        for (auto* const cb : platform_subsystem::s_char_callbacks) {
+            cb(window, codepoint);
+        }
+    }
+    static auto glfw_mouse_button_callback(GLFWwindow* window, int button, int action, int mods) noexcept -> void {
+        for (auto* const cb : platform_subsystem::s_mouse_button_callbacks) {
+            cb(window, button, action, mods);
+        }
+    }
+    static auto glfw_cursor_enter_callback(GLFWwindow* window, int entered) noexcept -> void {
+        for (auto* const cb : platform_subsystem::s_cursor_enter_callbacks) {
+            cb(window, entered);
+        }
+    }
+    static auto glfw_framebuffer_size_callback(GLFWwindow* window, int w, int h) noexcept -> void {
+        for (auto* const cb : platform_subsystem::s_framebuffer_size_callbacks) {
+            cb(window, w, h);
+        }
+    }
+
     platform_subsystem::platform_subsystem() : subsystem{"Platform"} {
         passert(s_window == nullptr);
 
@@ -348,7 +384,16 @@ auto dump_loaded_dylibs() -> void {
         glfwSetWindowSizeLimits(s_window, min_width, min_height, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
         // setup hooks
-        glfwSetFramebufferSizeCallback(s_window, &proxy_resize_hook);
+        glfwSetCursorPosCallback(s_window, &glfw_cursor_pos_callback);
+        glfwSetScrollCallback(s_window, &glfw_scroll_callback);
+        glfwSetKeyCallback(s_window, &glfw_key_callback);
+        glfwSetCharCallback(s_window, &glfw_char_callback);
+        glfwSetMouseButtonCallback(s_window, &glfw_mouse_button_callback);
+        glfwSetCursorEnterCallback(s_window, &glfw_cursor_enter_callback);
+        glfwSetFramebufferSizeCallback(s_window, &glfw_framebuffer_size_callback);
+
+        // setup framebuffer resize hook
+        s_framebuffer_size_callbacks.emplace_back(&proxy_resize_hook);
 
         // query monitor and print some info
         auto printMonitorInfo = [](GLFWmonitor* mon) {

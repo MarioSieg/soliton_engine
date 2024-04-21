@@ -1,9 +1,0 @@
-<rml>
-<head>
-	<title>Loading</title>
-	<link type="text/rcss" href="rml.rcss"/>
-</head>
-<body>
-	<h1 style="margin-top: 40%;">Welcome to Lunam Engine</h1>
-</body>
-</rml>

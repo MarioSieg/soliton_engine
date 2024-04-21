@@ -4038,7 +4038,7 @@ BX_STATIC_ASSERT(BX_COUNTOF(s_accessNames) == Access::Count, "Invalid s_accessNa
 
 		if (0 == (_render->m_debug&BGFX_DEBUG_IFH) )
 		{
-			viewState.m_rect = _render->m_view[0].m_rect;
+			viewState.m_rect = _render->m_app[0].m_rect;
 			int32_t numItems = _render->m_numRenderItems;
 
 			for (int32_t item = 0; item < numItems;)
@@ -4048,7 +4048,7 @@ BX_STATIC_ASSERT(BX_COUNTOF(s_accessNames) == Access::Count, "Invalid s_accessNa
 				statsKeyType[isCompute]++;
 
 				const bool viewChanged = 0
-					|| key.m_view != view
+					|| key.m_app != view
 					|| item == numItems
 					;
 
@@ -4060,7 +4060,7 @@ BX_STATIC_ASSERT(BX_COUNTOF(s_accessNames) == Access::Count, "Invalid s_accessNa
 				if (viewChanged
 				|| (!isCompute && wasCompute) )
 				{
-					view = key.m_view;
+					view = key.m_app;
 					currentProgram = BGFX_INVALID_HANDLE;
 
 					if (item > 1)
@@ -4074,29 +4074,29 @@ BX_STATIC_ASSERT(BX_COUNTOF(s_accessNames) == Access::Count, "Invalid s_accessNa
 
 					profiler.begin(view);
 
-					viewState.m_rect = _render->m_view[view].m_rect;
+					viewState.m_rect = _render->m_app[view].m_rect;
 
 					submitBlit(bs, view);
 
 					if (!isCompute)
 					{
-						const Rect& scissorRect = _render->m_view[view].m_scissor;
+						const Rect& scissorRect = _render->m_app[view].m_scissor;
 						viewHasScissor = !scissorRect.isZero();
 						viewScissorRect = viewHasScissor ? scissorRect : viewState.m_rect;
-						Clear& clr = _render->m_view[view].m_clear;
+						Clear& clr = _render->m_app[view].m_clear;
 
 						Rect viewRect = viewState.m_rect;
 						bool clearWithRenderPass = false;
 
 						if (NULL == m_renderCommandEncoder
-						||  fbh.idx != _render->m_view[view].m_fbh.idx)
+						||  fbh.idx != _render->m_app[view].m_fbh.idx)
 						{
 							endEncoding();
 
 							RenderPassDescriptor renderPassDescriptor = newRenderPassDescriptor();
 							renderPassDescriptor.visibilityResultBuffer = m_occlusionQuery.m_buffer;
 
-							fbh = _render->m_view[view].m_fbh;
+							fbh = _render->m_app[view].m_fbh;
 
 							uint32_t width  = m_resolution.width;
 							uint32_t height = m_resolution.height;

@@ -16,14 +16,7 @@
 #include "mesh.hpp"
 #include "texture.hpp"
 #include "debugdraw.hpp"
-
-#include "rmlui/rmlui_renderer.hpp"
-#include "rmlui/rmlui_system.hpp"
-#include "RmlUi/Core/ElementDocument.h"
-
-#include "NsGui/IView.h"
-#include "NsRender/RenderDevice.h"
-#include "NsCore/Ptr.h"
+#include "noesis/context.hpp"
 
 namespace graphics {
     class graphics_subsystem final : public subsystem {
@@ -50,6 +43,7 @@ namespace graphics {
         [[nodiscard]] auto get_debug_draw_opt() noexcept -> std::optional<debugdraw>& {
             return m_debugdraw;
         }
+        [[nodiscard]] auto get_noesis_context() noexcept -> noesis::context& { return *m_noesis_context; }
 
         static inline constinit DirectX::XMFLOAT4X4A s_view_mtx;
         static inline constinit DirectX::XMFLOAT4X4A s_proj_mtx;
@@ -58,19 +52,11 @@ namespace graphics {
         static inline DirectX::BoundingFrustum s_frustum;
         static inline com::transform s_camera_transform;
         static inline constinit graphics_subsystem* s_instance;
-        static inline constinit Rml::ElementDocument* s_ui_doc {};
-
-        [[nodiscard]] static inline auto get_ui_context() noexcept -> Rml::Context* { return m_ui_context; }
-        [[nodiscard]] auto get_rmlui_system() const noexcept -> SystemInterface_GLFW* { return &*m_rmlui_system; }
-        [[nodiscard]] auto get_rmlui_renderer() const noexcept -> RenderInterface_VK* { return &*m_rmlui_renderer; }
-
-        Noesis::Ptr<Noesis::IView> m_view {};
-        Noesis::Ptr<Noesis::RenderDevice> m_device {};
 
     private:
         auto create_descriptor_pool() -> void;
-        auto init_rmlui() -> void;
-        auto shutdown_rmlui() -> void;
+        auto init_noesis_ui() -> void;
+        auto shutdown_noesis_ui() -> void;
 
         vk::CommandBuffer m_cmd_buf = nullptr;
         vk::DescriptorPool m_descriptor_pool {};
@@ -78,10 +64,7 @@ namespace graphics {
         std::optional<render_thread_pool> m_render_thread_pool {};
         std::vector<std::pair<std::span<const com::transform>, std::span<const com::mesh_renderer>>> m_render_data {};
         std::optional<debugdraw> m_debugdraw {};
-        static inline constinit Rml::Context* m_ui_context {};
-        std::unique_ptr<SystemInterface_GLFW> m_rmlui_system {};
-        std::unique_ptr<RenderInterface_VK> m_rmlui_renderer {};
-
+        std::optional<noesis::context> m_noesis_context {};
 
         struct {
             flecs::query<const com::transform, const com::mesh_renderer> query {};

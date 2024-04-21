@@ -58,10 +58,12 @@ namespace vkb {
             vkcheck(cmd.begin(&cmd_begin_info));
             return cmd;
         }
-        template <const vk::QueueFlagBits QueueType> requires is_queue_type<QueueType>
+        template <const vk::QueueFlagBits QueueType, const bool Owned = true> requires is_queue_type<QueueType>
         auto flush_command_buffer(const vk::CommandBuffer cmd) const -> void {
             const vk::Device device = m_device->get_logical_device();
-            vkcheck(cmd.end());
+            if constexpr (Owned) {
+                vkcheck(cmd.end());
+            }
             constexpr vk::FenceCreateInfo fence_info {};
             vk::Fence fence {};
             vkcheck(device.createFence(&fence_info, &vkb::s_allocator, &fence));
@@ -81,17 +83,19 @@ namespace vkb {
             vkcheck(queue.submit(1, &submit_info, fence));// TODO: not thread safe, use transfer queue
             vkcheck(device.waitForFences(1, &fence, vk::True, std::numeric_limits<std::uint64_t>::max()));
             device.destroyFence(fence, &vkb::s_allocator);
-            vk::CommandPool pool {};
-            if constexpr (QueueType == vk::QueueFlagBits::eGraphics) {
-                pool = get_graphics_command_pool();
-            } else if constexpr (QueueType == vk::QueueFlagBits::eCompute) {
-                pool = get_compute_command_pool();
-            } else if constexpr (QueueType == vk::QueueFlagBits::eTransfer) {
-                pool = get_transfer_command_pool();
-            } else {
-                panic("Invalid queue type");
+            if constexpr (Owned) {
+                vk::CommandPool pool {};
+                if constexpr (QueueType == vk::QueueFlagBits::eGraphics) {
+                    pool = get_graphics_command_pool();
+                } else if constexpr (QueueType == vk::QueueFlagBits::eCompute) {
+                    pool = get_compute_command_pool();
+                } else if constexpr (QueueType == vk::QueueFlagBits::eTransfer) {
+                    pool = get_transfer_command_pool();
+                } else {
+                    panic("Invalid queue type");
+                }
+                device.freeCommandBuffers(pool, 1, &cmd);
             }
-            device.freeCommandBuffers(pool, 1, &cmd);
         }
         [[nodiscard]] auto get_command_buffers() const noexcept -> std::span<const vk::CommandBuffer> { return m_command_buffers; }
         [[nodiscard]] auto get_current_frame() const noexcept -> std::uint32_t { return m_current_frame; }

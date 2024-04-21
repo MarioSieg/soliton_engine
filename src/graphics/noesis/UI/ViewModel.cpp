@@ -10,6 +10,7 @@
 #include <NsCore/ReflectionImplementEnum.h>
 #include <NsCore/Log.h>
 #include <NsGui/UIElement.h>
+#include <NsApp/Application.h>
 
 
 using namespace Menu3D;

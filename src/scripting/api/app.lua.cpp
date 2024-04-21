@@ -8,8 +8,6 @@
 #include <infoware/infoware.hpp>
 #include <nfd.hpp>
 
-#include <RmlUi/Core.h>
-
 #include "../../graphics/graphics_subsystem.hpp"
 #include "../scripting_subsystem.hpp"
 
@@ -39,10 +37,7 @@ LUA_INTEROP_API auto __lu_app_is_ui_hovered() -> bool {
 }
 
 LUA_INTEROP_API auto __lu_app_hot_reload_ui() -> void {
-    auto* ctx = graphics_subsystem::get_ui_context();
-    graphics_subsystem::s_ui_doc->Close();
-    graphics_subsystem::s_ui_doc = ctx->LoadDocument("assets/ui/hello_world.rml");
-    graphics_subsystem::s_ui_doc->Show();
+    log_info("NYI");
 }
 
 LUA_INTEROP_API auto __lu_window_maximize() -> void {

@@ -13,8 +13,6 @@
 
 using scripting::scripting_subsystem;
 
-#include <RmlUi/Core.h>
-
 namespace vkb {
     context::context(GLFWwindow* window) : m_window{window} {
         passert(m_window != nullptr);

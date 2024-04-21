@@ -23,7 +23,6 @@ public:
 
 private:
     void InitializeComponent();
-    void OnLoaded(Noesis::BaseComponent*, const Noesis::RoutedEventArgs&);
 
     NS_DECLARE_REFLECTION(MainMenu, UserControl)
 };
