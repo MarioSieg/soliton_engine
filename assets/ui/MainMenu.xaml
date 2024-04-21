@@ -183,7 +183,7 @@
                             <Path Data="{StaticResource NoesisGuiTextGeometry}" Fill="{StaticResource NoesisLogoBlue}" Stretch="Uniform" Margin="40,0,0,0" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Viewbox>
-                    <TextBlock Text="MENU DEMO" FontSize="50" HorizontalAlignment="Right" Margin="0,-19,-2,0" Foreground="{StaticResource TransparentWhiteBrush95}"/>
+                    <TextBlock Text="BY MARIO SIEG" FontSize="50" HorizontalAlignment="Right" Margin="0,-19,-2,0" Foreground="{StaticResource TransparentWhiteBrush95}"/>
                 </StackPanel>
                 <Grid x:Name="MenuOptions" Grid.Row="1" Width="640" HorizontalAlignment="Left" Margin="0,30,0,0" RenderTransformOrigin="0.5,0.5"
                     KeyboardNavigation.TabNavigation="Cycle"
