@@ -3,7 +3,6 @@
 #pragma once
 
 #include "prelude.hpp"
-#include "vma.hpp"
 #include <GLFW/glfw3.h>
 
 namespace vkb {

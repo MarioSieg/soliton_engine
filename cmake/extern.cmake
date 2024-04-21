@@ -83,6 +83,8 @@ target_link_libraries(lunam nfd)
 add_subdirectory(extern/Vulkan-Utility-Libraries)
 target_include_directories(lunam PRIVATE extern/Vulkan-Utility-Libraries/include)
 
+target_include_directories(lunam PRIVATE extern/VulkanMemoryAllocator/include)
+
 target_include_directories(lunam PRIVATE extern/noesis/Include)
 target_include_directories(lunam PRIVATE src/graphics/noesis/Providers/Include)
 target_include_directories(lunam PRIVATE src/graphics/noesis/Interactivity/Include)

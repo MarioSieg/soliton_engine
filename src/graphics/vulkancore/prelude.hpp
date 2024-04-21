@@ -14,7 +14,7 @@
 #include <vulkan/vk_enum_string_helper.h>
 #include <mimalloc.h>
 
-#include "vma.hpp"
+#include <vk_mem_alloc.h>
 
 #if PLATFORM_OSX
 #   include <vulkan/vulkan_beta.h>

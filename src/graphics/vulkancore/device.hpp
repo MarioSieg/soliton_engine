@@ -3,7 +3,6 @@
 #pragma once
 
 #include "prelude.hpp"
-#include "vma.hpp"
 
 namespace vkb {
     class device final : public no_copy, public no_move {
