@@ -179,7 +179,10 @@ namespace vkb {
     };
 
     // Get global vulkan context wrapper class
-    [[nodiscard]] inline auto ctx() noexcept -> context& { return *context::s_instance; }
+    [[nodiscard]] inline auto ctx() noexcept -> context& {
+        passert(context::s_instance != nullptr);
+        return *context::s_instance;
+    }
 
     // Get global vulkan device wrapper class
     [[nodiscard]] inline auto dvc() noexcept -> const device& { return ctx().get_device(); }
