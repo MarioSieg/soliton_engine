@@ -5,6 +5,8 @@
 #if PLATFORM_WINDOWS
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+#else
+#include <pthread.h>
 #endif
 
 namespace graphics {
@@ -50,6 +52,17 @@ namespace graphics {
 
 #if PLATFORM_WINDOWS
         SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
+#else
+        pthread_t cthr_id = pthread_self();
+        pthread_setname_np(cthr_id, "Lunam Engine Render Thread");
+        pthread_attr_t thr_attr {};
+        int policy = 0;
+        int max_prio_for_policy = 0;
+        pthread_attr_init(&thr_attr);
+        pthread_attr_getschedpolicy(&thr_attr, &policy);
+        max_prio_for_policy = sched_get_priority_max(policy);
+        pthread_setschedprio(cthr_id, max_prio_for_policy);
+        pthread_attr_destroy(&thr_attr);
 #endif
 
         while (!m_token.load(std::memory_order_relaxed)) [[likely]] {

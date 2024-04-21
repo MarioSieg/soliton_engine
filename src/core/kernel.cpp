@@ -75,6 +75,8 @@ static auto redirect_io() -> void {
     std::wcin.clear();
     std::cin.clear();
 }
+#else
+#include <pthread.h>
 #endif
 
 static constinit kernel* g_kernel = nullptr;
@@ -84,8 +86,19 @@ kernel::kernel(const int argc, const char** argv, const char** $environ) {
     g_kernel = this;
 #if PLATFORM_WINDOWS
     redirect_io();
-    SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS); // Is this smart?
+    SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
     SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
+#else
+    pthread_t cthr_id = pthread_self();
+    pthread_setname_np(cthr_id, "Lunam Engine Main Thread");
+    pthread_attr_t thr_attr {};
+    int policy = 0;
+    int max_prio_for_policy = 0;
+    pthread_attr_init(&thr_attr);
+    pthread_attr_getschedpolicy(&thr_attr, &policy);
+    max_prio_for_policy = sched_get_priority_max(policy);
+    pthread_setschedprio(cthr_id, max_prio_for_policy);
+    pthread_attr_destroy(&thr_attr);
 #endif
     std::ostream::sync_with_stdio(false);
     spdlog::init_thread_pool(k_log_queue_size, k_log_threads);

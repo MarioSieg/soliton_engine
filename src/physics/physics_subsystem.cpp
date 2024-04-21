@@ -124,7 +124,7 @@ namespace physics {
         char buf[0x1000];
         vsnprintf(buf, sizeof(buf), msg, list);
         va_end(list);
-        log_info("[Physics]: ", buf);
+        log_info("[Physics]: {}", buf);
     }
 
     physics_subsystem::physics_subsystem() : subsystem{"Physics"} {
@@ -215,44 +215,6 @@ namespace physics {
 
 		log_info("Creating static colliders...");
 
-    	static constexpr auto create_static_body = [](const com::transform& transform, const com::mesh_renderer& renderer) -> std::optional<JPH::BodyCreationSettings> {
-    		if (renderer.meshes.empty()) [[unlikely]] {
-				return std::nullopt;
-    		}
-    		const auto& mesh = renderer.meshes.front();
-    		JPH::Shape::ShapeResult result {};
-    		const JPH::Vec3 pos {
-    			transform.position.x,
-				transform.position.y,
-				transform.position.z
-			};
-    		const JPH::Quat rot {
-    			transform.rotation.x,
-				transform.rotation.y,
-				transform.rotation.z,
-				transform.rotation.w,
-			};
-    		auto verts = mesh->verts;
-    		const auto scale = DirectX::XMLoadFloat4(&transform.scale);
-    		for (JPH::Float3& vert : verts) {
-    			static_assert(sizeof(JPH::Float3) == sizeof(DirectX::XMFLOAT3));
-    			static_assert(alignof(JPH::Float3) == alignof(DirectX::XMFLOAT3));
-    			auto* punned = reinterpret_cast<DirectX::XMFLOAT3*>(&vert);
-    			DirectX::XMStoreFloat3(punned, DirectX::XMVectorMultiply(DirectX::XMLoadFloat3(punned), scale));
-    		}
-    		JPH::BodyCreationSettings static_object {
-    			new JPH::MeshShape(JPH::MeshShapeSettings{verts, mesh->triangles}, result),
-				pos,
-				rot,
-				JPH::EMotionType::Static,
-				Layers::NON_MOVING
-			};
-    		// make static objects concrete like:
-    		static_object.mFriction = 0.9f;
-    		static_object.mRestitution = 0.0f;
-    		return static_object;
-    	};
-
     	auto filter = scene.filter<const com::transform, const com::mesh_renderer>();
 		std::vector<std::pair<std::span<const com::transform>, std::span<const com::mesh_renderer>>> targets {};
     	std::size_t total = 0;
@@ -261,32 +223,28 @@ namespace physics {
     		total += n;
     		targets.emplace_back(std::span{transform, n}, std::span{renderer, n});
 		});
-    	std::vector<std::optional<JPH::BodyCreationSettings>> bodies {};
+    	std::vector<JPH::BodyID> bodies {};
     	bodies.resize(total);
     	for (std::size_t base_idx = 0; auto&& target : targets) {
     		const auto& transforms = target.first;
     		const auto& renderers = target.second;
 			passert(transforms.size() == renderers.size());
-    		std::for_each(std::begin(transforms), std::end(transforms), [&](const com::transform& transform) {
-    			const auto index = &transform - &transforms.front();
-    			const auto& renderer = renderers[index];
-    			const auto body = create_static_body(transform, renderer);
-    			if (body) [[likely]] {
-					bodies[base_idx + index] = body;
-				}
+    		std::for_each(std::execution::par_unseq, std::begin(transforms), std::end(transforms), [&](const com::transform& transform) {
+                const auto index = &transform - &transforms.front();
+                const auto& renderer = renderers[index];
+                if (!renderer.meshes.empty()) [[likely]] {
+                    JPH::BodyCreationSettings ci {};
+                    create_static_body(ci, transform, renderer);
+                    bodies[base_idx + index] = bi.CreateAndAddBody(ci, JPH::EActivation::DontActivate);
+                }
     		});
     	}
     	for (auto old_body : m_static_bodies) {
     		bi.RemoveBody(old_body);
     	}
-    	m_static_bodies.reserve(bodies.size());
-    	for (const auto& body : bodies) {
-			if (body) [[likely]] {
-				m_static_bodies.emplace_back(bi.CreateAndAddBody(*body, JPH::EActivation::DontActivate));
-			}
-    	}
-    	m_static_bodies.shrink_to_fit();
+        m_static_bodies = std::move(bodies);
 
+        log_info("Optimizing broadphase...");
     	m_physics_system.OptimizeBroadPhase();
     }
 
@@ -315,5 +273,37 @@ namespace physics {
     		transform.position = std::bit_cast<DirectX::XMFLOAT4>(cc.characer->GetPosition());
 			transform.rotation = std::bit_cast<DirectX::XMFLOAT4>(cc.characer->GetPosition());
 		});
+    }
+
+    auto physics_subsystem::create_static_body(JPH::BodyCreationSettings& ci, const com::transform& transform, const com::mesh_renderer& renderer) -> void {
+        passert(!renderer.meshes.empty());
+        const auto& mesh = renderer.meshes.front();
+        JPH::Shape::ShapeResult result {};
+        const JPH::Vec3 pos {
+            transform.position.x,
+            transform.position.y,
+            transform.position.z
+        };
+        const JPH::Quat rot {
+            transform.rotation.x,
+            transform.rotation.y,
+            transform.rotation.z,
+            transform.rotation.w,
+        };
+        auto verts = mesh->verts;
+        const auto scale = DirectX::XMLoadFloat4(&transform.scale);
+        for (JPH::Float3& vert : verts) {
+            static_assert(sizeof(JPH::Float3) == sizeof(DirectX::XMFLOAT3));
+            static_assert(alignof(JPH::Float3) == alignof(DirectX::XMFLOAT3));
+            auto* punned = reinterpret_cast<DirectX::XMFLOAT3*>(&vert);
+            DirectX::XMStoreFloat3(punned, DirectX::XMVectorMultiply(DirectX::XMLoadFloat3(punned), scale));
+        }
+        ci = {
+            new JPH::MeshShape(JPH::MeshShapeSettings{verts, mesh->triangles}, result),
+            pos,
+            rot,
+            JPH::EMotionType::Static,
+            Layers::NON_MOVING
+        };
     }
 }
