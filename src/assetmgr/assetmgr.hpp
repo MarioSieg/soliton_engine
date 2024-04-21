@@ -145,6 +145,6 @@ namespace assetmgr {
             panic("Failed to load asset '{}' from category {}", name, static_cast<std::size_t>(category));
         }
     }
-    [[nodiscard]] extern auto get_asset_request_count() noexcept -> std::uint64_t;
-    [[nodiscard]] extern auto get_total_bytes_loaded() noexcept -> std::uint64_t;
+    [[nodiscard]] extern auto get_asset_request_count() noexcept -> std::size_t;
+    [[nodiscard]] extern auto get_total_bytes_loaded() noexcept -> std::size_t;
 }

@@ -72,8 +72,8 @@ namespace assetmgr {
         return dir;
     }
 
-    static constinit std::atomic_uint64_t s_asset_requests = 0;
-    static constinit std::atomic_uint64_t s_total_bytes_loaded = 0;
+    constinit std::atomic_size_t s_asset_requests = 0;
+    constinit std::atomic_size_t s_total_bytes_loaded = 0;
 
     [[nodiscard]] static auto validate_path(const std::string& full_path) -> bool {
         const int encoding = simdutf::autodetect_encoding(full_path.c_str(), full_path.size());
@@ -118,7 +118,7 @@ namespace assetmgr {
         file.seekg(0, std::ios::beg);
         out.resize(size);
         file.read(reinterpret_cast<char*>(out.data()), size);
-        s_total_bytes_loaded.fetch_add(static_cast<std::uint64_t>(size), std::memory_order_relaxed);
+        s_total_bytes_loaded.fetch_add(size, std::memory_order_relaxed);
         return true;
     }
 
@@ -140,11 +140,11 @@ namespace assetmgr {
         return load_asset(path, out);
     }
 
-    auto get_asset_request_count() noexcept -> std::uint64_t {
+    auto get_asset_request_count() noexcept -> std::size_t {
         return s_asset_requests.load(std::memory_order_relaxed);
     }
 
-    auto get_total_bytes_loaded() noexcept -> std::uint64_t {
+    auto get_total_bytes_loaded() noexcept -> std::size_t {
         return s_total_bytes_loaded.load(std::memory_order_relaxed);
     }
 }
