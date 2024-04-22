@@ -1,0 +1,374 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>LunamEngine</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+<li><a href="#Local_Functions">Local Functions</a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/ext.stack_trace_plus.html">ext.stack_trace_plus</a></li>
+  <li><strong>Module</strong></li>
+  <li><a href="../modules/Class.html">Class</a></li>
+  <li><a href="../modules/jit.bc.html">jit.bc</a></li>
+  <li><a href="../modules/jit.bcsave.html">jit.bcsave</a></li>
+  <li><a href="../modules/jit.dis_arm.html">jit.dis_arm</a></li>
+  <li><a href="../modules/jit.dis_arm64.html">jit.dis_arm64</a></li>
+  <li><a href="../modules/jit.dis_arm64be.html">jit.dis_arm64be</a></li>
+  <li><a href="../modules/jit.dis_mips.html">jit.dis_mips</a></li>
+  <li><a href="../modules/jit.dis_mips64.html">jit.dis_mips64</a></li>
+  <li><a href="../modules/jit.dis_mips64el.html">jit.dis_mips64el</a></li>
+  <li><a href="../modules/jit.dis_mips64r6.html">jit.dis_mips64r6</a></li>
+  <li><a href="../modules/jit.dis_mips64r6el.html">jit.dis_mips64r6el</a></li>
+  <li><a href="../modules/jit.dis_mipsel.html">jit.dis_mipsel</a></li>
+  <li><a href="../modules/jit.dis_ppc.html">jit.dis_ppc</a></li>
+  <li><a href="../modules/jit.dis_s390x.html">jit.dis_s390x</a></li>
+  <li><a href="../modules/jit.dis_x64.html">jit.dis_x64</a></li>
+  <li><a href="../modules/jit.dis_x86.html">jit.dis_x86</a></li>
+  <li><a href="../modules/jit.dump.html">jit.dump</a></li>
+  <li><a href="../modules/jit.p.html">jit.p</a></li>
+  <li><a href="../modules/jit.v.html">jit.v</a></li>
+  <li><a href="../modules/jit.zone.html">jit.zone</a></li>
+  <li><a href="../modules/lu.scene.html">lu.scene</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>Module</code></h1>
+<p></p>
+<p></p>
+    <h3>Info:</h3>
+    <ul>
+        <li><strong>Author</strong>: Paul Chakravarti (paulc@passtheaardvark.com),Manoel Campos da Silva Filho</li>
+    </ul>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#xml2lua.parser">xml2lua.parser (handler)</a></td>
+	<td class="summary">Instantiates a XmlParser object to parse a XML string</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#xml2lua.printable">xml2lua.printable (tb)</a></td>
+	<td class="summary">Recursivelly prints a table in an easy-to-ready format</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#xml2lua.toString">xml2lua.toString (t)</a></td>
+	<td class="summary">Handler to generate a string prepresentation of a table
+Convenience function for printHandler (Does not support recursive tables).</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#xml2lua.loadFile">xml2lua.loadFile (xmlFilePath)</a></td>
+	<td class="summary">Loads an XML file from a specified path</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#xml2lua.toXml">xml2lua.toXml (tb, tableName, level)</a></td>
+	<td class="summary">Converts a Lua table to a XML String representation.</td>
+	</tr>
+</table>
+<h2><a href="#Local_Functions">Local Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#printableInternal">printableInternal (tb, level)</a></td>
+	<td class="summary">Recursivelly prints a table in an easy-to-ready format</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#attrToXml">attrToXml (attrTable)</a></td>
+	<td class="summary">Gets an _attr element from a table that represents the attributes of an XML tag,
+and generates a XML String representing the attibutes to be inserted
+into the openning tag of the XML</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#getSingleChild">getSingleChild (tb)</a></td>
+	<td class="summary">Gets the first key of a given table</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#getFirstValue">getFirstValue (tb)</a></td>
+	<td class="summary">Gets the first value of a given table</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "xml2lua.parser"></a>
+    <strong>xml2lua.parser (handler)</strong>
+    </dt>
+    <dd>
+    Instantiates a XmlParser object to parse a XML string
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">handler</span>
+         Handler module to be used to convert the XML string
+to another formats. See the available handlers at the handler directory.
+ Usually you get an instance to a handler module using, for instance:
+ local handler = require("xmlhandler/tree").
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        a XmlParser object used to parse the XML
+    </ol>
+
+
+    <h3>See also:</h3>
+    <ul>
+    </ul>
+
+
+</dd>
+    <dt>
+    <a name = "xml2lua.printable"></a>
+    <strong>xml2lua.printable (tb)</strong>
+    </dt>
+    <dd>
+    Recursivelly prints a table in an easy-to-ready format
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">tb</span>
+         The table to be printed
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "xml2lua.toString"></a>
+    <strong>xml2lua.toString (t)</strong>
+    </dt>
+    <dd>
+    Handler to generate a string prepresentation of a table
+Convenience function for printHandler (Does not support recursive tables).
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">t</span>
+         Table to be parsed
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        a string representation of the table
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "xml2lua.loadFile"></a>
+    <strong>xml2lua.loadFile (xmlFilePath)</strong>
+    </dt>
+    <dd>
+    Loads an XML file from a specified path
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">xmlFilePath</span>
+         the path for the XML file to load
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        the XML loaded file content
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "xml2lua.toXml"></a>
+    <strong>xml2lua.toXml (tb, tableName, level)</strong>
+    </dt>
+    <dd>
+    Converts a Lua table to a XML String representation.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">tb</span>
+         Table to be converted to XML
+        </li>
+        <li><span class="parameter">tableName</span>
+         Name of the table variable given to this function,
+                 to be used as the root tag. If a value is not provided
+                 no root tag will be created.
+        </li>
+        <li><span class="parameter">level</span>
+         Only used internally, when the function is called recursively to print indentation
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        a String representing the table content in XML
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Local_Functions"></a>Local Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "printableInternal"></a>
+    <strong>printableInternal (tb, level)</strong>
+    </dt>
+    <dd>
+    Recursivelly prints a table in an easy-to-ready format
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">tb</span>
+         The table to be printed
+        </li>
+        <li><span class="parameter">level</span>
+         the indentation level to start with
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "attrToXml"></a>
+    <strong>attrToXml (attrTable)</strong>
+    </dt>
+    <dd>
+    Gets an _attr element from a table that represents the attributes of an XML tag,
+and generates a XML String representing the attibutes to be inserted
+into the openning tag of the XML
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">attrTable</span>
+         table from where the _attr field will be got
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        a XML String representation of the tag attributes
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "getSingleChild"></a>
+    <strong>getSingleChild (tb)</strong>
+    </dt>
+    <dd>
+    Gets the first key of a given table
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">tb</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "getFirstValue"></a>
+    <strong>getFirstValue (tb)</strong>
+    </dt>
+    <dd>
+    Gets the first value of a given table
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">tb</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/ldoc">LDoc 1.5.0</a></i>
+<i style="float:right;">Last updated 2024-04-23 01:47:56 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>
