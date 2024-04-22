@@ -230,7 +230,7 @@ namespace physics {
     		const auto& transforms = target.first;
     		const auto& renderers = target.second;
 			passert(transforms.size() == renderers.size());
-    		std::for_each(std::execution::par_unseq, std::begin(transforms), std::end(transforms), [&](const com::transform& transform) {
+            const auto exector = [&](const com::transform& transform) {
                 const auto index = &transform - &transforms.front();
                 const auto& renderer = renderers[index];
                 if (!renderer.meshes.empty()) [[likely]] {
@@ -238,7 +238,12 @@ namespace physics {
                     create_static_body(ci, transform, renderer);
                     bodies[base_idx + index] = bi.CreateAndAddBody(ci, JPH::EActivation::DontActivate);
                 }
-    		});
+            };
+#if PLATFORM_OSX
+            std::for_each(std::begin(transforms), std::end(transforms), exector);
+#else
+            std::for_each(std::execution::par_unseq, std::begin(transforms), std::end(transforms), exector);
+#endif
     	}
     	for (auto old_body : m_static_bodies) {
     		bi.RemoveBody(old_body);

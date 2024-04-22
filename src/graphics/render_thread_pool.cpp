@@ -52,7 +52,7 @@ namespace graphics {
 
 #if PLATFORM_WINDOWS
         SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
-#else
+#elif PLATFORM_LINUX
         pthread_t cthr_id = pthread_self();
         pthread_setname_np(cthr_id, "Lunam Engine Render Thread");
         pthread_attr_t thr_attr {};

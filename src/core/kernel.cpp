@@ -89,7 +89,7 @@ kernel::kernel(const int argc, const char** argv, const char** $environ) {
     redirect_io();
     SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
     SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
-#else
+#elif PLATFORM_LINUX
     pthread_t cthr_id = pthread_self();
     pthread_setname_np(cthr_id, "Lunam Engine Main Thread");
     pthread_attr_t thr_attr {};

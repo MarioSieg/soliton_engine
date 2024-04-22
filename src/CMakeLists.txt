@@ -1,8 +1,17 @@
-file(GLOB_RECURSE SOURCES
-    src/*.cpp
-    src/*.c
-    src/*.hpp
-)
+if (APPLE)
+    file(GLOB_RECURSE SOURCES
+        src/*.cpp
+        src/*.mm
+        src/*.c
+        src/*.hpp
+    )
+else()
+    file(GLOB_RECURSE SOURCES
+        src/*.cpp
+        src/*.c
+        src/*.hpp
+    )
+endif()
 
 if (WIN32)
     set(APP_ICON_RESOURCE_WINDOWS "WinRes.rc")
