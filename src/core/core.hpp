@@ -18,6 +18,12 @@
 #define log_critical SPDLOG_CRITICAL
 #define print_sep() log_info("------------------------------------------------------------")
 
+[[nodiscard]] consteval auto make_version(const std::uint8_t major, const std::uint8_t minor) -> std::uint32_t { return (static_cast<std::uint32_t>(major)<<8)|minor; }
+[[nodiscard]] consteval auto major_version(const std::uint32_t v) -> std::uint8_t { return (v>>8)&0xff; }
+[[nodiscard]] consteval auto minor_version(const std::uint32_t v) -> std::uint8_t { return v&0xff; }
+
+constexpr std::uint32_t k_lunam_engine_v = make_version(0, 2); // current engine version (must be known at compile time and we don't use patches yet)
+
 class no_copy {
 public:
     constexpr no_copy() = default;

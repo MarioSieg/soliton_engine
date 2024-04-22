@@ -1,11 +1,13 @@
 -- Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 local jit = require 'jit'
+local bit = require 'bit'
 local ffi = require 'ffi'
 
 ffi.cdef [[
     void __lu_panic(const char* msg);
     uint32_t __lu_ffi_cookie(void);
+    uint32_t __lu_engine_version(void);
     bool __lu_app_is_focused(void);
     bool __lu_app_is_ui_hovered(void);
     void __lu_app_hot_reload_ui(void);
@@ -37,7 +39,6 @@ local C = ffi.C
 local App = {
     name = 'Untitled App',
     appVersion = '0.1',
-    engineVersion = '0.1',
     author = 'Anonymous',
     copyright = '',
     website = '',
@@ -64,6 +65,22 @@ end
 
 function App.ffiCookie()
     return C.__lu_ffi_cookie()
+end
+
+function App.engineVersionPacked()
+    return C.__lu_engine_version()
+end
+
+function App.engineVersionUnpacked()
+    local packed = App.engineVersionPacked()
+    local major = bit.band(bit.rshift(packed, 8), 0xff)
+    local minor = bit.band(packed, 0xff)
+    return major, minor
+end
+
+function App.engineVersionStr()
+    local major, minor = App.engineVersionUnpacked()
+    return string.format('v.%d.%d', major, minor)
 end
 
 function App.isFocused()
@@ -138,9 +155,9 @@ end
 
 function App.Window.setPlatformTitle(suffix)
     if suffix and type(suffix) == 'string' then
-        App.Window.setTitle(string.format('Lunam Engine v.%s - %s %s - %s', App.engineVersion, jit.os, jit.arch:upper(), suffix))
+        App.Window.setTitle(string.format('Lunam Engine %s - %s %s - %s', App.engineVersionStr(), jit.os, jit.arch:upper(), suffix))
     else
-        App.Window.setTitle(string.format('Lunam Engine v.%s - %s %s', App.engineVersion, jit.os, jit.arch:upper()))
+        App.Window.setTitle(string.format('Lunam Engine %s - %s %s', App.engineVersionStr(), jit.os, jit.arch:upper()))
     end
 end
 

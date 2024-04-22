@@ -29,6 +29,10 @@ LUA_INTEROP_API auto __lu_ffi_cookie() -> std::uint32_t  {
     return 0xfefec0c0;
 }
 
+LUA_INTEROP_API auto __lu_engine_version() -> std::uint32_t {
+    return k_lunam_engine_v;
+}
+
 LUA_INTEROP_API auto __lu_app_is_focused() -> bool {
     return glfwGetWindowAttrib(platform_subsystem::get_glfw_window(), GLFW_FOCUSED) == GLFW_TRUE;
 }
