@@ -1,0 +1,8 @@
+var searchData=
+[
+  ['sdl_5fevent_0',['SDL_Event',['../cimgui_8hpp.html#a33fcc6aa445cb781bfca881e39e5333e',1,'cimgui.hpp']]],
+  ['sortedcollection_1',['SortedCollection',['../namespace_noesis_app.html#aeb8e4ba5717654a76305d50df0e3539a',1,'NoesisApp']]],
+  ['sortrequiredeventhandler_2',['SortRequiredEventHandler',['../namespace_noesis_app.html#ac59f7e994d058950aaf3f4c10daf70f7',1,'NoesisApp']]],
+  ['storage_5ftype_3',['storage_type',['../classluabridge_1_1detail_1_1expected__base__trivial.html#a1db733f6f6bb57f8310011bd59c40ded',1,'luabridge::detail::expected_base_trivial::storage_type'],['../classluabridge_1_1detail_1_1expected__base__non__trivial.html#af97d551104ba3cec662c7f8bc4d0fc7d',1,'luabridge::detail::expected_base_non_trivial::storage_type'],['../classluabridge_1_1detail_1_1expected__base__non__trivial_3_01_t_00_01_e_00_01false_00_01_is_move_constructible_01_4.html#a1e8d76dbebdae2d41304339e00cbe842',1,'luabridge::detail::expected_base_non_trivial&lt; T, E, false, IsMoveConstructible &gt;::storage_type'],['../classluabridge_1_1detail_1_1expected__base__non__trivial_3_01_t_00_01_e_00_01_is_copy_constructible_00_01false_01_4.html#a607957e085d231cffa3d867075df2254',1,'luabridge::detail::expected_base_non_trivial&lt; T, E, IsCopyConstructible, false &gt;::storage_type'],['../classluabridge_1_1detail_1_1expected__base__non__trivial_3_01_t_00_01_e_00_01false_00_01false_01_4.html#a13671d6fcd0ac9ddab04357268f92fd0',1,'luabridge::detail::expected_base_non_trivial&lt; T, E, false, false &gt;::storage_type']]],
+  ['string_4',['String',['../class_text_editor.html#aa2450eefe35d90e2b8c86b87cd192df3',1,'TextEditor']]]
+];

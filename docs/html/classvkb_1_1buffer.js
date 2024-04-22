@@ -1,0 +1,26 @@
+var classvkb_1_1buffer =
+[
+    [ "~buffer", "classvkb_1_1buffer.html#aaa19594dfcce70dc161a8d22badde28b", null ],
+    [ "create", "classvkb_1_1buffer.html#a7be6387ea959c948d2d1887667970298", null ],
+    [ "get_allocation", "classvkb_1_1buffer.html#aec3756d3ba7ff7c8292d45579e3f9db7", null ],
+    [ "get_allocator", "classvkb_1_1buffer.html#a9ac84faf220466363aecacae1dadf1d3", null ],
+    [ "get_buffer", "classvkb_1_1buffer.html#ac51dc1371792cb5debbeef8343de58db", null ],
+    [ "get_device_address", "classvkb_1_1buffer.html#a994466a2a5b19f7a6ce8731097b42ae9", null ],
+    [ "get_mapped_ptr", "classvkb_1_1buffer.html#a280f3916f01db78dd7c97a4c97981fa1", null ],
+    [ "get_memory", "classvkb_1_1buffer.html#a8fc7d0820e10e9ddf65a30cb3e956754", null ],
+    [ "get_memory_properties", "classvkb_1_1buffer.html#ae449f9ef81b66c97063041c3323cbaa1", null ],
+    [ "get_memory_usage", "classvkb_1_1buffer.html#a4396ec44980fc6d8eda2e59144965763", null ],
+    [ "get_size", "classvkb_1_1buffer.html#a18901495ee21e66424e1f13f423d2007", null ],
+    [ "get_usage", "classvkb_1_1buffer.html#aee29584c2e431c5dd8a35c66733244c8", null ],
+    [ "upload_data", "classvkb_1_1buffer.html#a03f626470714d87fde706092cf7ba412", null ],
+    [ "m_allocation", "classvkb_1_1buffer.html#ad365650be4f52aba8485c1ee9773cba6", null ],
+    [ "m_allocator", "classvkb_1_1buffer.html#ac9b9510fa9d2c9fa948ac18d79e6b7cf", null ],
+    [ "m_buffer", "classvkb_1_1buffer.html#ae6f8fe6e6662622edc4e7296b0e024f8", null ],
+    [ "m_device_address", "classvkb_1_1buffer.html#aee6d99a531917d4925833bae30416728", null ],
+    [ "m_mapped", "classvkb_1_1buffer.html#abdc14b4ea171c84a596ab0ece89f8531", null ],
+    [ "m_memory", "classvkb_1_1buffer.html#ae828a2307dd8b0b939f2b97e2e22e84c", null ],
+    [ "m_memory_properties", "classvkb_1_1buffer.html#ad594d7378d667b457cac12cab35423fa", null ],
+    [ "m_memory_usage", "classvkb_1_1buffer.html#a940ffb5b105d3ca0965ba2039ffed806", null ],
+    [ "m_size", "classvkb_1_1buffer.html#a0b26d76456f48a642d26e8ac395d613a", null ],
+    [ "m_usage", "classvkb_1_1buffer.html#a083c95a063c1b5bcde9c76f649d0f6e2", null ]
+];
