@@ -120,61 +120,56 @@ $(function(){initNavTree('_v_k_factory_8h_source.html',''); initResizable(); });
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;vulkan/vulkan_core.h&quot;</span></div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespace_noesis.html">Noesis</a></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">namespace </span>Noesis</div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>{</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">class </span>RenderDevice;</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">class </span>Texture;</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt; <span class="keyword">class </span>Ptr;</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>}</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespace_noesis_app.html">NoesisApp</a></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">namespace </span>NoesisApp</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>{</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
-<div class="foldopen" id="foldopen00028" data-start="{" data-end="};">
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="struct_noesis_app_1_1_v_k_factory.html">   28</a></span><span class="keyword">struct </span><a class="code hl_define" href="_v_k_render_device_api_8h.html#acf5917da3611cd50249240d98308c1b4">NS_RENDER_VKRENDERDEVICE_API</a> <a class="code hl_struct" href="struct_noesis_app_1_1_v_k_factory.html">VKFactory</a></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keyword">struct </span><a class="code hl_define" href="_v_k_render_device_api_8h.html#acf5917da3611cd50249240d98308c1b4">NS_RENDER_VKRENDERDEVICE_API</a> VKFactory</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>{</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="struct_noesis_app_1_1_v_k_factory.html#a3839a58f1f07a85838a59395c19eba26">   30</a></span>    <span class="keyword">typedef</span> Noesis::Delegate&lt;void (VkCommandBuffer commandBuffer)&gt; <a class="code hl_typedef" href="struct_noesis_app_1_1_v_k_factory.html#a3839a58f1f07a85838a59395c19eba26">QueueSubmitFunc</a>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keyword">typedef</span> Noesis::Delegate&lt;void (VkCommandBuffer commandBuffer)&gt; QueueSubmitFunc;</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
-<div class="foldopen" id="foldopen00032" data-start="{" data-end="};">
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="struct_noesis_app_1_1_v_k_factory_1_1_instance_info.html">   32</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="struct_noesis_app_1_1_v_k_factory_1_1_instance_info.html">InstanceInfo</a></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keyword">struct </span>InstanceInfo</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    {</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="struct_noesis_app_1_1_v_k_factory_1_1_instance_info.html#a53541256910201e15c832ebb58aa51b3">   34</a></span>        VkInstance instance = VK_NULL_HANDLE;</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="struct_noesis_app_1_1_v_k_factory_1_1_instance_info.html#a4dbb9ffc80be6225921688c13d40fa5a">   35</a></span>        VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="struct_noesis_app_1_1_v_k_factory_1_1_instance_info.html#a49bc0c3029fef9a3c82aa7f7ee27462b">   36</a></span>        VkDevice device = VK_NULL_HANDLE;</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="struct_noesis_app_1_1_v_k_factory_1_1_instance_info.html#afb36cf5a9e95680534d24db4d79358f2">   37</a></span>        VkPipelineCache pipelineCache = VK_NULL_HANDLE;</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="struct_noesis_app_1_1_v_k_factory_1_1_instance_info.html#a1f4d2f3682d3d4fd189e48b74de28a1f">   38</a></span>        uint32_t queueFamilyIndex = 0xFFFFFFFF;</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="struct_noesis_app_1_1_v_k_factory_1_1_instance_info.html#a4a58f4809751816793a64426274c956a">   39</a></span>        PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr = VK_NULL_HANDLE;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        VkInstance instance = VK_NULL_HANDLE;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        VkDevice device = VK_NULL_HANDLE;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        VkPipelineCache pipelineCache = VK_NULL_HANDLE;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        uint32_t queueFamilyIndex = 0xFFFFFFFF;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr = VK_NULL_HANDLE;</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="comment">// When enabled, pipelines supporting stereo rendering are compiled. This requires</span></div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        <span class="comment">// GL_EXT_multiview (Android) or GL_ARB_shader_viewport_layer_array (Desktop)</span></div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="struct_noesis_app_1_1_v_k_factory_1_1_instance_info.html#aa3be8c6d801b8d720bb564159ccee509">   43</a></span>        <span class="keywordtype">bool</span> stereoSupport = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keywordtype">bool</span> stereoSupport = <span class="keyword">false</span>;</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="comment">// Used for command buffer submission to the the Vulkan graphics queue</span></div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="struct_noesis_app_1_1_v_k_factory_1_1_instance_info.html#aa8fc1729d6474ce89dcb452f9d6ebe57">   46</a></span>        <a class="code hl_typedef" href="struct_noesis_app_1_1_v_k_factory.html#a3839a58f1f07a85838a59395c19eba26">QueueSubmitFunc</a> <a class="code hl_variable" href="struct_noesis_app_1_1_v_k_factory_1_1_instance_info.html#aa8fc1729d6474ce89dcb452f9d6ebe57">QueueSubmit</a>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        QueueSubmitFunc QueueSubmit;</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    };</div>
-</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">static</span> <a class="code hl_class" href="class_noesis_1_1_ptr.html">Noesis::Ptr&lt;Noesis::RenderDevice&gt;</a> CreateDevice(<span class="keywordtype">bool</span> sRGB, <span class="keyword">const</span> <a class="code hl_struct" href="struct_noesis_app_1_1_v_k_factory_1_1_instance_info.html">InstanceInfo</a>&amp; info);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">static</span> Noesis::Ptr&lt;Noesis::RenderDevice&gt; CreateDevice(<span class="keywordtype">bool</span> sRGB, <span class="keyword">const</span> InstanceInfo&amp; info);</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
-<div class="foldopen" id="foldopen00051" data-start="{" data-end="};">
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="struct_noesis_app_1_1_v_k_factory_1_1_recording_info.html">   51</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="struct_noesis_app_1_1_v_k_factory_1_1_recording_info.html">RecordingInfo</a></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keyword">struct </span>RecordingInfo</div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    {</div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="comment">// Vulkan command buffer that is currently recorded</span></div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="struct_noesis_app_1_1_v_k_factory_1_1_recording_info.html#aa3544bdf084dd1fd85a5e766dc93e6c1">   54</a></span>        VkCommandBuffer <a class="code hl_variable" href="struct_noesis_app_1_1_v_k_factory_1_1_recording_info.html#aa3544bdf084dd1fd85a5e766dc93e6c1">commandBuffer</a>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        VkCommandBuffer commandBuffer;</div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <span class="comment">// Can be used to track lifetime of own resources</span></div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="struct_noesis_app_1_1_v_k_factory_1_1_recording_info.html#a797b18cd44933f03c8b16e7a9d2946a5">   57</a></span>        uint64_t <a class="code hl_variable" href="struct_noesis_app_1_1_v_k_factory_1_1_recording_info.html#a797b18cd44933f03c8b16e7a9d2946a5">frameNumber</a>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        uint64_t frameNumber;</div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        <span class="comment">// All resources that were used in this frame (or before) are safe to be released</span></div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="struct_noesis_app_1_1_v_k_factory_1_1_recording_info.html#a44b699968ccce3c2fc0e4ab29f2e7676">   60</a></span>        uint64_t <a class="code hl_variable" href="struct_noesis_app_1_1_v_k_factory_1_1_recording_info.html#a44b699968ccce3c2fc0e4ab29f2e7676">safeFrameNumber</a>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        uint64_t safeFrameNumber;</div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    };</div>
-</div>
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> SetCommandBuffer(Noesis::RenderDevice* device, <span class="keyword">const</span> <a class="code hl_struct" href="struct_noesis_app_1_1_v_k_factory_1_1_recording_info.html">RecordingInfo</a>&amp; info);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> SetCommandBuffer(Noesis::RenderDevice* device, <span class="keyword">const</span> RecordingInfo&amp; info);</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> SetRenderPass(Noesis::RenderDevice* device, VkRenderPass renderPass, uint32_t sampleCount);</div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> WarmUpRenderPass(Noesis::RenderDevice* device, VkRenderPass renderPass, uint32_t sampleCount);</div>
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keyword">static</span> <a class="code hl_class" href="class_noesis_1_1_ptr.html">Noesis::Ptr&lt;Noesis::Texture&gt;</a> WrapTexture(VkImage image, uint32_t width, uint32_t height,</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keyword">static</span> Noesis::Ptr&lt;Noesis::Texture&gt; WrapTexture(VkImage image, uint32_t width, uint32_t height,</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        uint32_t levels, VkFormat format, VkImageLayout layout, <span class="keywordtype">bool</span> isInverted, <span class="keywordtype">bool</span> hasAlpha);</div>
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> UpdateLayout(Noesis::Texture* <a class="code hl_enumvalue" href="assetmgr_8hpp.html#a15fa112559db1187a8f9ee040d9c11a3a6d788fcb39cecfd54da7b065a8b75d1a">texture</a>, VkImageLayout layout);</div>
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
@@ -182,7 +177,6 @@ $(function(){initNavTree('_v_k_factory_8h_source.html',''); initResizable(); });
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keyword">const</span> <span class="keywordtype">void</span>* spirv, uint32_t size);</div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> ClearPixelShaders(Noesis::RenderDevice* device);</div>
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>};</div>
-</div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>}</div>
 <div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
@@ -191,17 +185,6 @@ $(function(){initNavTree('_v_k_factory_8h_source.html',''); initResizable(); });
 <div class="ttc" id="a_v_k_render_device_api_8h_html_acf5917da3611cd50249240d98308c1b4"><div class="ttname"><a href="_v_k_render_device_api_8h.html#acf5917da3611cd50249240d98308c1b4">NS_RENDER_VKRENDERDEVICE_API</a></div><div class="ttdeci">#define NS_RENDER_VKRENDERDEVICE_API</div><div class="ttdef"><b>Definition</b> VKRenderDeviceApi.h:15</div></div>
 <div class="ttc" id="aassetmgr_8hpp_html_a15fa112559db1187a8f9ee040d9c11a3a6d788fcb39cecfd54da7b065a8b75d1a"><div class="ttname"><a href="assetmgr_8hpp.html#a15fa112559db1187a8f9ee040d9c11a3a6d788fcb39cecfd54da7b065a8b75d1a">asset_category::texture</a></div><div class="ttdeci">@ texture</div></div>
 <div class="ttc" id="aassetmgr_8hpp_html_a15fa112559db1187a8f9ee040d9c11a3a842e3e5fe6c1b834705abd4bcb213342"><div class="ttname"><a href="assetmgr_8hpp.html#a15fa112559db1187a8f9ee040d9c11a3a842e3e5fe6c1b834705abd4bcb213342">asset_category::shader</a></div><div class="ttdeci">@ shader</div></div>
-<div class="ttc" id="aclass_noesis_1_1_ptr_html"><div class="ttname"><a href="class_noesis_1_1_ptr.html">Noesis::Ptr</a></div><div class="ttdef"><b>Definition</b> ComparisonLogic.h:19</div></div>
-<div class="ttc" id="anamespace_noesis_app_html"><div class="ttname"><a href="namespace_noesis_app.html">NoesisApp</a></div><div class="ttdef"><b>Definition</b> Application.cpp:21</div></div>
-<div class="ttc" id="anamespace_noesis_html"><div class="ttname"><a href="namespace_noesis.html">Noesis</a></div><div class="ttdef"><b>Definition</b> AttachableObject.h:18</div></div>
-<div class="ttc" id="astruct_noesis_app_1_1_v_k_factory_1_1_instance_info_html"><div class="ttname"><a href="struct_noesis_app_1_1_v_k_factory_1_1_instance_info.html">NoesisApp::VKFactory::InstanceInfo</a></div><div class="ttdef"><b>Definition</b> VKFactory.h:33</div></div>
-<div class="ttc" id="astruct_noesis_app_1_1_v_k_factory_1_1_instance_info_html_aa8fc1729d6474ce89dcb452f9d6ebe57"><div class="ttname"><a href="struct_noesis_app_1_1_v_k_factory_1_1_instance_info.html#aa8fc1729d6474ce89dcb452f9d6ebe57">NoesisApp::VKFactory::InstanceInfo::QueueSubmit</a></div><div class="ttdeci">QueueSubmitFunc QueueSubmit</div><div class="ttdef"><b>Definition</b> VKFactory.h:46</div></div>
-<div class="ttc" id="astruct_noesis_app_1_1_v_k_factory_1_1_recording_info_html"><div class="ttname"><a href="struct_noesis_app_1_1_v_k_factory_1_1_recording_info.html">NoesisApp::VKFactory::RecordingInfo</a></div><div class="ttdef"><b>Definition</b> VKFactory.h:52</div></div>
-<div class="ttc" id="astruct_noesis_app_1_1_v_k_factory_1_1_recording_info_html_a44b699968ccce3c2fc0e4ab29f2e7676"><div class="ttname"><a href="struct_noesis_app_1_1_v_k_factory_1_1_recording_info.html#a44b699968ccce3c2fc0e4ab29f2e7676">NoesisApp::VKFactory::RecordingInfo::safeFrameNumber</a></div><div class="ttdeci">uint64_t safeFrameNumber</div><div class="ttdef"><b>Definition</b> VKFactory.h:60</div></div>
-<div class="ttc" id="astruct_noesis_app_1_1_v_k_factory_1_1_recording_info_html_a797b18cd44933f03c8b16e7a9d2946a5"><div class="ttname"><a href="struct_noesis_app_1_1_v_k_factory_1_1_recording_info.html#a797b18cd44933f03c8b16e7a9d2946a5">NoesisApp::VKFactory::RecordingInfo::frameNumber</a></div><div class="ttdeci">uint64_t frameNumber</div><div class="ttdef"><b>Definition</b> VKFactory.h:57</div></div>
-<div class="ttc" id="astruct_noesis_app_1_1_v_k_factory_1_1_recording_info_html_aa3544bdf084dd1fd85a5e766dc93e6c1"><div class="ttname"><a href="struct_noesis_app_1_1_v_k_factory_1_1_recording_info.html#aa3544bdf084dd1fd85a5e766dc93e6c1">NoesisApp::VKFactory::RecordingInfo::commandBuffer</a></div><div class="ttdeci">VkCommandBuffer commandBuffer</div><div class="ttdef"><b>Definition</b> VKFactory.h:54</div></div>
-<div class="ttc" id="astruct_noesis_app_1_1_v_k_factory_html"><div class="ttname"><a href="struct_noesis_app_1_1_v_k_factory.html">NoesisApp::VKFactory</a></div><div class="ttdef"><b>Definition</b> VKFactory.h:29</div></div>
-<div class="ttc" id="astruct_noesis_app_1_1_v_k_factory_html_a3839a58f1f07a85838a59395c19eba26"><div class="ttname"><a href="struct_noesis_app_1_1_v_k_factory.html#a3839a58f1f07a85838a59395c19eba26">NoesisApp::VKFactory::QueueSubmitFunc</a></div><div class="ttdeci">Noesis::Delegate&lt; void(VkCommandBuffer commandBuffer)&gt; QueueSubmitFunc</div><div class="ttdef"><b>Definition</b> VKFactory.h:30</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

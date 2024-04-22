@@ -1,17 +1,8 @@
 var searchData=
 [
-  ['latin1_0',['Latin1',['../namespacesimdutf.html#a6bd0ecc4f9b16b205f779497eef6bd59a053aab5ec8acf4476abaee782ebf21f9',1,'simdutf']]],
-  ['line_1',['Line',['../class_text_editor.html#aed0b92add3785d71e009dbf66b78490da4803e6b9e63dabf04de980788d6a13c4',1,'TextEditor']]],
-  ['linenumber_2',['LineNumber',['../class_text_editor.html#acb9bdc8f59e2fd152f423db095672fd9af0832b74cdff24674836122af11cc30e',1,'TextEditor']]],
-  ['little_3',['LITTLE',['../namespacesimdutf.html#a4bfa8a9b32b9b52abbdde7c458290fb9a5ac03fc4a9023316a738bb8d41b20390',1,'simdutf']]],
-  ['luafunctioncallfailed_4',['LuaFunctionCallFailed',['../namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926a5795573056fbe054c01edb693efc1dc2',1,'luabridge']]],
-  ['luajit_5fmode_5fallfunc_5',['LUAJIT_MODE_ALLFUNC',['../luajit_8h.html#a7ff5f2dff38e7639981794c43dc9167bad3ba69a143d02368af711f4c6d682859',1,'LUAJIT_MODE_ALLFUNC:&#160;luajit.h'],['../luajit__rolling_8h.html#aabfcbcb5ac86a1edac4035264bc7d2b8ad3ba69a143d02368af711f4c6d682859',1,'LUAJIT_MODE_ALLFUNC:&#160;luajit_rolling.h']]],
-  ['luajit_5fmode_5fallsubfunc_6',['LUAJIT_MODE_ALLSUBFUNC',['../luajit_8h.html#a7ff5f2dff38e7639981794c43dc9167bac535af8fa4e0e82005f14e9d21a7bbdf',1,'LUAJIT_MODE_ALLSUBFUNC:&#160;luajit.h'],['../luajit__rolling_8h.html#aabfcbcb5ac86a1edac4035264bc7d2b8ac535af8fa4e0e82005f14e9d21a7bbdf',1,'LUAJIT_MODE_ALLSUBFUNC:&#160;luajit_rolling.h']]],
-  ['luajit_5fmode_5fdebug_7',['LUAJIT_MODE_DEBUG',['../luajit_8h.html#a7ff5f2dff38e7639981794c43dc9167ba4cc26fef419863202c19f13540249085',1,'LUAJIT_MODE_DEBUG:&#160;luajit.h'],['../luajit__rolling_8h.html#aabfcbcb5ac86a1edac4035264bc7d2b8a4cc26fef419863202c19f13540249085',1,'LUAJIT_MODE_DEBUG:&#160;luajit_rolling.h']]],
-  ['luajit_5fmode_5fengine_8',['LUAJIT_MODE_ENGINE',['../luajit_8h.html#a7ff5f2dff38e7639981794c43dc9167ba08bc67d62ef02f0c8b0bf031af31a50f',1,'LUAJIT_MODE_ENGINE:&#160;luajit.h'],['../luajit__rolling_8h.html#aabfcbcb5ac86a1edac4035264bc7d2b8a08bc67d62ef02f0c8b0bf031af31a50f',1,'LUAJIT_MODE_ENGINE:&#160;luajit_rolling.h']]],
-  ['luajit_5fmode_5ffunc_9',['LUAJIT_MODE_FUNC',['../luajit_8h.html#a7ff5f2dff38e7639981794c43dc9167babe0169e9c6f8662caf2918ab599927c0',1,'LUAJIT_MODE_FUNC:&#160;luajit.h'],['../luajit__rolling_8h.html#aabfcbcb5ac86a1edac4035264bc7d2b8abe0169e9c6f8662caf2918ab599927c0',1,'LUAJIT_MODE_FUNC:&#160;luajit_rolling.h']]],
-  ['luajit_5fmode_5fmax_10',['LUAJIT_MODE_MAX',['../luajit_8h.html#a7ff5f2dff38e7639981794c43dc9167bad848e47378f3d7e4c821fc33ea3b683d',1,'LUAJIT_MODE_MAX:&#160;luajit.h'],['../luajit__rolling_8h.html#aabfcbcb5ac86a1edac4035264bc7d2b8ad848e47378f3d7e4c821fc33ea3b683d',1,'LUAJIT_MODE_MAX:&#160;luajit_rolling.h']]],
-  ['luajit_5fmode_5ftrace_11',['LUAJIT_MODE_TRACE',['../luajit_8h.html#a7ff5f2dff38e7639981794c43dc9167badf756b8979cfd86aad6d9df0ddf27d9e',1,'LUAJIT_MODE_TRACE:&#160;luajit.h'],['../luajit__rolling_8h.html#aabfcbcb5ac86a1edac4035264bc7d2b8adf756b8979cfd86aad6d9df0ddf27d9e',1,'LUAJIT_MODE_TRACE:&#160;luajit_rolling.h']]],
-  ['luajit_5fmode_5fwrapcfunc_12',['LUAJIT_MODE_WRAPCFUNC',['../luajit_8h.html#a7ff5f2dff38e7639981794c43dc9167ba4ed30e46778f7aab6d79f3ca675170d9',1,'LUAJIT_MODE_WRAPCFUNC:&#160;luajit.h'],['../luajit__rolling_8h.html#aabfcbcb5ac86a1edac4035264bc7d2b8a4ed30e46778f7aab6d79f3ca675170d9',1,'LUAJIT_MODE_WRAPCFUNC:&#160;luajit_rolling.h']]],
-  ['luastackoverflow_13',['LuaStackOverflow',['../namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926a2ba028e9483ca53848ba8846d753c2d9',1,'luabridge']]]
+  ['material_0',['material',['../assetmgr_8hpp.html#a15fa112559db1187a8f9ee040d9c11a3aeec34d804c9ce6c89cff596be555e6a4',1,'assetmgr.hpp']]],
+  ['max_1',['Max',['../class_text_editor.html#acb9bdc8f59e2fd152f423db095672fd9a6a061313d22e51e0f25b7cd4dc065233',1,'TextEditor']]],
+  ['memory_2',['memory',['../assetmgr_8hpp.html#a63a6ce51773ef68ae14e2f2be44a22bbacd69b4957f06cd818d7bf3d61980e291',1,'assetmgr.hpp']]],
+  ['mesh_3',['mesh',['../assetmgr_8hpp.html#a15fa112559db1187a8f9ee040d9c11a3a09bc81c3aa886b690f84c5aba4109e20',1,'assetmgr.hpp']]],
+  ['multilinecomment_4',['MultiLineComment',['../class_text_editor.html#acb9bdc8f59e2fd152f423db095672fd9afb5201b0af9f09b8f695d8af9a5227b5',1,'TextEditor']]]
 ];

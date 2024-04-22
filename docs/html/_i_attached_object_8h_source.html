@@ -117,22 +117,22 @@ $(function(){initNavTree('_i_attached_object_8h_source.html',''); initResizable(
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;NsCore/Interface.h&gt;</span></div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespace_noesis.html">Noesis</a></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span>Noesis</div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>{</div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">class </span>DependencyObject;</div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>}</div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespace_noesis_app.html">NoesisApp</a></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">namespace </span>NoesisApp</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>{</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="namespace_noesis_app.html#a66418924ad4aff76bfae11c4f926b182">   26</a></span>NS_INTERFACE <a class="code hl_variable" href="namespace_noesis_app.html#a66418924ad4aff76bfae11c4f926b182">IAttachedObject</a>: <span class="keyword">public</span> Noesis::Interface</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>NS_INTERFACE IAttachedObject: <span class="keyword">public</span> Noesis::Interface</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>{</div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="comment">// Gets the associated object</span></div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keyword">virtual</span> Noesis::DependencyObject* GetAssociatedObject() <span class="keyword">const</span> = 0;</div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="namespace_noesis_app.html#ac45e30767b02edae74a89ce8c09aba66">   32</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespace_noesis_app.html#ac45e30767b02edae74a89ce8c09aba66">Attach</a>(Noesis::DependencyObject* associatedObject) = 0;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> Attach(Noesis::DependencyObject* associatedObject) = 0;</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="namespace_noesis_app.html#a90c7012626eea004a7c1fbde645e9535">   35</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespace_noesis_app.html#a90c7012626eea004a7c1fbde645e9535">Detach</a>() = 0;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> Detach() = 0;</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    NS_IMPLEMENT_INLINE_REFLECTION_(IAttachedObject, Noesis::Interface)</div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>};</div>
@@ -141,11 +141,6 @@ $(function(){initNavTree('_i_attached_object_8h_source.html',''); initResizable(
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="anamespace_noesis_app_html"><div class="ttname"><a href="namespace_noesis_app.html">NoesisApp</a></div><div class="ttdef"><b>Definition</b> Application.cpp:21</div></div>
-<div class="ttc" id="anamespace_noesis_app_html_a66418924ad4aff76bfae11c4f926b182"><div class="ttname"><a href="namespace_noesis_app.html#a66418924ad4aff76bfae11c4f926b182">NoesisApp::IAttachedObject</a></div><div class="ttdeci">NS_INTERFACE IAttachedObject</div><div class="ttdoc">An interface for an object that can be attached to another object.</div><div class="ttdef"><b>Definition</b> IAttachedObject.h:29</div></div>
-<div class="ttc" id="anamespace_noesis_app_html_a90c7012626eea004a7c1fbde645e9535"><div class="ttname"><a href="namespace_noesis_app.html#a90c7012626eea004a7c1fbde645e9535">NoesisApp::Detach</a></div><div class="ttdeci">virtual void Detach()=0</div><div class="ttdoc">Detaches this instance from its associated object.</div></div>
-<div class="ttc" id="anamespace_noesis_app_html_ac45e30767b02edae74a89ce8c09aba66"><div class="ttname"><a href="namespace_noesis_app.html#ac45e30767b02edae74a89ce8c09aba66">NoesisApp::Attach</a></div><div class="ttdeci">virtual void Attach(Noesis::DependencyObject *associatedObject)=0</div><div class="ttdoc">Attaches to the specified object.</div></div>
-<div class="ttc" id="anamespace_noesis_html"><div class="ttname"><a href="namespace_noesis.html">Noesis</a></div><div class="ttdef"><b>Definition</b> AttachableObject.h:18</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

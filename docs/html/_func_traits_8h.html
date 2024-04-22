@@ -96,11 +96,6 @@ $(function(){initNavTree('_func_traits_8h.html',''); initResizable(); });
 </div>
 
 <div class="header">
-  <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a> &#124;
-<a href="#typedef-members">Typedefs</a> &#124;
-<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">FuncTraits.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -109,60 +104,6 @@ $(function(){initNavTree('_func_traits_8h.html',''); initResizable(); });
 <code>#include &lt;tuple&gt;</code><br />
 </div>
 <p><a href="_func_traits_8h_source.html">Go to the source code of this file.</a></p>
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structluabridge_1_1detail_1_1remove__cvref.html">luabridge::detail::remove_cvref&lt; T &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides the member typedef type which is the type referred to by T with its topmost cv-qualifiers removed.  <a href="structluabridge_1_1detail_1_1remove__cvref.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structluabridge_1_1detail_1_1function__traits__base.html">luabridge::detail::function_traits_base&lt; IsMember, IsConst, R, Args &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generic function traits.  <a href="structluabridge_1_1detail_1_1function__traits__base.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structluabridge_1_1detail_1_1function__traits__impl_3_01_r_07_args_8_8_8_08_4.html">luabridge::detail::function_traits_impl&lt; R(Args...)&gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structluabridge_1_1detail_1_1function__traits__impl_3_01_r_07_5_08_07_args_8_8_8_08_4.html">luabridge::detail::function_traits_impl&lt; R(*)(Args...)&gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structluabridge_1_1detail_1_1function__traits__impl_3_01_r_07_c_1_1_5_08_07_args_8_8_8_08_4.html">luabridge::detail::function_traits_impl&lt; R(C::*)(Args...)&gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structluabridge_1_1detail_1_1function__traits__impl_3_01_r_07_c_1_1_5_08_07_args_8_8_8_08_01const_01_4.html">luabridge::detail::function_traits_impl&lt; R(C::*)(Args...) const &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structluabridge_1_1detail_1_1function__traits__impl_3_01_r_07_args_8_8_8_08_01noexcept_01_4.html">luabridge::detail::function_traits_impl&lt; R(Args...) noexcept &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structluabridge_1_1detail_1_1function__traits__impl_3_01_r_07_5_08_07_args_8_8_8_08_01noexcept_01_4.html">luabridge::detail::function_traits_impl&lt; R(*)(Args...) noexcept &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structluabridge_1_1detail_1_1function__traits__impl_3_01_r_07_c_1_1_5_08_07_args_8_8_8_08_01noexcept_01_4.html">luabridge::detail::function_traits_impl&lt; R(C::*)(Args...) noexcept &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structluabridge_1_1detail_1_1function__traits__impl_3_01_r_07_c_1_1_5_08_07_args_8_8_8_08_01const_01noexcept_01_4.html">luabridge::detail::function_traits_impl&lt; R(C::*)(Args...) const noexcept &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structluabridge_1_1detail_1_1functor__traits__impl.html">luabridge::detail::functor_traits_impl&lt; F &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structluabridge_1_1detail_1_1function__traits.html">luabridge::detail::function_traits&lt; F &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Traits class for callable objects (e.g. function pointers, lambdas)  <a href="structluabridge_1_1detail_1_1function__traits.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structluabridge_1_1detail_1_1function__argument__or__void.html">luabridge::detail::function_argument_or_void&lt; I, F, class &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deduces the argument type of a callble object or void in case it has no argument.  <a href="structluabridge_1_1detail_1_1function__argument__or__void.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
-Namespaces</h2></td></tr>
-<tr class="memitem:namespaceluabridge" id="r_namespaceluabridge"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html">luabridge</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespaceluabridge_1_1detail" id="r_namespaceluabridge_1_1detail"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceluabridge_1_1detail.html">luabridge::detail</a></td></tr>
-<tr class="memdesc:namespaceluabridge_1_1detail"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base for class and namespace registration. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:a0ba69d3965ebb9f49f1699301c8549dd" id="r_a0ba69d3965ebb9f49f1699301c8549dd"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
-<tr class="memitem:a0ba69d3965ebb9f49f1699301c8549dd"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceluabridge_1_1detail.html#a0ba69d3965ebb9f49f1699301c8549dd">luabridge::detail::remove_cvref_t</a> = typename <a class="el" href="structluabridge_1_1detail_1_1remove__cvref.html">remove_cvref</a>&lt;T&gt;::type</td></tr>
-<tr class="separator:a0ba69d3965ebb9f49f1699301c8549dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
-Functions</h2></td></tr>
-<tr class="memitem:ae47eb427de3bdeaf3a81e9ffc42c2888" id="r_ae47eb427de3bdeaf3a81e9ffc42c2888"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceluabridge_1_1detail.html#ae47eb427de3bdeaf3a81e9ffc42c2888">luabridge::detail::unreachable</a> ()</td></tr>
-<tr class="memdesc:ae47eb427de3bdeaf3a81e9ffc42c2888"><td class="mdescLeft">&#160;</td><td class="mdescRight">Invokes undefined behavior when an unreachable part of the code is reached.  <br /></td></tr>
-<tr class="separator:ae47eb427de3bdeaf3a81e9ffc42c2888"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

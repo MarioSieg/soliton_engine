@@ -119,42 +119,32 @@ $(function(){initNavTree('_comparison_logic_8h_source.html',''); initResizable()
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;<a class="code" href="_data_trigger_8h.html">NsApp/DataTrigger.h</a>&gt;</span></div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespace_noesis.html">Noesis</a></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span>Noesis</div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>{</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="class_noesis_1_1_ptr.html">   19</a></span><span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt; <span class="keyword">class </span><a class="code hl_class" href="class_noesis_1_1_ptr.html">Ptr</a>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt; <span class="keyword">class </span>Ptr;</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>}</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespace_noesis_app.html">NoesisApp</a></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">namespace </span>NoesisApp</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>{</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
-<div class="foldopen" id="foldopen00028" data-start="{" data-end="};">
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_comparison_logic.html">   28</a></span><span class="keyword">class </span><a class="code hl_class" href="class_noesis_app_1_1_comparison_logic.html">ComparisonLogic</a>: <span class="keyword">public</span> Noesis::BaseComponent</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keyword">class </span>ComparisonLogic: <span class="keyword">public</span> Noesis::BaseComponent</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>{</div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keyword">static</span> <span class="keyword">const</span> Noesis::Type* <a class="code hl_function" href="class_noesis_app_1_1_comparison_logic.html#ad26f2aab172d9fb829584f3bed28d128">ExtractBoxedType</a>(Noesis::BaseComponent* value);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keyword">static</span> <span class="keyword">const</span> Noesis::Type* ExtractBoxedType(Noesis::BaseComponent* value);</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keyword">static</span> <a class="code hl_class" href="class_noesis_1_1_ptr.html">Noesis::Ptr&lt;ComparisonLogic&gt;</a> <a class="code hl_function" href="class_noesis_app_1_1_comparison_logic.html#ae24b43ca61e8afce7ffc542acb47ccfc">Create</a>(<span class="keyword">const</span> Noesis::Type* type);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keyword">static</span> Noesis::Ptr&lt;ComparisonLogic&gt; Create(<span class="keyword">const</span> Noesis::Type* type);</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_comparison_logic.html#a6b3e6932167a8ccda437c64f7cbf6a86">   38</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="class_noesis_app_1_1_comparison_logic.html#a6b3e6932167a8ccda437c64f7cbf6a86">Evaluate</a>(Noesis::BaseComponent* left, <a class="code hl_enumeration" href="namespace_noesis_app.html#aaaa910e67b7a25a54f33594b32a8a0b5">ComparisonConditionType</a> comparison,</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> Evaluate(Noesis::BaseComponent* left, ComparisonConditionType comparison,</div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        Noesis::BaseComponent* right) <span class="keyword">const</span> = 0;</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    NS_DECLARE_REFLECTION(<a class="code hl_class" href="class_noesis_app_1_1_comparison_logic.html">ComparisonLogic</a>, Noesis::BaseComponent)</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    NS_DECLARE_REFLECTION(ComparisonLogic, Noesis::BaseComponent)</div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>};</div>
-</div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>}</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="a_data_trigger_8h_html"><div class="ttname"><a href="_data_trigger_8h.html">DataTrigger.h</a></div></div>
-<div class="ttc" id="aclass_noesis_1_1_ptr_html"><div class="ttname"><a href="class_noesis_1_1_ptr.html">Noesis::Ptr</a></div><div class="ttdef"><b>Definition</b> ComparisonLogic.h:19</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_comparison_logic_html"><div class="ttname"><a href="class_noesis_app_1_1_comparison_logic.html">NoesisApp::ComparisonLogic</a></div><div class="ttdoc">Helper class that evaluates logic operations.</div><div class="ttdef"><b>Definition</b> ComparisonLogic.h:29</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_comparison_logic_html_a6b3e6932167a8ccda437c64f7cbf6a86"><div class="ttname"><a href="class_noesis_app_1_1_comparison_logic.html#a6b3e6932167a8ccda437c64f7cbf6a86">NoesisApp::ComparisonLogic::Evaluate</a></div><div class="ttdeci">virtual bool Evaluate(Noesis::BaseComponent *left, ComparisonConditionType comparison, Noesis::BaseComponent *right) const =0</div><div class="ttdoc">Evaluates the specified binary oparation.</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_comparison_logic_html_ad26f2aab172d9fb829584f3bed28d128"><div class="ttname"><a href="class_noesis_app_1_1_comparison_logic.html#ad26f2aab172d9fb829584f3bed28d128">NoesisApp::ComparisonLogic::ExtractBoxedType</a></div><div class="ttdeci">static const Noesis::Type * ExtractBoxedType(Noesis::BaseComponent *value)</div><div class="ttdoc">Obtains the type of the boxed value.</div><div class="ttdef"><b>Definition</b> ComparisonLogic.cpp:88</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_comparison_logic_html_ae24b43ca61e8afce7ffc542acb47ccfc"><div class="ttname"><a href="class_noesis_app_1_1_comparison_logic.html#ae24b43ca61e8afce7ffc542acb47ccfc">NoesisApp::ComparisonLogic::Create</a></div><div class="ttdeci">static Noesis::Ptr&lt; ComparisonLogic &gt; Create(const Noesis::Type *type)</div><div class="ttdoc">Creates a ComparisonLogic object for the specified type.</div><div class="ttdef"><b>Definition</b> ComparisonLogic.cpp:108</div></div>
-<div class="ttc" id="anamespace_noesis_app_html"><div class="ttname"><a href="namespace_noesis_app.html">NoesisApp</a></div><div class="ttdef"><b>Definition</b> Application.cpp:21</div></div>
-<div class="ttc" id="anamespace_noesis_app_html_aaaa910e67b7a25a54f33594b32a8a0b5"><div class="ttname"><a href="namespace_noesis_app.html#aaaa910e67b7a25a54f33594b32a8a0b5">NoesisApp::ComparisonConditionType</a></div><div class="ttdeci">ComparisonConditionType</div><div class="ttdef"><b>Definition</b> DataTrigger.h:29</div></div>
-<div class="ttc" id="anamespace_noesis_html"><div class="ttname"><a href="namespace_noesis.html">Noesis</a></div><div class="ttdef"><b>Definition</b> AttachableObject.h:18</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

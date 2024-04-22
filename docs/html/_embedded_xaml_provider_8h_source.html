@@ -121,36 +121,32 @@ $(function(){initNavTree('_embedded_xaml_provider_8h_source.html',''); initResiz
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;NsGui/XamlProvider.h&gt;</span></div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespace_noesis_app.html">NoesisApp</a></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">namespace </span>NoesisApp</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>{</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
-<div class="foldopen" id="foldopen00022" data-start="{" data-end="};">
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="struct_noesis_app_1_1_embedded_xaml.html">   22</a></span><span class="keyword">struct </span><a class="code hl_struct" href="struct_noesis_app_1_1_embedded_xaml.html">EmbeddedXaml</a></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">struct </span>EmbeddedXaml</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>{</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="struct_noesis_app_1_1_embedded_xaml.html#ac0fa3709d848c62c74626dbb3f8cabd7">   24</a></span>    <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="struct_noesis_app_1_1_embedded_xaml.html#ac0fa3709d848c62c74626dbb3f8cabd7">name</a>;</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="struct_noesis_app_1_1_embedded_xaml.html#a7c02d4ef8c0021a1167c4b91beec7f52">   25</a></span>    Noesis::ArrayRef&lt;uint8_t&gt; <a class="code hl_variable" href="struct_noesis_app_1_1_embedded_xaml.html#a7c02d4ef8c0021a1167c4b91beec7f52">data</a>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keyword">const</span> <span class="keywordtype">char</span>* name;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    Noesis::ArrayRef&lt;uint8_t&gt; data;</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>};</div>
-</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>NS_WARNING_PUSH</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>NS_MSVC_WARNING_DISABLE(4251 4275)</div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
-<div class="foldopen" id="foldopen00034" data-start="{" data-end="};">
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_embedded_xaml_provider.html">   34</a></span>class <a class="code hl_define" href="_providers_api_8h.html#a2e77886ac35d91a1d3f9686bf046f803">NS_APP_PROVIDERS_API</a> <a class="code hl_class" href="class_noesis_app_1_1_embedded_xaml_provider.html">EmbeddedXamlProvider</a>: public <a class="code hl_namespace" href="namespace_noesis.html">Noesis</a>::XamlProvider</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>class <a class="code hl_define" href="_providers_api_8h.html#a2e77886ac35d91a1d3f9686bf046f803">NS_APP_PROVIDERS_API</a> EmbeddedXamlProvider: public Noesis::XamlProvider</div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>{</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <a class="code hl_class" href="class_noesis_app_1_1_embedded_xaml_provider.html">EmbeddedXamlProvider</a>(Noesis::ArrayRef&lt;EmbeddedXaml&gt; xamls, XamlProvider* fallback = 0);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    EmbeddedXamlProvider(Noesis::ArrayRef&lt;EmbeddedXaml&gt; xamls, XamlProvider* fallback = 0);</div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="keyword">private</span>:</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <a class="code hl_class" href="class_noesis_1_1_ptr.html">Noesis::Ptr&lt;Noesis::Stream&gt;</a> LoadXaml(<span class="keyword">const</span> Noesis::Uri&amp; uri) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    Noesis::Ptr&lt;Noesis::Stream&gt; LoadXaml(<span class="keyword">const</span> Noesis::Uri&amp; uri) <span class="keyword">override</span>;</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_embedded_xaml_provider.html#a965f261fd10c4aedbbd4d0c8d6dba02e">   46</a></span>    Noesis::Vector&lt;EmbeddedXaml&gt; <a class="code hl_variable" href="class_noesis_app_1_1_embedded_xaml_provider.html#a965f261fd10c4aedbbd4d0c8d6dba02e">mXamls</a>;</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_embedded_xaml_provider.html#a23082d62ec6ba44b7599f50cc057185b">   47</a></span>    <a class="code hl_class" href="class_noesis_1_1_ptr.html">Noesis::Ptr&lt;XamlProvider&gt;</a> <a class="code hl_variable" href="class_noesis_app_1_1_embedded_xaml_provider.html#a23082d62ec6ba44b7599f50cc057185b">mFallback</a>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    Noesis::Vector&lt;EmbeddedXaml&gt; mXamls;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    Noesis::Ptr&lt;XamlProvider&gt; mFallback;</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>};</div>
-</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>NS_WARNING_POP</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
@@ -159,15 +155,6 @@ $(function(){initNavTree('_embedded_xaml_provider_8h_source.html',''); initResiz
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="a_providers_api_8h_html"><div class="ttname"><a href="_providers_api_8h.html">ProvidersApi.h</a></div></div>
 <div class="ttc" id="a_providers_api_8h_html_a2e77886ac35d91a1d3f9686bf046f803"><div class="ttname"><a href="_providers_api_8h.html#a2e77886ac35d91a1d3f9686bf046f803">NS_APP_PROVIDERS_API</a></div><div class="ttdeci">#define NS_APP_PROVIDERS_API</div><div class="ttdef"><b>Definition</b> ProvidersApi.h:15</div></div>
-<div class="ttc" id="aclass_noesis_1_1_ptr_html"><div class="ttname"><a href="class_noesis_1_1_ptr.html">Noesis::Ptr</a></div><div class="ttdef"><b>Definition</b> ComparisonLogic.h:19</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_embedded_xaml_provider_html"><div class="ttname"><a href="class_noesis_app_1_1_embedded_xaml_provider.html">NoesisApp::EmbeddedXamlProvider</a></div><div class="ttdoc">A provider for XAMLs embedded in memory.</div><div class="ttdef"><b>Definition</b> EmbeddedXamlProvider.h:35</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_embedded_xaml_provider_html_a23082d62ec6ba44b7599f50cc057185b"><div class="ttname"><a href="class_noesis_app_1_1_embedded_xaml_provider.html#a23082d62ec6ba44b7599f50cc057185b">NoesisApp::EmbeddedXamlProvider::mFallback</a></div><div class="ttdeci">Noesis::Ptr&lt; XamlProvider &gt; mFallback</div><div class="ttdef"><b>Definition</b> EmbeddedXamlProvider.h:47</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_embedded_xaml_provider_html_a965f261fd10c4aedbbd4d0c8d6dba02e"><div class="ttname"><a href="class_noesis_app_1_1_embedded_xaml_provider.html#a965f261fd10c4aedbbd4d0c8d6dba02e">NoesisApp::EmbeddedXamlProvider::mXamls</a></div><div class="ttdeci">Noesis::Vector&lt; EmbeddedXaml &gt; mXamls</div><div class="ttdef"><b>Definition</b> EmbeddedXamlProvider.h:46</div></div>
-<div class="ttc" id="anamespace_noesis_app_html"><div class="ttname"><a href="namespace_noesis_app.html">NoesisApp</a></div><div class="ttdef"><b>Definition</b> Application.cpp:21</div></div>
-<div class="ttc" id="anamespace_noesis_html"><div class="ttname"><a href="namespace_noesis.html">Noesis</a></div><div class="ttdef"><b>Definition</b> AttachableObject.h:18</div></div>
-<div class="ttc" id="astruct_noesis_app_1_1_embedded_xaml_html"><div class="ttname"><a href="struct_noesis_app_1_1_embedded_xaml.html">NoesisApp::EmbeddedXaml</a></div><div class="ttdef"><b>Definition</b> EmbeddedXamlProvider.h:23</div></div>
-<div class="ttc" id="astruct_noesis_app_1_1_embedded_xaml_html_a7c02d4ef8c0021a1167c4b91beec7f52"><div class="ttname"><a href="struct_noesis_app_1_1_embedded_xaml.html#a7c02d4ef8c0021a1167c4b91beec7f52">NoesisApp::EmbeddedXaml::data</a></div><div class="ttdeci">Noesis::ArrayRef&lt; uint8_t &gt; data</div><div class="ttdef"><b>Definition</b> EmbeddedXamlProvider.h:25</div></div>
-<div class="ttc" id="astruct_noesis_app_1_1_embedded_xaml_html_ac0fa3709d848c62c74626dbb3f8cabd7"><div class="ttname"><a href="struct_noesis_app_1_1_embedded_xaml.html#ac0fa3709d848c62c74626dbb3f8cabd7">NoesisApp::EmbeddedXaml::name</a></div><div class="ttdeci">const char * name</div><div class="ttdef"><b>Definition</b> EmbeddedXamlProvider.h:24</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

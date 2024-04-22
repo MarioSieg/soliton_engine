@@ -121,26 +121,23 @@ $(function(){initNavTree('_embedded_font_provider_8h_source.html',''); initResiz
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;NsGui/CachedFontProvider.h&gt;</span></div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespace_noesis_app.html">NoesisApp</a></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">namespace </span>NoesisApp</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>{</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
-<div class="foldopen" id="foldopen00022" data-start="{" data-end="};">
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="struct_noesis_app_1_1_embedded_font.html">   22</a></span><span class="keyword">struct </span><a class="code hl_struct" href="struct_noesis_app_1_1_embedded_font.html">EmbeddedFont</a></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">struct </span>EmbeddedFont</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>{</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="struct_noesis_app_1_1_embedded_font.html#a66c70e83c58a085df429bfbcd8008ff2">   24</a></span>    <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="struct_noesis_app_1_1_embedded_font.html#a66c70e83c58a085df429bfbcd8008ff2">folder</a>;</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="struct_noesis_app_1_1_embedded_font.html#a1e5ef95dec092f810ace0441f646b6be">   25</a></span>    Noesis::ArrayRef&lt;uint8_t&gt; <a class="code hl_variable" href="struct_noesis_app_1_1_embedded_font.html#a1e5ef95dec092f810ace0441f646b6be">data</a>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keyword">const</span> <span class="keywordtype">char</span>* folder;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    Noesis::ArrayRef&lt;uint8_t&gt; data;</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>};</div>
-</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>NS_WARNING_PUSH</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>NS_MSVC_WARNING_DISABLE(4251 4275)</div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
-<div class="foldopen" id="foldopen00034" data-start="{" data-end="};">
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_embedded_font_provider.html">   34</a></span>class <a class="code hl_define" href="_providers_api_8h.html#a2e77886ac35d91a1d3f9686bf046f803">NS_APP_PROVIDERS_API</a> <a class="code hl_class" href="class_noesis_app_1_1_embedded_font_provider.html">EmbeddedFontProvider</a>: public <a class="code hl_namespace" href="namespace_noesis.html">Noesis</a>::CachedFontProvider</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>class <a class="code hl_define" href="_providers_api_8h.html#a2e77886ac35d91a1d3f9686bf046f803">NS_APP_PROVIDERS_API</a> EmbeddedFontProvider: public Noesis::CachedFontProvider</div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>{</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <a class="code hl_class" href="class_noesis_app_1_1_embedded_font_provider.html">EmbeddedFontProvider</a>(Noesis::ArrayRef&lt;EmbeddedFont&gt; fonts, FontProvider* fallback = 0);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    EmbeddedFontProvider(Noesis::ArrayRef&lt;EmbeddedFont&gt; fonts, FontProvider* fallback = 0);</div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="keyword">private</span>:</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
@@ -150,13 +147,12 @@ $(function(){initNavTree('_embedded_font_provider_8h_source.html',''); initResiz
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordtype">void</span> ScanFolder(<span class="keyword">const</span> Noesis::Uri&amp; folder) <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <a class="code hl_class" href="class_noesis_1_1_ptr.html">Noesis::Ptr&lt;Noesis::Stream&gt;</a> OpenFont(<span class="keyword">const</span> Noesis::Uri&amp; folder, <span class="keyword">const</span> <span class="keywordtype">char</span>* filename) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    Noesis::Ptr&lt;Noesis::Stream&gt; OpenFont(<span class="keyword">const</span> Noesis::Uri&amp; folder, <span class="keyword">const</span> <span class="keywordtype">char</span>* filename) <span class="keyword">const override</span>;</div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_embedded_font_provider.html#ae65480098f34d01a0af9c2b261b7f08f">   54</a></span>    Noesis::Vector&lt;EmbeddedFont&gt; <a class="code hl_variable" href="class_noesis_app_1_1_embedded_font_provider.html#ae65480098f34d01a0af9c2b261b7f08f">mFonts</a>;</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_embedded_font_provider.html#a0b0c45c54469d0112542c1fd9130b78e">   55</a></span>    <a class="code hl_class" href="class_noesis_1_1_ptr.html">Noesis::Ptr&lt;FontProvider&gt;</a> <a class="code hl_variable" href="class_noesis_app_1_1_embedded_font_provider.html#a0b0c45c54469d0112542c1fd9130b78e">mFallback</a>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    Noesis::Vector&lt;EmbeddedFont&gt; mFonts;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    Noesis::Ptr&lt;FontProvider&gt; mFallback;</div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>};</div>
-</div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>NS_WARNING_POP</div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
@@ -165,15 +161,6 @@ $(function(){initNavTree('_embedded_font_provider_8h_source.html',''); initResiz
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="a_providers_api_8h_html"><div class="ttname"><a href="_providers_api_8h.html">ProvidersApi.h</a></div></div>
 <div class="ttc" id="a_providers_api_8h_html_a2e77886ac35d91a1d3f9686bf046f803"><div class="ttname"><a href="_providers_api_8h.html#a2e77886ac35d91a1d3f9686bf046f803">NS_APP_PROVIDERS_API</a></div><div class="ttdeci">#define NS_APP_PROVIDERS_API</div><div class="ttdef"><b>Definition</b> ProvidersApi.h:15</div></div>
-<div class="ttc" id="aclass_noesis_1_1_ptr_html"><div class="ttname"><a href="class_noesis_1_1_ptr.html">Noesis::Ptr</a></div><div class="ttdef"><b>Definition</b> ComparisonLogic.h:19</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_embedded_font_provider_html"><div class="ttname"><a href="class_noesis_app_1_1_embedded_font_provider.html">NoesisApp::EmbeddedFontProvider</a></div><div class="ttdoc">A provider for fonts embedded in memory.</div><div class="ttdef"><b>Definition</b> EmbeddedFontProvider.h:35</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_embedded_font_provider_html_a0b0c45c54469d0112542c1fd9130b78e"><div class="ttname"><a href="class_noesis_app_1_1_embedded_font_provider.html#a0b0c45c54469d0112542c1fd9130b78e">NoesisApp::EmbeddedFontProvider::mFallback</a></div><div class="ttdeci">Noesis::Ptr&lt; FontProvider &gt; mFallback</div><div class="ttdef"><b>Definition</b> EmbeddedFontProvider.h:55</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_embedded_font_provider_html_ae65480098f34d01a0af9c2b261b7f08f"><div class="ttname"><a href="class_noesis_app_1_1_embedded_font_provider.html#ae65480098f34d01a0af9c2b261b7f08f">NoesisApp::EmbeddedFontProvider::mFonts</a></div><div class="ttdeci">Noesis::Vector&lt; EmbeddedFont &gt; mFonts</div><div class="ttdef"><b>Definition</b> EmbeddedFontProvider.h:54</div></div>
-<div class="ttc" id="anamespace_noesis_app_html"><div class="ttname"><a href="namespace_noesis_app.html">NoesisApp</a></div><div class="ttdef"><b>Definition</b> Application.cpp:21</div></div>
-<div class="ttc" id="anamespace_noesis_html"><div class="ttname"><a href="namespace_noesis.html">Noesis</a></div><div class="ttdef"><b>Definition</b> AttachableObject.h:18</div></div>
-<div class="ttc" id="astruct_noesis_app_1_1_embedded_font_html"><div class="ttname"><a href="struct_noesis_app_1_1_embedded_font.html">NoesisApp::EmbeddedFont</a></div><div class="ttdef"><b>Definition</b> EmbeddedFontProvider.h:23</div></div>
-<div class="ttc" id="astruct_noesis_app_1_1_embedded_font_html_a1e5ef95dec092f810ace0441f646b6be"><div class="ttname"><a href="struct_noesis_app_1_1_embedded_font.html#a1e5ef95dec092f810ace0441f646b6be">NoesisApp::EmbeddedFont::data</a></div><div class="ttdeci">Noesis::ArrayRef&lt; uint8_t &gt; data</div><div class="ttdef"><b>Definition</b> EmbeddedFontProvider.h:25</div></div>
-<div class="ttc" id="astruct_noesis_app_1_1_embedded_font_html_a66c70e83c58a085df429bfbcd8008ff2"><div class="ttname"><a href="struct_noesis_app_1_1_embedded_font.html#a66c70e83c58a085df429bfbcd8008ff2">NoesisApp::EmbeddedFont::folder</a></div><div class="ttdeci">const char * folder</div><div class="ttdef"><b>Definition</b> EmbeddedFontProvider.h:24</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

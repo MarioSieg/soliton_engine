@@ -113,29 +113,26 @@ $(function(){initNavTree('_globals_8h_source.html',''); initResizable(); });
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="_config_8h.html">Config.h</a>&quot;</span></div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="_stack_8h.html">Stack.h</a>&quot;</span></div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceluabridge.html">luabridge</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span>luabridge {</div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="comment">//=================================================================================================</span></div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
-<div class="foldopen" id="foldopen00019" data-start="{" data-end="}">
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="namespaceluabridge.html#af51f7131e71034d676427d4cd72d9be3">   19</a></span><a class="code hl_struct" href="structluabridge_1_1_type_result.html">TypeResult&lt;T&gt;</a> <a class="code hl_function" href="namespaceluabridge.html#af51f7131e71034d676427d4cd72d9be3">getGlobal</a>(<a class="code hl_typedef" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a>* L, <span class="keyword">const</span> <span class="keywordtype">char</span>* name)</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>TypeResult&lt;T&gt; getGlobal(<a class="code hl_typedef" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a>* L, <span class="keyword">const</span> <span class="keywordtype">char</span>* name)</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>{</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <a class="code hl_define" href="lua_8h.html#abc2f6fef4682c1d4cdc33206aaf42bec">lua_getglobal</a>(L, name);</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keyword">auto</span> result = <a class="code hl_function" href="structluabridge_1_1_stack.html#af837da7a0647a543dc3b709b17f0f8a2">luabridge::Stack&lt;T&gt;::get</a>(L, -1);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keyword">auto</span> result = luabridge::Stack&lt;T&gt;::get(L, -1);</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <a class="code hl_define" href="lua_8h.html#abb8eae2164badeafdb037bc1e03cc822">lua_pop</a>(L, 1);</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordflow">return</span> result;</div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>}</div>
-</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="comment">//=================================================================================================</span></div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
-<div class="foldopen" id="foldopen00037" data-start="{" data-end="}">
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="namespaceluabridge.html#aaaa5bbe9ba50e1692203341978e700c5">   37</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceluabridge.html#aaaa5bbe9ba50e1692203341978e700c5">setGlobal</a>(<a class="code hl_typedef" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a>* L, T&amp;&amp; t, <span class="keyword">const</span> <span class="keywordtype">char</span>* name)</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="keywordtype">bool</span> setGlobal(<a class="code hl_typedef" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a>* L, T&amp;&amp; t, <span class="keyword">const</span> <span class="keywordtype">char</span>* name)</div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>{</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordflow">if</span> (<span class="keyword">auto</span> result = <a class="code hl_function" href="namespaceluabridge.html#afe9c531ea92e0f3b9ecaa050cd5f0746">push</a>(L, std::forward&lt;T&gt;(t)))</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordflow">if</span> (<span class="keyword">auto</span> result = push(L, std::forward&lt;T&gt;(t)))</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    {</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <a class="code hl_define" href="lua_8h.html#ab9c7b1411a77d9dff74f2930fc51f796">lua_setglobal</a>(L, name);</div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
@@ -143,7 +140,6 @@ $(function(){initNavTree('_globals_8h_source.html',''); initResizable(); });
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>}</div>
-</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>} <span class="comment">// namespace luabridge</span></div>
 <div class="ttc" id="a_config_8h_html"><div class="ttname"><a href="_config_8h.html">Config.h</a></div></div>
@@ -152,12 +148,6 @@ $(function(){initNavTree('_globals_8h_source.html',''); initResizable(); });
 <div class="ttc" id="alua_8h_html_ab9c7b1411a77d9dff74f2930fc51f796"><div class="ttname"><a href="lua_8h.html#ab9c7b1411a77d9dff74f2930fc51f796">lua_setglobal</a></div><div class="ttdeci">#define lua_setglobal(L, s)</div><div class="ttdef"><b>Definition</b> lua.h:286</div></div>
 <div class="ttc" id="alua_8h_html_abb8eae2164badeafdb037bc1e03cc822"><div class="ttname"><a href="lua_8h.html#abb8eae2164badeafdb037bc1e03cc822">lua_pop</a></div><div class="ttdeci">#define lua_pop(L, n)</div><div class="ttdef"><b>Definition</b> lua.h:264</div></div>
 <div class="ttc" id="alua_8h_html_abc2f6fef4682c1d4cdc33206aaf42bec"><div class="ttname"><a href="lua_8h.html#abc2f6fef4682c1d4cdc33206aaf42bec">lua_getglobal</a></div><div class="ttdeci">#define lua_getglobal(L, s)</div><div class="ttdef"><b>Definition</b> lua.h:287</div></div>
-<div class="ttc" id="anamespaceluabridge_html"><div class="ttname"><a href="namespaceluabridge.html">luabridge</a></div><div class="ttdef"><b>Definition</b> Array.h:12</div></div>
-<div class="ttc" id="anamespaceluabridge_html_aaaa5bbe9ba50e1692203341978e700c5"><div class="ttname"><a href="namespaceluabridge.html#aaaa5bbe9ba50e1692203341978e700c5">luabridge::setGlobal</a></div><div class="ttdeci">bool setGlobal(lua_State *L, T &amp;&amp;t, const char *name)</div><div class="ttdoc">Set a global value in the lua_State.</div><div class="ttdef"><b>Definition</b> Globals.h:37</div></div>
-<div class="ttc" id="anamespaceluabridge_html_af51f7131e71034d676427d4cd72d9be3"><div class="ttname"><a href="namespaceluabridge.html#af51f7131e71034d676427d4cd72d9be3">luabridge::getGlobal</a></div><div class="ttdeci">TypeResult&lt; T &gt; getGlobal(lua_State *L, const char *name)</div><div class="ttdoc">Get a global value from the lua_State.</div><div class="ttdef"><b>Definition</b> Globals.h:19</div></div>
-<div class="ttc" id="anamespaceluabridge_html_afe9c531ea92e0f3b9ecaa050cd5f0746"><div class="ttname"><a href="namespaceluabridge.html#afe9c531ea92e0f3b9ecaa050cd5f0746">luabridge::push</a></div><div class="ttdeci">Result push(lua_State *L, const T &amp;t)</div><div class="ttdoc">Push an object onto the Lua stack.</div><div class="ttdef"><b>Definition</b> Stack.h:1521</div></div>
-<div class="ttc" id="astructluabridge_1_1_stack_html_af837da7a0647a543dc3b709b17f0f8a2"><div class="ttname"><a href="structluabridge_1_1_stack.html#af837da7a0647a543dc3b709b17f0f8a2">luabridge::Stack::get</a></div><div class="ttdeci">static ReturnType get(lua_State *L, int index)</div><div class="ttdef"><b>Definition</b> Userdata.h:938</div></div>
-<div class="ttc" id="astructluabridge_1_1_type_result_html"><div class="ttname"><a href="structluabridge_1_1_type_result.html">luabridge::TypeResult</a></div><div class="ttdoc">Simple result class containing or a type T or an error code.</div><div class="ttdef"><b>Definition</b> Result.h:69</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

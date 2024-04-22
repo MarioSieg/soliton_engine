@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['focusdirection_0',['FocusDirection',['../namespace_noesis_app.html#a8402c82c6d5487347b8b20051d1d9ee4',1,'NoesisApp']]],
-  ['forwardchaining_1',['ForwardChaining',['../namespace_noesis_app.html#ad0a591cfc79bee9b25119dd3d6c86715',1,'NoesisApp']]]
+  ['instruction_5fset_0',['instruction_set',['../namespacesimdutf_1_1internal.html#ac4f155d3cd7620e86db7e06af11d1d73',1,'simdutf::internal']]]
 ];

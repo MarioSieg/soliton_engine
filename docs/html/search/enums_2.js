@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['blendingmode_0',['BlendingMode',['../namespace_noesis_g_u_i_extensions.html#a8761b3d1237f05b85b26e9653713e91a',1,'NoesisGUIExtensions']]]
+  ['glfwclientapi_0',['GlfwClientApi',['../imgui__impl__glfw_8cpp.html#abfd5392e93ee3c4e7f86cc5515e2d413',1,'imgui_impl_glfw.cpp']]]
 ];

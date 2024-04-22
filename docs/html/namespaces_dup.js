@@ -24,28 +24,10 @@ var namespaces_dup =
       [ "s_asset_requests", "namespaceassetmgr.html#ace6e874fbad364caa52f1c81d38dc32d", null ],
       [ "s_total_bytes_loaded", "namespaceassetmgr.html#a50c1226b6b23035954a80f87a65c6fd4", null ]
     ] ],
-    [ "bin2h", "namespacebin2h.html", [
-      [ "main", "namespacebin2h.html#aa68e29d1c99fd9bcf2b8f4706f08ec8b", null ]
-    ] ],
     [ "com", "namespacecom.html", "namespacecom" ],
     [ "graphics", "namespacegraphics.html", "namespacegraphics" ],
-    [ "imgui", "namespaceimgui.html", "namespaceimgui" ],
-    [ "legit", "namespacelegit.html", "namespacelegit" ],
-    [ "luabridge", "namespaceluabridge.html", "namespaceluabridge" ],
-    [ "Menu3D", "namespace_menu3_d.html", "namespace_menu3_d" ],
-    [ "MyImPlot", "namespace_my_im_plot.html", "namespace_my_im_plot" ],
-    [ "noesis", "namespacenoesis.html", "namespacenoesis" ],
-    [ "Noesis", "namespace_noesis.html", "namespace_noesis" ],
-    [ "NoesisApp", "namespace_noesis_app.html", "namespace_noesis_app" ],
-    [ "NoesisGUIExtensions", "namespace_noesis_g_u_i_extensions.html", "namespace_noesis_g_u_i_extensions" ],
     [ "physics", "namespacephysics.html", "namespacephysics" ],
     [ "platform", "namespaceplatform.html", "namespaceplatform" ],
     [ "scripting", "namespacescripting.html", "namespacescripting" ],
-    [ "simdutf", "namespacesimdutf.html", "namespacesimdutf" ],
-    [ "System", "namespace_system.html", "namespace_system" ],
-    [ "tar", "namespacetar.html", [
-      [ "main", "namespacetar.html#a08eefc2ddb8bf91562bf073e17e427a2", null ]
-    ] ],
-    [ "Theme", "namespace_theme.html", "namespace_theme" ],
     [ "vkb", "namespacevkb.html", "namespacevkb" ]
 ];

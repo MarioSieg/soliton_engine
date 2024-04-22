@@ -96,12 +96,6 @@ $(function(){initNavTree('_type_traits_8h.html',''); initResizable(); });
 </div>
 
 <div class="header">
-  <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a> &#124;
-<a href="#typedef-members">Typedefs</a> &#124;
-<a href="#func-members">Functions</a> &#124;
-<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">TypeTraits.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -109,48 +103,6 @@ $(function(){initNavTree('_type_traits_8h.html',''); initResizable(); });
 <code>#include &lt;memory&gt;</code><br />
 </div>
 <p><a href="_type_traits_8h_source.html">Go to the source code of this file.</a></p>
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structluabridge_1_1_container_traits.html">luabridge::ContainerTraits&lt; T &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Container traits.  <a href="structluabridge_1_1_container_traits.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classluabridge_1_1detail_1_1_is_container.html">luabridge::detail::IsContainer&lt; T &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine if type T is a container.  <a href="classluabridge_1_1detail_1_1_is_container.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
-Namespaces</h2></td></tr>
-<tr class="memitem:namespaceluabridge" id="r_namespaceluabridge"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html">luabridge</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespaceluabridge_1_1detail" id="r_namespaceluabridge_1_1detail"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceluabridge_1_1detail.html">luabridge::detail</a></td></tr>
-<tr class="memdesc:namespaceluabridge_1_1detail"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base for class and namespace registration. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:ade25fb6c58b8606cc60a895e9c705389" id="r_ade25fb6c58b8606cc60a895e9c705389"><td class="memTemplParams" colspan="2">template&lt;class T , template&lt; class... &gt; class C&gt; </td></tr>
-<tr class="memitem:ade25fb6c58b8606cc60a895e9c705389"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceluabridge_1_1detail.html#ade25fb6c58b8606cc60a895e9c705389">luabridge::detail::is_base_of_template</a> = decltype(<a class="el" href="namespaceluabridge_1_1detail.html#af52651a3e3c4c3971987cb2973e0c1e3">is_base_of_template_impl</a>&lt;C&gt;(std::declval&lt;T*&gt;()))</td></tr>
-<tr class="separator:ade25fb6c58b8606cc60a895e9c705389"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
-Functions</h2></td></tr>
-<tr class="memitem:af52651a3e3c4c3971987cb2973e0c1e3" id="r_af52651a3e3c4c3971987cb2973e0c1e3"><td class="memTemplParams" colspan="2">template&lt;template&lt; class... &gt; class C, class... Ts&gt; </td></tr>
-<tr class="memitem:af52651a3e3c4c3971987cb2973e0c1e3"><td class="memTemplItemLeft" align="right" valign="top">std::true_type&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceluabridge_1_1detail.html#af52651a3e3c4c3971987cb2973e0c1e3">luabridge::detail::is_base_of_template_impl</a> (const C&lt; Ts... &gt; *)</td></tr>
-<tr class="separator:af52651a3e3c4c3971987cb2973e0c1e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a490bdba96137afb49a0a5d46e1281b1e" id="r_a490bdba96137afb49a0a5d46e1281b1e"><td class="memTemplParams" colspan="2">template&lt;template&lt; class... &gt; class C&gt; </td></tr>
-<tr class="memitem:a490bdba96137afb49a0a5d46e1281b1e"><td class="memTemplItemLeft" align="right" valign="top">std::false_type&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceluabridge_1_1detail.html#a490bdba96137afb49a0a5d46e1281b1e">luabridge::detail::is_base_of_template_impl</a> (...)</td></tr>
-<tr class="separator:a490bdba96137afb49a0a5d46e1281b1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
-Variables</h2></td></tr>
-<tr class="memitem:ab0bcb19625079baef0ab270420342678" id="r_ab0bcb19625079baef0ab270420342678"><td class="memTemplParams" colspan="2">template&lt;class T , template&lt; class... &gt; class C&gt; </td></tr>
-<tr class="memitem:ab0bcb19625079baef0ab270420342678"><td class="memTemplItemLeft" align="right" valign="top">static constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceluabridge_1_1detail.html#ab0bcb19625079baef0ab270420342678">luabridge::detail::is_base_of_template_v</a> = <a class="el" href="namespaceluabridge_1_1detail.html#ade25fb6c58b8606cc60a895e9c705389">is_base_of_template</a>&lt;T, C&gt;::value</td></tr>
-<tr class="separator:ab0bcb19625079baef0ab270420342678"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af828b280f54c202d4659d5db45033c17" id="r_af828b280f54c202d4659d5db45033c17"><td class="memTemplParams" colspan="2">template&lt;class... Args&gt; </td></tr>
-<tr class="memitem:af828b280f54c202d4659d5db45033c17"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceluabridge_1_1detail.html#af828b280f54c202d4659d5db45033c17">luabridge::detail::dependent_false</a> = false</td></tr>
-<tr class="separator:af828b280f54c202d4659d5db45033c17"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

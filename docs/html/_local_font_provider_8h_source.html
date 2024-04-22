@@ -118,38 +118,31 @@ $(function(){initNavTree('_local_font_provider_8h_source.html',''); initResizabl
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;<a class="code" href="_providers_api_8h.html">NsApp/ProvidersApi.h</a>&gt;</span></div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespace_noesis_app.html">NoesisApp</a></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span>NoesisApp</div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>{</div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
-<div class="foldopen" id="foldopen00023" data-start="{" data-end="};">
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_local_font_provider.html">   23</a></span><span class="keyword">class </span><a class="code hl_define" href="_providers_api_8h.html#a2e77886ac35d91a1d3f9686bf046f803">NS_APP_PROVIDERS_API</a> <a class="code hl_class" href="class_noesis_app_1_1_local_font_provider.html">LocalFontProvider</a>: <span class="keyword">public</span> Noesis::CachedFontProvider</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">class </span><a class="code hl_define" href="_providers_api_8h.html#a2e77886ac35d91a1d3f9686bf046f803">NS_APP_PROVIDERS_API</a> LocalFontProvider: <span class="keyword">public</span> Noesis::CachedFontProvider</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>{</div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <a class="code hl_class" href="class_noesis_app_1_1_local_font_provider.html">LocalFontProvider</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* rootPath = <span class="stringliteral">&quot;&quot;</span>);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    LocalFontProvider(<span class="keyword">const</span> <span class="keywordtype">char</span>* rootPath = <span class="stringliteral">&quot;&quot;</span>);</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keyword">private</span>:</div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_local_font_provider.html#a31aef39e1777e51b09dee2653d50b6b6">   31</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_noesis_app_1_1_local_font_provider.html#a31aef39e1777e51b09dee2653d50b6b6">ScanFolder</a>(<span class="keyword">const</span> Noesis::Uri&amp; folder) <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <a class="code hl_class" href="class_noesis_1_1_ptr.html">Noesis::Ptr&lt;Noesis::Stream&gt;</a> OpenFont(<span class="keyword">const</span> Noesis::Uri&amp; folder,</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordtype">void</span> ScanFolder(<span class="keyword">const</span> Noesis::Uri&amp; folder) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    Noesis::Ptr&lt;Noesis::Stream&gt; OpenFont(<span class="keyword">const</span> Noesis::Uri&amp; folder,</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keyword">const</span> <span class="keywordtype">char</span>* filename) <span class="keyword">const override</span>;</div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_local_font_provider.html#a581188c412bd149fcc528229f71494a4">   36</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_noesis_app_1_1_local_font_provider.html#a581188c412bd149fcc528229f71494a4">ScanFolder</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* path, <span class="keyword">const</span> Noesis::Uri&amp; folder, <span class="keyword">const</span> <span class="keywordtype">char</span>* ext);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordtype">void</span> ScanFolder(<span class="keyword">const</span> <span class="keywordtype">char</span>* path, <span class="keyword">const</span> Noesis::Uri&amp; folder, <span class="keyword">const</span> <span class="keywordtype">char</span>* ext);</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_local_font_provider.html#a61a3518be6715867b5ed7cbb4fef3500">   39</a></span>    <span class="keywordtype">char</span> mRootPath[512];</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordtype">char</span> mRootPath[512];</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>};</div>
-</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>}</div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="a_providers_api_8h_html"><div class="ttname"><a href="_providers_api_8h.html">ProvidersApi.h</a></div></div>
 <div class="ttc" id="a_providers_api_8h_html_a2e77886ac35d91a1d3f9686bf046f803"><div class="ttname"><a href="_providers_api_8h.html#a2e77886ac35d91a1d3f9686bf046f803">NS_APP_PROVIDERS_API</a></div><div class="ttdeci">#define NS_APP_PROVIDERS_API</div><div class="ttdef"><b>Definition</b> ProvidersApi.h:15</div></div>
-<div class="ttc" id="aclass_noesis_1_1_ptr_html"><div class="ttname"><a href="class_noesis_1_1_ptr.html">Noesis::Ptr</a></div><div class="ttdef"><b>Definition</b> ComparisonLogic.h:19</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_local_font_provider_html"><div class="ttname"><a href="class_noesis_app_1_1_local_font_provider.html">NoesisApp::LocalFontProvider</a></div><div class="ttdoc">A font provider that searches fonts in local directories.</div><div class="ttdef"><b>Definition</b> LocalFontProvider.h:24</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_local_font_provider_html_a31aef39e1777e51b09dee2653d50b6b6"><div class="ttname"><a href="class_noesis_app_1_1_local_font_provider.html#a31aef39e1777e51b09dee2653d50b6b6">NoesisApp::LocalFontProvider::ScanFolder</a></div><div class="ttdeci">void ScanFolder(const Noesis::Uri &amp;folder) override</div><div class="ttdoc">From CachedFontProvider.</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_local_font_provider_html_a581188c412bd149fcc528229f71494a4"><div class="ttname"><a href="class_noesis_app_1_1_local_font_provider.html#a581188c412bd149fcc528229f71494a4">NoesisApp::LocalFontProvider::ScanFolder</a></div><div class="ttdeci">void ScanFolder(const char *path, const Noesis::Uri &amp;folder, const char *ext)</div></div>
-<div class="ttc" id="anamespace_noesis_app_html"><div class="ttname"><a href="namespace_noesis_app.html">NoesisApp</a></div><div class="ttdef"><b>Definition</b> Application.cpp:21</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

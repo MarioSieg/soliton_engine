@@ -96,12 +96,6 @@ $(function(){initNavTree('_errors_8h.html',''); initResizable(); });
 </div>
 
 <div class="header">
-  <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a> &#124;
-<a href="#enum-members">Enumerations</a> &#124;
-<a href="#func-members">Functions</a> &#124;
-<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">Errors.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -109,50 +103,6 @@ $(function(){initNavTree('_errors_8h.html',''); initResizable(); });
 <code>#include &lt;system_error&gt;</code><br />
 </div>
 <p><a href="_errors_8h_source.html">Go to the source code of this file.</a></p>
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structluabridge_1_1detail_1_1_error_category.html">luabridge::detail::ErrorCategory</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
-Namespaces</h2></td></tr>
-<tr class="memitem:namespaceluabridge" id="r_namespaceluabridge"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html">luabridge</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespaceluabridge_1_1detail" id="r_namespaceluabridge_1_1detail"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceluabridge_1_1detail.html">luabridge::detail</a></td></tr>
-<tr class="memdesc:namespaceluabridge_1_1detail"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base for class and namespace registration. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
-Enumerations</h2></td></tr>
-<tr class="memitem:a9c453c5b0bb31b35710e481e0d580926" id="r_a9c453c5b0bb31b35710e481e0d580926"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926">luabridge::ErrorCode</a> { <br />
-&#160;&#160;<a class="el" href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926a73d7c07d7cbd7d2ace0ceb86bfe26ab2">luabridge::ClassNotRegistered</a> = 1
-, <a class="el" href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926a2ba028e9483ca53848ba8846d753c2d9">luabridge::LuaStackOverflow</a>
-, <a class="el" href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926a5795573056fbe054c01edb693efc1dc2">luabridge::LuaFunctionCallFailed</a>
-, <a class="el" href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926a158135ee278da81a6291c88105bb8d8c">luabridge::IntegerDoesntFitIntoLuaInteger</a>
-, <br />
-&#160;&#160;<a class="el" href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926a7b7a4a55e258f7628097b7e52937e153">luabridge::FloatingPointDoesntFitIntoLuaNumber</a>
-, <a class="el" href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926a623e6b1baa255aa4a31350088c322625">luabridge::InvalidTypeCast</a>
-, <a class="el" href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926aac6a0ba7a83d44cf8fc532fedf2b6cf1">luabridge::InvalidTableSizeInCast</a>
-<br />
- }</td></tr>
-<tr class="memdesc:a9c453c5b0bb31b35710e481e0d580926"><td class="mdescLeft">&#160;</td><td class="mdescRight">LuaBridge error codes.  <a href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926">More...</a><br /></td></tr>
-<tr class="separator:a9c453c5b0bb31b35710e481e0d580926"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
-Functions</h2></td></tr>
-<tr class="memitem:ad0ed633aeb5ff2da5a3e8a5bfdbb698e" id="r_ad0ed633aeb5ff2da5a3e8a5bfdbb698e"><td class="memItemLeft" align="right" valign="top">std::error_code&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#ad0ed633aeb5ff2da5a3e8a5bfdbb698e">luabridge::makeErrorCode</a> (<a class="el" href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926">ErrorCode</a> e)</td></tr>
-<tr class="memdesc:ad0ed633aeb5ff2da5a3e8a5bfdbb698e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an error code from the error enum.  <br /></td></tr>
-<tr class="separator:ad0ed633aeb5ff2da5a3e8a5bfdbb698e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1c0ea97797bbae69ca03b7bb7908e494" id="r_a1c0ea97797bbae69ca03b7bb7908e494"><td class="memItemLeft" align="right" valign="top">std::error_code&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#a1c0ea97797bbae69ca03b7bb7908e494">luabridge::make_error_code</a> (<a class="el" href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926">ErrorCode</a> e)</td></tr>
-<tr class="memdesc:a1c0ea97797bbae69ca03b7bb7908e494"><td class="mdescLeft">&#160;</td><td class="mdescRight">Supports std::error_code construction.  <br /></td></tr>
-<tr class="separator:a1c0ea97797bbae69ca03b7bb7908e494"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
-Variables</h2></td></tr>
-<tr class="memitem:abca718dfe2257327a6f7f0a9f74f81cf" id="r_abca718dfe2257327a6f7f0a9f74f81cf"><td class="memItemLeft" align="right" valign="top">static constexpr char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceluabridge_1_1detail.html#abca718dfe2257327a6f7f0a9f74f81cf">luabridge::detail::error_lua_stack_overflow</a> [] = &quot;stack overflow&quot;</td></tr>
-<tr class="separator:abca718dfe2257327a6f7f0a9f74f81cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

@@ -1,27 +1,7 @@
 var searchData=
 [
-  ['table_5fborder_5fsize_0',['TABLE_BORDER_SIZE',['../imgui__tables_8cpp.html#a9ba128f7eb2e553aae0299b36983f91b',1,'imgui_tables.cpp']]],
-  ['table_5fdraw_5fchannel_5fbg0_1',['TABLE_DRAW_CHANNEL_BG0',['../imgui__tables_8cpp.html#a91994afd965f48e251d70ca6dad4fae2',1,'imgui_tables.cpp']]],
-  ['table_5fdraw_5fchannel_5fbg2_5ffrozen_2',['TABLE_DRAW_CHANNEL_BG2_FROZEN',['../imgui__tables_8cpp.html#a8acdce7d7f4fc7b4d3fc0b243d0c09ab',1,'imgui_tables.cpp']]],
-  ['table_5fdraw_5fchannel_5fnoclip_3',['TABLE_DRAW_CHANNEL_NOCLIP',['../imgui__tables_8cpp.html#af9655126612649ebded9316e8c17028d',1,'imgui_tables.cpp']]],
-  ['table_5fresize_5fseparator_5ffeedback_5ftimer_4',['TABLE_RESIZE_SEPARATOR_FEEDBACK_TIMER',['../imgui__tables_8cpp.html#ab6f19f4326452b1997bb2619879146fb',1,'imgui_tables.cpp']]],
-  ['table_5fresize_5fseparator_5fhalf_5fthickness_5',['TABLE_RESIZE_SEPARATOR_HALF_THICKNESS',['../imgui__tables_8cpp.html#aee8b55f318d93b1be0a1228640e64b4c',1,'imgui_tables.cpp']]],
-  ['tangent_6',['tangent',['../structgraphics_1_1mesh_1_1vertex.html#a96e5a37bf703daf4d12171ec93b177ad',1,'graphics::mesh::vertex']]],
-  ['tappedevent_7',['TappedEvent',['../class_noesis_g_u_i_extensions_1_1_element.html#ac29b681ff05ceadb76b14fb22965f79b',1,'NoesisGUIExtensions::Element']]],
-  ['targetnameproperty_8',['TargetNameProperty',['../class_noesis_app_1_1_targeted_trigger_action.html#a2ca6759672799be30cbfd9bc9ed3458a',1,'NoesisApp::TargetedTriggerAction']]],
-  ['targetnameresolverproperty_9',['TargetNameResolverProperty',['../class_noesis_app_1_1_targeted_trigger_action.html#ac7d7bc5d000337f578e3eeac27abe123',1,'NoesisApp::TargetedTriggerAction']]],
-  ['targetobjectproperty_10',['TargetObjectProperty',['../class_noesis_app_1_1_targeted_trigger_action.html#ab434d19f03ec2b26de64ca3ae513eb73',1,'NoesisApp::TargetedTriggerAction']]],
-  ['taskid_11',['taskId',['../structcpu__profiler_1_1_task_handle_info.html#a5208c6513d823c76ff1e88a5d874ee98',1,'cpu_profiler::TaskHandleInfo']]],
-  ['tooltip_5fdefault_5foffset_12',['TOOLTIP_DEFAULT_OFFSET',['../imgui_8cpp.html#aaf29b78fb3f552fdac78b371f152c46e',1,'imgui.cpp']]],
-  ['totalticksproperty_13',['TotalTicksProperty',['../class_noesis_app_1_1_timer_trigger.html#ae003aa9a9fc6f9d1d8adec8a199c47c1',1,'NoesisApp::TimerTrigger']]],
-  ['transfer_14',['transfer',['../classvkb_1_1device.html#a160f970387a835aaaeb6b37b36ea7020',1,'vkb::device']]],
-  ['transform3dproperty_15',['Transform3DProperty',['../class_noesis_g_u_i_extensions_1_1_element.html#ae9e198e92387b2a6b184980375e4e054',1,'NoesisGUIExtensions::Element']]],
-  ['translatefrictionproperty_16',['TranslateFrictionProperty',['../class_noesis_app_1_1_translate_zoom_rotate_behavior.html#a65b6ce88a53909520bc4b9b1c2c5608e',1,'NoesisApp::TranslateZoomRotateBehavior']]],
-  ['translatexproperty_17',['TranslateXProperty',['../class_noesis_g_u_i_extensions_1_1_composite_transform3_d.html#aa5df333902e8919eb37d9c14b3404157',1,'NoesisGUIExtensions::CompositeTransform3D']]],
-  ['translateyproperty_18',['TranslateYProperty',['../class_noesis_g_u_i_extensions_1_1_composite_transform3_d.html#a693999b4510a9b77b9e42fc52adcaa70',1,'NoesisGUIExtensions::CompositeTransform3D']]],
-  ['translatezproperty_19',['TranslateZProperty',['../class_noesis_g_u_i_extensions_1_1_composite_transform3_d.html#a326a38a463f8e20eab4115ba8bd7d059',1,'NoesisGUIExtensions::CompositeTransform3D']]],
-  ['triangles_20',['triangles',['../classgraphics_1_1mesh.html#a714d89f897f1b782f79be2c919b6b299',1,'graphics::mesh']]],
-  ['triggersproperty_21',['TriggersProperty',['../struct_noesis_app_1_1_interaction.html#a16179dc91ba21437949b2d9ce2cde64e',1,'NoesisApp::Interaction::TriggersProperty'],['../struct_noesis_app_1_1_style_interaction.html#ae8d4170526a6725cbcf30f4145c9646d',1,'NoesisApp::StyleInteraction::TriggersProperty']]],
-  ['turqoise_22',['turqoise',['../namespacelegit_1_1_colors.html#a0f576ec391fd8e930abaa916844bf870',1,'legit::Colors']]],
-  ['type_23',['type',['../classgraphics_1_1pipeline__base.html#a4344d95513340336d7ce3a3fb3e00364',1,'graphics::pipeline_base']]]
+  ['upsample_5fps_5fsize_0',['Upsample_PS_Size',['../_shaders_8h.html#a74d6c0123f6988aa7b0930b2648ed149',1,'Shaders.h']]],
+  ['upsample_5fps_5fstart_1',['Upsample_PS_Start',['../_shaders_8h.html#afc86d5c78142fb6edb37d34016655aed',1,'Shaders.h']]],
+  ['usr_2',['usr',['../structgraphics_1_1thread__shared__ctx.html#a7fac1a7b9e8bc9719df854f8bd0cc214',1,'graphics::thread_shared_ctx']]],
+  ['uv_3',['uv',['../structgraphics_1_1debugdraw_1_1vertex.html#a8fb7e796854a7a7aad1d29f08f1f944b',1,'graphics::debugdraw::vertex::uv'],['../structgraphics_1_1mesh_1_1vertex.html#ab54832116dfbd0418fa1b73a612b4a26',1,'graphics::mesh::vertex::uv']]]
 ];

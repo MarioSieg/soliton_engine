@@ -121,40 +121,36 @@ $(function(){initNavTree('_embedded_texture_provider_8h_source.html',''); initRe
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;<a class="code" href="_file_texture_provider_8h.html">NsApp/FileTextureProvider.h</a>&gt;</span></div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespace_noesis_app.html">NoesisApp</a></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">namespace </span>NoesisApp</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>{</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
-<div class="foldopen" id="foldopen00022" data-start="{" data-end="};">
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="struct_noesis_app_1_1_embedded_texture.html">   22</a></span><span class="keyword">struct </span><a class="code hl_struct" href="struct_noesis_app_1_1_embedded_texture.html">EmbeddedTexture</a></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">struct </span>EmbeddedTexture</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>{</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="struct_noesis_app_1_1_embedded_texture.html#abe3f2d061fa2f34ea2649657122062cc">   24</a></span>    <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="struct_noesis_app_1_1_embedded_texture.html#abe3f2d061fa2f34ea2649657122062cc">name</a>;</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="struct_noesis_app_1_1_embedded_texture.html#afb4a82e3fe9e6c51c41aa301e5c4de30">   25</a></span>    Noesis::ArrayRef&lt;uint8_t&gt; <a class="code hl_variable" href="struct_noesis_app_1_1_embedded_texture.html#afb4a82e3fe9e6c51c41aa301e5c4de30">data</a>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keyword">const</span> <span class="keywordtype">char</span>* name;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    Noesis::ArrayRef&lt;uint8_t&gt; data;</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>};</div>
-</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>NS_WARNING_PUSH</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>NS_MSVC_WARNING_DISABLE(4251 4275)</div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
-<div class="foldopen" id="foldopen00034" data-start="{" data-end="};">
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_embedded_texture_provider.html">   34</a></span>class <a class="code hl_define" href="_providers_api_8h.html#a2e77886ac35d91a1d3f9686bf046f803">NS_APP_PROVIDERS_API</a> <a class="code hl_class" href="class_noesis_app_1_1_embedded_texture_provider.html">EmbeddedTextureProvider</a>: public <a class="code hl_class" href="class_noesis_app_1_1_file_texture_provider.html">FileTextureProvider</a></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>class <a class="code hl_define" href="_providers_api_8h.html#a2e77886ac35d91a1d3f9686bf046f803">NS_APP_PROVIDERS_API</a> EmbeddedTextureProvider: public FileTextureProvider</div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>{</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <a class="code hl_class" href="class_noesis_app_1_1_embedded_texture_provider.html">EmbeddedTextureProvider</a>(Noesis::ArrayRef&lt;EmbeddedTexture&gt; textures, TextureProvider* fallback = 0);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    EmbeddedTextureProvider(Noesis::ArrayRef&lt;EmbeddedTexture&gt; textures, TextureProvider* fallback = 0);</div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="keyword">private</span>:</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    Noesis::TextureInfo GetTextureInfo(<span class="keyword">const</span> Noesis::Uri&amp; uri) <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <a class="code hl_class" href="class_noesis_1_1_ptr.html">Noesis::Ptr&lt;Noesis::Texture&gt;</a> LoadTexture(<span class="keyword">const</span> Noesis::Uri&amp; uri, Noesis::RenderDevice* device) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    Noesis::Ptr&lt;Noesis::Texture&gt; LoadTexture(<span class="keyword">const</span> Noesis::Uri&amp; uri, Noesis::RenderDevice* device) <span class="keyword">override</span>;</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <a class="code hl_class" href="class_noesis_1_1_ptr.html">Noesis::Ptr&lt;Noesis::Stream&gt;</a> OpenStream(<span class="keyword">const</span> Noesis::Uri&amp; uri) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    Noesis::Ptr&lt;Noesis::Stream&gt; OpenStream(<span class="keyword">const</span> Noesis::Uri&amp; uri) <span class="keyword">const override</span>;</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_embedded_texture_provider.html#a961c3eaf277381e87792958aa1f94d9e">   52</a></span>    Noesis::Vector&lt;EmbeddedTexture&gt; <a class="code hl_variable" href="class_noesis_app_1_1_embedded_texture_provider.html#a961c3eaf277381e87792958aa1f94d9e">mTextures</a>;</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_embedded_texture_provider.html#a85a385b46da6e0959d6e644f3c13a462">   53</a></span>    <a class="code hl_class" href="class_noesis_1_1_ptr.html">Noesis::Ptr&lt;TextureProvider&gt;</a> <a class="code hl_variable" href="class_noesis_app_1_1_embedded_texture_provider.html#a85a385b46da6e0959d6e644f3c13a462">mFallback</a>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    Noesis::Vector&lt;EmbeddedTexture&gt; mTextures;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    Noesis::Ptr&lt;TextureProvider&gt; mFallback;</div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>};</div>
-</div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>NS_WARNING_POP</div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
@@ -164,15 +160,6 @@ $(function(){initNavTree('_embedded_texture_provider_8h_source.html',''); initRe
 <div class="ttc" id="a_file_texture_provider_8h_html"><div class="ttname"><a href="_file_texture_provider_8h.html">FileTextureProvider.h</a></div></div>
 <div class="ttc" id="a_providers_api_8h_html"><div class="ttname"><a href="_providers_api_8h.html">ProvidersApi.h</a></div></div>
 <div class="ttc" id="a_providers_api_8h_html_a2e77886ac35d91a1d3f9686bf046f803"><div class="ttname"><a href="_providers_api_8h.html#a2e77886ac35d91a1d3f9686bf046f803">NS_APP_PROVIDERS_API</a></div><div class="ttdeci">#define NS_APP_PROVIDERS_API</div><div class="ttdef"><b>Definition</b> ProvidersApi.h:15</div></div>
-<div class="ttc" id="aclass_noesis_1_1_ptr_html"><div class="ttname"><a href="class_noesis_1_1_ptr.html">Noesis::Ptr</a></div><div class="ttdef"><b>Definition</b> ComparisonLogic.h:19</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_embedded_texture_provider_html"><div class="ttname"><a href="class_noesis_app_1_1_embedded_texture_provider.html">NoesisApp::EmbeddedTextureProvider</a></div><div class="ttdoc">A provider for textures embedded in memory.</div><div class="ttdef"><b>Definition</b> EmbeddedTextureProvider.h:35</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_embedded_texture_provider_html_a85a385b46da6e0959d6e644f3c13a462"><div class="ttname"><a href="class_noesis_app_1_1_embedded_texture_provider.html#a85a385b46da6e0959d6e644f3c13a462">NoesisApp::EmbeddedTextureProvider::mFallback</a></div><div class="ttdeci">Noesis::Ptr&lt; TextureProvider &gt; mFallback</div><div class="ttdef"><b>Definition</b> EmbeddedTextureProvider.h:53</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_embedded_texture_provider_html_a961c3eaf277381e87792958aa1f94d9e"><div class="ttname"><a href="class_noesis_app_1_1_embedded_texture_provider.html#a961c3eaf277381e87792958aa1f94d9e">NoesisApp::EmbeddedTextureProvider::mTextures</a></div><div class="ttdeci">Noesis::Vector&lt; EmbeddedTexture &gt; mTextures</div><div class="ttdef"><b>Definition</b> EmbeddedTextureProvider.h:52</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_file_texture_provider_html"><div class="ttname"><a href="class_noesis_app_1_1_file_texture_provider.html">NoesisApp::FileTextureProvider</a></div><div class="ttdoc">A texture provider that loads standard image files (jpg, png, bmp, gif)</div><div class="ttdef"><b>Definition</b> FileTextureProvider.h:28</div></div>
-<div class="ttc" id="anamespace_noesis_app_html"><div class="ttname"><a href="namespace_noesis_app.html">NoesisApp</a></div><div class="ttdef"><b>Definition</b> Application.cpp:21</div></div>
-<div class="ttc" id="astruct_noesis_app_1_1_embedded_texture_html"><div class="ttname"><a href="struct_noesis_app_1_1_embedded_texture.html">NoesisApp::EmbeddedTexture</a></div><div class="ttdef"><b>Definition</b> EmbeddedTextureProvider.h:23</div></div>
-<div class="ttc" id="astruct_noesis_app_1_1_embedded_texture_html_abe3f2d061fa2f34ea2649657122062cc"><div class="ttname"><a href="struct_noesis_app_1_1_embedded_texture.html#abe3f2d061fa2f34ea2649657122062cc">NoesisApp::EmbeddedTexture::name</a></div><div class="ttdeci">const char * name</div><div class="ttdef"><b>Definition</b> EmbeddedTextureProvider.h:24</div></div>
-<div class="ttc" id="astruct_noesis_app_1_1_embedded_texture_html_afb4a82e3fe9e6c51c41aa301e5c4de30"><div class="ttname"><a href="struct_noesis_app_1_1_embedded_texture.html#afb4a82e3fe9e6c51c41aa301e5c4de30">NoesisApp::EmbeddedTexture::data</a></div><div class="ttdeci">Noesis::ArrayRef&lt; uint8_t &gt; data</div><div class="ttdef"><b>Definition</b> EmbeddedTextureProvider.h:25</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['call_0',['call',['../classluabridge_1_1_lua_result.html#a7e671bc4d3d7b0980344c73c359ed547',1,'luabridge::LuaResult']]]
+  ['graphics_5fsubsystem_0',['graphics_subsystem',['../classgraphics_1_1material.html#a8d8af2c36dc397864e6d80d797718a7d',1,'graphics::material::graphics_subsystem'],['../classgraphics_1_1pipeline__registry.html#a8d8af2c36dc397864e6d80d797718a7d',1,'graphics::pipeline_registry::graphics_subsystem']]]
 ];

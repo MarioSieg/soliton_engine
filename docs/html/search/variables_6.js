@@ -24,8 +24,7 @@ var searchData=
   ['gkeynames_21',['GKeyNames',['../imgui_8cpp.html#a79d4c3237f846bba392512bf614440a0',1,'imgui.cpp']]],
   ['glocalizationentriesenus_22',['GLocalizationEntriesEnUS',['../imgui_8cpp.html#ab939070be3a158fa0de15812bb372e70',1,'imgui.cpp']]],
   ['graphics_23',['graphics',['../classvkb_1_1device.html#a5ccb4c4134b1346937cb6d6768f617ef',1,'vkb::device']]],
-  ['greensea_24',['greenSea',['../namespacelegit_1_1_colors.html#a1eae7d20da1e0bbf2857dc563423fcad',1,'legit::Colors']]],
-  ['gstylevarinfo_25',['GStyleVarInfo',['../imgui_8cpp.html#a7ecde2aa28c7a36ff4cf4576e7ade58b',1,'imgui.cpp']]],
-  ['gwindowdockstylecolors_26',['GWindowDockStyleColors',['../imgui_8cpp.html#a366bacfdb3fb1c794ac284fa04b78df4',1,'imgui.cpp']]],
-  ['gxamls_27',['gXamls',['../_theme_providers_8cpp.html#ad4c075ad1b54ba9e6a3b5f0f515b0ca3',1,'ThemeProviders.cpp']]]
+  ['gstylevarinfo_24',['GStyleVarInfo',['../imgui_8cpp.html#a7ecde2aa28c7a36ff4cf4576e7ade58b',1,'imgui.cpp']]],
+  ['gwindowdockstylecolors_25',['GWindowDockStyleColors',['../imgui_8cpp.html#a366bacfdb3fb1c794ac284fa04b78df4',1,'imgui.cpp']]],
+  ['gxamls_26',['gXamls',['../_theme_providers_8cpp.html#ad4c075ad1b54ba9e6a3b5f0f515b0ca3',1,'ThemeProviders.cpp']]]
 ];

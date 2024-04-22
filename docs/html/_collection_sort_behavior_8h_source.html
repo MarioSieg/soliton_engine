@@ -120,56 +120,55 @@ $(function(){initNavTree('_collection_sort_behavior_8h_source.html',''); initRes
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;NsGui/FrameworkElement.h&gt;</span></div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespace_noesis.html">Noesis</a></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">namespace </span>Noesis</div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>{</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">struct </span>DependencyPropertyChangedEventArgs;</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt; <span class="keyword">class </span>ObservableCollection;</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>}</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespace_noesis_app.html">NoesisApp</a></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">namespace </span>NoesisApp</div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>{</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">class </span>SortComparer;</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="namespace_noesis_app.html#aeb8e4ba5717654a76305d50df0e3539a">   28</a></span><span class="keyword">typedef</span> <a class="code hl_class" href="class_noesis_1_1_observable_collection.html">Noesis::ObservableCollection&lt;Noesis::BaseComponent&gt;</a> <a class="code hl_typedef" href="namespace_noesis_app.html#aeb8e4ba5717654a76305d50df0e3539a">SortedCollection</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keyword">typedef</span> Noesis::ObservableCollection&lt;Noesis::BaseComponent&gt; SortedCollection;</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>NS_WARNING_PUSH</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>NS_MSVC_WARNING_DISABLE(4251)</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>NS_CLANG_WARNING_DISABLE(&quot;-Wdocumentation&quot;)</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
-<div class="foldopen" id="foldopen00052" data-start="{" data-end="};">
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_collection_sort_behavior.html">   52</a></span>class <a class="code hl_define" href="_interactivity_api_8h.html#a19ef9be0d7b903c63e87d626acc9db84">NS_APP_INTERACTIVITY_API</a> <a class="code hl_class" href="class_noesis_app_1_1_collection_sort_behavior.html">CollectionSortBehavior</a>:</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    public <a class="code hl_class" href="class_noesis_app_1_1_behavior_t.html">BehaviorT</a>&lt;<a class="code hl_namespace" href="namespace_noesis.html">Noesis</a>::FrameworkElement&gt;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>class <a class="code hl_define" href="_interactivity_api_8h.html#a19ef9be0d7b903c63e87d626acc9db84">NS_APP_INTERACTIVITY_API</a> CollectionSortBehavior:</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    public BehaviorT&lt;Noesis::FrameworkElement&gt;</div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>{</div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <a class="code hl_class" href="class_noesis_app_1_1_collection_sort_behavior.html">CollectionSortBehavior</a>();</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <a class="code hl_class" href="class_noesis_app_1_1_collection_sort_behavior.html">~CollectionSortBehavior</a>();</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    CollectionSortBehavior();</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    ~CollectionSortBehavior();</div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <a class="code hl_class" href="class_noesis_app_1_1_sort_comparer.html">SortComparer</a>* GetComparer() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordtype">void</span> SetComparer(<a class="code hl_class" href="class_noesis_app_1_1_sort_comparer.html">SortComparer</a>* value);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    SortComparer* GetComparer() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordtype">void</span> SetComparer(SortComparer* value);</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    Noesis::BaseComponent* GetItemsSource() <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordtype">void</span> SetItemsSource(Noesis::BaseComponent* value);</div>
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <a class="code hl_class" href="class_noesis_1_1_observable_collection.html">SortedCollection</a>* GetSortedItems();</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    SortedCollection* GetSortedItems();</div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_collection_sort_behavior.html#a45bfb01ce154aa588002bda9fa110f76">   77</a></span>    <span class="keyword">static</span> <span class="keyword">const</span> Noesis::DependencyProperty* <a class="code hl_variable" href="class_noesis_app_1_1_collection_sort_behavior.html#a45bfb01ce154aa588002bda9fa110f76">ComparerProperty</a>;</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_collection_sort_behavior.html#aa93521efe53139a49e69389afa358001">   78</a></span>    <span class="keyword">static</span> <span class="keyword">const</span> Noesis::DependencyProperty* <a class="code hl_variable" href="class_noesis_app_1_1_collection_sort_behavior.html#aa93521efe53139a49e69389afa358001">ItemsSourceProperty</a>;</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_collection_sort_behavior.html#a8f7a1dd5276bb88fccb65961623c3d78">   79</a></span>    <span class="keyword">static</span> <span class="keyword">const</span> Noesis::DependencyProperty* <a class="code hl_variable" href="class_noesis_app_1_1_collection_sort_behavior.html#a8f7a1dd5276bb88fccb65961623c3d78">SortedItemsProperty</a>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keyword">static</span> <span class="keyword">const</span> Noesis::DependencyProperty* ComparerProperty;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keyword">static</span> <span class="keyword">const</span> Noesis::DependencyProperty* ItemsSourceProperty;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keyword">static</span> <span class="keyword">const</span> Noesis::DependencyProperty* SortedItemsProperty;</div>
 <div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
 <div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span><span class="keyword">protected</span>:</div>
 <div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <a class="code hl_class" href="class_noesis_1_1_ptr.html">Noesis::Ptr&lt;Noesis::Freezable&gt;</a> CreateInstanceCore() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    Noesis::Ptr&lt;Noesis::Freezable&gt; CreateInstanceCore() <span class="keyword">const override</span>;</div>
 <div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
 <div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span><span class="keyword">private</span>:</div>
 <div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordtype">void</span> SortItems();</div>
 <div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keywordtype">void</span> OnSortRequired();</div>
 <div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordtype">void</span> AddSortedItem(<a class="code hl_class" href="class_noesis_app_1_1_sort_comparer.html">SortComparer</a>* comparer, <a class="code hl_class" href="class_noesis_1_1_observable_collection.html">SortedCollection</a>* list, Noesis::BaseComponent* item);</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordtype">void</span> RemSortedItem(<a class="code hl_class" href="class_noesis_app_1_1_sort_comparer.html">SortComparer</a>* comparer, <a class="code hl_class" href="class_noesis_1_1_observable_collection.html">SortedCollection</a>* list, Noesis::BaseComponent* item);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordtype">void</span> AddSortedItem(SortComparer* comparer, SortedCollection* list, Noesis::BaseComponent* item);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordtype">void</span> RemSortedItem(SortComparer* comparer, SortedCollection* list, Noesis::BaseComponent* item);</div>
 <div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
 <div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordtype">void</span> OnItemsChanged(Noesis::BaseComponent* sender,</div>
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        <span class="keyword">const</span> Noesis::NotifyCollectionChangedEventArgs&amp; e);</div>
@@ -177,12 +176,11 @@ $(function(){initNavTree('_collection_sort_behavior_8h_source.html',''); initRes
 <div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordtype">void</span> RegisterItemsSource(Noesis::BaseComponent* source);</div>
 <div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keywordtype">void</span> UnregisterItemsSource(Noesis::BaseComponent* source);</div>
 <div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keywordtype">void</span> RegisterComparer(<a class="code hl_class" href="class_noesis_app_1_1_sort_comparer.html">SortComparer</a>* comparer);</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keywordtype">void</span> UnregisterComparer(<a class="code hl_class" href="class_noesis_app_1_1_sort_comparer.html">SortComparer</a>* comparer);</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keywordtype">void</span> RegisterComparer(SortComparer* comparer);</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keywordtype">void</span> UnregisterComparer(SortComparer* comparer);</div>
 <div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    NS_DECLARE_REFLECTION(<a class="code hl_class" href="class_noesis_app_1_1_collection_sort_behavior.html">CollectionSortBehavior</a>, <a class="code hl_class" href="class_noesis_app_1_1_behavior_t.html">BehaviorT&lt;Noesis::FrameworkElement&gt;</a>)</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    NS_DECLARE_REFLECTION(CollectionSortBehavior, BehaviorT&lt;Noesis::FrameworkElement&gt;)</div>
 <div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>};</div>
-</div>
 <div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
 <div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>NS_WARNING_POP</div>
 <div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
@@ -193,17 +191,6 @@ $(function(){initNavTree('_collection_sort_behavior_8h_source.html',''); initRes
 <div class="ttc" id="a_behavior_8h_html"><div class="ttname"><a href="_behavior_8h.html">Behavior.h</a></div></div>
 <div class="ttc" id="a_interactivity_api_8h_html"><div class="ttname"><a href="_interactivity_api_8h.html">InteractivityApi.h</a></div></div>
 <div class="ttc" id="a_interactivity_api_8h_html_a19ef9be0d7b903c63e87d626acc9db84"><div class="ttname"><a href="_interactivity_api_8h.html#a19ef9be0d7b903c63e87d626acc9db84">NS_APP_INTERACTIVITY_API</a></div><div class="ttdeci">#define NS_APP_INTERACTIVITY_API</div><div class="ttdef"><b>Definition</b> InteractivityApi.h:15</div></div>
-<div class="ttc" id="aclass_noesis_1_1_observable_collection_html"><div class="ttname"><a href="class_noesis_1_1_observable_collection.html">Noesis::ObservableCollection</a></div><div class="ttdef"><b>Definition</b> CollectionFilterBehavior.h:21</div></div>
-<div class="ttc" id="aclass_noesis_1_1_ptr_html"><div class="ttname"><a href="class_noesis_1_1_ptr.html">Noesis::Ptr</a></div><div class="ttdef"><b>Definition</b> ComparisonLogic.h:19</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_behavior_t_html"><div class="ttname"><a href="class_noesis_app_1_1_behavior_t.html">NoesisApp::BehaviorT</a></div><div class="ttdoc">Templatized base class for Behaviors.</div><div class="ttdef"><b>Definition</b> Behavior.h:46</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_collection_sort_behavior_html"><div class="ttname"><a href="class_noesis_app_1_1_collection_sort_behavior.html">NoesisApp::CollectionSortBehavior</a></div><div class="ttdef"><b>Definition</b> CollectionSortBehavior.h:54</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_collection_sort_behavior_html_a45bfb01ce154aa588002bda9fa110f76"><div class="ttname"><a href="class_noesis_app_1_1_collection_sort_behavior.html#a45bfb01ce154aa588002bda9fa110f76">NoesisApp::CollectionSortBehavior::ComparerProperty</a></div><div class="ttdeci">static const Noesis::DependencyProperty * ComparerProperty</div><div class="ttdef"><b>Definition</b> CollectionSortBehavior.h:77</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_collection_sort_behavior_html_a8f7a1dd5276bb88fccb65961623c3d78"><div class="ttname"><a href="class_noesis_app_1_1_collection_sort_behavior.html#a8f7a1dd5276bb88fccb65961623c3d78">NoesisApp::CollectionSortBehavior::SortedItemsProperty</a></div><div class="ttdeci">static const Noesis::DependencyProperty * SortedItemsProperty</div><div class="ttdef"><b>Definition</b> CollectionSortBehavior.h:79</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_collection_sort_behavior_html_aa93521efe53139a49e69389afa358001"><div class="ttname"><a href="class_noesis_app_1_1_collection_sort_behavior.html#aa93521efe53139a49e69389afa358001">NoesisApp::CollectionSortBehavior::ItemsSourceProperty</a></div><div class="ttdeci">static const Noesis::DependencyProperty * ItemsSourceProperty</div><div class="ttdef"><b>Definition</b> CollectionSortBehavior.h:78</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_sort_comparer_html"><div class="ttname"><a href="class_noesis_app_1_1_sort_comparer.html">NoesisApp::SortComparer</a></div><div class="ttdoc">Base class for Comparer object used by CollectionSortBehavior. It compares 2 items.</div><div class="ttdef"><b>Definition</b> SortComparer.h:38</div></div>
-<div class="ttc" id="anamespace_noesis_app_html"><div class="ttname"><a href="namespace_noesis_app.html">NoesisApp</a></div><div class="ttdef"><b>Definition</b> Application.cpp:21</div></div>
-<div class="ttc" id="anamespace_noesis_app_html_aeb8e4ba5717654a76305d50df0e3539a"><div class="ttname"><a href="namespace_noesis_app.html#aeb8e4ba5717654a76305d50df0e3539a">NoesisApp::SortedCollection</a></div><div class="ttdeci">Noesis::ObservableCollection&lt; Noesis::BaseComponent &gt; SortedCollection</div><div class="ttdef"><b>Definition</b> CollectionSortBehavior.h:28</div></div>
-<div class="ttc" id="anamespace_noesis_html"><div class="ttname"><a href="namespace_noesis.html">Noesis</a></div><div class="ttdef"><b>Definition</b> AttachableObject.h:18</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

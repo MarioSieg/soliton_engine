@@ -5,7 +5,7 @@ var dir_1c7caf970a2eb45fc8d1b72ad641dae0 =
     [ "cimplot.cpp", "cimplot_8cpp.html", "cimplot_8cpp" ],
     [ "cimplot.h", "cimplot_8h.html", "cimplot_8h" ],
     [ "context.cpp", "imgui_2context_8cpp.html", null ],
-    [ "context.hpp", "imgui_2context_8hpp.html", "imgui_2context_8hpp" ],
+    [ "context.hpp", "imgui_2context_8hpp.html", null ],
     [ "font_awesome.ttf.inl", "font__awesome_8ttf_8inl.html", "font__awesome_8ttf_8inl" ],
     [ "font_awesome_pro_5.hpp", "font__awesome__pro__5_8hpp.html", "font__awesome__pro__5_8hpp" ],
     [ "imconfig.h", "imconfig_8h.html", "imconfig_8h" ],

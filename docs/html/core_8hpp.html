@@ -99,7 +99,8 @@ $(function(){initNavTree('core_8hpp.html',''); initResizable(); });
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#define-members">Macros</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">core.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -138,11 +139,22 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:acada7bd492729ce94f0a25210fd9e1e4" id="r_acada7bd492729ce94f0a25210fd9e1e4"><td class="memItemLeft" align="right" valign="top">consteval auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acada7bd492729ce94f0a25210fd9e1e4">make_version</a> (const std::uint8_t major, const std::uint8_t minor) -&gt; std::uint32_t</td></tr>
+<tr class="separator:acada7bd492729ce94f0a25210fd9e1e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5492b12282109265a3466fd5f9b718e" id="r_aa5492b12282109265a3466fd5f9b718e"><td class="memItemLeft" align="right" valign="top">consteval auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa5492b12282109265a3466fd5f9b718e">major_version</a> (const std::uint32_t v) -&gt; std::uint8_t</td></tr>
+<tr class="separator:aa5492b12282109265a3466fd5f9b718e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46005869a644c61d6f440da6efb37b35" id="r_a46005869a644c61d6f440da6efb37b35"><td class="memItemLeft" align="right" valign="top">consteval auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a46005869a644c61d6f440da6efb37b35">minor_version</a> (const std::uint32_t v) -&gt; std::uint8_t</td></tr>
+<tr class="separator:a46005869a644c61d6f440da6efb37b35"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3015419ef2c514a4cd4bd0498b40a96f" id="r_a3015419ef2c514a4cd4bd0498b40a96f"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3015419ef2c514a4cd4bd0498b40a96f">panic_impl</a> (std::string &amp;&amp;message) -&gt; void</td></tr>
 <tr class="separator:a3015419ef2c514a4cd4bd0498b40a96f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a112ec65cca67365ec0e6cee8ade4860e" id="r_a112ec65cca67365ec0e6cee8ade4860e"><td class="memTemplParams" colspan="2">template&lt;typename... Args&gt; </td></tr>
 <tr class="memitem:a112ec65cca67365ec0e6cee8ade4860e"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a112ec65cca67365ec0e6cee8ade4860e">panic</a> (std::string_view message, Args &amp;&amp;... args) -&gt; void</td></tr>
 <tr class="separator:a112ec65cca67365ec0e6cee8ade4860e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a11719f662b20e832a76eb449a533a0ca" id="r_a11719f662b20e832a76eb449a533a0ca"><td class="memItemLeft" align="right" valign="top">constexpr std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a11719f662b20e832a76eb449a533a0ca">k_lunam_engine_v</a> = <a class="el" href="#acada7bd492729ce94f0a25210fd9e1e4">make_version</a>(0, 2)</td></tr>
+<tr class="separator:a11719f662b20e832a76eb449a533a0ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="a1adadf095006629612166782177c39f2" name="a1adadf095006629612166782177c39f2"></a>
@@ -255,6 +267,61 @@ Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="aa5492b12282109265a3466fd5f9b718e" name="aa5492b12282109265a3466fd5f9b718e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5492b12282109265a3466fd5f9b718e">&#9670;&#160;</a></span>major_version()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">consteval auto major_version </td>
+          <td>(</td>
+          <td class="paramtype">const std::uint32_t</td>          <td class="paramname"><span class="paramname"><em>v</em></span></td><td>)</td>
+          <td> -&gt; std::uint8_t </td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acada7bd492729ce94f0a25210fd9e1e4" name="acada7bd492729ce94f0a25210fd9e1e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acada7bd492729ce94f0a25210fd9e1e4">&#9670;&#160;</a></span>make_version()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">consteval auto make_version </td>
+          <td>(</td>
+          <td class="paramtype">const std::uint8_t</td>          <td class="paramname"><span class="paramname"><em>major</em>, </span></td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::uint8_t</td>          <td class="paramname"><span class="paramname"><em>minor</em></span>&#160;) -&gt; std::uint32_t </td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a46005869a644c61d6f440da6efb37b35" name="a46005869a644c61d6f440da6efb37b35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46005869a644c61d6f440da6efb37b35">&#9670;&#160;</a></span>minor_version()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">consteval auto minor_version </td>
+          <td>(</td>
+          <td class="paramtype">const std::uint32_t</td>          <td class="paramname"><span class="paramname"><em>v</em></span></td><td>)</td>
+          <td> -&gt; std::uint8_t </td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a112ec65cca67365ec0e6cee8ade4860e" name="a112ec65cca67365ec0e6cee8ade4860e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a112ec65cca67365ec0e6cee8ade4860e">&#9670;&#160;</a></span>panic()</h2>
 
@@ -297,6 +364,29 @@ template&lt;typename... Args&gt; </div>
   </td>
   <td class="mlabels-right">
 <span class="mlabels"><span class="mlabel">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="a11719f662b20e832a76eb449a533a0ca" name="a11719f662b20e832a76eb449a533a0ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11719f662b20e832a76eb449a533a0ca">&#9670;&#160;</a></span>k_lunam_engine_v</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::uint32_t k_lunam_engine_v = <a class="el" href="#acada7bd492729ce94f0a25210fd9e1e4">make_version</a>(0, 2)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">

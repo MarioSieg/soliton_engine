@@ -163,7 +163,7 @@ Public Member Functions</h2></td></tr>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a10a2f080032e59da2537694e3dcad84c" id="r_a10a2f080032e59da2537694e3dcad84c"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a10a2f080032e59da2537694e3dcad84c">get_lua_state</a> () noexcept -&gt; <a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *</td></tr>
 <tr class="separator:a10a2f080032e59da2537694e3dcad84c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0b8aa96ab7e505582bd23eca59d94c25" id="r_a0b8aa96ab7e505582bd23eca59d94c25"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0b8aa96ab7e505582bd23eca59d94c25">get_config_table</a> () noexcept -&gt; const <a class="el" href="classluabridge_1_1_lua_ref.html">luabridge::LuaRef</a> &amp;</td></tr>
+<tr class="memitem:a0b8aa96ab7e505582bd23eca59d94c25" id="r_a0b8aa96ab7e505582bd23eca59d94c25"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0b8aa96ab7e505582bd23eca59d94c25">get_config_table</a> () noexcept -&gt; const luabridge::LuaRef &amp;</td></tr>
 <tr class="separator:a0b8aa96ab7e505582bd23eca59d94c25"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5238d89cd11606b5277114c76d260a0f" id="r_a5238d89cd11606b5277114c76d260a0f"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5238d89cd11606b5277114c76d260a0f">exec_string</a> (const std::string &amp;str) -&gt; bool</td></tr>
 <tr class="separator:a5238d89cd11606b5277114c76d260a0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -185,9 +185,9 @@ Private Attributes</h2></td></tr>
 <tr class="separator:a3c457cea83dcfd0d0da9067a9c83ab09"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a69cfbc99b65f758ee78f0c8d44773f83" id="r_a69cfbc99b65f758ee78f0c8d44773f83"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a69cfbc99b65f758ee78f0c8d44773f83">m_reconnect</a> = false</td></tr>
 <tr class="separator:a69cfbc99b65f758ee78f0c8d44773f83"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6095807f883da0e43f075040c5980b3c" id="r_a6095807f883da0e43f075040c5980b3c"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="classluabridge_1_1_lua_ref.html">luabridge::LuaRef</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6095807f883da0e43f075040c5980b3c">m_on_prepare</a> {}</td></tr>
+<tr class="memitem:a6095807f883da0e43f075040c5980b3c" id="r_a6095807f883da0e43f075040c5980b3c"><td class="memItemLeft" align="right" valign="top">std::optional&lt; luabridge::LuaRef &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6095807f883da0e43f075040c5980b3c">m_on_prepare</a> {}</td></tr>
 <tr class="separator:a6095807f883da0e43f075040c5980b3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ace7ff7fc3bbed0d96ec6f1f449397b88" id="r_ace7ff7fc3bbed0d96ec6f1f449397b88"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="classluabridge_1_1_lua_ref.html">luabridge::LuaRef</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ace7ff7fc3bbed0d96ec6f1f449397b88">m_on_tick</a> {}</td></tr>
+<tr class="memitem:ace7ff7fc3bbed0d96ec6f1f449397b88" id="r_ace7ff7fc3bbed0d96ec6f1f449397b88"><td class="memItemLeft" align="right" valign="top">std::optional&lt; luabridge::LuaRef &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ace7ff7fc3bbed0d96ec6f1f449397b88">m_on_tick</a> {}</td></tr>
 <tr class="separator:ace7ff7fc3bbed0d96ec6f1f449397b88"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-static-attribs" name="pri-static-attribs"></a>
@@ -202,7 +202,7 @@ Static Private Attributes</h2></td></tr>
 <tr class="separator:a32b578ab49a918a6db645e0f2dc53d90"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa0d51dae3a65b2d9e26c9895f9d2c65e" id="r_aa0d51dae3a65b2d9e26c9895f9d2c65e"><td class="memItemLeft" align="right" valign="top">static constinit <a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa0d51dae3a65b2d9e26c9895f9d2c65e">m_L</a> = nullptr</td></tr>
 <tr class="separator:aa0d51dae3a65b2d9e26c9895f9d2c65e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad111c006ea7700d32513be835ae485cd" id="r_ad111c006ea7700d32513be835ae485cd"><td class="memItemLeft" align="right" valign="top">static constinit std::optional&lt; <a class="el" href="classluabridge_1_1_lua_ref.html">luabridge::LuaRef</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad111c006ea7700d32513be835ae485cd">m_config_table</a> {}</td></tr>
+<tr class="memitem:ad111c006ea7700d32513be835ae485cd" id="r_ad111c006ea7700d32513be835ae485cd"><td class="memItemLeft" align="right" valign="top">static constinit std::optional&lt; luabridge::LuaRef &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad111c006ea7700d32513be835ae485cd">m_config_table</a> {}</td></tr>
 <tr class="separator:ad111c006ea7700d32513be835ae485cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
@@ -335,7 +335,7 @@ Additional Inherited Members</h2></td></tr>
           <td class="memname">static auto scripting::scripting_subsystem::get_config_table </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"></span></td><td>)</td>
-          <td> -&gt; const <a class="el" href="classluabridge_1_1_lua_ref.html">luabridge::LuaRef</a>&amp; </td>
+          <td> -&gt; const luabridge::LuaRef&amp; </td>
         </tr>
       </table>
   </td>
@@ -625,7 +625,7 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constinit std::optional&lt;<a class="el" href="classluabridge_1_1_lua_ref.html">luabridge::LuaRef</a>&gt; scripting::scripting_subsystem::m_config_table {}</td>
+          <td class="memname">constinit std::optional&lt;luabridge::LuaRef&gt; scripting::scripting_subsystem::m_config_table {}</td>
         </tr>
       </table>
   </td>
@@ -691,7 +691,7 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::optional&lt;<a class="el" href="classluabridge_1_1_lua_ref.html">luabridge::LuaRef</a>&gt; scripting::scripting_subsystem::m_on_prepare {}</td>
+          <td class="memname">std::optional&lt;luabridge::LuaRef&gt; scripting::scripting_subsystem::m_on_prepare {}</td>
         </tr>
       </table>
   </td>
@@ -713,7 +713,7 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::optional&lt;<a class="el" href="classluabridge_1_1_lua_ref.html">luabridge::LuaRef</a>&gt; scripting::scripting_subsystem::m_on_tick {}</td>
+          <td class="memname">std::optional&lt;luabridge::LuaRef&gt; scripting::scripting_subsystem::m_on_tick {}</td>
         </tr>
       </table>
   </td>

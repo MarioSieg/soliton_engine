@@ -1848,7 +1848,7 @@ $(function(){initNavTree('imgui__internal_8h_source.html',''); initResizable(); 
 <div class="line"><a id="l01742" name="l01742"></a><span class="lineno"> 1742</span>    ImGuiDockNodeFlags      LocalFlags;                 <span class="comment">// (Write) Flags specific to this node</span></div>
 <div class="line"><a id="l01743" name="l01743"></a><span class="lineno"> 1743</span>    ImGuiDockNodeFlags      LocalFlagsInWindows;        <span class="comment">// (Write) Flags specific to this node, applied from windows</span></div>
 <div class="line"><a id="l01744" name="l01744"></a><span class="lineno"> 1744</span>    ImGuiDockNodeFlags      MergedFlags;                <span class="comment">// (Read)  Effective flags (== SharedFlags | LocalFlagsInNode | LocalFlagsInWindows)</span></div>
-<div class="line"><a id="l01745" name="l01745"></a><span class="lineno"> 1745</span>    ImGuiDockNodeState      <a class="code hl_enumeration" href="namespace_menu3_d.html#a8a5931dc07024b81a7397019c4280633">State</a>;</div>
+<div class="line"><a id="l01745" name="l01745"></a><span class="lineno"> 1745</span>    ImGuiDockNodeState      State;</div>
 <div class="line"><a id="l01746" name="l01746"></a><span class="lineno"> 1746</span>    ImGuiDockNode*          ParentNode;</div>
 <div class="line"><a id="l01747" name="l01747"></a><span class="lineno"> 1747</span>    ImGuiDockNode*          ChildNodes[2];              <span class="comment">// [Split node only] Child nodes (left/right or top/bottom). Consider switching to an array.</span></div>
 <div class="line"><a id="l01748" name="l01748"></a><span class="lineno"> 1748</span>    ImVector&lt;ImGuiWindow*&gt;  Windows;                    <span class="comment">// Note: unordered list! Iterate TabBar-&gt;Tabs for user-order.</span></div>
@@ -3914,7 +3914,6 @@ $(function(){initNavTree('imgui__internal_8h_source.html',''); initResizable(); 
 <div class="ttc" id="aimgui__internal_8h_html_ac149be83e162f3775a56cd66590fc092"><div class="ttname"><a href="imgui__internal_8h.html#ac149be83e162f3775a56cd66590fc092">IM_DRAWLIST_ARCFAST_TABLE_SIZE</a></div><div class="ttdeci">#define IM_DRAWLIST_ARCFAST_TABLE_SIZE</div><div class="ttdef"><b>Definition</b> imgui_internal.h:769</div></div>
 <div class="ttc" id="aimgui__internal_8h_html_ac43e5dd8fc029332bb7865630c0dfef3"><div class="ttname"><a href="imgui__internal_8h.html#ac43e5dd8fc029332bb7865630c0dfef3">IM_BITARRAY_TESTBIT</a></div><div class="ttdeci">#define IM_BITARRAY_TESTBIT(_ARRAY, _N)</div><div class="ttdef"><b>Definition</b> imgui_internal.h:569</div></div>
 <div class="ttc" id="aimstb__textedit_8h_html"><div class="ttname"><a href="imstb__textedit_8h.html">imstb_textedit.h</a></div></div>
-<div class="ttc" id="anamespace_menu3_d_html_a8a5931dc07024b81a7397019c4280633"><div class="ttname"><a href="namespace_menu3_d.html#a8a5931dc07024b81a7397019c4280633">Menu3D::State</a></div><div class="ttdeci">State</div><div class="ttdef"><b>Definition</b> ViewModel.h:23</div></div>
 <div class="ttc" id="anamespacevkb_html_ac67c42fe1faf40f99bc2d2ea21dee8fa"><div class="ttname"><a href="namespacevkb.html#ac67c42fe1faf40f99bc2d2ea21dee8fa">vkb::ctx</a></div><div class="ttdeci">auto ctx() noexcept -&gt; context &amp;</div><div class="ttdef"><b>Definition</b> context.hpp:180</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

@@ -117,19 +117,18 @@ $(function(){initNavTree('_timer_trigger_8h_source.html',''); initResizable(); }
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;<a class="code" href="_event_trigger_8h.html">NsApp/EventTrigger.h</a>&gt;</span></div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespace_noesis_app.html">NoesisApp</a></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span>NoesisApp</div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>{</div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>NS_WARNING_PUSH</div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>NS_CLANG_WARNING_DISABLE(<span class="stringliteral">&quot;-Wdocumentation&quot;</span>)</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
-<div class="foldopen" id="foldopen00039" data-start="{" data-end="};">
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_timer_trigger.html">   39</a></span>class <a class="code hl_define" href="_interactivity_api_8h.html#a19ef9be0d7b903c63e87d626acc9db84">NS_APP_INTERACTIVITY_API</a> <a class="code hl_class" href="class_noesis_app_1_1_timer_trigger.html">TimerTrigger</a>: public <a class="code hl_class" href="class_noesis_app_1_1_event_trigger.html">EventTrigger</a></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>class <a class="code hl_define" href="_interactivity_api_8h.html#a19ef9be0d7b903c63e87d626acc9db84">NS_APP_INTERACTIVITY_API</a> TimerTrigger: public EventTrigger</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>{</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <a class="code hl_class" href="class_noesis_app_1_1_timer_trigger.html">TimerTrigger</a>();</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <a class="code hl_class" href="class_noesis_app_1_1_timer_trigger.html">~TimerTrigger</a>();</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    TimerTrigger();</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    ~TimerTrigger();</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordtype">int</span> GetMillisecondsPerTick() <span class="keyword">const</span>;</div>
@@ -140,16 +139,16 @@ $(function(){initNavTree('_timer_trigger_8h_source.html',''); initResizable(); }
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordtype">void</span> SetTotalTicks(<span class="keywordtype">int</span> ticks);</div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="comment">// Hides Freezable methods for convenience</span></div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <a class="code hl_class" href="class_noesis_1_1_ptr.html">Noesis::Ptr&lt;TimerTrigger&gt;</a> Clone() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <a class="code hl_class" href="class_noesis_1_1_ptr.html">Noesis::Ptr&lt;TimerTrigger&gt;</a> CloneCurrentValue() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    Noesis::Ptr&lt;TimerTrigger&gt; Clone() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    Noesis::Ptr&lt;TimerTrigger&gt; CloneCurrentValue() <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_timer_trigger.html#a2e1f3e7e862c09eec370e7924a708c64">   64</a></span>    <span class="keyword">static</span> <span class="keyword">const</span> Noesis::DependencyProperty* <a class="code hl_variable" href="class_noesis_app_1_1_timer_trigger.html#a2e1f3e7e862c09eec370e7924a708c64">MillisecondsPerTickProperty</a>;</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_timer_trigger.html#ae003aa9a9fc6f9d1d8adec8a199c47c1">   65</a></span>    <span class="keyword">static</span> <span class="keyword">const</span> Noesis::DependencyProperty* <a class="code hl_variable" href="class_noesis_app_1_1_timer_trigger.html#ae003aa9a9fc6f9d1d8adec8a199c47c1">TotalTicksProperty</a>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keyword">static</span> <span class="keyword">const</span> Noesis::DependencyProperty* MillisecondsPerTickProperty;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keyword">static</span> <span class="keyword">const</span> Noesis::DependencyProperty* TotalTicksProperty;</div>
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span><span class="keyword">protected</span>:</div>
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <a class="code hl_class" href="class_noesis_1_1_ptr.html">Noesis::Ptr&lt;Noesis::Freezable&gt;</a> CreateInstanceCore() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    Noesis::Ptr&lt;Noesis::Freezable&gt; CreateInstanceCore() <span class="keyword">const override</span>;</div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordtype">void</span> OnDetaching() <span class="keyword">override</span>;</div>
@@ -163,12 +162,11 @@ $(function(){initNavTree('_timer_trigger_8h_source.html',''); initResizable(); }
 <div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    uint32_t OnTimerTick();</div>
 <div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
 <div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_timer_trigger.html#a0325d1b449c76db0863211f32694c120">   89</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="class_noesis_app_1_1_timer_trigger.html#a0325d1b449c76db0863211f32694c120">mTimer</a>;</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_timer_trigger.html#a07c5c52ecc85711848a38c0b08878a90">   90</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="class_noesis_app_1_1_timer_trigger.html#a07c5c52ecc85711848a38c0b08878a90">mTickCount</a>;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keywordtype">int</span> mTimer;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordtype">int</span> mTickCount;</div>
 <div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    NS_DECLARE_REFLECTION(<a class="code hl_class" href="class_noesis_app_1_1_timer_trigger.html">TimerTrigger</a>, <a class="code hl_class" href="class_noesis_app_1_1_event_trigger.html">EventTrigger</a>)</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    NS_DECLARE_REFLECTION(TimerTrigger, EventTrigger)</div>
 <div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>};</div>
-</div>
 <div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>NS_WARNING_POP</div>
 <div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
@@ -178,14 +176,6 @@ $(function(){initNavTree('_timer_trigger_8h_source.html',''); initResizable(); }
 <div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="a_event_trigger_8h_html"><div class="ttname"><a href="_event_trigger_8h.html">EventTrigger.h</a></div></div>
 <div class="ttc" id="a_interactivity_api_8h_html_a19ef9be0d7b903c63e87d626acc9db84"><div class="ttname"><a href="_interactivity_api_8h.html#a19ef9be0d7b903c63e87d626acc9db84">NS_APP_INTERACTIVITY_API</a></div><div class="ttdeci">#define NS_APP_INTERACTIVITY_API</div><div class="ttdef"><b>Definition</b> InteractivityApi.h:15</div></div>
-<div class="ttc" id="aclass_noesis_1_1_ptr_html"><div class="ttname"><a href="class_noesis_1_1_ptr.html">Noesis::Ptr</a></div><div class="ttdef"><b>Definition</b> ComparisonLogic.h:19</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_event_trigger_html"><div class="ttname"><a href="class_noesis_app_1_1_event_trigger.html">NoesisApp::EventTrigger</a></div><div class="ttdef"><b>Definition</b> EventTrigger.h:40</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_timer_trigger_html"><div class="ttname"><a href="class_noesis_app_1_1_timer_trigger.html">NoesisApp::TimerTrigger</a></div><div class="ttdef"><b>Definition</b> TimerTrigger.h:40</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_timer_trigger_html_a0325d1b449c76db0863211f32694c120"><div class="ttname"><a href="class_noesis_app_1_1_timer_trigger.html#a0325d1b449c76db0863211f32694c120">NoesisApp::TimerTrigger::mTimer</a></div><div class="ttdeci">int mTimer</div><div class="ttdef"><b>Definition</b> TimerTrigger.h:89</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_timer_trigger_html_a07c5c52ecc85711848a38c0b08878a90"><div class="ttname"><a href="class_noesis_app_1_1_timer_trigger.html#a07c5c52ecc85711848a38c0b08878a90">NoesisApp::TimerTrigger::mTickCount</a></div><div class="ttdeci">int mTickCount</div><div class="ttdef"><b>Definition</b> TimerTrigger.h:90</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_timer_trigger_html_a2e1f3e7e862c09eec370e7924a708c64"><div class="ttname"><a href="class_noesis_app_1_1_timer_trigger.html#a2e1f3e7e862c09eec370e7924a708c64">NoesisApp::TimerTrigger::MillisecondsPerTickProperty</a></div><div class="ttdeci">static const Noesis::DependencyProperty * MillisecondsPerTickProperty</div><div class="ttdef"><b>Definition</b> TimerTrigger.h:64</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_timer_trigger_html_ae003aa9a9fc6f9d1d8adec8a199c47c1"><div class="ttname"><a href="class_noesis_app_1_1_timer_trigger.html#ae003aa9a9fc6f9d1d8adec8a199c47c1">NoesisApp::TimerTrigger::TotalTicksProperty</a></div><div class="ttdeci">static const Noesis::DependencyProperty * TotalTicksProperty</div><div class="ttdef"><b>Definition</b> TimerTrigger.h:65</div></div>
-<div class="ttc" id="anamespace_noesis_app_html"><div class="ttname"><a href="namespace_noesis_app.html">NoesisApp</a></div><div class="ttdef"><b>Definition</b> Application.cpp:21</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
