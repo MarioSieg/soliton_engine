@@ -286,6 +286,7 @@ namespace graphics {
 
     auto graphics_subsystem::on_resize() -> void {
         vkb::ctx().on_resize();
+        m_noesis_context->on_resize();
     }
 
     auto graphics_subsystem::on_start(scene& scene) -> void {

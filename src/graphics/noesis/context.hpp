@@ -24,6 +24,7 @@ namespace noesis {
         auto load_ui_from_xaml(const std::string& path) -> void;
         auto render(vk::CommandBuffer cmd) -> void;
         auto tick() -> void;
+        auto on_resize() -> void;
 
     private:
         Noesis::Ptr<NoesisApp::Application> m_app {};

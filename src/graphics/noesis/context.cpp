@@ -195,4 +195,8 @@ namespace noesis {
     auto context::tick() -> void {
         m_app->Tick();
     }
+
+    auto context::on_resize() -> void {
+        m_app->Resize();
+    }
 }
