@@ -2,6 +2,7 @@
 
 #include "Window.h"
 #include <GLFW/glfw3.h>
+#include "../../../../../platform/platform_subsystem.hpp"
 
 namespace NoesisApp
 {
@@ -30,7 +31,10 @@ namespace NoesisApp
         this->m_view->SetFlags(Noesis::RenderFlags_LCD|Noesis::RenderFlags_FlipY|Noesis::RenderFlags_PPAA);
         this->m_view->GetRenderer()->Init(device);
         this->m_view->SetTessellationMaxPixelError(Noesis::TessellationMaxPixelError::HighQuality());
-        this->m_view->SetScale(1.F);
+        float xscale;
+        float yscale;
+        glfwGetWindowContentScale(platform::platform_subsystem::get_glfw_window(), &xscale, &yscale);
+        this->m_view->SetScale((xscale + yscale) * 0.5f);
     }
 
     Window::~Window()
