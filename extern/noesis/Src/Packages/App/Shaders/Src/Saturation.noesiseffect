@@ -1,0 +1,19 @@
+#include "EffectHelpers.h"
+
+uniforms
+{
+    fixed _saturation;
+};
+
+fixed4 main_effect()
+{
+    fixed4 c = GetInput();
+
+    return float4
+    (
+        c.r * (0.213f + 0.787f * _saturation) + c.g * (0.715f - 0.715f * _saturation) + c.b * (0.072f - 0.072f * _saturation),
+        c.r * (0.213f - 0.213f * _saturation) + c.g * (0.715f + 0.285f * _saturation) + c.b * (0.072f - 0.072f * _saturation),
+        c.r * (0.213f - 0.213f * _saturation) + c.g * (0.715f - 0.715f * _saturation) + c.b * (0.072f + 0.928 * _saturation),
+        c.a
+    );
+}

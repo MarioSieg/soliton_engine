@@ -2,15 +2,17 @@
 
 #include "_prelude.hpp"
 
-LUA_INTEROP_API auto __lu_scene_import(const char* name, const char* file, const double scale, const std::uint32_t load_flags) -> std::uint32_t {
-    std::string sname {}, sfile {};
-    if (name) {
-        sname = name;
-    }
-    if (file) {
-        sfile = file;
-    }
-    scene::new_active(std::move(sname), std::move(sfile), static_cast<float>(scale), load_flags);
+LUA_INTEROP_API auto __lu_scene_create(const char* name) -> int {
+    passert(name != nullptr);
+    // pass empty file name to NOT load a file
+    scene::new_active(name, "", 1.0f, 0);
+    return scene::get_active().id;
+}
+
+LUA_INTEROP_API auto __lu_scene_import(const char* name, const char* file, const double scale, const std::uint32_t load_flags) -> int {
+    passert(name != nullptr);
+    passert(file != nullptr);
+    scene::new_active(name, file, static_cast<float>(scale), load_flags);
     return scene::get_active().id;
 }
 
@@ -44,45 +46,45 @@ LUA_INTEROP_API auto __lu_scene_set_active_camera_entity(const flecs::id_t id) -
     scene::get_active().active_camera = ent;
 }
 
+LUA_INTEROP_API auto __lu_scene_get_active_camera_entity() -> flecs::id_t {
+    return scene::get_active().active_camera.raw_id();
+}
+
 // TODO: Convert to FLECS C++ API
 
-static struct {
-    flecs::iter_t iter{};
-    scene* assoc {};
-} s_scene_iter_context;
+struct scene_iter_context final {
+    flecs::query<const com::metadata> query {};
+    scene* ref {};
+    std::vector<flecs::id_t> data {};
+};
+
+static constinit std::optional<scene_iter_context> s_scene_iter_context;
 
 LUA_INTEROP_API auto __lu_scene_full_entity_query_start() -> void {
-    return;
+    auto& ctx = s_scene_iter_context.emplace();
     scene& active = scene::get_active();
-    s_scene_iter_context.assoc = &active;
-    std::array<flecs::iter_t, 2> iters {};
-    // search for objects with com::metadata assigned
-    ecs_term_t term = {
-        .id = flecs::type_id<com::metadata>(),
-        .inout = EcsIn,
-        .oper = EcsOptional
-    };
-    ecs_iter_poly(active.m_world, active.m_world, iters.data(), &term);
-    s_scene_iter_context.iter = iters[0];
-    ecs_iter_fini(&iters[1]);
+    if (&active != ctx.ref || !ctx.query) {
+        ctx.ref = &active;
+        ctx.query = active.query<const com::metadata>();
+    }
+    ctx.query.each([](const flecs::entity& e, const com::metadata& m) {
+        s_scene_iter_context->data.emplace_back(e);
+    });
 }
 
 LUA_INTEROP_API auto __lu_scene_full_entity_query_next_table() -> std::int32_t {
-    return 0;
-    passert(&scene::get_active() == s_scene_iter_context.assoc);
-    return ecs_iter_next(&s_scene_iter_context.iter) ? s_scene_iter_context.iter.count : 0;
+    auto& ctx = s_scene_iter_context;
+    return ctx ? static_cast<std::int32_t>(ctx->data.size()) : 0;
 }
 
 LUA_INTEROP_API auto __lu_scene_full_entity_query_get(const std::int32_t i) -> flecs::id_t {
-    return 0;
-    passert(&scene::get_active() == s_scene_iter_context.assoc);
-    return s_scene_iter_context.iter.entities[i];
+    auto& ctx = s_scene_iter_context;
+    return ctx ? ctx->data[i] : 0;
 }
 
 LUA_INTEROP_API auto __lu_scene_full_entity_query_end() -> void {
-    return;
-    passert(&scene::get_active() == s_scene_iter_context.assoc);
-    ecs_iter_fini(&s_scene_iter_context.iter);
-    s_scene_iter_context.iter = {};
-    s_scene_iter_context.assoc = nullptr;
+    auto& ctx = s_scene_iter_context;
+    if (ctx) {
+        ctx.reset();
+    }
 }

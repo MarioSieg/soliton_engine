@@ -120,19 +120,19 @@ local function clone(q)
 end
 
 ffi.metatype('lua_vec4', {
-    _add = function(x, y)
+    __add = function(x, y)
         return rawnew(x.x + y.x, x.y + y.y, x.z + y.z, x.w + y.w)
     end,
-    _sub = function(x, y)
+    __sub = function(x, y)
         return rawnew(x.x - y.x, x.y - y.y, x.z - y.z, x.w - y.w)
     end,
-    _mul = function(x, y)
+    __mul = function(x, y)
         if type(y) == 'cdata' and istype('lua_vec4', y) then
-            local x = x.x*y.w + x.w*y.x + x.y*y.z - x.z*y.y
-            local y = x.y*y.w + x.w*y.y + x.z*y.x - x.x*y.z
-            local z = x.z*y.w + x.w*y.z + x.x*y.y - x.y*y.x
-            local w = x.w*y.w - x.x*y.x - x.y*y.y - x.z*y.z
-            return rawnew(x, y, z, w)
+            local xx = x.x*y.w + x.w*y.x + x.y*y.z - x.z*y.y
+            local yy = x.y*y.w + x.w*y.y + x.z*y.x - x.x*y.z
+            local zz = x.z*y.w + x.w*y.z + x.x*y.y - x.y*y.x
+            local ww = x.w*y.w - x.x*y.x - x.y*y.y - x.z*y.z
+            return rawnew(xx, yy, zz, ww)
         else
             return rawnew(x.x*y, x.y*y, x.z*y, x.w*y)
         end
@@ -144,8 +144,8 @@ ffi.metatype('lua_vec4', {
         return mag(self)
     end,
     __eq = function(x, y)
-        local is_vec3 = type(y) == 'cdata' and istype('lua_vec4', y)
-        return is_vec3 and x.x == y.x and x.y == y.y and x.z == y.z and x.w == y.w
+        local is_vec4 = type(y) == 'cdata' and istype('lua_vec4', y)
+        return is_vec4 and x.x == y.x and x.y == y.y and x.z == y.z and x.w == y.w
     end,
     __tostring = function(self)
         return string.format('Quat(%f, %f, %f, %f)', self.x, self.y, self.z, self.w)

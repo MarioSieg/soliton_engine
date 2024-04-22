@@ -29,14 +29,14 @@ namespace com {
     };
 
     struct transform final {
-        DirectX::XMFLOAT3 position;
+        DirectX::XMFLOAT4 position; // only xyz is used, w is padding for SIMD
         DirectX::XMFLOAT4 rotation;
-        DirectX::XMFLOAT3 scale;
+        DirectX::XMFLOAT4 scale; // only xyz is used, w is padding for SIMD
 
         transform() noexcept {
-            XMStoreFloat3(&this->position, DirectX::XMVectorZero());
+            XMStoreFloat4(&this->position, DirectX::XMVectorZero());
             XMStoreFloat4(&this->rotation, DirectX::XMQuaternionIdentity());
-            XMStoreFloat3(&this->scale, DirectX::XMVectorSplatOne());
+            XMStoreFloat4(&this->scale, DirectX::XMVectorSplatOne());
         }
 
         [[nodiscard]] auto XM_CALLCONV compute_matrix() const noexcept -> DirectX::XMMATRIX {
@@ -44,10 +44,10 @@ namespace com {
             return DirectX::XMMatrixTransformation(
                 zero,
                 DirectX::XMQuaternionIdentity(),
-                XMLoadFloat3(&this->scale),
+                XMLoadFloat4(&this->scale),
                 zero,
                 XMLoadFloat4(&this->rotation),
-                XMLoadFloat3(&this->position)
+                XMLoadFloat4(&this->position)
             );
         }
         [[nodiscard]] auto XM_CALLCONV forward_vec() const noexcept -> DirectX::XMVECTOR {
@@ -80,13 +80,13 @@ namespace com {
 
         camera() noexcept {
             DirectX::XMStoreFloat2(&viewport, DirectX::XMVectorZero());
-            DirectX::XMStoreFloat3(&clear_color, DirectX::XMVectorSplatOne());
+            DirectX::XMStoreFloat3(&clear_color, DirectX::XMVectorZero());
         }
 
         static inline flecs::entity active_camera = flecs::entity::null(); // main camera, resetted every frame
 
        [[nodiscard]] static auto XM_CALLCONV compute_view(const transform& transform) noexcept -> DirectX::XMMATRIX {
-           const DirectX::XMVECTOR eyePos { DirectX::XMLoadFloat3(&transform.position) };
+           const DirectX::XMVECTOR eyePos { DirectX::XMLoadFloat4(&transform.position) };
            const DirectX::XMVECTOR focusPos { DirectX::XMVectorAdd(eyePos, transform.forward_vec()) };
            return DirectX::XMMatrixLookAtLH(eyePos, focusPos, DirectX::XMVectorSet(.0F, 1.F, .0F, .0F));
        }

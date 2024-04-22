@@ -1,0 +1,6 @@
+build/Release/BounceAnimation.o
+build/Release/BackAnimation.o
+build/Release/CircleAnimation.o
+build/Release/ExponentialAnimation.o
+build/Release/ElasticAnimation.o
+build/Release/Main.o

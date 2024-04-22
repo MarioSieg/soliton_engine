@@ -55,7 +55,7 @@ namespace graphics {
             make_write_tex_info(metallic_roughness_map, &*s_error_texture),
             make_write_tex_info(ambient_occlusion_map, &*s_error_texture)
         };
-        vkb_vk_device().updateDescriptorSets(
+        vkb::vkdvc().updateDescriptorSets(
             static_cast<std::uint32_t>(write_descriptor_sets.size()),
             write_descriptor_sets.data(),
             0u,
@@ -79,7 +79,7 @@ namespace graphics {
         descriptor_pool_create_info.maxSets = lim;
         descriptor_pool_create_info.poolSizeCount = static_cast<std::uint32_t>(pool_sizes.size());
         descriptor_pool_create_info.pPoolSizes = pool_sizes.data();
-        vkcheck(vkb_vk_device().createDescriptorPool(&descriptor_pool_create_info, &vkb::s_allocator, &s_descriptor_pool));
+        vkcheck(vkb::vkdvc().createDescriptorPool(&descriptor_pool_create_info, &vkb::s_allocator, &s_descriptor_pool));
 
         auto get_texture_binding = [i = 0] () mutable -> vk::DescriptorSetLayoutBinding {
             vk::DescriptorSetLayoutBinding binding {};
@@ -100,12 +100,12 @@ namespace graphics {
         vk::DescriptorSetLayoutCreateInfo descriptor_set_layout_create_info {};
         descriptor_set_layout_create_info.bindingCount = static_cast<std::uint32_t>(bindings.size());
         descriptor_set_layout_create_info.pBindings = bindings.data();
-        vkcheck(vkb_vk_device().createDescriptorSetLayout(&descriptor_set_layout_create_info, &vkb::s_allocator, &s_descriptor_set_layout));
+        vkcheck(vkb::vkdvc().createDescriptorSetLayout(&descriptor_set_layout_create_info, &vkb::s_allocator, &s_descriptor_set_layout));
     }
 
     auto material::free_static_resources() -> void {
-        vkb_vk_device().destroyDescriptorSetLayout(s_descriptor_set_layout, &vkb::s_allocator);
-        vkb_vk_device().destroyDescriptorPool(s_descriptor_pool, &vkb::s_allocator);
+        vkb::vkdvc().destroyDescriptorSetLayout(s_descriptor_set_layout, &vkb::s_allocator);
+        vkb::vkdvc().destroyDescriptorPool(s_descriptor_pool, &vkb::s_allocator);
         s_error_texture.reset();
         s_flat_normal.reset();
     }

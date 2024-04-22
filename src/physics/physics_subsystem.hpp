@@ -12,6 +12,7 @@
 #include <Jolt/Physics/PhysicsSystem.h>
 
 #include "debug_renderer.hpp"
+#include "../scene/components.hpp"
 
 namespace physics {
     class physics_subsystem final : public subsystem {
@@ -31,6 +32,9 @@ namespace physics {
         }
 
     private:
+        static auto create_static_body(JPH::BodyCreationSettings& ci, const com::transform& transform, const com::mesh_renderer& renderer) -> void;
+
+        auto post_sync() const -> void;
         std::unique_ptr<JPH::TempAllocatorImpl> m_temp_allocator {};
         std::unique_ptr<JPH::JobSystemThreadPool> m_job_system {};
         std::unique_ptr<JPH::BroadPhaseLayerInterface> m_broad_phase {};

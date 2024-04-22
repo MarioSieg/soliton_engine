@@ -9,7 +9,7 @@ concept is_subsystem = std::conjunction_v<std::is_base_of<subsystem, T>, std::is
 
 class kernel final : public no_copy, public no_move {
 public:
-    kernel(int argc, const char** argv, const char** environ);
+    kernel(int argc, const char** argv, const char** $environ);
     ~kernel();
 
     template <typename T, typename... Ar> requires is_subsystem<T, Ar...>
@@ -33,7 +33,7 @@ public:
     [[nodiscard]] auto get_boot_stamp() const noexcept -> std::chrono::high_resolution_clock::time_point { return boot_stamp; }
 
 private:
-    [[nodiscard]] HOTPROC auto tick() const -> bool;
+    [[nodiscard]] HOTPROC auto tick() -> bool;
     const std::chrono::high_resolution_clock::time_point boot_stamp = std::chrono::high_resolution_clock::now();
     std::vector<std::shared_ptr<subsystem>> m_subsystems {};
 };

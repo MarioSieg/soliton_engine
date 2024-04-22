@@ -1,0 +1,20 @@
+<!-- Created using Noesis XAML exporter for TexturePacker (http://www.texturepacker.com) -->
+<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <BitmapImage x:Key="aladin-atlas" UriSource="aladin-atlas.png"/>
+  <CroppedBitmap x:Key="aladin01" Source="{StaticResource aladin-atlas}" SourceRect="145,58,33,54"/>
+  <CroppedBitmap x:Key="aladin02" Source="{StaticResource aladin-atlas}" SourceRect="180,58,30,54"/>
+  <CroppedBitmap x:Key="aladin03" Source="{StaticResource aladin-atlas}" SourceRect="73,61,27,57"/>
+  <CroppedBitmap x:Key="aladin04" Source="{StaticResource aladin-atlas}" SourceRect="39,2,33,57"/>
+  <CroppedBitmap x:Key="aladin05" Source="{StaticResource aladin-atlas}" SourceRect="112,2,38,54"/>
+  <CroppedBitmap x:Key="aladin06" Source="{StaticResource aladin-atlas}" SourceRect="74,2,36,56"/>
+  <CroppedBitmap x:Key="aladin07" Source="{StaticResource aladin-atlas}" SourceRect="152,2,31,54"/>
+  <CroppedBitmap x:Key="aladin08" Source="{StaticResource aladin-atlas}" SourceRect="185,2,27,54"/>
+  <CroppedBitmap x:Key="aladin09" Source="{StaticResource aladin-atlas}" SourceRect="41,61,30,57"/>
+  <CroppedBitmap x:Key="aladin10" Source="{StaticResource aladin-atlas}" SourceRect="2,2,35,58"/>
+  <CroppedBitmap x:Key="aladin11" Source="{StaticResource aladin-atlas}" SourceRect="102,60,41,55"/>
+  <CroppedBitmap x:Key="aladin12" Source="{StaticResource aladin-atlas}" SourceRect="2,62,37,57"/>
+
+</ResourceDictionary>

@@ -165,7 +165,10 @@ function Project:createOnDisk(rootDir)
     if not lfs.attributes(rootDir) then
         lfs.mkdir(rootDir)
     end
-    local fullPath = rootDir..'/'..self.serialized.name
+    local fullPath = rootDir
+    if rootDir:match("([^/]+)$") ~= self.serialized.name then
+        fullPath = fullPath..'/'..self.serialized.name
+    end
     if lfs.attributes(fullPath) then
         error('Project already exists: '..fullPath)
     end

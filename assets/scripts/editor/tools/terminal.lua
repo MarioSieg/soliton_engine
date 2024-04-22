@@ -20,40 +20,48 @@ local Terminal = {
     isVisible = ffi.new('bool[1]', true),
     cmdBufLen = 512,
     cmdBuf = ffi.new('char[?]', 512),
-    mustAutoScroll = true,
-    autoScrollOn = ffi.new('bool[1]', true),
+    scrollFlags = ffi.new('bool[2]', true, false),
 }
 
-local log = PROTOCOL
 function Terminal:render()
     UI.SetNextWindowSize(WINDOW_SIZE, ffi.C.ImGuiCond_FirstUseEver)
+    local isLuaLogTab = false
     if UI.Begin(self.name, self.isVisible, ffi.C.ImGuiWindowFlags_NoScrollbar) then
-        if UI.BeginChild('TerminalScrollingRegion', UI.ImVec2(0, -UI.GetFrameHeightWithSpacing()), false, ffi.C.ImGuiWindowFlags_HorizontalScrollbar) then
-            UI.PushStyleVar(ffi.C.ImGuiStyleVar_ItemSpacing, UI.ImVec2(4.0, 1.0))
-            local clipper = UI.ImGuiListClipper()
-            clipper:Begin(#log, UI.GetTextLineHeightWithSpacing())
-            while clipper:Step() do -- HOT LOOP
-                for i=clipper.DisplayStart+1, clipper.DisplayEnd do
-                    local isError = log[i][2]
-                    UI.PushStyleColor_U32(ffi.C.ImGuiCol_Text, isError and 0xff4444ff or 0xffffffff)
-                    UI.TextUnformatted(log[i][1])
-                    UI.PopStyleColor()
+        if UI.BeginTabBar('TerminalTabBar', ffi.C.ImGuiTabBarFlags_None) then
+            if UI.BeginTabItem(ICONS.CODE..' Lua') then
+                isLuaLogTab = true
+                local footer = UI.GetStyle().ItemSpacing.y + UI.GetFrameHeightWithSpacing()
+                if UI.BeginChild('TerminalScrollingRegion', UI.ImVec2(0, -footer), false, ffi.C.ImGuiWindowFlags_HorizontalScrollbar) then
+                    UI.PushStyleVar(ffi.C.ImGuiStyleVar_ItemSpacing, UI.ImVec2(4.0, 1.0))
+                    local clipper = UI.ImGuiListClipper()
+                    clipper:Begin(#PROTOCOL, UI.GetTextLineHeightWithSpacing())
+                    while clipper:Step() do -- HOT LOOP
+                        for i=clipper.DisplayStart+1, clipper.DisplayEnd do
+                            local isError = PROTOCOL[i][2]
+                            UI.PushStyleColor_U32(ffi.C.ImGuiCol_Text, isError and 0xff4444ff or 0xffffffff)
+                            UI.Separator()
+                            UI.TextUnformatted(PROTOCOL[i][1])
+                            UI.PopStyleColor()
+                        end
+                    end
+                    clipper:End()
+                    UI.PopStyleVar()
+                    if self.scrollFlags[1] then
+                        UI.SetScrollHereY(1.0)
+                        self.scrollFlags[1] = false
+                    end
+                    UI.EndChild()
                 end
+                UI.EndTabItem()
             end
-            clipper:End()
-            UI.PopStyleVar()
-            if self.mustAutoScroll then
-                UI.SetScrollHereY(1.0)
-                self.mustAutoScroll = false
+            if UI.BeginTabItem(ICONS.COGS..' System') then
+                ffi.C.__lu_dd_draw_native_log(self.scrollFlags[1])
+                if self.scrollFlags[1] then
+                    self.scrollFlags[1] = false
+                end
+                UI.EndTabItem()
             end
-            UI.EndChild()
             UI.Separator()
-            UI.TextUnformatted(string.format('%s %d', ICONS.ENVELOPE, #log))
-            UI.SameLine()
-            UI.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff4444ff)
-            UI.TextUnformatted(string.format('%s %d', ICONS.EXCLAMATION_TRIANGLE, PROTOCOL_ERRORS))
-            UI.PopStyleColor()
-            UI.SameLine()
             if UI.InputTextEx(ICONS.ARROW_LEFT, 'Enter command...', self.cmdBuf, self.cmdBufLen, UI.ImVec2(0, 0), ffi.C.ImGuiInputTextFlags_EnterReturnsTrue) then
                 if self.cmdBuf[0] ~= 0 then
                     local command = ffi.string(self.cmdBuf)
@@ -69,15 +77,22 @@ function Terminal:render()
                         print('Unknown command: '..cmd)
                     end
                     self.cmdBuf[0] = 0 -- Clear buffer by terminating string
-                    self.mustAutoScroll = true
+                    self.scrollFlags[1] = true
                     UI.SetKeyboardFocusHere(-1) -- Focus on command line
                 end
             end
             UI.SameLine()
-            UI.Checkbox(ICONS.MOUSE..' Scroll', self.autoScrollOn)
-            if self.autoScrollOn[0] then
-                self.mustAutoScroll = true
+            UI.Checkbox(ICONS.MOUSE..' Scroll', self.scrollFlags)
+            if self.scrollFlags[0] then
+                self.scrollFlags[1] = true
             end
+            if isLuaLogTab then
+                UI.SameLine()
+                if UI.Button(ICONS.TRASH..' Clear') then
+                    PROTOCOL = {}
+                end
+            end
+            UI.EndTabBar()
         end
     end
     UI.End()

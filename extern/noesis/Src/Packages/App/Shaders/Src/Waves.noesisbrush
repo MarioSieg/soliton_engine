@@ -1,0 +1,35 @@
+#include "BrushHelpers.h"
+
+uniforms
+{
+    float _time;
+};
+
+#if UV_STARTS_AT_TOP
+  #define FLIP(x) -x
+#else
+  #define FLIP(x) x
+#endif
+
+float wave_func(float2 uv, float2 s12, float2 t12, float2 f12, float2 h12)
+{
+    float2 x12 = sin((_time * s12 + t12 + uv.x) * f12) * h12;
+    float v = 0.3 - 0.2 * ((sin(_time * 0.5) + 1.0f) / 2.0f);
+    float d = uv.y - (v + x12.x + x12.y);
+    float o = smoothstep(FLIP(2.0f) * ddy(uv.y), 0.0, d);
+    float i0 = 1.0f - smoothstep(0.0, 0.15, d);
+    float i1 = pow((1.0 - smoothstep(0.0, 0.050, d)), 8.0);
+    return o * (0.15 * i0 + 0.10 * i1);
+}
+
+fixed4 main_brush(float2 uv)
+{
+    float s0 = 1.0 + 10.0 * ((sin((_time + 0.3) / 2.0) + 3.0) / 6.0);
+    float wave0 = wave_func(float2(uv.x, uv.y - 0.25), float2(0.735,0.255), float2(-0.09,0.27), float2(1.4,5.51), s0 * float2(0.006,0.005));
+    
+    float s1 = 1.0 + 20.0 * ((sin(_time / 1.5) + 3.0) / 6.0);
+    float wave1 = wave_func(float2(uv.x, uv.y - 0.25), float2(0.232,0.29), float2(0.08,-0.22), float2(1.6,3.89), s1 * float2(0.006,0.005));
+
+    float3 back = lerp(float3(0.01, 0.02, 0.3), float3(0.03, 0.69, 0.87), (uv.x + uv.y) * 0.65);
+    return float4(back + wave0 + wave1, 1.0);
+}

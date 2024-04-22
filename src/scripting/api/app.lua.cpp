@@ -1,13 +1,18 @@
 // Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "_prelude.hpp"
+
 #include "../../core/kernel.hpp"
 #include "../../graphics/vulkancore/context.hpp"
 #include "../../platform/platform_subsystem.hpp"
+#include "../../graphics/graphics_subsystem.hpp"
 
 #include <infoware/infoware.hpp>
 #include <nfd.hpp>
 
+#include "../scripting_subsystem.hpp"
+
+using graphics::graphics_subsystem;
 using platform::platform_subsystem;
 
 static constinit int s_window_pos_x = 0;
@@ -24,12 +29,20 @@ LUA_INTEROP_API auto __lu_ffi_cookie() -> std::uint32_t  {
     return 0xfefec0c0;
 }
 
+LUA_INTEROP_API auto __lu_engine_version() -> std::uint32_t {
+    return k_lunam_engine_v;
+}
+
 LUA_INTEROP_API auto __lu_app_is_focused() -> bool {
     return glfwGetWindowAttrib(platform_subsystem::get_glfw_window(), GLFW_FOCUSED) == GLFW_TRUE;
 }
 
 LUA_INTEROP_API auto __lu_app_is_ui_hovered() -> bool {
     return ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow);
+}
+
+LUA_INTEROP_API auto __lu_app_hot_reload_ui() -> void {
+    graphics_subsystem::s_instance->get_noesis_context().load_ui_from_xaml("App.xaml");
 }
 
 LUA_INTEROP_API auto __lu_window_maximize() -> void {

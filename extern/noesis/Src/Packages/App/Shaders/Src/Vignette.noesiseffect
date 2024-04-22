@@ -1,0 +1,18 @@
+#include "EffectHelpers.h"
+
+uniforms
+{
+    float4 _color;
+    float _strength;
+    float _size;
+};
+
+fixed4 main_effect()
+{
+    float2 uv = GetNormalizedInputCoordinate();
+    uv *=  1.0 - uv.yx;
+    float v = pow(abs(uv.x * uv.y * _strength), _size);
+
+    float4 c = GetInput();
+    return lerp(_color, c, v);
+}

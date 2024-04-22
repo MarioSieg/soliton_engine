@@ -877,7 +877,7 @@ namespace graphics {
         : k_max_vertices{scripting::scripting_subsystem::get_config_table()["Renderer"]["maxDebugDrawVertices"].cast<std::uint32_t>().valueOr(250'000)} {
         m_vertices.reserve(k_max_vertices);
         m_draw_commands.reserve(k_max_vertices / 2);
-        const vk::Device device = vkb_context().get_device();
+        const vk::Device device = vkb::ctx().get_device();
         create_uniform_buffer();
         create_vertex_buffer();
         create_descriptor_set_layout(device);
@@ -887,7 +887,7 @@ namespace graphics {
     }
 
     debugdraw::~debugdraw() {
-        const vk::Device device = vkb_context().get_device();
+        const vk::Device device = vkb::ctx().get_device();
         device.destroyPipelineLayout(m_pipeline_layout, &vkb::s_allocator);
         device.destroyDescriptorSetLayout(m_descriptor_set_layout, &vkb::s_allocator);
         device.destroyPipeline(m_line_depth_pipeline, &vkb::s_allocator);
@@ -902,7 +902,7 @@ namespace graphics {
         const FXMVECTOR view_pos
     ) -> void {
         if (!m_vertices.empty()) {
-            const std::uint32_t frameidx = vkb_context().get_current_frame();
+            const std::uint32_t frameidx = vkb::ctx().get_current_frame();
             uniform uniform_data {};
             XMStoreFloat4x4A(&uniform_data.view_proj, view_proj);
             auto* uptr = static_cast<std::uint8_t*>(m_uniform.get_mapped_ptr());

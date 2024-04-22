@@ -93,8 +93,10 @@ namespace vkb {
         const vk::Format format,
         const vk::ImageCreateFlags flags,
         const vk::ImageUsageFlags usage,
-        const vk::ImageTiling tiling
-    ) const -> bool {
+        const vk::ImageTiling tiling,
+        bool& is_generally_supported,
+        bool& is_mipgen_supported
+    ) const -> void {
         vk::PhysicalDeviceImageFormatInfo2 info {};
         info.type = type;
         info.format = format;
@@ -102,7 +104,14 @@ namespace vkb {
         info.usage = usage;
         info.tiling = tiling;
         vk::ImageFormatProperties2 props {};
-        return m_physical_device.getImageFormatProperties2(&info, &props) == vk::Result::eSuccess;
+        // check if format is generally supported
+        is_generally_supported = m_physical_device.getImageFormatProperties2(&info, &props) == vk::Result::eSuccess;
+        // check if format supports color writing for mipmap generation
+        if (is_generally_supported) [[likely]] {
+            vk::FormatProperties format_props {};
+            m_physical_device.getFormatProperties(format, &format_props);
+            is_mipgen_supported = static_cast<bool>(format_props.optimalTilingFeatures & vk::FormatFeatureFlagBits::eColorAttachment);
+        }
     }
 
     auto device::create_instance() -> void {
@@ -145,7 +154,7 @@ namespace vkb {
             }
         }
 
-        if constexpr (PLATFORM_OSX) {
+#if PLATFORM_OSX
             // When running on iOS/macOS with MoltenVK and VK_KHR_portability_subset is defined and supported by the device, enable the extension
             if (is_device_extension_supported(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME)) {
                 instance_extensions.insert(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
@@ -154,7 +163,7 @@ namespace vkb {
             if (is_device_extension_supported(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME)) {
                 instance_extensions.insert(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
             }
-        }
+#endif
 
         // Setup instance create info
         vk::InstanceCreateInfo instance_create_info {};

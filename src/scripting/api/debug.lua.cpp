@@ -1,0 +1,261 @@
+// Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+
+#include "_prelude.hpp"
+#include "../../core/buffered_sink.hpp"
+#include "../../graphics/graphics_subsystem.hpp"
+#include "../../graphics/imgui/ImGuiProfilerRenderer.h"
+#include "../../graphics/imgui/ImGuizmo.h"
+#include "../../physics/physics_subsystem.hpp"
+#include "../../core/profiler.hpp"
+
+
+using graphics::graphics_subsystem;
+
+#define dd (graphics_subsystem::s_instance->get_debug_draw())
+
+LUA_INTEROP_API auto __lu_dd_begin() -> void {
+    ImGuizmo::BeginFrame();
+    const auto& io = ImGui::GetIO();
+    ImGuizmo::SetRect(0.0f, 0.0f, io.DisplaySize.x, io.DisplaySize.y);
+    ImGuizmo::SetDrawlist(ImGui::GetBackgroundDrawList());
+}
+
+LUA_INTEROP_API auto __lu_dd_grid(const lua_vec3 pos, const double step, const lua_vec3 color) -> void {
+    dd.draw_grid(pos, static_cast<float>(step), color);
+}
+
+LUA_INTEROP_API auto __lu_dd_gizmo_enable(const bool enable) -> void {
+    ImGuizmo::Enable(enable);
+}
+
+LUA_INTEROP_API auto __lu_dd_gizmo_manipulator(const flecs::id_t id, const int op, const int mode, const bool enable_snap, const double snap_x, const lua_vec3 color) -> void {
+    const flecs::entity ent {scene::get_active(), id};
+    if (!ent.has<const com::transform>()) [[unlikely]] {
+        return;
+    }
+    auto* transform = ent.get_mut<com::transform>();
+    const auto* view = reinterpret_cast<const float*>(&graphics_subsystem::s_view_mtx);
+    const auto* proj = reinterpret_cast<const float*>(&graphics_subsystem::s_proj_mtx);
+    DirectX::XMFLOAT4X4A model_mtx;
+    DirectX::XMStoreFloat4x4A(&model_mtx, transform->compute_matrix());
+    DirectX::XMFLOAT3A snap;
+    DirectX::XMStoreFloat3A(&snap, DirectX::XMVectorReplicate(static_cast<float>(snap_x)));
+    ImGuizmo::Manipulate(
+        view,
+        proj,
+        static_cast<ImGuizmo::OPERATION>(op),
+        static_cast<ImGuizmo::MODE>(mode),
+        reinterpret_cast<float*>(&model_mtx),
+        nullptr,
+        enable_snap ? reinterpret_cast<const float*>(&snap) : nullptr
+    );
+    DirectX::XMVECTOR pos {}, rot {}, scale {};
+    DirectX::XMMatrixDecompose(&scale, &rot, &pos, DirectX::XMLoadFloat4x4A(&model_mtx));
+    DirectX::XMStoreFloat4(&transform->position, pos);
+    DirectX::XMStoreFloat4(&transform->rotation, rot);
+    DirectX::XMStoreFloat4(&transform->scale, scale);
+    if (auto* renderer = ent.get<com::mesh_renderer>(); renderer) {
+        for (const auto* mesh : renderer->meshes) {
+            if (mesh) [[likely]] {
+                DirectX::BoundingOrientedBox obb {};
+                DirectX::BoundingOrientedBox::CreateFromBoundingBox(obb, mesh->get_aabb());
+                const auto model = DirectX::XMLoadFloat4x4A(&model_mtx);
+                dd.draw_obb(obb, model, color);
+            }
+        }
+    }
+}
+
+LUA_INTEROP_API auto __lu_dd_enable_depth_test(const bool enable) -> void {
+    dd.set_depth_test(enable);
+}
+
+LUA_INTEROP_API auto __lu_dd_enable_fade(const bool enable) -> void {
+    dd.set_distance_fade_enable(enable);
+}
+
+LUA_INTEROP_API auto __lu_dd_set_fade_distance(const double $near, const double $far) -> void {
+    dd.set_fade_start(static_cast<float>($near));
+    dd.set_fade_end(static_cast<float>($far));
+}
+
+LUA_INTEROP_API auto __lu_dd_draw_scene_with_aabbs(const lua_vec3 color) -> void {
+    const DirectX::XMFLOAT3 ccolor = color;
+    dd.begin_batch();
+    scene::get_active().filter<const com::transform, const com::mesh_renderer>().each([&ccolor](const com::transform& transform, const com::mesh_renderer& renderer) {
+        for (const auto* mesh : renderer.meshes) {
+           if (mesh) [[likely]] {
+               DirectX::BoundingOrientedBox obb {};
+               DirectX::BoundingOrientedBox::CreateFromBoundingBox(obb, mesh->get_aabb());
+               const DirectX::XMMATRIX model = transform.compute_matrix();
+               dd.draw_obb(obb, model, ccolor);
+               dd.draw_transform(model, 1.0f);
+           }
+       }
+    });
+    dd.end_batch();
+}
+
+LUA_INTEROP_API auto __lu_dd_draw_physics_debug() -> void {
+    physics::debug_renderer::begin();
+    static constexpr auto draw_settings = [] {
+        JPH::BodyManager::DrawSettings settings {};
+        settings.mDrawVelocity = true;
+        settings.mDrawWorldTransform = true;
+        settings.mDrawBoundingBox = true;
+        settings.mDrawMassAndInertia = true;
+        settings.mDrawShape = true;
+        settings.mDrawShapeColor = JPH::BodyManager::EShapeColor::MaterialColor;
+        return settings;
+    }();
+    physics::physics_subsystem::get_physics_system().DrawBodies(draw_settings, &physics::physics_subsystem::get_debug_renderer());
+    physics::debug_renderer::end();
+}
+
+LUA_INTEROP_API auto __lu_dd_draw_native_log(const bool scroll) -> void {
+    std::shared_ptr<spdlog::logger> logger = spdlog::get("engine");
+    const auto& sinks = logger->sinks();
+    if (sinks.empty()) [[unlikely]] {
+        return;
+    }
+    const auto& sink = sinks.front();
+    auto* buffered = static_cast<buffered_sink*>(&*sink);
+    if (!buffered) [[unlikely]] {
+        return;
+    }
+    const std::span<const std::pair<spdlog::level::level_enum, std::string>> logs = buffered->get();
+    using namespace ImGui;
+    const float footer = GetStyle().ItemSpacing.y + GetFrameHeightWithSpacing();
+    const auto id = static_cast<ImGuiID>(std::bit_cast<std::uintptr_t>(logs.data()) ^ 0xfefefefe);
+    if (BeginChild(id, { .0F, -footer }, false)) {
+        PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2 { 4.F, 1.F });
+        ImGuiListClipper clipper {};
+        clipper.Begin(static_cast<int>(logs.size()), GetTextLineHeightWithSpacing());
+        while (clipper.Step()) {
+            for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; ++i) {
+                using enum spdlog::level::level_enum;
+                const auto& [level, message] = logs[i];
+                Separator();
+                TextUnformatted(message.c_str());
+            }
+        }
+        clipper.End();
+        if (scroll) {
+            SetScrollHereY(1.0);
+        }
+        PopStyleVar();
+    }
+    EndChild();
+}
+
+class cpu_profiler
+{
+public:
+    cpu_profiler()
+    {
+        frameIndex = 0;
+    }
+    size_t StartTask(std::string&& taskName, uint32_t taskColor)
+    {
+        legit::ProfilerTask task;
+        task.color = taskColor;
+        task.name = std::move(taskName);
+        task.startTime = GetCurrFrameTimeSeconds();
+        task.endTime = -1.0;
+        size_t taskId = profilerTasks.size();
+        profilerTasks.push_back(task);
+        return taskId;
+    }
+    legit::ProfilerTask EndTask(size_t taskId)
+    {
+        //assert(profilerTasks.size() == taskId + 1 && profilerTasks.back().endTime < 0.0);
+        profilerTasks.back().endTime = GetCurrFrameTimeSeconds();
+        return profilerTasks.back();
+    }
+    size_t StartFrame()
+    {
+        profilerTasks.clear();
+        frameStartTime = hrc::now();
+        return frameIndex;
+    }
+    void EndFrame(size_t frameId)
+    {
+        assert(frameId == frameIndex);
+        frameIndex++;
+    }
+    std::vector<legit::ProfilerTask>& GetProfilerTasks()
+    {
+        return profilerTasks;
+    }
+    double GetCurrFrameTimeSeconds()
+    {
+        return double(std::chrono::duration_cast<std::chrono::microseconds>(hrc::now() - frameStartTime).count()) / 1e6;
+    }
+private:
+    struct TaskHandleInfo
+    {
+        TaskHandleInfo(cpu_profiler *_profiler, size_t _taskId)
+        {
+            this->profiler = _profiler;
+            this->taskId = _taskId;
+        }
+        void Reset()
+        {
+            profiler->EndTask(taskId);
+        }
+        cpu_profiler *profiler;
+        size_t taskId;
+    };
+    struct FrameHandleInfo
+    {
+        FrameHandleInfo(cpu_profiler *_profiler, size_t _frameId)
+        {
+            this->profiler = _profiler;
+            this->frameId = _frameId;
+        }
+        void Reset()
+        {
+            profiler->EndFrame(frameId);
+        }
+        cpu_profiler *profiler;
+        size_t frameId;
+    };
+private:
+    using hrc = std::chrono::high_resolution_clock;
+    size_t frameIndex;
+    std::vector<legit::ProfilerTask> profilerTasks;
+    hrc::time_point frameStartTime;
+};
+
+static cpu_profiler s_cpuProfiler;
+
+auto profiler_start_task(std::string&& name, std::uint32_t color) -> std::size_t {
+    return s_cpuProfiler.StartTask(std::move(name), color);
+}
+
+auto profiler_end_task(const std::size_t id) -> void {
+    s_cpuProfiler.EndTask(id);
+}
+
+auto profiler_new_frame() -> void {
+    s_cpuProfiler.StartFrame();
+}
+
+auto profiler_get_frame_time() noexcept -> double {
+    return s_cpuProfiler.GetCurrFrameTimeSeconds();
+}
+
+auto profiler_submit_ex(std::string&& name, double start, double end, std::uint32_t color) -> void {
+    legit::ProfilerTask task {};
+    task.color = color;
+    task.name = std::move(name);
+    task.startTime = start;
+    task.endTime = end;
+    s_cpuProfiler.GetProfilerTasks().emplace_back(std::move(task));
+}
+
+LUA_INTEROP_API auto __lu_dd_draw_native_profiler() -> void {
+    static ImGuiUtils::ProfilersWindow s_profiler;
+    s_profiler.cpuGraph.LoadFrameData(s_cpuProfiler.GetProfilerTasks().data(), s_cpuProfiler.GetProfilerTasks().size());
+    s_profiler.Render();
+}

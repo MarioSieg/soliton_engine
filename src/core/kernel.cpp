@@ -1,6 +1,9 @@
 // Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "kernel.hpp"
+#include "profiler.hpp"
+#include "buffered_sink.hpp"
+
 #include "../scene/scene.hpp"
 
 #include <iostream>
@@ -18,34 +21,11 @@
 static constexpr std::size_t k_log_threads = 1;
 static constexpr std::size_t k_log_queue_size = 8192;
 
-class buf_sink final : public spdlog::sinks::base_sink<std::mutex> {
-public:
-    explicit buf_sink(std::size_t cap) { m_Backtrace.reserve(cap); }
-
-    auto get() const noexcept -> std::span<const std::pair<spdlog::level::level_enum, std::string>> {
-        return m_Backtrace;
-    }
-
-    auto clear() noexcept -> void { m_Backtrace.clear(); }
-
-private:
-    std::vector<std::pair<spdlog::level::level_enum, std::string>> m_Backtrace{};
-
-    auto sink_it_(const spdlog::details::log_msg& msg) -> void override {
-        spdlog::memory_buf_t buffer{};
-        formatter_->format(msg, buffer);
-        std::string message = {buffer.data(), buffer.size()};
-        m_Backtrace.emplace_back(std::make_pair(msg.level, std::move(message)));
-    }
-
-    auto flush_() -> void override {}
-};
-
 [[nodiscard]] static auto create_logger(const std::string& name, const std::string& pattern, bool print_stdout = true,
                                        bool enroll = true) -> std::shared_ptr<spdlog::logger> {
     const auto time = fmt::localtime(std::time(nullptr));
     std::vector<std::shared_ptr<spdlog::sinks::sink>> sinks = {
-        //std::make_shared<buf_sink>(k_log_queue_size),
+        std::make_shared<buffered_sink>(k_log_queue_size),
         std::make_shared<spdlog::sinks::basic_file_sink_mt>(
             fmt::format("log/session {:%d-%m-%Y  %H-%M-%S}/{}.log", time, name)),
     };
@@ -96,36 +76,50 @@ static auto redirect_io() -> void {
     std::wcin.clear();
     std::cin.clear();
 }
+#else
+#include <pthread.h>
 #endif
 
 static constinit kernel* g_kernel = nullptr;
 
-kernel::kernel(const int argc, const char** argv, const char** environ) {
+kernel::kernel(const int argc, const char** argv, const char** $environ) {
     passert(g_kernel == nullptr);
     g_kernel = this;
 #if PLATFORM_WINDOWS
     redirect_io();
-    SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS); // Is this smart?
+    SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
     SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
+#elif PLATFORM_LINUX
+    pthread_t cthr_id = pthread_self();
+    pthread_setname_np(cthr_id, "Lunam Engine Main Thread");
+    pthread_attr_t thr_attr {};
+    int policy = 0;
+    int max_prio_for_policy = 0;
+    pthread_attr_init(&thr_attr);
+    pthread_attr_getschedpolicy(&thr_attr, &policy);
+    max_prio_for_policy = sched_get_priority_max(policy);
+    pthread_setschedprio(cthr_id, max_prio_for_policy);
+    pthread_attr_destroy(&thr_attr);
 #endif
     std::ostream::sync_with_stdio(false);
     spdlog::init_thread_pool(k_log_queue_size, k_log_threads);
     std::shared_ptr<spdlog::logger> engineLogger = create_logger("engine", "%H:%M:%S:%e %s:%# %^[%l]%$ T:%t %v");
     std::shared_ptr<spdlog::logger> scriptLogger = create_logger("app", "%H:%M:%S:%e %v");
     spdlog::set_default_logger(engineLogger);
-    log_info("LunamEngine v0.0.1"); // TODO: version
-    log_info("Copyright (c) 2022-2023 Mario \"Neo\" Sieg. All Rights Reserved.");
+    log_info("LunamEngine v.{}.{}", major_version(k_lunam_engine_v), minor_version(k_lunam_engine_v));
+    log_info("Copyright (c) 2022-2024 Mario \"Neo\" Sieg. All Rights Reserved.");
     log_info("Booting Engine Kernel...");
     log_info("Build date: {}", __DATE__);
     log_info("Build time: {}", __TIME__);
     log_info("MIMAL version: {:#X}", mi_version());
+    log_info("Working dir: {}", std::filesystem::current_path().string());
     log_info("ARG VEC");
     for (int i = 0; i < argc; ++i) {
         log_info("  {}: {}", i, argv[i]);
     }
     log_info("ENVIRON VEC");
-    for (int i = 0; environ[i] != nullptr; ++i) {
-        log_info("  {}: {}", i, environ[i]);
+    for (int i = 0; $environ[i] != nullptr; ++i) {
+        log_info("  {}: {}", i, $environ[i]);
     }
 }
 
@@ -139,7 +133,7 @@ kernel::~kernel() {
     // Print asset manager infos
     log_info("Asset manager stats:");
     log_info("  Total assets requests: {}", assetmgr::get_asset_request_count());
-    log_info("  Total data loaded: {:.03f} MiB", static_cast<double>(assetmgr::get_total_bytes_loaded()) / (1024.0*1024.0));
+    log_info("  Total data loaded: {:.03f} GiB", static_cast<double>(assetmgr::get_total_bytes_loaded()) / std::pow(1024.0, 3.0));
     log_info("System offline");
     std::cout.flush();
     std::fflush(stdout);
@@ -187,10 +181,12 @@ HOTPROC auto kernel::run() -> void {
     while(tick()) [[likely]] {}
 }
 
-HOTPROC auto kernel::tick() const -> bool {
+HOTPROC auto kernel::tick() -> bool {
     bool flag = g_kernel_online;
     compute_delta_time();
+    profiler_new_frame();
     std::for_each(m_subsystems.cbegin(), m_subsystems.cend(), [&flag](const std::shared_ptr<subsystem>& sys) {
+        scoped_profiler_sample ps {std::string{sys->name}};
         if (!sys->on_pre_tick()) [[unlikely]]
             flag = false;
     });
@@ -198,7 +194,7 @@ HOTPROC auto kernel::tick() const -> bool {
         sys->on_tick();
     });
     std::for_each(m_subsystems.crbegin(), m_subsystems.crend(), [](const std::shared_ptr<subsystem>& sys) {
-       sys->on_post_tick();
+        sys->on_post_tick();
     });
     return flag;
 }

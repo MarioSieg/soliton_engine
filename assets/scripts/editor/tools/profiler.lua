@@ -40,21 +40,20 @@ function fileProxy:close() end
 function Profiler:render()
     if UI.Begin(self.name, self.isVisible) then
         if UI.BeginTabBar('##profiler_tabs') then
+            if UI.BeginTabItem(ICONS.BEZIER_CURVE..' Histogram') then
+                local plot_size = UI.ImVec2(WINDOW_SIZE.x, 200.0)
+                UI.PlotHistogram_FloatPtr('##frame_times', Time.fpsHistogram, Time.HISTOGRAM_SAMPLES, 0, nil, 0.0, Time.fpsAvg * 2.0, plot_size)
+                UI.EndTabItem()
+            end
             if UI.BeginTabItem(ICONS.ALARM_CLOCK..' General') then
-                if UI.CollapsingHeader(ICONS.CHART_AREA..' Histogram', ffi.C.ImGuiTreeNodeFlags_DefaultOpen) then
-                    local plot_size = UI.ImVec2(WINDOW_SIZE.x, 200.0)
-                    UI.PlotHistogram_FloatPtr('##frame_times', Time.fpsHistogram, Time.HISTOGRAM_SAMPLES, 0, nil, 0.0, Time.fpsAvg * 2.0, plot_size)
-                end
-                if UI.CollapsingHeader(ICONS.INFO..' Stats', ffi.C.ImGuiTreeNodeFlags_DefaultOpen) then
-                    UI.Text(string.format('FPS: %d', Time.fpsAvg))
-                    UI.Text(string.format('FPS avg: %d', Time.fpsAvg))
-                    UI.Text(string.format('FPS min: %d', Time.fpsMin))
-                    UI.Text(string.format('FPS max: %d', Time.fpsMax))
-                    UI.Text(string.format('Time: %.3f s', Time.time))
-                    UI.Text(string.format('Delta time: %f s', Time.deltaTime))
-                    UI.Text(string.format('Frame time: %f ms', Time.frameTime))
-                    UI.Text(string.format('Frame: %d', Time.frame))
-                end
+                UI.Text(string.format('FPS: %d', Time.fpsAvg))
+                UI.Text(string.format('FPS avg: %d', Time.fpsAvg))
+                UI.Text(string.format('FPS min: %d', Time.fpsMin))
+                UI.Text(string.format('FPS max: %d', Time.fpsMax))
+                UI.Text(string.format('Time: %.3f s', Time.time))
+                UI.Text(string.format('Delta time: %f s', Time.deltaTime))
+                UI.Text(string.format('Frame time: %f ms', Time.frameTime))
+                UI.Text(string.format('Frame: %d', Time.frame))
                 UI.EndTabItem()
             end
             if UI.BeginTabItem(ICONS.CODE..' Scripting') then

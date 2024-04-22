@@ -1,0 +1,22 @@
+name: Lunam CI GitHub Actions
+run-name: ${{ github.actor }} Lunam CI GitHub Actions 🚀
+on: [push]
+jobs:
+  Explore-GitHub-Actions:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+      - run: echo "🐧 This job is now running on a ${{ runner.os }} server!"
+      - run: echo "🔎 The name of the branch is ${{ github.ref }} and repo is ${{ github.repository }}."
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
+      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
+      - run: sudo apt-get update
+      - run: bash setup_packages_linux.sh
+      - run: clang -v
+      - run: export CC=/usr/bin/clang && export CXX=/usr/bin/clang++ && cmake -S . -B ci_build -DCMAKE_BUILD_TYPE=Release
+      - run: cd ci_build || exit
+      - run: cmake --build ci_build -t lunam -j4
+      - run: ./lunam
+      - run: echo "🍏 This job's status is ${{ job.status }}."

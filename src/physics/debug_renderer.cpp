@@ -60,9 +60,9 @@ namespace physics {
         ECastShadow shadow,
         EDrawMode mode
     ) -> void {
-        static constinit std::uint8_t called = 0;
+        static constinit int called = 0;
         if (called < 10) {
-            log_warn("Function not yet implemented");
+            log_warn("NYI");
             ++called;
         }
     }
@@ -73,17 +73,17 @@ namespace physics {
         JPH::ColorArg inColor,
         float height
     ) -> void {
-        static constinit std::uint8_t called = 0;
+        static constinit int called = 0;
         if (called < 10) {
-            log_warn("Function not yet implemented");
+            log_warn("NYI");
             ++called;
         }
     }
 
     auto debug_renderer::CreateTriangleBatch(const Triangle* tris, int count) -> Batch {
-        static constinit std::uint8_t called = 0;
+        static constinit int called = 0;
         if (called < 10) {
-            log_warn("Function not yet implemented");
+            log_warn("NYI");
             ++called;
         }
         return {};
@@ -95,9 +95,9 @@ namespace physics {
         const std::uint32_t* indices,
         int icount
     ) -> Batch {
-        static constinit std::uint8_t called = 0;
+        static constinit int called = 0;
         if (called < 10) {
-            log_warn("Function not yet implemented");
+            log_warn("NYI");
             ++called;
         }
         return {};

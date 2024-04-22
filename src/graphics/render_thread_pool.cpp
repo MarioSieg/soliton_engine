@@ -5,6 +5,8 @@
 #if PLATFORM_WINDOWS
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+#else
+#include <pthread.h>
 #endif
 
 namespace graphics {
@@ -14,12 +16,12 @@ namespace graphics {
         const std::int32_t thread_id,
         thread_shared_ctx& shared_ctx
     ) : m_token {token}, m_num_threads {num_threads}, m_thread_id {thread_id}, m_shared_ctx {shared_ctx} {
-        const vk::Device device = vkb_vk_device();
+        const vk::Device device = vkb::vkdvc();
 
         // create command pool
         const vk::CommandPoolCreateInfo pool_info {
             .flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer,
-            .queueFamilyIndex = vkb_device().get_graphics_queue_idx()
+            .queueFamilyIndex = vkb::dvc().get_graphics_queue_idx()
         };
         vkcheck(device.createCommandPool(&pool_info, &vkb::s_allocator, &m_command_pool));
 
@@ -39,7 +41,7 @@ namespace graphics {
         if (m_thread.joinable()) {
             m_thread.join();
         }
-        const vk::Device device = vkb_vk_device();
+        const vk::Device device = vkb::vkdvc();
         device.freeCommandBuffers(m_command_pool, vkb::context::k_max_concurrent_frames, m_command_buffers.data());
         device.destroyCommandPool(m_command_pool, &vkb::s_allocator);
     }
@@ -50,6 +52,17 @@ namespace graphics {
 
 #if PLATFORM_WINDOWS
         SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
+#elif PLATFORM_LINUX
+        pthread_t cthr_id = pthread_self();
+        pthread_setname_np(cthr_id, "Lunam Engine Render Thread");
+        pthread_attr_t thr_attr {};
+        int policy = 0;
+        int max_prio_for_policy = 0;
+        pthread_attr_init(&thr_attr);
+        pthread_attr_getschedpolicy(&thr_attr, &policy);
+        max_prio_for_policy = sched_get_priority_max(policy);
+        pthread_setschedprio(cthr_id, max_prio_for_policy);
+        pthread_attr_destroy(&thr_attr);
 #endif
 
         while (!m_token.load(std::memory_order_relaxed)) [[likely]] {
@@ -77,8 +90,8 @@ namespace graphics {
         m_active_command_buffer = m_command_buffers[vkb::context::s_instance->get_current_frame()];
         vkcheck(m_active_command_buffer.begin(&begin_info));
 
-        const auto w = static_cast<float>(vkb_context().get_width());
-        const auto h = static_cast<float>(vkb_context().get_height());
+        const auto w = static_cast<float>(vkb::ctx().get_width());
+        const auto h = static_cast<float>(vkb::ctx().get_height());
 
         // Update dynamic viewport state
         vk::Viewport viewport {};

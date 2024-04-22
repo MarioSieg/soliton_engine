@@ -3,7 +3,6 @@
 #pragma once
 
 #include "prelude.hpp"
-#include "vma.hpp"
 
 // TODO: RAII
 

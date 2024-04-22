@@ -1,0 +1,926 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+
+<title>NoesisGUI 3.1 Release Notes - Documentation | NoesisGUI</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<meta content="Release notes for NoesisGUI 3.1" name="description" />
+
+<meta charset="UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+
+<!-- Twitter Cards -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@noesisengine" />
+<meta name="twitter:url" content="https://www.noesisengine.com/docs/Gui.Core.Changelog_v31.html" />
+<meta name="twitter:title" content="NoesisGUI 3.1 Release Notes | NoesisGUI" />
+<meta name="twitter:description" content="Release notes for NoesisGUI 3.1" />
+<meta name="twitter:image" content="https://www.noesisengine.com/images/logos/logo-flat.png" />
+
+<!-- Facebook Cards -->
+<meta property="og:title" content="NoesisGUI 3.1 Release Notes | NoesisGUI" />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="https://www.noesisengine.com/images/logos/logo-flat.png" />
+<meta property="article:published_time" content="2023-10-02 14:30:50" />
+<meta property="og:description" content="Release notes for NoesisGUI 3.1" />
+<meta property="og:url" content="https://www.noesisengine.com/docs/Gui.Core.Changelog_v31.html" />
+<meta property="og:site_name" content="NoesisGUI" />
+
+<link rel="canonical" href="https://www.noesisengine.com/docs/Gui.Core.Changelog_v31.html" />
+<link rel="shortcut icon" href="/favicon.ico" />
+
+<!--script src="https://use.typekit.net/taq4txx.js"></script-->
+<!--script>try{Typekit.load({ async: true });}catch(e){}</script-->
+
+<link rel="stylesheet" href="style/noesis.css?version=12" type="text/css" media="all"/>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-KE76SPT9HR"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-KE76SPT9HR');
+</script>
+
+<script src="/js/vendor/modernizr.js"></script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
+
+
+</head>
+<body>
+<div class="changelog document" id="noesisgui-3-1-release-notes">
+
+
+    <!-- NOESIS WEB ------- BEGIN ------- -->
+
+    <div class="developers documentation">
+
+        <!--[if lt IE 9]>
+        <script type="text/javascript" src="/js/vendor/selectivizr.js"></script>
+        <script type="text/javascript" src="/js/vendor/respond.js"></script>
+        <div class="old-browser-warning">
+            You are using a very old browser.<br>
+            To get the best possible experience using our website we recommend that you upgrade to a newer version or other web browser. <br>
+            A list of the most popular web browsers <a href="http://browsehappy.com/">can be found here</a>
+        </div>
+        <![endif]-->
+
+        <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+            <symbol id="svg-icon-social-vimeo" width="30" height="30" viewBox="-26 20 30 30">
+                <path d="M-23,30.2c2.1-1.7,5.1-4.8,7.5-4.8c2.3,0,2.9,2.2,3.2,4.7c0.3,2.5,1.2,7.8,2.5,7.8 c1.2,0,4.1-4.7,3.9-6.6c-0.2-1.8-2.2-1.6-3.3-1c1-3.7,3.4-5.8,6.5-5.8c3.1,0,3.8,2.3,3.8,4.9c0,3.9-8.2,16-13.1,16 c-3.1,0-3.8-4.4-4.4-6.6c-0.6-2.2-1.8-7.9-3.3-8.3c-0.6-0.1-2.1,1.1-2.1,1.1L-23,30.2z"/>
+            </symbol>
+            <symbol id="svg-icon-social-google" width="30" height="30" viewBox="-25 24 30 30">
+                <path d="M-6.3 45.9c0 1-.3 2-.8 2.8-1.7 2.9-5.2 3.9-8.3 3.9-2.5 0-5.5-.6-6.9-2.9-.4-.6-.6-1.4-.6-2.1 0-1.9 1.1-3.4 2.7-4.3 1.9-1.2 4.4-1.5 6.6-1.6-.6-.8-1-1.4-1-2.4 0-.5.1-.9.3-1.4-.4 0-.7.1-1.1.1-3.2 0-5.8-2.3-5.8-5.6 0-1.8.9-3.6 2.2-4.8 1.8-1.5 4.3-2.1 6.6-2.1h6.9l-2.3 1.4H-10c1.5 1.3 2.5 2.7 2.5 4.8 0 4.2-3.9 4.7-3.9 6.8 0 2 5.1 2.7 5.1 7.4zm-2.3 1.4c0-2.2-2.2-3.6-3.8-4.7h-.8c-2.7 0-6.6.9-6.6 4.2 0 3.2 3.5 4.3 6.1 4.3 2.4 0 5.1-1 5.1-3.8zm-2.8-11.5c.7-.7.9-1.6.9-2.6 0-2.4-1.4-6.5-4.4-6.5-.9 0-1.9.5-2.4 1.2-.6.7-.8 1.7-.8 2.6 0 2.5 1.4 6.3 4.3 6.3.8 0 1.8-.4 2.4-1zm14.4.9v1.8H-.5v3.6h-1.7v-3.6h-3.5v-1.8h3.5v-3.6h1.7v3.6H3z">
+            </symbol>
+            <symbol id="svg-icon-social-twitter" width="30" height="30" viewBox="-25 20 30 30">
+                <path d="M.4 29.7v.7c0 7-5.3 15.1-15.1 15.1-3 0-5.8-.9-8.1-2.4.4 0 .8.1 1.3.1 2.5 0 4.8-.8 6.6-2.3-2.3 0-4.3-1.6-5-3.7.3 0 .7.1 1 .1.5 0 1-.1 1.4-.2-2.4-.5-4.2-2.6-4.2-5.2v-.1c.7.4 1.5.6 2.4.7-1.4-1-2.4-2.6-2.4-4.4 0-1 .3-1.9.7-2.7 2.6 3.2 6.5 5.3 10.9 5.5-.1-.4-.1-.8-.1-1.2 0-2.9 2.4-5.3 5.3-5.3 1.5 0 2.9.6 3.9 1.7 1.2-.2 2.3-.7 3.4-1.3C2 26 1.2 27.1.1 27.7c1.1-.1 2.1-.4 3.1-.8C2.4 28 1.4 29 .4 29.7z">
+            </symbol>
+            <symbol id="svg-icon-social-facebook" width="30" height="30" viewBox="-31 24 30 30">
+                <path d="M-8.7 29.8h-2.6c-2 0-2.4 1-2.4 2.4v3.1h4.8l-.6 4.9h-4.2v12.5h-5V40.1h-4.2v-4.9h4.2v-3.6c0-4.2 2.5-6.4 6.2-6.4 1.8 0 3.3.1 3.7.2v4.4z">
+            </symbol>
+            <symbol id="svg-icon-social-youtube" width="30" height="30" viewBox="-26 25 30 30">
+                <path d="M.9 52c-.3 1.3-1.4 2.2-2.6 2.4-3 .3-6.1.3-9.1.3s-6.1 0-9.1-.3c-1.3-.1-2.3-1.1-2.6-2.4-.5-1.9-.5-3.9-.5-5.8s0-3.9.4-5.7c.3-1.3 1.4-2.2 2.6-2.4 3-.3 6.1-.3 9.1-.3s6.1 0 9.1.3c1.3.1 2.3 1.1 2.6 2.4.4 1.8.4 3.8.4 5.7.1 1.9.1 3.9-.3 5.8zm-17-9.8v-1.5h-5.1v1.5h1.7v9.3h1.6v-9.3h1.8zm2.7-16.9l-2 6.5v4.4H-17v-4.4c-.1-.8-.5-2-1-3.5-.4-1-.7-2.1-1.1-3.1h1.7l1.2 4.3 1.1-4.3h1.7zm1.8 26.2v-8.1h-1.5v6.2c-.3.5-.6.7-.9.7-.2 0-.3-.1-.3-.3v-6.6h-1.5v6.4c0 .6 0 1 .1 1.2.1.4.5.6 1 .6s1.1-.3 1.7-1v.9h1.4zM-9 33.6c0 .9-.1 1.5-.5 1.9-.4.6-1 .8-1.7.8s-1.3-.3-1.7-.8c-.3-.4-.5-1.1-.5-1.9v-2.9c0-.9.1-1.5.5-1.9.4-.6 1-.8 1.7-.8.8 0 1.3.3 1.7.8.3.4.5 1 .5 1.9v2.9zm-1.5-3.1c0-.8-.2-1.1-.7-1.1-.5 0-.7.4-.7 1.1v3.4c0 .8.2 1.1.7 1.1.5 0 .7-.4.7-1.1v-3.4zM-6 45.8c0-.8 0-1.3-.1-1.6-.2-.6-.6-.9-1.2-.9-.5 0-1 .3-1.5.9v-3.6h-1.5v10.9h1.5v-.8c.5.6 1 .9 1.5.9.6 0 1-.3 1.2-.9.1-.3.1-.9.1-1.6v-3.3zm-1.5 3.4c0 .7-.2 1.1-.6 1.1-.2 0-.5-.1-.7-.4V45c.2-.2.5-.4.7-.4.4 0 .6.4.6 1.1v3.5zm4-12.9H-5v-.9c-.6.7-1.1 1-1.7 1-.5 0-.8-.2-1-.6-.1-.2-.1-.6-.1-1.2v-6.5h1.5v6.6c0 .2.1.4.3.4.3 0 .6-.2.9-.7v-6.2h1.5v8.1zm3 12.4H-2v1c-.1.4-.3.6-.7.6-.5 0-.8-.4-.8-1.1v-1.4h2.9V46c0-.9-.1-1.5-.4-1.9-.4-.6-1-.8-1.7-.8-.8 0-1.3.3-1.8.8-.3.4-.5 1-.5 1.9v2.8c0 .9.2 1.5.5 1.9.4.6 1 .8 1.8.8s1.4-.3 1.8-.9c.2-.3.3-.6.3-.9v-1zM-2 46.5h-1.5v-.8c0-.7.2-1.1.7-1.1s.8.4.8 1.1v.8z">
+            </symbol>
+            <symbol id="svg-icon-social-linkedin" width="30" height="30" viewBox="-26 25 30 30">
+                <path d="M-22.6 51.3h5v-15h-5v15zm17.8-15.5c-2.2 0-3.5.8-4.8 2.6v-2.1h-5v15h5v-8.1c0-1.7.9-3.4 2.8-3.4 2 0 3.2 1.7 3.2 3.4v8.2h5v-8.5c0-6-4-7.1-6.2-7.1zM-20.1 29c-1.6 0-2.9 1.2-2.9 2.6 0 1.5 1.3 2.6 2.9 2.6 1.6 0 2.9-1.2 2.9-2.6.1-1.4-1.2-2.6-2.9-2.6z">
+            </symbol>
+            <symbol id="svg-scroll-down" width="48" height="48" viewBox="0 0 48 48">
+                <path d="M24 1C11.3 1 1 11.3 1 24s10.3 23 23 23 23-10.3 23-23S36.7 1 24 1zm0 31.5L11.9 21.6l1.3-1.5L24 29.8l10.7-9.7 1.3 1.5-12 10.9z">
+            </symbol>
+        </svg>
+
+        <header id="header" class="SOZO-header js-hide-nav">
+
+            <div class="wrapper">
+
+                <a href="/" class="logo animate-me" title="Noesis">
+                    <img src="/images/logos/noesis-gui-logo.svg" alt="NoesisGUI">
+                </a>
+
+                <div class="user-management">
+                    <iframe src="/includes/user.php" scrolling="no"></iframe>
+                </div>
+
+                <a title="Menu" href="/" class="mobile-menu" rel="nofollow">
+                    <i class="burger-icon"></i>
+                </a>
+
+                <nav class="primary-nav site-nav" role="navigation">
+                    <ul>
+                        <li><a href="/" title="NoesisGUI Main Features"><span>features</span></a></li>
+                        <li><a href="/licensing.php" title="NoesisGUI Licensing"><span>licensing</span></a></li>
+                        <li class="has-children"><a data-id="child-nav" href="/forums" title="NoesisGUI Developer Resources" class="js-mobile-2nd-nav active"><span>developer</span></a>
+                            <nav class="child-nav" id="child-nav">
+                                <ul>
+                                    <li><a href="/forums" title="NoesisGUI Forums">forums</a></li>
+                                    <li><a href="/developers/samples.php" title="NoesisGUI Samples">samples</a></li>
+                                    <li><a href="/xamltoy" title="NoesisGUI XamlToy">xamltoy</a></li>
+                                    <li><a href="/developers/downloads.php" title="NoesisGUI Downloads">downloads</a></li>
+                                    <li><a href="/docs/Gui.Core.Index.html" title="NoesisGUI Documentation" class="active">documentation</a></li>
+                                    <li><a href="/bugs/my_view_page.php" target="_blank" rel="nofollow" title="NoesisGUI Bug Tracker">bugtracker</a></li>
+                                    <li><a href="/bugs/roadmap_page.php" target="_blank" rel="nofollow" title="NoesisGUI Roadmap">roadmap</a></li>
+                                </ul>
+                            </nav>
+                        </li>
+                        <li><a href="/contact.php" title="Contact Information"><span>Contact</span></a></li>
+                    </ul>
+                </nav>
+
+            </div>
+
+        </header>
+
+        <header id="doc-header">
+            <img src="noesis-gui-logo.svg" alt="NoesisGUI">
+        </header>
+
+        <div class="main-content" role="main">
+
+            <nav id="noesis-secondary-nav" class="secondary-nav site-nav js-hide-nav">
+                <div class="wrapper">
+                    <ul>
+                        <li><a href="/forums" title="NoesisGUI Forums">forums</a></li>
+                        <li><a href="/developers/samples.php" title="NoesisGUI Samples">samples</a></li>
+                        <li><a href="/xamltoy" title="NoesisGUI XamlToy">xamltoy</a></li>
+                        <li><a href="/developers/downloads.php" title="NoesisGUI Downloads">downloads</a></li>
+                        <li><a href="/docs/Gui.Core.Index.html" title="NoesisGUI Documentation" class="active">documentation</a></li>
+                        <li><a href="/bugs/my_view_page.php" target="_blank" rel="nofollow" title="NoesisGUI Bug Tracker">bugtracker</a></li>
+                        <li><a href="/bugs/roadmap_page.php" target="_blank" rel="nofollow" title="roadmap">roadmap</a></li>
+                    </ul>
+                </div>
+            </nav>
+
+
+            <div class="documentation-article">
+
+                <div class="wrapper">
+
+                    <div id="noesis_web_contenidosMain" class="noesis_web_contenidosMain sozo-content">
+                        <div id="noesis_doc_wrap">
+
+                            <div class="noesis_doc_header_menu">
+                                <div class="noesis_doc_search_container">
+                                    <div class="noesis_doc_search_box">
+                                      <input id="docsearch-input" class="noesis_doc_search_input"
+                                        aria-autocomplete="both" aria-labelledby="docsearch-label"
+                                        autocomplete="off" autocorrect="off" autocapitalize="off" enterkeyhint="search" spellcheck="false"
+                                        placeholder="Search docs..."
+                                        maxlength="64" type="search" value="">
+                                    </div>
+                                </div>
+                                <a href="Gui.Core.Index.html" class="noesis_doc_header_link">
+                                    <img src="blue-home-icon.png?version=3.2" alt="Documentation Index" title="Documentation Index">
+                                </a>
+                            </div>
+
+                            <div class="noesis_doc_content">
+
+        <!-- NOESIS WEB ------- END ------- -->
+
+
+<h1 class="title">NoesisGUI 3.1 Release Notes</h1>
+
+<div class="section" id="version-3-1-7">
+<h1>Version 3.1.7</h1>
+<p><em>Released 8 Feb 2023</em> - <a class="reference external" href="https://www.noesisengine.com/developers/downloads.php">Download</a></p>
+<ul class="simple">
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">Unreal</tt> Improvements and fixes:<ul>
+<li>Removed uses of functions deprecated in UE5.1.</li>
+<li>Moved to using RenderPass resolves for multisampled RenderTargets.</li>
+<li>Used Memoryless textures where applicable.</li>
+<li>Improved RHI object debug naming.</li>
+<li>Fixed deprecated warning updating uniform buffers on Metal platforms.</li>
+</ul>
+</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">App</tt> Xbox Series improvements:<ul>
+<li>Support for disabling VSync.</li>
+<li>Validation layer enabled in Debug builds.</li>
+<li>Fixed when using Multisampling.</li>
+<li>Invalid state creating derived pipelines.</li>
+<li>GameCoreDisplay using 4K resolution if supported.</li>
+<li>Updates for latest SDK (October 2022).</li>
+</ul>
+</li>
+<li><tt class="docutils literal">Enhancement</tt> Display::Close() for PlayStation and Xbox (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2366">#2366</a>).</li>
+<li><tt class="docutils literal">Enhancement</tt> RenderDeviceGL doesn't have sRGB parameter in C# constructor (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2473">#2473</a>).</li>
+<li><tt class="docutils literal">Enhancement</tt> Expose PS5 render device in C# (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2458">#2458</a>).</li>
+<li><tt class="docutils literal">Enhancement</tt> Updated Menu3D sample so 3D transform doesn't depend on resolution.</li>
+<li><tt class="docutils literal">Fixed</tt> Crash in TSF when collapsing focused <a class="reference external" href="Gui.Core._TextBox.html">TextBox</a> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2492">#2492</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> LayoutUpdated was incorrectly reentering ProcessLayout (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2492">#2492</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Binding converter errors not showing binding information (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2490">#2490</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Crash destroying template with IsMouseOver triggers (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2475">#2475</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> AGCRenderDevice::UpdateTexture fixed for Srgb textures (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2493">#2493</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Edit and Continue not working on the PS5 (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2376">#2376</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">C#</tt> Incorrect XSetWindowAttributes struct definition.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unity</tt> Meta file conflicts (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2489">#2489</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unity</tt> Texture corruption or crashes on built player (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2495">#2495</a>).</li>
+</ul>
+</div>
+<div class="section" id="version-3-1-6">
+<h1>Version 3.1.6</h1>
+<p><em>Released 18 Nov 2022</em> - <a class="reference external" href="https://www.noesisengine.com/developers/downloads.php">Download</a></p>
+<ul class="simple">
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">Unity</tt> Fixed compiler warnings in Unity 2022.1.</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">Unreal</tt> Support for UE5.1.</li>
+<li><tt class="docutils literal">Enhancement</tt> Implement <a class="reference external" href="Gui.Core._UIElement.html">UIElement</a> <em>LayoutUpdated</em> event (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=1041">#1041</a>).</li>
+<li><tt class="docutils literal">Enhancement</tt> Added support for <tt class="docutils literal"><span class="pre">PropertyChanged(&quot;&quot;)</span></tt> to indicate all props changed (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2432">#2432</a>).</li>
+<li><tt class="docutils literal">Enhancement</tt> Support for extra texture in custom <a class="reference external" href="Gui.Core._BrushShader.html">Brush Shaders</a> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2435">#2435</a>).</li>
+<li><tt class="docutils literal">Enhancement</tt> Support for <a class="reference external" href="https://github.com/Noesis/Tutorials/tree/master/Samples/CustomAnimation">Custom Animations</a> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2260">#2260</a>, <a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2372">#2372</a>).</li>
+<li><tt class="docutils literal">Enhancement</tt> Added localization helpers <a class="reference external" href="App.ApplicationLauncher._RichText.html">RichText</a> and <a class="reference external" href="App.ApplicationLauncher._LocExtension.html">LocExtension</a> markup. (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=1963">#1963</a>, <a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2355">#2355</a>)</li>
+<li><tt class="docutils literal">Enhancement</tt> <a class="reference external" href="https://github.com/Noesis/Tutorials/tree/master/Samples/Localization">Localization</a> sample updated with <a class="reference external" href="App.ApplicationLauncher._RichText.html">RichText</a> and <a class="reference external" href="App.ApplicationLauncher._LocExtension.html">LocExtension</a>.</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">App</tt> Restore focused element when <a class="reference external" href="App.ApplicationLauncher._MessageBox.html">MessageBox</a> is closed.</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">C#</tt> <a class="reference external" href="Gui.Animation._Clock.html">Clock</a> <em>CurrentIteration</em>, <em>CurrentProgress</em> and <em>CurrentTime</em> exposed as nullable (as in WPF).</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">C++</tt> Implemented support for <a class="reference external" href="https://github.com/wolfpld/tracy">Tracy</a> profiler.</li>
+<li><tt class="docutils literal">Fixed</tt> When using IME, <a class="reference external" href="Gui.Core._TextBox.html">TextBox</a> cursor shown even though focus has moved to another <a class="reference external" href="Gui.Core._TextBox.html">TextBox</a> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2367">#2367</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Assertion thrown when backspace key is pressed after long text is entered using IME (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2365">#2365</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Thumb failing after losing mouse capture (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2374">#2374</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Crash in <em>GetXamlDependencies()</em> when using unknown namespace (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2375">#2375</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Crash clearing <em>Inlines</em> that have a binding.</li>
+<li><tt class="docutils literal">Fixed</tt> Crash destroying <a class="reference external" href="Gui.Core._ItemsPresenter.html">ItemsPresenter</a> before its <a class="reference external" href="Gui.Core._ScrollContentPresenter.html">ScrollContentPresenter</a> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2384">#2384</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Inline bindings not working when used inside a template <a class="reference external" href="Gui.Core._ToolTip.html">ToolTip</a>.</li>
+<li><tt class="docutils literal">Fixed</tt> Inlines connected to the <em>View</em> twice when added in <a class="reference external" href="Gui.Core._TextBox.html">TextBlock's</a> <em>AncestorChanged</em> event.</li>
+<li><tt class="docutils literal">Fixed</tt> Kerning incorrectly applied between line breaks (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2388">#2388</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Incorrect view stats when sharing renderer between views.</li>
+<li><tt class="docutils literal">Fixed</tt> Assert hit when showing/hiding the scrollbars in a <a class="reference external" href="Gui.Core._ScrollViewer.html">ScrollViewer</a> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2390">#2390</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> DrawingCommands allocating when updating proxy.</li>
+<li><tt class="docutils literal">Fixed</tt> Allow using markup extension attached properties without the <em>Extension</em> suffix.</li>
+<li><tt class="docutils literal">Fixed</tt> Crash when clearing a collection that was bound in a <a class="reference external" href="Gui.Core._DataTemplate.html">DataTemplate</a>.</li>
+<li><tt class="docutils literal">Fixed</tt> Crash removing a <a class="reference external" href="Gui.Core._ScrollViewer.html">ScrollViewer</a> with a pending layout invalidation.</li>
+<li><tt class="docutils literal">Fixed</tt> Duplicate user control <tt class="docutils literal">x:Name</tt> causes incorrect binding (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2401">#2401</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <a class="reference external" href="Gui.Core._ScrollViewer.html">ScrollViewer</a> not applying <em>PanningMode</em> when set with style in a template (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2400">#2400</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <em>ScrollChanged</em> event missing the timing for ongoing scrolling input (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2408">#2408</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Cursors not working on popups.</li>
+<li><tt class="docutils literal">Fixed</tt> Crash reloading xaml using the same name in a template <a class="reference external" href="Gui.Core._Grid.html">Grid</a> and outer <a class="reference external" href="Gui.Core._Grid.html">Grid</a> elements (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2419">#2419</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <a class="reference external" href="Gui.Core._GridSplitter.html">GridSplitter</a> crash pressing <em>Escape</em> key without doing a resize.</li>
+<li><tt class="docutils literal">Fixed</tt> Infinite recursion caused by self binding in <em>VisualTreeInspector</em> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2426">#2426</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Nothing rendered when a child has an undefined transform.</li>
+<li><tt class="docutils literal">Fixed</tt> <a class="reference external" href="Gui.Core._TreeViewItem.html">TreeViewItem</a> preventing directional navigation outside of the <a class="reference external" href="Gui.Core._TreeView.html">TreeView</a> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2422">#2422</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <a class="reference external" href="Gui.Core._MenuItem.html">MenuItem</a> not receiving focus when inside <a class="reference external" href="Gui.Core._TreeView.html">TreeView</a> or <a class="reference external" href="Gui.Controls._ListView.html">ListView</a> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2431">#2431</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <a class="reference external" href="Gui.Core._ContextMenu.html">ContextMenu</a> <em>Placement</em> intermittently not being respected (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2437">#2437</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Gamepad <em>Accept</em> button not executing selected <a class="reference external" href="Gui.Core._MenuItem.html">MenuItem</a>.</li>
+<li><tt class="docutils literal">Fixed</tt> Crashes on Pixel 6/7-family devices running Android 13 (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2450">#2450</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Hitting assert in <em>Rect</em> constructor when using <a class="reference external" href="Gui.Animation._LinearRectKeyFrame.html">LinearRectKeyFrame</a> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2398">#2398</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Circular dependency produces memory leaks (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=1287">#1287</a>, <a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=1338">#1338</a>, <a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=1153">#1153</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Add an option to limit Inspector target local applications only (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2418">#2418</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Inspector value provider combo box losing selected value when scrolling.</li>
+<li><tt class="docutils literal">Fixed</tt> Inspector 'edit value' and 'add item' buttons shown at the same time.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">C#</tt> Getter for dependency properties of type <em>Type</em>.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">C#</tt> Argument exception when using ref property (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2386">#2386</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">C#</tt> Crash in code-behind event handler called when control is destroyed.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">C#</tt> Can't register embedded resources error (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2463">#2463</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">C++</tt> D3D11/12 <a class="reference external" href="App.MediaElement._MediaPlayer.html">MediaPlayer</a> error when setting position while playing.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">C++</tt> Inline enum reflection causes duplicate definition linker error (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2440">#2440</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">C++</tt> Memory corruption in <tt class="docutils literal"><span class="pre">String::Replace()</span></tt> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2462">#2462</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">C++</tt> Support for rectangles and DPI scale in <a class="reference external" href="Gui.Core.ProvidersTutorial.html#texture-provider">TextureProvider</a> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2373">#2373</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">C++</tt> Crash in <tt class="docutils literal"><span class="pre">GLRenderDevice::DestroyBuffer()</span></tt> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2414">#2414</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">C++</tt> API collision with <em>FindResource</em> macro in windows headers.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unity</tt> The files in the API folder are missing their .meta files (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2378">#2378</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unity</tt> UI not rendering when camera clearing set to SkyBox (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2385">#2385</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unity</tt> Added &quot;Injection Point&quot; to Noesis View editor to control when UI renders (URP) (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2438">#2438</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unity</tt> Font Importer cannot be changed (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2377">#2377</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unity</tt> Crash when loading <a class="reference external" href="https://renderdoc.org/">RenderDoc</a> while a preview is active.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unity</tt> <em>NoesisPostprocess</em> causes the editor to get stuck (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2413">#2413</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unity</tt> Crash rendering <a class="reference external" href="Gui.Core._WrapPanel.html">WrapPanel</a> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2417">#2417</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unity</tt> Better support for Sprites used in XAML (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2351">#2351</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unity</tt> Preview editors not resizing correctly.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unreal</tt> Unable to run blueprint command when using CreateEvent node (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2363">#2363</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unreal</tt> Video issues in Unreal Engine 5 (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2416">#2416</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unreal</tt> Noesis widget blocks input for other UMG widgets or actor mouse over events (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2430">#2430</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unreal</tt> Changes to Application Resources xaml not setting the new dictionary (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2441">#2441</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unreal</tt> Set W/Notify Regression (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2464">#2464</a>).</li>
+</ul>
+</div>
+<div class="section" id="version-3-1-5">
+<h1>Version 3.1.5</h1>
+<p><em>Released 24 June 2022</em> - <a class="reference external" href="https://www.noesisengine.com/developers/downloads.php">Download</a></p>
+<ul class="simple">
+<li><tt class="docutils literal">Feature</tt> Implement <a class="reference external" href="Gui.Animation._Storyboard.html">Storyboard</a> <em>Seek</em> methods (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=1484">#1484</a>).</li>
+<li><tt class="docutils literal">Feature</tt> Added support for <a class="reference external" href="Gui.Animation._Int64Animation.html">Int64</a> animations (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2339">#2339</a>).</li>
+<li><tt class="docutils literal">Feature</tt> Implemented <a class="reference external" href="Gui.Core._MouseBinding.html">MouseBinding</a> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=1161">#1161</a>).</li>
+<li><tt class="docutils literal">Enhancement</tt> Support for '-enable-16bit-types' in DXC compiler (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2329">#2329</a>).</li>
+<li><tt class="docutils literal">Enhancement</tt> Remote control with Xbox controller connected to PC (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2281">#2281</a>).</li>
+<li><tt class="docutils literal">Enhancement</tt> Added <em>CopyPixels</em> method to retrieve the image bytes from a <a class="reference external" href="Gui.Core._BitmapSource.html">BitmapSource</a> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2349">#2349</a>).</li>
+<li><tt class="docutils literal">Enhancement</tt> Improved virtualization warning message when panel is not wrapped in a <a class="reference external" href="Gui.Core._ScrollViewer.html">ScrollViewer</a>.</li>
+<li><tt class="docutils literal">Enhancement</tt> Exposed enumeration of font faces (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2140">#2140</a>).</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">Unreal</tt> Changed Input Mode to &quot;Game And UI&quot; on &quot;Add to Viewport&quot;.</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">Unreal</tt> Support for UE5.1.</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">Unreal</tt> Support for non PCH, non Unity builds.</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">C#</tt> Added support for automatic loading of assemblies and its resources.</li>
+<li><tt class="docutils literal">Fixed</tt> <a class="reference external" href="Gui.Core._TextBlock.html">TextBlock</a> not correctly aligned when bigger than its container.</li>
+<li><tt class="docutils literal">Fixed</tt> <a class="reference external" href="Gui.Core._Popup.html">Popup</a> contents cannot fill the entire screen (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2358">#2358</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Some converters crashing when receiving null string pointer (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2319">#2319</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Freeze resources in XAML missing (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=824">#824</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Crash when parsing a single node XAML without the default namespace.</li>
+<li><tt class="docutils literal">Fixed</tt> Crash when applying animation values in <em>TimeManager::Tick</em> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2317">#2317</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Crash when sharing storyboards in different <a class="reference external" href="Gui.Animation._VisualStateGroup.html">VisualStateGroups</a> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2297">#2297</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <a class="reference external" href="Gui.Controls._GridViewHeaderRowPresenter.html">GridViewHeaderRowPresenter</a> not updated when <a class="reference external" href="Gui.Controls._ListView.html">ListView</a> <em>View</em> changed.</li>
+<li><tt class="docutils literal">Fixed</tt> <a class="reference external" href="Gui.Core._EventTrigger.html">EventTrigger</a> <em>Actions</em> throws an exception when created from code behind (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2345">#2345</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <a class="reference external" href="Gui.Core._InlineUIContainer.html">InlineUIContainers</a> not rendered after disconnecting <a class="reference external" href="Gui.Core._TextBlock.html">TextBlock</a> from the <em>View</em> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2343">#2343</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <a class="reference external" href="Gui.Core._MultiBinding.html">MultiBinding</a> shows error messages when removing target from the visual tree (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2347">#2347</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Crash in Metal renderer when using complex SVG paths (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2342">#2342</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Shader compiler error - Intel HD (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2357">#2357</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Crash mapping vertices in GL renderer (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2313">#2313</a>, <a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2314">#2314</a>, <a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2323">#2323</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Assert failed - VGLContext::GetBatchGroupPaint (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2335">#2335</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">C++</tt> <tt class="docutils literal">App</tt> <em>Win32Display</em> calculating wrong width/height with DPI scale &gt; 1.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">C++</tt> <tt class="docutils literal">App</tt> <em>Win32Display</em> audio thread paused when window going to background.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">C#</tt> Local providers not closing <em>Stream</em> and running into errors (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2338">#2338</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">C#</tt> Dispatcher thread check should be done in managed land (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2261">#2261</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unreal</tt> Incorrect <em>FontWeight</em> value when setting <em>DefaultFontProperties</em>.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unreal</tt> Crash removing <em>NoesisInstance</em> during a mouse event.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unreal</tt> Crash when using MPC-collections in a material (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2312">#2312</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unreal</tt> <em>LevelToColorConverter</em> not working.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unreal</tt> Issues with lazily loaded textures in Standalone play-in-editor mode.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unreal</tt> CustomVersion added to <em>NoesisInstance</em> and assets upgraded on load.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unreal</tt> Hot reload not always working for <a class="reference external" href="Gui.Core._UserControl.html">UserControls</a> in the Content folder.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unreal</tt> Removed <em>FreeType</em> dependency from <em>NoesisRuntime</em> module.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unreal</tt> Removed forced load of the <em>NoesisEditor</em> module.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unity</tt> Dynamic changes to PPAA in <em>NoesisView</em> editor was broken.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unity</tt> Incorrect texture rect for automatically packed sprites (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2350">#2350</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unity</tt> Textures use twice the expected memory in Unity (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2352">#2352</a>).</li>
+</ul>
+</div>
+<div class="section" id="version-3-1-4">
+<h1>Version 3.1.4</h1>
+<p><em>Released 18 March 2022</em> - <a class="reference external" href="https://www.noesisengine.com/developers/downloads.php">Download</a></p>
+<ul class="simple">
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">Unreal</tt> 5.0-Preview 1 supported.</li>
+<li><tt class="docutils literal">Fixed</tt> <a class="reference external" href="Gui.Core._ScrollViewer.html">ScrollViewer</a> scroll not working if contained element has focus (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2303">#2303</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Crash removing a <a class="reference external" href="Gui.Core._Path.html">Path</a> previously collapsed and its <em>Data</em> set to null.</li>
+<li><tt class="docutils literal">Fixed</tt> <a class="reference external" href="Gui.Animation._VisualState.html">VisualState</a> value not applied when fired during initialization.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">C#</tt> Can't add points to <em>PointCollection</em> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2308">#2308</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unreal</tt> Assert setting null <em>Texture</em> with w/NotifyChanged (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2306">#2306</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unreal</tt> Null <em>FRHITextures</em> crashing the Vulkan RHI.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unity</tt> Disabling Previews still creates the View (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2304">#2304</a>).</li>
+</ul>
+</div>
+<div class="section" id="version-3-1-3">
+<h1>Version 3.1.3</h1>
+<p><em>Released 4 March 2022</em> - <a class="reference external" href="https://www.noesisengine.com/developers/downloads.php">Download</a></p>
+<ul class="simple">
+<li><tt class="docutils literal">Enhancement</tt> Video support on Switch (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2214">#2214</a>).</li>
+<li><tt class="docutils literal">Enhancement</tt> Expose <em>StringFormat</em> and the global <em>CultureInfo</em> object (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2206">#2206</a>).</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">Doc</tt> Our tutorials for <a class="reference external" href="Gui.Core.Unity3DTutorial.html">Unity</a> and <a class="reference external" href="Gui.Core.UnrealTutorial.html">Unreal</a> have been improved.</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">C++</tt> Better documentation of <em>IRenderer</em> and <em>IView</em> classes.</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">C#</tt> Added support for D3D12.</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">Unity</tt> Using custom <em>ScriptableRenderPass</em> with the <em>Universal Rendering Pipeline</em>.</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">Unity</tt> Emscripten updated to 2.0.19 (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2220">#2220</a>, <a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2246">#2246</a>).</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">Unity</tt> Toggle for automatic DPI scaling added to <em>View</em> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2235">#2235</a>).</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">Unity</tt> Support for dynamic DPI scenarios.</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">Unreal</tt> Support for storing XAML assets inside Plugin's Content (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=1951">#1951</a>, <a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=1961">#1961</a>).</li>
+<li><tt class="docutils literal">Feature</tt> Implemented <em>VisualStateGroup</em> events <em>CurrentStateChanging</em> and <em>CurrentStateChanged</em> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2211">#2211</a>).</li>
+<li><tt class="docutils literal">Feature</tt> Added <a class="reference external" href="App.Interactivity._MoveFocusAction.html">MoveFocusAction</a> to Interactivity package.</li>
+<li><tt class="docutils literal">Feature</tt> <tt class="docutils literal">Unreal</tt> Added <em>InputActionTrigger</em> that can be used with <a class="reference external" href="https://www.unrealengine.com/en-US/blog/input-action-and-axis-mappings-in-ue4">Unreal InputActions</a> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2247">#2247</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Text wrapping algorithm breaks words strangely (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2178">#2178</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Collection properties of <a class="reference external" href="Gui.Core._PathGeometry.html">PathGeometry</a>, <a class="reference external" href="Gui.Core._PathFigure.html">PathFigure</a>, <a class="reference external" href="Gui.Core._PolyLineSegment.html">PolyLineSegment</a> and <a class="reference external" href="Gui.Core._GradientBrush.html">GradientBrush</a> are null (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2229">#2229</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Animations added to incorrect <em>TimeManager</em> sometimes.</li>
+<li><tt class="docutils literal">Fixed</tt> 3D UI interaction broken (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2202">#2202</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <a class="reference external" href="Gui.Core._StaticResourceExtension.html">StaticResourceExtension</a> not in the public API (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2216">#2216</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Text not clipped after being collapsed.</li>
+<li><tt class="docutils literal">Fixed</tt> <a class="reference external" href="Gui.Core._Path.html">Path</a> not stretching when <a class="reference external" href="Gui.Core._Viewbox.html">Viewbox</a> expands (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2240">#2240</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Incorrect <a class="reference external" href="Gui.Core._Rectangle.html">Rectangle</a> geometry when only setting one of <em>RadiusX</em> or <em>RadiusY</em> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2236">#2236</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <a class="reference external" href="Gui.Core._TextBlock.html">TextBlock</a> inlines not triggering <em>Loaded</em> and <em>Unloaded</em> events (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2237">#2237</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> x:Name shouldn't be used as key in <em>Resources</em> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2231">#2231</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Bindings in resources not resolving (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2234">#2234</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> ImageSourceConverter not working for <em>Uri</em> properties (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2268">#2268</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <a class="reference external" href="Gui.Core._PasswordBox.html">PasswordBox</a> inside a <a class="reference external" href="Gui.Core._ListBoxItem.html">ListBoxItem</a> loses focus (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2278">#2278</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Crash on <em>LoadComponent</em> registering XAML for hot-reload (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2263">#2263</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Inspector not showing selected View's XAML path (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2284">#2284</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Deadlock when using SizeToContent=&quot;Height&quot; (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2293">#2293</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Window doesn't utilize available screen resolution on Switch (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2250">#2250</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">C#</tt> IDataObject is missing <em>GetDataPresent()</em> method (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2118">#2118</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">C#</tt> DataObject should be public and have a public constructor (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2119">#2119</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">C#</tt> Added <a class="reference external" href="Gui.Core._UIElement.html">UIElement</a> <em>TranslatePoint</em> method (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2030">#2030</a>, <a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2124">#2124</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">C#</tt> <a class="reference external" href="Gui.Core._UIElement.html">UIElement</a> <em>CaptureTouch/ReleaseTouchCapture</em> should receive TouchDevice.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">C#</tt> <a class="reference external" href="App.ApplicationLauncher._Application.html">Application</a> <em>FindResource</em> not implemented (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2245">#2245</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">C#</tt> Missing libEGL.so.1 in Android (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2233">#2233</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unity</tt> Black screen when using the <em>Universal Rendering Pipeline</em> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2219">#2219</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unity</tt> Compiler warnings because of files with the same name (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2227">#2227</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unity</tt> Texture provider incorrectly using <em>Uri</em> including the assembly (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2259">#2259</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unity</tt> Default font importer cannot be used (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2262">#2262</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unity</tt> Gamepad analog thumbstick cannot navigate dense UI (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2286">#2286</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unity</tt> Noesis not compiling when <em>Unity.UI</em> package not installed in the project (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2290">#2290</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unreal</tt> Issues when installing NoesisGUI as an Engine Plugin.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unreal</tt> Compiler errors building for Android.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unreal</tt> Android libraries not found for arm64 or x86_64.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unreal</tt> <em>NoesisEnumWrapper</em> <em>ToString()</em> returns index instead of entry name (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2266">#2266</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unreal</tt> Enum showing incorrect entry names (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2273">#2273</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unreal</tt> Importer unable to create references to assets (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2265">#2265</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unreal</tt> Compile error with <em>ClassGeneratedBy</em> variable in <em>NoesisTypeClass</em> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2292">#2292</a>).</li>
+</ul>
+</div>
+<div class="section" id="version-3-1-2">
+<h1>Version 3.1.2</h1>
+<p><em>Released 22 Dec 2021</em> - <a class="reference external" href="https://www.noesisengine.com/developers/downloads.php">Download</a></p>
+<ul class="simple">
+<li><tt class="docutils literal">Enhancement</tt> <a class="reference external" href="Gui.Core._GridSplitter.html">GridSplitter</a> control implemented (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=1601">#1601</a>, <a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=1870">#1870</a>, <a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=1990">#1990</a>).</li>
+<li><tt class="docutils literal">Enhancement</tt> <a class="reference external" href="Gui.Core._Adorner.html">Adorner</a> and <a class="reference external" href="Gui.Core._AdornerLayer.html">AdornerLayer</a> implemented (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2120">#2120</a>).</li>
+<li><tt class="docutils literal">Enhancement</tt> Added support for custom cursors (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=1109">#1109</a>).</li>
+<li><tt class="docutils literal">Enhancement</tt> Switch to <tt class="docutils literal">DXC</tt> shader compiler for much faster loading times on Xbox (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2093">#2093</a>).</li>
+<li><tt class="docutils literal">Enhancement</tt> <a class="reference external" href="Gui.Core._PropertyPath.html">PropertyPath</a> parser optimized to avoid heavy stack usage (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2131">#2131</a>).</li>
+<li><tt class="docutils literal">Enhancement</tt> Video implemented for PlayStation (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2128">#2128</a>).</li>
+<li><tt class="docutils literal">Enhancement</tt> Added support for .NET 5 and .NETCore 3.1 to <a class="reference external" href="https://www.nuget.org/packages/Noesis.GUI.Extensions/">Noesis.GUI.Extensions</a> NuGet.</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">Unreal</tt> Add Set w/ NotifyChanged <em>Blueprint</em> actions for native variables.</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">Unreal</tt> Added support for nativized <em>Blueprints</em>.</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">Unreal</tt> Make UE4 plugin build without PCHs or Unity CPPs (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2189">#2189</a>).</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">Unreal</tt> Added support for system fallback fonts in settings.</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">Unity</tt> Added XAML snippets to <em>'Tools-&gt;NoesisGUI-&gt;Create'</em> menu.</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">Unity</tt> Added support for Camera Stacking in both <tt class="docutils literal">URP</tt> and <tt class="docutils literal">HDRP</tt> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=1826">#1826</a>, <a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2046">#2046</a>, <a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=1669">#1669</a>).</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">Unity</tt> Improved performance of <tt class="docutils literal">URP</tt> and <tt class="docutils literal">HDRP</tt> renderer (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2005">#2005</a>).</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">Unity</tt> Massive improvement to import process times (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2210">#2210</a>).</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">Unreal</tt> <tt class="docutils literal">Unity</tt> Separate filter settings for <em>General</em> and <em>Binding</em> log levels.</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">Unreal</tt> <tt class="docutils literal">Unity</tt> Inspector disabled in non-development builds.</li>
+<li><tt class="docutils literal">Fixed</tt> Crash reloading textures after <em>TextureProvider</em> recreated.</li>
+<li><tt class="docutils literal">Fixed</tt> Images not working with hot-reload when size changed (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2115">#2115</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Frozen image resources not working with hot-reload (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2117">#2117</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <a class="reference external" href="App.ApplicationLauncher._Window.html">Window</a> background not rendered when not using application framework.</li>
+<li><tt class="docutils literal">Fixed</tt> Incorrect rendering of nested opacity groups not fitting in atlas texture.</li>
+<li><tt class="docutils literal">Fixed</tt> Crash destroying D3D12 media player after playing an audio only media.</li>
+<li><tt class="docutils literal">Fixed</tt> Alpha transparency not applied on grayscale images with alpha (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2153">#2153</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Crash adding visual to a parent not connected to the view (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2114">#2114</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> ActualWidth/Height should get its value from RenderSize.</li>
+<li><tt class="docutils literal">Fixed</tt> Background glitches when animated from blurred state (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2151">#2151</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <a class="reference external" href="Gui.Core._TabControl.html">TabControl</a> produces &quot;Visual is null&quot; error messages (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2106">#2106</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> {x:Null} is not a valid type for <em>TextDecorations</em> dependency property (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2161">#2161</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <a class="reference external" href="Gui.Core._ComboBox.html">ComboBox</a> KeyboardNavigation.DirectionalNavigation=&quot;Cycle&quot; not working (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2177">#2177</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> PageUp/PageDown keyboard navigation not working in <a class="reference external" href="Gui.Core._ComboBox.html">ComboBox</a> dropdown.</li>
+<li><tt class="docutils literal">Fixed</tt> <a class="reference external" href="Gui.Core._ItemsControl.html">ItemsControl</a> keyboard navigation failing with disabled/hidden containers.</li>
+<li><tt class="docutils literal">Fixed</tt> <a class="reference external" href="Gui.Core._ContentPresenter.html">ContentPresenter</a> with a <em>ContentTemplate</em> binding is not displaying the content (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2086">#2086</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Crash finishing <a class="reference external" href="Gui.Animation._VisualState.html">VisualState</a> animations (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2111">#2111</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Assert in <em>TimeManager</em> removing a pending storyboard (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2183">#2183</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Cannot animate named freezable in a template (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2187">#2187</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <a class="reference external" href="Gui.DependencySystem._Freezable.html">Freezable</a> objects inside templates not registered in the <a class="reference external" href="Gui.Core._NameScope.html">NameScope</a> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=1476">#1476</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Direct3D <a class="reference external" href="App.MediaElement._MediaPlayer.html">MediaPlayer</a> crashing when loading a video with unsupported audio format.</li>
+<li><tt class="docutils literal">Fixed</tt> Crashing issue in D3D12 with Intel drivers (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2150">#2150</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Incorrect assert logic in <em>Vector</em> and <em>String</em> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2134">#2134</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Unable to parse big numbers with <em>&lt;sys:UInt32&gt;</em> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2136">#2136</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Software Keyboard not opening when tapping on a focused <a class="reference external" href="Gui.Core._TextBox.html">TextBox</a> or <a class="reference external" href="Gui.Core._PasswordBox.html">PasswordBox</a> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2159">#2159</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Avoid binding errors when part of the path is null (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2200">#2200</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Gaps when using <a class="reference external" href="Gui.Core._TileBrush.html">TileBrush</a> <em>ViewBox</em> with <em>TileMode=None</em>.</li>
+<li><tt class="docutils literal">Fixed</tt> Glitch rendering on <tt class="docutils literal">Apple M1</tt> devices.</li>
+<li><tt class="docutils literal">Fixed</tt> Hot-reloading was initializing elements before setting its properties (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2210">#2210</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <a class="reference external" href="Gui.Core._BindingOperations.html">BindingOperations</a> <em>SetBinding()</em> can return a destroyed expression.</li>
+<li><tt class="docutils literal">Fixed</tt> <a class="reference external" href="App.Interactivity._TargetedTriggerAction.html">TargetedTriggerActions</a> not firing on rare cases.</li>
+<li><tt class="docutils literal">Fixed</tt> Rendering artifacts after tabbing in <a class="reference external" href="Gui.Core._TabControl.html">TabControl</a> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2217">#2217</a>)</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">App</tt> View not resizing when window <em>Restored</em> or <em>Maximized</em> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2165">#2165</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">App</tt> AppKitDisplay incorrectly resizing on High DPI displays.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unreal</tt> Crash in <em>NoesisNotifyArrayPropertyChanged</em> when wrapper not available (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2126">#2126</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unreal</tt> Added extra validation to <em>SetPropertyByRef</em> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2130">#2130</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unreal</tt> Incorrect use of <em>NotifyDictionaryChangedAction_Add</em> on remove notification.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unreal</tt> Crash when trying to play audio during shutdown.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unreal</tt> Videos not working properly after being paused (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2148">#2148</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unreal</tt> Crash importing XAML with system fonts (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2158">#2158</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unreal</tt> No way to call <em>RaiseCanExecuteChanged</em> for wrapped commands (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2213">#2213</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unity</tt> Resource providers are case sensitive (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2135">#2135</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unity</tt> Improvements to upgrade process (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2141">#2141</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unity</tt> <a class="reference external" href="Gui.Core._DropShadowEffect.html">DropShadowEffect</a> not working in PS5 builds (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2190">#2190</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">C#</tt> Crash destroying <a class="reference external" href="Gui.Core._ItemsPresenter.html">ItemsPresenter</a> after <a class="reference external" href="Gui.Core._ScrollContentPresenter.html">ScrollContentPresenter</a>.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">C#</tt> <em>OnApplyTemplate</em> should be public to match WPF.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">C#</tt> Missing <a class="reference external" href="Gui.Core._ItemsControl.html">ItemsControl</a> container virtual methods (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2004">#2004</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">C#</tt> <a class="reference external" href="App.MediaElement._MediaElement.html">MediaElement</a> <em>Source Uri</em> different from the one received by <em>XamlProvider</em> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2129">#2129</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">C#</tt> Exposed <a class="reference external" href="Gui.Core._Visual.html">Visual</a> child management protected methods.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">C#</tt> Unable to start application in <tt class="docutils literal">Linux .NET 5</tt> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2147">#2147</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">C#</tt> Assembly reload broken (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2121">#2121</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">C#</tt> .NET assemblies not loaded when parsing XAML (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=1016">#1016</a>, <a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=1283">#1283</a>, <a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=1320">#1320</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">C#</tt> Crash extending <a class="reference external" href="Gui.Controls._GridViewColumnHeader.html">GridViewColumnHeader</a> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2212">#2212</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">C#</tt> Crash when registering duplicated <a class="reference external" href="Gui.DependencySystem._DependencyProperty.html">DependencyProperty</a> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2201">#2201</a>).</li>
+</ul>
+</div>
+<div class="section" id="version-3-1-1">
+<h1>Version 3.1.1</h1>
+<p><em>Released 15 Sep 2021</em> - <a class="reference external" href="https://www.noesisengine.com/developers/downloads.php">Download</a></p>
+<ul class="simple">
+<li><tt class="docutils literal">Enhancement</tt> Added Xbox One using GDK. XDK has been deprecated.</li>
+<li><tt class="docutils literal">Enhancement</tt> Implemented caching of pipelines in D3D12 renderer.</li>
+<li><tt class="docutils literal">Enhancement</tt> Recommended NintendoSDK upgraded to 12.3.7+.</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">Doc</tt> Our tutorials for <a class="reference external" href="Gui.Core.Unity3DTutorial.html">Unity</a> and <a class="reference external" href="Gui.Core.UnrealTutorial.html">Unreal</a> have been improved.</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">C#</tt> Implemented <em>TemplatePartAttribute</em> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2007">#2007</a>).</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">C#</tt> Implemented <em>StyleTypedPropertyAttribute</em> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2009">#2009</a>).</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">C#</tt> Implemented <a class="reference external" href="Gui.DependencySystem._DependencyProperty.html">DependencyProperty</a> <em>AddOwner()</em> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2013">#2013</a>).</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">C#</tt> Added missing <a class="reference external" href="Gui.Core._FrameworkElement.html">FrameworkElement</a> virtual method <em>OnApplyTemplate</em> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2008">#2008</a>).</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">C#</tt> Added support for <em>file</em> and <em>http</em> schemas in <a class="reference external" href="Gui.Providers._Uri.html">Uris</a>.</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">Unity</tt> Improvements to Unity package upgrade</li>
+</ul>
+<blockquote>
+<ul class="simple">
+<li>Old xaml and font .asset automatically deleted.</li>
+<li>Proper importer assigned to each xaml and font.</li>
+</ul>
+</blockquote>
+<ul class="simple">
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">Unity</tt> Added menu entry to generate a Blend project from an existing Unity project (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2100">#2100</a>).</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">Unity</tt> Improvements to log (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2076">#2076</a>).</li>
+</ul>
+<blockquote>
+<ul class="simple">
+<li>Allow logging from different Unity threads.</li>
+<li>Render thread messages sent to specific platform log.</li>
+</ul>
+</blockquote>
+<ul class="simple">
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">Unreal</tt> Plugin updated to UE4.27.</li>
+<li><tt class="docutils literal">Fixed</tt> <a class="reference external" href="Gui.Core._Grid.html">Grid</a> doesn't layout according to <em>star</em> column definition (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2078">#2078</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Crash in <a class="reference external" href="Gui.Core._StaticResourceExtension.html">StaticResource</a> and <a class="reference external" href="Gui.Core._DynamicResourceExtension.html">DynamicResource</a> using <em>Type</em> keys for unknown types (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2077">#2077</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Custom types with namespace in x:Key not supported.</li>
+<li><tt class="docutils literal">Fixed</tt> <a class="reference external" href="Gui.Core._TextBlock.html">TextBlock</a> not including correct height of <a class="reference external" href="Gui.Core._InlineUIContainer.html">InlineUIContainer</a> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2066">#2066</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <em>IsVisible</em> property default value should be false (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2064">#2064</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> More than one caret visible sometimes (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2096">#2096</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Crash changing selection in <a class="reference external" href="Gui.Core._ComboBox.html">ComboBox</a> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2090">#2090</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Assert when stopping a <a class="reference external" href="Gui.Animation._Storyboard.html">Storyboard</a> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2063">#2063</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Projection matrix set in View not affecting hit test (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2089">#2089</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Merged dictionaries inside templates not loading (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2101">#2101</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <em>Loaded</em> event not recognized in <a class="reference external" href="Gui.Core._DataTemplate.html">DataTemplate</a> <em>Triggers</em> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2107">#2107</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Adding a <em>StringFormat</em> using Blend results in incompatible code (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2104">#2104</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal"><span class="pre">StringFormat=0.##</span></tt> produces 0.5 for 0.05 (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2070">#2070</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Memory leak when removing <em>TextureProvider</em> before releasing last <a class="reference external" href="Gui.Core._BitmapImage.html">BitmapImage</a> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2105">#2105</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Changes to <em>ToolTipOpening</em> and <em>ToolTipClosing</em> events to match WPF (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2102">#2102</a>)</li>
+</ul>
+<blockquote>
+<ul class="simple">
+<li>Events are now <em>Direct</em>, so only raised on the element owning the <a class="reference external" href="Gui.Core._ToolTip.html">ToolTip</a>.</li>
+<li>Marking <em>ToolTipClosing</em> event as handled does not cancel closing the <a class="reference external" href="Gui.Core._ToolTip.html">ToolTip</a>.</li>
+</ul>
+</blockquote>
+<ul class="simple">
+<li><tt class="docutils literal">Fixed</tt> Make <em>ScrollInfo</em> available for <a class="reference external" href="Gui.Core._ScrollViewer.html">ScrollViewer</a>'s inheritors.</li>
+<li><tt class="docutils literal">Fixed</tt> Crash using cached type converter while parsing a XAML.</li>
+<li><tt class="docutils literal">Fixed</tt> Incorrect rendering when blending in linear mode (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2085">#2085</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Black textures due to GL renderer mipmapping issues.</li>
+<li><tt class="docutils literal">Fixed</tt> Stroked text with null foreground not rendered.</li>
+<li><tt class="docutils literal">Fixed</tt> Opacity groups bigger than offscreen texture incorrectly clipped.</li>
+<li><tt class="docutils literal">Fixed</tt> Sample applications crashing when resized (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2098">#2098</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Random crash when updating textures on D3D12 renderer.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">C#</tt> Crash defining <a class="reference external" href="Gui.Core._GridLength.html">GridLength</a> dependency property (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2084">#2084</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">C#</tt> Allow resize of <a class="reference external" href="Gui.Core._DynamicTextureSource.html">DynamicTextureSource</a>.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">C#</tt> <a class="reference external" href="Gui.Core._DynamicTextureSource.html">DynamicTextureSource</a> callback not executed when creating multiple instances.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">C#</tt> <a class="reference external" href="App.MediaElement._MediaPlayer.html">MediaPlayer</a> <em>Create()</em> receiving string instead of Uri (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2072">#2072</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unity</tt> Nintendo Switch GPU crash during offscreen rendering (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2094">#2094</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unity</tt> Crash switching scenes (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2088">#2088</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unity</tt> Editor keeps reimporting all XAMLs all the time after upgrading to 3.1 (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2077">#2077</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unity</tt> Fonts defined with assembly in the Uri failing to load after upgrading to 3.1 (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2103">#2103</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unity</tt> Update process checking now if the package was incorrectly installed (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2099">#2099</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unity</tt> Unity's <em>Texture</em> used in <a class="reference external" href="Gui.Core._TextureSource.html">TextureSource</a> rendered with black background.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unity</tt> Updated <em>Noesis Settings</em> guid to avoid conflicts with previous version asset.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unreal</tt> Incorrect rendering of fonts.</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unreal</tt> Crashes with <em>TextInputMethodSystem</em> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2079">#2079</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unreal</tt> Crash adding variables in Sequence Director (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2083">#2083</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unreal</tt> <em>InputScope</em> property on <a class="reference external" href="Gui.Core._TextBox.html">TextBox</a> not working (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2068">#2068</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unreal</tt> Stack overflow when processing dependencies with invalid Uris.</li>
+</ul>
+</div>
+<div class="section" id="version-3-1-0rc2">
+<h1>Version 3.1.0rc2</h1>
+<p><em>Released 26 Jul 2021</em> - <a class="reference external" href="https://www.noesisengine.com/developers/downloads.php">Download</a></p>
+<ul class="simple">
+<li><tt class="docutils literal">Fixed</tt> <tt class="docutils literal">Unity</tt> Linking error when using <em>WebGL</em> platform.</li>
+<li><tt class="docutils literal">Fixed</tt> Effects working on UWP platforms.</li>
+</ul>
+</div>
+<div class="section" id="version-3-1-0rc1">
+<h1>Version 3.1.0rc1</h1>
+<p><em>Released 23 Jul 2021</em> - <a class="reference external" href="https://www.noesisengine.com/developers/downloads.php">Download</a></p>
+<ul class="simple">
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">Unity</tt> Support for automatic loading of system font fallbacks (Asian unicodes and emojis).</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">Unity</tt> Updated plugins for <em>Nintendo Switch</em>, <em>Xbox Series X|S</em>, <em>PlayStation 4</em> and <em>PlayStation 5</em>.</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">App</tt> <em>Display</em> and <em>Renderer</em> implementation for <em>Xbox Series X|S</em>.</li>
+<li><tt class="docutils literal">Fixed</tt> Rendering glitches in <em>PlayStation 4</em>.</li>
+</ul>
+</div>
+<div class="section" id="version-3-1-0b5">
+<h1>Version 3.1.0b5</h1>
+<p><em>Released 21 Jul 2021</em> - <a class="reference external" href="https://www.noesisengine.com/developers/downloads.php">Download</a></p>
+<ul class="simple">
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">C#</tt> <a class="reference external" href="https://www.nuget.org/packages/Noesis.GUI.Extensions/">Noesis.GUI.Extensions</a>  using official <a class="reference external" href="https://www.nuget.org/packages/Microsoft.Xaml.Behaviors.Wpf/">Microsoft.Xaml.Behaviors.Wpf</a> package.</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">C#</tt> Improvements to the performance of event handling.</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">C#</tt> Deprecated <em>OnPostInit</em> and <em>DependencyPropertyChanged</em> callbacks to be more WPF compliant.</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">C#</tt> Avoid calling callbacks if virtual methods are not overridden.</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">C#</tt> Exposed dependency property enumeration in <a class="reference external" href="Gui.DependencySystem._DependencyObject.html">DependencyObject</a> for automation.</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">C++</tt> Added extra tables and enums to <em>RenderDevice</em>.</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">C++</tt> Removed stride from Batch structure in <em>RenderDevice</em>.</li>
+<li><tt class="docutils literal">Enhancement</tt> Samples updated to latest <tt class="docutils literal">Noesis.GUI.Extensions</tt>.</li>
+<li><tt class="docutils literal">Fixed</tt> Crash clearing event binds during shutdown (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2061">#2061</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Issue with constant buffer updates in D3D11 and UWP apps.</li>
+</ul>
+</div>
+<div class="section" id="version-3-1-0b4">
+<h1>Version 3.1.0b4</h1>
+<p><em>Released 14 Jul 2021</em> - <a class="reference external" href="https://www.noesisengine.com/developers/downloads.php">Download</a></p>
+<ul class="simple">
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">Unity</tt> <tt class="docutils literal">C++</tt> Experimental support for D3D12 (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=1819">#1819</a>).</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">Unity</tt> Switch/NVN renderer support (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2048">#2048</a>, <a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2058">#2058</a>).</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">Unity</tt> Set DPI scale when creating <em>Views</em>.</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">C++</tt> Added helper tables to <a class="reference external" href="Gui.Core.RenderDeviceNotes.html">RenderDevice API</a>: <em>VertexShaders</em>, <em>VertexFormats</em> and <em>VertexSizes</em>.</li>
+<li><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">C++</tt> Stride information added to renderer <em>Batch</em> structure.</li>
+<li><tt class="docutils literal">Enhancement</tt> Exposed <em>Placeholder</em> property in <a class="reference external" href="Gui.Core._TextBox.html">TextBox</a>, <a class="reference external" href="Gui.Core._PasswordBox.html">PasswordBox</a> and <a class="reference external" href="Gui.Core._ComboBox.html">ComboBox</a> to use in code.</li>
+<li><tt class="docutils literal">Enhancement</tt> Support for AppleTV.</li>
+<li><tt class="docutils literal">Fixed</tt> Glitch in upsample shader.</li>
+<li><tt class="docutils literal">Fixed</tt> View perspective matrix incorrectly depending on viewport height.</li>
+<li><tt class="docutils literal">Fixed</tt> UI does not react to changes in <em>MergedDictionaries</em> of the <em>ApplicationResources</em> (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=2056">#2056</a>).</li>
+<li><tt class="docutils literal">Fixed</tt> Grid not checking for <tt class="docutils literal">NaN</tt> in <em>IsDesiredSize</em> method.</li>
+</ul>
+</div>
+<div class="section" id="version-3-1-0b3">
+<h1>Version 3.1.0b3</h1>
+<p><em>Released 2 Jul 2021</em> - <a class="reference external" href="https://www.noesisengine.com/developers/downloads.php">Download</a></p>
+<img alt="Changelog_v31_5.jpg" src="Changelog_v31_5.jpg" />
+<ul class="simple">
+<li><tt class="docutils literal">Feature</tt> New Unreal features. Read the <a class="reference external" href="Gui.Core.UnrealTutorial.html">tutorial</a> for more information.</li>
+</ul>
+<blockquote>
+<ul class="simple">
+<li>Support for custom <a class="reference external" href="Gui.Core.UnrealTutorial.html#materialsbrushes">Brushes</a> using Unreal <em>Materials</em>. See our <em>Materials</em> sample.</li>
+<li>Support for custom <a class="reference external" href="Gui.Core.UnrealTutorial.html#materialseffects">Effects</a> using Unreal <em>Materials</em>. See our <em>VideoEffect</em> example.</li>
+<li>Added new <a class="reference external" href="Gui.Core.ExtensionsTutorial.html#blending">Blending Modes</a>. See our <em>VideoEffect</em> example.</li>
+<li>Native support of <a class="reference external" href="https://docs.unrealengine.com/4.26/en-US/API/Runtime/MediaAssets/UMediaSource/">MediaSources</a> for playing <em>Video</em> using <a class="reference external" href="App.MediaElement._MediaElement.html">MediaElement</a>. See our <em>VideoEffect</em> example.</li>
+<li><a class="reference external" href="https://docs.unrealengine.com/4.26/en-US/AnimatingObjects/Paper2D/Sprites/">Sprites</a> are now supported in <em>DataContexts</em> and accessible to <a class="reference external" href="Gui.Core._ImageSource.html">ImageSource</a> properties in XAML using data-binding. See our <em>Inventory</em> sample.</li>
+<li>Added support for binding <a class="reference external" href="Gui.Core.UnrealTutorial.html#bindingmap">Map</a> properties, and improved native DataContext integration with support for <a class="reference external" href="Gui.Core.UnrealTutorial.html#bindingfunctions">getter/setter</a> properties and <a class="reference external" href="Gui.Core.UnrealTutorial.html#bindingcommand">command</a> properties.</li>
+<li>All the improvements included in 3.1 Core are also available for Unreal.</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="version-3-1-0b2">
+<h1>Version 3.1.0b2</h1>
+<p><em>Released 1 Jul 2021</em> - <a class="reference external" href="https://www.noesisengine.com/developers/downloads.php">Download</a></p>
+<img alt="Changelog_v31_4.jpg" src="Changelog_v31_4.jpg" />
+<ul class="simple">
+<li><tt class="docutils literal">Feature</tt> New Unity features. Read the <a class="reference external" href="Gui.Core.Unity3DTutorial.html">tutorial</a> for more information.</li>
+</ul>
+<blockquote>
+<ul class="simple">
+<li>NoesisGUI is now a package that must be installed using the <a class="reference external" href="https://docs.unity3d.com/Manual/upm-ui.html">Package Manager</a>. The previous package, located at <em>'Assets/NoesisGUI'</em> must be deleted before installing the new version.</li>
+<li>XAMLs assets are now implemented using a <a class="reference external" href="https://docs.unity3d.com/Manual/ScriptedImporters.html">Scripted Importer</a>. This means that we no longer need the corresponding <em>.asset</em> file for each <em>.xaml</em>. You must delete all <em>.asset</em> files belonging to <em>.xaml</em> resources if you are upgrading your project. References to XAMLs from current views must also be recreated.</li>
+<li>Fonts are also implemented using a <a class="reference external" href="https://docs.unity3d.com/Manual/ScriptedImporters.html">Scripted Importer</a>. In this case we are overriding the default font importer used by Unity. Sames as with XAMLs, you must delete all <em>.asset</em> files belonging to <em>.ttf</em> resources.</li>
+<li><em>NoesisSettings.asset</em> has been deprecated and must be removed. When first installing NoesisGUI 3.1, a new <em>Noesis.settings.asset</em> will be created. This new asset is very similar to the legacy one but no longer needs to be stored inside a <em>Resources</em> folder.</li>
+<li><a class="reference external" href="https://docs.unity3d.com/Manual/Sprites.html">Sprites</a> are now supported in <em>DataContexts</em> and accessible to <a class="reference external" href="Gui.Core._ImageSource.html">ImageSource</a> properties in  XAML using data-binding. See our <em>Inventory</em> sample.</li>
+<li>Implemented gamepad events using the new <a class="reference external" href="https://docs.unity3d.com/Manual/com.unity.inputsystem.html">Input System Package</a>. Note that for keyboard, mouse and touch we still need the legacy Input System.</li>
+<li>All new features like <em>Videos</em>, <em>Blending Modes</em> and <em>Shaders</em> included in 3.1 Core are also available for Unity. See our examples <em>VideoEffect</em> and <em>BrushShaders</em>.</li>
+<li>Hot-reloading while in <em>Play</em> mode is now always enabled.</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="version-3-1-0b1">
+<h1>Version 3.1.0b1</h1>
+<p><em>Released 14 Jun 2021</em> - <a class="reference external" href="https://www.noesisengine.com/developers/downloads.php">Download</a></p>
+<ul>
+<li><p class="first"><tt class="docutils literal">Feature</tt> Implemented support for custom shaders. There are two ways where custom shaders can be used in NoesisGUI. <a class="reference external" href="Gui.Core._ShaderEffect.html">Effects</a> (<a class="reference external" href="https://www.noesisengine.com/xamltoy/54cdaf5f05116c60c0cca759fc4a290a">preview</a>) apply a post-processing shader to any object including children. On the other hand, <a class="reference external" href="Gui.Core._BrushShader.html">Brushes</a> (<a class="reference external" href="https://www.noesisengine.com/xamltoy/ada01d4790a936b6aad8fa51421c9588">preview</a>) can be customized to define how elements are filled and stroked. More information in the <a class="reference external" href="Gui.Core.ShadersTutorial.html">Extending with Shaders</a> tutorial.</p>
+<img alt="Changelog_v31_0.jpg" src="Changelog_v31_0.jpg" />
+</li>
+<li><p class="first"><tt class="docutils literal">Feature</tt> Added compatibility with <a class="reference external" href="App.MediaElement._MediaElement.html">MediaElement</a> to display video content. <a class="reference external" href="App.MediaElement._MediaElement.html">MediaElement</a> requires a platform dependant implementation of <a class="reference external" href="App.MediaElement._MediaPlayer.html">MediaPlayer</a>. Our application framework provides an implementation for each renderer. A new <a class="reference external" href="https://github.com/Noesis/Tutorials/tree/master/Samples/VideoEffect">example</a> was added to the SDK showcasing this feature. We also added the following media actions: <a class="reference external" href="App.Interactivity._PlayMediaAction.html">PlayMediaAction</a>, <a class="reference external" href="App.Interactivity._PauseMediaAction.html">PauseMediaAction</a>, <a class="reference external" href="App.Interactivity._RewindMediaAction.html">RewindMediaAction</a> and <a class="reference external" href="App.Interactivity._StopMediaAction.html">StopMediaAction</a>.</p>
+<img alt="Changelog_v31_2.jpg" src="Changelog_v31_2.jpg" />
+</li>
+<li><p class="first"><tt class="docutils literal">Feature</tt> <a class="reference external" href="Gui.Core._CroppedBitmap.html">CroppedBitmap</a> implemented. With <a class="reference external" href="Gui.Core._CroppedBitmap.html">CroppedBitmap</a>, atlases can be defined in a <a class="reference external" href="Gui.Core._ResourceDictionary.html">ResourceDictionary</a>. These sub-images can be later rendered using standard <a class="reference external" href="Gui.Core._Image.html">Images</a> (<a class="reference external" href="https://www.noesisengine.com/xamltoy/723ac4c89abbdf78c6bbb21fbd06d007">preview</a>). Atlases also support now all combinations of tiling modes.</p>
+<img alt="Changelog_v31_3.jpg" src="Changelog_v31_3.jpg" />
+</li>
+<li><p class="first"><tt class="docutils literal">Feature</tt> New blending modes supported: <em>Multiply</em>, <em>Screen</em>, <em>Additive</em> (<a class="reference external" href="https://www.noesisengine.com/xamltoy/0899dee89b63bba437ad474dd92009bf">preview</a>). This is an <a class="reference external" href="Gui.Core.ExtensionsTutorial.html#blending">extension</a> to WPF.</p>
+<img alt="Changelog_v31_1.jpg" src="Changelog_v31_1.jpg" />
+</li>
+<li><p class="first"><tt class="docutils literal">Enhancement</tt> Better performance of <a class="reference external" href="Gui.Core._BlurEffect.html">BlurEffect</a> and <a class="reference external" href="Gui.Core._DropShadowEffect.html">DropShadowEffect</a> by using <em>Gaussian</em> pyramids instead of the traditional two-passes approach. For large radius, performance has been improved by an order of magnitude.</p>
+</li>
+<li><p class="first"><tt class="docutils literal">Enhancement</tt> We have a new <em>Tessellator</em> that is much faster and avoids dynamic allocations. You should observe a significant reduction in allocations coming from Noesis with this new implementation.</p>
+</li>
+<li><p class="first"><tt class="docutils literal">Enhancement</tt> Added support for drawing <em>Lines</em>, <em>Rectangles</em> and <em>Ellipses</em> to <a class="reference external" href="Gui.Core._DrawingContext.html">DrawingContext</a>. New <a class="reference external" href="Gui.Core.CustomRenderTutorial.html">Custom Render</a> tutorial and <a class="reference external" href="https://github.com/Noesis/Tutorials/tree/master/Samples/CustomRender">example</a>.</p>
+</li>
+<li><p class="first"><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">Boxing</tt> operations are now much faster and close to constant performance even on different threads.</p>
+</li>
+<li><p class="first"><tt class="docutils literal">Enhancement</tt> <em>IView::SetScale</em> changes the <tt class="docutils literal">DPI</tt> scale value. Default is 1.0 which corresponds to 96 pixels per inch. All <em>Display</em> implementation in our <em>Application Framework</em> are now system <em>DPI</em> aware.</p>
+</li>
+<li><p class="first"><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">D3D12</tt> reference device renderer implemented.</p>
+</li>
+<li><p class="first"><tt class="docutils literal">Enhancement</tt> Added support for <tt class="docutils literal">PlayStation 5</tt>.</p>
+</li>
+<li><p class="first"><tt class="docutils literal">Enhancement</tt> Added support for <tt class="docutils literal">Xbox Series X</tt>.</p>
+</li>
+<li><p class="first"><tt class="docutils literal">Enhancement</tt> Added support for <tt class="docutils literal">Apple M1</tt>.</p>
+</li>
+<li><p class="first"><tt class="docutils literal">Enhancement</tt> Added support for <tt class="docutils literal">Emscripten</tt> 2.0.</p>
+</li>
+<li><p class="first"><tt class="docutils literal">Enhancement</tt> <em>Point3D</em>, <em>Point4D</em> and <em>Int32Rect</em> types added. Added support for <em>Point3D</em> animations.</p>
+</li>
+<li><p class="first"><tt class="docutils literal">Enhancement</tt> Providers receive now a <a class="reference external" href="Gui.Providers._Uri.html">Uri</a> object with assembly and path information (<a class="reference external" href="https://www.noesisengine.com/bugs/view.php?id=1569">#1569</a>).</p>
+</li>
+<li><p class="first"><tt class="docutils literal">Enhancement</tt> Multi-touch handling improvements:</p>
+<ul class="simple">
+<li><em>Manipulations</em> and <em>Touch</em> events are now handled independently. This is a deviation from WPF explained in our <a class="reference external" href="Gui.Core.TouchTutorial.html">Touch and Manipulation</a> tutorial. With this change, <a class="reference external" href="Gui.Core._Control.html">Controls</a> implementing <em>Touch</em> events will behave correctly under <a class="reference external" href="Gui.Core._ScrollViewer.html">ScrollViewers</a>.</li>
+<li>All controls adapted to this new <em>Manipulations</em> behavior. A few of them like <a class="reference external" href="Gui.Core._ListBoxItem.html">ListBoxItem</a>, <a class="reference external" href="Gui.Controls._ListViewItem.html">ListViewItem</a> and <a class="reference external" href="Gui.Core._TreeViewItem.html">TreeViewItem</a> are now reacting to <em>TouchUp</em> events instead of <em>TouchDown</em>.</li>
+<li>Touches used for manipulations are now damped for smoother movements.</li>
+<li><a class="reference external" href="Gui.Core._Menu.html">Menu</a>, <a class="reference external" href="Gui.Core._ContextMenu.html">ContextMenu</a> and <a class="reference external" href="Gui.Core._ComboBox.html">ComboBox</a> popups now correctly close under touch scrolling.</li>
+<li><a class="reference external" href="Gui.Core._Slider.html">Sliders</a> with <em>IsMoveToPointEnabled</em> can now continue dragging without releasing the mouse or finger.</li>
+<li><em>Tapped</em> and <em>Holding</em> events are now always raised on the original source, as in WPF.</li>
+</ul>
+</li>
+<li><p class="first"><tt class="docutils literal">Enhancement</tt> <tt class="docutils literal">App</tt> <em>FileTextureProvider</em> is now automatically generating mipmaps for each loaded image. Our renderer implementations are now using a texture lod bias of -0.75 to reduce blurriness caused by mipmaps.</p>
+</li>
+<li><p class="first"><tt class="docutils literal">API</tt> Breaking Changes:</p>
+</li>
+</ul>
+<blockquote>
+<ul class="simple">
+<li>If you are implementing a custom <em>RenderDevice</em>, please read our <a class="reference external" href="Gui.Core.RenderDeviceNotes.html">RenderDevice API</a> document.</li>
+<li>As explained above, implementing <em>Touch</em> events no longer disables <em>Manipulation</em> events.</li>
+<li><em>GUI::Init</em> no longer receives license information, it must be passed to <em>GUI::SetLicense</em>.</li>
+<li>Providers are now receiving <a class="reference external" href="Gui.Providers._Uri.html">Uris</a> instead of <em>Strings</em>.</li>
+<li>Horizontal mouse wheel is no longer triggered by clicking <em>Shift</em> key.</li>
+</ul>
+</blockquote>
+<div class="contents topic" id="table-of-contents">
+<p class="topic-title">Table of Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#version-3-1-7" id="id69">Version 3.1.7</a></li>
+<li><a class="reference internal" href="#version-3-1-6" id="id70">Version 3.1.6</a></li>
+<li><a class="reference internal" href="#version-3-1-5" id="id71">Version 3.1.5</a></li>
+<li><a class="reference internal" href="#version-3-1-4" id="id72">Version 3.1.4</a></li>
+<li><a class="reference internal" href="#version-3-1-3" id="id73">Version 3.1.3</a></li>
+<li><a class="reference internal" href="#version-3-1-2" id="id74">Version 3.1.2</a></li>
+<li><a class="reference internal" href="#version-3-1-1" id="id75">Version 3.1.1</a></li>
+<li><a class="reference internal" href="#version-3-1-0rc2" id="id76">Version 3.1.0rc2</a></li>
+<li><a class="reference internal" href="#version-3-1-0rc1" id="id77">Version 3.1.0rc1</a></li>
+<li><a class="reference internal" href="#version-3-1-0b5" id="id78">Version 3.1.0b5</a></li>
+<li><a class="reference internal" href="#version-3-1-0b4" id="id79">Version 3.1.0b4</a></li>
+<li><a class="reference internal" href="#version-3-1-0b3" id="id80">Version 3.1.0b3</a></li>
+<li><a class="reference internal" href="#version-3-1-0b2" id="id81">Version 3.1.0b2</a></li>
+<li><a class="reference internal" href="#version-3-1-0b1" id="id82">Version 3.1.0b1</a></li>
+</ul>
+</div>
+</div>
+
+
+        <!-- NOESIS WEB ------- BEGIN ------- -->
+
+                            </div> <!-- eo noesis_doc_content -->
+                        </div> <!-- eo doc_wrap -->
+                    </div> <!-- eo noesis_web_contenidosMain -->
+
+                </div> <!-- eo wrapper -->
+
+            </div>  <!-- eo documentation-article -->
+
+        </div> <!-- eo main-content -->
+
+        <footer id="footer" class="SOZO-footer">
+            <div class="wrapper">
+                <ul class="footer social-icon-list">
+                    <li>
+                        <a href="https://twitter.com/noesisengine" title="Noesis Twitter" target="_blank">
+                            <i class="svg-icon">
+                                <svg class="icon-social-twitter">
+                                    <use xlink:href="#svg-icon-social-twitter"></use>
+                                </svg>
+                            </i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.linkedin.com/company/noesis-technologies-sl" title="Noesis Linkedin" target="_blank">
+                            <i class="svg-icon">
+                                <svg class="icon-social-linkedin">
+                                    <use xlink:href="#svg-icon-social-linkedin"></use>
+                                </svg>
+                            </i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://vimeo.com/noesisengine" title="Noesis Vimeo" target="_blank">
+                            <i class="svg-icon">
+                                <svg class="icon-social-vimeo">
+                                    <use xlink:href="#svg-icon-social-vimeo"></use>
+                                </svg>
+                            </i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.youtube.com/user/NoesisTechnologies" title="Noesis Youtube" target="_blank">
+                            <i class="svg-icon">
+                                <svg class="icon-social-youtube">
+                                    <use xlink:href="#svg-icon-social-youtube"></use>
+                                </svg>
+                            </i>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="footer-extended">
+
+                    <div class="cols">
+
+                        <nav class="unit">
+                            <h3 class="title">home</h3>
+                            <ul>
+                                <li><a href="/#goto-home-main-features" class="goto" title="NoesisGUI Main Features">Features</a></li>
+                                <li><a href="/#goto-home-apis" class="goto" title="NoesisGUI APIs and Integrations">Integrations</a></li>
+                                <li><a href="/#goto-home-platforms" class="goto" title="NoesisGUI Supported Platforms">Platforms</a></li>
+                                <li><a href="/#goto-home-clients" class="goto" title="NoesisGUI Happy Clients">Clients</a></li>
+                            </ul>
+                        </nav>
+
+                        <nav class="unit">
+                            <h3 class="title">Licensing</h3>
+                            <ul>
+                                <li><a href="/licensing.php#goto-licensing-prices" class="goto" title="NoesisGUI Prices">Prices</a></li>
+                                <li><a href="/licensing.php#goto-licensing-faqs" class="goto" title="NoesisGUI Licensing FAqs">FAQs</a></li>
+                                <li><a href="/presskit.php" class="goto" title="NoesisGUI Logos">Logos</a></li>
+                            </ul>
+                        </nav>
+
+                        <nav class="unit">
+                            <h3 class="title">Developers</h3>
+                            <ul>
+                                <li>
+                                    <div style="display:block;padding: 0.4em 0;">
+                                        <a href="/forums/index.php" class="goto" title="NoesisGUI Forums" style="display:inline;margin-right:1em;">Forums</a>
+                                        <a href="/bugs/my_view_page.php" class="goto" target="_blank" rel="nofollow" title="NoesisGUI Bug Tracker"style="display:inline;">Bugtracker</a>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div style="display:block;padding: 0.4em 0;">
+                                        <a href="/developers/samples.php" class="goto" title="NoesisGUI Samples and Tutorials"style="display:inline;margin-right:1em;">Samples</a>
+                                        <a href="/xamltoy" class="goto" title="NoesisGUI XamlToy" style="display:inline;">XamlToy</a>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div style="display:block;padding: 0.4em 0;">
+                                        <a href="/bugs/roadmap_page.php" class="goto" target="_blank" rel="nofollow" title="NoesisGUI Roadmap"style="display:inline;margin-right:1em;">Roadmap</a>
+                                        <a href="/docs/Gui.Core.Changelog.html" class="goto" title="NoesisGUI Version Changelog"style="display:inline;">Changelog</a>
+                                    </div>
+                                </li>
+                                <li>
+                                    <a href="/docs/Gui.Core.Index.html" class="goto" title="NoesisGUI Documentation">Documentation</a>
+                                </li>
+                                <li>
+                                    <a href="/developers/downloads.php" class="goto" title="NoesisGUI Downloads">Downloads</a>
+                                </li>
+                            </ul>
+                        </nav>
+
+                        <nav class="unit">
+                            <h3 class="title">Contact</h3>
+                            <ul>
+                                <li><a href="/contact.php#goto-contact-about" class="goto" title="About Noesis">About</a></li>
+                                <li><a href="/contact.php#goto-contact-details" class="goto" title="Contact Noesis">Contact details</a></li>
+                            </ul>
+                        </nav>
+
+                    </div>
+
+                    <nav class="legal">
+                        <figure class="SOZO-media logo">
+                            <img src="/images/logos/noesis-logo-stacked.png">
+                        </figure>
+                        <p>&copy; 2017 Noesis Technologies</p>
+                        <a href="/legal/privacy.php" title="Privacy Policy" rel="nofollow">Privacy</a>
+                        <a href="/legal/cookies.php" title="Cookie Policy" rel="nofollow">Cookies</a>
+                        <a href="/legal/terms-of-use.php" title="Terms and Conditions" rel="nofollow">Terms &amp; Conditions</a>
+                    </nav>
+
+                </div>
+
+                <div class="footer-reduced">
+                    <ul>
+                        <li><a href="/" class="goto" title="NoesisGUI Main Features">Features</a></li>
+                        <li><a href="/licensing.php" class="goto" title="NoesisGUI Prices">Licensing</a></li>
+                        <li><a href="/forums" class="goto" title="NoesisGUI Forums">Developer</a></li>
+                        <li><a href="/contact.php" class="goto" title="NoesisGUI Prices">Contact</a></li>
+                    </ul>
+                    <ul class="copyright-legal">
+                        <li>&copy; 2017 Noesis Technologies</li>
+                        <li><a href="/legal/privacy.php" title="Privacy Policy" rel="nofollow">Privacy</a></li>
+                        <li><a href="/legal/terms-of-use.php" title="Terms and Conditions" rel="nofollow">Terms &amp; Conditions</a></li>
+                    </ul>
+                </div>
+            </div>
+        </footer>
+
+        <footer id="doc-footer">
+            <span>&copy; 2017 Noesis Technologies</span>
+        </footer>
+
+    </div> <!-- eo developers documentation -->
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <!-- Use if you want latest version of 1x -->
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script> -->
+
+    <!-- If using 1.11.3 make sure you update the fallback file below to 1.11.3 -->
+    <script>window.jQuery || document.write('<script src="/js/vendor/jquery.js"><\/script>')</script>
+
+    <script src="/js/plugins.1481882071.js"></script><script src="/js/main.1485346364.js"></script>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script>
+    <script type="text/javascript">
+        docsearch({
+            appId: 'MXXRMLZ3LA',
+            apiKey: 'e21c7d87ab7d541af3087e40620862da',
+            indexName: 'noesisengine',
+            inputSelector: '#docsearch-input',
+            debug: false // Set debug to true if you want to inspect the dropdown
+        });
+    </script>
+
+    <!-- NOESIS WEB ------- END ------- -->
+
+
+</div>
+</body>
+</html>

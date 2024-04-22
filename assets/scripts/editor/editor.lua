@@ -31,11 +31,12 @@ local HOST_INFO = App.Host.GRAPHICS_API..' | '..(App.Host.HOST:upper())
 local CPU_NAME = 'CPU: '..App.Host.CPU_NAME
 local GPU_NAME = 'GPU: '..App.Host.GPU_NAME
 WINDOW_SIZE = UI.ImVec2(800, 600)
-local DOCK_LEFT_RATIO = 0.50
-local DOCK_RIGHT_RATIO = 1.0
-local DOCK_BOTTOM_RATIO = 0.50
-local MAX_TEXT_INPUT_SIZE = 128
+local DOCK_LEFT_RATIO = 0.4
+local DOCK_RIGHT_RATIO = 0.7
+local DOCK_BOTTOM_RATIO = 0.5
 local POPUP_ID_NEW_PROJECT = 0xffffffff-1
+local MAIN_MENU_PADDING = UI.GetStyle().FramePadding
+--MAIN_MENU_PADDING = MAIN_MENU_PADDING + UI.ImVec2(0.005, 0.005)
 
 local DEFAULT_PROJECT_DIR = ''
 if jit.os == 'Windows' then
@@ -49,10 +50,7 @@ if not lfs.attributes(DEFAULT_PROJECT_DIR) then
     DEFAULT_PROJECT_DIR = ''
 end
 
-DEFAULT_PROJECT_DIR = DEFAULT_PROJECT_DIR..'Lunam Projects/'
-if not lfs.attributes(DEFAULT_PROJECT_DIR) then
-    lfs.mkdir(DEFAULT_PROJECT_DIR)
-end
+DEFAULT_PROJECT_DIR = DEFAULT_PROJECT_DIR..'lunam projects/'
 
 local MESH_FILE_FILTER = '3d,3ds,3mf,ac,ac3d,acc,amj,ase,ask,b3d,bvh,csm,cob,dae,dxf,enff,fbx,gltf,glb,hmb,ifc,irr,lwo,lws,lxo,m3d,md2,md3,md5,mdc,mdl,mesh,mot,ms3d,ndo,nff,obj,off,ogex,ply,pmx,prj,q3o,q3s,raw,scn,sib,smd,stp,stl,ter,uc,vta,x,x3d,xgl,zgl'
 local GIZMO_OPERATIONS = {
@@ -100,14 +98,16 @@ local DEBUG_MODE = {
     PHYSICS = 2
 }
 local DEBUG_MODE_NAMES = {
-    'None',
-    ICONS.GLOBE_EUROPE..' Scene',
+    ICONS.ADJUST..' PBR',
+    ICONS.GLOBE_EUROPE..' Entities',
     ICONS.CAR..' Physics'
 }
 local DEBUG_MODE_NAMES_C = ffi.new("const char*[?]", #DEBUG_MODE_NAMES)
 for i=1, #DEBUG_MODE_NAMES do
     DEBUG_MODE_NAMES_C[i-1] = ffi.cast("const char*", DEBUG_MODE_NAMES[i])
 end
+local PREV_SCENE_PATH = ''
+
 
 local Editor = {
     isVisible = true,
@@ -120,12 +120,12 @@ local Editor = {
         Inspector
     },
     gizmos = {
-        showGrid = false,
+        showGrid = true,
         gridStep = 1.0,
         gridDims = Vec3(512, 0, 512),
-        gridColor = Vec3(0.5, 0.5, 0.5),
-        gridFadeStart = 32,
-        gridFadeRange = 4,
+        gridColor = Vec3(0.8, 0.8, 0.8),
+        gridFadeStart = 45,
+        gridFadeRange = 15,
         gizmoObbColor = Vec3(0, 1, 0),
         gizmoOperation = GIZMO_OPERATIONS.UNIVERSAL,
         gizmoMode = GIZMO_MODE.LOCAL,
@@ -135,7 +135,6 @@ local Editor = {
     },
     camera = require 'editor.camera',
     dockID = nil,
-    inputTextBuffer = ffi.new('char[?]', 1+MAX_TEXT_INPUT_SIZE),
     activeProject = nil,
     showDemoWindow = false,
 }
@@ -146,6 +145,14 @@ end
 
 function Editor.gizmos:drawGizmos()
     Debug.start()
+    if self.currentDebugMode[0] == DEBUG_MODE.SCENE then
+        Debug.drawSceneDebug(Vec3(0, 1, 0))
+    elseif self.currentDebugMode[0] == DEBUG_MODE.PHYSICS then
+        Debug.drawPhysicsDebug()
+    end
+    if Editor.isPlaying then
+        return 
+    end
     local selected = EntityListView.selectedEntity
     if selected and selected:isValid() then
         Debug.gizmoEnable(not selected:hasFlag(EFLAGS.STATIC))
@@ -156,11 +163,6 @@ function Editor.gizmos:drawGizmos()
         Debug.setFadeDistance(self.gridFadeStart, self.gridFadeStart+self.gridFadeRange)
         Debug.drawGrid(self.gridDims, self.gridStep, self.gridColor)
         Debug.enableFade(false)
-    end
-    if self.currentDebugMode[0] == DEBUG_MODE.SCENE then
-        Debug.drawSceneDebug(Vec3(0, 1, 0))
-    elseif self.currentDebugMode[0] == DEBUG_MODE.PHYSICS then
-        Debug.drawPhysicsDebug()
     end
 end
 
@@ -183,7 +185,12 @@ function Editor:defaultDockLayout()
 end
 
 function Editor:loadScene(file)
-    Scene.load('Default', file)
+    EntityListView.selectedEntity = nil
+    if file then
+        Scene.load(file)
+    else
+        Scene.new('Untitled Scene')
+    end
     local mainCamera = Scene.spawn('__EditorCamera') -- spawn editor camera
     mainCamera:addFlag(EFLAGS.HIDDEN + EFLAGS.TRANSIENT) -- hide and don't save
     mainCamera:getComponent(Components.Camera):setFov(80)
@@ -200,7 +207,7 @@ function Editor:playScene()
     self.camera.enableMouseLook = false
     local spawnPos = self.camera.position
     spawnPos.y = spawnPos.y + 2.0
-    Player:spawn(nil) -- todo
+    Player:spawn(spawnPos)
     Scene.setActiveCameraEntity(Player.camera)
     self.isVisible = false
 end
@@ -229,15 +236,11 @@ function Editor:switchGameMode()
 end
 
 function Editor:renderMainMenu()
-    if self.isPlaying then
-        UI.PushStyleColor_U32(ffi.C.ImGuiCol_MenuBarBg, 0xff000077)
-    end
+    UI.PushStyleVar(ffi.C.ImGuiStyleVar_FramePadding, MAIN_MENU_PADDING)
     if UI.BeginMainMenuBar() then
-        if self.isPlaying then
-            UI.PopStyleColor()
-        end
+        UI.PopStyleVar(1)
         if UI.BeginMenu('File') then
-            if UI.MenuItem(ICONS.FOLDER_PLUS..' New Project...') then
+            if UI.MenuItem(ICONS.FOLDER_PLUS..' Create Project...') then
                 UI.PushOverrideID(POPUP_ID_NEW_PROJECT)
                 UI.OpenPopup(ICONS.FOLDER_PLUS..' New Project')
                 UI.PopID()
@@ -253,10 +256,14 @@ function Editor:renderMainMenu()
                     collectgarbage('stop')
                 end
             end
-            if UI.MenuItem(ICONS.FILE_IMPORT..' Import Scene') then
-                local selectedFile = App.Utils.openFileDialog('3D Scenes', MESH_FILE_FILTER, '')
+            if UI.MenuItem(ICONS.PLUS_CIRCLE..' New Scene') then
+                self:loadScene(nil)
+            end
+            if UI.MenuItem(ICONS.FILE_IMPORT..' Open Scene') then
+                local selectedFile = App.Utils.openFileDialog('3D Scenes', MESH_FILE_FILTER, PREV_SCENE_PATH)
                 if selectedFile and lfs.attributes(selectedFile) then
-                    Editor:loadScene(selectedFile)
+                    PREV_SCENE_PATH = selectedFile
+                    self:loadScene(selectedFile)
                 end
             end
             if UI.MenuItem(ICONS.PORTAL_EXIT..' Exit') then
@@ -300,7 +307,6 @@ function Editor:renderMainMenu()
             UI.EndMenu()
         end
         UI.Separator()
-        UI.SameLine()
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_Button, 0)
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_BorderShadow, 0)
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_Border, 0)
@@ -311,26 +317,22 @@ function Editor:renderMainMenu()
         if UI.IsItemHovered() then
             UI.SetTooltip('Gizmo Mode: '..(self.gizmos.gizmoMode == GIZMO_MODE.LOCAL and 'Local' or 'World'))
         end
-        UI.SameLine()
         UI.Checkbox(ICONS.RULER, self.gizmos.gizmoSnap)
         if UI.IsItemHovered() then
             UI.SetTooltip('Enable/Disable Gizmo Snap')
         end
-        UI.SameLine()
-        UI.PushItemWidth(100)
-        UI.SliderFloat('##SnapStep', self.gizmos.gizmoSnapStep, 0.1, 10.0, '%.1f', 1.0)
+        UI.PushItemWidth(75)
+        UI.SliderFloat('##SnapStep', self.gizmos.gizmoSnapStep, 0.1, 5.0, '%.1f', 1.0)
         if UI.IsItemHovered() then
             UI.SetTooltip('Gizmo Snap Step')
         end
         UI.PopItemWidth()
-        UI.SameLine()
         UI.PushItemWidth(120)
-        UI.Combo(ICONS.GLASSES, self.gizmos.currentDebugMode, DEBUG_MODE_NAMES_C, #DEBUG_MODE_NAMES)
+        UI.Combo('##DebugRenderingMode', self.gizmos.currentDebugMode, DEBUG_MODE_NAMES_C, #DEBUG_MODE_NAMES)
         UI.PopItemWidth()
         if UI.IsItemHovered() then
             UI.SetTooltip('Debug rendering mode')
         end
-        UI.SameLine()
         UI.Separator()
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_Button, 0)
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_BorderShadow, 0)
@@ -342,6 +344,14 @@ function Editor:renderMainMenu()
             UI.SetTooltip(self.isPlaying and 'Stop' or 'Play Scene')
         end
         UI.PopStyleColor(3)
+        if UI.Button(ICONS.FLAME) then
+            App.hotReloadUI()
+        end
+        if UI.IsItemHovered() then
+            UI.SetTooltip('UI Hot Reload')
+        end
+        UI.Separator()
+        UI.Text('FPS: %g', math.floor(Time.fpsAvg))
         if Profiler.isProfilerRunning then
             UI.Separator()
             UI.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff0000ff)
@@ -356,46 +366,59 @@ function Editor:renderMainMenu()
     end
 end
 
-local tmpProjName = ''
-local tmpDir = ''
+local CREATE_PROJECT_MAX_PATH = 128
+local createProjectTextBuf = nil
+local creatingProject = false
+local createdProjectDir = ''
 function Editor:renderPopups()
     UI.PushOverrideID(POPUP_ID_NEW_PROJECT)
     if UI.BeginPopupModal(ICONS.FOLDER_PLUS..' New Project') then
-        if self.inputTextBuffer[0] == 0 then -- Init
-            tmpProjName = 'New Project'
-            tmpDir = DEFAULT_PROJECT_DIR..tmpProjName
-            ffi.copy(self.inputTextBuffer, tmpProjName)
+        if not createProjectTextBuf then
+            createProjectTextBuf = ffi.new('char[?]', CREATE_PROJECT_MAX_PATH)
         end
-        if UI.InputText('Name', self.inputTextBuffer, MAX_TEXT_INPUT_SIZE) then
-            tmpProjName = ffi.string(self.inputTextBuffer)
-            tmpDir = DEFAULT_PROJECT_DIR..tmpProjName
+        if not creatingProject then
+            local defaultName = 'new project'
+            createdProjectDir = DEFAULT_PROJECT_DIR..defaultName
+            ffi.copy(createProjectTextBuf, defaultName)
+            creatingProject = true
         end
-        if UI.Button('...') then
-            tmpDir = App.Utils.openFolderDialog(nil)..tmpProjName
+        if UI.InputText('##ProjName', createProjectTextBuf, CREATE_PROJECT_MAX_PATH) then
+            createdProjectDir = DEFAULT_PROJECT_DIR..ffi.string(createProjectTextBuf)
         end
         UI.SameLine()
-        UI.Text(tmpDir)
+        if UI.Button('...') then
+            local dir = App.Utils.openFolderDialog(nil)
+            if dir and lfs.attributes(dir) then
+                DEFAULT_PROJECT_DIR = dir
+                createdProjectDir = DEFAULT_PROJECT_DIR..ffi.string(createProjectTextBuf)
+            end
+        end
+        UI.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff999999)
+        UI.Text('Final path: '..createdProjectDir)
+        UI.PopStyleColor()
         if UI.Button('Create ') then
-            local name = tmpProjName
-            local dir = tmpDir
-            if not dir or not name or #name == 0 then
-                error('Invalid project name or directory')
-            end
-            local project = Project:new(dir, name)
-            print('Creating project on disk: '..dir)
-            if pcall(function() project:createOnDisk(dir) end) then
-                print('Project created: '..dir)
-            else
+            local name = ffi.string(createProjectTextBuf)
+            local dir = DEFAULT_PROJECT_DIR
+            if dir and name and #name ~= 0 then
+                local project = Project:new(dir, name)
+                print('Creating project on disk: '..dir)
+                if pcall(function() project:createOnDisk(dir) end) then
+                    print('Project created: '..dir)
+                else
+                    eprint('Failed to create project')
+                end
                 UI.CloseCurrentPopup()
-                error('Failed to create project')
+                createProjectTextBuf[0] = 0
+                creatingProject = false
+            else
+                eprint('Invalid project name or directory')
             end
-            UI.CloseCurrentPopup()
-            self.inputTextBuffer[0] = 0
         end
         UI.SameLine()
         if UI.Button('Cancel') then
             UI.CloseCurrentPopup()
-            self.inputTextBuffer[0] = 0
+            createProjectTextBuf[0] = 0
+            creatingProject = false
         end
         UI.EndPopup()
     end
@@ -430,21 +453,25 @@ function Editor:renderOverlay()
     end
     UI.SetNextWindowBgAlpha(0.35)
     if UI.Begin('Overlay', nil, overlayFlags) then
-        UI.Text(string.format('Sim Hz: %d, T: %.01f, %sT: %f', Time.fpsAvg, Time.time, ICONS.TRIANGLE, Time.deltaTime))
+        UI.TextUnformatted(string.format('Sim Hz: %d, T: %.01f, %sT: %f', Time.fpsAvg, Time.time, ICONS.TRIANGLE, Time.deltaTime))
         UI.SameLine()
         local size = App.Window.getFrameBufSize()
-        UI.Text(string.format(' | %d X %d', size.x, size.y))
-        UI.Text(string.format('GC Mem: %.03f MB', collectgarbage('count')/1000.0))
+        UI.TextUnformatted(string.format(' | %d X %d', size.x, size.y))
+        UI.TextUnformatted(string.format('GC Mem: %.03f MB', collectgarbage('count')/1000.0))
         UI.SameLine()
         local time = os.date('*t')
-        UI.Text(string.format(' | %02d.%02d.%02d %02d:%02d', time.day, time.month, time.year, time.hour, time.min))
+        UI.TextUnformatted(string.format(' | %02d.%02d.%02d %02d:%02d', time.day, time.month, time.year, time.hour, time.min))
         UI.Separator()
-        UI.Text(string.format('Pos: %s', self.camera.position))
-        UI.Text(string.format('Rot: %s', self.camera.rotation))
+        local camera = Scene.getActiveCameraEntity()
+        if camera:isValid() and camera:hasComponent(Components.Transform) then
+            local transform = camera:getComponent(Components.Transform)
+            UI.TextUnformatted(string.format('Pos: %s', transform:getPosition()))
+            UI.TextUnformatted(string.format('Dir: %s', transform:getForwardDir()))
+        end
         UI.Separator()
-        UI.Text(HOST_INFO)
-        UI.Text(CPU_NAME)
-        UI.Text(GPU_NAME)
+        UI.TextUnformatted(HOST_INFO)
+        UI.TextUnformatted(CPU_NAME)
+        UI.TextUnformatted(GPU_NAME)
         if UI.BeginPopupContextWindow() then
             if UI.MenuItem('Custom', nil, overlayLocation == -1) then
                 overlayLocation = -1
@@ -472,6 +499,7 @@ end
 
 local restoreLayout = true
 function Editor:drawTools()
+    Debug.drawNativeProfiler()
     self.dockID = UI.DockSpaceOverViewport(UI.GetMainViewport(), ffi.C.ImGuiDockNodeFlags_PassthruCentralNode)
     if restoreLayout then
         restoreLayout = false
@@ -522,7 +550,7 @@ function Editor:__onTick()
     self:renderPopups()
 end
 
-Style.setupDarkStyle()
+Style.setupDarkStyleNoRounding()
 Editor:loadScene(nil)
 
 return Editor

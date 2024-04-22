@@ -61,15 +61,15 @@
 	"images":[
 		{
 			"mimeType":"image/png",
-			"name":"texture_01",
-			"uri":"texture_01.png"
+			"name":"texture_01.png",
+			"uri":"../textures/proto/texture_01.png"
 		}
 	],
 	"accessors":[
 		{
 			"bufferView":0,
 			"componentType":5126,
-			"count":349,
+			"count":390,
 			"max":[
 				1,
 				0.3486346900463104,
@@ -85,13 +85,13 @@
 		{
 			"bufferView":1,
 			"componentType":5126,
-			"count":349,
+			"count":390,
 			"type":"VEC3"
 		},
 		{
 			"bufferView":2,
 			"componentType":5126,
-			"count":349,
+			"count":390,
 			"type":"VEC2"
 		},
 		{
@@ -104,26 +104,26 @@
 	"bufferViews":[
 		{
 			"buffer":0,
-			"byteLength":4188,
+			"byteLength":4680,
 			"byteOffset":0,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":4188,
-			"byteOffset":4188,
+			"byteLength":4680,
+			"byteOffset":4680,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":2792,
-			"byteOffset":8376,
+			"byteLength":3120,
+			"byteOffset":9360,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":1632,
-			"byteOffset":11168,
+			"byteOffset":12480,
 			"target":34963
 		}
 	],
@@ -135,7 +135,7 @@
 	],
 	"buffers":[
 		{
-			"byteLength":12800,
+			"byteLength":14112,
 			"uri":"test.bin"
 		}
 	]

@@ -1,0 +1,15 @@
+#include "EffectHelpers.h"
+
+uniforms
+{
+    float2 _center;
+    float _radius;
+    float _amount;
+};
+
+fixed4 main_effect()
+{
+    float2 displace = _center - GetImagePosition();
+    float range = clamp(1.0 - (length(displace) / (abs(-sin(_radius * 8.0) * _radius) + 0.00000001F)), 0.0, 1.0);
+    return SampleInputAtOffset(displace * range * _amount);
+}

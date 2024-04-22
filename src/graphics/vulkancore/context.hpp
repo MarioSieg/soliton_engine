@@ -7,7 +7,6 @@
 #include "device.hpp"
 #include "swapchain.hpp"
 
-#include "../imgui/imgui.h"
 #include <DirectXMath.h>
 
 namespace vkb {
@@ -59,10 +58,12 @@ namespace vkb {
             vkcheck(cmd.begin(&cmd_begin_info));
             return cmd;
         }
-        template <const vk::QueueFlagBits QueueType> requires is_queue_type<QueueType>
+        template <const vk::QueueFlagBits QueueType, const bool Owned = true> requires is_queue_type<QueueType>
         auto flush_command_buffer(const vk::CommandBuffer cmd) const -> void {
             const vk::Device device = m_device->get_logical_device();
-            vkcheck(cmd.end());
+            if constexpr (Owned) {
+                vkcheck(cmd.end());
+            }
             constexpr vk::FenceCreateInfo fence_info {};
             vk::Fence fence {};
             vkcheck(device.createFence(&fence_info, &vkb::s_allocator, &fence));
@@ -82,17 +83,19 @@ namespace vkb {
             vkcheck(queue.submit(1, &submit_info, fence));// TODO: not thread safe, use transfer queue
             vkcheck(device.waitForFences(1, &fence, vk::True, std::numeric_limits<std::uint64_t>::max()));
             device.destroyFence(fence, &vkb::s_allocator);
-            vk::CommandPool pool {};
-            if constexpr (QueueType == vk::QueueFlagBits::eGraphics) {
-                pool = get_graphics_command_pool();
-            } else if constexpr (QueueType == vk::QueueFlagBits::eCompute) {
-                pool = get_compute_command_pool();
-            } else if constexpr (QueueType == vk::QueueFlagBits::eTransfer) {
-                pool = get_transfer_command_pool();
-            } else {
-                panic("Invalid queue type");
+            if constexpr (Owned) {
+                vk::CommandPool pool {};
+                if constexpr (QueueType == vk::QueueFlagBits::eGraphics) {
+                    pool = get_graphics_command_pool();
+                } else if constexpr (QueueType == vk::QueueFlagBits::eCompute) {
+                    pool = get_compute_command_pool();
+                } else if constexpr (QueueType == vk::QueueFlagBits::eTransfer) {
+                    pool = get_transfer_command_pool();
+                } else {
+                    panic("Invalid queue type");
+                }
+                device.freeCommandBuffers(pool, 1, &cmd);
             }
-            device.freeCommandBuffers(pool, 1, &cmd);
         }
         [[nodiscard]] auto get_command_buffers() const noexcept -> std::span<const vk::CommandBuffer> { return m_command_buffers; }
         [[nodiscard]] auto get_current_frame() const noexcept -> std::uint32_t { return m_current_frame; }
@@ -114,7 +117,6 @@ namespace vkb {
 
         HOTPROC auto begin_frame(const DirectX::XMFLOAT4A& clear_color, vk::CommandBufferInheritanceInfo* out_inheritance_info = nullptr) -> vk::CommandBuffer;
         HOTPROC auto end_frame(vk::CommandBuffer cmd_buf) -> void;
-        auto render_imgui(ImDrawData* data, vk::CommandBuffer cmd_buf) -> void;
         auto on_resize() -> void;
 
     private:
@@ -128,7 +130,6 @@ namespace vkb {
         auto create_pipeline_cache() -> void;
         auto recreate_swapchain() -> void;
         auto create_msaa_target() -> void;
-        auto create_imgui_renderer() -> void;
 
         auto destroy_depth_stencil() const -> void;
         auto destroy_msaa_target() const -> void;
@@ -145,7 +146,6 @@ namespace vkb {
             std::array<vk::Semaphore, k_max_concurrent_frames> present_complete {}; // Swap chain image presentation
             std::array<vk::Semaphore, k_max_concurrent_frames> render_complete {}; // Command buffer submission and execution
         } m_semaphores {}; // Semaphores are used to coordinate operations within the graphics queue and ensure correct command ordering
-        vk::PipelineStageFlags m_submit_info_wait_stage_mask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
         vk::CommandPool m_graphics_command_pool {};
         vk::CommandPool m_compute_command_pool {};
         vk::CommandPool m_transfer_command_pool {};
@@ -176,9 +176,15 @@ namespace vkb {
         } m_msaa_target {};
     };
 
-    // Convenience macros hehe
-    #define vkb_context() (*vkb::context::s_instance)
-    #define vkb_device() (vkb_context().get_device())
-    #define vkb_swapchain() (vkb_context().get_swapchain())
-    #define vkb_vk_device() (vkb_device().get_logical_device())
+    // Get global vulkan context wrapper class
+    [[nodiscard]] inline auto ctx() noexcept -> context& {
+        passert(context::s_instance != nullptr);
+        return *context::s_instance;
+    }
+
+    // Get global vulkan device wrapper class
+    [[nodiscard]] inline auto dvc() noexcept -> const device& { return ctx().get_device(); }
+
+    // Get global raw vulkan logical device
+    [[nodiscard]] inline auto vkdvc() noexcept -> vk::Device { return dvc().get_logical_device(); }
 }

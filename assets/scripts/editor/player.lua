@@ -11,6 +11,12 @@ local Quat = require 'Quat'
 local Time = require 'Time'
 local EFLAGS = ENTITY_FLAGS
 
+local MOVEMENT_STATE = {
+    IDLE = 0,
+    WALKING = 1,
+    RUNNING = 2
+}
+
 local Player = {
     controller = nil,
     camera = nil,
@@ -21,7 +27,8 @@ local Player = {
     walkSpeed = 2,
     runSpeed = 5,
     jumpSpeed = 2,
-    _isRunning = false,
+    _movementState = MOVEMENT_STATE.IDLE,
+    _isInAir = false,
     _prevMousePos = Vec2.ZERO,
     _mouseAngles = Vec2.ZERO,
     _smoothAngles = Vec2.ZERO
@@ -32,19 +39,19 @@ function Player:spawn(spawnPos)
 
     self.controller = Scene.spawn('PlayerController')
     self.controller:addFlag(EFLAGS.TRANSIENT)
-    self.controller:getComponent(Components.Transform)
-    self.controller:getComponent(Components.CharacterController):setLinearVelocity(spawnPos)
+    self.controller:getComponent(Components.CharacterController)
+    self.controller:getComponent(Components.Transform):setPosition(spawnPos)
 
     self.camera = Scene.spawn('PlayerCamera')
     self.camera:addFlag(EFLAGS.TRANSIENT)
     self.camera:getComponent(Components.Transform)
-    self.camera:getComponent(Components.Camera):setFov(85)
+    self.camera:getComponent(Components.Camera):setFov(75)
 end
 
 function Player:updateCamera()
     local transform = self.camera:getComponent(Components.Transform)
     local newPos = self.controller:getComponent(Components.Transform):getPosition()
-    newPos.y = newPos.y + 1.35 * 0.5
+    newPos.y = newPos.y + 1.35 * 0.5 -- camera height
     transform:setPosition(newPos) -- sync pos
 
     local sens = Math.abs(self.sensitivity) * 0.01
@@ -66,33 +73,56 @@ function Player:updateCamera()
     self._mouseAngles = self._mouseAngles + delta
     self._mouseAngles.y = Math.clamp(self._mouseAngles.y, -clampYRad, clampYRad)
     local quat = Quat.fromYawPitchRoll(self._mouseAngles.x, self._mouseAngles.y, 0.0)
+    
+    if self._movementState ~= MOVEMENT_STATE.IDLE then
+        local walkFreq = 9.85
+        local walkAmplitude = 0.01
+        local runFreq = 15
+        local runApmlitude = 0.02
+        local freq = Time.time * self._movementState == MOVEMENT_STATE.RUNNING and runFreq or walkFreq
+        local amplitude = self._movementState == MOVEMENT_STATE.RUNNING and runApmlitude or walkAmplitude
+        local bobX = amplitude * Math.sin(freq)
+        local bobY = amplitude * Math.cos(freq)
+        local bobQ = Quat.fromYawPitchRoll(0, bobY, 0)
+        quat = quat * bobQ
+    end
+    
     transform:setRotation(quat)
 end
 
 function Player:updateMovement()
     local cameraTransform = self.camera:getComponent(Components.Transform)
     local controller = self.controller:getComponent(Components.CharacterController)
+    local isRunning = Input.isKeyPressed(Input.KEYS.W) and Input.isKeyPressed(Input.KEYS.LEFT_SHIFT)
+    local speed = isRunning and self.runSpeed or self.walkSpeed
     local dir = Vec3.ZERO
-    self._isRunning = Input.isKeyPressed(Input.KEYS.LEFT_SHIFT)
-    local speed = self._isRunning and self.runSpeed or self.walkSpeed
-    if Input.isKeyPressed(Input.KEYS.W) then
-        dir = dir + cameraTransform:getForwardDir() * speed
+    local move = function(key, tr_dir)
+        if Input.isKeyPressed(key) then
+            tr_dir.y = 0
+            dir = dir + Vec3.norm(tr_dir) * speed
+            return true
+        end
+        return false
     end
-    if Input.isKeyPressed(Input.KEYS.S) then
-        dir = dir + cameraTransform:getBackwardDir() * speed
+
+    local isMoving = false
+    isMoving = isMoving or move(Input.KEYS.W, cameraTransform:getForwardDir())
+    isMoving = isMoving or move(Input.KEYS.S, cameraTransform:getBackwardDir())
+    isMoving = isMoving or move(Input.KEYS.A, cameraTransform:getLeftDir())
+    isMoving = isMoving or move(Input.KEYS.D, cameraTransform:getRightDir())
+
+    if isMoving then
+        self._movementState = isRunning and MOVEMENT_STATE.RUNNING or MOVEMENT_STATE.WALKING
+    else
+        self._movementState = MOVEMENT_STATE.IDLE
     end
-    if Input.isKeyPressed(Input.KEYS.A) then
-        dir = dir + cameraTransform:getLeftDir() * speed
-    end
-    if Input.isKeyPressed(Input.KEYS.D) then
-        dir = dir + cameraTransform:getRightDir() * speed
-    end
-    if Input.isKeyPressed(Input.KEYS.SPACE) then
+
+    if Input.isKeyPressed(Input.KEYS.SPACE) then -- Jump
         dir = dir + Vec3(0, self.jumpSpeed, 0)
     end
     
     local groundState = controller:getGroundState()
-
+    self._isInAir = groundState == CHARACTER_GROUND_STATE.IN_AIR
     --  Cancel movement in opposite direction of normal when touching something we can't walk up
     if groundState == CHARACTER_GROUND_STATE.ON_STEEP_GROUND or groundState == CHARACTER_GROUND_STATE.NOT_SUPPORTED then
         local normal = controller:getGroundNormal()

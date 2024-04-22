@@ -1,10 +1,12 @@
 if (WIN32)
-    target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/win_amd64/lua51.lib)
+    target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/win_amd64/libluajit.lib)
 elseif(APPLE)
     target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/mac_aarch64/libluajit.a)
     target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/mac_aarch64/libMoltenVK.dylib)
+    target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/mac_aarch64/Noesis.dylib)
 else()
-    target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/linux_amd64/lua51.a)
+    target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/linux_amd64/libluajit.a)
+    target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/linux_amd64/libNoesis.so)
     target_link_libraries(lunam tbb)
 endif()
 
@@ -26,7 +28,11 @@ target_link_libraries(lunam freetype)
 
 add_subdirectory(extern/mimalloc)
 target_include_directories(lunam PRIVATE extern/mimalloc/include)
-target_link_libraries(lunam mimalloc)
+if (WIN32)
+    target_link_libraries(lunam mimalloc-static)
+else()
+    target_link_libraries(lunam mimalloc)
+endif()
 
 add_subdirectory(extern/infoware)
 target_include_directories(lunam PRIVATE extern/infoware/include)
@@ -64,6 +70,7 @@ add_subdirectory(extern/bgfx)
 target_include_directories(lunam PRIVATE extern/bgfx/include)
 target_link_libraries(lunam bx bimg bimg_decode) # we only borrow bgfx's bx and bimg
 
+add_compile_definitions(JPH_DEBUG_RENDERER=1)
 add_subdirectory(extern/JoltPhysics/Build)
 target_include_directories(lunam PRIVATE extern/JoltPhysics/Source)
 target_link_libraries(lunam Jolt)
@@ -77,12 +84,23 @@ target_link_libraries(lunam nfd)
 add_subdirectory(extern/Vulkan-Utility-Libraries)
 target_include_directories(lunam PRIVATE extern/Vulkan-Utility-Libraries/include)
 
+target_include_directories(lunam PRIVATE extern/VulkanMemoryAllocator/include)
+
+target_include_directories(lunam PRIVATE extern/noesis/Include)
+target_include_directories(lunam PRIVATE src/graphics/noesis/Providers/Include)
+target_include_directories(lunam PRIVATE src/graphics/noesis/Interactivity/Include)
+target_include_directories(lunam PRIVATE src/graphics/noesis/Theme/Include)
+target_include_directories(lunam PRIVATE src/graphics/noesis/MediaElement/Include)
+target_include_directories(lunam PRIVATE src/graphics/noesis/VKRenderDevice/Include)
+target_include_directories(lunam PRIVATE src/graphics/noesis/App/Include)
+
+add_subdirectory(extern/glm)
+target_include_directories(lunam PRIVATE extern/glm)
+
 # Assimp must be last
 add_subdirectory(extern/assimp)
 target_include_directories(lunam PRIVATE extern/assimp/include)
 target_link_libraries(lunam assimp)
-if (WIN32)
-    target_compile_options(assimp PRIVATE /GR) # fuck u assimp
-else()
-    target_compile_options(assimp PRIVATE -fexceptions -frtti) # fuck u assimp
+if (NOT WIN32)
+    target_compile_options(assimp PRIVATE -fexceptions)
 endif()

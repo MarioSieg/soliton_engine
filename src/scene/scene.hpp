@@ -13,7 +13,7 @@
 
 class scene : public flecs::world, public no_copy, public no_move {
 public:
-    const std::uint32_t id;
+    const int id;
     std::string name = {};
     virtual ~scene() override;
 

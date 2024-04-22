@@ -15,5 +15,12 @@ namespace platform {
         HOTPROC auto on_pre_tick() -> bool override;
 
         [[nodiscard]] static auto get_glfw_window() -> GLFWwindow*;
+        static inline std::vector<GLFWcursorposfun> s_cursor_pos_callbacks;
+        static inline std::vector<GLFWscrollfun> s_scroll_callbacks;
+        static inline std::vector<GLFWkeyfun> s_key_callbacks;
+        static inline std::vector<GLFWcharfun> s_char_callbacks;
+        static inline std::vector<GLFWmousebuttonfun> s_mouse_button_callbacks;
+        static inline std::vector<GLFWcursorenterfun> s_cursor_enter_callbacks;
+        static inline std::vector<GLFWframebuffersizefun> s_framebuffer_size_callbacks;
     };
 }

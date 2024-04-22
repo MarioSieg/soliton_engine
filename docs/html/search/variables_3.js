@@ -1,0 +1,26 @@
+var searchData=
+[
+  ['data_0',['data',['../struct_noesis_app_1_1_embedded_font.html#a1e5ef95dec092f810ace0441f646b6be',1,'NoesisApp::EmbeddedFont::data'],['../struct_noesis_app_1_1_embedded_texture.html#afb4a82e3fe9e6c51c41aa301e5c4de30',1,'NoesisApp::EmbeddedTexture::data'],['../struct_noesis_app_1_1_embedded_xaml.html#a7c02d4ef8c0021a1167c4b91beec7f52',1,'NoesisApp::EmbeddedXaml::data'],['../structscene__iter__context.html#a87ee8fbb8b17492bf35523a4a389f2aa',1,'scene_iter_context::data']]],
+  ['debug_5flocate_5fitem_5fcolor_1',['DEBUG_LOCATE_ITEM_COLOR',['../imgui_8cpp.html#a98396d13abd050b286236e24f5d7e280',1,'imgui.cpp']]],
+  ['defaultoptions_2',['defaultOptions',['../namespaceluabridge.html#a970825ae33d3dab8df925936ae5c8b1e',1,'luabridge']]],
+  ['deleted_3',['Deleted',['../struct_noesis_app_1_1_file_system_watcher.html#a4fa732def2782b86359153b3a3dad3bd',1,'NoesisApp::FileSystemWatcher']]],
+  ['delta_5ftime_4',['delta_time',['../kernel_8cpp.html#a266ae327bff674bb7a9839838c444162',1,'kernel.cpp']]],
+  ['dependent_5ffalse_5',['dependent_false',['../namespaceluabridge_1_1detail.html#af828b280f54c202d4659d5db45033c17',1,'luabridge::detail']]],
+  ['depth_6',['depth',['../classvkb_1_1context.html#aa91d3e8214f5cfe717c760a0c08bf770',1,'vkb::context']]],
+  ['depth_5ftest_7',['depth_test',['../structgraphics_1_1debugdraw_1_1draw__command.html#abbd88810b391d940236b44f46983c4d3',1,'graphics::debugdraw::draw_command']]],
+  ['descriptionproperty_8',['DescriptionProperty',['../class_menu3_d_1_1_menu_description.html#a3781f6b2ce9e64eac6fb8e69e247ad31',1,'Menu3D::MenuDescription']]],
+  ['device_9',['device',['../struct_noesis_app_1_1_v_k_factory_1_1_instance_info.html#a49bc0c3029fef9a3c82aa7f7ee27462b',1,'NoesisApp::VKFactory::InstanceInfo']]],
+  ['dir_10',['dir',['../structdir__data.html#a9888a18b3e273d6d7d47e9ac3069dac2',1,'dir_data']]],
+  ['directionproperty_11',['DirectionProperty',['../class_noesis_app_1_1_move_focus_action.html#a04218fc21e81a55eacfb0993b5e7c834',1,'NoesisApp::MoveFocusAction']]],
+  ['dirty_12',['Dirty',['../struct_my_document.html#a8d239384f0e6d16da96b783a4f14eb55',1,'MyDocument']]],
+  ['distance_5ffade_13',['distance_fade',['../structgraphics_1_1debugdraw_1_1draw__command.html#aed0426c4346cf0bba5cdbf7b6dd97fe7',1,'graphics::debugdraw::draw_command']]],
+  ['docking_5ftransparent_5fpayload_5falpha_14',['DOCKING_TRANSPARENT_PAYLOAD_ALPHA',['../imgui_8cpp.html#a3e951569621f704ef7f82065d1a283e7',1,'imgui.cpp']]],
+  ['doubletappedevent_15',['DoubleTappedEvent',['../class_noesis_g_u_i_extensions_1_1_element.html#a1cae45daf830020d8a8d8e77ff2870dc',1,'NoesisGUIExtensions::Element']]],
+  ['downsample_5fps_5fsize_16',['Downsample_PS_Size',['../_shaders_8h.html#a8a4264dee3aae05ae4ed8e8ed49eeabd',1,'Shaders.h']]],
+  ['downsample_5fps_5fstart_17',['Downsample_PS_Start',['../_shaders_8h.html#adcb14b50207f387c2cca137cab6c5bbd',1,'Shaders.h']]],
+  ['drag_5fmouse_5fthreshold_5ffactor_18',['DRAG_MOUSE_THRESHOLD_FACTOR',['../imgui__widgets_8cpp.html#a4e2b30a2cf82f491a712ba37c2bf3455',1,'imgui_widgets.cpp']]],
+  ['dragdrop_5fhold_5fto_5fopen_5ftimer_19',['DRAGDROP_HOLD_TO_OPEN_TIMER',['../imgui__widgets_8cpp.html#a6146d78f94a9da0cf92020500693ef2c',1,'imgui_widgets.cpp']]],
+  ['drawpos_20',['drawPos',['../struct_noesis_app_1_1_v_k_render_device_1_1_dynamic_buffer.html#a5991836d88a01eebe39ae6856498e7ee',1,'NoesisApp::VKRenderDevice::DynamicBuffer']]],
+  ['dummy_5f_21',['dummy_',['../unionluabridge_1_1detail_1_1expected__storage_3_01void_00_01_e_00_01true_00_01true_01_4.html#a96ac97b8bde17a26ee04cadfa93c4943',1,'luabridge::detail::expected_storage&lt; void, E, true, true &gt;::dummy_'],['../unionluabridge_1_1detail_1_1expected__storage_3_01_t_00_01_e_00_01false_00_01false_01_4.html#a438963318bbf94d3a090cc4b8aea5d37',1,'luabridge::detail::expected_storage&lt; T, E, false, false &gt;::dummy_'],['../unionluabridge_1_1detail_1_1expected__storage_3_01void_00_01_e_00_01true_00_01false_01_4.html#a94a373373da810be3121a2d0dcf3fe78',1,'luabridge::detail::expected_storage&lt; void, E, true, false &gt;::dummy_']]],
+  ['durationproperty_22',['DurationProperty',['../class_noesis_app_1_1_change_property_action.html#a565fc26ed73101d3b46a6c8b4de85dc0',1,'NoesisApp::ChangePropertyAction']]]
+];

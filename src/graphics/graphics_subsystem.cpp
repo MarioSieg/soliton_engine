@@ -8,8 +8,6 @@
 #include <execution>
 #include <mimalloc.h>
 
-#include "imgui/text_editor.hpp"
-#include "imgui/implot.h"
 #include "material.hpp"
 #include "pipeline.hpp"
 
@@ -21,84 +19,56 @@ using scripting::scripting_subsystem;
 namespace graphics {
     using vkb::context;
 
-    static auto render_scene_bucket(vk::CommandBuffer cmd_buf, std::int32_t bucket_id, std::int32_t num_threads, void* usr) -> void;
+    static auto render_scene_bucket(vk::CommandBuffer cmd, std::int32_t bucket_id, std::int32_t num_threads, void* usr) -> void;
 
     graphics_subsystem::graphics_subsystem() : subsystem{"Graphics"} {
         log_info("Initializing graphics subsystem");
 
         s_instance = this;
-        ImGui::SetAllocatorFunctions(
-            +[](size_t size, [[maybe_unused]] void* usr) -> void* {
-                return mi_malloc(size);
-            },
-            +[](void* ptr, [[maybe_unused]] void* usr) -> void {
-                mi_free(ptr);
-            }
-        );
-        ImGui::CreateContext();
-        ImPlot::CreateContext();
-        auto& io = ImGui::GetIO();
-        io.DisplaySize.x = 800.0f;
-        io.DisplaySize.y = 600.0f;
-        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-        io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
-        io.IniFilename = nullptr;
 
         GLFWwindow* window = platform_subsystem::get_glfw_window();
         context::s_instance = std::make_unique<context>(window); // Create Vulkan context
-
-        // Apply DPI scaling
-        float scale = 1.0f;
-        float xscale;
-        float yscale;
-        glfwGetWindowContentScale(window, &xscale, &yscale);
-        scale = (xscale + yscale) * 0.5f;
-        if constexpr (PLATFORM_OSX) {
-            io.FontGlobalScale = 1.0f / scale;
-        } else {
-            ImGui::GetStyle().ScaleAllSizes(scale);
-        }
 
         material::init_static_resources();
 
         create_descriptor_pool();
 
-        pipeline_registry::s_instance = std::make_unique<pipeline_registry>(vkb_context().get_device().get_logical_device());
+        pipeline_registry::s_instance = std::make_unique<pipeline_registry>(vkb::ctx().get_device().get_logical_device());
 
         const auto num_render_threads = scripting_subsystem::get_config_table()["Threads"]["renderThreads"].cast<std::int32_t>().valueOr(2);
         m_render_thread_pool.emplace(&render_scene_bucket, this, num_render_threads);
         m_render_data.reserve(32);
 
         pipeline_registry::get().register_pipeline<pipelines::pbr_pipeline>();
+
+        m_imgui_context.emplace();
+
+        m_noesis_context.emplace();
+        m_noesis_context->load_ui_from_xaml("App.xaml");
     }
 
     [[nodiscard]] static auto compute_render_bucket_range(const std::size_t id, const std::size_t num_entities, const std::size_t num_threads) noexcept -> std::array<std::size_t, 2> {
-        const std::size_t base_bucket_size = num_entities / num_threads;
-        const std::size_t num_extra_entities = num_entities % num_threads;
-        const std::size_t begin = base_bucket_size * id + std::min(id, num_extra_entities);
+        const std::size_t base_bucket_size = num_entities/num_threads;
+        const std::size_t num_extra_entities = num_entities%num_threads;
+        const std::size_t begin = base_bucket_size*id + std::min(id, num_extra_entities);
         const std::size_t end = begin + base_bucket_size + (id < num_extra_entities ? 1 : 0);
         passert(begin <= end && end <= num_entities);
         return {begin, end};
     }
 
     graphics_subsystem::~graphics_subsystem() {
+        vkcheck(context::s_instance->get_device().get_logical_device().waitIdle()); // must be first
+
+        m_imgui_context.reset();
+        m_noesis_context.reset();
+
         pipeline_registry::s_instance.reset();
-
         m_render_thread_pool.reset();
-
-        vkcheck(context::s_instance->get_device().get_logical_device().waitIdle());
-
         if (m_debugdraw) {
             m_debugdraw.reset();
         }
-
         material::free_static_resources();
-
         context::s_instance.reset();
-
-        ImPlot::DestroyContext();
-        ImGui::DestroyContext();
-
         s_instance = nullptr;
     }
 
@@ -229,13 +199,13 @@ namespace graphics {
     }
 
     // WARNING! RENDER THREAD LOCAL
-    HOTPROC static auto render_scene_bucket(const vk::CommandBuffer cmd_buf, const std::int32_t bucket_id, const std::int32_t num_threads, void* usr) -> void {
+    HOTPROC static auto render_scene_bucket(const vk::CommandBuffer cmd, const std::int32_t bucket_id, const std::int32_t num_threads, void* usr) -> void {
         passert(usr != nullptr);
         auto& self = *static_cast<graphics_subsystem*>(usr);
 
         const pipeline_base& pipe = pipeline_registry::get().get_pipeline("pbr");
 
-        cmd_buf.bindPipeline(vk::PipelineBindPoint::eGraphics, pipe.get_pipeline());
+        cmd.bindPipeline(vk::PipelineBindPoint::eGraphics, pipe.get_pipeline());
         const DirectX::XMMATRIX vp = DirectX::XMLoadFloat4x4A(&graphics_subsystem::s_view_proj_mtx);
 
         // thread workload distribution
@@ -259,7 +229,7 @@ namespace graphics {
                 local_end = std::min(transforms.size(), global_end - processed_entities);
             }
             for (std::size_t i = local_start; i < local_end; ++i) {
-                render_mesh(cmd_buf, pipe.get_layout(), transforms[i], renderers[i], vp);
+                render_mesh(cmd, pipe.get_layout(), transforms[i], renderers[i], vp);
             }
             processed_entities += transforms.size();
         }
@@ -267,30 +237,29 @@ namespace graphics {
         if (bucket_id == num_threads - 1) { // Last thread
             if (std::optional<debugdraw>& dd = self.get_debug_draw_opt(); dd) {
                 dd->render(
-                    cmd_buf,
+                    cmd,
                     DirectX::XMLoadFloat4x4A(&graphics_subsystem::s_view_proj_mtx),
-                    DirectX::XMLoadFloat3(&graphics_subsystem::s_camera_transform.position)
+                    DirectX::XMLoadFloat4(&graphics_subsystem::s_camera_transform.position)
                 );
             }
-            vkb_context().render_imgui(ImGui::GetDrawData(), cmd_buf); // thread safe?!
+            self.get_noesis_context().render(cmd);
+            self.get_imgui_context().submit_imgui(cmd);
         }
     }
 
     HOTPROC auto graphics_subsystem::on_pre_tick() -> bool {
         const auto w = static_cast<float>(context::s_instance->get_width());
         const auto h = static_cast<float>(context::s_instance->get_height());
-        ImGui::NewFrame();
-        auto& io = ImGui::GetIO();
-        io.DisplaySize.x = w;
-        io.DisplaySize.y = h;
+        m_imgui_context->begin_frame();
         update_main_camera(w, h);
-        m_cmd_buf = vkb_context().begin_frame(s_clear_color, &m_inheritance_info);
+        m_cmd_buf = vkb::ctx().begin_frame(s_clear_color, &m_inheritance_info);
         return true;
     }
 
     HOTPROC auto graphics_subsystem::on_post_tick() -> void {
-        ImGui::Render();
         auto& scene = scene::get_active();
+        m_noesis_context->tick();
+        m_imgui_context->end_frame();
         if (!m_render_query.scene || &scene != m_render_query.scene) [[unlikely]] { // Scene changed
             m_render_query.scene = &scene;
             // m_render_query.query.destruct(); TODO: leak
@@ -300,7 +269,7 @@ namespace graphics {
         m_render_data.clear();
         m_render_query.query.iter([this](const flecs::iter& i, const com::transform* transforms, const com::mesh_renderer* renderers) {
             const std::size_t n = i.count();
-            m_render_data.emplace_back(std::make_pair(std::span{transforms, n}, std::span{renderers, n}));
+            m_render_data.emplace_back(std::span{transforms, n}, std::span{renderers, n});
         });
         if (m_cmd_buf) [[likely]] {
             m_render_thread_pool->begin_frame(&m_inheritance_info);
@@ -310,13 +279,14 @@ namespace graphics {
         scene.readonly_end();
 
         if (m_cmd_buf) [[likely]] {
-            vkb_context().end_frame(m_cmd_buf);
+            vkb::ctx().end_frame(m_cmd_buf);
         }
         com::camera::active_camera = flecs::entity::null();
     }
 
     auto graphics_subsystem::on_resize() -> void {
-        vkb_context().on_resize();
+        vkb::ctx().on_resize();
+        m_noesis_context->on_resize();
     }
 
     auto graphics_subsystem::on_start(scene& scene) -> void {
@@ -325,8 +295,8 @@ namespace graphics {
 
     // Descriptors are allocated from a pool, that tells the implementation how many and what types of descriptors we are going to use (at maximum)
     auto graphics_subsystem::create_descriptor_pool() -> void {
-        const vkb::device& vkb_device = context::s_instance->get_device();
-        const vk::Device device = vkb_device.get_logical_device();
+        const vkb::device& dvc = context::s_instance->get_device();
+        const vk::Device device = vkb::dvc().get_logical_device();
 
         const std::array<vk::DescriptorPoolSize, 2> sizes {
             vk::DescriptorPoolSize {

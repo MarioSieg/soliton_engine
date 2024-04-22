@@ -1,0 +1,11 @@
+#include "BrushHelpers.h"
+
+uniforms
+{
+    float _weight;
+};
+
+fixed4 main_brush(float2 uv)
+{
+    return _weight * SampleImage2(uv) + (1.0 - _weight) * SampleImage(uv);
+}

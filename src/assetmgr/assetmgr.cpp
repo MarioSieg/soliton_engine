@@ -8,8 +8,10 @@
 #include <fstream>
 
 namespace assetmgr {
+    using namespace std::filesystem;
+
     auto get_asset_root() -> const std::string& {
-        static const std::string asset_root = (std::filesystem::current_path() / "assets").string();
+        static const std::string asset_root = (current_path() / "assets").string();
         return asset_root;
     }
 
@@ -46,12 +48,12 @@ namespace assetmgr {
     }();
 
     [[nodiscard]] static auto is_fs_valid() -> bool {
-        if (!std::filesystem::exists(get_asset_root())) [[unlikely]] {
+        if (!exists(get_asset_root())) [[unlikely]] {
             log_error("Asset directory not found: {}", get_asset_root());
             return false;
         }
         for (const std::string& dir : k_asset_dirs) {
-            if (!std::filesystem::exists(dir)) [[unlikely]] {
+            if (!exists(dir)) [[unlikely]] {
                 log_error("Asset directory not found: {}", dir);
                 return false;
             }
@@ -70,21 +72,21 @@ namespace assetmgr {
         return dir;
     }
 
-    static constinit std::atomic_uint64_t s_asset_requests = 0;
-    static constinit std::atomic_uint64_t s_total_bytes_loaded = 0;
+    constinit std::atomic_size_t s_asset_requests = 0;
+    constinit std::atomic_size_t s_total_bytes_loaded = 0;
 
     [[nodiscard]] static auto validate_path(const std::string& full_path) -> bool {
         const int encoding = simdutf::autodetect_encoding(full_path.c_str(), full_path.size());
         if (encoding != simdutf::encoding_type::UTF8) [[unlikely]] { /* UTF8 != ASCII but UTF8 can store ASCII */
-            log_error("Asset {} is not ASCII encoded", full_path);
+            log_warn("Asset path {} is not ASCII encoded", full_path);
             return false;
         }
         if (!simdutf::validate_ascii(full_path.c_str(), full_path.size())) [[unlikely]] {
-            log_error("Asset {} contains non-ASCII characters", full_path);
+            log_warn("Asset path {} contains non-ASCII characters", full_path);
             return false;
         }
-        if (!std::filesystem::exists(full_path)) [[unlikely]] {
-            log_error("Asset not found: {}", full_path);
+        if (!exists(full_path)) [[unlikely]] {
+            log_warn("Asset path not found: {}", full_path);
             return false;
         }
         return true;
@@ -99,20 +101,15 @@ namespace assetmgr {
             }
             is_fs_validated.store(true, std::memory_order_relaxed);
         }
-        log_info("Asset load request [{}]: {}", s_asset_requests.fetch_add(1, std::memory_order_relaxed), path);
-        std::string corrected_path {};
-        const std::string* valid_path;
-        if (std::ranges::find(path, '\\') != path.cend()) { // Windows path
-            corrected_path = path;
-            std::ranges::replace(corrected_path, '\\', '/'); // Convert to Unix path
-            valid_path = &corrected_path;
-        } else {
-            valid_path = &path;
+        log_info("Asset load request #{}: {}", s_asset_requests.fetch_add(1, std::memory_order_relaxed), path);
+        std::string abs = absolute(path).string();
+        if (std::ranges::find(abs, '\\') != abs.cend()) { // Windows path
+            std::ranges::replace(abs, '\\', '/'); // Convert to Unix path
         }
-        if (!validate_path(*valid_path)) [[unlikely]] {
+        if (!validate_path(abs)) [[unlikely]] {
             return false;
         }
-        std::ifstream file {*valid_path, std::ios::binary | std::ios::ate | std::ios::in};
+        std::ifstream file {abs, std::ios::binary | std::ios::ate | std::ios::in};
         if (!file.is_open() || !file.good()) [[unlikely]] {
             log_error("Failed to open asset: {}", path);
             return false;
@@ -121,7 +118,7 @@ namespace assetmgr {
         file.seekg(0, std::ios::beg);
         out.resize(size);
         file.read(reinterpret_cast<char*>(out.data()), size);
-        s_total_bytes_loaded.fetch_add(static_cast<std::uint64_t>(size), std::memory_order_relaxed);
+        s_total_bytes_loaded.fetch_add(size, std::memory_order_relaxed);
         return true;
     }
 
@@ -143,11 +140,11 @@ namespace assetmgr {
         return load_asset(path, out);
     }
 
-    auto get_asset_request_count() noexcept -> std::uint64_t {
+    auto get_asset_request_count() noexcept -> std::size_t {
         return s_asset_requests.load(std::memory_order_relaxed);
     }
 
-    auto get_total_bytes_loaded() noexcept -> std::uint64_t {
+    auto get_total_bytes_loaded() noexcept -> std::size_t {
         return s_total_bytes_loaded.load(std::memory_order_relaxed);
     }
 }

@@ -57,7 +57,7 @@ function __on_prepare__()
             require('jit.dump').on('m', 'jit.log')
         end
     else
-        log_info('! JIT is disabled')
+        print('! JIT is disabled')
     end
 
     -- Print some debug info

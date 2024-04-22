@@ -3,7 +3,6 @@
 #pragma once
 
 #include "prelude.hpp"
-#include "vma.hpp"
 
 namespace vkb {
     class device final : public no_copy, public no_move {
@@ -44,13 +43,15 @@ namespace vkb {
         [[nodiscard]] auto get_compute_queue_idx() const noexcept -> std::uint32_t { return m_queue_families.compute; }
         [[nodiscard]] auto get_transfer_queue_idx() const noexcept -> std::uint32_t { return m_queue_families.transfer; }
         [[nodiscard]] auto get_allocator() const noexcept -> VmaAllocator { return m_allocator; }
-        [[nodiscard]] auto is_image_format_supported(
+        auto is_image_format_supported(
             vk::ImageType type,
             vk::Format format,
             vk::ImageCreateFlags flags,
             vk::ImageUsageFlags usage,
-            vk::ImageTiling tiling
-        ) const -> bool;
+            vk::ImageTiling tiling,
+            bool& is_generally_supported,
+            bool& is_mipgen_supported
+        ) const -> void;
 
     private:
         static inline constinit std::array<const char*, 2> k_device_extensions {
@@ -60,6 +61,7 @@ namespace vkb {
         static constexpr vk::PhysicalDeviceFeatures k_enabled_features = [] {
             vk::PhysicalDeviceFeatures enabled_features {};
             enabled_features.samplerAnisotropy = vk::True;
+            enabled_features.fillModeNonSolid = vk::True;
             return enabled_features;
         }();
 

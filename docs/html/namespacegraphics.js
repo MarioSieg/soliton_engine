@@ -1,0 +1,35 @@
+var namespacegraphics =
+[
+    [ "pipelines", "namespacegraphics_1_1pipelines.html", "namespacegraphics_1_1pipelines" ],
+    [ "debugdraw", "classgraphics_1_1debugdraw.html", "classgraphics_1_1debugdraw" ],
+    [ "graphics_subsystem", "classgraphics_1_1graphics__subsystem.html", "classgraphics_1_1graphics__subsystem" ],
+    [ "material", "classgraphics_1_1material.html", "classgraphics_1_1material" ],
+    [ "mesh", "classgraphics_1_1mesh.html", "classgraphics_1_1mesh" ],
+    [ "pipeline_base", "classgraphics_1_1pipeline__base.html", "classgraphics_1_1pipeline__base" ],
+    [ "pipeline_registry", "classgraphics_1_1pipeline__registry.html", "classgraphics_1_1pipeline__registry" ],
+    [ "render_thread", "classgraphics_1_1render__thread.html", "classgraphics_1_1render__thread" ],
+    [ "render_thread_pool", "classgraphics_1_1render__thread__pool.html", "classgraphics_1_1render__thread__pool" ],
+    [ "texture", "classgraphics_1_1texture.html", "classgraphics_1_1texture" ],
+    [ "texture_allocator", "classgraphics_1_1texture__allocator.html", "classgraphics_1_1texture__allocator" ],
+    [ "texture_format_info", "structgraphics_1_1texture__format__info.html", "structgraphics_1_1texture__format__info" ],
+    [ "thread_shared_ctx", "structgraphics_1_1thread__shared__ctx.html", "structgraphics_1_1thread__shared__ctx" ],
+    [ "thread_sig", "classgraphics_1_1thread__sig.html", "classgraphics_1_1thread__sig" ],
+    [ "render_bucket_callback", "namespacegraphics.html#ab5fef6b3b8381f338a305431c196c79e", null ],
+    [ "pipeline_type", "namespacegraphics.html#aa75145e4cda86d7a66d6739ccd38aeae", [
+      [ "graphics", "namespacegraphics.html#aa75145e4cda86d7a66d6739ccd38aeaea73b0472d43069103642ffa07997ff20a", null ]
+    ] ],
+    [ "compute_aabb", "namespacegraphics.html#a2622d8cdf7e1f458876843a7f3a7223a", null ],
+    [ "compute_render_bucket_range", "namespacegraphics.html#a3638a66210aa7c81630026d1afc9bb36", null ],
+    [ "draw_mesh", "namespacegraphics.html#a1874acac88487d951d8acbe0f7e08cdd", null ],
+    [ "find_main_camera", "namespacegraphics.html#a86638bfe00b4e8b60bf3b6e0d653d913", null ],
+    [ "load_primitive", "namespacegraphics.html#a6db632fd9d08bd62a2f65ff79498057f", null ],
+    [ "render_mesh", "namespacegraphics.html#a124808cbe7742d75548b9ff68748edd5", null ],
+    [ "render_scene_bucket", "namespacegraphics.html#ac145dc3d801bac7862f67dcdda4cd4c6", null ],
+    [ "update_main_camera", "namespacegraphics.html#aa8f32d05cd2f86faf22b5f885b3d1ccd", null ],
+    [ "k_debug_draw_fs_spirv", "namespacegraphics.html#ad2042a4a2fcc06a4132297f2c5ceb66a", null ],
+    [ "k_debug_draw_vs_spirv", "namespacegraphics.html#a9bb3439ce599371308ca979704474f76", null ],
+    [ "k_fallback_format", "namespacegraphics.html#afb79183a088d98c4b81b1081c05006e5", null ],
+    [ "k_natural_align", "namespacegraphics.html#a205ef3f7306e1790106e69a54faa9066", null ],
+    [ "k_texture_format_map", "namespacegraphics.html#a5c7367b008362df8dfccde0328ac09b4", null ],
+    [ "s_texture_allocator", "namespacegraphics.html#a4442ccc992b00bf9c80e06de99f50fdc", null ]
+];

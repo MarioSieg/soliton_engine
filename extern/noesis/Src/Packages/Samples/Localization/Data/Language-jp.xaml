@@ -1,0 +1,14 @@
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+  <ImageBrush x:Key="Flag" ImageSource="Flag-jp.png" Stretch="Fill"/>
+
+  <sys:String x:Key="SelectLabel">言語を選択する</sys:String>
+  <sys:String x:Key="SoundLabel">音</sys:String>
+  <sys:String x:Key="MusicLabel">音楽</sys:String>
+  <sys:String x:Key="TitleLabel">[b]局地化 見本[/b]</sys:String>
+  <sys:String x:Key="DescLabel">[style=ColoredText]NoesisGUI[/style]でローカリゼーションを実装する方法はたくさんあります。この例では、ロケール[i]ResourceDictionary[/i]のリソースを参照する[style=ColoredText][i]Loc[/i][/style]マー クアップ拡張機能を使用しています。言語辞書は、ルート[i]DataContext[/i]で選択されます。添付されたプロパティ[style=ColoredText][i]RichText[/i][/style]は[i]TextBlocks[/i]で使用でき、テキストでBBCodeマークアップを使用できます。テキストの書式設定、画像、および[i]DataContext[/i]へのバインドをサポートします:サウンドレベル=[style=ColoredNumber][bind format='{0:0}%']MusicLevel[/bind][/style]</sys:String>
+
+</ResourceDictionary>

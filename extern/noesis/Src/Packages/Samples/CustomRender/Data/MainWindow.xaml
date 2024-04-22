@@ -1,0 +1,11 @@
+<Window x:Class="CustomRender.MainWindow"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:local="clr-namespace:CustomRender"
+  Title="NoesisGUI - CustomRender"
+  SizeToContent="WidthAndHeight"
+  ResizeMode="NoResize">
+
+  <local:Game Width="800" Height="600"/>
+
+</Window>

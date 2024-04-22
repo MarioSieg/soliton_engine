@@ -17,12 +17,14 @@
 #include "texture.hpp"
 #include "debugdraw.hpp"
 
+#include "imgui/context.hpp"
+#include "noesis/context.hpp"
+
 namespace graphics {
     class graphics_subsystem final : public subsystem {
     public:
-        static constexpr std::uint32_t k_max_concurrent_frames = 3;
         graphics_subsystem();
-        ~graphics_subsystem() override;
+        ~graphics_subsystem();
 
         HOTPROC auto on_pre_tick() -> bool override;
         HOTPROC auto on_post_tick() -> void override;
@@ -40,10 +42,9 @@ namespace graphics {
             return *m_debugdraw;
         }
 
-        [[nodiscard]] auto get_debug_draw_opt() noexcept -> std::optional<debugdraw>& {
-            return m_debugdraw;
-        }
-
+        [[nodiscard]] auto get_debug_draw_opt() noexcept -> std::optional<debugdraw>& { return m_debugdraw; }
+        [[nodiscard]] auto get_noesis_context() noexcept -> noesis::context& { return *m_noesis_context; }
+        [[nodiscard]] auto get_imgui_context() noexcept -> imgui::context& { return *m_imgui_context; }
         static inline constinit DirectX::XMFLOAT4X4A s_view_mtx;
         static inline constinit DirectX::XMFLOAT4X4A s_proj_mtx;
         static inline constinit DirectX::XMFLOAT4X4A s_view_proj_mtx;
@@ -61,6 +62,8 @@ namespace graphics {
         std::optional<render_thread_pool> m_render_thread_pool {};
         std::vector<std::pair<std::span<const com::transform>, std::span<const com::mesh_renderer>>> m_render_data {};
         std::optional<debugdraw> m_debugdraw {};
+        std::optional<imgui::context> m_imgui_context {};
+        std::optional<noesis::context> m_noesis_context {};
 
         struct {
             flecs::query<const com::transform, const com::mesh_renderer> query {};

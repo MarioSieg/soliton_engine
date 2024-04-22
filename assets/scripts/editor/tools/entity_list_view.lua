@@ -16,30 +16,26 @@ local EntityListView = {
     entityList = {},
     entityCounter = 0,
     showHiddenEntities = ffi.new('bool[1]', false),
-    selectedWantsFocus = false
+    selectedWantsFocus = false,
 }
 
 function EntityListView:buildEntityList()
     self.entityList = {}
     Scene.fullEntityQueryStart()
-    while true do
-        local n = Scene.fullEntityQueryNextTable()
-        if n == 0 then break end
-        for i=0, n do
-            local entity = Scene.fullEntityQueryGet(i)
-            if entity:isValid() then
-                if not self.showHiddenEntities[0] and entity:hasFlag(EFLAGS.HIDDEN) then
-                    goto continue
-                end
-                local name = entity:getName()
-                local isUnnamed = name == ''
-                if isUnnamed then
-                    name = 'Unnamed'
-                end
-                name = ICONS.DATABASE..' '..name
-                table.insert(self.entityList, {entity, name, isUnnamed})
-                ::continue::
+    for i=0, Scene.fullEntityQueryNextTable() do
+        local entity = Scene.fullEntityQueryGet(i)
+        if entity:isValid() then
+            if not self.showHiddenEntities[0] and entity:hasFlag(EFLAGS.HIDDEN) then
+                goto continue
             end
+            local name = entity:getName()
+            local isUnnamed = name == ''
+            if isUnnamed then
+                name = 'Unnamed'
+            end
+            name = ICONS.CUBE..' '..name
+            table.insert(self.entityList, {entity, name, isUnnamed})
+            ::continue::
         end
     end
     Scene.fullEntityQueryEnd()
