@@ -499,7 +499,6 @@ end
 
 local restoreLayout = true
 function Editor:drawTools()
-    Debug.drawNativeProfiler()
     self.dockID = UI.DockSpaceOverViewport(UI.GetMainViewport(), ffi.C.ImGuiDockNodeFlags_PassthruCentralNode)
     if restoreLayout then
         restoreLayout = false
