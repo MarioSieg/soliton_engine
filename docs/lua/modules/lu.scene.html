@@ -26,6 +26,7 @@
 <br/>
 <h1>LunamEngine</h1>
 
+<img src="../data/logo_small.png" />
 
 <ul>
   <li><a href="../index.html">Index</a></li>
@@ -34,6 +35,7 @@
 <h2>Contents</h2>
 <ul>
 <li><a href="#Functions">Functions</a></li>
+<li><a href="#Tables">Tables</a></li>
 </ul>
 
 
@@ -61,7 +63,19 @@
   <li><a href="../modules/jit.p.html">jit.p</a></li>
   <li><a href="../modules/jit.v.html">jit.v</a></li>
   <li><a href="../modules/jit.zone.html">jit.zone</a></li>
+  <li><a href="../modules/lu.app.html">lu.app</a></li>
+  <li><a href="../modules/lu.color.html">lu.color</a></li>
+  <li><a href="../modules/lu.components.html">lu.components</a></li>
+  <li><a href="../modules/lu.debug.html">lu.debug</a></li>
+  <li><a href="../modules/lu.entity.html">lu.entity</a></li>
+  <li><a href="../modules/lu.input.html">lu.input</a></li>
+  <li><a href="../modules/lu.math.html">lu.math</a></li>
+  <li><a href="../modules/lu.quat.html">lu.quat</a></li>
   <li><strong>lu.scene</strong></li>
+  <li><a href="../modules/lu.time.html">lu.time</a></li>
+  <li><a href="../modules/lu.tween.html">lu.tween</a></li>
+  <li><a href="../modules/lu.vec2.html">lu.vec2</a></li>
+  <li><a href="../modules/lu.vec3.html">lu.vec3</a></li>
 </ul>
 
 </div>
@@ -69,20 +83,28 @@
 <div id="content">
 
 <h1>Module <code>lu.scene</code></h1>
-<p>Scene import flags for post processing.</p>
-<p>
- Only applies if the scene is not a .lunam file.</p>
+<p>Lunam Engine Scene Module
+<p> Copyright (c) 2022-2024 Mario "Neo" Sieg.</p>
+<p> All Rights Reserved.
+</p>
 
 
 <h2><a href="#Functions">Functions</a></h2>
 <table class="function_list">
 	<tr>
 	<td class="name" nowrap><a href="#Scene.new">Scene.new (name:)</a></td>
-	<td class="summary"></td>
+	<td class="summary">Creates a new, empty scene with the given name and makes it the active scene.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#Scene.load">Scene.load (file:, import_scale:, import_flags:)</a></td>
 	<td class="summary">Loads a scene from a given file and makes it the active scene.</td>
+	</tr>
+</table>
+<h2><a href="#Tables">Tables</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#SCENE_IMPORT_FLAGS">SCENE_IMPORT_FLAGS</a></td>
+	<td class="summary">Only applies if the scene is not a .lunam file.</td>
 	</tr>
 </table>
 
@@ -98,7 +120,7 @@
     <strong>Scene.new (name:)</strong>
     </dt>
     <dd>
-
+    Creates a new, empty scene with the given name and makes it the active scene.
 
 
     <h3>Parameters:</h3>
@@ -142,13 +164,133 @@
 
 </dd>
 </dl>
+    <h2 class="section-header "><a name="Tables"></a>Tables</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "SCENE_IMPORT_FLAGS"></a>
+    <strong>SCENE_IMPORT_FLAGS</strong>
+    </dt>
+    <dd>
+    Only applies if the scene is not a .lunam file.
+
+
+    <h3>Fields:</h3>
+    <ul>
+        <li><span class="parameter">NONE</span>
+
+        </li>
+        <li><span class="parameter">CALC_TANGENT_SPACE</span>
+
+        </li>
+        <li><span class="parameter">JOIN_IDENTICAL_VERTICES</span>
+
+        </li>
+        <li><span class="parameter">MAKE_LEFT_HANDED</span>
+
+        </li>
+        <li><span class="parameter">TRIANGULATE</span>
+
+        </li>
+        <li><span class="parameter">REMOVE_COMPONENT</span>
+
+        </li>
+        <li><span class="parameter">GEN_NORMALS</span>
+
+        </li>
+        <li><span class="parameter">GEN_SMOOTH_NORMALS</span>
+
+        </li>
+        <li><span class="parameter">SPLIT_LARGE_MESHES</span>
+
+        </li>
+        <li><span class="parameter">PRE_TRANSFORM_VERTICES</span>
+
+        </li>
+        <li><span class="parameter">LIMIT_BONE_WEIGHTS</span>
+
+        </li>
+        <li><span class="parameter">VALIDATE_DATA_STRUCTURE</span>
+
+        </li>
+        <li><span class="parameter">IMPROVE_CACHE_LOCALITY</span>
+
+        </li>
+        <li><span class="parameter">REMOVE_REDUNDANT_MATERIALS</span>
+
+        </li>
+        <li><span class="parameter">FIX_INFACING_NORMALS</span>
+
+        </li>
+        <li><span class="parameter">POPULATE_ARMATURE_DATA</span>
+
+        </li>
+        <li><span class="parameter">SORT_BY_PTYPE</span>
+
+        </li>
+        <li><span class="parameter">FIND_DEGENERATES</span>
+
+        </li>
+        <li><span class="parameter">FIND_INVALID_DATA</span>
+
+        </li>
+        <li><span class="parameter">GEN_UV_COORDS</span>
+
+        </li>
+        <li><span class="parameter">TRANSFORM_UV_COORDS</span>
+
+        </li>
+        <li><span class="parameter">FIND_INSTANCES</span>
+
+        </li>
+        <li><span class="parameter">OPTIMIZE_MESHES</span>
+
+        </li>
+        <li><span class="parameter">OPTIMIZE_GRAPH</span>
+
+        </li>
+        <li><span class="parameter">FLIP_UVS</span>
+
+        </li>
+        <li><span class="parameter">FLIP_WINDING_ORDER</span>
+
+        </li>
+        <li><span class="parameter">SPLIT_BY_BONE_COUNT</span>
+
+        </li>
+        <li><span class="parameter">DEBONE</span>
+
+        </li>
+        <li><span class="parameter">GLOBAL_SCALE</span>
+
+        </li>
+        <li><span class="parameter">EMBED_TEXTURES</span>
+
+        </li>
+        <li><span class="parameter">FORCE_GEN_NORMALS</span>
+
+        </li>
+        <li><span class="parameter">DROP_NORMALS</span>
+
+        </li>
+        <li><span class="parameter">GEN_BOUNDING_BOXES</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
 
 
 </div> <!-- id="content" -->
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/lunarmodules/ldoc">LDoc 1.5.0</a></i>
-<i style="float:right;">Last updated 2024-04-23 01:47:56 </i>
+<i style="float:right;">Last updated 2024-04-23 08:09:12 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>

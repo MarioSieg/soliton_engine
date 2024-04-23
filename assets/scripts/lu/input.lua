@@ -1,4 +1,8 @@
--- Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+----------------------------------------------------------------------------
+-- Lunam Engine Input Module
+--
+-- Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+------------------------------------------------------------------------------
 
 local ffi = require 'ffi'
 

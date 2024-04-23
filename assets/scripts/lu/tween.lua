@@ -1,11 +1,10 @@
+----------------------------------------------------------------------------
+-- Lunam Engine Animatiomn Tweening Math Module
+--
+-- Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+------------------------------------------------------------------------------
+
 local Tween = {}
-  
-  -- Adapted from https://github.com/EmmanuelOga/easing. See LICENSE.txt for credits.
-  -- For all easing functions:
-  -- t = time == how much time has to pass for the tweening to complete
-  -- b = begin == starting property value
-  -- c = change == ending - beginning
-  -- d = duration == running time. How much time has passed *right now*
   
   local pow, sin, cos, pi, sqrt, abs, asin = math.pow, math.sin, math.cos, math.pi, math.sqrt, math.abs, math.asin
   
