@@ -297,6 +297,30 @@ function Editor:renderMainMenu()
             UI.EndMenu()
         end
         if UI.BeginMenu('Help') then
+            if UI.MenuItem(ICONS.BOOK_OPEN..' Open Lua API Documentation') then
+                local LUA_DOC = 'docs/lua/index.html'
+                if lfs.attributes(LUA_DOC) then
+                    if jit.os == 'Windows' then
+                        pcall(os.execute('start "" '..'"'..LUA_DOC..'"'))
+                    else
+                        pcall(os.execute('open '..'"'..LUA_DOC..'"'))
+                    end
+                else
+                    perror('Lua API documentation not found: '..LUA_DOC)
+                end
+            end
+            if UI.MenuItem(ICONS.BOOK_OPEN..' Open C++ SDK Documentation') then
+                local CPP_DOC = 'docs/html/index.html'
+                if lfs.attributes(CPP_DOC) then
+                    if jit.os == 'Windows' then
+                        pcall(os.execute('start "" '..'"'..CPP_DOC..'"'))
+                    else
+                        pcall(os.execute('open '..'"'..CPP_DOC..'"'))
+                    end
+                else
+                    perror('C++ SDK documentation not found: '..CPP_DOC)
+                end
+            end
             if UI.MenuItem('Perform Full GC Cycle') then
                 collectgarbage('collect')
                 collectgarbage('stop')
