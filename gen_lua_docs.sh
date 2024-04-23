@@ -1,1 +1,1 @@
-lua misc/ldoc/ldoc.lua -d=docs/lua -p=LunamEngine -a assets/scripts/lu --icon assets/icons/logo_small.png
+luajit misc/ldoc/ldoc.lua -d=docs/lua -p=LunamEngine -a assets/scripts/lu --icon assets/icons/logo_small.png

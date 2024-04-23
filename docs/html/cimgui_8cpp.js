@@ -1,6 +1,6 @@
 var cimgui_8cpp =
 [
-    [ "CimguiStorage", "struct_cimgui_storage.html", "struct_cimgui_storage" ],
+    [ "CimguiStorage", "structCimguiStorage.html", "structCimguiStorage" ],
     [ "GetCimguiStorage", "cimgui_8cpp.html#a06e67a76d9236b146c724aa6706048be", null ],
     [ "igAcceptDragDropPayload", "cimgui_8cpp.html#a76480bba6c578aef5ae00853d187af7a", null ],
     [ "igActivateItemByID", "cimgui_8cpp.html#a4d79145e8474c0d9def51d5e836edf3c", null ],

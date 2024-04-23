@@ -2,10 +2,10 @@ var searchData=
 [
   ['w_0',['w',['../structlua__vec4.html#accfc8011c6fe3c8aa365ddd69d447242',1,'lua_vec4']]],
   ['wait_1',['wait',['../classgraphics_1_1thread__sig.html#ae8cf3c31221bb031bdbd1729b0e7247d',1,'graphics::thread_sig']]],
-  ['watch_2',['Watch',['../class_provider_file_watcher.html#a18e87dfc541648a567f7ffdb615ba392',1,'ProviderFileWatcher']]],
-  ['what_3',['what',['../structlua___debug.html#afbf8df5f26e9c345378a7eb402eed081',1,'lua_Debug']]],
-  ['window_2ecpp_4',['Window.cpp',['../_window_8cpp.html',1,'']]],
-  ['window_2eh_5',['Window.h',['../_window_8h.html',1,'']]],
+  ['watch_2',['Watch',['../classProviderFileWatcher.html#a18e87dfc541648a567f7ffdb615ba392',1,'ProviderFileWatcher']]],
+  ['what_3',['what',['../structlua__Debug.html#afbf8df5f26e9c345378a7eb402eed081',1,'lua_Debug']]],
+  ['window_2ecpp_4',['Window.cpp',['../Window_8cpp.html',1,'']]],
+  ['window_2eh_5',['Window.h',['../Window_8h.html',1,'']]],
   ['windows_5fhover_5fpadding_6',['WINDOWS_HOVER_PADDING',['../imgui_8cpp.html#a8b5aacee393d6f3c38e32fe56bd64be6',1,'imgui.cpp']]],
   ['windows_5fmouse_5fwheel_5fscroll_5flock_5ftimer_7',['WINDOWS_MOUSE_WHEEL_SCROLL_LOCK_TIMER',['../imgui_8cpp.html#a8a1884294fd35bf48679533083c54f64',1,'imgui.cpp']]],
   ['windows_5fresize_5ffrom_5fedges_5ffeedback_5ftimer_8',['WINDOWS_RESIZE_FROM_EDGES_FEEDBACK_TIMER',['../imgui_8cpp.html#ab6bee9ea01e0feab33c8263be3f58bca',1,'imgui.cpp']]],
@@ -15,7 +15,6 @@ var searchData=
   ['windowsettingshandler_5freadopen_12',['WindowSettingsHandler_ReadOpen',['../imgui_8cpp.html#a96167b8831eaf55d73bfd79411b01fd6',1,'imgui.cpp']]],
   ['windowsettingshandler_5fwriteall_13',['WindowSettingsHandler_WriteAll',['../imgui_8cpp.html#a24623093a2b9a7babcc73f502bfabad0',1,'imgui.cpp']]],
   ['winver_14',['WINVER',['../luaconf_8h.html#a966cd377b9f3fdeb1432460c33352af1',1,'luaconf.h']]],
-  ['word_15',['Word',['../class_text_editor.html#aed0b92add3785d71e009dbf66b78490da07a094a210794e74a0e5e1a1457a92ee',1,'TextEditor']]],
-  ['wrapper_16',['Wrapper',['../cimplot_8cpp.html#ad7e369d75be9b67f27b115a5d80383a4',1,'cimplot.cpp']]],
-  ['wrapper2_17',['Wrapper2',['../cimplot_8cpp.html#a6f960eaf14d5364d8dc91542e7440287',1,'cimplot.cpp']]]
+  ['wrapper_15',['Wrapper',['../cimplot_8cpp.html#ad7e369d75be9b67f27b115a5d80383a4',1,'cimplot.cpp']]],
+  ['wrapper2_16',['Wrapper2',['../cimplot_8cpp.html#a6f960eaf14d5364d8dc91542e7440287',1,'cimplot.cpp']]]
 ];

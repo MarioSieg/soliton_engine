@@ -36,7 +36,7 @@ var searchData=
   ['simdutf_5fimplementation_5fwestmere_33',['SIMDUTF_IMPLEMENTATION_WESTMERE',['../simdutf_8cpp.html#a866219e231ce571d8cca1e837d8fa3d6',1,'simdutf.cpp']]],
   ['simdutf_5finternal_5fisadetection_5fh_34',['SIMDutf_INTERNAL_ISADETECTION_H',['../simdutf_8h.html#a9de804b8e358430f1a1b00d4b2cbdc14',1,'simdutf.h']]],
   ['simdutf_5fis_5f32bits_35',['SIMDUTF_IS_32BITS',['../simdutf_8h.html#ac0be9785ab806fce54261b4f0705a73c',1,'simdutf.h']]],
-  ['simdutf_5fis_5fbig_5fendian_36',['SIMDUTF_IS_BIG_ENDIAN',['../simdutf_8h.html#af2b7c405b94d3c5352246c6723d27c7e',1,'SIMDUTF_IS_BIG_ENDIAN:&#160;simdutf.h'],['../simdutf_8h.html#af2b7c405b94d3c5352246c6723d27c7e',1,'SIMDUTF_IS_BIG_ENDIAN:&#160;simdutf.h']]],
+  ['simdutf_5fis_5fbig_5fendian_36',['SIMDUTF_IS_BIG_ENDIAN',['../simdutf_8h.html#af2b7c405b94d3c5352246c6723d27c7e',1,'SIMDUTF_IS_BIG_ENDIAN():&#160;simdutf.h'],['../simdutf_8h.html#af2b7c405b94d3c5352246c6723d27c7e',1,'SIMDUTF_IS_BIG_ENDIAN():&#160;simdutf.h']]],
   ['simdutf_5fisaligned_5fn_37',['SIMDUTF_ISALIGNED_N',['../simdutf_8h.html#a92e1101acea57e458f0e823d230ac57f',1,'simdutf.h']]],
   ['simdutf_5flatin1_5fh_38',['SIMDUTF_LATIN1_H',['../simdutf_8cpp.html#a73741f4dc3fcc6f8b46bbe0106d03ae5',1,'simdutf.cpp']]],
   ['simdutf_5flatin1_5fto_5futf16_5fh_39',['SIMDUTF_LATIN1_TO_UTF16_H',['../simdutf_8cpp.html#a1e600b2ecfd4b272fbe9a9214b8be368',1,'simdutf.cpp']]],

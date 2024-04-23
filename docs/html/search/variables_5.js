@@ -2,7 +2,7 @@ var searchData=
 [
   ['fade_5fend_0',['fade_end',['../structgraphics_1_1debugdraw_1_1draw__command.html#ab753ba8396b6fb2969b7e663439da2ff',1,'graphics::debugdraw::draw_command']]],
   ['fade_5fstart_1',['fade_start',['../structgraphics_1_1debugdraw_1_1draw__command.html#a254546c28c5f758a5c21527eaafbc7b9',1,'graphics::debugdraw::draw_command']]],
-  ['flags_2',['flags',['../structcom_1_1metadata.html#a93ce567f121d53e4e7c27471484d23d6',1,'com::metadata::flags'],['../structcom_1_1mesh__renderer.html#af01cec18122d1d4c9ab54b9419108317',1,'com::mesh_renderer::flags']]],
+  ['flags_2',['flags',['../structcom_1_1metadata.html#a93ce567f121d53e4e7c27471484d23d6',1,'com::metadata::flags()'],['../structcom_1_1mesh__renderer.html#af01cec18122d1d4c9ab54b9419108317',1,'com::mesh_renderer::flags()']]],
   ['fmt_3',['fmt',['../structgraphics_1_1texture__format__info.html#a8f89adcce0d7882c3744551d2f4e49be',1,'graphics::texture_format_info']]],
   ['fmt_5fdsv_4',['fmt_dsv',['../structgraphics_1_1texture__format__info.html#a1a61e3cc86ea8cb2eeb65ffd210fcb82',1,'graphics::texture_format_info']]],
   ['fmt_5fsrgb_5',['fmt_srgb',['../structgraphics_1_1texture__format__info.html#a78e392b580d6489927ceeaeed8551592',1,'graphics::texture_format_info']]],
@@ -14,9 +14,9 @@ var searchData=
   ['fov_11',['fov',['../structcom_1_1camera.html#a2f73ead288b7e811d8f5d077d54ddb7c',1,'com::camera']]],
   ['frame_5ftime_5facc_12',['frame_time_acc',['../classsubsystem.html#a21ce02f1764364f9860d39538cc662e9',1,'subsystem']]],
   ['frame_5ftime_5fstart_13',['frame_time_start',['../classsubsystem.html#ac65b088c62e0ec07b52f2e4a115f78b1',1,'subsystem']]],
-  ['frameid_14',['frameId',['../structcpu__profiler_1_1_frame_handle_info.html#a90b7ded4b7431bedbce8aa79695677e2',1,'cpu_profiler::FrameHandleInfo']]],
+  ['frameid_14',['frameId',['../structcpu__profiler_1_1FrameHandleInfo.html#a90b7ded4b7431bedbce8aa79695677e2',1,'cpu_profiler::FrameHandleInfo']]],
   ['frameindex_15',['frameIndex',['../classcpu__profiler.html#a671735727b7b5042d3cea879f46c56e5',1,'cpu_profiler']]],
   ['framestarttime_16',['frameStartTime',['../classcpu__profiler.html#aecfa3b6748ebad576dcdcb436e1ec376',1,'cpu_profiler']]],
   ['fslib_17',['fslib',['../lfs_8c.html#a53a2fdc4f257aee310d388d4587a2907',1,'lfs.c']]],
-  ['func_18',['func',['../structlua_l___reg.html#a54aa8f9955870caf78148514e61196ce',1,'luaL_Reg']]]
+  ['func_18',['func',['../structluaL__Reg.html#a54aa8f9955870caf78148514e61196ce',1,'luaL_Reg']]]
 ];

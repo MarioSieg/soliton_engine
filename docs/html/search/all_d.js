@@ -26,13 +26,10 @@ var searchData=
   ['k_5ftick_5fhook_23',['k_tick_hook',['../classscripting_1_1scripting__subsystem.html#a2730986d6af2c433bb2bccfdf7f1c6ad',1,'scripting::scripting_subsystem']]],
   ['k_5fttf_5fjet_5fbrains_5fmono_24',['k_ttf_jet_brains_mono',['../jetbrains__mono_8ttf_8inl.html#a0d3fb78d63ae632ba75a22bf3f8d1982',1,'jetbrains_mono.ttf.inl']]],
   ['k_5fvulkan_5fapi_5fversion_25',['k_vulkan_api_version',['../classvkb_1_1device.html#a89574bc9fcd080e64a41a4a1b27fbe2d',1,'vkb::device']]],
-  ['kernel_26',['kernel',['../classkernel.html',1,'kernel'],['../classsubsystem.html#aaae51189d6e1e8b24b5654e3704ff50b',1,'subsystem::kernel'],['../classscene.html#aaae51189d6e1e8b24b5654e3704ff50b',1,'scene::kernel'],['../classkernel.html#a6e887ffeaf1e6e99c6a5025bf552fe5e',1,'kernel::kernel()']]],
+  ['kernel_26',['kernel',['../classsubsystem.html#aaae51189d6e1e8b24b5654e3704ff50b',1,'subsystem::kernel()'],['../classkernel.html#a6e887ffeaf1e6e99c6a5025bf552fe5e',1,'kernel::kernel()'],['../classscene.html#aaae51189d6e1e8b24b5654e3704ff50b',1,'scene::kernel()'],['../classkernel.html',1,'kernel']]],
   ['kernel_2ecpp_27',['kernel.cpp',['../kernel_8cpp.html',1,'']]],
   ['kernel_2ehpp_28',['kernel.hpp',['../kernel_8hpp.html',1,'']]],
   ['kernel_5fvariant_5fname_29',['kernel_variant_name',['../namespaceplatform.html#a0295a4cf0625f798b558d34e11c1ecd8',1,'platform']]],
-  ['keytrigger_2ecpp_30',['KeyTrigger.cpp',['../_key_trigger_8cpp.html',1,'']]],
-  ['keytrigger_2eh_31',['KeyTrigger.h',['../_key_trigger_8h.html',1,'']]],
-  ['keyword_32',['Keyword',['../class_text_editor.html#acb9bdc8f59e2fd152f423db095672fd9a220f3d3750583b9db48568a0b5b9a5f1',1,'TextEditor']]],
-  ['keywords_33',['Keywords',['../class_text_editor.html#a0b28c26a8de0ef1762e229d515901c5d',1,'TextEditor']]],
-  ['knownidentifier_34',['KnownIdentifier',['../class_text_editor.html#acb9bdc8f59e2fd152f423db095672fd9a110205a61f3ff4b16b854c54ffc0d8c6',1,'TextEditor']]]
+  ['keytrigger_2ecpp_30',['KeyTrigger.cpp',['../KeyTrigger_8cpp.html',1,'']]],
+  ['keytrigger_2eh_31',['KeyTrigger.h',['../KeyTrigger_8h.html',1,'']]]
 ];

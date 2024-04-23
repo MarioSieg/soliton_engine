@@ -298,27 +298,45 @@ function Editor:renderMainMenu()
         end
         if UI.BeginMenu('Help') then
             if UI.MenuItem(ICONS.BOOK_OPEN..' Open Lua API Documentation') then
-                local LUA_DOC = 'docs/lua/index.html'
-                if lfs.attributes(LUA_DOC) then
+                local INDEX = 'docs/lua/index.html'
+                if lfs.attributes(INDEX) then
                     if jit.os == 'Windows' then
-                        pcall(os.execute('start "" '..'"'..LUA_DOC..'"'))
+                        pcall(os.execute('start "" '..'"'..INDEX..'"'))
                     else
-                        pcall(os.execute('open '..'"'..LUA_DOC..'"'))
+                        pcall(os.execute('open '..'"'..INDEX..'"'))
                     end
                 else
-                    perror('Lua API documentation not found: '..LUA_DOC)
+                    perror('Lua API documentation not found: '..INDEX)
                 end
             end
             if UI.MenuItem(ICONS.BOOK_OPEN..' Open C++ SDK Documentation') then
-                local CPP_DOC = 'docs/html/index.html'
-                if lfs.attributes(CPP_DOC) then
+                local INDEX = 'docs/html/index.html'
+                if lfs.attributes(INDEX) then
                     if jit.os == 'Windows' then
-                        pcall(os.execute('start "" '..'"'..CPP_DOC..'"'))
+                        pcall(os.execute('start "" '..'"'..INDEX..'"'))
                     else
-                        pcall(os.execute('open '..'"'..CPP_DOC..'"'))
+                        pcall(os.execute('open '..'"'..INDEX..'"'))
                     end
                 else
-                    perror('C++ SDK documentation not found: '..CPP_DOC)
+                    perror('C++ SDK documentation not found: '..INDEX)
+                end
+            end
+            if jit.os ~= 'Windows' then -- Currently only POSIX support
+                if UI.MenuItem(ICONS.COGS..' Regenerate Lua API Documentation') then
+                    local GENERATOR = 'gen_lua_docs.sh'
+                    if lfs.attributes(GENERATOR) then
+                        pcall(os.execute('bash '..'"'..GENERATOR..'" &'))
+                    else
+                        perror('Lua API documentation generator not found: '..GENERATOR)
+                    end
+                end
+                if UI.MenuItem(ICONS.COGS..' Regenerate C++ API Documentation') then
+                    local GENERATOR = 'gen_cpp_docs.sh'
+                    if lfs.attributes(GENERATOR) then
+                        pcall(os.execute('bash '..'"'..GENERATOR..'" &'))
+                    else
+                        perror('C++ SDK documentation generator not found: '..GENERATOR)
+                    end
                 end
             end
             if UI.MenuItem('Perform Full GC Cycle') then

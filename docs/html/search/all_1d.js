@@ -16,7 +16,7 @@ var searchData=
   ['_7epipeline_5fbase_13',['~pipeline_base',['../classgraphics_1_1pipeline__base.html#a1e3b49bdfc0900daffeb79e17c053a29',1,'graphics::pipeline_base']]],
   ['_7epipeline_5fregistry_14',['~pipeline_registry',['../classgraphics_1_1pipeline__registry.html#a255b28fece9d35af4f2001af454e7d4c',1,'graphics::pipeline_registry']]],
   ['_7eplatform_5fsubsystem_15',['~platform_subsystem',['../classplatform_1_1platform__subsystem.html#a947735c741dd9092b8fb4e810c72e975',1,'platform::platform_subsystem']]],
-  ['_7eproviderfilewatcher_16',['~ProviderFileWatcher',['../class_provider_file_watcher.html#a0149f4070f1aef1b96aee01e3fc7380f',1,'ProviderFileWatcher']]],
+  ['_7eproviderfilewatcher_16',['~ProviderFileWatcher',['../classProviderFileWatcher.html#a0149f4070f1aef1b96aee01e3fc7380f',1,'ProviderFileWatcher']]],
   ['_7erender_5fthread_17',['~render_thread',['../classgraphics_1_1render__thread.html#a2c9876d31ab4b2ad6f5f8d40bdb59932',1,'graphics::render_thread']]],
   ['_7erender_5fthread_5fpool_18',['~render_thread_pool',['../classgraphics_1_1render__thread__pool.html#a8f6b10372a72e8f9248cb44cc387398a',1,'graphics::render_thread_pool']]],
   ['_7escene_19',['~scene',['../classscene.html#abb70bf5df219bce22893b564557bb445',1,'scene']]],
@@ -25,8 +25,6 @@ var searchData=
   ['_7eshader_22',['~shader',['../classvkb_1_1shader.html#a92b0f0a9ca60fae3a8b64966c8818c1f',1,'vkb::shader']]],
   ['_7esubsystem_23',['~subsystem',['../classsubsystem.html#a526af62a8c5949836ef3c00c36f914a0',1,'subsystem']]],
   ['_7eswapchain_24',['~swapchain',['../classvkb_1_1swapchain.html#abc4476083d559c4f316afa233be7989a',1,'vkb::swapchain']]],
-  ['_7etexteditor_25',['~TextEditor',['../class_text_editor.html#a67cc14c174c7b66738c40f844d4dd7d7',1,'TextEditor']]],
-  ['_7etexture_26',['~texture',['../classgraphics_1_1texture.html#a5e745f3d8a87df4c73a8088575839dde',1,'graphics::texture']]],
-  ['_7ethread_5fsig_27',['~thread_sig',['../classgraphics_1_1thread__sig.html#ad5eeee110572ef460a406056a6b48f88',1,'graphics::thread_sig']]],
-  ['_7eundorecord_28',['~UndoRecord',['../class_text_editor_1_1_undo_record.html#a981455d44f29b51ee6aeb5065afa12ff',1,'TextEditor::UndoRecord']]]
+  ['_7etexture_25',['~texture',['../classgraphics_1_1texture.html#a5e745f3d8a87df4c73a8088575839dde',1,'graphics::texture']]],
+  ['_7ethread_5fsig_26',['~thread_sig',['../classgraphics_1_1thread__sig.html#ad5eeee110572ef460a406056a6b48f88',1,'graphics::thread_sig']]]
 ];

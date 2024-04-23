@@ -1,9 +1,7 @@
 var searchData=
 [
-  ['charliteral_0',['CharLiteral',['../class_text_editor.html#acb9bdc8f59e2fd152f423db095672fd9a616b859bc3920670a4509686f20de06e',1,'TextEditor']]],
-  ['comment_1',['Comment',['../class_text_editor.html#acb9bdc8f59e2fd152f423db095672fd9a0be8406951cdfda82f00f79328cf4efc',1,'TextEditor']]],
-  ['currentlineedge_2',['CurrentLineEdge',['../class_text_editor.html#acb9bdc8f59e2fd152f423db095672fd9a1e1c9698023b75321413607285347f7c',1,'TextEditor']]],
-  ['currentlinefill_3',['CurrentLineFill',['../class_text_editor.html#acb9bdc8f59e2fd152f423db095672fd9ad08df88464b784729c83c7f2cadbc573',1,'TextEditor']]],
-  ['currentlinefillinactive_4',['CurrentLineFillInactive',['../class_text_editor.html#acb9bdc8f59e2fd152f423db095672fd9a28e997aa0a7c4236cdf250c8b64084eb',1,'TextEditor']]],
-  ['cursor_5',['Cursor',['../class_text_editor.html#acb9bdc8f59e2fd152f423db095672fd9a9abdae4fa5d93330363a88ed8a5e7946',1,'TextEditor']]]
+  ['glfwclientapi_5fopengl_0',['GlfwClientApi_OpenGL',['../imgui__impl__glfw_8cpp.html#abfd5392e93ee3c4e7f86cc5515e2d413a4bdb1206a80d2fecbccc1ba13a194189',1,'imgui_impl_glfw.cpp']]],
+  ['glfwclientapi_5funknown_1',['GlfwClientApi_Unknown',['../imgui__impl__glfw_8cpp.html#abfd5392e93ee3c4e7f86cc5515e2d413a64b18e86183bf2f895418038ae86fd97',1,'imgui_impl_glfw.cpp']]],
+  ['glfwclientapi_5fvulkan_2',['GlfwClientApi_Vulkan',['../imgui__impl__glfw_8cpp.html#abfd5392e93ee3c4e7f86cc5515e2d413aea35a390f6542022f5704637f7cbefb5',1,'imgui_impl_glfw.cpp']]],
+  ['graphics_3',['graphics',['../namespacegraphics.html#aa75145e4cda86d7a66d6739ccd38aeaea73b0472d43069103642ffa07997ff20a',1,'graphics']]]
 ];
