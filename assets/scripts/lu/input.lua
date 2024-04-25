@@ -1,7 +1,8 @@
-----------------------------------------------------------------------------
--- Lunam Engine Input Module
---
 -- Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+
+----------------------------------------------------------------------------
+-- Input Module - Functions for input handling.
+-- @module Input
 ------------------------------------------------------------------------------
 
 local ffi = require 'ffi'
@@ -16,7 +17,9 @@ ffi.cdef[[
 
 local C = ffi.C
 
+--- Input Module
 local Input = {
+    --- Keybord key codes
     KEYS = {
         SPACE = 32,
         APOSTROPHE = 39,
@@ -139,6 +142,7 @@ local Input = {
         RIGHT_SUPER = 347,
         MENU = 348
     },
+    --- Mouse button codes
     MOUSE_BUTTONS = {
         MB1 = 0,
         MB2 = 1,
@@ -154,22 +158,36 @@ local Input = {
     }
 }
 
+--- Checks if the specified key is pressed.
+-- @tparam Input.KEYS key The key code
+-- @treturn bool True if the key is pressed
 function Input.isKeyPressed(key)
     return C.__lu_input_is_key_pressed(key)
 end
 
+--- Checks if the specified key is released.
+-- @tparam Input.KEYS key The key code
+-- @treturn bool True if the key is released
 function Input.isKeyReleased(key)
     return C.__lu_input_is_key_released(key)
 end
 
+--- Checks if the specified mouse button is pressed.
+-- @tparam Input.MOUSE_BUTTONS mb The mouse button code
+-- @treturn bool True if the mouse button is pressed
 function Input.isMouseButtonPressed(mb)
     return C.__lu_input_is_mouse_button_pressed(mb)
 end
 
+--- Checks if the specified mouse button is released.
+-- @tparam Input.MOUSE_BUTTONS mb The mouse button code
+-- @treturn bool True if the mouse button is released
 function Input.isMouseButtonReleased(mb)
     return C.__lu_input_is_mouse_button_released(mb)
 end
 
+--- Gets the current mouse position.
+-- @treturn Math.Vec2 The current mouse position
 function Input.getMousePos()
     return C.__lu_input_get_mouse_pos()
 end

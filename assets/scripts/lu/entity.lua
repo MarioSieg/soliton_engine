@@ -1,7 +1,8 @@
-----------------------------------------------------------------------------
--- Lunam Engine Entity Module
---
 -- Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+
+----------------------------------------------------------------------------
+-- Entity Module - Entity class for the entity-component-system and entity management.
+-- @module Entity
 ------------------------------------------------------------------------------
 
 local ffi = require 'ffi'
@@ -23,18 +24,22 @@ ffi.cdef[[
     void __lu_entity_set_flags(lua_entity_id id, uint32_t flags);
 ]]
 
-ENTITY_FLAGS = { -- Keep in Sync with com::entity_flags::$ in components.hpp
-    NONE = 0,
-    HIDDEN = 0x1,
-    TRANSIENT = 0x2,
-    STATIC = 0x4,
+--- Entity flags for the entity class.
+-- Keep in Sync with C++ com::entity_flags::$ in components.hpp
+ENTITY_FLAGS = {
+    NONE = 0, -- No flags
+    HIDDEN = 0x1, -- Entity is hidden in editor
+    TRANSIENT = 0x2, -- Entity is transient and will not be serialized
+    STATIC = 0x4, -- Entity is static and will not be moved
 }
 
+--- Entity class
 local Entity = {
     id = nil
 }
 
--- creates a new entity
+--- Creates a new entity from an entity id.
+-- @tparam number id The valid entity id
 function Entity:fromId(id)
     assert(istype('lua_entity_id', id))
     local o = {}
@@ -43,54 +48,80 @@ function Entity:fromId(id)
     return o
 end
 
+--- Checks if the entity is valid and alive.
+-- @treturn bool True if the entity is valid and alive
 function Entity:isValid()
     return self.id and C.__lu_entity_is_valid(self.id) and C.__lu_entity_is_alive(self.id)
 end
 
+--- Gets the name of the entity.
+-- @treturn string The name of the entity
 function Entity:getName()
     return ffi.string(C.__lu_entity_get_name(self.id))
 end
 
+--- Sets the name of the entity.
+-- @tparam string name The name of the entity
 function Entity:setName(name)
     C.__lu_entity_set_name(self.id, name)
 end
 
+--- Gets specified component from the entity or adds it if it does not exist.
+-- @tparam components.Component component The component class
 function Entity:getComponent(component)
     return component:_new(self.id)
 end
 
+--- Checks if the entity has the specified component.
+-- @tparam components.Component component The component class
 function Entity:hasComponent(component)
     return component._exists(self.id)
 end
 
+--- Gets the entity flags.
+-- @treturn ENTITY_FLAGS The entity flags
 function Entity:getFlags()
     return C.__lu_entity_get_flags(self.id)
 end
 
+--- Sets the entity flags.
+-- @tparam ENTITY_FLAGS flags The entity flags
 function Entity:setFlags(flags)
     C.__lu_entity_set_flags(self.id, flags)
 end
 
+--- Checks if the entity has the specified flags.
+-- @tparam ENTITY_FLAGS flags The flags to check
 function Entity:hasFlag(flags)
     return band(self:getFlags(), flags) == flags
 end
 
+--- Adds the specified flags to the entity.
+-- @tparam ENTITY_FLAGS flags The flags to add
 function Entity:addFlag(flags)
     self:setFlags(bor(self:getFlags(), flags))
 end
 
+--- Removes the specified flags from the entity.
+-- @tparam ENTITY_FLAGS flags The flags to remove
 function Entity:removeFlag(flags)
     self:setFlags(band(self:getFlags(), bnot(flags)))
 end
 
+--- Toggles the specified flags of the entity.
+-- @tparam ENTITY_FLAGS flags The flags to toggle
 function Entity:toggleFlag(flags)
     self:setFlags(bxor(self:getFlags(), flags))
 end
 
+--- Checks if the entity is equal to another entity by comparing their ids.
+-- @tparam Entity other The other entity to compare
 function Entity:__eq(other)
     return self.id == other.id
 end
 
+--- Converts the entity to a string.
+-- @treturn string The string representation of the entity ID
 function Entity:__tostring()
     return string.format('Entity(%d)', self.id)
 end

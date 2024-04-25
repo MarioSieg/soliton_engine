@@ -5,6 +5,7 @@
 -- @module Components
 ------------------------------------------------------------------------------
 
+--- Components Module
 local Components = {
     Transform = require 'lu.components.transform', -- Transform component
     Camera = require 'lu.components.camera', -- Camera component
