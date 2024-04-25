@@ -1,7 +1,6 @@
 ----------------------------------------------------------------------------
--- Lunam Engine App Module
---
--- Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+-- App Module.
+-- Functions for interacting with the host application.
 ------------------------------------------------------------------------------
 
 local jit = require 'jit'
@@ -40,33 +39,38 @@ ffi.cdef [[
 
 local C = ffi.C
 
+-- App Module
 local App = {
-    name = 'Untitled App',
-    appVersion = '0.1',
-    author = 'Anonymous',
-    copyright = '',
-    website = '',
-    company = '',
-    type = 'Game',
-    Window = {
-        isMaximized = false,
-        isFullscreen = false,
-        isVisible = true,
+    name = 'Untitled App', -- Name of the application (can be filled by you)
+    appVersion = '0.1', -- Version of the application (can be filled by you)
+    author = 'Anonymous', -- Author of the application (can be filled by you)
+    copyright = '', -- Copyright of the application (can be filled by you)
+    website = '', -- Website of the application (can be filled by you)
+    company = '', -- Company of the application (can be filled by you)
+    type = 'Game', -- Type of the application (can be filled by you)
+    Window = { -- Window related functions and properties
+        isMaximized = false, -- Is the window maximized
+        isFullscreen = false, -- Is the window fullscreen
+        isVisible = true, -- Is the window visible
     },
-    Host = {
-        CPU_NAME = ffi.string(C.__lu_app_host_get_cpu_name()),
-        GPU_NAME = ffi.string(C.__lu_app_host_get_gpu_name()),
-        GRAPHICS_API = ffi.string(C.__lu_app_host_get_gapi_name()),
-        HOST = jit.os..' '..jit.arch,
-        NUM_CPUS = math.max(1, C.__lu_app_host_get_num_cpus()),
+    Host = { -- Host machine related properties
+        CPU_NAME = ffi.string(C.__lu_app_host_get_cpu_name()), -- Name of the CPU
+        GPU_NAME = ffi.string(C.__lu_app_host_get_gpu_name()), --  Name of the GPU
+        GRAPHICS_API = ffi.string(C.__lu_app_host_get_gapi_name()), -- Name of the graphics API
+        HOST = jit.os..' '..jit.arch, -- Host OS and architecture
+        NUM_CPUS = math.max(1, C.__lu_app_host_get_num_cpus()), -- Number of CPUs
     },
-    Utils = {}
+    Utils = {} -- Utility functions
 }
 
+-- Panic and terminate the application
+-- string : msg : Panic message
 function App.panic(msg)
     C.__lu_panic(msg)
 end
 
+-- Get the FFI cookie
+-- return : uint32_t : FFI cookie
 function App.ffiCookie()
     return C.__lu_ffi_cookie()
 end
