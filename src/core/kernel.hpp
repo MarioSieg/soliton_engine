@@ -36,4 +36,5 @@ private:
     [[nodiscard]] HOTPROC auto tick() -> bool;
     const std::chrono::high_resolution_clock::time_point boot_stamp = std::chrono::high_resolution_clock::now();
     std::vector<std::shared_ptr<subsystem>> m_subsystems {};
+    std::uint64_t m_frame = 0;
 };

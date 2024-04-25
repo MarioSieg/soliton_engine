@@ -196,6 +196,7 @@ HOTPROC auto kernel::tick() -> bool {
     std::for_each(m_subsystems.crbegin(), m_subsystems.crend(), [](const std::shared_ptr<subsystem>& sys) {
         sys->on_post_tick();
     });
+    ++m_frame;
     return flag;
 }
 
