@@ -1,7 +1,8 @@
-----------------------------------------------------------------------------
--- Lunam Engine Color Tools Module
---
 -- Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+
+----------------------------------------------------------------------------
+-- Color Module - Functions for converting between color formats, rooms and manipulations.
+-- @module Color
 ------------------------------------------------------------------------------
 
 local Color = {}
@@ -24,7 +25,6 @@ local function getColorArgs(first, ...)
   return first, ...
 end
 
---RGB to `colorspace`
 function Color.RGBtoHSL(...)
   local r,g,b,a = getColorArgs(...)
 

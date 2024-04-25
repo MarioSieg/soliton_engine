@@ -1,7 +1,8 @@
-----------------------------------------------------------------------------
--- Lunam Engine Debug Module
---
 -- Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+
+----------------------------------------------------------------------------
+-- Debug Module - Functions for debugging drawing and visualization.
+-- @module Debug
 ------------------------------------------------------------------------------
 
 local ffi = require 'ffi'
@@ -25,10 +26,13 @@ ffi.cdef[[
 
 local Debug = {}
 
+--- Starts the debug drawing. This function should be called at the beginning of the frame.
 function Debug.start()
     C.__lu_dd_begin()
 end
 
+--- Draws a grid in the scene.
+-- @tparam vec3 dims The dimensions of the grid.
 function Debug.drawGrid(dims, size, color)
     C.__lu_dd_grid(dims, size, color)
 end

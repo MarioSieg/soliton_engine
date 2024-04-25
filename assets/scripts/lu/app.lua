@@ -1,6 +1,8 @@
+-- Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+
 ----------------------------------------------------------------------------
--- App Module.
--- Functions for interacting with the host application.
+-- App Module - Functions for interacting with the host application, window and OS.
+-- @module App
 ------------------------------------------------------------------------------
 
 local jit = require 'jit'
@@ -39,15 +41,17 @@ ffi.cdef [[
 
 local C = ffi.C
 
--- App Module
+--- App Module
 local App = {
-    name = 'Untitled App', -- Name of the application (can be filled by you)
-    appVersion = '0.1', -- Version of the application (can be filled by you)
-    author = 'Anonymous', -- Author of the application (can be filled by you)
-    copyright = '', -- Copyright of the application (can be filled by you)
-    website = '', -- Website of the application (can be filled by you)
-    company = '', -- Company of the application (can be filled by you)
-    type = 'Game', -- Type of the application (can be filled by you)
+    Info = { -- User defined application information
+        name = 'Untitled App', -- Name of the application
+        appVersion = '0.1', -- Version of the application
+        author = 'Anonymous', -- Author of the application
+        copyright = '', -- Copyright of the application
+        website = '', -- Website of the application
+        company = '', -- Company of the application
+        type = 'Game', -- Type of the application
+    },
     Window = { -- Window related functions and properties
         isMaximized = false, -- Is the window maximized
         isFullscreen = false, -- Is the window fullscreen
@@ -63,22 +67,26 @@ local App = {
     Utils = {} -- Utility functions
 }
 
--- Panic and terminate the application
--- string : msg : Panic message
+--- Panic and terminate the application
+-- @param msg (string): Panic message
 function App.panic(msg)
     C.__lu_panic(msg)
 end
 
--- Get the FFI cookie
--- return : uint32_t : FFI cookie
+--- Get the FFI cookie
+-- @return (number): FFI cookie
 function App.ffiCookie()
     return C.__lu_ffi_cookie()
 end
 
+--- Get engine version as packed integer (major << 8 | minor)
+-- @return (number): Engine version packed as integer
 function App.engineVersionPacked()
     return C.__lu_engine_version()
 end
 
+--- Get engine version as unpacked integers (major, minor)
+-- @return (number, number): Engine version unpacked as integers
 function App.engineVersionUnpacked()
     local packed = App.engineVersionPacked()
     local major = bit.band(bit.rshift(packed, 8), 0xff)
@@ -86,81 +94,112 @@ function App.engineVersionUnpacked()
     return major, minor
 end
 
+--- Get engine version string
+-- @return (string): Engine version string with format: v.major.minor
 function App.engineVersionStr()
     local major, minor = App.engineVersionUnpacked()
     return string.format('v.%d.%d', major, minor)
 end
 
+--- Check if the application is user focused
+-- @return (bool): Is the application user focused
 function App.isFocused()
     return C.__lu_app_is_focused()
 end
 
+--- Check if the application UI is hovered (editor UI and ingame UI)
+-- @return (bool): Is the application UI hovered
 function App.isUIHovered()
     return C.__lu_app_is_ui_hovered()
 end
 
+--- Hot reload the ingame UI and update changes
 function App.hotReloadUI()
     C.__lu_app_hot_reload_ui()
 end
 
+--- Maximize the window
 function App.Window.maximize()
     C.__lu_window_maximize()
     App.Window.isMaximized = true
 end
 
+--- Minimize the window
 function App.Window.minimize()
     C.__lu_window_minimize()
     App.Window.isMaximized = false
 end
 
+--- Enter fullscreen mode
 function App.Window.enterFullscreen()
     C.__lu_window_enter_fullscreen()
     App.Window.isFullscreen = true
 end
 
+--- Leave fullscreen mode
 function App.Window.leaveFullscreen()
     C.__lu_window_leave_fullscreen()
     App.Window.isFullscreen = false
 end
 
+--- Set window title
+-- @param title (string): Title of the window
 function App.Window.setTitle(title)
     C.__lu_window_set_title(title)
 end
 
+--- Set window size
+-- @param width (number): Width of the window
+-- @param height (number): Height of the window
 function App.Window.setSize(width, height)
     C.__lu_window_set_size(width, height)
 end
 
+--- Set window position
+-- @param x (number): X position of the window (from top left corner of the screen)
+-- @param y (number): Y position of the window (from top left corner of the screen)
 function App.Window.setPos(x, y)
     C.__lu_window_set_pos(x, y)
 end
 
+--- Show the window
 function App.Window.show()
     C.__lu_window_show()
     App.Window.isVisible = true
 end
 
+--- Hide the window
 function App.Window.hide()
     C.__lu_window_hide()
     App.Window.isVisible = false
 end
 
+--- Allow window resize
+-- @param allow (bool): Allow window resize
 function App.Window.allowResize(allow)
     C.__lu_window_allow_resize(allow)
 end
 
+--- Get window size
+-- @return (number, number): Width and height of the window
 function App.Window.getSize()
     return C.__lu_window_get_size()
 end
 
+--- Get window frame buffer size
+-- @return (number, number): Width and height of the window frame buffer
 function App.Window.getFrameBufSize()
     return C.__lu_window_get_framebuf_size()
 end
 
+--- Get window position
+-- @return (number, number): X and Y position of the window
 function App.Window.getPos()
     return C.__lu_window_get_pos()
 end
 
+--- Set window title to include platform information
+-- @param suffix (string): Suffix to add to the title
 function App.Window.setPlatformTitle(suffix)
     if suffix and type(suffix) == 'string' then
         App.Window.setTitle(string.format('Lunam Engine %s - %s %s - %s', App.engineVersionStr(), jit.os, jit.arch, suffix))
@@ -169,20 +208,29 @@ function App.Window.setPlatformTitle(suffix)
     end
 end
 
+--- Enable or disable cursor
+-- @param enable (bool): Enable or disable cursor
 function App.Window.enableCursor(enable)
     C.__lu_window_enable_cursor(enable)
 end
 
+--- Exit the application
 function App.exit()
     C.__lu_app_exit()
 end
 
+--- Open native file dialog
+-- @param fileTypes (string): File types to open
+-- @param filters (string): Filters for the file dialog
+-- @param defaultPath (string): Default path to open the file dialog
 function App.Utils.openFileDialog(fileTypes, filters, defaultPath)
     filters = filters or ''
     defaultPath = defaultPath or ''
     return ffi.string(C.__lu_app_open_file_dialog(fileTypes, filters, defaultPath))
 end
 
+--- Open native folder dialog
+-- @param defaultPath (string): Default path to open the folder dialog
 function App.Utils.openFolderDialog(defaultPath)
     defaultPath = defaultPath or ''
     return ffi.string(C.__lu_app_open_folder_dialog(defaultPath))
