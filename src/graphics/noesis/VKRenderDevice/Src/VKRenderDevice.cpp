@@ -33,9 +33,9 @@ using namespace NoesisApp;
 // really resolved. For desktop, we need to manually resolve each region with 'vkCmdResolveImage'.
 
 #ifdef NS_PLATFORM_ANDROID
-  #define RESOLVE_ON_WRITEBACK 1
+#define RESOLVE_ON_WRITEBACK 1
 #else
-  #define RESOLVE_ON_WRITEBACK 0
+#define RESOLVE_ON_WRITEBACK 0
 #endif
 
 #define DESCRIPTOR_POOL_MAX_SETS 128
@@ -75,7 +75,7 @@ using namespace NoesisApp;
     NS_MACRO_END
 
 #ifdef NS_PROFILE
-    #define VK_BEGIN_EVENT(...) \
+#define VK_BEGIN_EVENT(...) \
         NS_MACRO_BEGIN \
             if (vkCmdDebugMarkerBeginEXT != nullptr) \
             { \
@@ -134,31 +134,31 @@ using namespace NoesisApp;
             } \
         NS_MACRO_END
 #else
-    #define VK_BEGIN_EVENT(...) NS_NOOP
-    #define VK_END_EVENT() NS_NOOP
-    #define VK_NAME(obj, type, ...) NS_UNUSED(__VA_ARGS__)
+#define VK_BEGIN_EVENT(...) NS_NOOP
+#define VK_END_EVENT() NS_NOOP
+#define VK_NAME(obj, type, ...) NS_UNUSED(__VA_ARGS__)
 #endif
 
 namespace
 {
 
 // Root signature flags
-static const uint32_t VS_CB0 = 1;
-static const uint32_t VS_CB1 = 2;
-static const uint32_t PS_CB0 = 4;
-static const uint32_t PS_CB1 = 8;
-static const uint32_t PS_T0 = 16;
-static const uint32_t PS_T1 = 32;
-static const uint32_t PS_T2 = 64;
-static const uint32_t PS_T3 = 128;
-static const uint32_t PS_T4 = 256;
+    static const uint32_t VS_CB0 = 1;
+    static const uint32_t VS_CB1 = 2;
+    static const uint32_t PS_CB0 = 4;
+    static const uint32_t PS_CB1 = 8;
+    static const uint32_t PS_T0 = 16;
+    static const uint32_t PS_T1 = 32;
+    static const uint32_t PS_T2 = 64;
+    static const uint32_t PS_T3 = 128;
+    static const uint32_t PS_T4 = 256;
 
-struct ShaderVS
-{
-    const char* label;
-    uint32_t start;
-    uint32_t size;
-};
+    struct ShaderVS
+    {
+        const char* label;
+        uint32_t start;
+        uint32_t size;
+    };
 
 #ifdef NS_PLATFORM_ANDROID
     #define VSHADER(n) case Shader::Vertex::n: \
@@ -175,12 +175,12 @@ struct ShaderVS
                 ShaderVS{ #n"_sRGB", n##_SRGB_VS_Start, n##_SRGB_VS_Size } : \
                 ShaderVS{ #n, n##_VS_Start, n##_VS_Size });
 #else
-    #define VSHADER(n) case Shader::Vertex::n: \
+#define VSHADER(n) case Shader::Vertex::n: \
         return stereo ? \
             ShaderVS { #n, n##_Layer_VS_Start, n##_Layer_VS_Size } : \
             ShaderVS { #n, n##_VS_Start, n##_VS_Size };
 
-    #define VSHADER_SRGB(n) case Shader::Vertex::n: \
+#define VSHADER_SRGB(n) case Shader::Vertex::n: \
         return stereo ? \
             (sRGB ? \
                 ShaderVS{ #n"_sRGB", n##_SRGB_Layer_VS_Start, n##_SRGB_Layer_VS_Size } : \
@@ -190,165 +190,162 @@ struct ShaderVS
                 ShaderVS{ #n, n##_VS_Start, n##_VS_Size });
 #endif
 
-static auto ShadersVS = [](uint32_t shader, bool sRGB, bool stereo)
-{
-    switch (shader)
+    static auto ShadersVS = [](uint32_t shader, bool sRGB, bool stereo)
     {
-        VSHADER(Pos)
-        VSHADER_SRGB(PosColor)
-        VSHADER(PosTex0)
-        VSHADER(PosTex0Rect)
-        VSHADER(PosTex0RectTile)
-        VSHADER_SRGB(PosColorCoverage)
-        VSHADER(PosTex0Coverage)
-        VSHADER(PosTex0CoverageRect)
-        VSHADER(PosTex0CoverageRectTile)
-        VSHADER_SRGB(PosColorTex1_SDF)
-        VSHADER(PosTex0Tex1_SDF)
-        VSHADER(PosTex0Tex1Rect_SDF)
-        VSHADER(PosTex0Tex1RectTile_SDF)
-        VSHADER_SRGB(PosColorTex1)
-        VSHADER(PosTex0Tex1)
-        VSHADER(PosTex0Tex1Rect)
-        VSHADER(PosTex0Tex1RectTile)
-        VSHADER_SRGB(PosColorTex0Tex1)
-        VSHADER(PosTex0Tex1_Downsample)
-        VSHADER_SRGB(PosColorTex1Rect)
-        VSHADER_SRGB(PosColorTex0RectImagePos)
+        switch (shader)
+        {
+            VSHADER(Pos)
+            VSHADER_SRGB(PosColor)
+            VSHADER(PosTex0)
+            VSHADER(PosTex0Rect)
+            VSHADER(PosTex0RectTile)
+            VSHADER_SRGB(PosColorCoverage)
+            VSHADER(PosTex0Coverage)
+            VSHADER(PosTex0CoverageRect)
+            VSHADER(PosTex0CoverageRectTile)
+            VSHADER_SRGB(PosColorTex1_SDF)
+            VSHADER(PosTex0Tex1_SDF)
+            VSHADER(PosTex0Tex1Rect_SDF)
+            VSHADER(PosTex0Tex1RectTile_SDF)
+            VSHADER_SRGB(PosColorTex1)
+            VSHADER(PosTex0Tex1)
+            VSHADER(PosTex0Tex1Rect)
+            VSHADER(PosTex0Tex1RectTile)
+            VSHADER_SRGB(PosColorTex0Tex1)
+            VSHADER(PosTex0Tex1_Downsample)
+            VSHADER_SRGB(PosColorTex1Rect)
+            VSHADER_SRGB(PosColorTex0RectImagePos)
 
-        default: NS_ASSERT_UNREACHABLE;
-    }
-};
+            default: NS_ASSERT_UNREACHABLE;
+        }
+    };
 
-struct ShaderPS
-{
-    const char* label;
-    uint32_t start;
-    uint32_t size;
-    uint32_t signature;
-};
+    struct ShaderPS
+    {
+        const char* label;
+        uint32_t start;
+        uint32_t size;
+        uint32_t signature;
+    };
 
 #define PSHADER(n, s) case Shader::n: return ShaderPS { #n, n##_PS_Start, n##_PS_Size, s };
 
-static auto ShadersPS = [](uint32_t shader)
-{
-    switch (shader)
+    static auto ShadersPS = [](uint32_t shader)
     {
-        PSHADER(RGBA, VS_CB0 | PS_CB0)
-        PSHADER(Mask, VS_CB0)
-        PSHADER(Clear, VS_CB0)
-
-        PSHADER(Path_Solid, VS_CB0)
-        PSHADER(Path_Linear, VS_CB0 | PS_CB0 | PS_T1)
-        PSHADER(Path_Radial, VS_CB0 | PS_CB0 | PS_T1)
-        PSHADER(Path_Pattern, VS_CB0 | PS_CB0 | PS_T0)
-        PSHADER(Path_Pattern_Clamp, VS_CB0 | PS_CB0 | PS_T0)
-        PSHADER(Path_Pattern_Repeat, VS_CB0 | PS_CB0 | PS_T0)
-        PSHADER(Path_Pattern_MirrorU, VS_CB0 | PS_CB0 | PS_T0)
-        PSHADER(Path_Pattern_MirrorV, VS_CB0 | PS_CB0 | PS_T0)
-        PSHADER(Path_Pattern_Mirror, VS_CB0 | PS_CB0 | PS_T0)
-
-        PSHADER(Path_AA_Solid, VS_CB0)
-        PSHADER(Path_AA_Linear, VS_CB0 | PS_CB0 | PS_T1)
-        PSHADER(Path_AA_Radial, VS_CB0 | PS_CB0 | PS_T1)
-        PSHADER(Path_AA_Pattern, VS_CB0 | PS_CB0 | PS_T0)
-        PSHADER(Path_AA_Pattern_Clamp, VS_CB0 | PS_CB0 | PS_T0)
-        PSHADER(Path_AA_Pattern_Repeat, VS_CB0 | PS_CB0 | PS_T0)
-        PSHADER(Path_AA_Pattern_MirrorU, VS_CB0 | PS_CB0 | PS_T0)
-        PSHADER(Path_AA_Pattern_MirrorV, VS_CB0 | PS_CB0 | PS_T0)
-        PSHADER(Path_AA_Pattern_Mirror, VS_CB0 | PS_CB0 | PS_T0)
-
-        PSHADER(SDF_Solid, VS_CB0 | VS_CB1 | PS_T3)
-        PSHADER(SDF_Linear, VS_CB0 | VS_CB1 | PS_CB0 | PS_T1 | PS_T3)
-        PSHADER(SDF_Radial, VS_CB0 | VS_CB1 | PS_CB0 | PS_T1 | PS_T3)
-        PSHADER(SDF_Pattern, VS_CB0 | VS_CB1 | PS_CB0 | PS_T0 | PS_T3)
-        PSHADER(SDF_Pattern_Clamp, VS_CB0 | VS_CB1 | PS_CB0 | PS_T0 | PS_T3)
-        PSHADER(SDF_Pattern_Repeat, VS_CB0 | VS_CB1 | PS_CB0 | PS_T0 | PS_T3)
-        PSHADER(SDF_Pattern_MirrorU, VS_CB0 | VS_CB1 | PS_CB0 | PS_T0 | PS_T3)
-        PSHADER(SDF_Pattern_MirrorV, VS_CB0 | VS_CB1 | PS_CB0 | PS_T0 | PS_T3)
-        PSHADER(SDF_Pattern_Mirror, VS_CB0 | VS_CB1 | PS_CB0 | PS_T0 | PS_T3)
-
-        PSHADER(Opacity_Solid, VS_CB0 | PS_T2)
-        PSHADER(Opacity_Linear, VS_CB0 | PS_CB0 | PS_T1 | PS_T2)
-        PSHADER(Opacity_Radial, VS_CB0 | PS_CB0 | PS_T1 | PS_T2)
-        PSHADER(Opacity_Pattern, VS_CB0 | PS_CB0 | PS_T0 | PS_T2)
-        PSHADER(Opacity_Pattern_Clamp, VS_CB0 | PS_CB0 | PS_T0 | PS_T2)
-        PSHADER(Opacity_Pattern_Repeat, VS_CB0 | PS_CB0 | PS_T0 | PS_T2)
-        PSHADER(Opacity_Pattern_MirrorU, VS_CB0 | PS_CB0 | PS_T0 | PS_T2)
-        PSHADER(Opacity_Pattern_MirrorV, VS_CB0 | PS_CB0 | PS_T0 | PS_T2)
-        PSHADER(Opacity_Pattern_Mirror, VS_CB0 | PS_CB0 | PS_T0 | PS_T2)
-
-        PSHADER(Upsample, VS_CB0 | PS_T0 | PS_T2)
-        PSHADER(Downsample, VS_CB0 | PS_T0)
-
-        PSHADER(Shadow, VS_CB0 | PS_CB1 | PS_T2 | PS_T4)
-        PSHADER(Blur, VS_CB0 | PS_CB1 | PS_T2 | PS_T4)
-
-        default: return ShaderPS{};
-    }
-};
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-class VKTexture final: public Texture
-{
-public:
-    VKTexture(uint32_t hash_): hash(hash_) {}
-
-    ~VKTexture()
-    {
-        if (device)
+        switch (shader)
         {
-            //device->SafeReleaseTexture(this);
-            vmaDestroyImage(vkb::dvc().get_allocator(), image, alloc);
-            vkDestroyImageView(vkb::vkdvc(), view, nullptr);
+            PSHADER(RGBA, VS_CB0 | PS_CB0)
+            PSHADER(Mask, VS_CB0)
+            PSHADER(Clear, VS_CB0)
+
+            PSHADER(Path_Solid, VS_CB0)
+            PSHADER(Path_Linear, VS_CB0 | PS_CB0 | PS_T1)
+            PSHADER(Path_Radial, VS_CB0 | PS_CB0 | PS_T1)
+            PSHADER(Path_Pattern, VS_CB0 | PS_CB0 | PS_T0)
+            PSHADER(Path_Pattern_Clamp, VS_CB0 | PS_CB0 | PS_T0)
+            PSHADER(Path_Pattern_Repeat, VS_CB0 | PS_CB0 | PS_T0)
+            PSHADER(Path_Pattern_MirrorU, VS_CB0 | PS_CB0 | PS_T0)
+            PSHADER(Path_Pattern_MirrorV, VS_CB0 | PS_CB0 | PS_T0)
+            PSHADER(Path_Pattern_Mirror, VS_CB0 | PS_CB0 | PS_T0)
+
+            PSHADER(Path_AA_Solid, VS_CB0)
+            PSHADER(Path_AA_Linear, VS_CB0 | PS_CB0 | PS_T1)
+            PSHADER(Path_AA_Radial, VS_CB0 | PS_CB0 | PS_T1)
+            PSHADER(Path_AA_Pattern, VS_CB0 | PS_CB0 | PS_T0)
+            PSHADER(Path_AA_Pattern_Clamp, VS_CB0 | PS_CB0 | PS_T0)
+            PSHADER(Path_AA_Pattern_Repeat, VS_CB0 | PS_CB0 | PS_T0)
+            PSHADER(Path_AA_Pattern_MirrorU, VS_CB0 | PS_CB0 | PS_T0)
+            PSHADER(Path_AA_Pattern_MirrorV, VS_CB0 | PS_CB0 | PS_T0)
+            PSHADER(Path_AA_Pattern_Mirror, VS_CB0 | PS_CB0 | PS_T0)
+
+            PSHADER(SDF_Solid, VS_CB0 | VS_CB1 | PS_T3)
+            PSHADER(SDF_Linear, VS_CB0 | VS_CB1 | PS_CB0 | PS_T1 | PS_T3)
+            PSHADER(SDF_Radial, VS_CB0 | VS_CB1 | PS_CB0 | PS_T1 | PS_T3)
+            PSHADER(SDF_Pattern, VS_CB0 | VS_CB1 | PS_CB0 | PS_T0 | PS_T3)
+            PSHADER(SDF_Pattern_Clamp, VS_CB0 | VS_CB1 | PS_CB0 | PS_T0 | PS_T3)
+            PSHADER(SDF_Pattern_Repeat, VS_CB0 | VS_CB1 | PS_CB0 | PS_T0 | PS_T3)
+            PSHADER(SDF_Pattern_MirrorU, VS_CB0 | VS_CB1 | PS_CB0 | PS_T0 | PS_T3)
+            PSHADER(SDF_Pattern_MirrorV, VS_CB0 | VS_CB1 | PS_CB0 | PS_T0 | PS_T3)
+            PSHADER(SDF_Pattern_Mirror, VS_CB0 | VS_CB1 | PS_CB0 | PS_T0 | PS_T3)
+
+            PSHADER(Opacity_Solid, VS_CB0 | PS_T2)
+            PSHADER(Opacity_Linear, VS_CB0 | PS_CB0 | PS_T1 | PS_T2)
+            PSHADER(Opacity_Radial, VS_CB0 | PS_CB0 | PS_T1 | PS_T2)
+            PSHADER(Opacity_Pattern, VS_CB0 | PS_CB0 | PS_T0 | PS_T2)
+            PSHADER(Opacity_Pattern_Clamp, VS_CB0 | PS_CB0 | PS_T0 | PS_T2)
+            PSHADER(Opacity_Pattern_Repeat, VS_CB0 | PS_CB0 | PS_T0 | PS_T2)
+            PSHADER(Opacity_Pattern_MirrorU, VS_CB0 | PS_CB0 | PS_T0 | PS_T2)
+            PSHADER(Opacity_Pattern_MirrorV, VS_CB0 | PS_CB0 | PS_T0 | PS_T2)
+            PSHADER(Opacity_Pattern_Mirror, VS_CB0 | PS_CB0 | PS_T0 | PS_T2)
+
+            PSHADER(Upsample, VS_CB0 | PS_T0 | PS_T2)
+            PSHADER(Downsample, VS_CB0 | PS_T0)
+
+            PSHADER(Shadow, VS_CB0 | PS_CB1 | PS_T2 | PS_T4)
+            PSHADER(Blur, VS_CB0 | PS_CB1 | PS_T2 | PS_T4)
+
+            default: return ShaderPS{};
         }
-    }
-
-    uint32_t GetWidth() const override { return width; }
-    uint32_t GetHeight() const override { return height; }
-    bool HasMipMaps() const override { return levels > 1; }
-    bool IsInverted() const override { return isInverted; }
-    bool HasAlpha() const override { return hasAlpha; }
-
-    VmaAllocation alloc {};
-    VkImage image = VK_NULL_HANDLE;
-    VkImageView view = VK_NULL_HANDLE;
-    VkDeviceMemory memory = VK_NULL_HANDLE;
-
-    uint32_t width = 0;
-    uint32_t height = 0;
-    uint32_t levels = 0;
-
-    VKRenderDevice* device = VK_NULL_HANDLE;
-
-    VkFormat format = VK_FORMAT_UNDEFINED;
-    VkImageLayout layout = VK_IMAGE_LAYOUT_UNDEFINED;
-
-    bool hasAlpha = true;
-    bool isInverted = false;
-
-    uint32_t hash = 0;
-};
+    };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-class VKRenderTarget final: public RenderTarget
-{
-public:
-    ~VKRenderTarget()
+    class VKTexture final: public Texture
     {
-        color->device->SafeReleaseRenderTarget(this);
-    }
+    public:
+        VKTexture(uint32_t hash_): hash(hash_) {}
 
-    Texture* GetTexture() override { return color; }
+        ~VKTexture()
+        {
+            if (device)
+            {
+                device->SafeReleaseTexture(this);
+            }
+        }
 
-    Ptr<VKTexture> color;
-    Ptr<VKTexture> colorAA;
-    Ptr<VKTexture> stencil;
+        uint32_t GetWidth() const override { return width; }
+        uint32_t GetHeight() const override { return height; }
+        bool HasMipMaps() const override { return levels > 1; }
+        bool IsInverted() const override { return isInverted; }
+        bool HasAlpha() const override { return hasAlpha; }
 
-    VkFramebuffer framebuffer = VK_NULL_HANDLE;
-    VkRenderPass renderPass = VK_NULL_HANDLE;
-    VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT;
-};
+        VkImage image = VK_NULL_HANDLE;
+        VkImageView view = VK_NULL_HANDLE;
+        VkDeviceMemory memory = VK_NULL_HANDLE;
+
+        uint32_t width = 0;
+        uint32_t height = 0;
+        uint32_t levels = 0;
+
+        VKRenderDevice* device = VK_NULL_HANDLE;
+
+        VkFormat format = VK_FORMAT_UNDEFINED;
+        VkImageLayout layout = VK_IMAGE_LAYOUT_UNDEFINED;
+
+        bool hasAlpha = true;
+        bool isInverted = false;
+
+        uint32_t hash = 0;
+    };
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+    class VKRenderTarget final: public RenderTarget
+    {
+    public:
+        ~VKRenderTarget()
+        {
+            color->device->SafeReleaseRenderTarget(this);
+        }
+
+        Texture* GetTexture() override { return color; }
+
+        Ptr<VKTexture> color;
+        Ptr<VKTexture> colorAA;
+        Ptr<VKTexture> stencil;
+
+        VkFramebuffer framebuffer = VK_NULL_HANDLE;
+        VkRenderPass renderPass = VK_NULL_HANDLE;
+        VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT;
+    };
 
 }
 
@@ -488,7 +485,7 @@ void VKRenderDevice::WarmUpRenderPass(VkRenderPass renderPass, VkSampleCountFlag
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 Ptr<Texture> VKRenderDevice::WrapTexture(VkImage image, uint32_t width, uint32_t height,
-    uint32_t levels, VkFormat format, VkImageLayout layout, bool isInverted, bool hasAlpha)
+                                         uint32_t levels, VkFormat format, VkImageLayout layout, bool isInverted, bool hasAlpha)
 {
     Ptr<VKTexture> texture = MakePtr<VKTexture>(0);
 
@@ -513,11 +510,11 @@ void VKRenderDevice::UpdateLayout(Texture* texture_, VkImageLayout layout)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void* VKRenderDevice::CreatePixelShader(const char* label, uint8_t shader, const void* spirv,
-    uint32_t size)
+                                        uint32_t size)
 {
-  #ifdef NS_PROFILE
+#ifdef NS_PROFILE
     uint64_t t0 = HighResTimer::Ticks();
-  #endif
+#endif
 
     uint32_t signature;
     memcpy(&signature, spirv, sizeof(signature));
@@ -540,13 +537,13 @@ void* VKRenderDevice::CreatePixelShader(const char* label, uint8_t shader, const
     for (const auto& renderPass : mCachedPipelineRenderPasses)
     {
         CreatePipelines(label, shader, renderPass.key, module, layout.pipelineLayout,
-            renderPass.value, mCustomShaders.Size());
+                        renderPass.value, mCustomShaders.Size());
     }
 
-  #ifdef NS_PROFILE
+#ifdef NS_PROFILE
     uint64_t t1 = HighResTimer::Ticks();
     NS_LOG_TRACE("'%s' shader compiled in %.0f ms", label, 1000.0 * HighResTimer::Seconds(t1 - t0));
-  #endif
+#endif
 
     return (void*)(uintptr_t)mCustomShaders.Size();
 }
@@ -634,13 +631,13 @@ static uint32_t Index(VkSampleCountFlagBits samples)
         case VK_SAMPLE_COUNT_32_BIT: return 5;
         case VK_SAMPLE_COUNT_64_BIT: return 6;
         default:
-            NS_ASSERT_UNREACHABLE;
+        NS_ASSERT_UNREACHABLE;
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 Ptr<RenderTarget> VKRenderDevice::CreateRenderTarget(const char* label, uint32_t width,
-    uint32_t height, uint32_t samples_, bool needsStencil)
+                                                     uint32_t height, uint32_t samples_, bool needsStencil)
 {
     Ptr<VKRenderTarget> surface = MakePtr<VKRenderTarget>();
     surface->samples = GetSampleCount(samples_, mDeviceProperties.limits);
@@ -652,16 +649,16 @@ Ptr<RenderTarget> VKRenderDevice::CreateRenderTarget(const char* label, uint32_t
     if (needsStencil)
     {
         surface->stencil = StaticPtrCast<VKTexture>(CreateTexture(label, width, height, 1,
-            mStencilFormat, surface->samples, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT |
-            VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT |
-            VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT, VK_IMAGE_ASPECT_STENCIL_BIT));
+                                                                  mStencilFormat, surface->samples, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT |
+                                                                                                    VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT |
+                                                                                                                                             VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT, VK_IMAGE_ASPECT_STENCIL_BIT));
         attachments.PushBack(surface->stencil->view);
         ChangeLayout(mTransferCommands, surface->stencil, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
     }
 
     if (surface->samples > 1)
     {
-      #if RESOLVE_ON_WRITEBACK
+#if RESOLVE_ON_WRITEBACK
         // Multisample surface
         surface->colorAA = StaticPtrCast<VKTexture>(CreateTexture(label, width, height, 1,
             mBackBufferFormat, surface->samples, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
@@ -676,29 +673,29 @@ Ptr<RenderTarget> VKRenderDevice::CreateRenderTarget(const char* label, uint32_t
             VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT));
         ChangeLayout(mTransferCommands, surface->color, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
         attachments.PushBack(surface->color->view);
-      #else
+#else
         // Multisample surface
         surface->colorAA = StaticPtrCast<VKTexture>(CreateTexture(label, width, height, 1,
-            mBackBufferFormat, surface->samples, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
-            VK_IMAGE_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            VK_IMAGE_ASPECT_COLOR_BIT));
+                                                                  mBackBufferFormat, surface->samples, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
+                                                                                                       VK_IMAGE_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                                                                  VK_IMAGE_ASPECT_COLOR_BIT));
         ChangeLayout(mTransferCommands, surface->colorAA, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 
         // Resolve surface
         surface->color = StaticPtrCast<VKTexture>(CreateTexture(label, width, height, 1,
-            mBackBufferFormat, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_USAGE_SAMPLED_BIT |
-            VK_IMAGE_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            VK_IMAGE_ASPECT_COLOR_BIT));
+                                                                mBackBufferFormat, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_USAGE_SAMPLED_BIT |
+                                                                                                          VK_IMAGE_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                                                                VK_IMAGE_ASPECT_COLOR_BIT));
         attachments.PushBack(surface->colorAA->view);
-      #endif
+#endif
     }
     else
     {
         // XamlTester needs VK_IMAGE_USAGE_TRANSFER_SRC_BIT for grabbing screenshots
         surface->color = StaticPtrCast<VKTexture>(CreateTexture(label, width, height, 1,
-            mBackBufferFormat, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
-            VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
-            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT));
+                                                                mBackBufferFormat, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
+                                                                                                          VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
+                                                                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT));
         attachments.PushBack(surface->color->view);
         ChangeLayout(mTransferCommands, surface->color, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
     }
@@ -751,7 +748,7 @@ Ptr<RenderTarget> VKRenderDevice::CloneRenderTarget(const char* label, RenderTar
 
     if (src->samples > 1)
     {
-      #if RESOLVE_ON_WRITEBACK
+#if RESOLVE_ON_WRITEBACK
         surface->color = StaticPtrCast<VKTexture>(CreateTexture(label, width, height, 1,
             src->color->format, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_USAGE_SAMPLED_BIT,
             VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT));
@@ -759,21 +756,21 @@ Ptr<RenderTarget> VKRenderDevice::CloneRenderTarget(const char* label, RenderTar
         attachments.PushBack(surface->colorAA->view);
         attachments.PushBack(surface->color->view);
 
-      #else
+#else
         surface->color = StaticPtrCast<VKTexture>(CreateTexture(label, width, height, 1,
-            src->color->format, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_USAGE_SAMPLED_BIT |
-            VK_IMAGE_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            VK_IMAGE_ASPECT_COLOR_BIT));
+                                                                src->color->format, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_USAGE_SAMPLED_BIT |
+                                                                                                           VK_IMAGE_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                                                                VK_IMAGE_ASPECT_COLOR_BIT));
         ChangeLayout(mTransferCommands, surface->color, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
         attachments.PushBack(surface->colorAA->view);
-      #endif
+#endif
     }
     else
     {
         surface->color = StaticPtrCast<VKTexture>(CreateTexture(label, width, height, 1,
-            src->color->format, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
-            VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            VK_IMAGE_ASPECT_COLOR_BIT));
+                                                                src->color->format, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
+                                                                                                           VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                                                                VK_IMAGE_ASPECT_COLOR_BIT));
         ChangeLayout(mTransferCommands, surface->color, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
         attachments.PushBack(surface->color->view);
     }
@@ -813,12 +810,12 @@ static uint32_t Align(uint32_t n, uint32_t alignment)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 Ptr<Texture> VKRenderDevice::CreateTexture(const char* label, uint32_t width, uint32_t height,
-    uint32_t numLevels, TextureFormat::Enum format_, const void** data)
+                                           uint32_t numLevels, TextureFormat::Enum format_, const void** data)
 {
     VkFormat format = VKFormat(format_, mCaps.linearRendering);
     Ptr<VKTexture> texture = StaticPtrCast<VKTexture>(CreateTexture(label, width, height, numLevels,
-        format, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT));
+                                                                    format, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+                                                                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_COLOR_BIT));
     texture->hasAlpha = format_ == TextureFormat::RGBA8;
 
     if (data != nullptr)
@@ -850,7 +847,7 @@ Ptr<Texture> VKRenderDevice::CreateTexture(const char* label, uint32_t width, ui
         allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
         allocInfo.allocationSize = memRequirements.size;
         allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits,
-            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+                                                   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
         VkDeviceMemory memory;
         V(vkAllocateMemory(mDevice, &allocInfo, nullptr, &memory));
@@ -887,7 +884,7 @@ Ptr<Texture> VKRenderDevice::CreateTexture(const char* label, uint32_t width, ui
         ChangeLayout(mTransferCommands, texture, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
         vkCmdCopyBufferToImage(mTransferCommands, buffer, texture->image,
-            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, regions.Size(), regions.Data());
+                               VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, regions.Size(), regions.Data());
 
         SafeReleaseBuffer(buffer, memory);
         mUpdatedTextures.PushBack(texture);
@@ -898,7 +895,7 @@ Ptr<Texture> VKRenderDevice::CreateTexture(const char* label, uint32_t width, ui
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void VKRenderDevice::UpdateTexture(Texture* texture_, uint32_t level, uint32_t x, uint32_t y,
-    uint32_t width, uint32_t height, const void* data)
+                                   uint32_t width, uint32_t height, const void* data)
 {
     VKTexture* texture = (VKTexture*)texture_;
 
@@ -922,7 +919,7 @@ void VKRenderDevice::UpdateTexture(Texture* texture_, uint32_t level, uint32_t x
     region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 
     vkCmdCopyBufferToImage(mTransferCommands, mTexUpload.currentPage->buffer, texture->image,
-        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+                           VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
     if (mUpdatedTextures.Find(texture) == mUpdatedTextures.End())
     {
@@ -1009,7 +1006,7 @@ void VKRenderDevice::ResolveRenderTarget(RenderTarget* surface_, const Tile* til
 {
     VK_END_EVENT();
 
-  #if !RESOLVE_ON_WRITEBACK
+#if !RESOLVE_ON_WRITEBACK
     VKRenderTarget* surface = (VKRenderTarget*)surface_;
 
     if (surface->samples > 1)
@@ -1042,12 +1039,12 @@ void VKRenderDevice::ResolveRenderTarget(RenderTarget* surface_, const Tile* til
 
         ChangeLayout(mCommandBuffer, dst, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
         vkCmdResolveImage(mCommandBuffer, src->image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-            dst->image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, regions.Size(), regions.Data());
+                          dst->image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, regions.Size(), regions.Data());
         ChangeLayout(mCommandBuffer, dst,  VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
     }
-  #else
+#else
     NS_UNUSED(surface_, tiles, numTiles);
-  #endif
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1120,13 +1117,13 @@ void VKRenderDevice::DrawBatch(const Batch& batch)
 
     if (batch.singlePassStereo)
     {
-      #ifdef NS_PLATFORM_ANDROID
+#ifdef NS_PLATFORM_ANDROID
         // GL_EXT_multiview
         vkCmdDrawIndexed(mCommandBuffer, batch.numIndices, 1, firstIndex, 0, 0);
-      #else
+#else
         // GL_ARB_shader_viewport_layer_array
         vkCmdDrawIndexed(mCommandBuffer, batch.numIndices, 2, firstIndex, 0, 0);
-      #endif
+#endif
     }
     else
     {
@@ -1237,6 +1234,7 @@ Ptr<Texture> VKRenderDevice::CreateTexture(const char* label, uint32_t width, ui
     Ptr<VKTexture> texture = MakePtr<VKTexture>(mLastTextureHashValue++);
 
     texture->device = this;
+
     texture->format = format;
     texture->width = width;
     texture->height = height;
@@ -1246,37 +1244,42 @@ Ptr<Texture> VKRenderDevice::CreateTexture(const char* label, uint32_t width, ui
                          (aspect == VK_IMAGE_ASPECT_COLOR_BIT ? "_AA" : "_Stencil_AA") :
                          (aspect == VK_IMAGE_ASPECT_COLOR_BIT ? "" : "_Stencil");
 
-    // Create image using Vulkan Memory Allocator
-    VkImageCreateInfo imageInfo = {};
-    imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-    imageInfo.imageType = VK_IMAGE_TYPE_2D;
-    imageInfo.format = format;
-    imageInfo.samples = samples;
-    imageInfo.usage = usage;
-    imageInfo.extent.width = width;
-    imageInfo.extent.height = height;
-    imageInfo.mipLevels = levels;
-    imageInfo.extent.depth = 1;
-    imageInfo.arrayLayers = 1;
-    imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
-    imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    // Create image
+    VkImageCreateInfo createInfo{};
+    createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+    createInfo.imageType = VK_IMAGE_TYPE_2D;
+    createInfo.format = format;
+    createInfo.samples = samples;
+    createInfo.usage = usage;
+    createInfo.extent.width = width;
+    createInfo.extent.height = height;
+    createInfo.mipLevels = levels;
+    createInfo.extent.depth = 1;
+    createInfo.arrayLayers = 1;
+    createInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+    createInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
-    VmaAllocationCreateInfo allocCreateInfo = {};
-    allocCreateInfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
-
-    VmaAllocation allocation;
-    VmaAllocationInfo allocationInfo;
-    V(vmaCreateImage(vkb::dvc().get_allocator(), &imageInfo, &allocCreateInfo, &texture->image, &allocation, &allocationInfo));
+    V(vkCreateImage(mDevice, &createInfo, nullptr, &texture->image));
     VK_NAME(texture->image, IMAGE, "Noesis_%s%s", label, suffix);
 
-    texture->memory = allocationInfo.deviceMemory; // Store the VmaAllocation
-    texture->alloc = allocation; // Store the VmaAllocation
+    // Allocate memory
+    VkMemoryRequirements memoryRequirements;
+    vkGetImageMemoryRequirements(mDevice, texture->image, &memoryRequirements);
 
+    VkMemoryAllocateInfo allocInfo{};
+    allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+    allocInfo.allocationSize = memoryRequirements.size;
+    allocInfo.memoryTypeIndex = FindMemoryType(memoryRequirements.memoryTypeBits, memFlags,
+                                               VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+    V(vkAllocateMemory(mDevice, &allocInfo, nullptr, &texture->memory));
+    V(vkBindImageMemory(mDevice, texture->image, texture->memory, 0));
+    VK_NAME(texture->memory, DEVICE_MEMORY, "Noesis_%s%s_Mem", label, suffix);
     NS_LOG_TRACE("Texture '%s' created (%zu KB) (Type %02d)", label,
-                 allocationInfo.size / 1024, allocationInfo.memoryType);
+                 allocInfo.allocationSize / 1024, allocInfo.memoryTypeIndex);
 
     // Create View
-    VkImageViewCreateInfo viewInfo = {};
+    VkImageViewCreateInfo viewInfo{};
     viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
     viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
     viewInfo.format = format;
@@ -1284,6 +1287,7 @@ Ptr<Texture> VKRenderDevice::CreateTexture(const char* label, uint32_t width, ui
     viewInfo.subresourceRange.aspectMask = aspect;
     viewInfo.subresourceRange.levelCount = levels;
     viewInfo.subresourceRange.layerCount = 1;
+
     V(vkCreateImageView(mDevice, &viewInfo, nullptr, &texture->view));
     VK_NAME(texture->view, IMAGE_VIEW, "Noesis_%s%s_View", label, suffix);
 
@@ -1314,7 +1318,7 @@ VKRenderDevice::Page* VKRenderDevice::AllocatePage(DynamicBuffer& buffer)
     allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     allocInfo.allocationSize = memRequirements.size;
     allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, buffer.memFlags,
-        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+                                               VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
     V(vkAllocateMemory(mDevice, &allocInfo, nullptr, &page->memory));
     VK_NAME(page->memory, DEVICE_MEMORY, "Noesis_%s_Mem[%d]", buffer.label, buffer.numPages);
@@ -1323,7 +1327,7 @@ VKRenderDevice::Page* VKRenderDevice::AllocatePage(DynamicBuffer& buffer)
     V(vkMapMemory(mDevice, page->memory, 0, VK_WHOLE_SIZE, 0, &page->base));
 
     NS_LOG_TRACE("Page '%s[%d]' created (%d KB) (Type %02d)", buffer.label, buffer.numPages,
-        buffer.size / 1024, allocInfo.memoryTypeIndex);
+                 buffer.size / 1024, allocInfo.memoryTypeIndex);
 
     buffer.numPages++;
     return page;
@@ -1339,7 +1343,7 @@ void VKRenderDevice::DestroyPage(Page* page)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void VKRenderDevice::CreateBuffer(DynamicBuffer& buffer, const char* label, uint32_t size,
-    VkBufferUsageFlags usage, VkMemoryPropertyFlags memFlags)
+                                  VkBufferUsageFlags usage, VkMemoryPropertyFlags memFlags)
 {
     buffer.size = size;
     buffer.pos = 0;
@@ -1452,31 +1456,31 @@ void VKRenderDevice::CreateBuffers()
     memset(mCachedConstantHash, 0, sizeof(mCachedConstantHash));
 
     CreateBuffer(mVertices, "Vertices", DYNAMIC_VB_SIZE, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-        VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+                 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                 VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
     CreateBuffer(mIndices, "Indices", DYNAMIC_IB_SIZE, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-        VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+                 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                 VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
     CreateBuffer(mConstants[0], "VertexCB0", CBUFFER_SIZE, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-        VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+                 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                 VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
     CreateBuffer(mConstants[1], "VertexCB1", CBUFFER_SIZE, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-        VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+                 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                 VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
     CreateBuffer(mConstants[2], "PixelCB0", CBUFFER_SIZE, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-        VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+                 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                 VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
     CreateBuffer(mConstants[3], "PixelCB1", CBUFFER_SIZE, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-        VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+                 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                 VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
     CreateBuffer(mTexUpload, "TexUpload", DYNAMIC_TEX_SIZE, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT); 
+                 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1576,7 +1580,7 @@ void VKRenderDevice::DestroyShaders()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 static void FillLayoutBindings(uint32_t buffersVS, uint32_t buffersPS, uint32_t textures,
-    BaseVector<VkDescriptorSetLayoutBinding>& v)
+                               BaseVector<VkDescriptorSetLayoutBinding>& v)
 {
     NS_ASSERT(buffersVS + buffersPS <= 4);
     NS_ASSERT(textures <= 3);
@@ -1655,7 +1659,7 @@ void VKRenderDevice::CreateLayout(uint32_t signature, Layout& layout)
 
         V(vkCreateDescriptorSetLayout(mDevice, &layoutInfo, nullptr, &setLayout));
         VK_NAME(setLayout, DESCRIPTOR_SET_LAYOUT, "Noesis_SetLayout_B%d_B%d_T%d",
-            buffersVS, buffersPS, textures);
+                buffersVS, buffersPS, textures);
 
         // VkPipelineLayout
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
@@ -1665,7 +1669,7 @@ void VKRenderDevice::CreateLayout(uint32_t signature, Layout& layout)
 
         V(vkCreatePipelineLayout(mDevice, &pipelineLayoutInfo, nullptr, &pipelineLayout));
         VK_NAME(pipelineLayout, PIPELINE_LAYOUT, "Noesis_PipelineLayout_B%d_B%d_T%d",
-            buffersVS, buffersPS, textures);
+                buffersVS, buffersPS, textures);
     }
 
     layout.setLayout = setLayout;
@@ -1733,10 +1737,10 @@ void VKRenderDevice::CreateDescriptorPool()
     }
 
     VkDescriptorPoolSize poolSizes[2] =
-    {
-        { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, DESCRIPTOR_POOL_MAX_SETS * 4 },
-        { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, DESCRIPTOR_POOL_MAX_SETS * 3 }
-    };
+            {
+                    { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, DESCRIPTOR_POOL_MAX_SETS * 4 },
+                    { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, DESCRIPTOR_POOL_MAX_SETS * 3 }
+            };
 
     VkDescriptorPoolCreateInfo poolInfo{};
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
@@ -1889,7 +1893,7 @@ void VKRenderDevice::CreateSamplers()
                 SamplerState s = {{ uv, minmag, mip }};
                 V(vkCreateSampler(mDevice, &samplerInfo, nullptr, &mSamplers[s.v]));
                 VK_NAME(mSamplers[s.v], SAMPLER, "Noesis_%s_%s_%s", MinMagStr[minmag], MipStr[mip],
-                    WrapStr[uv]);
+                        WrapStr[uv]);
             }
         }
     }
@@ -1955,7 +1959,7 @@ VkRenderPass VKRenderDevice::CreateRenderPass(VkSampleCountFlagBits samples, boo
 
     if (samples > 1)
     {
-      #if RESOLVE_ON_WRITEBACK
+#if RESOLVE_ON_WRITEBACK
         // Multisampled Color: Don't care -> Don't care
         VkAttachmentDescription color{};
         color.format = mBackBufferFormat;
@@ -1988,7 +1992,7 @@ VkRenderPass VKRenderDevice::CreateRenderPass(VkSampleCountFlagBits samples, boo
         subpass.pResolveAttachments = &resolveRef;
         attachments.PushBack(resolve);
 
-      #else
+#else
         // Multisampled Color: Don't care -> Store
         VkAttachmentDescription color{};
         color.format = mBackBufferFormat;
@@ -2007,7 +2011,7 @@ VkRenderPass VKRenderDevice::CreateRenderPass(VkSampleCountFlagBits samples, boo
 
         dependencies[1].dstStageMask = VK_PIPELINE_STAGE_TRANSFER_BIT;
         dependencies[1].dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
-      #endif
+#endif
     }
     else
     {
@@ -2040,7 +2044,7 @@ VkRenderPass VKRenderDevice::CreateRenderPass(VkSampleCountFlagBits samples, boo
     VkRenderPass renderPass;
     V(vkCreateRenderPass(mDevice, &renderPassInfo, nullptr, &renderPass));
     VK_NAME(renderPass, RENDER_PASS, samples > 1 ? "Noesis_RGBA8%s_x%d_RenderPass" :
-        "Noesis_RGBA8%s_RenderPass", needsStencil ? "_S8" : "", samples);
+                                     "Noesis_RGBA8%s_RenderPass", needsStencil ? "_S8" : "", samples);
     return renderPass;
 }
 
@@ -2074,7 +2078,7 @@ static uint32_t HashPipeline(VkRenderPass pass, uint8_t id, uint8_t state, bool 
 void VKRenderDevice::BindPipeline(const Batch& batch)
 {
     uint32_t hash = HashPipeline(mActiveRenderPass, batch.shader.v, batch.renderState.v,
-        batch.singlePassStereo, (int)(uintptr_t)batch.pixelShader);
+                                 batch.singlePassStereo, (int)(uintptr_t)batch.pixelShader);
     VkPipeline pipeline = mPipelines[mPipelineMap.Find(hash)->value];
 
     if (pipeline != mCachedPipeline)
@@ -2100,7 +2104,7 @@ void VKRenderDevice::SetBuffers(const Batch& batch)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void VKRenderDevice::UploadUniforms(uint32_t i, const UniformData* data, uint32_t& hash,
-    BaseVector<uint32_t>& offsets)
+                                    BaseVector<uint32_t>& offsets)
 {
     NS_ASSERT(data != 0);
     NS_ASSERT(data->numDwords > 0);
@@ -2121,8 +2125,8 @@ void VKRenderDevice::UploadUniforms(uint32_t i, const UniformData* data, uint32_
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void VKRenderDevice::FillBufferInfo(uint32_t i, const UniformData* data, VkDescriptorSet set,
-    BaseVector<VkDescriptorBufferInfo>& buffers, BaseVector<VkWriteDescriptorSet>& writes,
-    uint32_t& binding)
+                                    BaseVector<VkDescriptorBufferInfo>& buffers, BaseVector<VkWriteDescriptorSet>& writes,
+                                    uint32_t& binding)
 {
     NS_ASSERT(data != 0);
     NS_ASSERT(data->numDwords > 0);
@@ -2142,8 +2146,8 @@ void VKRenderDevice::FillBufferInfo(uint32_t i, const UniformData* data, VkDescr
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void VKRenderDevice::FillImageInfo(Texture* texture, uint8_t sampler, VkDescriptorSet set,
-    BaseVector<VkDescriptorImageInfo>& images, BaseVector<VkWriteDescriptorSet>& writes,
-    uint32_t& binding)
+                                   BaseVector<VkDescriptorImageInfo>& images, BaseVector<VkWriteDescriptorSet>& writes,
+                                   uint32_t& binding)
 {
     NS_ASSERT(texture != 0);
 
@@ -2276,7 +2280,7 @@ void VKRenderDevice::BindDescriptors(const Batch& batch, const Layout& layout)
     }
 
     vkCmdBindDescriptorSets(mCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, layout.pipelineLayout,
-        0, 1, &it->value, offsets.Size(), offsets.Data());
+                            0, 1, &it->value, offsets.Size(), offsets.Data());
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2318,7 +2322,7 @@ static void FillVertexAttributes(uint32_t format, BaseVector<VkVertexInputAttrib
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 static void RasterizerInfo(VkPipelineRasterizationStateCreateInfo& info, RenderState state,
-    const VkPhysicalDeviceFeatures& features, BaseString& label)
+                           const VkPhysicalDeviceFeatures& features, BaseString& label)
 {
     info.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
     info.depthClampEnable = VK_FALSE;
@@ -2347,7 +2351,7 @@ static void BlendInfo(VkPipelineColorBlendAttachmentState& info, RenderState sta
     if (state.f.colorEnable)
     {
         info.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
-            VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+                              VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 
         info.colorBlendOp = VK_BLEND_OP_ADD;
         info.alphaBlendOp = VK_BLEND_OP_ADD;
@@ -2409,7 +2413,7 @@ static void BlendInfo(VkPipelineColorBlendAttachmentState& info, RenderState sta
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 static void DepthStencilInfo(VkPipelineDepthStencilStateCreateInfo& info, RenderState state,
-    BaseString& label)
+                             BaseString& label)
 {
     info.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
     info.depthWriteEnable = VK_FALSE;
@@ -2519,7 +2523,7 @@ static void DepthStencilInfo(VkPipelineDepthStencilStateCreateInfo& info, Render
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void VKRenderDevice::CreatePipelines(const char* label_, uint8_t shader_, VkRenderPass renderPass,
-    VkGraphicsPipelineCreateInfo& pipelineInfo, bool stereo, uint32_t custom)
+                                     VkGraphicsPipelineCreateInfo& pipelineInfo, bool stereo, uint32_t custom)
 {
     VkPipeline parent = VK_NULL_HANDLE;
 
@@ -2535,7 +2539,7 @@ void VKRenderDevice::CreatePipelines(const char* label_, uint8_t shader_, VkRend
         {
             pipelineInfo.basePipelineHandle = parent;
             pipelineInfo.flags = (parent != VK_NULL_HANDLE) ? VK_PIPELINE_CREATE_DERIVATIVE_BIT :
-                VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT;
+                                 VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT;
 
             FixedString<256> label = label_;
 
@@ -2572,8 +2576,8 @@ void VKRenderDevice::CreatePipelines(const char* label_, uint8_t shader_, VkRend
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void VKRenderDevice::CreatePipelines(const char* label, uint8_t shader, VkRenderPass renderPass,
-    VkShaderModule psModule, VkPipelineLayout layout, VkSampleCountFlagBits sampleCount,
-    uint32_t custom)
+                                     VkShaderModule psModule, VkPipelineLayout layout, VkSampleCountFlagBits sampleCount,
+                                     uint32_t custom)
 {
     uint8_t vsIndex = VertexForShader[shader];
 
@@ -2630,11 +2634,11 @@ void VKRenderDevice::CreatePipelines(const char* label, uint8_t shader, VkRender
 
     // Dynamic State
     VkDynamicState dynamicStates[] =
-    { 
-        VK_DYNAMIC_STATE_SCISSOR,
-        VK_DYNAMIC_STATE_VIEWPORT,
-        VK_DYNAMIC_STATE_STENCIL_REFERENCE
-    };
+            {
+                    VK_DYNAMIC_STATE_SCISSOR,
+                    VK_DYNAMIC_STATE_VIEWPORT,
+                    VK_DYNAMIC_STATE_STENCIL_REFERENCE
+            };
 
     VkPipelineDynamicStateCreateInfo dynamicState{};
     dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
@@ -2678,9 +2682,9 @@ void VKRenderDevice::CreatePipelines(VkRenderPass renderPass, VkSampleCountFlagB
         return;
     }
 
-  #ifdef NS_PROFILE
+#ifdef NS_PROFILE
     uint64_t t0 = HighResTimer::Ticks();
-  #endif
+#endif
 
     for (uint32_t i = 0; i < Shader::Count; i++)
     {
@@ -2689,7 +2693,7 @@ void VKRenderDevice::CreatePipelines(VkRenderPass renderPass, VkSampleCountFlagB
         if (pShader.label != nullptr)
         {
             CreatePipelines(pShader.label, (uint8_t)i, renderPass, mPixelShaders[i],
-                mLayouts[i].pipelineLayout, sampleCount, 0);
+                            mLayouts[i].pipelineLayout, sampleCount, 0);
         }
     }
 
@@ -2697,14 +2701,14 @@ void VKRenderDevice::CreatePipelines(VkRenderPass renderPass, VkSampleCountFlagB
     {
         const CustomShader& customShader = mCustomShaders[i];
         CreatePipelines(customShader.label.Str(), customShader.id, renderPass,
-            customShader.module, customShader.layout.pipelineLayout, sampleCount, i + 1);
+                        customShader.module, customShader.layout.pipelineLayout, sampleCount, i + 1);
     }
 
-  #ifdef NS_PROFILE
+#ifdef NS_PROFILE
     uint64_t t1 = HighResTimer::Ticks();
     NS_LOG_TRACE("Pipelines compiled in %.0f ms [0x%" PRIX64 "]",
         HighResTimer::Milliseconds(t1 - t0), (uint64_t)renderPass);
-   #endif
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2839,7 +2843,7 @@ void VKRenderDevice::ChangeLayout(VkCommandBuffer commands, Texture* texture_, V
                 break;
             }
             default:
-                NS_ASSERT_UNREACHABLE;
+            NS_ASSERT_UNREACHABLE;
         }
 
         switch (layout)
@@ -2847,9 +2851,9 @@ void VKRenderDevice::ChangeLayout(VkCommandBuffer commands, Texture* texture_, V
             case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
             {
                 dstStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT |
-                    VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
+                               VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
                 dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT |
-                    VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+                                VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
                 break;
             }
             case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
@@ -2874,11 +2878,11 @@ void VKRenderDevice::ChangeLayout(VkCommandBuffer commands, Texture* texture_, V
             {
                 dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
                 dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT |
-                    VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+                                VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
                 break;
             }
             default:
-                NS_ASSERT_UNREACHABLE;
+            NS_ASSERT_UNREACHABLE;
         }
 
         VkImageAspectFlags aspectMask;
