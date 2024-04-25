@@ -19,7 +19,7 @@ local C = ffi.C
 
 --- Input Module
 local Input = {
-    --- Keybord key codes
+    --- Keyboard key codes
     KEYS = {
         SPACE = 32,
         APOSTROPHE = 39,

@@ -90,8 +90,8 @@ local Editor = {
         gridFadeStart = 45,
         gridFadeRange = 15,
         gizmoObbColor = Vec3(0, 1, 0),
-        gizmoOperation = GIZMO_OPERATIONS.UNIVERSAL,
-        gizmoMode = GIZMO_MODE.LOCAL,
+        gizmoOperation = Debug.GIZMO_OPERATIONS.UNIVERSAL,
+        gizmoMode = Debug.GIZMO_MODE.LOCAL,
         gizmoSnap = ffi.new('bool[1]', true),
         gizmoSnapStep = ffi.new('float[1]', 0.1),
         currentDebugMode = ffi.new('int[1]', DEBUG_MODE.NONE)
@@ -315,12 +315,12 @@ function Editor:renderMainMenu()
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_Button, 0)
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_BorderShadow, 0)
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_Border, 0)
-        if UI.SmallButton(self.gizmos.gizmoMode == GIZMO_MODE.LOCAL and ICONS.HOUSE or ICONS.GLOBE) then
+        if UI.SmallButton(self.gizmos.gizmoMode == Debug.GIZMO_MODE.LOCAL and ICONS.HOUSE or ICONS.GLOBE) then
             self.gizmos.gizmoMode = band(self.gizmos.gizmoMode + 1, 1)
         end
         UI.PopStyleColor(3)
         if UI.IsItemHovered() then
-            UI.SetTooltip('Gizmo Mode: '..(self.gizmos.gizmoMode == GIZMO_MODE.LOCAL and 'Local' or 'World'))
+            UI.SetTooltip('Gizmo Mode: '..(self.gizmos.gizmoMode == Debug.GIZMO_MODE.LOCAL and 'Local' or 'World'))
         end
         UI.Checkbox(ICONS.RULER, self.gizmos.gizmoSnap)
         if UI.IsItemHovered() then
