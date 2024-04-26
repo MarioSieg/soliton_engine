@@ -882,7 +882,7 @@ namespace graphics {
         create_vertex_buffer();
         create_descriptor_set_layout(device);
         create_descriptor_set(device, pool);
-        create_pipeline_states(device, vkb::context::s_instance->get_render_pass());
+        create_pipeline_states(device, vkb::ctx().get_render_pass());
         log_info("Created debug draw context");
     }
 

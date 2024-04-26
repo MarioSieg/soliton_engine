@@ -54,7 +54,12 @@ namespace vkb {
         m_device.reset();
     }
 
+    // Set clear values for all framebuffer attachments with loadOp set to clear
+    // We use two attachments (color and depth) that are cleared at the start of the subpass and as such we need to set clear values for both
     auto context::begin_frame(const DirectX::XMFLOAT4A& clear_color, vk::CommandBufferInheritanceInfo* out_inheritance_info) -> vk::CommandBuffer {
+        m_clear_values[0].color = std::bit_cast<vk::ClearColorValue>(clear_color);
+        m_clear_values[1].color = std::bit_cast<vk::ClearColorValue>(clear_color);
+        m_clear_values[2].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
 
         // Use a fence to wait until the command buffer has finished execution before using it again
         vkcheck(m_device->get_logical_device().waitForFences(1, &m_wait_fences[m_current_frame], vk::True, std::numeric_limits<std::uint64_t>::max()));
@@ -72,21 +77,6 @@ namespace vkb {
             vkcheck(result);
         }
 
-        // Set clear values for all framebuffer attachments with loadOp set to clear
-        // We use two attachments (color and depth) that are cleared at the start of the subpass and as such we need to set clear values for both
-        std::array<vk::ClearValue, 3> clear_values {};
-        clear_values[0].color = std::bit_cast<vk::ClearColorValue>(clear_color);
-        clear_values[1].color = std::bit_cast<vk::ClearColorValue>(clear_color);
-        clear_values[2].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
-
-        vk::RenderPassBeginInfo render_pass_begin_info {};
-        render_pass_begin_info.renderPass = m_render_pass;
-        render_pass_begin_info.framebuffer = m_framebuffers[m_image_index];
-        render_pass_begin_info.renderArea.extent.width = m_width;
-        render_pass_begin_info.renderArea.extent.height = m_height;
-        render_pass_begin_info.clearValueCount = static_cast<std::uint32_t>(clear_values.size());
-        render_pass_begin_info.pClearValues = clear_values.data();
-
         if (out_inheritance_info) {
             *out_inheritance_info = vk::CommandBufferInheritanceInfo {};
             out_inheritance_info->renderPass = m_render_pass;
@@ -98,24 +88,15 @@ namespace vkb {
         constexpr vk::CommandBufferBeginInfo command_buffer_begin_info {};
         vkcheck(cmd_buf.begin(&command_buffer_begin_info));
 
-        // Start the first sub pass specified in our default render pass setup by the base class
-        // This will clear the color and depth attachment
-        cmd_buf.beginRenderPass(&render_pass_begin_info, vk::SubpassContents::eSecondaryCommandBuffers);
-
         return cmd_buf;
     }
 
-    auto context::end_frame(const vk::CommandBuffer cmd_buf) -> void {
-        passert(cmd_buf);
-
-        cmd_buf.endRenderPass();
-        vkcheck(cmd_buf.end());
-
+    auto context::end_frame(const vk::CommandBuffer cmd) -> void {
         vk::PipelineStageFlags wait_stage_mask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
         vk::SubmitInfo submit_info {};
         submit_info.pWaitDstStageMask = &wait_stage_mask;
         submit_info.commandBufferCount = 1;
-        submit_info.pCommandBuffers = &cmd_buf;
+        submit_info.pCommandBuffers = &cmd;
         // Semaphore to wait upon before the submitted command buffer starts executing
         submit_info.waitSemaphoreCount = 1;
         submit_info.pWaitSemaphores = &m_semaphores.present_complete[m_current_frame];
@@ -476,5 +457,20 @@ namespace vkb {
         for (auto&& semaphore : m_semaphores.present_complete) {
             m_device->get_logical_device().destroySemaphore(semaphore, &s_allocator);
         }
+    }
+
+    auto context::begin_render_pass(vk::CommandBuffer cmd, vk::RenderPass pass, vk::SubpassContents contents) -> void {
+        vk::RenderPassBeginInfo render_pass_begin_info {};
+        render_pass_begin_info.renderPass = pass;
+        render_pass_begin_info.framebuffer = m_framebuffers[m_image_index];
+        render_pass_begin_info.renderArea.extent.width = m_width;
+        render_pass_begin_info.renderArea.extent.height = m_height;
+        render_pass_begin_info.clearValueCount = static_cast<std::uint32_t>(m_clear_values.size());
+        render_pass_begin_info.pClearValues = m_clear_values.data();
+        cmd.beginRenderPass(&render_pass_begin_info, contents);
+    }
+
+    auto context::end_render_pass(vk::CommandBuffer cmd) -> void {
+        cmd.endRenderPass();
     }
 }

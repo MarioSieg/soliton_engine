@@ -87,7 +87,7 @@ namespace graphics {
             .pInheritanceInfo = m_shared_ctx.inheritance_info
         };
 
-        m_active_command_buffer = m_command_buffers[vkb::context::s_instance->get_current_frame()];
+        m_active_command_buffer = m_command_buffers[vkb::ctx().get_current_frame()];
         vkcheck(m_active_command_buffer.begin(&begin_info));
 
         const auto w = static_cast<float>(vkb::ctx().get_width());

@@ -9,6 +9,10 @@
 
 #include <DirectXMath.h>
 
+namespace graphics {
+    class graphics_subsystem;
+}
+
 namespace vkb {
     template <const vk::QueueFlagBits QueueType>
     concept is_queue_type = requires {
@@ -21,7 +25,6 @@ namespace vkb {
     class context final : public no_copy, public no_move {
     public:
         static constexpr std::uint32_t k_max_concurrent_frames = 3;
-        inline constinit static std::unique_ptr<context> s_instance {};
         explicit context(
             GLFWwindow* window
         );
@@ -116,10 +119,15 @@ namespace vkb {
         [[nodiscard]] auto get_swapchain_image_depth_stencil_view() const noexcept -> vk::ImageView { return m_depth_stencil.view; }
 
         HOTPROC auto begin_frame(const DirectX::XMFLOAT4A& clear_color, vk::CommandBufferInheritanceInfo* out_inheritance_info = nullptr) -> vk::CommandBuffer;
-        HOTPROC auto end_frame(vk::CommandBuffer cmd_buf) -> void;
+        HOTPROC auto end_frame(vk::CommandBuffer cmd) -> void;
+        auto begin_render_pass(vk::CommandBuffer cmd, vk::RenderPass pass, vk::SubpassContents contents) -> void;
+        auto end_render_pass(vk::CommandBuffer cmd) -> void;
         auto on_resize() -> void;
 
     private:
+        friend auto ctx() noexcept -> context&;
+        friend class graphics::graphics_subsystem;
+
         auto boot_vulkan_core() -> void;
         auto create_sync_prims() -> void;
         auto create_command_pools() -> void;
@@ -137,6 +145,7 @@ namespace vkb {
         auto destroy_command_buffers() const -> void;
         auto destroy_sync_prims() const -> void;
 
+        inline constinit static std::unique_ptr<context> s_instance {};
         GLFWwindow* m_window = nullptr;
         std::uint32_t m_width = 0;
         std::uint32_t m_height = 0;
@@ -174,6 +183,7 @@ namespace vkb {
                 VmaAllocation memory {};
             } depth {};
         } m_msaa_target {};
+        std::array<vk::ClearValue, 3> m_clear_values {};
     };
 
     // Get global vulkan context wrapper class

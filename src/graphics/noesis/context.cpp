@@ -214,6 +214,8 @@ namespace noesis {
     }
 
     context::context() {
+        create_render_pass();
+
         static constexpr Noesis::MemoryCallbacks k_allocator {
             .user = nullptr,
             .alloc = +[]([[maybe_unused]] void*, const Noesis::SizeT size) noexcept -> void* { return mi_malloc(size); },
@@ -271,6 +273,7 @@ namespace noesis {
     }
 
     context::~context() {
+        vkb::vkdvc().destroyRenderPass(m_render_pass, &vkb::s_allocator);
         NsShutdownPackages_NoesisApp();
         m_app.Reset();
         m_device.Reset();
@@ -278,15 +281,44 @@ namespace noesis {
 
     auto context::render(const vk::CommandBuffer cmd) -> void {
         m_app->GetMainWindow()->GetView()->GetRenderer()->UpdateRenderTree();
+
+        constexpr vk::CommandBufferBeginInfo begin_info {};
+        cmd.begin(&begin_info);
+
         const NoesisApp::VKFactory::RecordingInfo recording_info {
             .commandBuffer = cmd,
             .frameNumber = vkb::ctx().get_image_index(),
             .safeFrameNumber = vkb::ctx().get_image_index()
         };
         NoesisApp::VKFactory::SetCommandBuffer(m_device, recording_info);
-        NoesisApp::VKFactory::SetRenderPass(m_device, vkb::ctx().get_render_pass(), static_cast<std::uint32_t>(vkb::k_msaa_sample_count));
         m_app->GetMainWindow()->GetView()->GetRenderer()->RenderOffscreen();
+
+        auto w = static_cast<float>(vkb::ctx().get_width());
+        auto h = static_cast<float>(vkb::ctx().get_height());
+        // Update dynamic viewport state
+        vk::Viewport viewport {};
+        viewport.width = w;
+        viewport.height = -h;
+        viewport.x = 0.0f;
+        viewport.y = h;
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+        cmd.setViewport(0, 1, &viewport);
+
+        // Update dynamic scissor state
+        vk::Rect2D scissor {};
+        scissor.extent.width = w;
+        scissor.extent.height = h;
+        scissor.offset.x = 0.0f;
+        scissor.offset.y = 0.0f;
+        cmd.setScissor(0, 1, &scissor);
+
+        vkb::ctx().begin_render_pass(cmd, m_render_pass, vk::SubpassContents::eInline);
+        NoesisApp::VKFactory::SetRenderPass(m_device, m_render_pass, static_cast<std::uint32_t>(vkb::k_msaa_sample_count));
         m_app->GetMainWindow()->GetView()->GetRenderer()->Render();
+        vkb::ctx().end_render_pass(cmd);
+
+        cmd.end();
     }
 
     auto context::load_ui_from_xaml(const std::string& path) -> void {
@@ -303,5 +335,90 @@ namespace noesis {
 
     auto context::on_resize() -> void {
         m_app->Resize();
+    }
+
+    auto context::create_render_pass() -> void {
+        std::array<vk::AttachmentDescription, 3> attachments {};
+
+        // Multisampled attachment that we render to
+        attachments[0].format = vkb::ctx().get_swapchain().get_format();
+        attachments[0].samples = vkb::k_msaa_sample_count;
+        attachments[0].loadOp = vk::AttachmentLoadOp::eClear;
+        attachments[0].storeOp = vk::AttachmentStoreOp::eDontCare;
+        attachments[0].stencilLoadOp = vk::AttachmentLoadOp::eDontCare;
+        attachments[0].stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
+        attachments[0].initialLayout = vk::ImageLayout::eUndefined;
+        attachments[0].finalLayout = vk::ImageLayout::eColorAttachmentOptimal;
+
+        // This is the frame buffer attachment to where the multisampled image
+        // will be resolved to and which will be presented to the swapchain
+        attachments[1].format = vkb::ctx().get_swapchain().get_format();
+        attachments[1].samples = vk::SampleCountFlagBits::e1;
+        attachments[1].loadOp = vk::AttachmentLoadOp::eDontCare;
+        attachments[1].storeOp = vk::AttachmentStoreOp::eStore;
+        attachments[1].stencilLoadOp = vk::AttachmentLoadOp::eDontCare;
+        attachments[1].stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
+        attachments[1].initialLayout = vk::ImageLayout::eUndefined;
+        attachments[1].finalLayout = vk::ImageLayout::ePresentSrcKHR;
+
+        // Multisampled depth attachment we render to
+        attachments[2].format = vkb::dvc().get_depth_format();
+        attachments[2].samples = vkb::k_msaa_sample_count;
+        attachments[2].loadOp = vk::AttachmentLoadOp::eClear;
+        attachments[2].storeOp = vk::AttachmentStoreOp::eDontCare;
+        attachments[2].stencilLoadOp = vk::AttachmentLoadOp::eDontCare;
+        attachments[2].stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
+        attachments[2].initialLayout = vk::ImageLayout::eUndefined;
+        attachments[2].finalLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
+
+        vk::AttachmentReference color_reference {};
+        color_reference.attachment = 0;
+        color_reference.layout = vk::ImageLayout::eColorAttachmentOptimal;
+
+        // Resolve attachment reference for the color attachment
+        vk::AttachmentReference resolve_reference {};
+        resolve_reference.attachment = 1;
+        resolve_reference.layout = vk::ImageLayout::eColorAttachmentOptimal;
+
+        vk::AttachmentReference depth_reference {};
+        depth_reference.attachment = 2;
+        depth_reference.layout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
+
+        vk::SubpassDescription subpass_description {};
+        subpass_description.pipelineBindPoint = vk::PipelineBindPoint::eGraphics;
+        subpass_description.colorAttachmentCount = 1;
+        subpass_description.pColorAttachments = &color_reference;
+        subpass_description.pDepthStencilAttachment = &depth_reference;
+        subpass_description.inputAttachmentCount = 0;
+        subpass_description.pInputAttachments = nullptr;
+        subpass_description.preserveAttachmentCount = 0;
+        subpass_description.pPreserveAttachments = nullptr;
+        subpass_description.pResolveAttachments = &resolve_reference;
+
+        // Subpass dependencies for layout transitions
+        std::array<vk::SubpassDependency, 2> dependencies {};
+
+        dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
+        dependencies[0].dstSubpass = 0;
+        dependencies[0].srcStageMask = vk::PipelineStageFlagBits::eEarlyFragmentTests | vk::PipelineStageFlagBits::eLateFragmentTests;
+        dependencies[0].dstStageMask = vk::PipelineStageFlagBits::eEarlyFragmentTests | vk::PipelineStageFlagBits::eLateFragmentTests;
+        dependencies[0].srcAccessMask = vk::AccessFlagBits::eDepthStencilAttachmentWrite;
+        dependencies[0].dstAccessMask = vk::AccessFlagBits::eDepthStencilAttachmentWrite | vk::AccessFlagBits::eDepthStencilAttachmentRead;
+
+        dependencies[1].srcSubpass = VK_SUBPASS_EXTERNAL;
+        dependencies[1].dstSubpass = 0;
+        dependencies[1].srcStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
+        dependencies[1].dstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
+        dependencies[1].dstAccessMask = vk::AccessFlagBits::eColorAttachmentWrite | vk::AccessFlagBits::eColorAttachmentRead;
+
+        vk::RenderPassCreateInfo render_pass_ci {};
+        render_pass_ci.attachmentCount = static_cast<std::uint32_t>(attachments.size());
+        render_pass_ci.pAttachments = attachments.data();
+        render_pass_ci.subpassCount = 1;
+        render_pass_ci.pSubpasses = &subpass_description;
+        render_pass_ci.dependencyCount = static_cast<std::uint32_t>(dependencies.size());
+        render_pass_ci.pDependencies = dependencies.data();
+
+        vkcheck(vkb::vkdvc().createRenderPass(&render_pass_ci, &vkb::s_allocator, &m_render_pass));
     }
 }

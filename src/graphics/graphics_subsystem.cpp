@@ -242,7 +242,6 @@ namespace graphics {
                     DirectX::XMLoadFloat4(&graphics_subsystem::s_camera_transform.position)
                 );
             }
-            self.get_noesis_context().render(cmd);
             self.get_imgui_context().submit_imgui(cmd);
         }
     }
@@ -253,6 +252,7 @@ namespace graphics {
         m_imgui_context->begin_frame();
         update_main_camera(w, h);
         m_cmd_buf = vkb::ctx().begin_frame(s_clear_color, &m_inheritance_info);
+        vkb::ctx().begin_render_pass(m_cmd_buf, vkb::ctx().get_render_pass(), vk::SubpassContents::eSecondaryCommandBuffers);
         return true;
     }
 
@@ -271,14 +271,16 @@ namespace graphics {
             const std::size_t n = i.count();
             m_render_data.emplace_back(std::span{transforms, n}, std::span{renderers, n});
         });
-        if (m_cmd_buf) [[likely]] {
+        if (m_cmd_buf) [[likely]] { // TODO: refractor
             m_render_thread_pool->begin_frame(&m_inheritance_info);
             m_render_thread_pool->process_frame(m_cmd_buf);
+            scene.readonly_end();
+            vkb::ctx().end_render_pass(m_cmd_buf);
+            m_cmd_buf.end();
             m_render_data.clear();
-        }
-        scene.readonly_end();
 
-        if (m_cmd_buf) [[likely]] {
+            m_noesis_context->render(m_cmd_buf);
+
             vkb::ctx().end_frame(m_cmd_buf);
         }
         com::camera::active_camera = flecs::entity::null();

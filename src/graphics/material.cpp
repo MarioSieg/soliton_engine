@@ -23,7 +23,7 @@ namespace graphics {
         descriptor_set_alloc_info.descriptorPool = s_descriptor_pool;
         descriptor_set_alloc_info.descriptorSetCount = 1;
         descriptor_set_alloc_info.pSetLayouts = &s_descriptor_set_layout;
-        vkcheck(vkb::context::s_instance->get_device().get_logical_device().allocateDescriptorSets(&descriptor_set_alloc_info, &m_descriptor_set));
+        vkcheck(vkb::ctx().get_device().get_logical_device().allocateDescriptorSets(&descriptor_set_alloc_info, &m_descriptor_set));
 
         flush_property_updates();
     }

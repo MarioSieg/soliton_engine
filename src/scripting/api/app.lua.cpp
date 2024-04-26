@@ -126,11 +126,11 @@ LUA_INTEROP_API auto __lu_app_host_get_cpu_name() -> const char* {
 }
 
 LUA_INTEROP_API auto __lu_app_host_get_gpu_name() -> const char* {
-    return vkb::context::s_instance->get_device().get_physical_device_props().deviceName;
+    return vkb::ctx().get_device().get_physical_device_props().deviceName;
 }
 
 LUA_INTEROP_API auto __lu_app_host_get_gapi_name() -> const char* {
-    const std::uint32_t api = vkb::context::s_instance->get_device().get_physical_device_props().apiVersion;
+    const std::uint32_t api = vkb::ctx().get_device().get_physical_device_props().apiVersion;
     const std::uint32_t major = VK_API_VERSION_MAJOR(api);
     const std::uint32_t minor = VK_API_VERSION_MINOR(api);
     const std::uint32_t patch = VK_API_VERSION_PATCH(api);
