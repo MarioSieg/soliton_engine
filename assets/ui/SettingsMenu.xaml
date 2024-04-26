@@ -173,16 +173,6 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <StackPanel x:Name="MenuTitle" Orientation="Vertical" HorizontalAlignment="Left">
-                    <Viewbox x:Name="Logo" Stretch="Uniform" Height="100" Margin="0,-9,0,0">
-                        <StackPanel Orientation="Horizontal">
-                            <Path Data="{StaticResource NoesisLogoGeometry}" Fill="{StaticResource NoesisLogoBlue}" Stretch="Uniform"/>
-                            <Path Data="{StaticResource NoesisTextGeometry}" Fill="White" Stretch="Uniform" Margin="40,0,0,0" VerticalAlignment="Center"/>
-                            <Path Data="{StaticResource NoesisGuiTextGeometry}" Fill="{StaticResource NoesisLogoBlue}" Stretch="Uniform" Margin="40,0,0,0" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Viewbox>
-                    <TextBlock Text="MENU DEMO" FontSize="50" HorizontalAlignment="Right" Margin="0,-19,-2,0" Foreground="{StaticResource TransparentWhiteBrush95}"/>
-                </StackPanel>
                 <Grid x:Name="MenuOptions" Grid.Row="1" Margin="0,30,0,0" RenderTransformOrigin="0.5,0.5"
                     KeyboardNavigation.TabNavigation="Cycle"
                     KeyboardNavigation.ControlTabNavigation="Cycle"
