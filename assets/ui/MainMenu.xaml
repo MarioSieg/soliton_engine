@@ -176,13 +176,8 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <StackPanel x:Name="MenuTitle" Orientation="Vertical" HorizontalAlignment="Left">
-                    <Viewbox x:Name="Logo" Stretch="Uniform" Height="100" Margin="0,-9,0,0">
-                        <StackPanel Orientation="Horizontal">
-                            <Image Source="Images/Logo.png" Width="50" Height="50" Margin="0,0,10,0"/>
-                            <TextBlock Text="LUNAM ENGINE" FontSize="50" Foreground="{StaticResource TransparentWhiteBrush95}"/>
-                        </StackPanel>
-                    </Viewbox>
-                    <TextBlock Text="BY MARIO SIEG" FontSize="50" HorizontalAlignment="Right" Margin="0,-19,-2,0" Foreground="{StaticResource TransparentWhiteBrush95}"/>
+                    <TextBlock Text="LUNAM" FontSize="180" FontFamily="Fonts/#Bonello" Foreground="{StaticResource TransparentWhiteBrush95}"/>
+                    <TextBlock Text="by Mario Sieg" FontSize="50" FontFamily="Fonts/#Story Lens" HorizontalAlignment="Right" Margin="0,-60,-2,0" Foreground="{StaticResource TransparentWhiteBrush95}"/>
                 </StackPanel>
                 <Grid x:Name="MenuOptions" Grid.Row="1" Width="640" HorizontalAlignment="Left" Margin="0,30,0,0" RenderTransformOrigin="0.5,0.5"
                     KeyboardNavigation.TabNavigation="Cycle"
