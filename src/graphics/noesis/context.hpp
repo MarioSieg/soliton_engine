@@ -22,19 +22,13 @@ namespace noesis {
         ~context();
 
         auto load_ui_from_xaml(const std::string& path) -> void;
-        auto render(vk::CommandBuffer cmd) -> void;
+        auto render_offscreen(const vk::CommandBuffer cmd) -> void;
+        auto render_onscreen(const vk::RenderPass pass) -> void;
         auto tick() -> void;
         auto on_resize() -> void;
 
-        [[nodiscard]] inline auto get_render_pass() const noexcept -> vk::RenderPass {
-            return m_render_pass;
-        }
-
     private:
-        auto create_render_pass() -> void;
-
         Noesis::Ptr<NoesisApp::Application> m_app {};
         Noesis::Ptr<Noesis::RenderDevice> m_device {};
-        vk::RenderPass m_render_pass {};
     };
 }

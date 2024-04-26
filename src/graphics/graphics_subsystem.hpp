@@ -55,8 +55,9 @@ namespace graphics {
 
     private:
         auto create_descriptor_pool() -> void;
+        auto render_uis() -> void;
 
-        vk::CommandBuffer m_cmd_buf = nullptr;
+        vk::CommandBuffer m_cmd = nullptr;
         vk::DescriptorPool m_descriptor_pool {};
         vk::CommandBufferInheritanceInfo m_inheritance_info {};
         std::optional<render_thread_pool> m_render_thread_pool {};

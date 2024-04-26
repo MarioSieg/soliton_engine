@@ -79,7 +79,7 @@ namespace imgui {
         init_info.CheckVkResultFn = [](const VkResult result) {
             vkccheck(result);
         };
-        passert(ImGui_ImplVulkan_Init(&init_info, vkb::ctx().get_render_pass()));
+        passert(ImGui_ImplVulkan_Init(&init_info, vkb::ctx().get_scene_render_pass()));
 
         const float font_size = scripting::scripting_subsystem::get_config_table()["Renderer"]["uiFontSize"].cast<float>().valueOr(18.0f);
 

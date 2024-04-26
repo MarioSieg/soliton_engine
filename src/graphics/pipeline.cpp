@@ -190,7 +190,7 @@ namespace graphics {
 
     auto pipeline_base::configure_render_pass(vk::RenderPass& pass) -> void {
         passert(type == pipeline_type::graphics);
-        pass = vkb::ctx().get_render_pass();
+        pass = vkb::ctx().get_scene_render_pass();
     }
 
     auto pipeline_base::post_configure() -> void {

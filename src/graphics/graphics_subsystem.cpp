@@ -242,7 +242,6 @@ namespace graphics {
                     DirectX::XMLoadFloat4(&graphics_subsystem::s_camera_transform.position)
                 );
             }
-            self.get_imgui_context().submit_imgui(cmd);
         }
     }
 
@@ -251,8 +250,8 @@ namespace graphics {
         const auto h = static_cast<float>(context::s_instance->get_height());
         m_imgui_context->begin_frame();
         update_main_camera(w, h);
-        m_cmd_buf = vkb::ctx().begin_frame(s_clear_color, &m_inheritance_info);
-        vkb::ctx().begin_render_pass(m_cmd_buf, vkb::ctx().get_render_pass(), vk::SubpassContents::eSecondaryCommandBuffers);
+        m_cmd = vkb::ctx().begin_frame(s_clear_color, &m_inheritance_info);
+        vkb::ctx().begin_render_pass(m_cmd, vkb::ctx().get_scene_render_pass(), vk::SubpassContents::eSecondaryCommandBuffers);
         return true;
     }
 
@@ -271,17 +270,17 @@ namespace graphics {
             const std::size_t n = i.count();
             m_render_data.emplace_back(std::span{transforms, n}, std::span{renderers, n});
         });
-        if (m_cmd_buf) [[likely]] { // TODO: refractor
+        if (m_cmd) [[likely]] { // TODO: refractor
             m_render_thread_pool->begin_frame(&m_inheritance_info);
-            m_render_thread_pool->process_frame(m_cmd_buf);
+            m_render_thread_pool->process_frame(m_cmd);
             scene.readonly_end();
-            vkb::ctx().end_render_pass(m_cmd_buf);
-            m_cmd_buf.end();
+            vkb::ctx().end_render_pass(m_cmd);
+            vkcheck(m_cmd.end());
             m_render_data.clear();
 
-            m_noesis_context->render(m_cmd_buf);
+            render_uis();
 
-            vkb::ctx().end_frame(m_cmd_buf);
+            vkb::ctx().end_frame(m_cmd);
         }
         com::camera::active_camera = flecs::entity::null();
     }
@@ -314,5 +313,39 @@ namespace graphics {
         descriptor_pool_ci.pPoolSizes = sizes.data();
         descriptor_pool_ci.maxSets = 32; // TODO max sets Allocate one set for each frame
         vkcheck(device.createDescriptorPool(&descriptor_pool_ci, &vkb::s_allocator, &m_descriptor_pool));
+    }
+
+    auto graphics_subsystem::render_uis() -> void {
+        constexpr vk::CommandBufferBeginInfo begin_info {};
+        vkcheck(m_cmd.begin(&begin_info));
+        m_noesis_context->render_offscreen(m_cmd);
+
+        auto w = static_cast<float>(vkb::ctx().get_width());
+        auto h = static_cast<float>(vkb::ctx().get_height());
+
+        // Update dynamic viewport state
+        vk::Viewport viewport {};
+        viewport.width = w;
+        viewport.height = -h;
+        viewport.x = 0.0f;
+        viewport.y = h;
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+        m_cmd.setViewport(0, 1, &viewport);
+
+        // Update dynamic scissor state
+        vk::Rect2D scissor {};
+        scissor.extent.width = w;
+        scissor.extent.height = h;
+        scissor.offset.x = 0.0f;
+        scissor.offset.y = 0.0f;
+        m_cmd.setScissor(0, 1, &scissor);
+
+        vkb::ctx().begin_render_pass(m_cmd, vkb::ctx().get_ui_render_pass(), vk::SubpassContents::eInline);
+        m_noesis_context->render_onscreen(vkb::ctx().get_ui_render_pass());
+        m_imgui_context->submit_imgui(m_cmd);
+        vkb::ctx().end_render_pass(m_cmd);
+
+        vkcheck(m_cmd.end());
     }
 }

@@ -36,7 +36,8 @@ namespace vkb {
 
         m_device->get_logical_device().destroyDescriptorPool(m_imgui_descriptor_pool, &s_allocator);
         m_device->get_logical_device().destroyPipelineCache(m_pipeline_cache, &s_allocator);
-        m_device->get_logical_device().destroyRenderPass(m_render_pass, &s_allocator);
+        m_device->get_logical_device().destroyRenderPass(m_ui_render_pass, &s_allocator);
+        m_device->get_logical_device().destroyRenderPass(m_scene_render_pass, &s_allocator);
 
         destroy_depth_stencil();
         destroy_msaa_target();
@@ -79,7 +80,7 @@ namespace vkb {
 
         if (out_inheritance_info) {
             *out_inheritance_info = vk::CommandBufferInheritanceInfo {};
-            out_inheritance_info->renderPass = m_render_pass;
+            out_inheritance_info->renderPass = m_scene_render_pass;
             out_inheritance_info->framebuffer = m_framebuffers[m_image_index];
         }
 
@@ -326,7 +327,8 @@ namespace vkb {
         render_pass_ci.dependencyCount = static_cast<std::uint32_t>(dependencies.size());
         render_pass_ci.pDependencies = dependencies.data();
 
-        vkcheck(m_device->get_logical_device().createRenderPass(&render_pass_ci, &s_allocator, &m_render_pass));
+        vkcheck(m_device->get_logical_device().createRenderPass(&render_pass_ci, &s_allocator, &m_scene_render_pass));
+        vkcheck(m_device->get_logical_device().createRenderPass(&render_pass_ci, &s_allocator, &m_ui_render_pass));
     }
 
     auto context::setup_frame_buffer() -> void {
@@ -339,7 +341,7 @@ namespace vkb {
             attachments[2] = m_msaa_target.depth.view;
 
             vk::FramebufferCreateInfo framebuffer_ci {};
-            framebuffer_ci.renderPass = m_render_pass;
+            framebuffer_ci.renderPass = m_scene_render_pass;
             framebuffer_ci.attachmentCount = attachments.size();
             framebuffer_ci.pAttachments = attachments.data();
             framebuffer_ci.width = m_width;
