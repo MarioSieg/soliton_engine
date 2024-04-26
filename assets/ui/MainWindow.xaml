@@ -42,12 +42,12 @@
                 <ImageSource x:Key="Image.FrontClouds">Images/FrontClouds.png</ImageSource>
             </Grid.Resources>
             <Grid.RowDefinitions>
-                <RowDefinition Height="850*"/>
+                <RowDefinition Height="450*"/>
                 <RowDefinition Height="435*"/>
-                <RowDefinition Height="180*"/>
-                <RowDefinition Height="184*"/>
-                <RowDefinition Height="180*"/>
-                <RowDefinition Height="380*"/>
+                <RowDefinition Height="480*"/>
+                <RowDefinition Height="484*"/>
+                <RowDefinition Height="480*"/>
+                <RowDefinition Height="480*"/>
                 <RowDefinition Height="490*"/>
                 <RowDefinition Height="521*"/>
             </Grid.RowDefinitions>
