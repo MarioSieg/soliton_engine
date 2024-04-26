@@ -299,7 +299,7 @@ namespace graphics {
         const vkb::device& dvc = context::s_instance->get_device();
         const vk::Device device = vkb::dvc().get_logical_device();
 
-        const std::array<vk::DescriptorPoolSize, 2> sizes {
+        const std::array<vk::DescriptorPoolSize, 1> sizes {
             vk::DescriptorPoolSize {
                 .type = vk::DescriptorType::eUniformBufferDynamic,
                 .descriptorCount = 128u

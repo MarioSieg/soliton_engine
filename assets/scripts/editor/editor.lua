@@ -58,12 +58,14 @@ local EFLAGS = ENTITY_FLAGS
 local DEBUG_MODE = {
     NONE = 0,
     SCENE = 1,
-    PHYSICS = 2
+    PHYSICS = 2,
+    UI = 3
 }
 local DEBUG_MODE_NAMES = {
     ICONS.ADJUST..' PBR',
     ICONS.GLOBE_EUROPE..' Entities',
-    ICONS.CAR..' Physics'
+    ICONS.CAR..' Physics',
+    ICONS.WINDOW_FRAME..' UI',
 }
 local DEBUG_MODE_NAMES_C = ffi.new("const char*[?]", #DEBUG_MODE_NAMES)
 for i=1, #DEBUG_MODE_NAMES do
@@ -197,6 +199,8 @@ function Editor:switchGameMode()
         self:stopScene()
     end
 end
+
+local isUiWireframeEnabled = false
 
 function Editor:renderMainMenu()
     UI.PushStyleVar(ffi.C.ImGuiStyleVar_FramePadding, MAIN_MENU_PADDING)
@@ -333,7 +337,15 @@ function Editor:renderMainMenu()
         end
         UI.PopItemWidth()
         UI.PushItemWidth(120)
-        UI.Combo('##DebugRenderingMode', self.gizmos.currentDebugMode, DEBUG_MODE_NAMES_C, #DEBUG_MODE_NAMES)
+        if UI.Combo('##DebugRenderingMode', self.gizmos.currentDebugMode, DEBUG_MODE_NAMES_C, #DEBUG_MODE_NAMES) then
+            if self.gizmos.currentDebugMode[0] == DEBUG_MODE.UI then
+                isUiWireframeEnabled = not isUiWireframeEnabled
+                App.hotReloadUI(isUiWireframeEnabled)
+            else
+                isUiWireframeEnabled = false
+                App.hotReloadUI(isUiWireframeEnabled)
+            end
+        end
         UI.PopItemWidth()
         if UI.IsItemHovered() then
             UI.SetTooltip('Debug rendering mode')

@@ -24,7 +24,8 @@ namespace NoesisApp
         Noesis::RenderDevice* const device,
         const Noesis::Uri& startupUri,
         const std::uint16_t width,
-        const std::uint16_t height
+        const std::uint16_t height,
+        const bool wireframe
     ) -> void
     {
         passert(!Noesis::StrIsNullOrEmpty(this->m_boot_uri.Str()));
@@ -39,7 +40,7 @@ namespace NoesisApp
             this->m_main_window->SetContent(root);
         }
 
-        this->m_main_window->Init(device, width, height);
+        this->m_main_window->Init(device, width, height, wireframe);
     }
 
     auto Application::GetStartupUri() const noexcept -> const Noesis::Uri&

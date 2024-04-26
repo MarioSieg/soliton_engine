@@ -15,7 +15,7 @@ ffi.cdef [[
     uint32_t __lu_engine_version(void);
     bool __lu_app_is_focused(void);
     bool __lu_app_is_ui_hovered(void);
-    void __lu_app_hot_reload_ui(void);
+    void __lu_app_hot_reload_ui(bool enable_wireframe);
     void __lu_window_maximize(void);
     void __lu_window_minimize(void);
     void __lu_window_enter_fullscreen(void);
@@ -114,8 +114,9 @@ function App.isUIHovered()
 end
 
 --- Hot reload the ingame UI and update changes
-function App.hotReloadUI()
-    C.__lu_app_hot_reload_ui()
+-- @tparam boolean|nil enable_wireframe Enable UI wireframe debug mode after reloading
+function App.hotReloadUI(enable_wireframe)
+    C.__lu_app_hot_reload_ui(enable_wireframe or false)
 end
 
 --- Maximize the window

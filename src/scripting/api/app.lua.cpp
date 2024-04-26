@@ -41,8 +41,8 @@ LUA_INTEROP_API auto __lu_app_is_ui_hovered() -> bool {
     return ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow);
 }
 
-LUA_INTEROP_API auto __lu_app_hot_reload_ui() -> void {
-    graphics_subsystem::s_instance->get_noesis_context().load_ui_from_xaml("App.xaml");
+LUA_INTEROP_API auto __lu_app_hot_reload_ui(const bool render_wireframe) -> void {
+    graphics_subsystem::s_instance->get_noesis_context().reload_ui(render_wireframe);
 }
 
 LUA_INTEROP_API auto __lu_window_maximize() -> void {

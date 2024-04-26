@@ -21,14 +21,14 @@ namespace NoesisApp
         );
     }
 
-    auto Window::Init(Noesis::RenderDevice* const device, const std::uint16_t width, const std::uint16_t height) -> void
+    auto Window::Init(Noesis::RenderDevice* const device, const std::uint16_t width, const std::uint16_t height, const bool wireframe) -> void
     {
         this->m_view = Noesis::GUI::CreateView(this);
         this->m_view->SetSize(
             static_cast<std::uint32_t>(width),
             static_cast<std::uint32_t>(height)
         );
-        this->m_view->SetFlags(Noesis::RenderFlags_LCD|Noesis::RenderFlags_FlipY|Noesis::RenderFlags_PPAA);
+        this->m_view->SetFlags(Noesis::RenderFlags_LCD|Noesis::RenderFlags_FlipY|Noesis::RenderFlags_PPAA|(wireframe ? Noesis::RenderFlags::RenderFlags_Wireframe : 0));
         this->m_view->GetRenderer()->Init(device);
         this->m_view->SetTessellationMaxPixelError(Noesis::TessellationMaxPixelError::HighQuality());
         float xscale;

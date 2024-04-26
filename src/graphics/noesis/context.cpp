@@ -2,6 +2,8 @@
 
 #include "context.hpp"
 
+#include <filesystem>
+
 #include <NsGui/IntegrationAPI.h>
 #include <NsGui/Uri.h>
 #include <NsGui/IView.h>
@@ -288,12 +290,9 @@ namespace noesis {
         m_app->GetMainWindow()->GetView()->GetRenderer()->RenderOffscreen();
     }
 
-    auto context::load_ui_from_xaml(const std::string& path) -> void {
-        m_app.Reset();
-        m_app = Noesis::DynamicPtrCast<NoesisApp::Application>(Noesis::GUI::LoadXaml(path.c_str()));
-        passert(m_app);
-        m_app->Init(m_device, path.c_str(), vkb::ctx().get_width(), vkb::ctx().get_height());
-        s_event_proxy = m_app->GetMainWindow()->GetView();
+    auto context::load_ui_from_xaml(std::string&& path) -> void {
+        m_xaml_path = std::move(path);
+        reload_ui();
     }
 
     auto context::tick() -> void {
@@ -307,5 +306,15 @@ namespace noesis {
     auto context::render_onscreen(const vk::RenderPass pass) -> void {
         NoesisApp::VKFactory::SetRenderPass(m_device, pass, static_cast<std::uint32_t>(vkb::k_msaa_sample_count));
         m_app->GetMainWindow()->GetView()->GetRenderer()->Render();
+    }
+
+    auto context::reload_ui(const bool render_wireframe) -> void {
+        if (!m_xaml_path.empty()) [[likely]] {
+            m_app.Reset();
+            m_app = Noesis::DynamicPtrCast<NoesisApp::Application>(Noesis::GUI::LoadXaml(m_xaml_path.c_str()));
+            passert(m_app);
+            m_app->Init(m_device, m_xaml_path.c_str(), vkb::ctx().get_width(), vkb::ctx().get_height(), render_wireframe);
+            s_event_proxy = m_app->GetMainWindow()->GetView();
+        }
     }
 }
