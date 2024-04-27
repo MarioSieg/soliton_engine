@@ -873,29 +873,6 @@ namespace graphics {
         0x00010038,
     };
 
-    debugdraw::debugdraw(const vk::DescriptorPool pool)
-        : k_max_vertices{scripting::scripting_subsystem::get_config_table()["Renderer"]["maxDebugDrawVertices"].cast<std::uint32_t>().valueOr(250'000)} {
-        m_vertices.reserve(k_max_vertices);
-        m_draw_commands.reserve(k_max_vertices / 2);
-        const vk::Device device = vkb::ctx().get_device();
-        create_uniform_buffer();
-        create_vertex_buffer();
-        create_descriptor_set_layout(device);
-        create_descriptor_set(device, pool);
-        create_pipeline_states(device, vkb::ctx().get_scene_render_pass());
-        log_info("Created debug draw context");
-    }
-
-    debugdraw::~debugdraw() {
-        const vk::Device device = vkb::ctx().get_device();
-        device.destroyPipelineLayout(m_pipeline_layout, &vkb::s_allocator);
-        device.destroyDescriptorSetLayout(m_descriptor_set_layout, &vkb::s_allocator);
-        device.destroyPipeline(m_line_depth_pipeline, &vkb::s_allocator);
-        device.destroyPipeline(m_line_no_depth_pipeline, &vkb::s_allocator);
-        device.destroyPipeline(m_line_strip_depth_pipeline, &vkb::s_allocator);
-        device.destroyPipeline(m_line_strip_no_depth_pipeline, &vkb::s_allocator);
-    }
-
     auto debugdraw::render(
         const vk::CommandBuffer cmd,
         const FXMMATRIX view_proj,
@@ -1286,5 +1263,27 @@ namespace graphics {
 
         device.destroyShaderModule(vs, &vkb::s_allocator);
         device.destroyShaderModule(fs, &vkb::s_allocator);
+    }
+
+    debugdraw::debugdraw(const vk::DescriptorPool pool) : k_max_vertices{scripting::scripting_subsystem::get_config_table()["Renderer"]["maxDebugDrawVertices"].cast<std::uint32_t>().valueOr(250'000)} {
+        m_vertices.reserve(k_max_vertices);
+        m_draw_commands.reserve(k_max_vertices / 2);
+        const vk::Device device = vkb::ctx().get_device();
+        create_uniform_buffer();
+        create_vertex_buffer();
+        create_descriptor_set_layout(device);
+        create_descriptor_set(device, pool);
+        create_pipeline_states(device, vkb::ctx().get_scene_render_pass());
+        log_info("Created debug draw context");
+    }
+
+    debugdraw::~debugdraw() {
+        const vk::Device device = vkb::ctx().get_device();
+        device.destroyPipelineLayout(m_pipeline_layout, &vkb::s_allocator);
+        device.destroyDescriptorSetLayout(m_descriptor_set_layout, &vkb::s_allocator);
+        device.destroyPipeline(m_line_depth_pipeline, &vkb::s_allocator);
+        device.destroyPipeline(m_line_no_depth_pipeline, &vkb::s_allocator);
+        device.destroyPipeline(m_line_strip_depth_pipeline, &vkb::s_allocator);
+        device.destroyPipeline(m_line_strip_no_depth_pipeline, &vkb::s_allocator);
     }
 }
