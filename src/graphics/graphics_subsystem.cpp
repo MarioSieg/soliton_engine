@@ -35,7 +35,7 @@ namespace graphics {
 
         pipeline_registry::s_instance = std::make_unique<pipeline_registry>(vkb::ctx().get_device().get_logical_device());
 
-        const auto num_render_threads = scripting_subsystem::get_config_table()["Threads"]["renderThreads"].cast<std::int32_t>().valueOr(2);
+        const auto num_render_threads = scripting_subsystem::cfg()["Threads"]["renderThreads"].cast<std::int32_t>().valueOr(2);
         m_render_thread_pool.emplace(&render_scene_bucket, this, num_render_threads);
         m_render_data.reserve(32);
 

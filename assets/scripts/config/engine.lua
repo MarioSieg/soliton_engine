@@ -10,7 +10,28 @@ ffi.cdef[[
 
 print('Loading internal engine config...')
 
--- Default engine config:
+-- Default render flags for the in-game UI
+local UI_RENDER_FLAGS = {
+    WIREFRAME = 1, -- Toggles wireframe mode when rendering triangles
+    COLOR_BATCHES = 2, -- Each batch submitted to the GPU is given a unique solid color
+    OVERDRAW = 4, -- Displays pixel overdraw using blending layers. Different colors are used for each type of triangles. 'Green' for normal ones, 'Red' for opacities and 'Blue' for clipping masks
+    FLIP_Y = 8, -- Inverts the render vertically
+    PPAA = 16, -- Per-Primitive Antialiasing extrudes the contours of the geometry and smooths them. It is a 'cheap' antialiasing algorithm useful when GPU MSAA is not enabled
+    LCD = 32, -- Enables subpixel rendering compatible with LCD displays
+    SHOW_GLYPS = 64, -- Displays glyph atlas as a small overlay for debugging purposes
+    SHOW_RAMPS = 128, -- Displays ramp atlas as a small overlay for debugging purposes
+    DEPTH_TESTING = 256 -- Enables testing against the content of the depth buffer
+
+}
+
+-- Tesselation pixel error quality for the in-game UI
+local UI_TESSELATION_PIXEL_ERROR = {
+    LOW_QUALITY = 0.7,
+    MEDIUM_QUALITY = 0.4,
+    HIGH_QUALITY = 0.2
+}
+
+-- Default engine config. Most of the variables are used on initialization and runtime changes might require a restart.
 -- Do NOT rename any variables in here, as some these are accessed from C++ code.
 ENGINE_CONFIG = {
     General = {
@@ -51,19 +72,36 @@ ENGINE_CONFIG = {
         maxDebugDrawVertices = 1000000, -- Maximum amount of debug draw vertices.
         uiFontSize = 18, -- UI font size (ImGui).
     },
+    GameUI = {
+        renderFlags = UI_RENDER_FLAGS.LCD+UI_RENDER_FLAGS.FLIP_Y+UI_RENDER_FLAGS.PPAA, -- In-Game UI default render flags.
+        tesselationPixelError = UI_TESSELATION_PIXEL_ERROR.HIGH_QUALITY, -- In-Game UI tesselation pixel error quality.
+        license = {
+            userId = 'neo',
+            key = 'Hayg7oXhoO5LHKuI/YPxXOK/Ghu5Mosoic3bbRrVZQmc/ovw'
+        },
+        xamlRootPath = 'assets/ui',
+        fontRootPath = 'assets/ui',
+        textureRootPath = 'assets/ui',
+        defaultFont = {
+            family = 'Fonts/#PT Root UI',
+            size = 15.0,
+            weight = 400,
+            stretch = 5
+        }
+    },
     Physics = {
-        tempAllocatorBufferSize = 1024 * 1024 * 64, -- 64 MB
-        maxRigidBodies = 65535, -- Max amount of rigid bodies that you can add to the physics system. If you try to add more you'll get an error.
+        tempAllocatorBufferSize = (1024^2) * 64, -- 64 MB
+        maxRigidBodies = 0xffff, -- Max amount of rigid bodies that you can add to the physics system. If you try to add more you'll get an error.
         numMutexes = 0, -- how many mutexes to allocate to protect rigid bodies from concurrent access. Set it to 0 for the default settings.
 
         -- This is the max amount of body pairs that can be queued at any time (the broad phase will detect overlapping
         -- body pairs based on their bounding boxes and will insert them into a queue for the narrowphase). If you make this buffer
         -- too small the queue will fill up and the broad phase jobs will start to do narrow phase work. This is slightly less efficient.
-        maxBodyPairs = 65535,
+        maxBodyPairs = 0xffff,
 
         -- This is the maximum size of the contact constraint buffer. If more contacts (collisions between bodies) are detected than this
         -- number then these contacts will be ignored and bodies will start interpenetrating / fall through the world.
-        maxContacts = 65535, 
+        maxContacts = 0xffff, 
     }
 }
 

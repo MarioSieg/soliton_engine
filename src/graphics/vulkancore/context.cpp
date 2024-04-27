@@ -157,7 +157,7 @@ namespace vkb {
     }
 
     auto context::boot_vulkan_core() -> void {
-        const bool enable_validation = scripting_subsystem::get_config_table()["Renderer"]["enableVulkanValidationLayers"].cast<bool>().valueOr(false);
+        const bool enable_validation = scripting_subsystem::cfg()["Renderer"]["enableVulkanValidationLayers"].cast<bool>().valueOr(false);
         m_device.emplace(enable_validation);
         m_swapchain.emplace(m_device->get_instance(), m_device->get_physical_device(), m_device->get_logical_device());
         m_swapchain->init_surface(m_window);

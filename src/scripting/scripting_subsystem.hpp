@@ -23,7 +23,8 @@ namespace scripting {
         [[nodiscard]] auto is_lua_host_online() const noexcept -> bool { return m_is_lua_host_online; }
 
         [[nodiscard]] static auto get_lua_state() noexcept -> lua_State* { return m_L; }
-        [[nodiscard]] static auto get_config_table() noexcept -> const luabridge::LuaRef& {
+        // get global engine config table which is filled in from Lua (scripts/config/engine.lua)
+        [[nodiscard]] static auto cfg() noexcept -> const luabridge::LuaRef& {
             passert(m_config_table.has_value());
             return *m_config_table;
         }

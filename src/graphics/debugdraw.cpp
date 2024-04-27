@@ -1265,7 +1265,7 @@ namespace graphics {
         device.destroyShaderModule(fs, &vkb::s_allocator);
     }
 
-    debugdraw::debugdraw(const vk::DescriptorPool pool) : k_max_vertices{scripting::scripting_subsystem::get_config_table()["Renderer"]["maxDebugDrawVertices"].cast<std::uint32_t>().valueOr(250'000)} {
+    debugdraw::debugdraw(const vk::DescriptorPool pool) : k_max_vertices{scripting::scripting_subsystem::cfg()["Renderer"]["maxDebugDrawVertices"].cast<std::uint32_t>().valueOr(250'000)} {
         m_vertices.reserve(k_max_vertices);
         m_draw_commands.reserve(k_max_vertices / 2);
         const vk::Device device = vkb::ctx().get_device();

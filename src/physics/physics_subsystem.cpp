@@ -146,9 +146,9 @@ namespace physics {
         JPH::Factory::sInstance = new JPH::Factory();
         JPH::RegisterTypes();
         m_temp_allocator = std::make_unique<JPH::TempAllocatorImpl>(
-			scripting_subsystem::get_config_table()["Physics"]["tempAllocatorBufferSize"].cast<std::size_t>().valueOr(32ull << 20)
+                scripting_subsystem::cfg()["Physics"]["tempAllocatorBufferSize"].cast<std::size_t>().valueOr(32ull << 20)
         );
-    	const auto num_threads = scripting_subsystem::get_config_table()["Threads"]["physicsThreads"].cast<std::uint32_t>().valueOr(1);
+    	const auto num_threads = scripting_subsystem::cfg()["Threads"]["physicsThreads"].cast<std::uint32_t>().valueOr(1);
         m_job_system = std::make_unique<JPH::JobSystemThreadPool>(
         	JPH::cMaxPhysicsJobs,
         	JPH::cMaxPhysicsBarriers,
@@ -160,10 +160,10 @@ namespace physics {
     	m_contact_listener = std::make_unique<ContactListenerImpl>();
 
     	m_physics_system.Init(
-    		scripting_subsystem::get_config_table()["Physics"]["maxRigidBodies"].cast<std::uint32_t>().valueOr(0x1000),
-    		scripting_subsystem::get_config_table()["Physics"]["numMutexes"].cast<std::uint32_t>().valueOr(0x1000),
-    		scripting_subsystem::get_config_table()["Physics"]["maxBodyPairs"].cast<std::uint32_t>().valueOr(0x1000),
-    		scripting_subsystem::get_config_table()["Physics"]["maxContacts"].cast<std::uint32_t>().valueOr(0x1000),
+                scripting_subsystem::cfg()["Physics"]["maxRigidBodies"].cast<std::uint32_t>().valueOr(0x1000),
+            scripting_subsystem::cfg()["Physics"]["numMutexes"].cast<std::uint32_t>().valueOr(0x1000),
+            scripting_subsystem::cfg()["Physics"]["maxBodyPairs"].cast<std::uint32_t>().valueOr(0x1000),
+            scripting_subsystem::cfg()["Physics"]["maxContacts"].cast<std::uint32_t>().valueOr(0x1000),
     		*m_broad_phase,
     		*m_broad_phase_filter,
     		*m_object_layer_pair_filter

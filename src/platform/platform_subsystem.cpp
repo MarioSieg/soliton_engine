@@ -369,10 +369,10 @@ auto dump_loaded_dylibs() -> void {
             passert(is_glfw_online);
         }
 
-        const int default_width = scripting_subsystem::get_config_table()["Window"]["defaultWidth"].cast<int>().valueOr(1280);
-        const int default_height = scripting_subsystem::get_config_table()["Window"]["defaultHeight"].cast<int>().valueOr(720);
-        const int min_width = scripting_subsystem::get_config_table()["Window"]["minWidth"].cast<int>().valueOr(640);
-        const int min_height = scripting_subsystem::get_config_table()["Window"]["minHeight"].cast<int>().valueOr(480);
+        const int default_width = scripting_subsystem::cfg()["Window"]["defaultWidth"].cast<int>().valueOr(1280);
+        const int default_height = scripting_subsystem::cfg()["Window"]["defaultHeight"].cast<int>().valueOr(720);
+        const int min_width = scripting_subsystem::cfg()["Window"]["minWidth"].cast<int>().valueOr(640);
+        const int min_height = scripting_subsystem::cfg()["Window"]["minHeight"].cast<int>().valueOr(480);
 
         // create window
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -434,7 +434,7 @@ auto dump_loaded_dylibs() -> void {
         // set window icon
         if constexpr (!PLATFORM_OSX) { // Cocoa - regular windows do not have icons on macOS
             std::vector<std::uint8_t> pixel_buf {};
-            const std::string k_window_icon_file = scripting_subsystem::get_config_table()["Window"]["icon"].cast<std::string>().valueOr("icon.png");
+            const std::string k_window_icon_file = scripting_subsystem::cfg()["Window"]["icon"].cast<std::string>().valueOr("icon.png");
             assetmgr::load_asset_blob_or_panic(asset_category::icon, k_window_icon_file, pixel_buf);
             int w, h;
             stbi_uc *pixels = stbi_load_from_memory(pixel_buf.data(), static_cast<int>(pixel_buf.size()), &w, &h, nullptr, STBI_rgb_alpha);

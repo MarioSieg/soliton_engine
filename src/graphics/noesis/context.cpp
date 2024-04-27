@@ -28,8 +28,11 @@
 #include "../noesis/UI/ViewModel.h"
 #include "../vulkancore/context.hpp"
 #include "../imgui/imgui.h"
+
+#include "../../scripting/scripting_subsystem.hpp"
 #include "../../platform/platform_subsystem.hpp"
 
+using scripting::scripting_subsystem;
 using platform::platform_subsystem;
 
 #include "UI/App.xaml.h"
@@ -228,7 +231,12 @@ namespace noesis {
             constexpr static const char* prefixes[] = { "T", "D", "I", "W", "E" };
             log_info("[GUI]: [{}] {}", prefixes[level], msg);
         });
-        Noesis::GUI::SetLicense("neo", "Hayg7oXhoO5LHKuI/YPxXOK/Ghu5Mosoic3bbRrVZQmc/ovw");
+        static const std::string user_name {scripting_subsystem::cfg()["GameUI"]["license"]["userId"].cast<std::string>().valueOr("")};
+        static const std::string license_key {scripting_subsystem::cfg()["GameUI"]["license"]["key"].cast<std::string>().valueOr("")};
+        Noesis::GUI::SetLicense(
+            user_name.c_str(),
+            license_key.c_str()
+        );
         Noesis::GUI::Init();
 
         NsRegisterReflection_NoesisApp();
@@ -244,12 +252,21 @@ namespace noesis {
         Noesis::RegisterComponent<Noesis::EnumConverter<Menu3D::State>>();
         Noesis::RegisterComponent<Menu3D::MultiplierConverter>();
 
-        Noesis::GUI::SetXamlProvider(Noesis::MakePtr<NoesisApp::LocalXamlProvider>("assets/ui/"));
-        Noesis::GUI::SetFontProvider(Noesis::MakePtr<NoesisApp::LocalFontProvider>("assets/ui/"));
-        Noesis::GUI::SetTextureProvider(Noesis::MakePtr<NoesisApp::LocalTextureProvider>("assets/ui/"));
-        const char* fonts[] = { "Fonts/#PT Root UI", "Arial", "Segoe UI Emoji" };
-        Noesis::GUI::SetFontFallbacks(fonts, 3);
-        Noesis::GUI::SetFontDefaultProperties(15.0f, Noesis::FontWeight_Normal, Noesis::FontStretch_Normal, Noesis::FontStyle_Normal);
+        static const std::string xaml_root = scripting_subsystem::cfg()["GameUI"]["xamlRootPath"].cast<std::string>().valueOr("assets/ui");
+        static const std::string font_root = scripting_subsystem::cfg()["GameUI"]["fontRootPath"].cast<std::string>().valueOr("assets/ui");
+        static const std::string texture_root = scripting_subsystem::cfg()["GameUI"]["textureRootPath"].cast<std::string>().valueOr("assets/ui");
+        Noesis::GUI::SetXamlProvider(Noesis::MakePtr<NoesisApp::LocalXamlProvider>(xaml_root.c_str()));
+        Noesis::GUI::SetFontProvider(Noesis::MakePtr<NoesisApp::LocalFontProvider>(font_root.c_str()));
+        Noesis::GUI::SetTextureProvider(Noesis::MakePtr<NoesisApp::LocalTextureProvider>(texture_root.c_str()));
+        static const std::string default_font = scripting_subsystem::cfg()["GameUI"]["defaultFont"]["family"].cast<std::string>().valueOr("Fonts/#PT Root UI");
+        const char* fonts[] = { default_font.c_str() };
+        Noesis::GUI::SetFontFallbacks(fonts, 1);
+        Noesis::GUI::SetFontDefaultProperties(
+            scripting_subsystem::cfg()["GameUI"]["defaultFont"]["size"].cast<float>().valueOr(15.0f),
+            static_cast<Noesis::FontWeight>(scripting_subsystem::cfg()["GameUI"]["defaultFont"]["weight"].cast<std::int32_t>().valueOr(Noesis::FontWeight_Normal)),
+            static_cast<Noesis::FontStretch>(scripting_subsystem::cfg()["GameUI"]["defaultFont"]["stretch"].cast<std::int32_t>().valueOr(Noesis::FontStretch_Normal)),
+            Noesis::FontStyle_Normal
+        );
         NoesisApp::SetThemeProviders();
         Noesis::GUI::LoadApplicationResources(NoesisApp::Theme::DarkBlue());
 

@@ -2,11 +2,23 @@
 
 #include "Window.h"
 #include <GLFW/glfw3.h>
+
 #include "../../../../../platform/platform_subsystem.hpp"
+#include "../../../../../scripting/scripting_subsystem.hpp"
 
 namespace NoesisApp
 {
     NS_IMPLEMENT_REFLECTION(Window) { }
+
+    static_assert(Noesis::RenderFlags::RenderFlags_Wireframe == 1, "Update scripts/config/engine.lua -> UI_RENDER_FLAGS");
+    static_assert(Noesis::RenderFlags::RenderFlags_ColorBatches == 2, "Update scripts/config/engine.lua -> UI_RENDER_FLAGS");
+    static_assert(Noesis::RenderFlags::RenderFlags_Overdraw == 4, "Update scripts/config/engine.lua -> UI_RENDER_FLAGS");
+    static_assert(Noesis::RenderFlags::RenderFlags_FlipY == 8, "Update scripts/config/engine.lua -> UI_RENDER_FLAGS");
+    static_assert(Noesis::RenderFlags::RenderFlags_PPAA == 16, "Update scripts/config/engine.lua -> UI_RENDER_FLAGS");
+    static_assert(Noesis::RenderFlags::RenderFlags_LCD == 32, "Update scripts/config/engine.lua -> UI_RENDER_FLAGS");
+    static_assert(Noesis::RenderFlags::RenderFlags_ShowGlyphs == 64, "Update scripts/config/engine.lua -> UI_RENDER_FLAGS");
+    static_assert(Noesis::RenderFlags::RenderFlags_ShowRamps == 128, "Update scripts/config/engine.lua -> UI_RENDER_FLAGS");
+    static_assert(Noesis::RenderFlags::RenderFlags_DepthTesting == 256, "Update scripts/config/engine.lua -> UI_RENDER_FLAGS");
 
     auto Window::Tick() -> void
     {
@@ -21,6 +33,8 @@ namespace NoesisApp
         );
     }
 
+    using scripting::scripting_subsystem;
+
     auto Window::Init(Noesis::RenderDevice* const device, const std::uint16_t width, const std::uint16_t height, const bool wireframe) -> void
     {
         this->m_view = Noesis::GUI::CreateView(this);
@@ -28,9 +42,13 @@ namespace NoesisApp
             static_cast<std::uint32_t>(width),
             static_cast<std::uint32_t>(height)
         );
-        this->m_view->SetFlags(Noesis::RenderFlags_LCD|Noesis::RenderFlags_FlipY|Noesis::RenderFlags_PPAA|(wireframe ? Noesis::RenderFlags::RenderFlags_Wireframe : 0));
+        std::uint32_t flags = scripting_subsystem::cfg()["GameUI"]["renderFlags"].cast<std::uint32_t>().valueOr(Noesis::RenderFlags_LCD | Noesis::RenderFlags_FlipY | Noesis::RenderFlags_PPAA);
+        if (wireframe) {
+            flags |= Noesis::RenderFlags::RenderFlags_Wireframe;
+        }
+        this->m_view->SetFlags(flags);
         this->m_view->GetRenderer()->Init(device);
-        this->m_view->SetTessellationMaxPixelError(Noesis::TessellationMaxPixelError::HighQuality());
+        this->m_view->SetTessellationMaxPixelError(scripting_subsystem::cfg()["GameUI"]["tesselationPixelError"].cast<float>().valueOr(Noesis::TessellationMaxPixelError::HighQuality().error));
         float xscale;
         float yscale;
         glfwGetWindowContentScale(platform::platform_subsystem::get_glfw_window(), &xscale, &yscale);
