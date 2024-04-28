@@ -566,7 +566,8 @@ function Editor:__onTick()
     self:renderPopups()
 end
 
-Style.setupDarkStyleNoRounding()
+Style.setup()
+
 Editor:loadScene(nil)
 
 return Editor

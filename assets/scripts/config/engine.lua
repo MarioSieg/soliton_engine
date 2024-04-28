@@ -70,9 +70,92 @@ ENGINE_CONFIG = {
     Renderer = {
         enableVulkanValidationLayers = true, -- Enable Vulkan validation layers.
         maxDebugDrawVertices = 1000000, -- Maximum amount of debug draw vertices.
-        uiFontSize = 18, -- UI font size (ImGui).
+        fallbackTexture = 'assets/textures/system/error.png', -- Fallback texture when a texture is not found.
+        flatNormalTexture = 'assets/textures/system/flatnormal.png', -- Flat normal texture.
     },
-    GameUI = {
+    EditorUI = { -- Editor UI settings.
+        fontSize = 18, -- Font size
+        style = {
+            windowPadding            = {x=8.00, y=8.00},
+            framePadding             = {x=5.00, y=2.00},
+            cellPadding              = {x=6.00, y=6.00},
+            itemSpacing              = {x=6.00, y=6.00},
+            itemInnerSpacing         = {x=6.00, y=6.00},
+            touchExtraPadding        = {x=0.00, y=0.00},
+            indentSpacing            = 25,
+            scrollbarSize            = 15,
+            grabMinSize              = 10,
+            windowBorderSize         = 1,
+            childBorderSize          = 1,
+            popupBorderSize          = 1,
+            frameBorderSize          = 1,
+            tabBorderSize            = 1,
+            logSliderDeadzone        = 4,
+            windowRounding           = 0,
+            childRounding            = 0,
+            frameRounding            = 0,
+            popupRounding            = 0,
+            scrollbarRounding        = 0,
+            grabRounding             = 0,
+            tabRounding              = 0,
+            text                     = {a=1.00, g=1.00, b=1.00, r=1.00},
+            textDisabled             = {a=0.50, g=0.50, b=0.50, r=1.00},
+            windowBg                 = {a=0.10, g=0.10, b=0.10, r=1.00},
+            childBg                  = {a=0.00, g=0.00, b=0.00, r=0.00},
+            popupBg                  = {a=0.19, g=0.19, b=0.19, r=0.92},
+            border                   = {a=0.28, g=0.28, b=0.28, r=0.8 },
+            borderShadow             = {a=0.92, g=0.91, b=0.88, r=0.0 },
+            frameBg                  = {a=0.05, g=0.05, b=0.05, r=0.54},
+            frameBgHovered           = {a=0.19, g=0.19, b=0.19, r=0.54},
+            frameBgActive            = {a=0.20, g=0.22, b=0.23, r=1.00},
+            titleBg                  = {a=0.00, g=0.00, b=0.00, r=1.00},
+            titleBgActive            = {a=0.06, g=0.06, b=0.06, r=1.00},
+            titleBgCollapsed         = {a=0.00, g=0.00, b=0.00, r=1.00},
+            menuBarBg                = {a=0.14, g=0.14, b=0.14, r=1.00},
+            scrollbarBg              = {a=0.05, g=0.05, b=0.05, r=0.54},
+            scrollbarGrab            = {a=0.34, g=0.34, b=0.34, r=0.54},
+            scrollbarGrabHovered     = {a=0.40, g=0.40, b=0.40, r=0.54},
+            scrollbarGrabActive      = {a=0.56, g=0.56, b=0.56, r=0.54},
+            checkMark                = {a=0.33, g=0.67, b=0.86, r=1.00},
+            sliderGrab               = {a=0.34, g=0.34, b=0.34, r=0.54},
+            sliderGrabActive         = {a=0.56, g=0.56, b=0.56, r=0.54},
+            button                   = {a=0.05, g=0.05, b=0.05, r=0.54},
+            buttonHovered            = {a=0.19, g=0.19, b=0.19, r=0.54},
+            buttonActive             = {a=0.20, g=0.22, b=0.23, r=1.00},
+            header                   = {a=0.00, g=0.00, b=0.00, r=0.52},
+            headerHovered            = {a=0.00, g=0.00, b=0.00, r=0.36},
+            headerActive             = {a=0.20, g=0.22, b=0.23, r=0.33},
+            separator                = {a=0.28, g=0.28, b=0.28, r=0.29},
+            separatorHovered         = {a=0.44, g=0.44, b=0.44, r=0.29},
+            separatorActive          = {a=0.40, g=0.44, b=0.47, r=1.00},
+            resizeGrip               = {a=0.28, g=0.28, b=0.28, r=0.29},
+            resizeGripHovered        = {a=0.44, g=0.44, b=0.44, r=0.29},
+            resizeGripActive         = {a=0.40, g=0.44, b=0.47, r=1.00},
+            tab                      = {a=0.00, g=0.00, b=0.00, r=0.52},
+            tabHovered               = {a=0.14, g=0.14, b=0.14, r=1.00},
+            tabActive                = {a=0.20, g=0.20, b=0.20, r=0.36},
+            tabUnfocused             = {a=0.00, g=0.00, b=0.00, r=0.52},
+            tabUnfocusedActive       = {a=0.14, g=0.14, b=0.14, r=1.00},
+            dockingPreview           = {a=0.33, g=0.67, b=0.86, r=1.00},
+            dockingEmptyBg           = {a=1.00, g=0.00, b=0.00, r=1.00},
+            plotLines                = {a=0.33, g=0.67, b=0.86, r=1.00},
+            plotLinesHovered         = {a=1.00, g=0.00, b=0.00, r=1.00},
+            plotHistogram            = {a=0.33, g=0.67, b=0.86, r=1.00},
+            plotHistogramHovered     = {a=1.00, g=0.00, b=0.00, r=1.00},
+            tableHeaderBg            = {a=0.00, g=0.00, b=0.00, r=0.52},
+            tableBorderStrong        = {a=0.00, g=0.00, b=0.00, r=0.52},
+            tableBorderLight         = {a=0.28, g=0.28, b=0.28, r=0.29},
+            tableRowBg               = {a=0.00, g=0.00, b=0.00, r=0.00},
+            tableRowBgAlt            = {a=1.00, g=1.00, b=1.00, r=0.06},
+            textSelectedBg           = {a=0.20, g=0.22, b=0.23, r=1.00},
+            dragDropTarget           = {a=0.33, g=0.67, b=0.86, r=1.00},
+            navHighlight             = {a=1.00, g=0.00, b=0.00, r=1.00},
+            navWindowingHighlight    = {a=1.00, g=0.00, b=0.00, r=0.70},
+            navWindowingDimBg        = {a=1.00, g=0.00, b=0.00, r=0.20},
+            modalWindowDimBg         = {a=1.00, g=0.00, b=0.00, r=0.35},
+        },
+    },
+    GameUI = { -- In-Game UI settings.
         renderFlags = UI_RENDER_FLAGS.LCD+UI_RENDER_FLAGS.FLIP_Y+UI_RENDER_FLAGS.PPAA, -- In-Game UI default render flags.
         tesselationPixelError = UI_TESSELATION_PIXEL_ERROR.HIGH_QUALITY, -- In-Game UI tesselation pixel error quality.
         license = {
@@ -91,17 +174,17 @@ ENGINE_CONFIG = {
     },
     Physics = {
         tempAllocatorBufferSize = (1024^2) * 64, -- 64 MB
-        maxRigidBodies = 0xffff, -- Max amount of rigid bodies that you can add to the physics system. If you try to add more you'll get an error.
+        maxRigidBodies = (2^16)-1, -- Max amount of rigid bodies that you can add to the physics system. If you try to add more you'll get an error.
         numMutexes = 0, -- how many mutexes to allocate to protect rigid bodies from concurrent access. Set it to 0 for the default settings.
 
         -- This is the max amount of body pairs that can be queued at any time (the broad phase will detect overlapping
         -- body pairs based on their bounding boxes and will insert them into a queue for the narrowphase). If you make this buffer
         -- too small the queue will fill up and the broad phase jobs will start to do narrow phase work. This is slightly less efficient.
-        maxBodyPairs = 0xffff,
+        maxBodyPairs = (2^16)-1,
 
         -- This is the maximum size of the contact constraint buffer. If more contacts (collisions between bodies) are detected than this
         -- number then these contacts will be ignored and bodies will start interpenetrating / fall through the world.
-        maxContacts = 0xffff, 
+        maxContacts = (2^16)-1, 
     }
 }
 

@@ -4,6 +4,9 @@
 
 #include "vulkancore/context.hpp"
 #include "graphics_subsystem.hpp"
+#include "../scripting/scripting_subsystem.hpp"
+
+using scripting::scripting_subsystem;
 
 namespace graphics {
     material::material(
@@ -64,8 +67,8 @@ namespace graphics {
     }
 
     auto material::init_static_resources() -> void {
-        s_error_texture.emplace("assets/textures/system/error.png");
-        s_flat_normal.emplace("assets/textures/system/flatnormal.png");
+        s_error_texture.emplace(scripting_subsystem::cfg()["Renderer"]["fallbackTexture"].cast<std::string>().valueOr(""));
+        s_flat_normal.emplace(scripting_subsystem::cfg()["Renderer"]["flatNormalTexture"].cast<std::string>().valueOr(""));
 
         constexpr unsigned lim = 16384u;
         std::array<vk::DescriptorPoolSize, 1> pool_sizes = {

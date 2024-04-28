@@ -81,7 +81,7 @@ namespace imgui {
         };
         passert(ImGui_ImplVulkan_Init(&init_info, vkb::ctx().get_scene_render_pass()));
 
-        const float font_size = scripting::scripting_subsystem::cfg()["Renderer"]["uiFontSize"].cast<float>().valueOr(18.0f);
+        const float font_size = scripting::scripting_subsystem::cfg()["EditorUI"]["fontSize"].cast<float>().valueOr(18.0f);
 
         // add primary text font:
         ImFontConfig config { };
