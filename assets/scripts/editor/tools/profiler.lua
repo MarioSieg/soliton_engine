@@ -110,8 +110,8 @@ function Profiler:render()
                     UI.Text(string.format('AVG: %.03fHz', fpsAvg))
                     UI.Separator()
                     if UI.BeginChild('##profiler_callstack') then
-                        for _, routine in ipairs(profileDataRoutines) do
-                            UI.TextUnformatted(routine)
+                        for i=1, #profileDataRoutines do
+                            UI.TextUnformatted(profileDataRoutines[i])
                             UI.Separator()
                         end
                     end
