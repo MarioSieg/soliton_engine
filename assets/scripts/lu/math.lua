@@ -157,4 +157,17 @@ function Math.randomInterval(lower, greater)
     return lower + Math.random() * (greater - lower);
 end
 
+function Math.factorial(n)
+    if n == 0 then return 1 end
+    local r = 1
+    for i=2, n do
+        r = r * i
+    end
+    return r
+end
+
+function Math.binomial(n, k)
+    return Math.factorial(n) / Math.factorial(k) * Math.factorial(n - k)
+end
+
 return Math
