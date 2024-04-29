@@ -50,18 +50,23 @@ function NativeEditor.hasTextChanged()
     return ffi.C.__lu_script_editor_has_text_changed()
 end
 
-function readAllText(file)
-    local f = assert(io.open(file, "rb"))
+local function readAllText(file)
+    local f = io.open(file, "rb")
+    if not f then
+        perror('Failed to open file: '..file)
+        return ''
+    end
     local content = f:read("*all")
     f:close()
     return content
 end
 
-local SCRIPT_TEMPLATE = readAllText('assets/scripts/editor/tools/script_template.lua')
+local SCRIPT_TEMPLATE = readAllText('templates/assets/script_template.lua')
 
-function newScript(str, name)
+local function newScript(str, name)
     local script = {
         name = name,
+        nameWithExt = name..'.lua',
         textBuf = ffi.new('char[?]', #str+1),
     }
 
@@ -103,10 +108,6 @@ local ScriptEditor = {
             function()
                 local script = newScript(SCRIPT_TEMPLATE, 'New')
                 script:syncToEditor()
-                -- test sync
-                --assert(NativeScriptEditor.getText() == SCRIPT_TEMPLATE)
-                --script:syncFromEditor()
-                --assert(ffi.string(script.textBuf) == SCRIPT_TEMPLATE)
                 return script
             end
         )(),
@@ -128,20 +129,18 @@ function ScriptEditor:render()
                 UI.EndMenu()
             end
             UI.Separator()
-            UI.PushStyleColor_U32(ffi.C.ImGuiCol_Button, 0xff000088)
-            if UI.Button(ICONS.PLAY_CIRCLE..' Restart') then
+            if UI.Button(ICONS.PLAY_CIRCLE..' Run') then
                 local script = ScriptEditor.scripts[ScriptEditor.activeScriptName]
                 assert(script)
                 script:exec()
             end
-            UI.PopStyleColor(1)
             UI.EndMenuBar()
         end
         UI.Separator()
         if UI.BeginTabBar('##ScriptEditorTabs') then
             for name, script in pairs(ScriptEditor.scripts) do
-                if UI.BeginTabItem(name) then
-                    NativeEditor.render(name)
+                if UI.BeginTabItem(script.nameWithExt) then
+                    NativeEditor.render(name.nameWithExt)
                     UI.EndTabItem()
                 end
             end
