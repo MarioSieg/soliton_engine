@@ -106,7 +106,7 @@ namespace imgui {
         ImGui::GetIO().Fonts->AddFontFromMemoryTTF(
             const_cast<void*>(static_cast<const void*>(range.data.data())),
             static_cast<int>(range.data.size()),
-            font_size-5.0f,
+            font_size-8.0f, // TODO: maybe adjust this constant to dpi scaling
             &config,
             reinterpret_cast<const ImWchar*>(range.ranges.data())
         );

@@ -26,13 +26,14 @@ local Profiler = require 'editor.tools.profiler'
 local ScriptEditor = require 'editor.tools.scripteditor'
 local EntityListView = require 'editor.tools.entity_list_view'
 local Inspector = require 'editor.tools.inspector'
+local AssetExplorer = require 'editor.tools.asset_explorer'
 
 local HOST_INFO = App.Host.GRAPHICS_API..' | '..(App.Host.HOST:upper())
 local CPU_NAME = 'CPU: '..App.Host.CPU_NAME
 local GPU_NAME = 'GPU: '..App.Host.GPU_NAME
 WINDOW_SIZE = UI.ImVec2(800, 600)
-local DOCK_LEFT_RATIO = 0.4
-local DOCK_RIGHT_RATIO = 0.7
+local DOCK_LEFT_RATIO = 0.6
+local DOCK_RIGHT_RATIO = 0.4
 local DOCK_BOTTOM_RATIO = 0.5
 local POPUP_ID_NEW_PROJECT = 0xffffffff-1
 local MAIN_MENU_PADDING = UI.GetStyle().FramePadding
@@ -82,7 +83,8 @@ local Editor = {
         Profiler,
         ScriptEditor,
         EntityListView,
-        Inspector
+        Inspector,
+        AssetExplorer
     },
     gizmos = {
         showGrid = true,
@@ -138,12 +140,13 @@ function Editor:defaultDockLayout()
         UI.DockBuilderSetNodeSize(self.dockID, UI.GetMainViewport().Size)
         local dock_main_id = ffi.new('ImGuiID[1]') -- cursed
         dock_main_id[0] = self.dockID
+        local dockRight = UI.DockBuilderSplitNode(dock_main_id[0], ffi.C.ImGuiDir_Right, DOCK_RIGHT_RATIO, nil, dock_main_id)
         local dockBot = UI.DockBuilderSplitNode(dock_main_id[0], ffi.C.ImGuiDir_Down, DOCK_BOTTOM_RATIO, nil, dock_main_id)
         local dockLeft = UI.DockBuilderSplitNode(dock_main_id[0], ffi.C.ImGuiDir_Left, DOCK_LEFT_RATIO, nil, dock_main_id)
-        local dockRight = UI.DockBuilderSplitNode(dock_main_id[0], ffi.C.ImGuiDir_Right, DOCK_RIGHT_RATIO, nil, dock_main_id)
         UI.DockBuilderDockWindow(Terminal.name, dockBot)
         UI.DockBuilderDockWindow(Profiler.name, dockBot)
         UI.DockBuilderDockWindow(ScriptEditor.name, dockBot)
+        UI.DockBuilderDockWindow(AssetExplorer.name, dockBot)
         UI.DockBuilderDockWindow(EntityListView.name, dockLeft)
         UI.DockBuilderDockWindow(Inspector.name, dockRight)
     end
