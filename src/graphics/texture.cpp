@@ -356,15 +356,25 @@ namespace graphics {
         if (conversion_required) {
             log_warn("Texture format not supported: {} converting -> {}", string_VkFormat(static_cast<VkFormat>(format)), string_VkFormat(k_texture_format_map[k_fallback_format].fmt));
             bimg::ImageContainer* original = image;
+            // TODO: conversion currently happens on CPU -> maybe move to GPU using compute shaders or automatic blitting?
+            // On the other hand most scenes converted to .lunam scenes have ktx/dds textures anyway so
+            // the conversion mainly happens on scene import. Exception might be network streamed content or modded content
+            // or when assets are not processed and used in original form in the editor.
             image = bimg::imageConvert(&s_texture_allocator, k_fallback_format, *original, true);
             bimg::imageFree(original);
             passert(image != nullptr);
             format = static_cast<vk::Format>(k_texture_format_map[k_fallback_format].fmt);
         }
+        const exit_guard img_free {
+            [&image] () -> void {
+                bimg::imageFree(image);
+                image = nullptr;
+            }
+        };
 
         create(
             image,
-            vk::ImageType::e2D, // TODO: cubemap?
+            vk::ImageType::e2D, // TODO: Support for cubemap / volume texture (texture 3d)
             image->m_width,
             image->m_height,
             image->m_depth,
@@ -382,8 +392,6 @@ namespace graphics {
         );
 
         m_approx_byte_size = sizeof(*this) + image->m_size;
-
-        bimg::imageFree(image);
     }
 
     auto texture::upload(
@@ -420,11 +428,14 @@ namespace graphics {
         std::vector<vk::BufferImageCopy> regions {};
         regions.reserve(m_mip_levels);
         std::size_t offset = 0;
-        for (std::uint32_t i = 0; i < m_mip_levels; ++i) { /* TODO is this optimal? */
+        // To remove loop and replace with sub-viewport blitting inside VRAM (safes m_mip_levels-1 copies from host to GPU)
+        for (std::uint32_t i = 0; i < m_mip_levels; ++i) {
             passert(img);
-            bimg::ImageContainer* image = static_cast<bimg::ImageContainer*>(img);
+            auto* image = static_cast<bimg::ImageContainer*>(img);
             bimg::ImageMip mip {};
-            if (!bimg::imageGetRawData(*image, 0, i, data, size, mip)) {
+            if (!bimg::imageGetRawData(*image, 0, i, data, size, mip)) [[unlikely]] {
+                log_warn("Failed to get raw data for mip level {}", i);
+                // TODO: What to do? Fill mip-level pyramid memory with a solid color?
                 continue;
             }
             vk::BufferImageCopy region {};
@@ -439,7 +450,7 @@ namespace graphics {
             region.imageExtent.depth = 1;
             regions.emplace_back(region);
         }
-        copy_cmd.copyBufferToImage(
+        copy_cmd.copyBufferToImage( // TODO: replace with single big blit (if possible)
             staging.get_buffer(),
             m_image,
             vk::ImageLayout::eTransferDstOptimal,
@@ -507,7 +518,7 @@ namespace graphics {
                         subresource_range
                     );
                 }
-                if (!transfer_only) { // if we're only doing a transfer, we don't need to blit
+                if (!transfer_only) { // If we're only doing a transfer, we don't need to blit. TODO: refractor
                     vk::ImageBlit blit {};
                     blit.srcOffsets[0] = vk::Offset3D { 0, 0, 0 };
                     blit.srcOffsets[1] = vk::Offset3D { static_cast<std::int32_t>(mip_w), static_cast<std::int32_t>(mip_h), 1 };
@@ -516,7 +527,11 @@ namespace graphics {
                     blit.srcSubresource.baseArrayLayer = i;
                     blit.srcSubresource.layerCount = 1;
                     blit.dstOffsets[0] = vk::Offset3D { 0, 0, 0 };
-                    blit.dstOffsets[1] = vk::Offset3D { static_cast<std::int32_t>(mip_w > 1 ? mip_w >> 1 : 1), static_cast<std::int32_t>(mip_h > 1 ? mip_h >> 1 : 1), 1 };
+                    blit.dstOffsets[1] = vk::Offset3D {
+                        static_cast<std::int32_t>(mip_w > 1 ? mip_w >> 1 : 1),
+                        static_cast<std::int32_t>(mip_h > 1 ? mip_h >> 1 : 1),
+                        1
+                    };
                     blit.dstSubresource.aspectMask = aspect_mask;
                     blit.dstSubresource.mipLevel = j;
                     blit.dstSubresource.baseArrayLayer = i;
@@ -538,12 +553,8 @@ namespace graphics {
                     dst_layout,
                     subresource_range
                 );
-                if (mip_w > 1) {
-                    mip_w >>= 1;
-                }
-                if (mip_h > 1) {
-                    mip_h >>= 1;
-                }
+                mip_w >>= (mip_w > 1);
+                mip_h >>= (mip_h > 1);
             }
         }
 
@@ -557,7 +568,7 @@ namespace graphics {
         );
 
         vkb::ctx().flush_command_buffer<vk::QueueFlagBits::eGraphics>(blit_cmd);
-        log_info("{} mipchain with {} maps", transfer_only ? "Loaded" : "Generated", m_mip_levels);
+        log_info("{} mip-chain with {} maps", transfer_only ? "Loaded" : "Generated", m_mip_levels);
     }
 
     auto texture::create_sampler() -> void {
