@@ -11,7 +11,7 @@ local Scene = require('Scene')
 local EFLAGS = ENTITY_FLAGS
 
 local AssetExplorer = {
-    name = ICONS.FOLDER_TREE..' Assets',
+    name = ICONS.FOLDER_TREE..' Asset View',
     isVisible = ffi.new('bool[1]', true),
     scanDir = 'assets',
     assetList = {},
