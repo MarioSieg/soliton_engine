@@ -190,7 +190,7 @@ ENGINE_CONFIG = {
 
 if jit.os == 'OSX' then
     print('Detected macOS, increasing UI font size...')
-    ENGINE_CONFIG.Renderer.uiFontSize = ENGINE_CONFIG.Renderer.uiFontSize * 2
+    ENGINE_CONFIG.EditorUI.fontSize = ENGINE_CONFIG.EditorUI.fontSize * 2
 end
 
 if ENGINE_CONFIG.Threads.autoPartitionEngineThreadCount then
