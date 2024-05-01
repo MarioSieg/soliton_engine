@@ -227,9 +227,14 @@ namespace noesis {
             .allocSize = +[]([[maybe_unused]] void*, void* const block) noexcept -> Noesis::SizeT { return mi_malloc_size(block); }
         };
         Noesis::GUI::SetMemoryCallbacks(k_allocator);
-        Noesis::SetLogHandler([](const char*, uint32_t, uint32_t level, const char*, const char* msg) {
-            constexpr static const char* prefixes[] = { "T", "D", "I", "W", "E" };
-            log_info("[GUI]: [{}] {}", prefixes[level], msg);
+        Noesis::SetLogHandler([](const char* const file, const uint32_t line, const uint32_t level, const char* const abc, const char* const msg) -> void {
+            std::string file_name {std::filesystem::path{file}.filename().string()};
+            std::transform(file_name.begin(), file_name.end(), file_name.begin(), [](const char c) noexcept -> char { return static_cast<char>(std::tolower(c)); });
+            switch (level) {
+                case 4: log_error("{}:{} [GUI] {}", file_name, line, msg); break;
+                case 3: log_warn("{}:{} [GUI] {}", file_name, line, msg); break;
+                default: log_info("{}:{} [GUI] {}", file_name, line, msg); break;
+            }
         });
         static const std::string user_name {scripting_subsystem::cfg()["GameUI"]["license"]["userId"].cast<std::string>().valueOr("")};
         static const std::string license_key {scripting_subsystem::cfg()["GameUI"]["license"]["key"].cast<std::string>().valueOr("")};

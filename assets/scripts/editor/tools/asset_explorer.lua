@@ -15,7 +15,7 @@ local AssetExplorer = {
     isVisible = ffi.new('bool[1]', true),
     scanDir = 'assets',
     assetList = {},
-    columns = ffi.new('int[1]', 1)
+    columns = ffi.new('int[1]', 10)
 }
 
 function AssetExplorer:expandAssetListRecursive(path) -- TODO: Only do for top directory and expand on demand
@@ -62,10 +62,9 @@ function AssetExplorer:render()
             UI.EndMenuBar()
         end
         local win_size = UI.GetWindowSize()
-        local grid_size = win_size
         local cols = self.columns[0]
-        grid_size.x = grid_size.x / cols
-        grid_size.y = grid_size.x / cols
+        local tile = (win_size.x/cols)-32
+        local grid_size = UI.ImVec2(tile, tile)
         if UI.BeginChild('AssetScrollingRegion', UI.ImVec2(0, -UI.GetFrameHeightWithSpacing()), false, WINDOW_FLAGS) then
             UI.Columns(cols, 'AssetColumns', true)
             for i=1, #self.assetList do

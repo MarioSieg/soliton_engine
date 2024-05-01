@@ -54,8 +54,8 @@ LUA_INTEROP_API auto __lu_dd_gizmo_manipulator(const flecs::id_t id, const int o
     DirectX::XMStoreFloat4(&transform->position, pos);
     DirectX::XMStoreFloat4(&transform->rotation, rot);
     DirectX::XMStoreFloat4(&transform->scale, scale);
-    if (auto* renderer = ent.get<com::mesh_renderer>(); renderer) {
-        for (const auto* mesh : renderer->meshes) {
+    if (const auto* const renderer = ent.get<com::mesh_renderer>(); renderer) {
+        for (const auto* const mesh : renderer->meshes) {
             if (mesh) [[likely]] {
                 DirectX::BoundingOrientedBox obb {};
                 DirectX::BoundingOrientedBox::CreateFromBoundingBox(obb, mesh->get_aabb());
@@ -136,7 +136,15 @@ LUA_INTEROP_API auto __lu_dd_draw_native_log(const bool scroll) -> void {
                 using enum spdlog::level::level_enum;
                 const auto& [level, message] = logs[i];
                 Separator();
+                std::uint32_t color;
+                switch (level) {
+                    case err: color = 0xff9091f3; break;
+                    case warn: color = 0xff76acf1; break;
+                    default: color = 0xffeeeeee; break;
+                }
+                PushStyleColor(ImGuiCol_Text, color);
                 TextUnformatted(message.c_str());
+                PopStyleColor();
             }
         }
         clipper.End();

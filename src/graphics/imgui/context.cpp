@@ -119,6 +119,7 @@ namespace imgui {
         float yscale;
         glfwGetWindowContentScale(window, &xscale, &yscale);
         scale = (xscale + yscale) * 0.5f;
+        log_info("DPI scaling: {}", scale);
         if constexpr (PLATFORM_OSX) {
             io.FontGlobalScale = 1.0f / scale;
         } else {
