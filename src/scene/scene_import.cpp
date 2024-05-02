@@ -20,30 +20,50 @@
 #include <bimg/bimg.h>
 #include <bimg/decode.h>
 
-namespace assetmgr {
-    extern constinit std::atomic_size_t s_asset_requests; // TODO: this is NOT using asset mgr correctly
-    extern constinit std::atomic_size_t s_total_bytes_loaded;
-}
-
-class lunam_io_stream : public Assimp::DefaultIOStream {
+class lunam_io_stream : public Assimp::IOStream {
 public:
-    lunam_io_stream(std::FILE* pFile, const std::string& strFilename) : Assimp::DefaultIOStream{pFile, strFilename} {}
-    auto Read(void* pvBuffer, size_t pSize, size_t pCount) -> size_t override {
-        assetmgr::s_total_bytes_loaded.fetch_add(pSize * pCount, std::memory_order_relaxed); // TODO: this is NOT using asset mgr correctly
-        return Assimp::DefaultIOStream::Read(pvBuffer, pSize, pCount);
+    explicit lunam_io_stream(std::shared_ptr<assetmgr::istream>&& stream) : m_stream{std::move(stream)} {
+        passert(m_stream != nullptr);
     }
+    auto Read(void* pvBuffer, std::size_t pSize, std::size_t pCount) -> std::size_t override {
+        return m_stream->read(pvBuffer, static_cast<std::streamsize>(pSize * pCount)) / pSize;
+    }
+    auto Write(const void* pvBuffer, size_t pSize, size_t pCount) -> std::size_t override {
+        panic("Write not supported");
+    }
+    auto Seek(size_t pOffset, aiOrigin pOrigin) -> aiReturn override {
+        switch (pOrigin) {
+            case aiOrigin_SET:
+                return m_stream->set_pos(static_cast<std::streamsize>(pOffset), std::ios::beg) ? aiReturn_SUCCESS : aiReturn_FAILURE;
+            case aiOrigin_CUR:
+                return m_stream->set_pos(static_cast<std::streamsize>(pOffset), std::ios::cur) ? aiReturn_SUCCESS : aiReturn_FAILURE;
+            case aiOrigin_END:
+                return m_stream->set_pos(static_cast<std::streamsize>(pOffset), std::ios::end) ? aiReturn_SUCCESS : aiReturn_FAILURE;
+            default: panic("Unknown origin");
+        }
+    }
+    [[nodiscard]] auto Tell() const -> std::size_t override {
+        return static_cast<std::size_t>(m_stream->get_pos());
+    }
+    [[nodiscard]] auto FileSize() const -> std::size_t override {
+        return static_cast<std::size_t>(m_stream->get_length());
+    }
+    auto Flush() -> void override {
+        panic("Flush not supported");
+    }
+private:
+    const std::shared_ptr<assetmgr::istream> m_stream;
 };
 
 class lunam_assimp_io_system : public Assimp::DefaultIOSystem {
 public:
-    auto Open(const char* file, const char* mode = "rb") -> Assimp::IOStream* override {
-        assetmgr::s_asset_requests.fetch_add(1, std::memory_order_relaxed); // TODO: this is NOT using asset mgr correctly
-        std::FILE* f = std::fopen(file, mode);
-        if (!f) [[unlikely]] {
-            log_error("Failed to open file '{}'", file);
+    auto Open(const char* file, const char* mode) -> Assimp::IOStream* override {
+        auto stream = assetmgr::file_stream::open(file);
+        if (stream) [[likely]] {
+            return new lunam_io_stream {std::move(stream)};
+        } else {
             return nullptr;
         }
-        return new lunam_io_stream {f, file};
     }
     auto Close(Assimp::IOStream* f) -> void override {
         delete f;

@@ -274,6 +274,7 @@ namespace graphics {
             m_render_thread_pool->begin_frame(&m_inheritance_info);
             m_render_thread_pool->process_frame(m_cmd);
             scene.readonly_end();
+
             vkb::ctx().end_render_pass(m_cmd);
             vkcheck(m_cmd.end());
             m_render_data.clear();

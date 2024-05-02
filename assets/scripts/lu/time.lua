@@ -37,11 +37,11 @@ function Time:__onTick()
     self.time = self.time + self.deltaTime
     self.frameTime = self.deltaTime * 1000.0
     self.frame = self.frame + 1
-    self.fps = 1000.0 / self.frameTime
-    self.fpsMin = math.min(self.fpsMin, self.fps)
-    self.fpsMax = math.max(self.fpsMax, self.fps)
-    self.fpsAvgMin = math.min(self.fpsAvgMin, Time.fpsAvg)
-    self.fpsAvgMax = math.max(self.fpsAvgMax, self.fpsAvg)
+    self.fps = math.abs(1000.0 / self.frameTime)
+    self.fpsMin = math.abs(math.min(self.fpsMin, self.fps))
+    self.fpsMax = math.abs(math.max(self.fpsMax, self.fps))
+    self.fpsAvgMin = math.abs(math.min(self.fpsAvgMin, Time.fpsAvg))
+    self.fpsAvgMax = math.abs(math.max(self.fpsAvgMax, self.fpsAvg))
 
     -- Update circular buffer with the current fps
     self.fpsHistogram[idx-1] = self.fps

@@ -17,14 +17,6 @@
 using namespace Noesis;
 using namespace NoesisApp;
 
-#include <atomic>
-
-// TODO: this is NOT using asset mgr correctly
-namespace assetmgr {
-    extern constinit std::atomic_size_t s_asset_requests;
-    extern constinit std::atomic_size_t s_total_bytes_loaded;
-}
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 LocalTextureProvider::LocalTextureProvider(const char* rootPath)
@@ -65,8 +57,6 @@ Ptr<Stream> LocalTextureProvider::OpenStream(const Uri& uri) const
     }
 
     Ptr<Stream> stream = OpenFileStream(filename);
-    assetmgr::s_asset_requests.fetch_add(1, std::memory_order_relaxed); // TODO: this is NOT using asset mgr correctly
-    assetmgr::s_total_bytes_loaded.fetch_add(stream->GetLength(), std::memory_order_relaxed); // TODO: this is NOT using asset mgr correctly
 
   #ifdef NS_PROFILE
     if (stream)

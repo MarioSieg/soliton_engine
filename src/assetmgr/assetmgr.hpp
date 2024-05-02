@@ -5,6 +5,7 @@
 #include <array>
 #include <string>
 #include <filesystem>
+#include <fstream>
 #include <vector>
 
 #include <ankerl/unordered_dense.h>
@@ -118,6 +119,37 @@ private:
 };
 
 namespace assetmgr {
+    class istream {
+    public:
+        virtual ~istream() = default;
+        [[nodiscard]] virtual auto set_pos(std::streamsize pos, std::ios::seekdir dir) -> bool = 0;
+        [[nodiscard]] virtual auto get_pos() -> std::streamsize = 0;
+        [[nodiscard]] virtual auto get_length() const -> std::streamsize = 0;
+        [[nodiscard]] virtual auto read(void* buffer, std::streamsize size) -> std::streamsize = 0;
+        [[nodiscard]] virtual auto get_path() const -> const std::string& = 0;
+
+    protected:
+        explicit istream() noexcept = default;
+    };
+
+    class file_stream : public istream {
+    public:
+        [[nodiscard]] static auto open(std::string&& path) -> std::shared_ptr<file_stream>;
+        ~file_stream() override = default;
+        [[nodiscard]] auto set_pos(std::streamsize pos, std::ios::seekdir dir) -> bool override;
+        [[nodiscard]] auto get_pos() -> std::streamsize override;
+        [[nodiscard]] auto get_length() const -> std::streamsize override;
+        [[nodiscard]] auto read(void* buffer, std::streamsize size) -> std::streamsize override;
+        [[nodiscard]] auto get_path() const -> const std::string& override;
+
+    protected:
+        explicit file_stream() = default;
+
+        std::string m_path {};
+        std::streamsize m_size {};
+        std::ifstream m_file {};
+    };
+
     [[nodiscard]] extern auto get_asset_root() -> const std::string&;
     [[nodiscard]] extern auto get_asset_dir(asset_category category) -> const std::string&;
     [[nodiscard]] extern auto get_asset_path(asset_category category, const std::string& name) -> std::string;
