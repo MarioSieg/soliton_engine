@@ -102,11 +102,20 @@ namespace imgui {
             std::span<const std::uint8_t> data {};
             std::array<char16_t, 3> ranges {};
         };
+
+        // Compute DPI scaling
+        float scale = 1.0f;
+        float xscale;
+        float yscale;
+        glfwGetWindowContentScale(window, &xscale, &yscale);
+        scale = (xscale+yscale)*0.5f;
+        log_info("DPI scaling: {}", scale);
+
         static constexpr font_range range = { k_font_awesome_ttf, { ICON_MIN_FA, ICON_MAX_FA, 0 } };
         ImGui::GetIO().Fonts->AddFontFromMemoryTTF(
             const_cast<void*>(static_cast<const void*>(range.data.data())),
             static_cast<int>(range.data.size()),
-            font_size-8.0f, // TODO: maybe adjust this constant to dpi scaling
+            font_size-(scale>1.0f?8.0f:5.0f),
             &config,
             reinterpret_cast<const ImWchar*>(range.ranges.data())
         );
@@ -114,12 +123,6 @@ namespace imgui {
         passert(ImGui_ImplVulkan_CreateFontsTexture());
 
         // Apply DPI scaling
-        float scale = 1.0f;
-        float xscale;
-        float yscale;
-        glfwGetWindowContentScale(window, &xscale, &yscale);
-        scale = (xscale + yscale) * 0.5f;
-        log_info("DPI scaling: {}", scale);
         if constexpr (PLATFORM_OSX) {
             io.FontGlobalScale = 1.0f / scale;
         } else {
