@@ -2,10 +2,11 @@
 
 #include "assetmgr.hpp"
 #include "../core/core.hpp"
-#include "simdutf.h"
 
 #include <atomic>
 #include <fstream>
+
+#include <simdutf.h>
 
 namespace assetmgr {
     using namespace std::filesystem;
