@@ -21,15 +21,15 @@
 #include <bimg/decode.h>
 
 namespace assetmgr {
-    extern constinit std::atomic_size_t s_asset_requests;
+    extern constinit std::atomic_size_t s_asset_requests; // TODO: this is NOT using asset mgr correctly
     extern constinit std::atomic_size_t s_total_bytes_loaded;
-};
+}
 
 class lunam_io_stream : public Assimp::DefaultIOStream {
 public:
     lunam_io_stream(std::FILE* pFile, const std::string& strFilename) : Assimp::DefaultIOStream{pFile, strFilename} {}
     auto Read(void* pvBuffer, size_t pSize, size_t pCount) -> size_t override {
-        assetmgr::s_total_bytes_loaded.fetch_add(pSize * pCount, std::memory_order_relaxed);
+        assetmgr::s_total_bytes_loaded.fetch_add(pSize * pCount, std::memory_order_relaxed); // TODO: this is NOT using asset mgr correctly
         return Assimp::DefaultIOStream::Read(pvBuffer, pSize, pCount);
     }
 };
@@ -37,7 +37,7 @@ public:
 class lunam_assimp_io_system : public Assimp::DefaultIOSystem {
 public:
     auto Open(const char* file, const char* mode = "rb") -> Assimp::IOStream* override {
-        assetmgr::s_asset_requests.fetch_add(1, std::memory_order_relaxed);
+        assetmgr::s_asset_requests.fetch_add(1, std::memory_order_relaxed); // TODO: this is NOT using asset mgr correctly
         std::FILE* f = std::fopen(file, mode);
         if (!f) [[unlikely]] {
             log_error("Failed to open file '{}'", file);
