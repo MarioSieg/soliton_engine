@@ -221,8 +221,9 @@ auto dump_cpu_info() -> void {
     log_info("CPU Sockets: {}", packages);
     log_info("CPU Vendor: {}", vendor);
     log_info("CPU Vendor ID: {}", vendorId);
-    std::size_t hwc = std::thread::hardware_concurrency();
-    log_info("Hardware concurrency: {}, status: {}", hwc, hwc >= 8 ? "GOOD" : "BAD");
+
+    const std::size_t hwc = std::thread::hardware_concurrency();
+    log_info("Hardware concurrency: {}, machine class: {}", hwc, hwc >= 12 ? "EXCELLENT" : hwc >= 8 ? "GOOD" : "BAD");
 
     static constexpr auto dumpCache = [](unsigned level, const iware::cpu::cache_t& cache) {
         const auto [size, line_size, associativity, type] {cache};
