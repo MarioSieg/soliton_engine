@@ -48,7 +48,7 @@ namespace assetmgr {
         return dirs;
     }();
 
-    [[nodiscard]] static auto is_fs_valid() -> bool {
+    [[nodiscard]] static auto is_fs_valid() -> bool { // todo: improve this
         if (!exists(get_asset_root())) [[unlikely]] {
             log_error("Asset directory not found: {}", get_asset_root());
             return false;
@@ -107,8 +107,7 @@ namespace assetmgr {
         if (!stream) [[unlikely]] {
             return false;
         }
-        out.resize(stream->get_length());
-        return stream->read(out.data(), out.size()) == out.size();
+        return stream->read_all_bytes(out);
     }
 
     auto load_asset_blob_raw(const std::string& path, std::vector<std::uint8_t>& out) -> bool {
