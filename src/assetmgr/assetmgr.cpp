@@ -78,7 +78,7 @@ namespace assetmgr {
     static constinit std::atomic_size_t s_total_bytes_loaded = 0;
 
     [[nodiscard]] static auto validate_path(const std::string& full_path) -> bool {
-        const int encoding = simdutf::autodetect_encoding(full_path.c_str(), full_path.size());
+        const simdutf::encoding_type encoding = simdutf::autodetect_encoding(full_path.c_str(), full_path.size());
         if (encoding != simdutf::encoding_type::UTF8) [[unlikely]] { /* UTF8 != ASCII but UTF8 can store ASCII */
             log_warn("Asset path {} is not ASCII encoded", full_path);
             return false;
