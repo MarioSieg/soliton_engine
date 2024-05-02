@@ -13,6 +13,7 @@
 
 #include "ProviderFileWatcher.h"
 
+#include "lunam_stream.hpp"
 
 using namespace Noesis;
 using namespace NoesisApp;
@@ -55,14 +56,5 @@ Ptr<Stream> LocalXamlProvider::LoadXaml(const Uri& uri)
         StrAppend(filename, sizeof(filename), path.Str());
     }
 
-    Ptr<Stream> stream = OpenFileStream(filename);
-
-  #ifdef NS_PROFILE
-    if (stream)
-    {
-        mWatcher->Watch(filename, uri);
-    }
-  #endif
-
-    return stream;
+    return noesis_lunam_file_stream::open(filename);
 }

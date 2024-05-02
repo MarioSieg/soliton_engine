@@ -137,6 +137,15 @@ namespace assetmgr {
         return s_total_bytes_loaded.load(std::memory_order_relaxed);
     }
 
+    auto istream::read_all_bytes(std::vector<std::uint8_t>& out) -> bool {
+        out.resize(static_cast<std::size_t>(get_length()));
+        return read(out.data(), static_cast<std::streamsize>(out.size())) == out.size();
+    }
+    auto istream::read_all_bytes(std::string& out) -> bool {
+        out.resize(static_cast<std::size_t>(get_length()));
+        return read(out.data(), static_cast<std::streamsize>(out.size())) == out.size();
+    }
+
     auto file_stream::open(std::string&& path) -> std::shared_ptr<file_stream> {
         std::string abs = absolute(path).string();
         if (std::ranges::find(abs, '\\') != abs.cend()) { // Windows path

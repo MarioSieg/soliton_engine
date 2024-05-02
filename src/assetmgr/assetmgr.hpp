@@ -127,6 +127,8 @@ namespace assetmgr {
         [[nodiscard]] virtual auto get_length() const -> std::streamsize = 0;
         [[nodiscard]] virtual auto read(void* buffer, std::streamsize size) -> std::streamsize = 0;
         [[nodiscard]] virtual auto get_path() const -> const std::string& = 0;
+        [[nodiscard]] auto read_all_bytes(std::vector<std::uint8_t>& out) -> bool;
+        [[nodiscard]] auto read_all_bytes(std::string& out) -> bool;
 
     protected:
         explicit istream() noexcept = default;
