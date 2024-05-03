@@ -65,7 +65,7 @@ ENGINE_CONFIG = {
         defaultHeight = 1080, -- Default window height.
         minWidth = 640, -- Minimum window width.
         minHeight = 480, -- Minimum window height.
-        icon = 'logo.png' -- Window icon image file.
+        icon = 'assets/icons/logo.png' -- Window icon image file.
     },
     Renderer = {
         enableVulkanValidationLayers = true, -- Enable Vulkan validation layers.
