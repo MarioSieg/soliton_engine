@@ -45,13 +45,6 @@ ENGINE_CONFIG = {
         smartFramerateDependentGCSteppingCollectionLimit = 0.01, -- Variable number of seconds to reserve for other things that won’t be caught in diff (experimented with everywhere from 0.002 to 0.01).
         targetFramerate = 0, -- Target framerate. Set to 0 to set to the display refresh rate.
     },
-    AssetMgr = { --  Asset manager config
-        assetRootPath = 'assets', -- Asset root path.
-        allowStandaloneAssetLoading = true, -- Allow loading assets from other directories than assetRootPath.
-        allowSourceAssetLoading = true, -- Allow loading assets from plain files (.png or .obj) instead of packages.
-        validatePaths = true, -- Validate asset paths and UTF-8 encoding.
-        validateFileSystemOnBoot = true, -- Validate the filesystem on boot.
-    },
     Threads = {
         -- Lunam gives 1/4 of the CPU threads to rendering, 1/4 to physics and 1/4 to simulation (ECS).
         -- The rest is used for audio and scene loading threads and for other software running on the system.

@@ -44,5 +44,5 @@ private:
     std::vector<std::shared_ptr<subsystem>> m_subsystems {};
     std::uint64_t m_frame = 0;
     mINI::INIStructure m_config {};
-    auto load_core_config() -> void;
+    auto update_core_config(bool update_file) -> void;
 };

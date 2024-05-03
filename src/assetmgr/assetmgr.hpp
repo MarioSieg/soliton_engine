@@ -147,7 +147,7 @@ namespace assetmgr {
         bool validate_fs : 1 = true; // Validate the filesystem on boot
     };
 
-    extern auto init(std::string&& asset_root) -> void;
+    extern auto init(mgr_config&& cfg) -> void;
     extern auto shutdown() -> void;
     [[nodiscard]] extern auto cfg() noexcept -> const mgr_config&;
     [[nodiscard]] extern auto load_asset_blob_raw(const std::string& path, std::vector<std::uint8_t>& out) -> bool;

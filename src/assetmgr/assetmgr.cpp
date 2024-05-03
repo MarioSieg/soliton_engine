@@ -1,14 +1,11 @@
 // Copyright (c) 2022 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "assetmgr.hpp"
-#include "../scripting/scripting_subsystem.hpp"
 
 #include <atomic>
 #include <fstream>
 
 #include <simdutf.h>
-
-using scripting::scripting_subsystem;
 
 namespace assetmgr {
     using namespace std::filesystem;
@@ -19,21 +16,18 @@ namespace assetmgr {
     static constinit std::atomic_size_t s_asset_requests_failed = 0;
     static constinit std::atomic_size_t s_total_bytes_loaded = 0;
 
-    auto init(std::string&& asset_root) -> void {
+    auto init(mgr_config&& cfg) -> void {
         if (s_is_initialized.load(std::memory_order_relaxed)) [[unlikely]] {
+            log_error("Asset manager already initialized");
             return;
         }
         log_info("Initializing asset manager");
-        s_cfg.asset_root = std::move(asset_root);
+        s_cfg = std::move(cfg);
         log_info("Asset root directory: '{}'", s_cfg.asset_root);
         if (!std::filesystem::exists(s_cfg.asset_root)) [[unlikely]] {
             panic("Asset root directory not found: '{}'", s_cfg.asset_root);
         }
-        //s_cfg.allow_standalone_asset_loading = lua_cfg["allowStandaloneAssetLoading"].cast<bool>().valueOr(false);
-        //s_cfg.allow_source_asset_loading = lua_cfg["allowSourceAssetLoading"].cast<bool>().valueOr(false);
-        //s_cfg.validate_paths = lua_cfg["validatePaths"].cast<bool>().valueOr(true);
-        //s_cfg.validate_fs = lua_cfg["validateFileSystemOnBoot"].cast<bool>().valueOr(true);
-        if (s_cfg.validate_fs) {
+        if (s_cfg.validate_fs) [[likely]] {
             // TODO
         }
         s_is_initialized.store(true, std::memory_order_relaxed);
