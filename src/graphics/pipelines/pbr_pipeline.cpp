@@ -43,8 +43,10 @@ namespace graphics::pipelines {
     }
 
     auto pbr_pipeline::configure_shaders(std::vector<std::pair<std::unique_ptr<vkb::shader>, vk::ShaderStageFlagBits>>& cfg) -> void {
-        cfg.emplace_back(std::make_unique<vkb::shader>("triangle.vert"), vk::ShaderStageFlagBits::eVertex);
-        cfg.emplace_back(std::make_unique<vkb::shader>("triangle.frag"), vk::ShaderStageFlagBits::eFragment);
+        auto vs = vkb::shader::compile("triangle.vert");
+        auto fs = vkb::shader::compile("triangle.frag");
+        cfg.emplace_back(std::move(vs), vk::ShaderStageFlagBits::eVertex);
+        cfg.emplace_back(std::move(fs), vk::ShaderStageFlagBits::eFragment);
     }
 
     auto pbr_pipeline::configure_vertex_info(

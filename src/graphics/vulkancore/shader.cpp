@@ -13,74 +13,82 @@ namespace vkb {
     static constinit std::atomic_bool s_initialized;
 
     // Returns GLSL shader source text after preprocessing.
-    static auto preprocess_shader(
+    [[nodiscard]] static auto preprocess_shader(
         const std::string& source_name,
         const shaderc_shader_kind kind,
         const std::string& source,
         const shaderc::CompileOptions& options,
         std::string& out
-    ) -> void{
+    ) -> bool {
         passert(s_compiler);
         const shaderc::PreprocessedSourceCompilationResult result =
             s_compiler->PreprocessGlsl(source, kind, source_name.c_str(), options);
         if (result.GetCompilationStatus() != shaderc_compilation_status_success) [[unlikely]] {
             log_error(result.GetErrorMessage());
-            panic("Failed to preprocess shader: {}", source_name);
+            log_error("Failed to preprocess shader: {}", source_name);
+            return false;
         }
         out = {result.cbegin(), result.cend()};
+        return true;
     }
 
     // Compiles a shader to SPIR-V assembly. Returns the assembly text as a string.
-    static auto compile_file_to_assembly(
+    [[nodiscard]] static auto compile_file_to_assembly(
         const std::string& source_name,
         const shaderc_shader_kind kind,
         const std::string& source,
         const shaderc::CompileOptions& options,
         std::string& out
-    ) -> void {
+    ) -> bool {
         passert(s_compiler);
         const shaderc::AssemblyCompilationResult result = s_compiler->CompileGlslToSpvAssembly(
             source, kind, source_name.c_str(), options);
         if (result.GetCompilationStatus() != shaderc_compilation_status_success) [[unlikely]] {
             log_error(result.GetErrorMessage());
-            panic("Failed to preprocess shader: {}", source_name);
+            log_error("Failed to preprocess shader: {}", source_name);
+            return false;
         }
         out = {result.cbegin(), result.cend()};
+        return true;
     }
 
     // Compiles a shader to a SPIR-V binary. Returns the binary as a vector of 32-bit words.
-    static auto compile_file_to_bin(
+    [[nodiscard]] static auto compile_file_to_bin(
         const std::string& source_name,
         shaderc_shader_kind kind,
         const std::string& source,
         const shaderc::CompileOptions& options,
         std::vector<uint32_t>& out
-    ) -> void {
+    ) -> bool {
         passert(s_compiler);
         const shaderc::SpvCompilationResult module =
             s_compiler->CompileGlslToSpv(source, kind, source_name.c_str(), options);
         if (module.GetCompilationStatus() != shaderc_compilation_status_success) [[unlikely]] {
             log_error(module.GetErrorMessage());
-            panic("Failed to preprocess shader: {}", source_name);
+            log_error("Failed to preprocess shader: {}", source_name);
+            return false;
         }
         out = {module.cbegin(), module.cend()};
+        return true;
     }
 
-    shader::shader(
+    auto shader::compile(
         std::string&& file_name,
-        const bool keep_assembly,
-        const bool source,
+        bool keep_assembly,
+        bool keep_source,
         const std::unordered_map<std::string, std::string>& macros
-    ) {
+    ) -> std::unique_ptr<shader> {
         if (!s_initialized) {
             log_info("Initializing online shader compiler...");
+            const auto now = std::chrono::high_resolution_clock::now();
             s_compiler.emplace();
+            log_info("Initialized online shader compiler in {:.03f}s", std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - now).count());
             s_initialized = true;
         }
 
-        file_name = assetmgr::cfg().asset_root + "/shaders/" + file_name;
-
         const auto start = std::chrono::high_resolution_clock::now();
+
+        file_name = assetmgr::cfg().asset_root + "/shaders/" + file_name;
 
         // Load string BLOB from file
         std::string buffer {};
@@ -96,7 +104,8 @@ namespace vkb {
             case VK_API_VERSION_1_2: vk_version = shaderc_env_version_vulkan_1_2; break;
             case VK_API_VERSION_1_3: vk_version = shaderc_env_version_vulkan_1_3; break;
             default:
-                panic("Unsupported Vulkan API version: {}", device::k_vulkan_api_version);
+                log_info("Unsupported Vulkan API version: {}", device::k_vulkan_api_version);
+                return nullptr;
         }
         options.SetTargetEnvironment(shaderc_target_env_vulkan, vk_version);
         options.SetWarningsAsErrors();
@@ -113,33 +122,45 @@ namespace vkb {
             else if (ext == ".geom") { kind = shaderc_glsl_geometry_shader; }
             else if (ext == ".frag") { kind = shaderc_glsl_fragment_shader; }
             else if (ext == ".comp") { kind = shaderc_glsl_compute_shader; }
-            else { panic("Unsupported shader file extension: {}", ext); }
+            else { log_error("Unsupported shader file extension: {}", ext); return nullptr; }
         }
 
-        preprocess_shader(file_name, kind, buffer, options, buffer);
+        if (!preprocess_shader(file_name, kind, buffer, options, buffer)) [[unlikely]] {
+            return nullptr;
+        }
 
-        if (keep_assembly) {
-            compile_file_to_assembly(file_name, kind, buffer, options, m_assembly);
+        struct proxy : shader {};
+        auto shader = std::make_unique<proxy>();
+
+        if (keep_assembly && !compile_file_to_assembly(file_name, kind, buffer, options, shader->m_assembly)) {
+            return nullptr;
         }
 
         std::vector<std::uint32_t> spirv_bytecode {};
-        compile_file_to_bin(file_name, kind, buffer, options, spirv_bytecode);
-        passert(spirv_bytecode.size() * sizeof(std::uint32_t) % 4 == 0); // SPIR-V bytecode must be a multiple of 4 bytes
+        if (!compile_file_to_bin(file_name, kind, buffer, options, spirv_bytecode) || spirv_bytecode.empty() || spirv_bytecode.size() % 4 != 0) [[unlikely]] {
+            log_error("Failed to compile shader: {}", file_name);
+            return nullptr;
+        }
 
-        if (source) {
-            m_source = std::move(buffer);
+        if (keep_source) {
+            shader->m_source = std::move(buffer);
         }
 
         vk::ShaderModuleCreateInfo create_info {};
         create_info.codeSize = spirv_bytecode.size() * sizeof(std::uint32_t);
         create_info.pCode = spirv_bytecode.data();
-        vkcheck(vkb::ctx().get_device().get_logical_device().createShaderModule(&create_info, &s_allocator, &m_module));
+        if (vk::Result::eSuccess != vkb::ctx().get_device().get_logical_device().createShaderModule(&create_info, &s_allocator, &shader->m_module)) [[unlikely]] {
+            log_error("Failed to create shader module: {}", file_name);
+            return nullptr;
+        }
 
         log_info("Compiled shader: {} in {:.03f}s", file_name, std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - start).count());
+
+        return shader;
     }
 
     shader::~shader() noexcept {
-        vkb::ctx().get_device().get_logical_device().destroyShaderModule(m_module, &s_allocator);
+        vkb::vkdvc().destroyShaderModule(m_module, &s_allocator);
     }
 
     auto shader::shutdown_online_compiler() -> void {

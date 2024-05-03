@@ -59,7 +59,7 @@ LUA_INTEROP_API auto __lu_dd_gizmo_manipulator(const flecs::id_t id, const int o
             if (mesh) [[likely]] {
                 DirectX::BoundingOrientedBox obb {};
                 DirectX::BoundingOrientedBox::CreateFromBoundingBox(obb, mesh->get_aabb());
-                const auto model = DirectX::XMLoadFloat4x4A(&model_mtx);
+                const DirectX::XMMATRIX model = DirectX::XMLoadFloat4x4A(&model_mtx);
                 dd().draw_obb(obb, model, color);
             }
         }

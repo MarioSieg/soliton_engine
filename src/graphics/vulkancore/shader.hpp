@@ -7,15 +7,16 @@
 #include <shaderc/shaderc.hpp>
 
 namespace vkb {
-    class shader final : public no_copy, public no_move {
+    class shader : public no_copy, public no_move {
     public:
-        shader(
+        [[nodiscard]] static auto compile(
             std::string&& file_name,
             bool keep_assembly = true,
             bool keep_source = true,
             const std::unordered_map<std::string, std::string>& macros = {}
-        );
-        ~shader() noexcept;
+        ) -> std::unique_ptr<shader>;
+
+        virtual ~shader() noexcept;
 
         operator vk::ShaderModule() const noexcept { return m_module; }
 
@@ -26,6 +27,7 @@ namespace vkb {
         [[nodiscard]] auto get_assembly() const noexcept -> const std::string& { return m_assembly; }
 
     private:
+        shader() = default;
         shaderc_shader_kind m_shader_kind {};
         std::string m_source {};
         std::string m_assembly {};
