@@ -34,7 +34,8 @@ namespace graphics {
         create_descriptor_pool();
 
         pipeline_registry::init();
-        reload_pipelines();
+        auto& reg = pipeline_registry::get();
+        reg.register_pipeline<pipelines::pbr_pipeline>();
 
         int num_render_threads = scripting_subsystem::cfg()["Threads"]["renderThreads"].cast<std::int32_t>().valueOr(2);
         num_render_threads = std::clamp(num_render_threads, 1, std::max(1, static_cast<int>(std::thread::hardware_concurrency())));
@@ -364,7 +365,6 @@ namespace graphics {
 
     auto graphics_subsystem::reload_pipelines() -> void {
         auto& reg = pipeline_registry::get();
-        reg.invalidate_all();
-        reg.register_pipeline<pipelines::pbr_pipeline>();
+        reg.try_recreate_all();
     }
 }

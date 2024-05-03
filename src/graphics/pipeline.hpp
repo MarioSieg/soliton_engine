@@ -20,7 +20,7 @@ namespace graphics {
         const std::string name;
         const pipeline_type type;
 
-        auto create(vk::PipelineCache cache) -> void;
+        [[nodiscard]] auto create(vk::PipelineCache cache) -> bool;
         [[nodiscard]] auto get_layout() const -> vk::PipelineLayout { return m_layout; }
         [[nodiscard]] auto get_pipeline() const -> vk::Pipeline { return m_pipeline; }
         [[nodiscard]] auto get_num_creations() const -> std::uint32_t { return m_num_creations; }
@@ -28,19 +28,19 @@ namespace graphics {
     protected:
         explicit pipeline_base(std::string&& name, pipeline_type type);
 
-        virtual auto pre_configure() -> void;
-        virtual auto configure_shaders(std::vector<std::pair<std::unique_ptr<vkb::shader>, vk::ShaderStageFlagBits>>& cfg) -> void = 0;
-        virtual auto configure_vertex_info(std::vector<vk::VertexInputBindingDescription>& cfg, std::vector<vk::VertexInputAttributeDescription>& bindings) -> void = 0;
-        virtual auto configure_pipeline_layout(std::vector<vk::DescriptorSetLayout>& layouts, std::vector<vk::PushConstantRange>& ranges) -> void = 0;
-        virtual auto configure_viewport_state(vk::PipelineViewportStateCreateInfo& cfg) -> void;
-        virtual auto configure_input_assembly(vk::PipelineInputAssemblyStateCreateInfo& cfg) -> void;
-        virtual auto configure_rasterizer(vk::PipelineRasterizationStateCreateInfo& cfg) -> void;
-        virtual auto configure_dynamic_states(std::vector<vk::DynamicState>& states) -> void;
-        virtual auto configure_depth_stencil(vk::PipelineDepthStencilStateCreateInfo& cfg) -> void;
-        virtual auto configure_multisampling(vk::PipelineMultisampleStateCreateInfo& cfg) -> void;
-        virtual auto configure_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> void;
-        virtual auto configure_render_pass(vk::RenderPass& pass) -> void;
-        virtual auto post_configure() -> void;
+        [[nodiscard]] virtual auto pre_configure() -> bool;
+        [[nodiscard]] virtual auto configure_shaders(std::vector<std::pair<std::unique_ptr<vkb::shader>, vk::ShaderStageFlagBits>>& cfg) -> bool = 0;
+        [[nodiscard]] virtual auto configure_vertex_info(std::vector<vk::VertexInputBindingDescription>& cfg, std::vector<vk::VertexInputAttributeDescription>& bindings) -> bool = 0;
+        [[nodiscard]] virtual auto configure_pipeline_layout(std::vector<vk::DescriptorSetLayout>& layouts, std::vector<vk::PushConstantRange>& ranges) -> bool = 0;
+        [[nodiscard]] virtual auto configure_viewport_state(vk::PipelineViewportStateCreateInfo& cfg) -> bool;
+        [[nodiscard]] virtual auto configure_input_assembly(vk::PipelineInputAssemblyStateCreateInfo& cfg) -> bool;
+        [[nodiscard]] virtual auto configure_rasterizer(vk::PipelineRasterizationStateCreateInfo& cfg) -> bool;
+        [[nodiscard]] virtual auto configure_dynamic_states(std::vector<vk::DynamicState>& states) -> bool;
+        [[nodiscard]] virtual auto configure_depth_stencil(vk::PipelineDepthStencilStateCreateInfo& cfg) -> bool;
+        [[nodiscard]] virtual auto configure_multisampling(vk::PipelineMultisampleStateCreateInfo& cfg) -> bool;
+        [[nodiscard]] virtual auto configure_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> bool;
+        [[nodiscard]] virtual auto configure_render_pass(vk::RenderPass& pass) -> bool;
+        [[nodiscard]] virtual auto post_configure() -> bool;
 
     private:
         vk::PipelineLayout m_layout {};
@@ -63,13 +63,16 @@ namespace graphics {
         auto register_pipeline(Args&&... args) -> T& {
             auto instance = std::make_unique<T>(std::forward<Args>(args)...);
             passert(!m_pipelines.contains(instance->name));
-            instance->create(m_cache);
+            if (!instance->create(m_cache)) [[unlikely]] {
+                panic("Failed to create pipeline '{}'", instance->name);
+            }
             m_names.emplace_back(std::string{instance->name});
             m_pipelines[m_names.back()] = std::move(instance);
             return *static_cast<T*>(&*m_pipelines[m_names.back()]);
         }
 
         auto invalidate_all() -> void;
+        auto try_recreate_all() -> bool;
 
         [[nodiscard]] auto get_cache() const -> vk::PipelineCache { return m_cache; }
 
