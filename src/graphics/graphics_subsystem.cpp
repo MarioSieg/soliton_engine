@@ -243,6 +243,7 @@ namespace graphics {
                     DirectX::XMLoadFloat4(&graphics_subsystem::s_camera_transform.position)
                 );
             }
+            self.get_imgui_context().submit_imgui(cmd);
         }
     }
 
@@ -280,7 +281,7 @@ namespace graphics {
             vkcheck(m_cmd.end());
             m_render_data.clear();
 
-            render_uis();
+            //render_uis(); TODO
 
             vkb::ctx().end_frame(m_cmd);
         }
