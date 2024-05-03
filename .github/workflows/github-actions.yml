@@ -15,9 +15,9 @@ jobs:
       - run: sudo apt-get update
       - run: bash setup_packages_linux.sh
       - run: wget https://apt.llvm.org/llvm.sh && chmod +x ./llvm.sh && sudo ./llvm.sh 17
-      - run: clang -v
+      - run: clang-17 -v
       - run: export CC=/usr/bin/clang-17 && export CXX=/usr/bin/clang++-17 && cmake -S . -B ci_build -DCMAKE_BUILD_TYPE=Release
       - run: cd ci_build || exit
       - run: cmake --build ci_build -t lunam -j4
-      - run: ./lunam
+      - run: ./ci_build/lunam
       - run: echo "🍏 This job's status is ${{ job.status }}."
