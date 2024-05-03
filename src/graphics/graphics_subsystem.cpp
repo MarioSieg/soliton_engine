@@ -35,7 +35,8 @@ namespace graphics {
 
         pipeline_registry::s_instance = std::make_unique<pipeline_registry>(vkb::ctx().get_device().get_logical_device());
 
-        const auto num_render_threads = scripting_subsystem::cfg()["Threads"]["renderThreads"].cast<std::int32_t>().valueOr(2);
+        int num_render_threads = scripting_subsystem::cfg()["Threads"]["renderThreads"].cast<std::int32_t>().valueOr(2);
+        num_render_threads = std::clamp(num_render_threads, 1, std::max(1, static_cast<int>(std::thread::hardware_concurrency())));
         m_render_thread_pool.emplace(&render_scene_bucket, this, num_render_threads);
         m_render_data.reserve(32);
 
@@ -44,7 +45,7 @@ namespace graphics {
         m_imgui_context.emplace();
 
         m_noesis_context.emplace();
-        m_noesis_context->load_ui_from_xaml("App.xaml");
+        //m_noesis_context->load_ui_from_xaml("App.xaml");
     }
 
     [[nodiscard]] static auto compute_render_bucket_range(const std::size_t id, const std::size_t num_entities, const std::size_t num_threads) noexcept -> std::array<std::size_t, 2> {

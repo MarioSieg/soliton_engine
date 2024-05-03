@@ -301,8 +301,9 @@ namespace noesis {
     }
 
     auto context::render_offscreen(const vk::CommandBuffer cmd) -> void {
+        if (!m_app) [[unlikely]]
+            return;
         m_app->GetMainWindow()->GetView()->GetRenderer()->UpdateRenderTree();
-
         const NoesisApp::VKFactory::RecordingInfo recording_info {
             .commandBuffer = cmd,
             .frameNumber = vkb::ctx().get_image_index(),
@@ -318,14 +319,18 @@ namespace noesis {
     }
 
     auto context::tick() -> void {
-        m_app->Tick();
+        if (m_app) [[likely]]
+            m_app->Tick();
     }
 
     auto context::on_resize() -> void {
-        m_app->Resize();
+        if (m_app) [[likely]]
+            m_app->Resize();
     }
 
     auto context::render_onscreen(const vk::RenderPass pass) -> void {
+        if (!m_app) [[unlikely]]
+            return;
         NoesisApp::VKFactory::SetRenderPass(m_device, pass, static_cast<std::uint32_t>(vkb::k_msaa_sample_count));
         m_app->GetMainWindow()->GetView()->GetRenderer()->Render();
     }
