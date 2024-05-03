@@ -38,6 +38,7 @@ namespace graphics {
         std::vector<std::pair<std::unique_ptr<vkb::shader>, vk::ShaderStageFlagBits>> shaders {};
         configure_shaders(shaders);
         passert(!shaders.empty());
+        shader_stages.reserve(shaders.size());
         for (const auto& [shader, stage] : shaders) {
             shader_stages.emplace_back(vk::PipelineShaderStageCreateInfo {
                 .stage = stage,

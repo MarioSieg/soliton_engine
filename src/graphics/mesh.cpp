@@ -60,7 +60,7 @@ namespace graphics {
 		compute_aabb(prim_info.aabb, {vertices.data() + prim_info.vertex_start, prim_info.vertex_count});
 	}
 
-	mesh::mesh(std::string&& path) : asset{asset_category::mesh, asset_source::filesystem, std::move(path)} {
+	mesh::mesh(std::string&& path) : asset{assetmgr::asset_source::filesystem, std::move(path)} {
 		Assimp::Importer importer {};
 		const aiScene* scene = importer.ReadFile(get_asset_path().c_str(), k_import_flags);
 		if (!scene || !scene->mNumMeshes) [[unlikely]] {
@@ -76,7 +76,7 @@ namespace graphics {
 		create_from_assimp(meshes);
 	}
 
-    mesh::mesh(const std::span<const aiMesh*> meshes) : asset{asset_category::mesh, asset_source::memory} {
+    mesh::mesh(const std::span<const aiMesh*> meshes) : asset{assetmgr::asset_source::memory} {
 		create_from_assimp(meshes);
     }
 

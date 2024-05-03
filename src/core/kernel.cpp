@@ -130,10 +130,7 @@ kernel::~kernel() {
     scene::s_active.reset();
     log_info("Killing subsystems...");
     m_subsystems.clear();
-    // Print asset manager infos
-    log_info("Asset manager stats:");
-    log_info("  Total assets requests: {}", assetmgr::get_asset_request_count());
-    log_info("  Total data loaded: {:.03f} GiB", static_cast<double>(assetmgr::get_total_bytes_loaded()) / std::pow(1024.0, 3.0));
+    assetmgr::shutdown();
     log_info("System offline");
     std::cout.flush();
     std::fflush(stdout);

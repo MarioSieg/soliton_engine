@@ -16,7 +16,7 @@
 namespace graphics {
     class material;
 
-    class mesh final : public asset {
+class mesh final : public assetmgr::asset {
     public:
         struct vertex final {
             DirectX::XMFLOAT3 position;

@@ -160,13 +160,13 @@ namespace graphics {
 
     constinit texture_allocator s_texture_allocator {};
 
-    texture::texture(std::string&& asset_path) : asset {asset_category::texture, asset_source::filesystem, std::move(asset_path)} {
+    texture::texture(std::string&& asset_path) : asset {assetmgr::asset_source::filesystem, std::move(asset_path)} {
         std::vector<std::uint8_t> texels {};
         assetmgr::load_asset_blob_raw_or_panic(get_asset_path(), texels);
         parse_from_raw_memory(texels);
     }
 
-    texture::texture(const std::span<const std::uint8_t> raw_mem) : asset {asset_category::texture, asset_source::memory} {
+    texture::texture(const std::span<const std::uint8_t> raw_mem) : asset {assetmgr::asset_source::memory} {
         parse_from_raw_memory(raw_mem);
     }
 
@@ -186,7 +186,7 @@ namespace graphics {
         const std::size_t size,
         const vk::ImageCreateFlags flags,
         const vk::ImageTiling tiling
-    ) : asset {asset_category::texture, asset_source::memory} {
+    ) : asset {assetmgr::asset_source::memory} {
         create(
             nullptr,
             type,

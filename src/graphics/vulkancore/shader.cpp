@@ -78,11 +78,13 @@ namespace vkb {
             s_initialized = true;
         }
 
+        file_name = assetmgr::cfg().asset_root + "/shaders/" + file_name;
+
         const auto start = std::chrono::high_resolution_clock::now();
 
         // Load string BLOB from file
         std::string buffer {};
-        assetmgr::load_asset_text_or_panic(asset_category::shader, file_name, buffer);
+        assetmgr::load_asset_text_or_panic(file_name, buffer);
 
         shaderc::CompileOptions options {};
         options.SetOptimizationLevel(shaderc_optimization_level_performance);

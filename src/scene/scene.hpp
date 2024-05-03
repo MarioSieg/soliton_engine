@@ -29,7 +29,7 @@ public:
     auto spawn(const char* name) const -> flecs::entity;
 
     template <typename A>
-    [[nodiscard]] auto get_asset_registry() -> asset_registry<std::decay_t<A>>& {
+    [[nodiscard]] auto get_asset_registry() -> assetmgr::asset_registry<std::decay_t<A>>& {
         if constexpr (std::is_same_v<std::decay_t<A>, graphics::mesh>) { return m_meshes; }
         else if constexpr (std::is_same_v<std::decay_t<A>, graphics::texture>) { return m_textures; }
         else if constexpr (std::is_same_v<std::decay_t<A>, graphics::material>) { return m_materials; }
@@ -42,9 +42,9 @@ private:
     friend class kernel;
     auto import_from_file(const std::string& path, float scale, std::uint32_t load_flags) -> void;
 
-    asset_registry<graphics::mesh> m_meshes {};
-    asset_registry<graphics::texture> m_textures {};
-    asset_registry<graphics::material> m_materials {};
+    assetmgr::asset_registry<graphics::mesh> m_meshes {};
+    assetmgr::asset_registry<graphics::texture> m_textures {};
+    assetmgr::asset_registry<graphics::material> m_materials {};
 
     friend struct proxy;
     static inline constinit std::unique_ptr<scene> s_active {};

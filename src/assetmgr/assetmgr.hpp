@@ -12,113 +12,100 @@
 
 #include "../core/core.hpp"
 
-enum class asset_source : std::uint8_t {
-    filesystem,
-    memory
-};
-
-enum class asset_category : std::uint8_t {
-    icon,
-    mesh,
-    script,
-    shader,
-    texture,
-    material,
-
-    $count
-};
-
-class asset : public no_copy, public no_move {
-protected:
-    explicit asset(
-        const asset_category category,
-        const asset_source source,
-        std::string&& asset_path = {}
-    ) noexcept :
-        m_category{category}, m_source{source}, m_asset_path{std::move(asset_path)} { }
-
-public:
-    virtual ~asset() = default;
-
-    [[nodiscard]] auto get_category() const noexcept -> asset_category { return m_category; }
-    [[nodiscard]] auto get_source() const noexcept -> asset_source { return m_source; }
-    [[nodiscard]] auto get_asset_path() const noexcept -> const std::string& { return m_asset_path; }
-    [[nodiscard]] auto get_approx_byte_size() const noexcept -> std::size_t { return m_approx_byte_size; }
-
-private:
-    const asset_category m_category;
-    const asset_source m_source;
-    const std::string m_asset_path;
-
-protected:
-    std::size_t m_approx_byte_size = 0;
-};
-
-template <typename T>
-concept is_asset = std::is_base_of_v<asset, T>;
-
-template <typename  T> requires is_asset<T>
-class asset_registry final {
-public:
-    template <typename S>
-    [[nodiscard]] static auto asset_id_from_scalar(S&& s) -> std::string {
-        return fmt::format("tmp_{}", s);
-    }
-
-    explicit asset_registry(std::size_t capacity = 32) {
-        m_registry.reserve(capacity);
-    }
-
-    [[nodiscard]] auto contains_ptr(const T* ptr) const noexcept -> bool {
-        for (const auto& [_, p] : m_registry) {
-            if (&*p == ptr) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    template <typename... Args>
-   [[nodiscard]] auto load_from_memory(Args&&... args) -> T* {
-        std::unique_ptr<T> ptr = std::make_unique<T>(std::forward<Args>(args)...);
-        ++m_cache_misses;
-        return &*m_registry.emplace(fmt::format("mem_{:#X}", ++m_id_gen), std::move(ptr)).first->second;
-    }
-
-    template <typename... Args>
-    [[nodiscard]] auto load(std::string&& path, Args&&... args) -> T* {
-        if (m_registry.contains(path)) {
-            ++m_cache_hits;
-            return &*m_registry[path];
-        }
-        std::string key = path;
-        std::unique_ptr<T> ptr = std::make_unique<T>(std::move(path), std::forward<Args>(args)...);
-        ++m_cache_misses;
-        return &*m_registry.emplace(std::move(key), std::move(ptr)).first->second;
-    }
-
-    [[nodiscard]] auto get_map() const noexcept -> const ankerl::unordered_dense::map<std::string, std::unique_ptr<T>>& {
-        return m_registry;
-    }
-
-    [[nodiscard]] auto get_cache_hits() const noexcept -> std::uint32_t { return m_cache_hits; }
-    [[nodiscard]] auto get_cache_misses() const noexcept -> std::uint32_t { return m_cache_misses; }
-    [[nodiscard]] auto get_load_count() const noexcept -> std::uint32_t { return m_cache_hits + m_cache_misses; }
-
-    [[nodiscard]] auto invalidate() {
-        m_registry.clear();
-        m_cache_hits = 0;
-        m_cache_misses = 0;
-    }
-
-private:
-    ankerl::unordered_dense::map<std::string, std::unique_ptr<T>> m_registry {};
-    std::uint32_t m_cache_hits = 0;
-    std::uint32_t m_cache_misses = 0;
-    std::uint32_t m_id_gen = 0;
-};
-
 namespace assetmgr {
+    enum class asset_source : std::uint8_t {
+        filesystem, // asset loaded from regular file from disk
+        memory, // asset loaded from memory buffer
+        package // asset loaded from compressed lunam package from disk
+    };
+
+    class asset : public no_copy, public no_move {
+    protected:
+        explicit asset(
+                const asset_source source,
+                std::string&& asset_path = {}
+        ) noexcept :
+            m_source{source}, m_asset_path{std::move(asset_path)} { }
+
+    public:
+        virtual ~asset() = default;
+
+        [[nodiscard]] auto get_source() const noexcept -> asset_source { return m_source; }
+        [[nodiscard]] auto get_asset_path() const noexcept -> const std::string& { return m_asset_path; }
+        [[nodiscard]] auto get_approx_byte_size() const noexcept -> std::size_t { return m_approx_byte_size; }
+
+    private:
+        const asset_source m_source;
+        const std::string m_asset_path;
+
+    protected:
+        std::size_t m_approx_byte_size = 0;
+    };
+
+    template <typename T>
+    concept is_asset = std::is_base_of_v<asset, T>;
+
+    template <typename  T> requires is_asset<T>
+    class asset_registry final {
+    public:
+        template <typename S>
+        [[nodiscard]] static auto asset_id_from_scalar(S&& s) -> std::string {
+            return fmt::format("tmp_{}", s);
+        }
+
+        explicit asset_registry(std::size_t capacity = 32) {
+            m_registry.reserve(capacity);
+        }
+
+        [[nodiscard]] auto contains_ptr(const T* ptr) const noexcept -> bool {
+            for (const auto& [_, p] : m_registry) {
+                if (&*p == ptr) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        template <typename... Args>
+        [[nodiscard]] auto load_from_memory(Args&&... args) -> T* {
+            std::unique_ptr<T> ptr = std::make_unique<T>(std::forward<Args>(args)...);
+            ++m_cache_misses;
+            return &*m_registry.emplace(fmt::format("mem_{:#X}", ++m_id_gen), std::move(ptr)).first->second;
+        }
+
+        template <typename... Args>
+        [[nodiscard]] auto load(std::string&& path, Args&&... args) -> T* {
+            if (m_registry.contains(path)) {
+                ++m_cache_hits;
+                return &*m_registry[path];
+            }
+            std::string key = path;
+            std::unique_ptr<T> ptr = std::make_unique<T>(std::move(path), std::forward<Args>(args)...);
+            ++m_cache_misses;
+            return &*m_registry.emplace(std::move(key), std::move(ptr)).first->second;
+        }
+
+        [[nodiscard]] auto get_map() const noexcept -> const ankerl::unordered_dense::map<std::string, std::unique_ptr<T>>& {
+            return m_registry;
+        }
+
+        [[nodiscard]] auto get_cache_hits() const noexcept -> std::uint32_t { return m_cache_hits; }
+        [[nodiscard]] auto get_cache_misses() const noexcept -> std::uint32_t { return m_cache_misses; }
+        [[nodiscard]] auto get_load_count() const noexcept -> std::uint32_t { return m_cache_hits + m_cache_misses; }
+
+        [[nodiscard]] auto invalidate() {
+            m_registry.clear();
+            m_cache_hits = 0;
+            m_cache_misses = 0;
+        }
+
+    private:
+        ankerl::unordered_dense::map<std::string, std::unique_ptr<T>> m_registry {};
+        std::uint32_t m_cache_hits = 0;
+        std::uint32_t m_cache_misses = 0;
+        std::uint32_t m_id_gen = 0;
+    };
+
     class istream {
     public:
         virtual ~istream() = default;
@@ -131,7 +118,7 @@ namespace assetmgr {
         [[nodiscard]] auto read_all_bytes(std::string& out) -> bool;
 
     protected:
-        explicit istream() noexcept = default;
+        istream() = default;
     };
 
     class file_stream : public istream {
@@ -152,9 +139,17 @@ namespace assetmgr {
         std::ifstream m_file {};
     };
 
-    [[nodiscard]] extern auto get_asset_root() -> const std::string&;
-    [[nodiscard]] extern auto get_asset_dir(asset_category category) -> const std::string&;
-    [[nodiscard]] extern auto get_asset_path(asset_category category, const std::string& name) -> std::string;
+    struct mgr_config final {
+        std::string asset_root {};
+        bool allow_standalone_asset_loading : 1 = true; // Allow loading assets from other directories than asset_root
+        bool allow_source_asset_loading : 1 = true; // Allow loading assets from plain files (.png or .obj) instead of packages
+        bool validate_paths : 1 = true; // Validate asset paths and UTF-8 encoding
+        bool validate_fs : 1 = true; // Validate the filesystem on boot
+    };
+
+    extern auto init() -> void;
+    extern auto shutdown() -> void;
+    [[nodiscard]] extern auto cfg() noexcept -> const mgr_config&;
     [[nodiscard]] extern auto load_asset_blob_raw(const std::string& path, std::vector<std::uint8_t>& out) -> bool;
     [[nodiscard]] extern auto load_asset_text_raw(const std::string& path, std::string& out) -> bool;
     inline auto load_asset_blob_raw_or_panic(const std::string& name, std::vector<std::uint8_t>& out) -> void {
@@ -167,16 +162,16 @@ namespace assetmgr {
             panic("Failed to load asset '{}'", name);
         }
     }
-    [[nodiscard]] extern auto load_asset_blob(asset_category category, const std::string& name, std::vector<std::uint8_t>& out) -> bool;
-    [[nodiscard]] extern auto load_asset_text(asset_category category, const std::string& name, std::string& out) -> bool;
-    inline auto load_asset_blob_or_panic(asset_category category, const std::string& name, std::vector<std::uint8_t>& out) -> void {
-        if (!load_asset_blob(category, name, out)) [[unlikely]] {
-            panic("Failed to load asset '{}' from category {}", name, static_cast<std::size_t>(category));
+    [[nodiscard]] extern auto load_asset_blob(const std::string& name, std::vector<std::uint8_t>& out) -> bool;
+    [[nodiscard]] extern auto load_asset_text(const std::string& name, std::string& out) -> bool;
+    inline auto load_asset_blob_or_panic(const std::string& name, std::vector<std::uint8_t>& out) -> void {
+        if (!load_asset_blob(name, out)) [[unlikely]] {
+            panic("Failed to load asset '{}'", name);
         }
     }
-    inline auto load_asset_text_or_panic(asset_category category, const std::string& name, std::string& out) -> void {
-        if (!load_asset_text(category, name, out)) [[unlikely]] {
-            panic("Failed to load asset '{}' from category {}", name, static_cast<std::size_t>(category));
+    inline auto load_asset_text_or_panic(const std::string& name, std::string& out) -> void {
+        if (!load_asset_text(name, out)) [[unlikely]] {
+            panic("Failed to load asset '{}'", name);
         }
     }
     [[nodiscard]] extern auto get_asset_request_count() noexcept -> std::size_t;

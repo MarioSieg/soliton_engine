@@ -8,7 +8,7 @@
 #include "texture.hpp"
 
 namespace graphics {
-    class material : public asset {
+    class material : public assetmgr::asset {
     public:
         texture* albedo_map = nullptr;
         texture* normal_map = nullptr;

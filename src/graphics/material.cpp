@@ -14,7 +14,7 @@ namespace graphics {
         texture* metallic_roughness_map,
         texture* normal_map,
         texture* ambient_occlusion_map
-    ) : asset{asset_category::material, asset_source::memory} {
+    ) : asset{assetmgr::asset_source::memory} {
         this->albedo_map = albedo_map;
         this->metallic_roughness_map = metallic_roughness_map;
         this->normal_map = normal_map;

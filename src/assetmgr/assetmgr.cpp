@@ -1,81 +1,62 @@
 // Copyright (c) 2022 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "assetmgr.hpp"
-#include "../core/core.hpp"
+#include "../scripting/scripting_subsystem.hpp"
 
 #include <atomic>
 #include <fstream>
 
 #include <simdutf.h>
 
+using scripting::scripting_subsystem;
+
 namespace assetmgr {
     using namespace std::filesystem;
 
-    auto get_asset_root() -> const std::string& {
-        static const std::string asset_root = (current_path() / "assets").string();
-        return asset_root;
-    }
-
-    static constexpr std::string_view k_asset_type_names[] = {
-        "icon",
-        "mesh",
-        "script",
-        "shader",
-        "texture",
-        "material"
-    };
-    static_assert(std::size(k_asset_type_names) == static_cast<std::size_t>(asset_category::$count));
-
-    static constexpr std::string_view k_asset_dir_names[] = {
-        "icons",
-        "meshes",
-        "scripts",
-        "shaders",
-        "textures",
-        "materials"
-    };
-    static_assert(std::size(k_asset_dir_names) == static_cast<std::size_t>(asset_category::$count));
-
-    static constexpr char k_dir_sep = '/';
-
-    static const std::array<std::string, static_cast<std::size_t>(asset_category::$count)> k_asset_dirs = [] {
-        std::array<std::string, static_cast<std::size_t>(asset_category::$count)> dirs;
-        for (std::size_t i = 0; i < dirs.size(); ++i) {
-            dirs[i] = get_asset_root();
-            dirs[i].push_back(k_dir_sep);
-            dirs[i].append(k_asset_dir_names[i]);
-        }
-        return dirs;
-    }();
-
-    [[nodiscard]] static auto is_fs_valid() -> bool { // todo: improve this
-        if (!exists(get_asset_root())) [[unlikely]] {
-            log_error("Asset directory not found: {}", get_asset_root());
-            return false;
-        }
-        for (const std::string& dir : k_asset_dirs) {
-            if (!exists(dir)) [[unlikely]] {
-                log_error("Asset directory not found: {}", dir);
-                return false;
-            }
-        }
-        return true;
-    }
-
-    auto get_asset_dir(const asset_category category) -> const std::string& {
-        return k_asset_dirs[static_cast<std::size_t>(category)];
-    }
-
-    auto get_asset_path(const asset_category category, const std::string& name) -> std::string {
-        std::string dir = get_asset_dir(category);
-        dir.push_back(k_dir_sep);
-        dir.append(name);
-        return dir;
-    }
-
+    static mgr_config s_cfg;
+    static constinit std::atomic_bool s_is_initialized = false;
     static constinit std::atomic_size_t s_asset_requests = 0;
     static constinit std::atomic_size_t s_asset_requests_failed = 0;
     static constinit std::atomic_size_t s_total_bytes_loaded = 0;
+
+    auto init() -> void {
+        if (s_is_initialized.load(std::memory_order_relaxed)) [[unlikely]] {
+            return;
+        }
+        log_info("Initializing asset manager");
+        auto lua_cfg = scripting_subsystem::cfg()["AssetMgr"];
+        s_cfg.asset_root = lua_cfg["assetRootPath"].cast<std::string>().valueOr("assets");
+        s_cfg.allow_standalone_asset_loading = lua_cfg["allowStandaloneAssetLoading"].cast<bool>().valueOr(false);
+        s_cfg.allow_source_asset_loading = lua_cfg["allowSourceAssetLoading"].cast<bool>().valueOr(false);
+        s_cfg.validate_paths = lua_cfg["validatePaths"].cast<bool>().valueOr(true);
+        s_cfg.validate_fs = lua_cfg["validateFileSystemOnBoot"].cast<bool>().valueOr(true);
+        log_info("Asset root directory: '{}'", s_cfg.asset_root);
+        if (!std::filesystem::exists(s_cfg.asset_root)) [[unlikely]] {
+            panic("Asset root directory not found: '{}'", s_cfg.asset_root);
+        }
+        if (s_cfg.validate_fs) {
+            // TODO
+        }
+        s_is_initialized.store(true, std::memory_order_relaxed);
+    }
+
+    auto shutdown() -> void {
+        if (!s_is_initialized.load(std::memory_order_relaxed)) {
+            return;
+        }
+        // Print asset manager infos
+        log_info("--------- Asset Mgr Stats --------- ");
+        log_info("  Total assets requests: {}", assetmgr::get_asset_request_count());
+        log_info(
+            "  Total data loaded: {:.03f} GiB",
+             static_cast<double>(assetmgr::get_total_bytes_loaded()) / std::pow(1024.0, 3.0)
+        );
+        s_is_initialized.store(false, std::memory_order_relaxed);
+    }
+
+    auto cfg() noexcept -> const mgr_config& {
+        return s_cfg;
+    }
 
     [[nodiscard]] static auto validate_path(const std::string& full_path) -> bool {
         const simdutf::encoding_type encoding = simdutf::autodetect_encoding(full_path.c_str(), full_path.size());
@@ -96,13 +77,6 @@ namespace assetmgr {
 
     template <typename T>
     [[nodiscard]] static auto load_asset(const std::string& path, T& out) -> bool {
-        static constinit std::atomic_bool is_fs_validated = false;
-        if (!is_fs_validated.load(std::memory_order_relaxed)) {
-            if (!is_fs_valid()) [[unlikely]] {
-                panic("Corrupted installation - asset filesystem is invalid - please reinstall");
-            }
-            is_fs_validated.store(true, std::memory_order_relaxed);
-        }
         auto stream = file_stream::open(std::string{path});
         if (!stream) [[unlikely]] {
             return false;
@@ -118,14 +92,12 @@ namespace assetmgr {
         return load_asset(path, out);
     }
 
-    auto load_asset_blob(const asset_category category, const std::string& name, std::vector<std::uint8_t>& out) -> bool {
-        const std::string path = get_asset_path(category, name);
-        return load_asset(path, out);
+    auto load_asset_blob(const std::string& name, std::vector<std::uint8_t>& out) -> bool {
+        return load_asset(name, out);
     }
 
-    auto load_asset_text(asset_category category, const std::string& name, std::string& out) -> bool {
-        const std::string path = get_asset_path(category, name);
-        return load_asset(path, out);
+    auto load_asset_text(const std::string& name, std::string& out) -> bool {
+        return load_asset(name, out);
     }
 
     auto get_asset_request_count() noexcept -> std::size_t {
@@ -146,16 +118,17 @@ namespace assetmgr {
     }
 
     auto file_stream::open(std::string&& path) -> std::shared_ptr<file_stream> {
+        init();
         std::string abs = absolute(path).string();
         if (std::ranges::find(abs, '\\') != abs.cend()) { // Windows path
             std::ranges::replace(abs, '\\', '/'); // Convert to Unix path
         }
         log_info("Asset stream request #{}: {}", s_asset_requests.fetch_add(1, std::memory_order_relaxed), abs);
-        if (!validate_path(abs)) [[unlikely]] {
+        if (s_cfg.validate_paths && !validate_path(abs)) [[unlikely]] {
             s_asset_requests_failed.fetch_add(1, std::memory_order_relaxed);
             return nullptr;
         }
-        class proxy : public file_stream { };
+        class proxy : public file_stream {};
         auto stream = std::make_shared<proxy>();
         std::ifstream& file = stream->m_file;
         file.open(abs, std::ios::binary|std::ios::ate|std::ios::in);
