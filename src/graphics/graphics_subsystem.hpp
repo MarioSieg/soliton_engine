@@ -53,7 +53,12 @@ namespace graphics {
         static inline com::transform s_camera_transform;
         static inline constinit graphics_subsystem* s_instance;
 
+        auto hot_reload_pipelines() noexcept -> void {
+            m_reload_pipelines_next_frame = true;
+        }
+
     private:
+        auto reload_pipelines() -> void;
         auto create_descriptor_pool() -> void;
         auto render_uis() -> void;
 
@@ -65,6 +70,7 @@ namespace graphics {
         std::optional<debugdraw> m_debugdraw {};
         std::optional<imgui::context> m_imgui_context {};
         std::optional<noesis::context> m_noesis_context {};
+        bool m_reload_pipelines_next_frame {};
 
         struct {
             flecs::query<const com::transform, const com::mesh_renderer> query {};

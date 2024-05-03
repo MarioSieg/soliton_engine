@@ -211,4 +211,27 @@ namespace graphics {
             m_cache = nullptr;
         }
     }
+
+    static inline constinit std::atomic_bool s_init;
+
+    auto pipeline_registry::init() -> void {
+        if (s_init.load(std::memory_order_relaxed)) {
+            return;
+        }
+        s_instance = std::make_unique<pipeline_registry>(vkb::vkdvc());
+        s_init.store(true, std::memory_order_relaxed);
+    }
+
+    auto pipeline_registry::shutdown() -> void {
+        if (!s_init.load(std::memory_order_relaxed)) {
+            return;
+        }
+        s_instance.reset();
+        s_init.store(false, std::memory_order_relaxed);
+    }
+
+    auto pipeline_registry::invalidate_all() -> void {
+        m_pipelines.clear();
+        m_names.clear();
+    }
 }

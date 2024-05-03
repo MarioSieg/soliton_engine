@@ -69,6 +69,8 @@ namespace graphics {
             return *static_cast<T*>(&*m_pipelines[m_names.back()]);
         }
 
+        auto invalidate_all() -> void;
+
         [[nodiscard]] auto get_cache() const -> vk::PipelineCache { return m_cache; }
 
         [[nodiscard]] static auto get() -> pipeline_registry& {
@@ -76,8 +78,10 @@ namespace graphics {
             return *s_instance;
         }
 
+        static auto init() -> void;
+        static auto shutdown() -> void;
+
     private:
-        friend class graphics_subsystem;
         static inline constinit std::unique_ptr<pipeline_registry> s_instance {};
         std::vector<std::string> m_names {};
         ankerl::unordered_dense::map<std::string_view, std::unique_ptr<pipeline_base>> m_pipelines {};

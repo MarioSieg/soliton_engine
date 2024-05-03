@@ -33,19 +33,34 @@ namespace graphics {
 
         create_descriptor_pool();
 
-        pipeline_registry::s_instance = std::make_unique<pipeline_registry>(vkb::ctx().get_device().get_logical_device());
+        pipeline_registry::init();
+        reload_pipelines();
 
         int num_render_threads = scripting_subsystem::cfg()["Threads"]["renderThreads"].cast<std::int32_t>().valueOr(2);
         num_render_threads = std::clamp(num_render_threads, 1, std::max(1, static_cast<int>(std::thread::hardware_concurrency())));
         m_render_thread_pool.emplace(&render_scene_bucket, this, num_render_threads);
         m_render_data.reserve(32);
 
-        pipeline_registry::get().register_pipeline<pipelines::pbr_pipeline>();
-
         m_imgui_context.emplace();
 
         m_noesis_context.emplace();
         //m_noesis_context->load_ui_from_xaml("App.xaml");
+    }
+
+    graphics_subsystem::~graphics_subsystem() {
+        vkcheck(context::s_instance->get_device().get_logical_device().waitIdle()); // must be first
+
+        m_imgui_context.reset();
+        m_noesis_context.reset();
+
+        pipeline_registry::shutdown();
+        m_render_thread_pool.reset();
+        if (m_debugdraw) {
+            m_debugdraw.reset();
+        }
+        material::free_static_resources();
+        context::s_instance.reset();
+        s_instance = nullptr;
     }
 
     [[nodiscard]] static auto compute_render_bucket_range(const std::size_t id, const std::size_t num_entities, const std::size_t num_threads) noexcept -> std::array<std::size_t, 2> {
@@ -55,22 +70,6 @@ namespace graphics {
         const std::size_t end = begin + base_bucket_size + (id < num_extra_entities ? 1 : 0);
         passert(begin <= end && end <= num_entities);
         return {begin, end};
-    }
-
-    graphics_subsystem::~graphics_subsystem() {
-        vkcheck(context::s_instance->get_device().get_logical_device().waitIdle()); // must be first
-
-        m_imgui_context.reset();
-        m_noesis_context.reset();
-
-        pipeline_registry::s_instance.reset();
-        m_render_thread_pool.reset();
-        if (m_debugdraw) {
-            m_debugdraw.reset();
-        }
-        material::free_static_resources();
-        context::s_instance.reset();
-        s_instance = nullptr;
     }
 
     [[nodiscard]] static auto find_main_camera() -> flecs::entity {
@@ -248,6 +247,12 @@ namespace graphics {
     }
 
     HOTPROC auto graphics_subsystem::on_pre_tick() -> bool {
+        if (m_reload_pipelines_next_frame) [[unlikely]] {
+            vkcheck(vkb::vkdvc().waitIdle());
+            reload_pipelines();
+            vkcheck(vkb::vkdvc().waitIdle());
+            m_reload_pipelines_next_frame = false;
+        }
         const auto w = static_cast<float>(context::s_instance->get_width());
         const auto h = static_cast<float>(context::s_instance->get_height());
         m_imgui_context->begin_frame();
@@ -350,5 +355,11 @@ namespace graphics {
         vkb::ctx().end_render_pass(m_cmd);
 
         vkcheck(m_cmd.end());
+    }
+
+    auto graphics_subsystem::reload_pipelines() -> void {
+        auto& reg = pipeline_registry::get();
+        reg.invalidate_all();
+        reg.register_pipeline<pipelines::pbr_pipeline>();
     }
 }
