@@ -27,7 +27,7 @@ namespace graphics {
         s_instance = this;
 
         GLFWwindow* window = platform_subsystem::get_glfw_window();
-        context::s_instance = std::make_unique<context>(window); // Create Vulkan context
+        context::init(window);
 
         material::init_static_resources();
 
@@ -48,7 +48,7 @@ namespace graphics {
     }
 
     graphics_subsystem::~graphics_subsystem() {
-        vkcheck(context::s_instance->get_device().get_logical_device().waitIdle()); // must be first
+        vkcheck(vkb::vkdvc().waitIdle()); // must be first
 
         m_imgui_context.reset();
         m_noesis_context.reset();
@@ -59,7 +59,7 @@ namespace graphics {
             m_debugdraw.reset();
         }
         material::free_static_resources();
-        context::s_instance.reset();
+        context::shutdown();
         s_instance = nullptr;
     }
 
@@ -80,7 +80,7 @@ namespace graphics {
         return flecs::entity::null();
     }
 
-    static auto update_main_camera(const float width, const float height) -> void {
+    auto graphics_subsystem::update_main_camera(const float width, const float height) -> void {
         flecs::entity main_cam;
         auto& active = scene::get_active().active_camera;
         if (!active.is_valid() || !active.is_alive()) {
@@ -97,20 +97,20 @@ namespace graphics {
                 return;
             }
         com::camera::active_camera = main_cam;
-        graphics_subsystem::s_camera_transform = *main_cam.get<com::transform>();
+        s_camera_transform = *main_cam.get<com::transform>();
         com::camera& cam = *main_cam.get_mut<com::camera>();
         if (cam.auto_viewport) {
             cam.viewport.x = width;
             cam.viewport.y = height;
         }
-        DirectX::XMStoreFloat4A(&graphics_subsystem::s_clear_color, DirectX::XMVectorSetW(DirectX::XMLoadFloat3(&cam.clear_color), 1.0f));
-        const DirectX::XMMATRIX view = cam.compute_view(graphics_subsystem::s_camera_transform);
+        DirectX::XMStoreFloat4A(&s_clear_color, DirectX::XMVectorSetW(DirectX::XMLoadFloat3(&cam.clear_color), 1.0f));
+        const DirectX::XMMATRIX view = cam.compute_view(s_camera_transform);
         const DirectX::XMMATRIX proj = cam.compute_projection();
-        DirectX::XMStoreFloat4x4A(&graphics_subsystem::s_view_mtx, view);
-        DirectX::XMStoreFloat4x4A(&graphics_subsystem::s_proj_mtx, proj);
-        DirectX::XMStoreFloat4x4A(&graphics_subsystem::s_view_proj_mtx, DirectX::XMMatrixMultiply(view, proj));
-        DirectX::BoundingFrustum::CreateFromMatrix(graphics_subsystem::s_frustum, proj);
-        graphics_subsystem::s_frustum.Transform(graphics_subsystem::s_frustum, DirectX::XMMatrixInverse(nullptr, view));
+        DirectX::XMStoreFloat4x4A(&s_view_mtx, view);
+        DirectX::XMStoreFloat4x4A(&s_proj_mtx, proj);
+        DirectX::XMStoreFloat4x4A(&s_view_proj_mtx, DirectX::XMMatrixMultiply(view, proj));
+        DirectX::BoundingFrustum::CreateFromMatrix(s_frustum, proj);
+        s_frustum.Transform(s_frustum, DirectX::XMMatrixInverse(nullptr, view));
     }
 
     // WARNING! RENDER THREAD LOCAL
@@ -151,7 +151,7 @@ namespace graphics {
     }
 
     // WARNING! RENDER THREAD LOCAL
-    HOTPROC static auto render_mesh(
+    HOTPROC auto graphics_subsystem::render_mesh(
         const vk::CommandBuffer cmd_buf,
         const vk::PipelineLayout layout,
         const com::transform& transform,
@@ -177,7 +177,7 @@ namespace graphics {
             obb.CreateFromBoundingBox(obb, mesh->get_aabb());
             obb.Transform(obb, model);
             if ((renderer.flags & com::render_flags::skip_frustum_culling) == 0) [[likely]] {
-                if (graphics_subsystem::s_frustum.Contains(obb) == DirectX::ContainmentType::DISJOINT) { // Object is culled
+                if (s_frustum.Contains(obb) == DirectX::ContainmentType::DISJOINT) { // Object is culled
                     return;
                 }
             }
@@ -199,7 +199,12 @@ namespace graphics {
     }
 
     // WARNING! RENDER THREAD LOCAL
-    HOTPROC static auto render_scene_bucket(const vk::CommandBuffer cmd, const std::int32_t bucket_id, const std::int32_t num_threads, void* usr) -> void {
+    HOTPROC auto graphics_subsystem::render_scene_bucket(
+        const vk::CommandBuffer cmd,
+        const std::int32_t bucket_id,
+        const std::int32_t num_threads,
+        void* const usr
+    ) -> void {
         passert(usr != nullptr);
         auto& self = *static_cast<graphics_subsystem*>(usr);
 
@@ -253,8 +258,8 @@ namespace graphics {
             vkcheck(vkb::vkdvc().waitIdle());
             m_reload_pipelines_next_frame = false;
         }
-        const auto w = static_cast<float>(context::s_instance->get_width());
-        const auto h = static_cast<float>(context::s_instance->get_height());
+        const auto w = static_cast<float>(vkb::ctx().get_width());
+        const auto h = static_cast<float>(vkb::ctx().get_height());
         m_imgui_context->begin_frame();
         update_main_camera(w, h);
         m_cmd = vkb::ctx().begin_frame(s_clear_color, &m_inheritance_info);
@@ -304,8 +309,8 @@ namespace graphics {
 
     // Descriptors are allocated from a pool, that tells the implementation how many and what types of descriptors we are going to use (at maximum)
     auto graphics_subsystem::create_descriptor_pool() -> void {
-        const vkb::device& dvc = context::s_instance->get_device();
-        const vk::Device device = vkb::dvc().get_logical_device();
+        const vkb::device& dvc = vkb::dvc();
+        const vk::Device device = vkb::vkdvc();
 
         const std::array<vk::DescriptorPoolSize, 1> sizes {
             vk::DescriptorPoolSize {

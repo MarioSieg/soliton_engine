@@ -30,6 +30,7 @@ if (WIN32)
 else()
     add_compile_options(-fno-exceptions -frtti)
     add_compile_options(-fvisibility=hidden)
+    add_compile_options(-Wno-defaulted-function-deleted)
     add_link_options(-rdynamic)
 endif()
 

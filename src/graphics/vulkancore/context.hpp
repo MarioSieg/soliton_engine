@@ -37,6 +37,7 @@ namespace vkb {
         [[nodiscard]] auto get_graphics_command_pool() const noexcept -> vk::CommandPool { return m_graphics_command_pool; }
         [[nodiscard]] auto get_compute_command_pool() const noexcept -> vk::CommandPool { return m_compute_command_pool; }
         [[nodiscard]] auto get_transfer_command_pool() const noexcept -> vk::CommandPool { return m_transfer_command_pool; }
+
         template <const vk::QueueFlagBits QueueType> requires is_queue_type<QueueType>
         [[nodiscard]] auto start_command_buffer() const -> vk::CommandBuffer {
             vk::CommandBuffer cmd {};
@@ -61,6 +62,7 @@ namespace vkb {
             vkcheck(cmd.begin(&cmd_begin_info));
             return cmd;
         }
+
         template <const vk::QueueFlagBits QueueType, const bool Owned = true> requires is_queue_type<QueueType>
         auto flush_command_buffer(const vk::CommandBuffer cmd) const -> void {
             const vk::Device device = m_device->get_logical_device();
@@ -100,6 +102,7 @@ namespace vkb {
                 device.freeCommandBuffers(pool, 1, &cmd);
             }
         }
+
         [[nodiscard]] auto get_command_buffers() const noexcept -> std::span<const vk::CommandBuffer> { return m_command_buffers; }
         [[nodiscard]] auto get_current_frame() const noexcept -> std::uint32_t { return m_current_frame; }
         [[nodiscard]] auto get_image_index() const noexcept -> std::uint32_t { return m_image_index; }
@@ -125,9 +128,11 @@ namespace vkb {
         auto end_render_pass(vk::CommandBuffer cmd) -> void;
         auto on_resize() -> void;
 
+        static auto init(GLFWwindow* window) -> void;
+        static auto shutdown() -> void;
+
     private:
         friend auto ctx() noexcept -> context&;
-        friend class graphics::graphics_subsystem;
 
         auto boot_vulkan_core() -> void;
         auto create_sync_prims() -> void;

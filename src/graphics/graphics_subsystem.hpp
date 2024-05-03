@@ -45,13 +45,16 @@ namespace graphics {
         [[nodiscard]] auto get_debug_draw_opt() noexcept -> std::optional<debugdraw>& { return m_debugdraw; }
         [[nodiscard]] auto get_noesis_context() noexcept -> noesis::context& { return *m_noesis_context; }
         [[nodiscard]] auto get_imgui_context() noexcept -> imgui::context& { return *m_imgui_context; }
-        static inline constinit DirectX::XMFLOAT4X4A s_view_mtx;
-        static inline constinit DirectX::XMFLOAT4X4A s_proj_mtx;
-        static inline constinit DirectX::XMFLOAT4X4A s_view_proj_mtx;
-        static inline DirectX::XMFLOAT4A s_clear_color;
-        static inline DirectX::BoundingFrustum s_frustum;
-        static inline com::transform s_camera_transform;
-        static inline constinit graphics_subsystem* s_instance;
+        [[nodiscard]] static auto get() noexcept -> graphics_subsystem& {
+            passert(s_instance != nullptr);
+            return *s_instance;
+        }
+        [[nodiscard]] static auto get_view_mtx() noexcept -> const DirectX::XMFLOAT4X4A& { return s_view_mtx; }
+        [[nodiscard]] static auto get_proj_mtx() noexcept -> const DirectX::XMFLOAT4X4A& { return s_proj_mtx; }
+        [[nodiscard]] static auto get_view_proj_mtx() noexcept -> const DirectX::XMFLOAT4X4A& { return s_view_proj_mtx; }
+        [[nodiscard]] static auto get_frustum() noexcept -> const DirectX::BoundingFrustum& { return s_frustum; }
+        [[nodiscard]] static auto get_clear_color() noexcept -> DirectX::XMFLOAT4A& { return s_clear_color; }
+        [[nodiscard]] static auto get_camera_transform() noexcept -> com::transform& { return s_camera_transform; }
 
         auto hot_reload_pipelines() noexcept -> void {
             m_reload_pipelines_next_frame = true;
@@ -61,7 +64,28 @@ namespace graphics {
         auto reload_pipelines() -> void;
         auto create_descriptor_pool() -> void;
         auto render_uis() -> void;
+        static auto update_main_camera(float width, float height) -> void;
+        HOTPROC static auto render_mesh(
+            vk::CommandBuffer cmd_buf,
+            vk::PipelineLayout layout,
+            const com::transform& transform,
+            const com::mesh_renderer& renderer,
+            DirectX::FXMMATRIX vp
+        ) -> void;
+        HOTPROC static auto render_scene_bucket(
+            vk::CommandBuffer cmd,
+            std::int32_t bucket_id,
+            std::int32_t num_threads,
+            void* usr
+        ) -> void;
 
+        static inline constinit DirectX::XMFLOAT4X4A s_view_mtx;
+        static inline constinit DirectX::XMFLOAT4X4A s_proj_mtx;
+        static inline constinit DirectX::XMFLOAT4X4A s_view_proj_mtx;
+        static inline DirectX::XMFLOAT4A s_clear_color;
+        static inline DirectX::BoundingFrustum s_frustum;
+        static inline com::transform s_camera_transform;
+        static inline constinit graphics_subsystem* s_instance;
         vk::CommandBuffer m_cmd = nullptr;
         vk::DescriptorPool m_descriptor_pool {};
         vk::CommandBufferInheritanceInfo m_inheritance_info {};

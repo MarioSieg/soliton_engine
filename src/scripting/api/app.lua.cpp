@@ -42,11 +42,11 @@ LUA_INTEROP_API auto __lu_app_is_ui_hovered() -> bool {
 }
 
 LUA_INTEROP_API auto __lu_app_hot_reload_ui(const bool render_wireframe) -> void {
-    graphics_subsystem::s_instance->get_noesis_context().reload_ui(render_wireframe);
+    graphics_subsystem::get().get_noesis_context().reload_ui(render_wireframe);
 }
 
 LUA_INTEROP_API auto __lu_app_hot_reload_shaders() -> void {
-    graphics_subsystem::s_instance->hot_reload_pipelines();
+    graphics_subsystem::get().hot_reload_pipelines();
 }
 
 LUA_INTEROP_API auto __lu_window_maximize() -> void {

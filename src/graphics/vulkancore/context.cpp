@@ -475,4 +475,23 @@ namespace vkb {
     auto context::end_render_pass(vk::CommandBuffer cmd) -> void {
         cmd.endRenderPass();
     }
+
+    static constinit std::atomic_bool s_init;
+
+    auto context::init(GLFWwindow* const window) -> void {
+        if (s_init.load(std::memory_order_relaxed)) {
+            return;
+        }
+        passert(window != nullptr);
+        s_instance = std::make_unique<context>(window);
+        s_init.store(true, std::memory_order_relaxed);
+    }
+
+    auto context::shutdown() -> void {
+        if (!s_init.load(std::memory_order_relaxed)) {
+            return;
+        }
+        s_instance.reset();
+        s_init.store(false, std::memory_order_relaxed);
+    }
 }
