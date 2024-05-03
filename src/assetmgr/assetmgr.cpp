@@ -19,21 +19,20 @@ namespace assetmgr {
     static constinit std::atomic_size_t s_asset_requests_failed = 0;
     static constinit std::atomic_size_t s_total_bytes_loaded = 0;
 
-    auto init() -> void {
+    auto init(std::string&& asset_root) -> void {
         if (s_is_initialized.load(std::memory_order_relaxed)) [[unlikely]] {
             return;
         }
         log_info("Initializing asset manager");
-        auto lua_cfg = scripting_subsystem::cfg()["AssetMgr"];
-        s_cfg.asset_root = lua_cfg["assetRootPath"].cast<std::string>().valueOr("assets");
-        s_cfg.allow_standalone_asset_loading = lua_cfg["allowStandaloneAssetLoading"].cast<bool>().valueOr(false);
-        s_cfg.allow_source_asset_loading = lua_cfg["allowSourceAssetLoading"].cast<bool>().valueOr(false);
-        s_cfg.validate_paths = lua_cfg["validatePaths"].cast<bool>().valueOr(true);
-        s_cfg.validate_fs = lua_cfg["validateFileSystemOnBoot"].cast<bool>().valueOr(true);
+        s_cfg.asset_root = std::move(asset_root);
         log_info("Asset root directory: '{}'", s_cfg.asset_root);
         if (!std::filesystem::exists(s_cfg.asset_root)) [[unlikely]] {
             panic("Asset root directory not found: '{}'", s_cfg.asset_root);
         }
+        //s_cfg.allow_standalone_asset_loading = lua_cfg["allowStandaloneAssetLoading"].cast<bool>().valueOr(false);
+        //s_cfg.allow_source_asset_loading = lua_cfg["allowSourceAssetLoading"].cast<bool>().valueOr(false);
+        //s_cfg.validate_paths = lua_cfg["validatePaths"].cast<bool>().valueOr(true);
+        //s_cfg.validate_fs = lua_cfg["validateFileSystemOnBoot"].cast<bool>().valueOr(true);
         if (s_cfg.validate_fs) {
             // TODO
         }
@@ -118,7 +117,6 @@ namespace assetmgr {
     }
 
     auto file_stream::open(std::string&& path) -> std::shared_ptr<file_stream> {
-        init();
         std::string abs = absolute(path).string();
         if (std::ranges::find(abs, '\\') != abs.cend()) { // Windows path
             std::ranges::replace(abs, '\\', '/'); // Convert to Unix path

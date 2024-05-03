@@ -101,6 +101,8 @@ add_subdirectory(extern/simdutf)
 target_include_directories(lunam PRIVATE extern/simdutf/include)
 target_link_libraries(lunam simdutf)
 
+target_include_directories(lunam PRIVATE extern/mINI/src)
+
 # Assimp must be last
 add_subdirectory(extern/assimp)
 target_include_directories(lunam PRIVATE extern/assimp/include)

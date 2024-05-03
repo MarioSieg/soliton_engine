@@ -6,6 +6,7 @@
 
 #include "../scene/scene.hpp"
 
+#include <filesystem>
 #include <iostream>
 
 #include <mimalloc.h>
@@ -18,6 +19,8 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
+using namespace std::filesystem;
+
 static constexpr std::size_t k_log_threads = 1;
 static constexpr std::size_t k_log_queue_size = 8192;
 
@@ -27,7 +30,7 @@ static constexpr std::size_t k_log_queue_size = 8192;
     std::vector<std::shared_ptr<spdlog::sinks::sink>> sinks = {
         std::make_shared<buffered_sink>(k_log_queue_size),
         std::make_shared<spdlog::sinks::basic_file_sink_mt>(
-            fmt::format("log/session {:%d-%m-%Y  %H-%M-%S}/{}.log", time, name)),
+            fmt::format("{}/session {:%d-%m-%Y  %H-%M-%S}/{}.log", kernel::log_dir, time, name)),
     };
     if (print_stdout) {
         sinks.emplace_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
@@ -44,6 +47,23 @@ static constexpr std::size_t k_log_queue_size = 8192;
         register_logger(result);
     }
     return result;
+}
+
+auto kernel::load_core_config() -> void {
+    if (!exists(kernel::config_dir)) [[unlikely]] {
+        log_warn("Config directory does not exist, creating: {}", kernel::config_dir);
+        create_directory(kernel::config_dir);
+    }
+    if (exists(kernel::config_file)) {
+        log_info("Loading core config file: {}", kernel::config_file);
+        mINI::INIFile file {kernel::config_file};
+        file.read(m_config);
+    } else {
+        log_warn("Core config file does not exist, creating: {}", kernel::config_file);
+        m_config["asset_mgr"]["asset_root"] = "assets";
+        mINI::INIFile file {kernel::config_file};
+        file.write(m_config);
+    }
 }
 
 #if PLATFORM_WINDOWS
@@ -121,6 +141,12 @@ kernel::kernel(const int argc, const char** argv, const char** $environ) {
     for (int i = 0; $environ[i] != nullptr; ++i) {
         log_info("  {}: {}", i, $environ[i]);
     }
+    log_info("Engine config dir: {}", config_dir);
+    log_info("Engine core config file: {}", config_file);
+    log_info("Engine log dir: {}", log_dir);
+    log_info("Loading engine config");
+    load_core_config();
+    assetmgr::init(m_config.get("asset_mgr").get("asset_root"));
 }
 
 kernel::~kernel() {
