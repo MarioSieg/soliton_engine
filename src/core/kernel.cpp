@@ -178,7 +178,7 @@ HOTPROC auto kernel::run() -> void {
     log_info("Boot time: {}ms", std::chrono::duration_cast<std::chrono::milliseconds>(now - boot_stamp).count());
 
     // simulation loop
-    while(tick()) [[likely]] {}
+    while (tick());
 }
 
 HOTPROC auto kernel::tick() -> bool {
