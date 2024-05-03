@@ -186,7 +186,7 @@ HOTPROC auto kernel::tick() -> bool {
     compute_delta_time();
     profiler_new_frame();
     std::for_each(m_subsystems.cbegin(), m_subsystems.cend(), [&flag](const std::shared_ptr<subsystem>& sys) {
-        scoped_profiler_sample ps {std::string{sys->name}};
+        //scoped_profiler_sample ps {std::string{sys->name}};
         if (!sys->on_pre_tick()) [[unlikely]]
             flag = false;
     });
