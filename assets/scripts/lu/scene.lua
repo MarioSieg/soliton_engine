@@ -169,7 +169,7 @@ local function setLocalSceneProps(id, sceneName)
     print(string.format('Created new scene: %s, id: %x', sceneName, id))
 
     -- Perform one full GC cycle to clean up any garbage
-    collectgarbage()
+    collectgarbage('collect')
     collectgarbage('stop')
     return true
 end
