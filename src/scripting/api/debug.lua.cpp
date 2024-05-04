@@ -34,8 +34,8 @@ LUA_INTEROP_API auto __lu_dd_gizmo_manipulator(const flecs::id_t id, const int o
         return;
     }
     auto* transform = ent.get_mut<com::transform>();
-    const auto* view = reinterpret_cast<const float*>(&graphics_subsystem::get_view_mtx);
-    const auto* proj = reinterpret_cast<const float*>(&graphics_subsystem::get_proj_mtx);
+    const auto* view = reinterpret_cast<const float*>(&graphics_subsystem::get_view_mtx());
+    const auto* proj = reinterpret_cast<const float*>(&graphics_subsystem::get_proj_mtx());
     DirectX::XMFLOAT4X4A model_mtx;
     DirectX::XMStoreFloat4x4A(&model_mtx, transform->compute_matrix());
     DirectX::XMFLOAT3A snap;
