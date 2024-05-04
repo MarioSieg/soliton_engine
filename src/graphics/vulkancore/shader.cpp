@@ -65,7 +65,7 @@ namespace vkb {
             s_compiler->CompileGlslToSpv(source, kind, source_name.c_str(), options);
         if (module.GetCompilationStatus() != shaderc_compilation_status_success) [[unlikely]] {
             log_error(module.GetErrorMessage());
-            log_error("Failed to preprocess shader: {}", source_name);
+            log_error("Failed to compile shader: {}", source_name);
             return false;
         }
         out = {module.cbegin(), module.cend()};
@@ -137,7 +137,7 @@ namespace vkb {
         }
 
         std::vector<std::uint32_t> spirv_bytecode {};
-        if (!compile_file_to_bin(file_name, kind, buffer, options, spirv_bytecode) || spirv_bytecode.empty() || spirv_bytecode.size() % 4 != 0) [[unlikely]] {
+        if (!compile_file_to_bin(file_name, kind, buffer, options, spirv_bytecode) || spirv_bytecode.empty()) [[unlikely]] {
             log_error("Failed to compile shader: {}", file_name);
             return nullptr;
         }
