@@ -163,7 +163,7 @@ namespace graphics {
         // create pipeline
         vkcheck(device.createGraphicsPipelines(cache, 1, &pipeline_info, &vkb::s_allocator, &m_pipeline));
 
-        log_info("Created graphics pipeline '{}' in {}s", name, std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - now).count());
+        log_info("Created graphics pipeline '{}' in {:.03}s", name, std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - now).count());
 
         if (!post_configure()) [[unlikely]] {
             log_error("Failed to post-configure pipeline '{}'", name);
