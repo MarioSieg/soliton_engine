@@ -367,6 +367,7 @@ function Editor:renderMainMenu()
             UI.SetTooltip(self.isPlaying and 'Stop' or 'Play Scene')
         end
         UI.PopStyleColor(3)
+        UI.Separator()
         if UI.Button(ICONS.FLAME..' UI') then
             App.hotReloadUI()
         end
