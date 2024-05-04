@@ -6,9 +6,9 @@
 #include "../../scene/scene.hpp"
 
 #if PLATFORM_WINDOWS
-#define LUA_INTEROP_API extern "C" __cdecl __declspec(dllexport) [[maybe_unused]]
+#define LUA_INTEROP_API [[maybe_unused]] extern "C" __cdecl __declspec(dllexport)
 #else
-#define LUA_INTEROP_API extern "C" __attribute__((visibility("default"))) [[maybe_unused]]
+#define LUA_INTEROP_API [[maybe_unused]] extern "C" __attribute__((visibility("default")))
 #endif
 
 static_assert(sizeof(flecs::id_t) == sizeof(std::uint64_t));
