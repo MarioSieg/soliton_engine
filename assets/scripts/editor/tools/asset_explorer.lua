@@ -15,8 +15,10 @@ local AssetExplorer = {
     isVisible = ffi.new('bool[1]', true),
     scanDir = 'assets',
     assetList = {},
-    columns = ffi.new('int[1]', 10)
+    columns = ffi.new('int[1]', 10),
+    columsRange = {min=4, max=15}
 }
+
 
 function AssetExplorer:expandAssetListRecursive(path) -- TODO: Only do for top directory and expand on demand
     path = path or self.scanDir
@@ -27,11 +29,17 @@ function AssetExplorer:expandAssetListRecursive(path) -- TODO: Only do for top d
             if attr.mode == 'directory' then
                 self:expandAssetListRecursive(fullPath)
             else
+                local fileExt = string.match(entry, '[^.]+$')
+                if not fileExt then
+                    fileExt = 'unknown'
+                end
+                
                 table.insert(self.assetList, {
                     path = fullPath,
                     name = entry,
                     size = attr.size,
-                    date = attr.modification
+                    date = attr.modification,
+                    type = determineAssetType(fileExt)
                 })
             end
         end
@@ -58,7 +66,9 @@ function AssetExplorer:render()
             if UI.SmallButton(ICONS.REDO_ALT..' Refresh') then
                 
             end
-            UI.DragInt('##AssetExplorerColumns', self.columns, 1, 2, 32, '%d columns')
+            UI.PushItemWidth(75)
+            UI.SliderInt('##AssetExplorerColumns', self.columns, self.columsRange.min, self.columsRange.max, '%d Cols')
+            UI.PopItemWidth()
             UI.EndMenuBar()
         end
         local win_size = UI.GetWindowSize()
@@ -67,13 +77,19 @@ function AssetExplorer:render()
         local grid_size = UI.ImVec2(tile, tile)
         if UI.BeginChild('AssetScrollingRegion', UI.ImVec2(0, -UI.GetFrameHeightWithSpacing()), false, WINDOW_FLAGS) then
             UI.Columns(cols, 'AssetColumns', true)
+            local r = math.random()
             for i=1, #self.assetList do
                 local asset = self.assetList[i]
                 local label = asset.name
+                UI.PushID(i*r)
                 -- Render icon with file name in a grid:
                 if UI.Button(label, grid_size) then
                     print('Clicked on asset: '..label)
                 end
+                if UI.IsItemHovered() then
+                    UI.SetTooltip(label..' - '..ASSET_TYPE_NAMES[asset.type])
+                end
+                UI.PopID()
                 UI.NextColumn()
             end
             UI.EndChild()

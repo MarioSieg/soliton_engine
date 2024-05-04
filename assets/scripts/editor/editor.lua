@@ -9,6 +9,8 @@ local band = bit.band
 local UI = require 'editor.imgui'
 local Style = require 'editor.style'
 
+require 'editor.gconsts'
+
 local App = require 'App'
 local Time = require 'Time'
 local Debug = require 'Debug'
@@ -32,13 +34,11 @@ local AssetTree = require 'editor.tools.asset_tree'
 local HOST_INFO = App.Host.GRAPHICS_API..' | '..(App.Host.HOST)
 local CPU_NAME = 'CPU: '..App.Host.CPU_NAME
 local GPU_NAME = 'GPU: '..App.Host.GPU_NAME
-WINDOW_SIZE = UI.ImVec2(800, 600)
 local DOCK_LEFT_RATIO = 0.6
 local DOCK_RIGHT_RATIO = 0.4
 local DOCK_BOTTOM_RATIO = 0.5
 local POPUP_ID_NEW_PROJECT = 0xffffffff-1
 local MAIN_MENU_PADDING = UI.GetStyle().FramePadding
---MAIN_MENU_PADDING = MAIN_MENU_PADDING + UI.ImVec2(0.005, 0.005)
 
 local DEFAULT_PROJECT_DIR = ''
 if jit.os == 'Windows' then
@@ -54,7 +54,15 @@ end
 
 DEFAULT_PROJECT_DIR = DEFAULT_PROJECT_DIR..'lunam projects/'
 
-local MESH_FILE_FILTER = '3d,3ds,3mf,ac,ac3d,acc,amj,ase,ask,b3d,bvh,csm,cob,dae,dxf,enff,fbx,gltf,glb,hmb,ifc,irr,lwo,lws,lxo,m3d,md2,md3,md5,mdc,mdl,mesh,mot,ms3d,ndo,nff,obj,off,ogex,ply,pmx,prj,q3o,q3s,raw,scn,sib,smd,stp,stl,ter,uc,vta,x,x3d,xgl,zgl'
+local function buildFilterString(items)
+    local r = ''
+    for k, v in pairs(items) do
+        r = r..k..','
+    end
+    return r
+end
+
+local MESH_FILE_FILTER = buildFilterString(MESH_FILE_EXTS)
 
 local EFLAGS = ENTITY_FLAGS
 local DEBUG_MODE = {
