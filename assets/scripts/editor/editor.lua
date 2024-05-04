@@ -29,7 +29,7 @@ local Inspector = require 'editor.tools.inspector'
 local AssetExplorer = require 'editor.tools.asset_explorer'
 local AssetTree = require 'editor.tools.asset_tree'
 
-local HOST_INFO = App.Host.GRAPHICS_API..' | '..(App.Host.HOST:upper())
+local HOST_INFO = App.Host.GRAPHICS_API..' | '..(App.Host.HOST)
 local CPU_NAME = 'CPU: '..App.Host.CPU_NAME
 local GPU_NAME = 'GPU: '..App.Host.GPU_NAME
 WINDOW_SIZE = UI.ImVec2(800, 600)
@@ -367,17 +367,17 @@ function Editor:renderMainMenu()
             UI.SetTooltip(self.isPlaying and 'Stop' or 'Play Scene')
         end
         UI.PopStyleColor(3)
-        if UI.Button(ICONS.WINDOW_RESTORE) then
+        if UI.Button(ICONS.FLAME..' UI') then
             App.hotReloadUI()
         end
         if UI.IsItemHovered() then
-            UI.SetTooltip('UI Hot Reload')
+            UI.SetTooltip('Reload game UI')
         end
-        if UI.Button(ICONS.PAINT_BRUSH) then
+        if UI.Button(ICONS.FLAME..' Shaders') then
             App.hotReloadShaders()
         end
         if UI.IsItemHovered() then
-            UI.SetTooltip('UI Hot Reload')
+            UI.SetTooltip('Reload shaders')
         end
         UI.Separator()
         UI.Text('FPS: %g', math.floor(Time.fpsAvg))
