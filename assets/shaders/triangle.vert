@@ -1,3 +1,5 @@
+// Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+
 #version 450
 
 layout (location = 0) in vec3 inPos;

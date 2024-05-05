@@ -24,7 +24,7 @@ namespace vkb {
     context::~context() {
         vkcheck(m_device->get_logical_device().waitIdle());
 
-        shader::shutdown_online_compiler();
+        shader::init_shader_compiler();
 
         // Dump VMA Infos
 #if 0

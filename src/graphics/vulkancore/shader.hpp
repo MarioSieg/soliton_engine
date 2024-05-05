@@ -14,13 +14,14 @@ namespace vkb {
             bool keep_assembly = true,
             bool keep_source = true,
             const std::unordered_map<std::string, std::string>& macros = {}
-        ) -> std::unique_ptr<shader>;
+        ) -> std::shared_ptr<shader>;
 
         virtual ~shader() noexcept;
 
         operator vk::ShaderModule() const noexcept { return m_module; }
 
-        static auto shutdown_online_compiler() -> void;
+        static auto init_shader_compiler() -> void;
+        static auto shutdown_shader_compiler() -> void;
 
         [[nodiscard]] auto get_module() const noexcept -> vk::ShaderModule { return m_module; }
         [[nodiscard]] auto get_kind() const noexcept -> shaderc_shader_kind { return m_shader_kind; }

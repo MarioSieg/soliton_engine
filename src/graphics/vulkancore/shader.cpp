@@ -126,18 +126,12 @@ namespace vkb {
         bool keep_assembly,
         bool keep_source,
         const std::unordered_map<std::string, std::string>& macros
-    ) -> std::unique_ptr<shader> {
-        if (!s_initialized) {
-            log_info("Initializing online shader compiler...");
-            const auto now = std::chrono::high_resolution_clock::now();
-            s_compiler.emplace();
-            log_info("Initialized online shader compiler in {:.03f}s", std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - now).count());
-            s_initialized = true;
+    ) -> std::shared_ptr<shader> {
+        if (!s_compiler.has_value()) [[unlikely]] {
+            panic("Online shader compiler not initialized");
         }
 
         const auto start = std::chrono::high_resolution_clock::now();
-
-        file_name = assetmgr::cfg().asset_root + "/shaders/" + file_name;
 
         // Load string BLOB from file
         std::string buffer {};
@@ -172,6 +166,7 @@ namespace vkb {
             else if (ext == ".geom") { kind = shaderc_glsl_geometry_shader; }
             else if (ext == ".frag") { kind = shaderc_glsl_fragment_shader; }
             else if (ext == ".comp") { kind = shaderc_glsl_compute_shader; }
+            else if (ext == ".glsl") { kind = shaderc_glsl_infer_from_source; }
             else { log_error("Unsupported shader file extension: {}", ext); return nullptr; }
         }
 
@@ -180,7 +175,7 @@ namespace vkb {
         }
 
         struct proxy : shader {};
-        auto shader = std::make_unique<proxy>();
+        auto shader = std::make_shared<proxy>();
 
         if (keep_assembly && !compile_file_to_assembly(file_name, kind, buffer, options, shader->m_assembly)) {
             return nullptr;
@@ -213,11 +208,19 @@ namespace vkb {
         vkb::vkdvc().destroyShaderModule(m_module, &s_allocator);
     }
 
-    auto shader::shutdown_online_compiler() -> void {
-        if (s_initialized) {
+    auto shader::init_shader_compiler() -> void {
+        if (!s_compiler.has_value()) {
+            log_info("Initializing online shader compiler...");
+            const auto now = std::chrono::high_resolution_clock::now();
+            s_compiler.emplace();
+            log_info("Initialized online shader compiler in {:.03f}s", std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - now).count());
+        }
+    }
+
+    auto shader::shutdown_shader_compiler() -> void {
+        if (s_compiler.has_value()) {
             log_info("Shutting down online shader compiler...");
             s_compiler.reset();
-            s_initialized = false;
         }
     }
 }

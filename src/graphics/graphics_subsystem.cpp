@@ -5,10 +5,10 @@
 #include "../platform/platform_subsystem.hpp"
 #include "../scripting/scripting_subsystem.hpp"
 
-#include <execution>
 #include <mimalloc.h>
 
 #include "material.hpp"
+#include "shader_registry.hpp"
 #include "pipeline.hpp"
 
 #include "pipelines/pbr_pipeline.hpp"
@@ -33,6 +33,12 @@ namespace graphics {
 
         create_descriptor_pool();
 
+        std::string shader_dir = scripting_subsystem::cfg()["Renderer"]["shaderDir"].cast<std::string>().valueOr("shaders");
+        shader_registry::init(std::move(shader_dir));
+        if (!shader_registry::get().compile_all()) [[unlikely]] {
+           panic("Failed to compile shaders");
+        }
+
         pipeline_registry::init();
         auto& reg = pipeline_registry::get();
         reg.register_pipeline<pipelines::pbr_pipeline>();
@@ -54,6 +60,7 @@ namespace graphics {
         m_imgui_context.reset();
         m_noesis_context.reset();
 
+        shader_registry::shutdown();
         pipeline_registry::shutdown();
         m_render_thread_pool.reset();
         if (m_debugdraw) {
@@ -364,7 +371,9 @@ namespace graphics {
     }
 
     auto graphics_subsystem::reload_pipelines() -> void {
-        auto& reg = pipeline_registry::get();
-        reg.try_recreate_all();
+        if (shader_registry::get().compile_all()) {
+            auto &reg = pipeline_registry::get();
+            reg.try_recreate_all();
+        }
     }
 }

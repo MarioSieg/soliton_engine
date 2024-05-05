@@ -68,6 +68,7 @@ ENGINE_CONFIG = {
         icon = 'assets/icons/logo.png' -- Window icon image file.
     },
     Renderer = {
+        shaderDir = 'assets/shaders', -- Shader directory.
         enableVulkanValidationLayers = true, -- Enable Vulkan validation layers.
         maxDebugDrawVertices = 1000000, -- Maximum amount of debug draw vertices.
         fallbackTexture = 'assets/textures/system/error.png', -- Fallback texture when a texture is not found.

@@ -4,6 +4,7 @@
 #include "../mesh.hpp"
 #include "../material.hpp"
 #include "../vulkancore/context.hpp"
+#include "../shader_registry.hpp"
 
 namespace graphics::pipelines {
     pbr_pipeline::pbr_pipeline() : pipeline_base{"pbr", pipeline_type::graphics} {
@@ -16,7 +17,7 @@ namespace graphics::pipelines {
 
     }
 
-    auto pbr_pipeline::pre_configure() -> bool {
+    auto pbr_pipeline::pre_configure() -> void {
         const vk::Device device = vkb::ctx().get_device();
 
         // Binding 0: Uniform buffer (Vertex shader)
@@ -40,23 +41,19 @@ namespace graphics::pipelines {
         descriptor_layout.bindingCount = static_cast<std::uint32_t>(bindings.size());
         descriptor_layout.pBindings = bindings.data();
         vkcheck(device.createDescriptorSetLayout(&descriptor_layout, &vkb::s_allocator, &m_descriptor_set_layout));
-
-        return true;
     }
 
-    auto pbr_pipeline::configure_shaders(std::vector<std::pair<std::unique_ptr<vkb::shader>, vk::ShaderStageFlagBits>>& cfg) -> bool {
-        auto vs = vkb::shader::compile("triangle.vert");
-        auto fs = vkb::shader::compile("triangle.frag");
-        if (!vs || !fs) return false;
-        cfg.emplace_back(std::move(vs), vk::ShaderStageFlagBits::eVertex);
-        cfg.emplace_back(std::move(fs), vk::ShaderStageFlagBits::eFragment);
-        return true;
+    auto pbr_pipeline::configure_shaders(std::vector<std::pair<std::shared_ptr<vkb::shader>, vk::ShaderStageFlagBits>>& cfg) -> void {
+        auto vs = shader_registry::get().get_shader("triangle.vert");
+        auto fs = shader_registry::get().get_shader("triangle.frag");
+        cfg.emplace_back(vs, vk::ShaderStageFlagBits::eVertex);
+        cfg.emplace_back(fs, vk::ShaderStageFlagBits::eFragment);
     }
 
     auto pbr_pipeline::configure_vertex_info(
         std::vector<vk::VertexInputBindingDescription>& cfg,
         std::vector<vk::VertexInputAttributeDescription>& bindings
-    ) -> bool {
+    ) -> void {
         cfg.emplace_back(vk::VertexInputBindingDescription {
             .binding = 0,
             .stride = sizeof(mesh::vertex),
@@ -75,14 +72,12 @@ namespace graphics::pipelines {
         push_attribute(vk::Format::eR32G32Sfloat, offsetof(mesh::vertex, uv));
         push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(mesh::vertex, tangent));
         push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(mesh::vertex, bitangent));
-
-        return true;
     }
 
     auto pbr_pipeline::configure_pipeline_layout(
         std::vector<vk::DescriptorSetLayout>& layouts,
         std::vector<vk::PushConstantRange>& ranges
-    ) -> bool {
+    ) -> void {
         layouts.emplace_back(m_descriptor_set_layout);
         layouts.emplace_back(material::get_descriptor_set_layout());
 
@@ -91,19 +86,15 @@ namespace graphics::pipelines {
         push_constant_range.offset = 0;
         push_constant_range.size = sizeof(gpu_vertex_push_constants);
         ranges.emplace_back(push_constant_range);
-
-        return true;
     }
 
-    auto pbr_pipeline::configure_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> bool {
+    auto pbr_pipeline::configure_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> void {
         pipeline_base::configure_color_blending(cfg);
         cfg.blendEnable = vk::True;
-        return true;
     }
 
-    auto pbr_pipeline::configure_multisampling(vk::PipelineMultisampleStateCreateInfo& cfg) -> bool {
+    auto pbr_pipeline::configure_multisampling(vk::PipelineMultisampleStateCreateInfo& cfg) -> void {
         pipeline_base::configure_multisampling(cfg);
         cfg.alphaToCoverageEnable = vk::True;
-        return true;
     }
 }
