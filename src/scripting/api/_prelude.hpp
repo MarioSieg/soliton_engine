@@ -8,7 +8,7 @@
 #if PLATFORM_WINDOWS
 #define LUA_INTEROP_API [[maybe_unused]] extern "C" __cdecl __declspec(dllexport)
 #elif PLATFORM_LINUX
-#define LUA_INTEROP_API [[maybe_unused]] extern "C" __attribute__((visibility("default")))
+#define LUA_INTEROP_API extern "C" __attribute__((visibility("default")))
 #else
 #define LUA_INTEROP_API extern "C" __attribute__((visibility("default")))
 #endif

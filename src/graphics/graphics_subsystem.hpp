@@ -61,7 +61,7 @@ namespace graphics {
         }
 
     private:
-        auto reload_pipelines() -> void;
+        static auto reload_pipelines() -> void;
         auto create_descriptor_pool() -> void;
         auto render_uis() -> void;
         static auto update_main_camera(float width, float height) -> void;

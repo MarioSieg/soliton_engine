@@ -239,10 +239,8 @@ namespace graphics {
     }
 
     auto pipeline_registry::try_recreate_all() -> void {
-        const auto now = std::chrono::high_resolution_clock::now();
         for (const auto& [name, pipeline] : m_pipelines) {
             pipeline->create(m_cache);
         }
-        log_info("Recreated {} pipelines in {:.03}s", m_pipelines.size(), std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - now).count());
     }
 }

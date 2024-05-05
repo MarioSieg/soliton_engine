@@ -371,9 +371,14 @@ namespace graphics {
     }
 
     auto graphics_subsystem::reload_pipelines() -> void {
-        if (shader_registry::get().compile_all()) {
-            auto &reg = pipeline_registry::get();
+        log_info("Reloading pipelines");
+        const auto now = std::chrono::high_resolution_clock::now();
+        if (shader_registry::get().compile_all()) [[likely]] {
+            auto& reg = pipeline_registry::get();
             reg.try_recreate_all();
+            log_info("Reloaded pipelines in {}ms", std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - now).count());
+        } else {
+            log_error("Failed to compile shaders");
         }
     }
 }
