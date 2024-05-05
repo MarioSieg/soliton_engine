@@ -29,7 +29,6 @@ local ScriptEditor = require 'editor.tools.scripteditor'
 local EntityListView = require 'editor.tools.entity_list_view'
 local Inspector = require 'editor.tools.inspector'
 local AssetExplorer = require 'editor.tools.asset_explorer'
-local AssetTree = require 'editor.tools.asset_tree'
 
 local HOST_INFO = App.Host.GRAPHICS_API..' | '..(App.Host.HOST)
 local CPU_NAME = 'CPU: '..App.Host.CPU_NAME
@@ -101,7 +100,6 @@ local Editor = {
         EntityListView,
         Inspector,
         AssetExplorer,
-        AssetTree
     },
     gizmos = {
         showGrid = true,
@@ -164,7 +162,6 @@ function Editor:defaultDockLayout()
         UI.DockBuilderDockWindow(Profiler.name, dockBot)
         UI.DockBuilderDockWindow(ScriptEditor.name, dockBot)
         UI.DockBuilderDockWindow(AssetExplorer.name, dockBot)
-        UI.DockBuilderDockWindow(AssetTree.name, dockBot)
         UI.DockBuilderDockWindow(EntityListView.name, dockLeft)
         UI.DockBuilderDockWindow(Inspector.name, dockRight)
     end

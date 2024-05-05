@@ -6,19 +6,73 @@ local inspect = require 'ext.inspect'
 
 local UI = require 'editor.imgui'
 local ICONS = require 'editor.icons'
-local Time = require('Time')
-local Scene = require('Scene')
+local Time = require 'Time'
+local Scene = require 'Scene'
 local EFLAGS = ENTITY_FLAGS
+
 
 local AssetExplorer = {
     name = ICONS.FOLDER_TREE..' Asset View',
     isVisible = ffi.new('bool[1]', true),
     scanDir = 'assets',
     assetList = {},
+    dirTree = {},
     columns = ffi.new('int[1]', 10),
     columsRange = {min=4, max=15}
 }
 
+function AssetExplorer:buildDirTreeRecursive(path, parent)
+    path = path or self.scanDir
+    parent = parent or self.dirTree
+    for entry in lfs.dir(path) do
+        if entry ~= '.' and entry ~= '..' then
+            local fullPath = path..'/'..entry
+            local attr = lfs.attributes(fullPath)
+            if attr and (attr.mode == 'directory' or attr.mode == 'file') then
+                local node = {
+                    name = entry,
+                    is_file = attr.mode == 'file',
+                    children = {}
+                }
+                table.insert(parent, node)
+                if not node.is_file then
+                    self:buildDirTreeRecursive(fullPath, node.children)
+                end
+            end
+        end
+    end
+end
+
+function AssetExplorer:renderTree()
+    UI.SetNextWindowSize(WINDOW_SIZE, ffi.C.ImGuiCond_FirstUseEver)
+    local DIR_COLOR = 0xffaaaaaa
+    local FILE_COLOR = 0xffcccccc
+    UI.PushStyleColor(ffi.C.ImGuiCol_Text, DIR_COLOR)
+    if UI.BeginChild('AssetTree') then
+        for i=1, #self.dirTree do
+            local node = self.dirTree[i]
+            if UI.TreeNode(node.name) then
+                for j=1, #node.children do
+                    local child = node.children[j]
+                    if child.is_file then
+                        UI.PushStyleColor(ffi.C.ImGuiCol_Text, FILE_COLOR)
+                        UI.Indent()
+                        UI.TextUnformatted(child.name)
+                        UI.Unindent()
+                        UI.PopStyleColor()
+                    else
+                        if UI.TreeNode(child.name) then
+                            UI.TreePop()
+                        end
+                    end
+                end
+                UI.TreePop()
+            end
+        end
+    end
+    UI.EndChild()
+    UI.PopStyleColor()
+end
 
 function AssetExplorer:expandAssetListRecursive(path) -- TODO: Only do for top directory and expand on demand
     path = path or self.scanDir
@@ -55,10 +109,6 @@ function AssetExplorer:buildAssetList()
     self:expandAssetListRecursive()
 end
 
-AssetExplorer:buildAssetList() -- Build asset list once on start
-
-local WINDOW_FLAGS = 0
-
 function AssetExplorer:render()
     UI.SetNextWindowSize(WINDOW_SIZE, ffi.C.ImGuiCond_FirstUseEver)
     if UI.Begin(self.name, self.isVisible, ffi.C.ImGuiWindowFlags_MenuBar) then
@@ -71,11 +121,12 @@ function AssetExplorer:render()
             UI.PopItemWidth()
             UI.EndMenuBar()
         end
+        self:renderTree()
         local win_size = UI.GetWindowSize()
         local cols = self.columns[0]
         local tile = (win_size.x/cols)-32
         local grid_size = UI.ImVec2(tile, tile)
-        if UI.BeginChild('AssetScrollingRegion', UI.ImVec2(0, -UI.GetFrameHeightWithSpacing()), false, WINDOW_FLAGS) then
+        if UI.BeginChild('AssetScrollingRegion', UI.ImVec2(0, -UI.GetFrameHeightWithSpacing()), false, 0) then
             UI.Columns(cols, 'AssetColumns', true)
             local r = math.random()
             for i=1, #self.assetList do
@@ -97,5 +148,8 @@ function AssetExplorer:render()
     end
     UI.End()
 end
+
+AssetExplorer:buildDirTreeRecursive() -- Build directory tree once on start
+AssetExplorer:buildAssetList() -- Build asset list once on start
 
 return AssetExplorer
