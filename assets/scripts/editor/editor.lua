@@ -62,7 +62,14 @@ local function buildFilterString(items)
     return r
 end
 
+local TEXTURE_FILE_FILTER = buildFilterString(TEXTURE_FILE_EXTS)
 local MESH_FILE_FILTER = buildFilterString(MESH_FILE_EXTS)
+local SCRIPT_FILE_FILTER = buildFilterString(SCRIPT_FILE_EXTS)
+local FONT_FILE_FILTER = buildFilterString(FONT_FILE_EXTS)
+local MATERIAL_FILE_FILTER = buildFilterString(MATERIAL_FILE_EXTS)
+local SOUND_FILE_FILTER = buildFilterString(SOUND_FILE_EXTS)
+local ICONS_FILE_FILTER = buildFilterString(ICONS_FILE_EXTS)
+local XAML_FILE_FILTER = buildFilterString(XAML_FILE_EXTS)
 
 local EFLAGS = ENTITY_FLAGS
 local DEBUG_MODE = {

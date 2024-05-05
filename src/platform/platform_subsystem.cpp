@@ -289,9 +289,17 @@ auto dump_loaded_dylibs() -> void {
     static auto proxy_resize_hook(GLFWwindow* window, int w, int h) -> void {
         passert(window != nullptr);
         void* user = glfwGetWindowUserPointer(window);
-        passert(user != nullptr);
-        static_cast<platform_subsystem*>(user)->resize_hook(); // inform kernel about resize
-        log_info("Resizing window to {}x{}", w, h);
+        if (!user) [[unlikely]] {
+            log_error("No user context ptr set for window");
+            return;
+        }
+        auto& sys = *static_cast<platform_subsystem*>(user);
+        if (!sys.resize_hook) [[unlikely]] {
+            log_error("No resize hook set for window");
+            return;
+        }
+        std::invoke(sys.resize_hook); // inform kernel about resize
+        log_info("Resized window to {}x{}", w, h);
     }
 
     static auto glfw_cursor_pos_callback(GLFWwindow* window, double x, double y) noexcept -> void {
