@@ -35,8 +35,8 @@ namespace graphics {
 
         std::string shader_dir = scripting_subsystem::cfg()["Renderer"]["shaderDir"].cast<std::string>().valueOr("shaders");
         shader_registry::init(std::move(shader_dir));
-        if (!shader_registry::get().compile_all()) [[unlikely]] {
-           panic("Failed to compile shaders");
+        if (!shader_registry::get().compile_all(scripting_subsystem::cfg()["Renderer"]["enableParallelShaderCompilation"].cast<bool>().valueOr(true))) [[unlikely]] {
+           log_error("Failed to compile shaders");
         }
 
         pipeline_registry::init();
@@ -373,7 +373,7 @@ namespace graphics {
     auto graphics_subsystem::reload_pipelines() -> void {
         log_info("Reloading pipelines");
         const auto now = std::chrono::high_resolution_clock::now();
-        if (shader_registry::get().compile_all()) [[likely]] {
+        if (shader_registry::get().compile_all(scripting_subsystem::cfg()["Renderer"]["enableParallelShaderCompilation"].cast<bool>().valueOr(true))) [[likely]] {
             auto& reg = pipeline_registry::get();
             reg.try_recreate_all();
             log_info("Reloaded pipelines in {}ms", std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - now).count());

@@ -20,24 +20,23 @@ namespace graphics {
         return m_shaders.at(name);
     }
 
-    auto shader_registry::compile_all() -> bool {
+    auto shader_registry::compile_all(const bool parallel) -> bool {
         using namespace std::filesystem;
         m_shaders.clear();
-        std::vector<std::future<std::pair<std::string, std::shared_ptr<vkb::shader>>>> futures {};
+        std::vector<std::future<std::tuple<std::string, std::string, std::shared_ptr<vkb::shader>>>> futures {};
         for (auto&& entry : recursive_directory_iterator{m_shader_dir}) {
             const auto& path = entry.path();
             auto name = path.filename().string();
-            auto shader = vkb::shader::compile(path.string());
-            futures.emplace_back(std::async(std::launch::async, [](std::string&& name, std::string&& path) -> std::pair<std::string, std::shared_ptr<vkb::shader>> {
+            futures.emplace_back(std::async(parallel ? std::launch::async : std::launch::deferred, [](std::string&& name, std::string&& path) {
                 log_info("Compiling shader: {} from {}", name, path);
-                return {name, vkb::shader::compile(std::move(path))};
+                return std::make_tuple(name, std::string{path}, vkb::shader::compile(std::move(path)));
             }, std::move(name), path.string()));
         }
         bool all_successful = true;
         for (auto&& future : futures) {
-            auto [name, shader] = future.get();
+            auto [name, path, shader] = future.get();
             if (!shader) {
-                log_error("Failed to compile shader: {}", name);
+                log_error("Failed to compile shader: {}", path);
                 all_successful = false;
                 continue;
             }

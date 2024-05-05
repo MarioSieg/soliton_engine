@@ -110,7 +110,8 @@ namespace vkb {
         const shaderc::SpvCompilationResult module =
             com.CompileGlslToSpv(source, kind, source_name.c_str(), options);
         if (module.GetCompilationStatus() != shaderc_compilation_status_success) [[unlikely]] {
-            log_error(module.GetErrorMessage());
+            if (const auto err = module.GetErrorMessage(); !err.empty())
+                log_error("Error: {}", err);
             log_error("Failed to compile shader: {}", source_name);
             return false;
         }

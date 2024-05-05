@@ -69,6 +69,7 @@ ENGINE_CONFIG = {
     },
     Renderer = {
         shaderDir = 'assets/shaders', -- Shader directory.
+        enableParallelShaderCompilation = true, -- Enable shader compilation using multiple threads.
         enableVulkanValidationLayers = true, -- Enable Vulkan validation layers.
         maxDebugDrawVertices = 1000000, -- Maximum amount of debug draw vertices.
         fallbackTexture = 'assets/textures/system/error.png', -- Fallback texture when a texture is not found.

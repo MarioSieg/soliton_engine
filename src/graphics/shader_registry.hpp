@@ -15,7 +15,7 @@ namespace graphics {
         [[nodiscard]] auto get_shader(const std::string& name) const -> std::shared_ptr<vkb::shader>;
 
         // search for shaders in the shader directory and compile them all
-        auto compile_all() -> bool;
+        auto compile_all(bool parallel) -> bool;
 
         [[nodiscard]] static auto get() noexcept -> shader_registry&;
         static auto init(std::string&& shader_dir) -> void;
