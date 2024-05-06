@@ -146,7 +146,9 @@ auto scene::import_from_file(const std::string& path, const float scale, const s
                     aiString name {};
                     mat->Get(AI_MATKEY_TEXTURE(*textureType, 0), name);
                     std::string tex_path = asset_root + name.C_Str();
-                    return get_asset_registry<graphics::texture>().load(std::move(tex_path));
+                    if (std::filesystem::exists(tex_path) && std::filesystem::is_regular_file(tex_path)) [[likely]] {
+                        return get_asset_registry<graphics::texture>().load(std::move(tex_path));
+                    }
                 }
                 return nullptr;
             };
@@ -154,6 +156,8 @@ auto scene::import_from_file(const std::string& path, const float scale, const s
             auto* material = get_asset_registry<graphics::material>().load_from_memory();
             material->albedo_map = load_tex({aiTextureType_DIFFUSE, aiTextureType_BASE_COLOR});
             material->normal_map = load_tex({aiTextureType_NORMALS, aiTextureType_NORMAL_CAMERA});
+            material->metallic_roughness_map = load_tex({aiTextureType_SPECULAR, aiTextureType_METALNESS, aiTextureType_DIFFUSE_ROUGHNESS, aiTextureType_SHININESS});
+            material->ambient_occlusion_map = load_tex({aiTextureType_AMBIENT_OCCLUSION});
             material->flush_property_updates();
 
             renderer->materials.emplace_back(material);

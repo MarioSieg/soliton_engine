@@ -44,8 +44,8 @@ namespace graphics::pipelines {
     }
 
     auto pbr_pipeline::configure_shaders(std::vector<std::pair<std::shared_ptr<vkb::shader>, vk::ShaderStageFlagBits>>& cfg) -> void {
-        auto vs = shader_registry::get().get_shader("triangle.vert");
-        auto fs = shader_registry::get().get_shader("triangle.frag");
+        auto vs = shader_registry::get().get_shader("uber_surface_pbr.vert");
+        auto fs = shader_registry::get().get_shader("uber_surface_pbr.frag");
         cfg.emplace_back(vs, vk::ShaderStageFlagBits::eVertex);
         cfg.emplace_back(fs, vk::ShaderStageFlagBits::eFragment);
     }

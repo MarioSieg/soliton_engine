@@ -4,6 +4,8 @@
 
 layout (set = 1, binding = 0) uniform sampler2D samplerAlbedoMap;
 layout (set = 1, binding = 1) uniform sampler2D samplerNormalMap;
+layout (set = 1, binding = 2) uniform sampler2D samplerRoughness;
+layout (set = 1, binding = 3) uniform sampler2D samplerAO;
 
 layout (location = 0) in vec2 outUV;
 layout (location = 1) in vec3 outNormal;
