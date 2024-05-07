@@ -20,7 +20,13 @@ namespace graphics {
 
     static convar<std::string> cv_shader_dir {"Renderer.shaderDir", std::nullopt, scripting::convar_flags::read_only};
     static convar<bool> cv_enable_parallel_shader_compilation {"Renderer.enableParallelShaderCompilation", true, scripting::convar_flags::read_only};
-    static convar<std::uint32_t> cv_max_render_threads {"Threads.renderThreads", 2u, scripting::convar_flags::read_only};
+    static convar<std::uint32_t> cv_max_render_threads {
+        "Threads.renderThreads",
+        2u,
+        scripting::convar_flags::read_only,
+        1u,
+        std::max(1u, std::thread::hardware_concurrency())
+    };
 
     graphics_subsystem::graphics_subsystem() : subsystem{"Graphics"} {
         log_info("Initializing graphics subsystem");

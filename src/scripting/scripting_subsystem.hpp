@@ -29,9 +29,6 @@ namespace scripting {
         }
 
         static auto exec_file(const std::string& file) -> bool;
-        static auto register_convar(std::optional<luabridge::LuaRef>* ref, bool* lock) -> void {
-            m_convar_hooks.emplace_back(std::make_pair(ref, lock));
-        }
 
     private:
         bool m_is_lua_host_online = false;
@@ -45,7 +42,6 @@ namespace scripting {
         static constexpr const char* k_engine_config_tab = "ENGINE_CONFIG";
         static inline constinit lua_State* m_L = nullptr;
         static inline constinit std::optional<luabridge::LuaRef> m_config_table {};
-        static inline std::vector<std::pair<std::optional<luabridge::LuaRef>*, bool*>> m_convar_hooks {};
         std::optional<luabridge::LuaRef> m_on_prepare {}; // Reference to __boot__.lua's on_prepare function
         std::optional<luabridge::LuaRef> m_on_tick {}; // Reference to __boot__.lua's on_tick function
     };
