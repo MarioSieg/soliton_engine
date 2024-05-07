@@ -36,12 +36,12 @@ namespace scripting {
 
         [[nodiscard]] auto operator ()() -> T {
             if (m_is_locked) [[unlikely]] {
-                log_error("Failed to get convar '{}' as it is locked", full_name());
+                log_error("Failed to get CONVAR '{}' as it is locked", full_name());
                 return fallback<false>();
             }
             register_var();
             if (!m_ref) [[unlikely]] {
-                log_error("Failed to get convar '{}' as the engine config key value is not valid", full_name());
+                log_error("Failed to get CONVAR '{}' as the engine config key value is not valid", full_name());
                 return fallback<false>();
             }
             ++m_gets;
@@ -53,13 +53,13 @@ namespace scripting {
     private:
         auto register_var() {
             if (m_ref) return;
-            log_info("Registering convar #{} [{} : {}] | Flags: {:#x}, Fallback: {}", ++s_convar_i, full_name(), type_name(), m_flags, fallback<true>());
+            log_info("Registering CONVAR #{} [{} : {}] | Flags: {:#x}, Fallback: {}", ++s_convar_i, full_name(), type_name(), m_flags, fallback<true>());
             passert(!m_name.empty() && "Convar must have a name");
             passert(tid == std::this_thread::get_id() && "Convars must be registered on the main thread");
             std::stack<luabridge::LuaRef> refs {};
             const auto* const root = scripting_subsystem::cfg();
             if (!root || !root->isTable()) [[unlikely]] {
-                log_error("Failed to register convar '{}' as the engine config root table is not initialized yet", full_name());
+                log_error("Failed to register CONVAR '{}' as the engine config root table is not initialized yet", full_name());
                 return;
             }
             refs.emplace(*root);
@@ -68,28 +68,28 @@ namespace scripting {
                 if (refs.top().isTable()) {
                     refs.emplace(refs.top()[k]);
                 } else {
-                    log_error("Failed to register convar '{}' as the engine config root table is not a table", full_name());
+                    log_error("Failed to register CONVAR '{}' as the engine config root table is not a table", full_name());
                     return;
                 }
             }
             auto key = refs.top();
             if (!key.isValid()) [[unlikely]] {
-                log_error("Failed to register convar '{}' as the engine config key value is not valid", full_name());
+                log_error("Failed to register CONVAR '{}' as the engine config key value is not valid", full_name());
                 return;
             }
             if constexpr (!std::is_same_v<T, bool> && (std::is_integral_v<T> || std::is_floating_point_v<T>)) {
                 if (!key.isNumber()) {
-                    log_error("Failed to register convar '{}' as the engine config key value is not of type 'number': '{}'", full_name(), key.tostring());
+                    log_error("Failed to register CONVAR '{}' as the engine config key value is not of type 'number': '{}'", full_name(), key.tostring());
                     return;
                 }
             } else if constexpr (std::is_same_v<T, bool>) {
                 if (!key.isBool()) {
-                    log_error("Failed to register convar '{}' as the engine config key value is not of type 'boolean': '{}'", full_name(), key.tostring());
+                    log_error("Failed to register CONVAR '{}' as the engine config key value is not of type 'boolean': '{}'", full_name(), key.tostring());
                     return;
                 }
             } else if constexpr (std::is_same_v<T, std::string>) {
                 if (!key.isString()) {
-                    log_error("Failed to register convar '{}' as the engine config key value is not of type 'string': '{}'", full_name(), key.tostring());
+                    log_error("Failed to register CONVAR '{}' as the engine config key value is not of type 'string': '{}'", full_name(), key.tostring());
                     return;
                 }
             }
