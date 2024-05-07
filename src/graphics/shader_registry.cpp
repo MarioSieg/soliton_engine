@@ -25,6 +25,7 @@ namespace graphics {
         m_shaders.clear();
         std::vector<std::future<std::tuple<std::string, std::string, std::shared_ptr<vkb::shader>>>> futures {};
         for (auto&& entry : recursive_directory_iterator{m_shader_dir}) {
+            if (entry.is_directory()) continue;
             const auto& path = entry.path();
             auto name = path.filename().string();
             futures.emplace_back(std::async(parallel ? std::launch::async : std::launch::deferred, [](std::string&& name, std::string&& path) {

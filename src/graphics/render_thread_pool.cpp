@@ -17,7 +17,6 @@ namespace graphics {
         thread_shared_ctx& shared_ctx
     ) : m_token {token}, m_num_threads {num_threads}, m_thread_id {thread_id}, m_shared_ctx {shared_ctx} {
         const vk::Device device = vkb::vkdvc();
-
         // create command pool
         const vk::CommandPoolCreateInfo pool_info {
             .flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer,
@@ -33,7 +32,7 @@ namespace graphics {
         vkcheck(device.allocateCommandBuffers(&alloc_info, m_command_buffers.data()));
 
         // start thread
-        m_thread = std::thread { [=, this] { thread_routine(); }};
+        m_thread = std::thread { [=, this] () -> void { thread_routine(); }};
     }
 
     render_thread::~render_thread() {
