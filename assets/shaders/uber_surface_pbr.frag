@@ -33,5 +33,5 @@ void main() {
   outFragColor = texColor * (ambient + diff * lightColor);
 
   // gamma correction
-  outFragColor.rgb = pow(outFragColor.rgb, VGAMMA);
+  outFragColor.rgb = texture(samplerRoughness, outUV).rgb;
 }

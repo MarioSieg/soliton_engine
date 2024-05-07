@@ -51,7 +51,7 @@ namespace assetmgr {
         return s_cfg;
     }
 
-    [[nodiscard]] static auto validate_path(const std::string& full_path) -> bool {
+    auto validate_path(std::string& full_path) -> bool {
         const simdutf::encoding_type encoding = simdutf::autodetect_encoding(full_path.c_str(), full_path.size());
         if (encoding != simdutf::encoding_type::UTF8) [[unlikely]] { /* UTF8 != ASCII but UTF8 can store ASCII */
             log_warn("Asset path {} is not ASCII encoded", full_path);
@@ -60,6 +60,9 @@ namespace assetmgr {
         if (!simdutf::validate_ascii(full_path.c_str(), full_path.size())) [[unlikely]] {
             log_warn("Asset path {} contains non-ASCII characters", full_path);
             return false;
+        }
+        if (std::ranges::find(full_path, '\\') != full_path.cend()) { // Windows path
+            std::ranges::replace(full_path, '\\', '/'); // Convert to Unix path
         }
         if (!exists(full_path)) [[unlikely]] {
             log_warn("Asset path not found: {}", full_path);
@@ -112,9 +115,6 @@ namespace assetmgr {
 
     auto file_stream::open(std::string&& path) -> std::shared_ptr<file_stream> {
         std::string abs = absolute(path).string();
-        if (std::ranges::find(abs, '\\') != abs.cend()) { // Windows path
-            std::ranges::replace(abs, '\\', '/'); // Convert to Unix path
-        }
         log_info("Asset stream request #{}: {}", s_asset_requests.fetch_add(1, std::memory_order_relaxed), abs);
         if (s_cfg.validate_paths && !validate_path(abs)) [[unlikely]] {
             s_asset_requests_failed.fetch_add(1, std::memory_order_relaxed);

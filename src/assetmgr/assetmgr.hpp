@@ -149,6 +149,7 @@ namespace assetmgr {
 
     extern auto init(mgr_config&& cfg) -> void;
     extern auto shutdown() -> void;
+    [[nodiscard]] extern auto validate_path(std::string& full_path) -> bool; // validates paths and converts Windows to UNIX separators
     [[nodiscard]] extern auto cfg() noexcept -> const mgr_config&;
     [[nodiscard]] extern auto load_asset_blob_raw(const std::string& path, std::vector<std::uint8_t>& out) -> bool;
     [[nodiscard]] extern auto load_asset_text_raw(const std::string& path, std::string& out) -> bool;
