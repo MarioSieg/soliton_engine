@@ -12,6 +12,7 @@
 
 #include "bridge/LuaBridge.h"
 
+
 namespace scripting {
     class scripting_subsystem final : public subsystem {
     public:
@@ -24,12 +25,10 @@ namespace scripting {
 
         [[nodiscard]] static auto get_lua_state() noexcept -> lua_State* { return m_L; }
         // get global engine config table which is filled in from Lua (scripts/config/engine.lua)
-        [[nodiscard]] static auto cfg() noexcept -> const luabridge::LuaRef& {
-            passert(m_config_table.has_value());
-            return *m_config_table;
+        [[nodiscard]] static auto cfg() noexcept -> const luabridge::LuaRef* {
+            return m_config_table ? &*m_config_table : nullptr;
         }
 
-        [[nodiscard]] static auto exec_string(const std::string& str) -> bool;
         static auto exec_file(const std::string& file) -> bool;
 
     private:
