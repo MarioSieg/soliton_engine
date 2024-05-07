@@ -23,6 +23,7 @@ namespace scripting {
     };
 
     inline constinit std::uint32_t s_convar_i = 0;
+    inline const auto tid = std::this_thread::get_id();
 
     template <typename T> requires is_con_var_type<T>
     class convar final {
@@ -34,6 +35,10 @@ namespace scripting {
         ) : m_name{std::move(name)}, m_fallback{std::move(fallback)}, m_flags{flags} {}
 
         [[nodiscard]] auto operator ()() -> T {
+            if (m_is_locked) [[unlikely]] {
+                log_error("Failed to get convar '{}' as it is locked", full_name());
+                return fallback<false>();
+            }
             register_var();
             if (!m_ref) [[unlikely]] {
                 log_error("Failed to get convar '{}' as the engine config key value is not valid", full_name());
@@ -50,6 +55,7 @@ namespace scripting {
             if (m_ref) return;
             log_info("Registering convar #{} [{} : {}] | Flags: {:#x}, Fallback: {}", ++s_convar_i, full_name(), type_name(), m_flags, fallback<true>());
             passert(!m_name.empty() && "Convar must have a name");
+            passert(tid == std::this_thread::get_id() && "Convars must be registered on the main thread");
             std::stack<luabridge::LuaRef> refs {};
             const auto* const root = scripting_subsystem::cfg();
             if (!root || !root->isTable()) [[unlikely]] {
@@ -88,6 +94,7 @@ namespace scripting {
                 }
             }
             m_ref = key;
+            scripting_subsystem::register_convar(&m_ref, &m_is_locked);
         }
 
         template<const bool None = false>
@@ -112,6 +119,7 @@ namespace scripting {
         const std::underlying_type_t<convar_flags::$> m_flags;
         std::optional<luabridge::LuaRef> m_ref {};
         std::uint32_t m_gets {}, m_sets {};
+        bool m_is_locked {};
     };
 }
 

@@ -4,6 +4,7 @@
 
 #include "../scene/scene.hpp"
 #include "lfs/lfs.h"
+#include "convar.hpp"
 
 namespace scripting {
     template <typename... Ts>
@@ -23,6 +24,15 @@ namespace scripting {
     }
 
     scripting_subsystem::~scripting_subsystem() {
+        for (const auto& [ref, lock] : m_convar_hooks) {
+            if (lock) {
+                *lock = true;
+            }
+            if (ref) {
+                ref->reset();
+            }
+        }
+        m_convar_hooks.clear();
         lua_host_disconnect();
     }
 
