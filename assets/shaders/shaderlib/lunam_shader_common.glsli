@@ -1,0 +1,8 @@
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+
+#ifndef LUNAM_SHADERLIB_COMMON_H
+#define LUNAM_SHADERLIB_COMMON_H
+
+const float PI = 3.1415926535897932384626433832795;
+
+#endif

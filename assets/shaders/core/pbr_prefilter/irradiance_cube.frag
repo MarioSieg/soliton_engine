@@ -1,6 +1,8 @@
-// Generates an irradiance cube from an environment map using convolution
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #version 450
+
+#include <lunam_shader_common.glsli>
 
 layout (location = 0) in vec3 inPos;
 layout (location = 0) out vec4 outColor;
@@ -11,10 +13,7 @@ layout(push_constant) uniform PushConsts {
 	layout (offset = 68) float deltaTheta;
 } consts;
 
-#define PI 3.1415926535897932384626433832795
-
-void main()
-{
+void main() {
 	vec3 N = normalize(inPos);
 	vec3 up = vec3(0.0, 1.0, 0.0);
 	vec3 right = normalize(cross(up, N));

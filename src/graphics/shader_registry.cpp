@@ -27,6 +27,8 @@ namespace graphics {
         for (auto&& entry : recursive_directory_iterator{m_shader_dir}) {
             if (entry.is_directory()) continue;
             const auto& path = entry.path();
+            if (path.has_extension() && path.extension() == ".glsli") // ignore shader headers
+                continue;
             auto name = path.filename().string();
             futures.emplace_back(std::async(parallel ? std::launch::async : std::launch::deferred, [](std::string&& name, std::string&& path) {
                 log_info("Compiling shader: {} from {}", name, path);

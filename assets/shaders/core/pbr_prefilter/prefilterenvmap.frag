@@ -1,4 +1,8 @@
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+
 #version 450
+
+#include <lunam_shader_common.glsli>
 
 layout (location = 0) in vec3 inPos;
 layout (location = 0) out vec4 outColor;
@@ -9,8 +13,6 @@ layout(push_constant) uniform PushConsts {
 	layout (offset = 64) float roughness;
 	layout (offset = 68) uint numSamples;
 } consts;
-
-const float PI = 3.1415926536;
 
 // Based omn http://byteblacksmith.com/improvements-to-the-canonical-one-liner-glsl-rand-for-opengl-es-2-0/
 float random(vec2 co)

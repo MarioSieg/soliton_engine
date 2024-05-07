@@ -1,6 +1,8 @@
-// Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #version 450
+
+#include <lunam_shader_common.glsli>
 
 layout (set = 1, binding = 0) uniform sampler2D samplerAlbedoMap;
 layout (set = 1, binding = 1) uniform sampler2D samplerNormalMap;

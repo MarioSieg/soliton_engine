@@ -1,5 +1,7 @@
 #version 450
 
+#include <lunam_shader_common.glsli>
+
 layout (location = 0) in vec3 inPos;
 
 layout(push_constant) uniform PushConsts {
@@ -12,8 +14,7 @@ out gl_PerVertex {
 	vec4 gl_Position;
 };
 
-void main() 
-{
+void main() {
 	outUVW = inPos;
 	gl_Position = pushConsts.mvp * vec4(inPos.xyz, 1.0);
 }

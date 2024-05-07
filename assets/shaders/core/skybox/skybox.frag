@@ -1,9 +1,12 @@
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+
 #version 450
+
+#include <lunam_shader_common.glsli>
 
 layout (binding = 2) uniform samplerCube samplerEnv;
 
 layout (location = 0) in vec3 inUVW;
-
 layout (location = 0) out vec4 outColor;
 
 layout (binding = 1) uniform UBOParams {
@@ -13,8 +16,7 @@ layout (binding = 1) uniform UBOParams {
 } uboParams;
 
 // From http://filmicworlds.com/blog/filmic-tonemapping-operators/
-vec3 Uncharted2Tonemap(vec3 color)
-{
+vec3 Uncharted2Tonemap(vec3 color) {
 	float A = 0.15;
 	float B = 0.50;
 	float C = 0.10;
@@ -25,8 +27,7 @@ vec3 Uncharted2Tonemap(vec3 color)
 	return ((color*(A*color+C*B)+D*E)/(color*(A*color+B)+D*F))-E/F;
 }
 
-void main() 
-{
+void main() {
 	vec3 color = texture(samplerEnv, inUVW).rgb;
 
 	// Tone mapping

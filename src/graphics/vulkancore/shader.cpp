@@ -19,9 +19,14 @@ namespace vkb {
             std::size_t include_depth
         ) -> shaderc_include_result* override {
             using namespace std::filesystem;
-            const std::string requested_source {assetmgr::cfg().asset_root + "/shaders/" + requested_source_name};
+            if (type == shaderc_include_type_relative) {
+                panic("Relative shader includes are not supported: {}", requested_source_name);
+            }
+            const std::string requested_source {
+                assetmgr::cfg().asset_root + "/shaders/shaderlib/" + requested_source_name
+            };
             log_info("Resolving shader include: {}", requested_source);
-            if (type == shaderc_include_type_relative && (!exists(requested_source) || !is_regular_file(requested_source))) [[unlikely]] {
+            if (!exists(requested_source) || !is_regular_file(requested_source)) [[unlikely]] {
                 log_error("Requested include file does not exist: {}", requested_source);
                 return new shaderc_include_result {
                     .source_name = "",
