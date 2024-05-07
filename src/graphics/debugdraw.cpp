@@ -7,7 +7,7 @@
 
 namespace graphics {
     static convar<std::uint32_t> k_debug_draw_max_verts {
-        "Renderer.maxDebugDrawVertices\"",
+        "Renderer.maxDebugDrawVertices",
         100'000u,
         scripting::convar_flags::read_only
     };
