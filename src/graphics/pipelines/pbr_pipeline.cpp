@@ -90,11 +90,11 @@ namespace graphics::pipelines {
 
     auto pbr_pipeline::configure_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> void {
         pipeline_base::configure_color_blending(cfg);
-        cfg.blendEnable = vk::True;
+        cfg.blendEnable = vk::False;
     }
 
     auto pbr_pipeline::configure_multisampling(vk::PipelineMultisampleStateCreateInfo& cfg) -> void {
         pipeline_base::configure_multisampling(cfg);
-        cfg.alphaToCoverageEnable = vk::True;
+        cfg.alphaToCoverageEnable = vk::False;
     }
 }

@@ -99,7 +99,7 @@ auto scene::import_from_file(const std::string& path, const float scale, const s
     const std::string asset_root = std::filesystem::path {path}.parent_path().string() + "/";
 
     auto* missing_material = get_asset_registry<graphics::material>().load_from_memory();
-    missing_material->albedo_map = get_asset_registry<graphics::texture>().load("assets/textures/system/error.png");
+    missing_material->albedo_map = graphics::material::get_error_texture();
     missing_material->flush_property_updates();
 
     ankerl::unordered_dense::map<std::string, std::uint32_t> resolved_names {};
