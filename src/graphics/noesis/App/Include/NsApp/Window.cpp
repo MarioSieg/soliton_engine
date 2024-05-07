@@ -4,10 +4,21 @@
 #include <GLFW/glfw3.h>
 
 #include "../../../../../platform/platform_subsystem.hpp"
-#include "../../../../../scripting/scripting_subsystem.hpp"
+#include "../../../../../scripting/convar.hpp"
 
 namespace NoesisApp
 {
+    static convar<std::int32_t> ui_render_flags {
+        "GameUI.renderFlags",
+        Noesis::RenderFlags_LCD | Noesis::RenderFlags_FlipY | Noesis::RenderFlags_PPAA,
+        scripting::convar_flags::none
+    };
+    static convar<float> ui_tesselation_pixel_error {
+        "GameUI.tesselationPixelError",
+        {Noesis::TessellationMaxPixelError::HighQuality().error},
+        scripting::convar_flags::none
+    };
+
     NS_IMPLEMENT_REFLECTION(Window) { }
 
     static_assert(Noesis::RenderFlags::RenderFlags_Wireframe == 1, "Update scripts/config/engine.lua -> UI_RENDER_FLAGS");
@@ -42,13 +53,13 @@ namespace NoesisApp
             static_cast<std::uint32_t>(width),
             static_cast<std::uint32_t>(height)
         );
-        std::uint32_t flags = scripting_subsystem::cfg()["GameUI"]["renderFlags"].cast<std::uint32_t>().valueOr(Noesis::RenderFlags_LCD | Noesis::RenderFlags_FlipY | Noesis::RenderFlags_PPAA);
+        std::uint32_t flags = ui_render_flags();
         if (wireframe) {
             flags |= Noesis::RenderFlags::RenderFlags_Wireframe;
         }
         this->m_view->SetFlags(flags);
         this->m_view->GetRenderer()->Init(device);
-        this->m_view->SetTessellationMaxPixelError(scripting_subsystem::cfg()["GameUI"]["tesselationPixelError"].cast<float>().valueOr(Noesis::TessellationMaxPixelError::HighQuality().error));
+        this->m_view->SetTessellationMaxPixelError(ui_tesselation_pixel_error());
         float xscale;
         float yscale;
         glfwGetWindowContentScale(platform::platform_subsystem::get_glfw_window(), &xscale, &yscale);

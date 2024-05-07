@@ -2,10 +2,16 @@
 
 #include "debugdraw.hpp"
 
-#include "../scripting/scripting_subsystem.hpp"
+#include "../scripting/convar.hpp"
 #include "vulkancore/context.hpp"
 
 namespace graphics {
+    static convar<std::uint32_t> k_debug_draw_max_verts {
+        "Renderer.maxDebugDrawVertices\"",
+        100'000u,
+        scripting::convar_flags::read_only
+    };
+
     using namespace DirectX;
 
     static constexpr std::array<const std::uint32_t, 1532 / 4> k_debug_draw_vs_spirv {
@@ -1265,7 +1271,7 @@ namespace graphics {
         device.destroyShaderModule(fs, &vkb::s_allocator);
     }
 
-    debugdraw::debugdraw(const vk::DescriptorPool pool) : k_max_vertices{scripting::scripting_subsystem::cfg()["Renderer"]["maxDebugDrawVertices"].cast<std::uint32_t>().valueOr(250'000)} {
+    debugdraw::debugdraw(const vk::DescriptorPool pool) : k_max_vertices{k_debug_draw_max_verts()} {
         m_vertices.reserve(k_max_vertices);
         m_draw_commands.reserve(k_max_vertices / 2);
         const vk::Device device = vkb::ctx().get_device();

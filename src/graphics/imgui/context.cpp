@@ -11,11 +11,13 @@
 #include "implot.h"
 #include "../pipeline.hpp"
 #include "../../platform/platform_subsystem.hpp"
-#include "../../scripting/scripting_subsystem.hpp"
+#include "../../scripting/convar.hpp"
 
 #include <vk_mem_alloc.h>
 
 namespace imgui {
+    static convar<float> cv_font_size {"EditorUI.fontSize", 18.0f, scripting::convar_flags::read_only};
+
     context::context() {
         ImGui::SetAllocatorFunctions(
             +[](size_t size, [[maybe_unused]] void* usr) -> void* {
@@ -81,7 +83,7 @@ namespace imgui {
         };
         passert(ImGui_ImplVulkan_Init(&init_info, vkb::ctx().get_scene_render_pass()));
 
-        const float font_size = scripting::scripting_subsystem::cfg()["EditorUI"]["fontSize"].cast<float>().valueOr(18.0f);
+        const float font_size = cv_font_size();
 
         // add primary text font:
         ImFontConfig config { };

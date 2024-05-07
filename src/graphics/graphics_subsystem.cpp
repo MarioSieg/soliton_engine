@@ -3,7 +3,7 @@
 #include "graphics_subsystem.hpp"
 
 #include "../platform/platform_subsystem.hpp"
-#include "../scripting/scripting_subsystem.hpp"
+#include "../scripting/convar.hpp"
 
 #include <mimalloc.h>
 
@@ -14,10 +14,13 @@
 #include "pipelines/pbr_pipeline.hpp"
 
 using platform::platform_subsystem;
-using scripting::scripting_subsystem;
 
 namespace graphics {
     using vkb::context;
+
+    static convar<std::string> cv_shader_dir {"Renderer.shaderDir", std::nullopt, scripting::convar_flags::read_only};
+    static convar<bool> cv_enable_parallel_shader_compilation {"Renderer.enableParallelShaderCompilation", true, scripting::convar_flags::read_only};
+    static convar<std::uint32_t> cv_max_render_threads {"Threads.renderThreads", 2u, scripting::convar_flags::read_only};
 
     graphics_subsystem::graphics_subsystem() : subsystem{"Graphics"} {
         log_info("Initializing graphics subsystem");
@@ -31,9 +34,8 @@ namespace graphics {
 
         create_descriptor_pool();
 
-        std::string shader_dir = scripting_subsystem::cfg()["Renderer"]["shaderDir"].cast<std::string>().valueOr("shaders");
-        shader_registry::init(std::move(shader_dir));
-        if (!shader_registry::get().compile_all(scripting_subsystem::cfg()["Renderer"]["enableParallelShaderCompilation"].cast<bool>().valueOr(true))) [[unlikely]] {
+        shader_registry::init(cv_shader_dir());
+        if (!shader_registry::get().compile_all(cv_enable_parallel_shader_compilation())) [[unlikely]] {
            log_error("Failed to compile shaders");
         }
 
@@ -41,7 +43,7 @@ namespace graphics {
         auto& reg = pipeline_registry::get();
         reg.register_pipeline<pipelines::pbr_pipeline>();
 
-        int num_render_threads = scripting_subsystem::cfg()["Threads"]["renderThreads"].cast<std::int32_t>().valueOr(2);
+        int num_render_threads = cv_max_render_threads();
         num_render_threads = std::clamp(num_render_threads, 1, std::max(1, static_cast<int>(std::thread::hardware_concurrency())));
         m_render_thread_pool.emplace(&render_scene_bucket, this, num_render_threads);
         m_render_data.reserve(32);
@@ -371,7 +373,7 @@ namespace graphics {
     auto graphics_subsystem::reload_pipelines() -> void {
         log_info("Reloading pipelines");
         const auto now = std::chrono::high_resolution_clock::now();
-        if (shader_registry::get().compile_all(scripting_subsystem::cfg()["Renderer"]["enableParallelShaderCompilation"].cast<bool>().valueOr(true))) [[likely]] {
+        if (shader_registry::get().compile_all(cv_enable_parallel_shader_compilation())) [[likely]] {
             auto& reg = pipeline_registry::get();
             reg.try_recreate_all();
             log_info("Reloaded pipelines in {}ms", std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - now).count());

@@ -3,11 +3,15 @@
 #include "context.hpp"
 #include "shader.hpp"
 
-#include "../../scripting/scripting_subsystem.hpp"
-
-using scripting::scripting_subsystem;
+#include "../../scripting/convar.hpp"
 
 namespace vkb {
+    static convar<bool> cv_enable_vulkan_validation_layers {
+        "Renderer.enableVulkanValidationLayers",
+        false,
+        convar_flags::read_only
+    };
+
     context::context(GLFWwindow* window) : m_window{window} {
         passert(m_window != nullptr);
         boot_vulkan_core();
@@ -155,8 +159,7 @@ namespace vkb {
     }
 
     auto context::boot_vulkan_core() -> void {
-        const bool enable_validation = scripting_subsystem::cfg()["Renderer"]["enableVulkanValidationLayers"].cast<bool>().valueOr(false);
-        m_device.emplace(enable_validation);
+        m_device.emplace(cv_enable_vulkan_validation_layers());
         m_swapchain.emplace(m_device->get_instance(), m_device->get_physical_device(), m_device->get_logical_device());
         m_swapchain->init_surface(m_window);
         recreate_swapchain();

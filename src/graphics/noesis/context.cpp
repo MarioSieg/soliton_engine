@@ -29,7 +29,7 @@
 #include "../vulkancore/context.hpp"
 #include "../imgui/imgui.h"
 
-#include "../../scripting/scripting_subsystem.hpp"
+#include "../../scripting/convar.hpp"
 #include "../../platform/platform_subsystem.hpp"
 
 using scripting::scripting_subsystem;
@@ -79,6 +79,16 @@ extern "C" void NsShutdownPackages_NoesisApp() {
 }
 
 namespace noesis {
+    static convar<std::string> cv_license { "GameUI.license.userId", std::nullopt, convar_flags::read_only };
+    static convar<std::string> cv_key { "GameUI.license.key", std::nullopt, convar_flags::read_only };
+    static convar<std::string> cv_xaml_root { "GameUI.xamlRootPath", "assets/ui", convar_flags::read_only };
+    static convar<std::string> cv_font_root { "GameUI.fontRootPath", "assets/ui", convar_flags::read_only };
+    static convar<std::string> cv_texture_root { "GameUI.textureRootPath", "assets/ui", convar_flags::read_only };
+    static convar<std::string> cv_default_font { "GameUI.defaultFont.family", "Fonts/#PT Root UI", convar_flags::read_only };
+    static convar<float> cv_default_font_size { "GameUI.defaultFont.size", 15.0f, convar_flags::read_only };
+    static convar<std::int32_t> cv_default_font_weight { "GameUI.defaultFont.weight", {Noesis::FontWeight_Normal}, convar_flags::read_only };
+    static convar<std::int32_t> cv_default_font_stretch { "GameUI.defaultFont.stretch", {Noesis::FontStretch_Normal}, convar_flags::read_only };
+
     static constinit Noesis::IView* s_event_proxy;
 
     [[nodiscard]] static auto is_ui_active(GLFWwindow* const window) noexcept -> bool {
@@ -236,8 +246,8 @@ namespace noesis {
                 default: log_info("{}:{} [GUI] {}", file_name, line, msg); break;
             }
         });
-        static const std::string user_name {scripting_subsystem::cfg()["GameUI"]["license"]["userId"].cast<std::string>().valueOr("")};
-        static const std::string license_key {scripting_subsystem::cfg()["GameUI"]["license"]["key"].cast<std::string>().valueOr("")};
+        static const std::string user_name {cv_license()};
+        static const std::string license_key {cv_key()};
         Noesis::GUI::SetLicense(
             user_name.c_str(),
             license_key.c_str()
@@ -257,19 +267,19 @@ namespace noesis {
         Noesis::RegisterComponent<Noesis::EnumConverter<Menu3D::State>>();
         Noesis::RegisterComponent<Menu3D::MultiplierConverter>();
 
-        static const std::string xaml_root = scripting_subsystem::cfg()["GameUI"]["xamlRootPath"].cast<std::string>().valueOr("assets/ui");
-        static const std::string font_root = scripting_subsystem::cfg()["GameUI"]["fontRootPath"].cast<std::string>().valueOr("assets/ui");
-        static const std::string texture_root = scripting_subsystem::cfg()["GameUI"]["textureRootPath"].cast<std::string>().valueOr("assets/ui");
+        static const std::string xaml_root = cv_xaml_root();
+        static const std::string font_root = cv_font_root();
+        static const std::string texture_root = cv_texture_root();
         Noesis::GUI::SetXamlProvider(Noesis::MakePtr<NoesisApp::LocalXamlProvider>(xaml_root.c_str()));
         Noesis::GUI::SetFontProvider(Noesis::MakePtr<NoesisApp::LocalFontProvider>(font_root.c_str()));
         Noesis::GUI::SetTextureProvider(Noesis::MakePtr<NoesisApp::LocalTextureProvider>(texture_root.c_str()));
-        static const std::string default_font = scripting_subsystem::cfg()["GameUI"]["defaultFont"]["family"].cast<std::string>().valueOr("Fonts/#PT Root UI");
+        static const std::string default_font = cv_default_font();
         const char* fonts[] = { default_font.c_str() };
         Noesis::GUI::SetFontFallbacks(fonts, 1);
         Noesis::GUI::SetFontDefaultProperties(
-            scripting_subsystem::cfg()["GameUI"]["defaultFont"]["size"].cast<float>().valueOr(15.0f),
-            static_cast<Noesis::FontWeight>(scripting_subsystem::cfg()["GameUI"]["defaultFont"]["weight"].cast<std::int32_t>().valueOr(Noesis::FontWeight_Normal)),
-            static_cast<Noesis::FontStretch>(scripting_subsystem::cfg()["GameUI"]["defaultFont"]["stretch"].cast<std::int32_t>().valueOr(Noesis::FontStretch_Normal)),
+            cv_default_font_size(),
+            static_cast<Noesis::FontWeight>(cv_default_font_weight()),
+            static_cast<Noesis::FontStretch>(cv_default_font_stretch()),
             Noesis::FontStyle_Normal
         );
         NoesisApp::SetThemeProviders();

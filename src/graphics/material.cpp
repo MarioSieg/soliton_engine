@@ -4,11 +4,14 @@
 
 #include "vulkancore/context.hpp"
 #include "graphics_subsystem.hpp"
-#include "../scripting/scripting_subsystem.hpp"
+#include "../scripting/convar.hpp"
 
 using scripting::scripting_subsystem;
 
 namespace graphics {
+    static convar<std::string> cv_error_texture {"Renderer.fallbackTexture", std::nullopt, scripting::convar_flags::read_only};
+    static convar<std::string> cv_flat_normal {"Renderer.flatNormalTexture", std::nullopt, scripting::convar_flags::read_only};
+
     material::material(
         texture* albedo_map,
         texture* metallic_roughness_map,
@@ -67,8 +70,8 @@ namespace graphics {
     }
 
     auto material::init_static_resources() -> void {
-        s_error_texture.emplace(scripting_subsystem::cfg()["Renderer"]["fallbackTexture"].cast<std::string>().valueOr(""));
-        s_flat_normal.emplace(scripting_subsystem::cfg()["Renderer"]["flatNormalTexture"].cast<std::string>().valueOr(""));
+        s_error_texture.emplace(cv_error_texture());
+        s_flat_normal.emplace(cv_flat_normal());
 
         constexpr unsigned lim = 16384u;
         std::array<vk::DescriptorPoolSize, 1> pool_sizes = {
