@@ -19,8 +19,6 @@ using scripting::scripting_subsystem;
 namespace graphics {
     using vkb::context;
 
-    static auto render_scene_bucket(vk::CommandBuffer cmd, std::int32_t bucket_id, std::int32_t num_threads, void* usr) -> void;
-
     graphics_subsystem::graphics_subsystem() : subsystem{"Graphics"} {
         log_info("Initializing graphics subsystem");
 
