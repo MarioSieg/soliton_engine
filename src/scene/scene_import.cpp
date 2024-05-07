@@ -148,8 +148,6 @@ auto scene::import_from_file(const std::string& path, const float scale, const s
                     std::string tex_path = asset_root + name.C_Str();
                     if (assetmgr::validate_path(tex_path)) [[likely]] {
                         return get_asset_registry<graphics::texture>().load(std::move(tex_path));
-                    } else {
-                        log_warn("Texture '{}' not found, using placeholder", tex_path);
                     }
                 }
                 return nullptr;

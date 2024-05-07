@@ -68,6 +68,10 @@ namespace assetmgr {
             log_warn("Asset path not found: {}", full_path);
             return false;
         }
+        if (is_directory(full_path)) [[unlikely]] {
+            log_warn("Asset path is a directory: {}", full_path);
+            return false;
+        }
         return true;
     }
 
