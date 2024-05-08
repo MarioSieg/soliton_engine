@@ -78,7 +78,7 @@ namespace scripting {
             if (m_ref) return;
             passert(detail::tid == std::this_thread::get_id() && "Convars must be registered on the main thread");
             std::string s_fallback {"None"};
-            if constexpr (std::is_same_v<T, std::string>) {
+            if constexpr (std::is_same_v<T, std::string> | std::is_same_v<T, bool>) {
                 if (m_fallback) {
                     s_fallback = fallback();
                 }
@@ -97,7 +97,7 @@ namespace scripting {
                 if (has_range) {
                     range = fmt::format(", Range: [{} : {}]", m_min, m_max);
                 }
-                log_info("Registering CONVAR #{} [{} : {}] | Flags: {:#x}, Fallback: {}{}", ++detail::s_convar_i, full_name(), type_name(), m_flags, s_fallback, m_min, m_max, range);
+                log_info("Registering CONVAR #{} [{} : {}] | Flags: {:#x}, Fallback: {}{}", ++detail::s_convar_i, full_name(), type_name(), m_flags, s_fallback, range);
             }
             if constexpr (std::is_same_v<T, bool> && std::is_integral_v<T> || std::is_floating_point_v<T>) {
                 if (m_min > m_max) [[unlikely]] {
