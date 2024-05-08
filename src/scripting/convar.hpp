@@ -80,7 +80,8 @@ namespace scripting {
             std::string s_fallback {"None"};
             if constexpr (std::is_same_v<T, std::string> | std::is_same_v<T, bool>) {
                 if (m_fallback) {
-                    s_fallback = fallback();
+                    if constexpr (std::is_same_v<T, std::string>) s_fallback = fallback();
+                    else s_fallback = fallback() ? "true" : "false";
                 }
                log_info("Registering CONVAR #{} [{} : {}] | Flags: {:#x}, Fallback: {}", ++detail::s_convar_i, full_name(), type_name(), m_flags, s_fallback);
             } else {
