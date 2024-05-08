@@ -96,7 +96,7 @@ namespace scripting {
                 }
                 std::string range {};
                 if (has_range) {
-                    range = fmt::format(", Range: [{} : {}]", m_min, m_max);
+                    range = fmt::format(", Range: [{}, {}]", m_min, m_max);
                 }
                 log_info("Registering CONVAR #{} [{} : {}] | Flags: {:#x}, Fallback: {}{}", ++detail::s_convar_i, full_name(), type_name(), m_flags, s_fallback, range);
             }
