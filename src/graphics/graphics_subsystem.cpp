@@ -12,6 +12,7 @@
 #include "pipeline.hpp"
 
 #include "pipelines/pbr_pipeline.hpp"
+#include "pipelines/sky.hpp"
 
 using platform::platform_subsystem;
 
@@ -48,10 +49,9 @@ namespace graphics {
         pipeline_registry::init();
         auto& reg = pipeline_registry::get();
         reg.register_pipeline<pipelines::pbr_pipeline>();
+        reg.register_pipeline<pipelines::sky_pipeline>();
 
-        int num_render_threads = cv_max_render_threads();
-        num_render_threads = std::clamp(num_render_threads, 1, std::max(1, static_cast<int>(std::thread::hardware_concurrency())));
-        m_render_thread_pool.emplace(&render_scene_bucket, this, num_render_threads);
+        m_render_thread_pool.emplace(&render_scene_bucket, this, cv_max_render_threads());
         m_render_data.reserve(32);
 
         m_imgui_context.emplace();
@@ -129,91 +129,6 @@ namespace graphics {
     }
 
     // WARNING! RENDER THREAD LOCAL
-    HOTPROC static auto draw_mesh(
-        const mesh& mesh,
-        const vk::CommandBuffer cmd,
-        const std::vector<material*>& mats,
-        const vk::PipelineLayout layout
-    ) -> void {
-        constexpr vk::DeviceSize offsets = 0;
-        cmd.bindIndexBuffer(mesh.get_index_buffer().get_buffer(), 0, mesh.is_index_32bit() ? vk::IndexType::eUint32 : vk::IndexType::eUint16);
-        cmd.bindVertexBuffers(0, 1, &mesh.get_vertex_buffer().get_buffer(), &offsets);
-        if (mesh.get_primitives().size() <= mats.size()) { // we have at least one material for each primitive
-            for (std::size_t idx = 0; const mesh::primitive& prim : mesh.get_primitives()) {
-                cmd.bindDescriptorSets(
-                    vk::PipelineBindPoint::eGraphics,
-                    layout,
-                    1,
-                    1,
-                    &mats[idx++]->get_descriptor_set(),
-                    0,
-                    nullptr
-                );
-                cmd.drawIndexed(prim.index_count, 1, prim.index_start, 0, 1);
-            }
-        } else {
-            cmd.bindDescriptorSets(
-                vk::PipelineBindPoint::eGraphics,
-                layout,
-                1,
-                1,
-                &mats[0]->get_descriptor_set(),
-                0,
-                nullptr
-            );
-            cmd.drawIndexed(mesh.get_index_count(), 1, 0, 0, 0);
-        }
-    }
-
-    // WARNING! RENDER THREAD LOCAL
-    HOTPROC auto graphics_subsystem::render_mesh(
-        const vk::CommandBuffer cmd_buf,
-        const vk::PipelineLayout layout,
-        const com::transform& transform,
-        const com::mesh_renderer& renderer,
-        DirectX::FXMMATRIX vp
-    ) -> void {
-        if (renderer.meshes.empty() || renderer.materials.empty()) [[unlikely]] {
-            log_warn("Mesh renderer has no meshes or materials");
-            return;
-        }
-        if (renderer.flags & com::render_flags::skip_rendering) [[unlikely]] {
-            return;
-        }
-        const DirectX::XMMATRIX model = transform.compute_matrix();
-        for (const mesh* mesh : renderer.meshes) {
-            if (!mesh) [[unlikely]] {
-                log_warn("Mesh renderer has a null mesh");
-                continue;
-            }
-
-            // Frustum Culling
-            DirectX::BoundingOrientedBox obb {};
-            obb.CreateFromBoundingBox(obb, mesh->get_aabb());
-            obb.Transform(obb, model);
-            if ((renderer.flags & com::render_flags::skip_frustum_culling) == 0) [[likely]] {
-                if (s_frustum.Contains(obb) == DirectX::ContainmentType::DISJOINT) { // Object is culled
-                    return;
-                }
-            }
-
-            // Uniforms
-            pipelines::pbr_pipeline::gpu_vertex_push_constants push_constants {};
-            DirectX::XMStoreFloat4x4A(&push_constants.model_view_proj, DirectX::XMMatrixMultiply(model, vp));
-            DirectX::XMStoreFloat4x4A(&push_constants.normal_matrix, DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(nullptr, model)));
-            cmd_buf.pushConstants(
-                layout,
-                vk::ShaderStageFlagBits::eVertex,
-                0,
-                sizeof(push_constants),
-                &push_constants
-            );
-
-            draw_mesh(*mesh, cmd_buf, renderer.materials, layout);
-        }
-    }
-
-    // WARNING! RENDER THREAD LOCAL
     HOTPROC auto graphics_subsystem::render_scene_bucket(
         const vk::CommandBuffer cmd,
         const std::int32_t bucket_id,
@@ -223,9 +138,9 @@ namespace graphics {
         passert(usr != nullptr);
         auto& self = *static_cast<graphics_subsystem*>(usr);
 
-        const pipeline_base& pipe = pipeline_registry::get().get_pipeline("pbr");
+        const auto& pbr_pipeline = dynamic_cast<const pipelines::pbr_pipeline&>(pipeline_registry::get().get_pipeline("pbr"));
 
-        cmd.bindPipeline(vk::PipelineBindPoint::eGraphics, pipe.get_pipeline());
+        cmd.bindPipeline(vk::PipelineBindPoint::eGraphics, pbr_pipeline.get_pipeline());
         const DirectX::XMMATRIX vp = DirectX::XMLoadFloat4x4A(&graphics_subsystem::s_view_proj_mtx);
 
         // thread workload distribution
@@ -242,15 +157,12 @@ namespace graphics {
             if (processed_entities >= global_end) break; // Already processed all entities this thread is responsible for
             std::size_t local_start = 0;
             std::size_t local_end = transforms.size();
-            if (processed_entities < global_start) {
+            if (processed_entities < global_start)
                 local_start = std::min(transforms.size(), global_start - processed_entities);
-            }
-            if (processed_entities + transforms.size() > global_end) {
+            if (processed_entities + transforms.size() > global_end)
                 local_end = std::min(transforms.size(), global_end - processed_entities);
-            }
-            for (std::size_t i = local_start; i < local_end; ++i) {
-                render_mesh(cmd, pipe.get_layout(), transforms[i], renderers[i], vp);
-            }
+            for (std::size_t i = local_start; i < local_end; ++i)
+                pbr_pipeline.render_mesh(cmd, pbr_pipeline.get_layout(), transforms[i], renderers[i], s_frustum, vp);
             processed_entities += transforms.size();
         }
 
@@ -262,6 +174,8 @@ namespace graphics {
                     DirectX::XMLoadFloat4(&graphics_subsystem::s_camera_transform.position)
                 );
             }
+            const auto& sky_pipeline = dynamic_cast<pipelines::sky_pipeline&>(pipeline_registry::get().get_pipeline("sky"));
+            sky_pipeline.render(cmd);
             self.get_imgui_context().submit_imgui(cmd);
         }
     }
@@ -301,7 +215,6 @@ namespace graphics {
             m_render_thread_pool->begin_frame(&m_inheritance_info);
             m_render_thread_pool->process_frame(m_cmd);
             scene.readonly_end();
-
             vkb::ctx().end_render_pass(m_cmd);
             vkcheck(m_cmd.end());
             m_render_data.clear();

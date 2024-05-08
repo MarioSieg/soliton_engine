@@ -65,13 +65,6 @@ namespace graphics {
         auto create_descriptor_pool() -> void;
         auto render_uis() -> void;
         static auto update_main_camera(float width, float height) -> void;
-        HOTPROC static auto render_mesh(
-            vk::CommandBuffer cmd_buf,
-            vk::PipelineLayout layout,
-            const com::transform& transform,
-            const com::mesh_renderer& renderer,
-            DirectX::FXMMATRIX vp
-        ) -> void;
         HOTPROC static auto render_scene_bucket(
             vk::CommandBuffer cmd,
             std::int32_t bucket_id,

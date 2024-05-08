@@ -3,6 +3,8 @@
 #include "pipeline.hpp"
 
 #include "vulkancore/context.hpp"
+#include "mesh.hpp"
+#include "material.hpp"
 
 namespace graphics {
     pipeline_base::~pipeline_base() {
@@ -235,12 +237,78 @@ namespace graphics {
 
     auto pipeline_registry::invalidate_all() -> void {
         m_pipelines.clear();
-        m_names.clear();
     }
 
     auto pipeline_registry::try_recreate_all() -> void {
         for (const auto& [name, pipeline] : m_pipelines) {
             pipeline->create(m_cache);
+        }
+    }
+
+    auto pipeline_base::configure_vertex_info(std::vector<vk::VertexInputBindingDescription>& cfg, std::vector<vk::VertexInputAttributeDescription>& bindings) -> void {
+        cfg.emplace_back(vk::VertexInputBindingDescription {
+            .binding = 0,
+            .stride = sizeof(mesh::vertex),
+            .inputRate = vk::VertexInputRate::eVertex
+        });
+
+        auto push_attribute = [&](const vk::Format format, const std::uint32_t offset) mutable  {
+            vk::VertexInputAttributeDescription& desc = bindings.emplace_back();
+            desc.location = bindings.size() - 1;
+            desc.binding = 0;
+            desc.format = format;
+            desc.offset = offset;
+        };
+        push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(mesh::vertex, position));
+        push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(mesh::vertex, normal));
+        push_attribute(vk::Format::eR32G32Sfloat, offsetof(mesh::vertex, uv));
+        push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(mesh::vertex, tangent));
+    }
+
+    // WARNING! MIGHT BE RENDER THREAD LOCAL
+    auto pipeline_base::draw_mesh(const mesh& mesh, const vk::CommandBuffer cmd) -> void {
+        constexpr vk::DeviceSize offsets = 0;
+        cmd.bindIndexBuffer(mesh.get_index_buffer().get_buffer(), 0, mesh.is_index_32bit() ? vk::IndexType::eUint32 : vk::IndexType::eUint16);
+        cmd.bindVertexBuffers(0, 1, &mesh.get_vertex_buffer().get_buffer(), &offsets);
+        for (const mesh::primitive& prim : mesh.get_primitives()) {
+            cmd.drawIndexed(prim.index_count, 1, prim.index_start, 0, 1);
+        }
+    }
+
+    // WARNING! MIGHT BE RENDER THREAD LOCAL
+    auto pipeline_base::draw_mesh(
+        const mesh& mesh,
+        const vk::CommandBuffer cmd,
+        const std::vector<material*>& mats,
+        const vk::PipelineLayout layout
+    ) -> void {
+        constexpr vk::DeviceSize offsets = 0;
+        cmd.bindIndexBuffer(mesh.get_index_buffer().get_buffer(), 0, mesh.is_index_32bit() ? vk::IndexType::eUint32 : vk::IndexType::eUint16);
+        cmd.bindVertexBuffers(0, 1, &mesh.get_vertex_buffer().get_buffer(), &offsets);
+        if (mesh.get_primitives().size() <= mats.size()) { // we have at least one material for each primitive
+            for (std::size_t idx = 0; const mesh::primitive& prim : mesh.get_primitives()) {
+                cmd.bindDescriptorSets(
+                        vk::PipelineBindPoint::eGraphics,
+                        layout,
+                        0,
+                        1,
+                        &mats[idx++]->get_descriptor_set(),
+                        0,
+                        nullptr
+                );
+                cmd.drawIndexed(prim.index_count, 1, prim.index_start, 0, 1);
+            }
+        } else {
+            cmd.bindDescriptorSets(
+                    vk::PipelineBindPoint::eGraphics,
+                    layout,
+                    0,
+                    1,
+                    &mats[0]->get_descriptor_set(),
+                    0,
+                    nullptr
+            );
+            cmd.drawIndexed(mesh.get_index_count(), 1, 0, 0, 0);
         }
     }
 }

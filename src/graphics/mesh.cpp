@@ -68,11 +68,14 @@ namespace graphics {
 		}
 		const aiNode* node = scene->mRootNode;
 		std::vector<const aiMesh*> meshes {};
-		meshes.reserve(node->mNumMeshes);
-		for (unsigned i = 0; i < node->mNumMeshes; ++i) {
-			const aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+		meshes.reserve(scene->mNumMeshes);
+		for (unsigned i = 0; i <scene->mNumMeshes; ++i) {
+			const aiMesh* mesh = scene->mMeshes[i];
 			meshes.emplace_back(mesh);
 		}
+        if (meshes.empty()) [[unlikely]] {
+            panic("Failed to load mesh from file '{}': No meshes found", get_asset_path());
+        }
 		create_from_assimp(meshes);
 	}
 

@@ -52,7 +52,7 @@ class mesh final : public assetmgr::asset {
             std::uint32_t k_import_flags = aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_ConvertToLeftHanded;
             k_import_flags |= aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_GenBoundingBoxes;
             //k_import_flags |= aiProcess_FixInfacingNormals;
-            //k_import_flags |= aiProcess_PreTransformVertices; // do we need this?
+            k_import_flags |= aiProcess_PreTransformVertices; // do we need this?
             k_import_flags &= ~(aiProcess_ValidateDataStructure | aiProcess_SplitLargeMeshes);
             return k_import_flags;
         }();
