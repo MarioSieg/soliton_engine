@@ -100,7 +100,7 @@ namespace scripting {
                 }
                 log_info("Registering CONVAR #{} [{} : {}] | Flags: {:#x}, Fallback: {}{}", ++detail::s_convar_i, full_name(), type_name(), m_flags, s_fallback, range);
             }
-            if constexpr (std::is_same_v<T, bool> && std::is_integral_v<T> || std::is_floating_point_v<T>) {
+            if constexpr (!std::is_same_v<T, bool> && std::is_integral_v<T> || std::is_floating_point_v<T>) {
                 if (m_min > m_max) [[unlikely]] {
                     panic("Failed to create CONVAR '{}': The min value is greater than the max value", full_name());
                     return;
@@ -114,7 +114,7 @@ namespace scripting {
                     if (m_min == 0) m_min = std::numeric_limits<T>::min();
                     if (m_max == 0) m_max = std::numeric_limits<T>::max();
                 }
-            } else if constexpr (std::is_same_v<T, std::string> || std::is_same_v<T, bool>) {
+            } else if constexpr (std::is_same_v<T, std::string>) {
                 if (!m_min.empty() || !m_max.empty()) [[unlikely]] {
                     panic("Failed to create CONVAR '{}', string/bool variables cannot have min/max clamps", full_name());
                     return;
