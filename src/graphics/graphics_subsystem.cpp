@@ -57,6 +57,7 @@ namespace graphics {
         m_imgui_context.emplace();
 
         m_noesis_context.emplace();
+
         //m_noesis_context->load_ui_from_xaml("App.xaml");
     }
 

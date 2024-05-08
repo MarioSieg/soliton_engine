@@ -27,6 +27,14 @@ namespace graphics::pipelines {
         virtual auto configure_multisampling(vk::PipelineMultisampleStateCreateInfo& cfg) -> void override;
 
     private:
+        // Generate a BRDF integration map used as a look-up-table (stores roughness / NdotV)
+        auto generate_brdf_lut() -> void;
+
         vk::DescriptorSetLayout m_descriptor_set_layout {};
+        struct {
+            vk::Image image {};
+            vk::ImageView m_image_view {};
+            vk::DeviceMemory memory {};
+        } m_brdf_lut {};
     };
 }

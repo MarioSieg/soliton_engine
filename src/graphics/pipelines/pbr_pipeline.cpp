@@ -8,13 +8,15 @@
 
 namespace graphics::pipelines {
     pbr_pipeline::pbr_pipeline() : pipeline_base{"pbr", pipeline_type::graphics} {
-
+        generate_brdf_lut();
     }
 
     pbr_pipeline::~pbr_pipeline() {
         const vk::Device device = vkb::ctx().get_device();
         device.destroyDescriptorSetLayout(m_descriptor_set_layout, &vkb::s_allocator);
-
+        device.destroyImageView(m_brdf_lut.m_image_view, &vkb::s_allocator);
+        device.destroyImage(m_brdf_lut.image, &vkb::s_allocator);
+        device.freeMemory(m_brdf_lut.memory, &vkb::s_allocator);
     }
 
     auto pbr_pipeline::pre_configure() -> void {
