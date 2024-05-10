@@ -263,6 +263,7 @@ namespace graphics {
         push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(mesh::vertex, normal));
         push_attribute(vk::Format::eR32G32Sfloat, offsetof(mesh::vertex, uv));
         push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(mesh::vertex, tangent));
+        push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(mesh::vertex, bitangent));
     }
 
     // WARNING! MIGHT BE RENDER THREAD LOCAL
