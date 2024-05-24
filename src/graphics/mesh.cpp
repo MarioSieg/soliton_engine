@@ -69,7 +69,7 @@ namespace graphics {
 		const aiNode* node = scene->mRootNode;
 		std::vector<const aiMesh*> meshes {};
 		meshes.reserve(scene->mNumMeshes);
-		for (unsigned i = 0; i <scene->mNumMeshes; ++i) {
+		for (unsigned i = 0; i < scene->mNumMeshes; ++i) {
 			const aiMesh* mesh = scene->mMeshes[i];
 			meshes.emplace_back(mesh);
 		}
