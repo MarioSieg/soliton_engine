@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include "prelude.hpp"
+#include "vulkancore/prelude.hpp"
 
-#include <shaderc/shaderc.hpp>
+#include "shaderc/shaderc.hpp"
 
 namespace vkb {
     class shader : public no_copy, public no_move {

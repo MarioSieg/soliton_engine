@@ -8,7 +8,7 @@
 #include "../scene/scene.hpp"
 
 #include "vulkancore/context.hpp"
-#include "vulkancore/shader.hpp"
+#include "shader.hpp"
 #include "vulkancore/buffer.hpp"
 
 #include "render_thread_pool.hpp"

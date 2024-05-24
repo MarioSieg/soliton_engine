@@ -1,7 +1,7 @@
 // Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "context.hpp"
-#include "shader.hpp"
+#include "../shader.hpp"
 
 #include "../../scripting/convar.hpp"
 

@@ -22,6 +22,9 @@ namespace graphics {
 
     auto shader_registry::compile_all(const bool parallel) -> bool {
         using namespace std::filesystem;
+        if (!parallel) [[unlikely]] {
+            log_warn("Parallel shader compilation disabled - compiling shaders sequentially");
+        }
         m_shaders.clear();
         std::vector<std::future<std::tuple<std::string, std::string, std::shared_ptr<vkb::shader>>>> futures {};
         for (auto&& entry : recursive_directory_iterator{m_shader_dir}) {

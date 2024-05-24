@@ -4,7 +4,7 @@
 
 #include <filesystem>
 
-#include "vulkancore/shader.hpp"
+#include "shader.hpp"
 #include <ankerl/unordered_dense.h>
 
 namespace graphics {

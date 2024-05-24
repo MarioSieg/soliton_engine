@@ -1,12 +1,12 @@
 // Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "shader.hpp"
-#include "context.hpp"
+#include "vulkancore/context.hpp"
 
 #include <fstream>
 #include <filesystem>
 
-#include "../../assetmgr/assetmgr.hpp"
+#include "../assetmgr/assetmgr.hpp"
 
 namespace vkb {
     class shader_includer final : public shaderc::CompileOptions::IncluderInterface {

@@ -63,7 +63,7 @@ namespace scripting {
             }
             ++m_gets;
             const T rv = m_ref->cast<T>().valueOr(fallback());
-            if constexpr (std::is_same_v<T, bool> && std::is_integral_v<T> || std::is_floating_point_v<T>) {
+            if constexpr (!std::is_same_v<T, bool> && std::is_integral_v<T> || std::is_floating_point_v<T>) {
                 if (~(m_flags & convar_flags::no_clamp)) {
                     return std::clamp(rv, m_min, m_max);
                 }

@@ -6,7 +6,7 @@
 
 #include <ankerl/unordered_dense.h>
 
-#include "vulkancore/shader.hpp"
+#include "shader.hpp"
 
 namespace graphics {
     class mesh;
