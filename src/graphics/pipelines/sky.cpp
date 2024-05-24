@@ -90,6 +90,13 @@ namespace graphics::pipelines {
         const DirectX::XMMATRIX model = DirectX::XMMatrixScalingFromVector(DirectX::XMVectorReplicate(10.0f));
         const auto& vp = graphics_subsystem::get_view_proj_mtx();
         DirectX::XMStoreFloat4x4A(&push_constants.model_view_proj, DirectX::XMMatrixMultiply(model, DirectX::XMLoadFloat4x4A(&vp)));
+        cmd.pushConstants(
+            layout,
+            vk::ShaderStageFlagBits::eVertex,
+            0,
+            sizeof(push_constants),
+            &push_constants
+        );
         draw_mesh(*m_skydome, cmd);
     }
 }

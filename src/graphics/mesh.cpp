@@ -5,9 +5,9 @@
 
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
-#include <Jolt/Physics/Collision/Shape/Shape.h>
 
 #include "material.hpp"
+#include "mesh_utils.hpp"
 
 namespace graphics {
 	using namespace DirectX;
@@ -47,13 +47,18 @@ namespace graphics {
 			}
 			vertices.emplace_back(v);
 		}
+        if (mesh->mNumFaces == 0) [[unlikely]] {
+            log_error("Mesh '{}' has no faces - no index buffer will be generated", mesh->mName.C_Str());
+        }
 		for (unsigned i = 0; i < mesh->mNumFaces; ++i) {
 			const aiFace face = mesh->mFaces[i];
 			if (face.mNumIndices == 3) [[likely]] {
 				for (unsigned j = 0; j < 3; ++j) {
 					indices.emplace_back(face.mIndices[j]);
 				}
-			}
+			} else {
+                log_error("Face with {} indices found in mesh '{}' - mesh should be triangulated", face.mNumIndices, mesh->mName.C_Str());
+            }
 		}
 		prim_info.index_count = indices.size() - prim_info.index_start;
 		prim_info.vertex_count = vertices.size() - prim_info.vertex_start;
@@ -61,22 +66,41 @@ namespace graphics {
 	}
 
 	mesh::mesh(std::string&& path) : asset{assetmgr::asset_source::filesystem, std::move(path)} {
-		Assimp::Importer importer {};
-		const aiScene* scene = importer.ReadFile(get_asset_path().c_str(), k_import_flags);
-		if (!scene || !scene->mNumMeshes) [[unlikely]] {
-			panic("Failed to load mesh from file '{}': {}", get_asset_path(), importer.GetErrorString());
-		}
-		const aiNode* node = scene->mRootNode;
-		std::vector<const aiMesh*> meshes {};
-		meshes.reserve(scene->mNumMeshes);
-		for (unsigned i = 0; i < scene->mNumMeshes; ++i) {
-			const aiMesh* mesh = scene->mMeshes[i];
-			meshes.emplace_back(mesh);
-		}
-        if (meshes.empty()) [[unlikely]] {
-            panic("Failed to load mesh from file '{}': No meshes found", get_asset_path());
+        Assimp::DefaultLogger::create("", Assimp::Logger::NORMAL);
+        Assimp::DefaultLogger::get()->attachStream(new assimp_logger {}, Assimp::Logger::Info | Assimp::Logger::Err | Assimp::Logger::Warn);
+
+        Assimp::Importer importer {};
+        importer.SetIOHandler(new lunam_assimp_io_system{}); // use my IO system
+        const auto load_flags = k_import_flags;
+        passert(importer.ValidateFlags(load_flags));
+        const aiScene* scene = importer.ReadFile(get_asset_path().c_str(), load_flags);
+        if (!scene || !scene->mNumMeshes) [[unlikely]] {
+            panic("Failed to load scene from file '{}': {}", get_asset_path(), importer.GetErrorString());
         }
-		create_from_assimp(meshes);
+
+		const aiNode* node = scene->mRootNode;
+        if (!node || node->mNumMeshes == 0) [[unlikely]] { // search for other nodes with meshes
+            std::function<auto(const aiNode*) -> const aiNode*> search_for_meshes = [&search_for_meshes](const aiNode* const node) -> const aiNode* {
+                for (unsigned i = 0; i < node->mNumChildren; ++i) {
+                    auto* local_node = node->mChildren[i];
+                    if (local_node && local_node->mNumMeshes > 0) {
+                        return local_node;
+                    }
+                    search_for_meshes(local_node);
+                }
+                return nullptr;
+            };
+            node = search_for_meshes(node);
+        }
+
+        if (!node || node->mNumMeshes == 0) [[unlikely]] {
+            panic("Scene has no root node and no meshes");
+        }
+
+        const aiMesh* mesh = scene->mMeshes[node->mMeshes[0]];
+        std::span span {&mesh, 1};
+
+		create_from_assimp(span);
 	}
 
     mesh::mesh(const std::span<const aiMesh*> meshes) : asset{assetmgr::asset_source::memory} {
@@ -125,12 +149,16 @@ namespace graphics {
     		std::vector<std::uint16_t> indices16 {};
     		indices16.reserve(indices.size());
     		for (const index idx : indices) {
+                if (idx > std::numeric_limits<std::uint16_t>::max()) [[unlikely]] {
+                    log_warn("Index {} is greater than 16 bit limit, switching to 32 bit indices", idx);
+                    goto index32;
+                }
     			indices16.emplace_back(static_cast<std::uint16_t>(idx));
     		}
     		m_index_32bit = false;
     		m_index_count = static_cast<std::uint32_t>(indices16.size());
     		m_index_buffer.create(
-				indices16.size() * sizeof(std::uint16_t),
+				indices16.size() * sizeof(indices16[0]),
 				0,
 				vk::BufferUsageFlagBits::eIndexBuffer,
 				VMA_MEMORY_USAGE_GPU_ONLY,
@@ -138,10 +166,11 @@ namespace graphics {
 				indices16.data()
 			);
     	} else {
+        index32: // 32 bit indices
     		m_index_32bit = true;
     		m_index_count = static_cast<std::uint32_t>(indices.size());
     		m_index_buffer.create(
-				indices.size() * sizeof(index),
+				indices.size() * sizeof(indices[0]),
 				0,
 				vk::BufferUsageFlagBits::eIndexBuffer,
 				VMA_MEMORY_USAGE_GPU_ONLY,

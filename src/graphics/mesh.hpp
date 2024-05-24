@@ -26,7 +26,7 @@ class mesh final : public assetmgr::asset {
             DirectX::XMFLOAT3 bitangent;
         };
 
-        using index = std::uint32_t;
+        using index = std::uint32_t; // Meshes generally use 32-bit indices, 16-bit indices are used internally, when possible
 
         struct primitive final {
             std::uint32_t index_start = 0;
@@ -51,9 +51,7 @@ class mesh final : public assetmgr::asset {
         static constexpr std::uint32_t k_import_flags = []() noexcept -> std::uint32_t { // TODO use flags from lua
             std::uint32_t k_import_flags = aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_ConvertToLeftHanded;
             k_import_flags |= aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_GenBoundingBoxes;
-            //k_import_flags |= aiProcess_FixInfacingNormals;
-            k_import_flags |= aiProcess_PreTransformVertices; // do we need this?
-            k_import_flags &= ~(aiProcess_ValidateDataStructure | aiProcess_SplitLargeMeshes);
+            k_import_flags |= aiProcess_FixInfacingNormals;
             return k_import_flags;
         }();
 
