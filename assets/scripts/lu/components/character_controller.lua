@@ -29,7 +29,7 @@ local CharacterController = {
         C.__lu_com_character_controller_add(entity_id)
         return o
     end,
-    _exists = function(entity_id) return C.__lu_com_character_controller_exists(entity_id) end,
+    _exists = function(entity_id) return C.__lu_com_character_controller_exists(self._entity_id) end,
     remove = function(self) C.__lu_com_character_controller_remove(self._entity_id) end,
 
     getLinearVelocity = function(self) return C.__lu_com_character_controller_get_linear_velocity(self._entity_id) end,
