@@ -23,6 +23,6 @@ void main() {
   outFragColor.rgb = diffuse_lambert_lit(tex_color, normal);
 
   // gamma correction
-  outFragColor.rgb = gamma_correct(outFragColor.rgb);
+  outFragColor.rgb = gamma_correct(tex_color);
   outFragColor.a = 1.0;
 }

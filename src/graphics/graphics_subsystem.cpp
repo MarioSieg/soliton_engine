@@ -174,8 +174,6 @@ namespace graphics {
                     DirectX::XMLoadFloat4(&graphics_subsystem::s_camera_transform.position)
                 );
             }
-            const auto& sky_pipeline = dynamic_cast<pipelines::sky_pipeline&>(pipeline_registry::get().get_pipeline("sky"));
-            sky_pipeline.render(cmd);
             self.get_imgui_context().submit_imgui(cmd);
         }
     }

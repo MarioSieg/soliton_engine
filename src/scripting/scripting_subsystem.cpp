@@ -64,17 +64,6 @@ namespace scripting {
         return true;
     }
 
-    auto scripting_subsystem::reconnect_lua_host_impl() -> void {
-        const auto now = std::chrono::high_resolution_clock::now();
-        log_info("Reconnecting to Lua host");
-        if (m_is_lua_host_online) {
-            lua_host_disconnect();
-        }
-        lua_host_connect();
-        const auto elapsed = std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(std::chrono::high_resolution_clock::now() - now).count();
-        log_info("Reconnected to Lua host in {}ms", elapsed);
-    }
-
     auto scripting_subsystem::lua_host_connect() -> void {
         log_info("Connecting to Lua host");
 

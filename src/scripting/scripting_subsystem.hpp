@@ -32,8 +32,6 @@ namespace scripting {
 
     private:
         bool m_is_lua_host_online = false;
-        bool m_reconnect = false;
-        auto reconnect_lua_host_impl() -> void;
         auto lua_host_connect() -> void;
         auto lua_host_disconnect() -> void;
         static constexpr const char* k_boot_script = "system/__boot__.lua";
