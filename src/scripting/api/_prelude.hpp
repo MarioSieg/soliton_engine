@@ -24,8 +24,12 @@ static_assert(alignof(flecs::id_t) == alignof(lua_entity_id));
         return std::nullopt;
     }
     const flecs::entity ent {scene::get_active(), f_id};
-    if (!ent.is_valid() || !ent.is_alive()) [[unlikely]] {
-        log_warn("Entity ID is invalid or not alive");
+    if (!ent.is_valid()) [[unlikely]] {
+        log_warn("Entity ID is invalid");
+        return std::nullopt;
+    }
+    if (!ent.is_alive()) [[unlikely]] {
+        log_warn("Entity ID is not alive");
         return std::nullopt;
     }
     return ent;
