@@ -28,8 +28,8 @@ LUA_INTEROP_API auto __lu_dd_gizmo_enable(const bool enable) -> void {
     ImGuizmo::Enable(enable);
 }
 
-LUA_INTEROP_API auto __lu_dd_gizmo_manipulator(const flecs::id_t id, const int op, const int mode, const bool enable_snap, const double snap_x, const lua_vec3 color) -> void {
-    const flecs::entity ent {scene::get_active(), id};
+LUA_INTEROP_API auto __lu_dd_gizmo_manipulator(const lua_entity_id id, const int op, const int mode, const bool enable_snap, const double snap_x, const lua_vec3 color) -> void {
+    const flecs::entity ent {scene::get_active(), std::bit_cast<flecs::id_t>(id)};
     if (!ent.has<const com::transform>()) [[unlikely]] {
         return;
     }

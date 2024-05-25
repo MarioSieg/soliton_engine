@@ -21,7 +21,7 @@ CHARACTER_GROUND_STATE = { -- Keep in sync with C++: CharacterBase.h
 }
 
 local CharacterController = {
-    _entity_id = nil,
+    _entity_id = 0,
     _new = function(self, entity_id)
         local o = {}
         setmetatable(o, {__index = self})

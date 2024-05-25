@@ -17,7 +17,7 @@ local Components = require 'Components'
 
 local Camera = {}
 
-Camera.targetEntity = 0
+Camera.targetEntity = nil
 Camera.sensitivity = 0.5 -- mouse look sensitivity
 Camera.clampY = 80 -- mouse look Y-axis clamp
 Camera.defaultMovementSpeed = 4 -- default movement speed
@@ -52,8 +52,8 @@ Camera.isFocused = true
 -- invoked every frame
 function Camera:tick()
     self.isFocused = App.isFocused() and not App.isUIHovered()
-    if not self.targetEntity:isValid() then
-        print('Camera has no target entity')
+    if not self.targetEntity or not self.targetEntity:isValid() then
+        perror('Camera has no valid target entity')
     end
     if self.enableMouseLook and self.isFocused then
         self:_computeCameraRotation()

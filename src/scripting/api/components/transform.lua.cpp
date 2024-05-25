@@ -5,16 +5,17 @@
 
 impl_component_core(transform)
 
-LUA_INTEROP_API auto __lu_com_transform_set_pos(const flecs::id_t id, const double x, const double y, const double z) -> void {
-    const flecs::entity ent {scene::get_active(), id};
-    // If the entity has a rigidbody component, set the position of the rigidbody
+LUA_INTEROP_API auto __lu_com_transform_set_pos(const lua_entity_id id, const double x, const double y, const double z) -> void {
+    std::optional<flecs::entity> ent {resolve_entity(id)};
+    if (!ent) [[unlikely]] { return; }
+    // If the entity has a rigidbody component, set the position of the rigidbody todo fix
     // as the transform position will be overwritten by the physics system
-    if (const auto* rigidbody = ent.get<const com::rigidbody>(); rigidbody) {
+    if (const auto* rigidbody = ent->get<const com::rigidbody>(); rigidbody) {
         auto& bi = physics::physics_subsystem::get_physics_system().GetBodyInterface();
         bi.SetPosition(rigidbody->body_id, JPH::Vec3{static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)}, JPH::EActivation::Activate);
-    } else if (const auto* cc = ent.get<const com::character_controller>(); cc) {
+    } else if (const auto* cc = ent->get<const com::character_controller>(); cc) {
         cc->characer->SetPosition(JPH::Vec3{static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)}, JPH::EActivation::Activate);
-    } else if (auto* transform = ent.get_mut<com::transform>(); transform) [[likely]] {
+    } else if (auto* transform = ent->get_mut<com::transform>(); transform) [[likely]] {
         transform->position = {
             static_cast<float>(x),
             static_cast<float>(y),
@@ -24,24 +25,26 @@ LUA_INTEROP_API auto __lu_com_transform_set_pos(const flecs::id_t id, const doub
     }
 }
 
-LUA_INTEROP_API auto __lu_com_transform_get_pos(const flecs::id_t id) -> lua_vec3 {
-    const flecs::entity ent {scene::get_active(), id};
-    if (const auto* transform = ent.get_mut<const com::transform>(); transform) [[likely]] {
+LUA_INTEROP_API auto __lu_com_transform_get_pos(const lua_entity_id id) -> lua_vec3 {
+    std::optional<flecs::entity> ent {resolve_entity(id)};
+    if (!ent) [[unlikely]] { return {}; }
+    if (const auto* transform = ent->get_mut<const com::transform>(); transform) [[likely]] {
         return transform->position;
     }
     return {};
 }
 
-LUA_INTEROP_API auto __lu_com_transform_set_rot(const flecs::id_t id, const double x, const double y, const double z, const double w) -> void {
-    const flecs::entity ent {scene::get_active(), id};
+LUA_INTEROP_API auto __lu_com_transform_set_rot(const lua_entity_id id, const double x, const double y, const double z, const double w) -> void {
+    std::optional<flecs::entity> ent {resolve_entity(id)};
+    if (!ent) [[unlikely]] { return; }
     // If the entity has a rigidbody component, set the position of the rigidbody
     // as the transform position will be overwritten by the physics system
-    if (const auto* rigidbody = ent.get<const com::rigidbody>(); rigidbody) {
+    if (const auto* rigidbody = ent->get<const com::rigidbody>(); rigidbody) {
         auto& bi = physics::physics_subsystem::get_physics_system().GetBodyInterface();
         bi.SetRotation(rigidbody->body_id, JPH::Quat{static_cast<float>(x), static_cast<float>(y), static_cast<float>(z), static_cast<float>(w)}, JPH::EActivation::Activate);
-    } else if (const auto* cc = ent.get<const com::character_controller>(); cc) {
+    } else if (const auto* cc = ent->get<const com::character_controller>(); cc) {
         cc->characer->SetRotation(JPH::Quat{static_cast<float>(x), static_cast<float>(y), static_cast<float>(z), static_cast<float>(w)}, JPH::EActivation::Activate);
-    } else if (auto* transform = ent.get_mut<com::transform>(); transform) [[likely]] {
+    } else if (auto* transform = ent->get_mut<com::transform>(); transform) [[likely]] {
         transform->rotation = {
             static_cast<float>(x),
             static_cast<float>(y),
@@ -51,17 +54,19 @@ LUA_INTEROP_API auto __lu_com_transform_set_rot(const flecs::id_t id, const doub
     }
 }
 
-LUA_INTEROP_API auto __lu_com_transform_get_rot(const flecs::id_t id) -> lua_vec4 {
-    const flecs::entity ent {scene::get_active(), id};
-    if (const auto* transform = ent.get_mut<const com::transform>(); transform) [[likely]] {
+LUA_INTEROP_API auto __lu_com_transform_get_rot(const lua_entity_id id) -> lua_vec4 {
+    std::optional<flecs::entity> ent {resolve_entity(id)};
+    if (!ent) [[unlikely]] { return {}; }
+    if (const auto* transform = ent->get_mut<const com::transform>(); transform) [[likely]] {
         return transform->rotation;
     }
     return {};
 }
 
-LUA_INTEROP_API auto __lu_com_transform_set_scale(const flecs::id_t id, const double x, const double y, const double z) -> void {
-    const flecs::entity ent {scene::get_active(), id};
-    if (auto* transform = ent.get_mut<com::transform>(); transform) [[likely]] {
+LUA_INTEROP_API auto __lu_com_transform_set_scale(const lua_entity_id id, const double x, const double y, const double z) -> void {
+    std::optional<flecs::entity> ent {resolve_entity(id)};
+    if (!ent) [[unlikely]] { return; }
+    if (auto* transform = ent->get_mut<com::transform>(); transform) [[likely]] {
         transform->scale = {
             static_cast<float>(x),
             static_cast<float>(y),
@@ -71,17 +76,19 @@ LUA_INTEROP_API auto __lu_com_transform_set_scale(const flecs::id_t id, const do
     }
 }
 
-LUA_INTEROP_API auto __lu_com_transform_get_scale(const flecs::id_t id) -> lua_vec3 {
-    const flecs::entity ent {scene::get_active(), id};
-    if (const auto* transform = ent.get_mut<const com::transform>(); transform) [[likely]] {
+LUA_INTEROP_API auto __lu_com_transform_get_scale(const lua_entity_id id) -> lua_vec3 {
+    std::optional<flecs::entity> ent {resolve_entity(id)};
+    if (!ent) [[unlikely]] { return {}; }
+    if (const auto* transform = ent->get_mut<const com::transform>(); transform) [[likely]] {
         return transform->scale;
     }
     return {};
 }
 
-LUA_INTEROP_API auto __lu_com_transform_get_forward(const flecs::id_t id) -> lua_vec3 {
-    const flecs::entity ent {scene::get_active(), id};
-    if (const auto* transform = ent.get_mut<const com::transform>(); transform) [[likely]] {
+LUA_INTEROP_API auto __lu_com_transform_get_forward(const lua_entity_id id) -> lua_vec3 {
+    std::optional<flecs::entity> ent {resolve_entity(id)};
+    if (!ent) [[unlikely]] { return {}; }
+    if (const auto* transform = ent->get_mut<const com::transform>(); transform) [[likely]] {
         DirectX::XMFLOAT3A tmp;
         DirectX::XMStoreFloat3A(&tmp, transform->forward_vec());
         return tmp;
@@ -89,9 +96,10 @@ LUA_INTEROP_API auto __lu_com_transform_get_forward(const flecs::id_t id) -> lua
     return {};
 }
 
-LUA_INTEROP_API auto __lu_com_transform_get_backward(const flecs::id_t id) -> lua_vec3 {
-    const flecs::entity ent {scene::get_active(), id};
-    if (const auto* transform = ent.get_mut<const com::transform>(); transform) [[likely]] {
+LUA_INTEROP_API auto __lu_com_transform_get_backward(const lua_entity_id id) -> lua_vec3 {
+    std::optional<flecs::entity> ent {resolve_entity(id)};
+    if (!ent) [[unlikely]] { return {}; }
+    if (const auto* transform = ent->get_mut<const com::transform>(); transform) [[likely]] {
         DirectX::XMFLOAT3A tmp;
         DirectX::XMStoreFloat3A(&tmp, transform->backward_vec());
         return tmp;
@@ -99,9 +107,10 @@ LUA_INTEROP_API auto __lu_com_transform_get_backward(const flecs::id_t id) -> lu
     return {};
 }
 
-LUA_INTEROP_API auto __lu_com_transform_get_up(const flecs::id_t id) -> lua_vec3 {
-    const flecs::entity ent {scene::get_active(), id};
-    if (const auto* transform = ent.get_mut<const com::transform>(); transform) [[likely]] {
+LUA_INTEROP_API auto __lu_com_transform_get_up(const lua_entity_id id) -> lua_vec3 {
+    std::optional<flecs::entity> ent {resolve_entity(id)};
+    if (!ent) [[unlikely]] { return {}; }
+    if (const auto* transform = ent->get_mut<const com::transform>(); transform) [[likely]] {
         DirectX::XMFLOAT3A tmp;
         DirectX::XMStoreFloat3A(&tmp, transform->up_vec());
         return tmp;
@@ -109,9 +118,10 @@ LUA_INTEROP_API auto __lu_com_transform_get_up(const flecs::id_t id) -> lua_vec3
     return {};
 }
 
-LUA_INTEROP_API auto __lu_com_transform_get_down(const flecs::id_t id) -> lua_vec3 {
-    const flecs::entity ent {scene::get_active(), id};
-    if (const auto* transform = ent.get_mut<const com::transform>(); transform) [[likely]] {
+LUA_INTEROP_API auto __lu_com_transform_get_down(const lua_entity_id id) -> lua_vec3 {
+    std::optional<flecs::entity> ent {resolve_entity(id)};
+    if (!ent) [[unlikely]] { return {}; }
+    if (const auto* transform = ent->get_mut<const com::transform>(); transform) [[likely]] {
         DirectX::XMFLOAT3A tmp;
         DirectX::XMStoreFloat3A(&tmp, transform->down_vec());
         return tmp;
@@ -119,9 +129,10 @@ LUA_INTEROP_API auto __lu_com_transform_get_down(const flecs::id_t id) -> lua_ve
     return {};
 }
 
-LUA_INTEROP_API auto __lu_com_transform_get_right(const flecs::id_t id) -> lua_vec3 {
-    const flecs::entity ent {scene::get_active(), id};
-    if (const auto* transform = ent.get_mut<const com::transform>(); transform) [[likely]] {
+LUA_INTEROP_API auto __lu_com_transform_get_right(const lua_entity_id id) -> lua_vec3 {
+    std::optional<flecs::entity> ent {resolve_entity(id)};
+    if (!ent) [[unlikely]] { return {}; }
+    if (const auto* transform = ent->get_mut<const com::transform>(); transform) [[likely]] {
         DirectX::XMFLOAT3A tmp;
         DirectX::XMStoreFloat3A(&tmp, transform->right_vec());
         return tmp;
@@ -129,9 +140,10 @@ LUA_INTEROP_API auto __lu_com_transform_get_right(const flecs::id_t id) -> lua_v
     return {};
 }
 
-LUA_INTEROP_API auto __lu_com_transform_get_left(const flecs::id_t id) -> lua_vec3 {
-    const flecs::entity ent {scene::get_active(), id};
-    if (const auto* transform = ent.get_mut<const com::transform>(); transform) [[likely]] {
+LUA_INTEROP_API auto __lu_com_transform_get_left(const lua_entity_id id) -> lua_vec3 {
+    std::optional<flecs::entity> ent {resolve_entity(id)};
+    if (!ent) [[unlikely]] { return {}; }
+    if (const auto* transform = ent->get_mut<const com::transform>(); transform) [[likely]] {
         DirectX::XMFLOAT3A tmp;
         DirectX::XMStoreFloat3A(&tmp, transform->left_vec());
         return tmp;
