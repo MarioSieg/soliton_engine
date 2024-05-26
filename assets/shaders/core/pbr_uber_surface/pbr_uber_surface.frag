@@ -17,8 +17,8 @@ layout (location = 4) in mat3 outTBN;
 
 layout (location = 0) out vec4 outFragColor;
 
-layout (push_constant) uniform PushConstants { // TODO: move to per frame cb
-  float time;
+layout (push_constant, std430) uniform PushConstants { // TODO: move to per frame cb
+  layout(offset = 128) float time;
 } pushConstants;
 
 void main() {
@@ -26,9 +26,9 @@ void main() {
   const vec3 normal = normal_map(outTBN, texture(samplerNormalMap, outUV).xyz);
   //vec3 final = diffuse_lambert_lit(tex_color, normal);
   vec3 final = tex_color;
-  final = color_saturation(final, 2.5);
+  final = color_saturation(final, 3.5);
   final = gamma_correct(final);
-  final += vec3(film_noise(pushConstants.time, gl_FragCoord.xy)) * 15;
+  final += vec3(film_noise(pushConstants.time*outUV)) * 0.075;
   outFragColor.rgb = final;
   outFragColor.a = 1.0;
 }

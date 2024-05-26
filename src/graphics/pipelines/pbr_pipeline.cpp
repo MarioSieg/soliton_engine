@@ -57,7 +57,7 @@ namespace graphics::pipelines {
             cmd_buf.pushConstants(
                 layout,
                 vk::ShaderStageFlagBits::eFragment,
-                0,
+                sizeof(pc_vs),
                 sizeof(pc_fs),
                 &pc_fs
             );
@@ -97,7 +97,7 @@ namespace graphics::pipelines {
         ranges.emplace_back(push_constant_range);
 
         push_constant_range.stageFlags = vk::ShaderStageFlagBits::eFragment;
-        push_constant_range.offset = 0;
+        push_constant_range.offset = sizeof(push_constants_vs);
         push_constant_range.size = sizeof(push_constants_fs);
         ranges.emplace_back(push_constant_range);
     }
