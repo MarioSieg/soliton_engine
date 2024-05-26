@@ -13,11 +13,16 @@ namespace graphics::pipelines {
         explicit pbr_pipeline();
         ~pbr_pipeline() override;
 
-        struct gpu_vertex_push_constants final {
+        struct push_constants_vs final {
             DirectX::XMFLOAT4X4A model_view_proj;
             DirectX::XMFLOAT4X4A normal_matrix;
         };
-        static_assert(sizeof(gpu_vertex_push_constants) <= 128);
+        static_assert(sizeof(push_constants_vs) <= 128);
+
+        struct push_constants_fs final {
+            float time;
+        };
+        static_assert(sizeof(push_constants_fs) <= 128);
 
         // WARNING! RENDER THREAD LOCAL
         HOTPROC auto XM_CALLCONV render_mesh(

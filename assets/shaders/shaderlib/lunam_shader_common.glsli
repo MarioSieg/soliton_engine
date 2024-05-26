@@ -61,4 +61,15 @@ vec3 uncharted2_tonemap(const vec3 color) {
 	return ((color*(A*color+C*B)+D*E)/(color*(A*color+B)+D*F))-E/F;
 }
 
+vec3 color_saturation(const vec3 rgb, const float adjustment) {
+    const vec3 W = vec3(0.2125, 0.7154, 0.0721);
+    vec3 intensity = vec3(dot(rgb, W));
+    return mix(intensity, rgb, adjustment);
+}
+
+float film_noise(const float time, const vec2 seed) {
+    const float x = (seed.x + 4) * (seed.y + 4) * (time * 10);
+    return mod(mod(x, 13) + 1) * (mod(x, 123) + 1), 0.01 - 0.005;
+}
+
 #endif

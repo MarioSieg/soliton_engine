@@ -4,6 +4,7 @@
 #include "../mesh.hpp"
 #include "../material.hpp"
 #include "../vulkancore/context.hpp"
+#include "../../core/kernel.hpp"
 #include "../shader_registry.hpp"
 
 namespace graphics::pipelines {
@@ -40,16 +41,25 @@ namespace graphics::pipelines {
                 }
             }
 
-            // Uniforms
-            pipelines::pbr_pipeline::gpu_vertex_push_constants push_constants {};
-            DirectX::XMStoreFloat4x4A(&push_constants.model_view_proj, DirectX::XMMatrixMultiply(model, vp));
-            DirectX::XMStoreFloat4x4A(&push_constants.normal_matrix, DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(nullptr, model)));
+            push_constants_vs pc_vs {};
+            DirectX::XMStoreFloat4x4A(&pc_vs.model_view_proj, DirectX::XMMatrixMultiply(model, vp));
+            DirectX::XMStoreFloat4x4A(&pc_vs.normal_matrix, DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(nullptr, model)));
             cmd_buf.pushConstants(
                 layout,
                 vk::ShaderStageFlagBits::eVertex,
                 0,
-                sizeof(push_constants),
-                &push_constants
+                sizeof(pc_vs),
+                &pc_vs
+            );
+
+            push_constants_fs pc_fs {};
+            pc_fs.time = static_cast<float>(kernel::get().get_time());
+            cmd_buf.pushConstants(
+                layout,
+                vk::ShaderStageFlagBits::eFragment,
+                0,
+                sizeof(pc_fs),
+                &pc_fs
             );
 
             draw_mesh(*mesh, cmd_buf, renderer.materials, layout);
@@ -83,7 +93,12 @@ namespace graphics::pipelines {
         vk::PushConstantRange push_constant_range {};
         push_constant_range.stageFlags = vk::ShaderStageFlagBits::eVertex;
         push_constant_range.offset = 0;
-        push_constant_range.size = sizeof(gpu_vertex_push_constants);
+        push_constant_range.size = sizeof(push_constants_vs);
+        ranges.emplace_back(push_constant_range);
+
+        push_constant_range.stageFlags = vk::ShaderStageFlagBits::eFragment;
+        push_constant_range.offset = 0;
+        push_constant_range.size = sizeof(push_constants_fs);
         ranges.emplace_back(push_constant_range);
     }
 }

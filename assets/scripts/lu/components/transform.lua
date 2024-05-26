@@ -31,7 +31,7 @@ local Transform = {
         C.__lu_com_transform_add(entity_id)
         return o
     end,
-    _exists = function(entity_id) return C.__lu_com_transform_exists(self._entity_id) end,
+    _exists = function(entity_id) return C.__lu_com_transform_exists(entity_id) end,
     remove = function(self) C.__lu_com_transform_remove(self._entity_id) end,
 
     setPosition = function(self, pos) C.__lu_com_transform_set_pos(self._entity_id, pos.x, pos.y, pos.z) end,

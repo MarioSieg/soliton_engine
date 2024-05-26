@@ -25,7 +25,7 @@ local Camera = {
         C.__lu_com_camera_add(entity_id)
         return o
     end,
-    _exists = function(entity_id) return C.__lu_com_camera_exists(self._entity_id) end,
+    _exists = function(entity_id) return C.__lu_com_camera_exists(entity_id) end,
     remove = function(self) C.__lu_com_camera_remove(self._entity_id) end,
 
     getFov = function(self) return C.__lu_com_camera_get_fov(self._entity_id) end,

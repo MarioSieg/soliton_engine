@@ -189,13 +189,15 @@ kernel::~kernel() {
     g_kernel = nullptr;
 }
 
-static constinit double delta_time;
+static constinit double g_delta_time, g_time;
+
 static auto compute_delta_time() noexcept {
     static auto prev = std::chrono::high_resolution_clock::now();
     auto now = std::chrono::high_resolution_clock::now();
     auto delta = std::chrono::duration_cast<std::chrono::high_resolution_clock::duration>(now - prev);
-    delta_time = std::chrono::duration_cast<std::chrono::duration<double>>(delta).count();
+    g_delta_time = std::chrono::duration_cast<std::chrono::duration<double>>(delta).count();
     prev = now;
+    g_time += g_delta_time;
 }
 
 auto kernel::get() noexcept -> kernel& {
@@ -204,7 +206,11 @@ auto kernel::get() noexcept -> kernel& {
 }
 
 auto kernel::get_delta_time() noexcept -> double {
-    return delta_time;
+    return g_delta_time;
+}
+
+auto kernel::get_time() noexcept -> double {
+    return g_time;
 }
 
 static constinit bool g_kernel_online = true;
