@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 if (APPLE)
     add_compile_options(-march=native)
 else()
-    #add_compile_options(-march=haswell)
+    add_compile_options(-march=haswell)
 endif()
 
 if (WIN32)
