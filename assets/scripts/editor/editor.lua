@@ -605,10 +605,10 @@ function Editor:loadConfig()
         print('Creating new editor config file: '..CONFIG_FILE)
         self:saveConfig()
     end
-    if not lfs.attributes(self.serializedConfig.general.prevProjectOpenDir) then
+    if not self.serializedConfig.general.prevProjectOpenDir or not lfs.attributes(self.serializedConfig.general.prevProjectOpenDir) then
         self.serializedConfig.general.prevProjectOpenDir = DEFAULT_PROJECT_DIR
     end
-    if not lfs.attributes(self.serializedConfig.general.prevSceneOpenDir) then
+    if not self.serializedConfig.general.prevSceneOpenDir or not lfs.attributes(self.serializedConfig.general.prevSceneOpenDir) then
         self.serializedConfig.general.prevSceneOpenDir = DEFAULT_PROJECT_DIR
     end
 end
