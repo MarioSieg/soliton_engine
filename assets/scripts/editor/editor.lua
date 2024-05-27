@@ -19,6 +19,7 @@ local Quat = require 'Quat'
 local Scene = require 'Scene'
 local Input = require 'Input'
 local Components = require 'Components'
+local Ini = require 'Ini'
 
 local ICONS = require 'editor.icons'
 local Project = require 'editor.project'
@@ -87,8 +88,7 @@ local DEBUG_MODE_NAMES_C = ffi.new("const char*[?]", #DEBUG_MODE_NAMES)
 for i=1, #DEBUG_MODE_NAMES do
     DEBUG_MODE_NAMES_C[i-1] = ffi.cast("const char*", DEBUG_MODE_NAMES[i])
 end
-local PREV_SCENE_PATH = ''
-
+local CONFIG_FILE = 'config/editor.ini'
 
 local Editor = {
     isVisible = true,
@@ -115,6 +115,12 @@ local Editor = {
         gizmoSnapStep = ffi.new('float[1]', 0.1),
         currentDebugMode = ffi.new('int[1]', DEBUG_MODE.NONE)
     },
+    serializedConfig = {
+        general = {
+            prevSceneOpenDir = '',
+            prevProjectOpenDir = '',
+        }
+    },
     camera = require 'editor.camera',
     dockID = nil,
     activeProject = nil,
@@ -133,12 +139,12 @@ function Editor.gizmos:drawGizmos()
         Debug.drawPhysicsDebug()
     end
     if Editor.isPlaying then
-        return 
+        return
     end
     local selected = EntityListView.selectedEntity
     if selected and selected:isValid() then
         Debug.gizmoEnable(not selected:hasFlag(EFLAGS.STATIC))
-        Debug.gizmoManipulator(selected, self.gizmoOperation, self.gizmoMode, self.gizmoSnap[0], self.gizmoSnapStep[0], self.gizmoObbColor) 
+        Debug.gizmoManipulator(selected, self.gizmoOperation, self.gizmoMode, self.gizmoSnap[0], self.gizmoSnapStep[0], self.gizmoObbColor)
     end
     if self.showGrid then
         Debug.enableFade(true)
@@ -231,8 +237,9 @@ function Editor:renderMainMenu()
                 UI.PopID()
             end
             if UI.MenuItem(ICONS.FOLDER_OPEN..' Open Project...') then
-                local selectedFile = App.Utils.openFileDialog('Lunam Projects', 'lupro', DEFAULT_PROJECT_DIR)
+                local selectedFile = App.Utils.openFileDialog('Lunam Projects', 'lupro', self.serializedConfig.general.prevProjectOpenDir)
                 if selectedFile and lfs.attributes(selectedFile) then
+                    self.serializedConfig.general.prevProjectOpenDir = selectedFile:match("(.*[/\\])")
                     local project = Project:open(selectedFile)
                     print('Opened project: '..project.transientFullPath)
                     self.activeProject = project
@@ -245,9 +252,9 @@ function Editor:renderMainMenu()
                 self:loadScene(nil)
             end
             if UI.MenuItem(ICONS.FILE_IMPORT..' Open Scene') then
-                local selectedFile = App.Utils.openFileDialog('3D Scenes', MESH_FILE_FILTER, PREV_SCENE_PATH)
+                local selectedFile = App.Utils.openFileDialog('3D Scenes', MESH_FILE_FILTER, self.serializedConfig.general.prevSceneOpenDir)
                 if selectedFile and lfs.attributes(selectedFile) then
-                    PREV_SCENE_PATH = selectedFile
+                    self.serializedConfig.general.prevSceneOpenDir = selectedFile:match("(.*[/\\])")
                     self:loadScene(selectedFile)
                 end
             end
@@ -591,8 +598,28 @@ function Editor:__onTick()
     self:renderPopups()
 end
 
+function Editor:loadConfig()
+    if lfs.attributes(CONFIG_FILE) then
+        self.serializedConfig = Ini.deserialize(CONFIG_FILE)
+    else
+        print('Creating new editor config file: '..CONFIG_FILE)
+        self:saveConfig()
+    end
+    if not lfs.attributes(self.serializedConfig.general.prevProjectOpenDir) then
+        self.serializedConfig.general.prevProjectOpenDir = DEFAULT_PROJECT_DIR
+    end
+    if not lfs.attributes(self.serializedConfig.general.prevSceneOpenDir) then
+        self.serializedConfig.general.prevSceneOpenDir = DEFAULT_PROJECT_DIR
+    end
+end
+
+function Editor:saveConfig()
+    Ini.serialize(CONFIG_FILE, self.serializedConfig)
+end
+
 Style.setup()
 
+Editor:loadConfig()
 Editor:loadScene(nil)
 
 return Editor
