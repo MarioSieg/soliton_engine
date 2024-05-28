@@ -598,7 +598,7 @@ function Editor:__onTick()
     self:renderPopups()
 end
 
-function Editor:loadConfig()
+function Editor:loadConfig() -- TODO: Save config on exit
     if lfs.attributes(CONFIG_FILE) then
         self.serializedConfig = Ini.deserialize(CONFIG_FILE)
     else
