@@ -72,7 +72,7 @@ function Player:updateCamera()
     delta = delta * vec2(sens, sens)
     self._mouseAngles = self._mouseAngles + delta
     self._mouseAngles.y = gmath.clamp(self._mouseAngles.y, -clampYRad, clampYRad)
-    local quat = quat.fromYawPitchRoll(self._mouseAngles.x, self._mouseAngles.y, 0.0)
+    local rot = quat.fromYawPitchRoll(self._mouseAngles.x, self._mouseAngles.y, 0.0)
     
     if self._movementState ~= MOVEMENT_STATE.IDLE then
         local walkFreq = 9.85
@@ -84,10 +84,10 @@ function Player:updateCamera()
         local bobX = amplitude * gmath.sin(freq)
         local bobY = amplitude * gmath.cos(freq)
         local bobQ = quat.fromYawPitchRoll(0, bobY, 0)
-        quat = quat * bobQ
+        rot = rot * bobQ
     end
     
-    transform:setRotation(quat)
+    transform:setRotation(rot)
 end
 
 function Player:updateMovement()
@@ -121,11 +121,11 @@ function Player:updateMovement()
         dir = dir + vec3(0, self.jumpSpeed, 0)
     end
     
-    local groundState = controller:getGroundState()
-    self._isInAir = groundState == CHARACTER_GROUND_STATE.IN_AIR
+    local state = controller:get_ground_state()
+    self._isInAir = state == ground_state.flying
     --  Cancel movement in opposite direction of normal when touching something we can't walk up
-    if groundState == CHARACTER_GROUND_STATE.ON_STEEP_GROUND or groundState == CHARACTER_GROUND_STATE.NOT_SUPPORTED then
-        local normal = controller:getGroundNormal()
+    if state == ground_state.on_steep_ground or state == ground_state.not_supported then
+        local normal = controller:get_ground_normal()
         local dot = vec3.dot(normal, dir)
         if dot < 0 then
             dir = dir - (dot * normal) / vec3.magSqr(normal)
@@ -133,17 +133,17 @@ function Player:updateMovement()
     end
 
     -- Update velocity
-    local current = controller:getLinearVelocity()
+    local current = controller:get_linear_velocity()
     local desired = dir * 2.0
     desired.y = current.y
     local new = 0.75 * current + 0.25 * desired
 
     -- Jump
-    if groundState == CHARACTER_GROUND_STATE.ON_GROUND and input.isKeyPressed(input.KEYS.SPACE) then
+    if state == ground_state.on_ground and input.isKeyPressed(input.KEYS.SPACE) then
         new.y = 5.0
     end
 
-    controller:setLinearVelocity(new)
+    controller:set_linear_velocity(new)
 end
 
 function Player:tick()
