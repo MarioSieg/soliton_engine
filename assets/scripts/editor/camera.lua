@@ -51,7 +51,7 @@ camera.isFocused = true
 
 -- invoked every frame
 function camera:tick()
-    self.isFocused = app.isFocused() and not app.isUIHovered()
+    self.isFocused = app.is_focused() and not app.is_any_ui_hovered()
     if not self.targetEntity or not self.targetEntity:isValid() then
         perror('camera has no valid target entity')
     end

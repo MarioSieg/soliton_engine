@@ -31,9 +31,9 @@ local EntityListView = require 'editor.tools.entity_list_view'
 local Inspector = require 'editor.tools.inspector'
 local AssetExplorer = require 'editor.tools.asset_explorer'
 
-local HOST_INFO = app.Host.GRAPHICS_API..' | '..(app.Host.HOST)
-local CPU_NAME = 'CPU: '..app.Host.CPU_NAME
-local GPU_NAME = 'GPU: '..app.Host.GPU_NAME
+local HOST_INFO = app.host.graphics_api..' | '..(app.host.host_string)
+local CPU_NAME = 'CPU: '..app.host.cpu_name
+local GPU_NAME = 'GPU: '..app.host.gpu_name
 local DOCK_LEFT_RATIO = 0.6
 local DOCK_RIGHT_RATIO = 0.4
 local DOCK_BOTTOM_RATIO = 0.5
@@ -191,7 +191,7 @@ local Player = require 'editor.player'
 
 function Editor:playScene()
     EntityListView:buildEntityList()
-    app.Window.enableCursor(false)
+    app.window.enable_cursor(false)
     self.camera.enableMovement = false
     self.camera.enableMouseLook = false
     local spawnPos = self.camera.position
@@ -209,7 +209,7 @@ function Editor:stopScene()
     Player:despawn()
     scene.setActiveCameraEntity(self.camera.targetEntity)
     EntityListView:buildEntityList()
-    app.Window.enableCursor(true)
+    app.window.enable_cursor(true)
     self.camera.enableMovement = true
     self.camera.enableMouseLook = true
     self.isVisible = true
@@ -504,7 +504,7 @@ function Editor:renderOverlay()
     if UI.Begin('Overlay', nil, overlayFlags) then
         UI.TextUnformatted(string.format('Sim Hz: %d, T: %.01f, %sT: %f', time.fpsAvg, time.time, ICONS.TRIANGLE, time.deltaTime))
         UI.SameLine()
-        local size = app.Window.getFrameBufSize()
+        local size = app.window.get_frame_buffer_size()
         UI.TextUnformatted(string.format(' | %d X %d', size.x, size.y))
         UI.TextUnformatted(string.format('GC Mem: %.03f MB', collectgarbage('count')/1000.0))
         UI.SameLine()
