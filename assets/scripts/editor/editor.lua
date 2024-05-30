@@ -514,8 +514,8 @@ function Editor:renderOverlay()
         local camera = scene.getActiveCameraEntity()
         if camera:isValid() and camera:hasComponent(components.transform) then
             local transform = camera:getComponent(components.transform)
-            UI.TextUnformatted(string.format('Pos: %s', transform:getPosition()))
-            UI.TextUnformatted(string.format('Dir: %s', transform:getForwardDir()))
+            UI.TextUnformatted(string.format('Pos: %s', transform:get_position()))
+            UI.TextUnformatted(string.format('Dir: %s', transform:get_forward_dir()))
         end
         UI.Separator()
         UI.TextUnformatted(HOST_INFO)
@@ -580,7 +580,7 @@ function Editor:__onTick()
     local selectedE = EntityListView.selectedEntity
     if EntityListView.selectedWantsFocus and selectedE and selectedE:isValid() then
         if selectedE:hasComponent(components.transform) then
-            local pos = selectedE:getComponent(components.transform):getPosition()
+            local pos = selectedE:getComponent(components.transform):get_position()
             pos.z = pos.z - 1.0
             if pos then
                 self.camera.position = pos

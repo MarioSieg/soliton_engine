@@ -83,27 +83,27 @@ function Inspector:_inspectTransform()
         if not self._perComponentBaseTools(transform, components.transform) then
             return
         end
-        local pos = transform:getPosition()
-        local rot = transform:getRotation()
-        local scale = transform:getScale()
+        local pos = transform:get_position()
+        local rot = transform:get_rotation()
+        local scale = transform:get_scale()
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff88ff88)
         local changed, pos = self:_inspectVec3(ICONS.ARROWS_ALT..' Position', pos)
         if changed then
-            transform:setPosition(pos)
+            transform:set_position(pos)
             self.propertiesChanged = true
         end
         UI.PopStyleColor()
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff8888ff)
         local changed, rot = self:_inspectVec3(ICONS.REDO_ALT..' Rotation', rot)
         if changed then
-            transform:setRotation(rot)
+            transform:set_rotation(rot)
             self.propertiesChanged = true
         end
         UI.PopStyleColor()
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff88ffff)
         local changed, scale = self:_inspectVec3(ICONS.EXPAND_ARROWS..' Scale', scale)
         if changed then
-            transform:setScale(scale)
+            transform:set_scale(scale)
             self.propertiesChanged = true
         end
         UI.PopStyleColor()

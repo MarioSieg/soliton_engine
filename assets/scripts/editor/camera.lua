@@ -87,7 +87,7 @@ function camera:_computeCameraRotation()
     self.mouseAngles = self.mouseAngles + delta
     self.mouseAngles.y = gmath.clamp(self.mouseAngles.y, -clampYRad, clampYRad)
     self.rotation = quat.fromYawPitchRoll(self.mouseAngles.x, self.mouseAngles.y, 0.0)
-    self.targetEntity:getComponent(components.transform):setRotation(self.rotation)
+    self.targetEntity:getComponent(components.transform):set_rotation(self.rotation)
 end
 
 function camera:_computeMovement()
@@ -134,7 +134,7 @@ function camera:_computeMovement()
     end
 
     self.position = self.position * self.lockAxisMovement -- apply axis lock
-    self.targetEntity:getComponent(components.transform):setPosition(self.position)
+    self.targetEntity:getComponent(components.transform):set_position(self.position)
 end
 
 return camera

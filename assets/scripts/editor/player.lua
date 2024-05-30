@@ -40,7 +40,7 @@ function Player:spawn(spawnPos)
     self.controller = scene.spawn('PlayerController')
     self.controller:addFlag(EFLAGS.TRANSIENT)
     self.controller:getComponent(components.character_controller)
-    self.controller:getComponent(components.transform):setPosition(spawnPos)
+    self.controller:getComponent(components.transform):set_position(spawnPos)
 
     self.camera = scene.spawn('PlayerCamera')
     self.camera:addFlag(EFLAGS.TRANSIENT)
@@ -50,9 +50,9 @@ end
 
 function Player:updateCamera()
     local transform = self.camera:getComponent(components.transform)
-    local newPos = self.controller:getComponent(components.transform):getPosition()
+    local newPos = self.controller:getComponent(components.transform):get_position()
     newPos.y = newPos.y + 1.35 * 0.5 -- camera height
-    transform:setPosition(newPos) -- sync pos
+    transform:set_position(newPos) -- sync pos
 
     local sens = gmath.abs(self.sensitivity) * 0.01
     local clampYRad = gmath.rad(gmath.abs(self.clampY))
@@ -87,7 +87,7 @@ function Player:updateCamera()
         rot = rot * bobQ
     end
     
-    transform:setRotation(rot)
+    transform:set_rotation(rot)
 end
 
 function Player:updateMovement()
@@ -105,11 +105,11 @@ function Player:updateMovement()
         return false
     end
 
-    local isMoving = false
-    isMoving = isMoving or move(input.KEYS.W, cameraTransform:getForwardDir())
-    isMoving = isMoving or move(input.KEYS.S, cameraTransform:getBackwardDir())
-    isMoving = isMoving or move(input.KEYS.A, cameraTransform:getLeftDir())
-    isMoving = isMoving or move(input.KEYS.D, cameraTransform:getRightDir())
+    local isMoving = falsew
+    isMoving = isMoving or move(input.KEYS.W, cameraTransform:get_forward_dir())
+    isMoving = isMoving or move(input.KEYS.S, cameraTransform:get_backward_dir())
+    isMoving = isMoving or move(input.KEYS.A, cameraTransform:get_left_dir())
+    isMoving = isMoving or move(input.KEYS.D, cameraTransform:get_right_dir())
 
     if isMoving then
         self._movementState = isRunning and MOVEMENT_STATE.RUNNING or MOVEMENT_STATE.WALKING
