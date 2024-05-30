@@ -11,7 +11,7 @@ local scene = require 'scene'
 local components = require 'components'
 local vec3 = require 'vec3'
 local quat = require 'quat'
-local EFLAGS = ENTITY_FLAGS
+local entity_flags = entity_flags
 
 local MAX_TEXT_INPUT_SIZE = 128
 local Inspector = {
@@ -78,7 +78,7 @@ function Inspector:_perComponentBaseTools(instance, id)
 end
 
 function Inspector:_inspectTransform()
-    local transform = self.selectedEntity:getComponent(components.transform)
+    local transform = self.selectedEntity:get_component(components.transform)
     if UI.CollapsingHeader(ICONS.ARROWS_ALT..' transform', ffi.C.ImGuiTreeNodeFlags_DefaultOpen) then
         if not self._perComponentBaseTools(transform, components.transform) then
             return
@@ -115,7 +115,7 @@ function Inspector:render()
     UI.SetNextWindowSize(WINDOW_SIZE, ffi.C.ImGuiCond_FirstUseEver)
     if UI.Begin(self.name, self.isVisible) then
         local entity = self.selectedEntity
-        if not entity or not entity:isValid() then
+        if not entity or not entity:is_valid() then
             UI.TextUnformatted('No entity selected')
         else
             UI.Combo('##ComponentType', selectedComponent, COM_NAMES_C, #COM_NAMES)
@@ -124,14 +124,14 @@ function Inspector:render()
             end
             UI.SameLine()
             if UI.Button(ICONS.PLUS..' Add') then
-                entity:getComponent(components[COM_NAMES[selectedComponent[0]+1]])
+                entity:get_component(components[COM_NAMES[selectedComponent[0]+1]])
                 self.propertiesChanged = true
             end
             if UI.IsItemHovered() then
                 UI.SetTooltip('Add new component')
             end
             if UI.CollapsingHeader(ICONS.INFO_CIRCLE..' General', ffi.C.ImGuiTreeNodeFlags_DefaultOpen) then
-                local name = entity:getName()
+                local name = entity:get_name()
                 if #name >= MAX_TEXT_INPUT_SIZE then
                     name = name:sub(1, MAX_TEXT_INPUT_SIZE-1)
                 end
@@ -140,25 +140,25 @@ function Inspector:render()
                     entity:setName(ffi.string(self.inputTextBuffer))
                     self.propertiesChanged = true
                 end
-                local hidden = entity:hasFlag(EFLAGS.HIDDEN)
+                local hidden = entity:has_flag(entity_flags.hidden)
                 self.manipBufBool[0] = hidden
                 UI.Checkbox(ICONS.EYE_SLASH..' Hidden', self.manipBufBool)
                 if hidden ~= self.manipBufBool[0] then
-                    entity:setFlags(bxor(entity:getFlags(), EFLAGS.HIDDEN))
+                    entity:set_flags(bxor(entity:get_flags(), entity_flags.hidden))
                     self.propertiesChanged = true
                 end
-                local static = entity:hasFlag(EFLAGS.STATIC)
+                local static = entity:has_flag(entity_flags.static)
                 self.manipBufBool[0] = static
                 UI.Checkbox(ICONS.DO_NOT_ENTER..' Static', self.manipBufBool)
                 if static ~= self.manipBufBool[0] then
-                    entity:setFlags(bxor(entity:getFlags(), EFLAGS.STATIC))
+                    entity:set_flags(bxor(entity:get_flags(), entity_flags.static))
                     self.propertiesChanged = true
                 end
-                local transient = entity:hasFlag(EFLAGS.TRANSIENT)
+                local transient = entity:has_flag(entity_flags.transient)
                 self.manipBufBool[0] = transient
                 UI.Checkbox(ICONS.ALARM_CLOCK..' Transient', self.manipBufBool)
                 if transient ~= self.manipBufBool[0] then
-                    entity:setFlags(bxor(entity:getFlags(), EFLAGS.TRANSIENT))
+                    entity:set_flags(bxor(entity:get_flags(), entity_flags.transient))
                     self.propertiesChanged = true
                 end
                 -- UI.Separator()
@@ -168,7 +168,7 @@ function Inspector:render()
                 -- UI.TextUnformatted(string.format('ID Address: %p', entity.id))
                 -- UI.PopStyleColor()
             end
-            if entity:hasComponent(components.transform) then
+            if entity:has_component(components.transform) then
                 self:_inspectTransform()
             end
         end

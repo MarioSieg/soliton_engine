@@ -48,7 +48,7 @@ camera.isFocused = true
 -- invoked every frame
 function camera:tick()
     self.isFocused = app.is_focused() and not app.is_any_ui_hovered()
-    if not self.targetEntity or not self.targetEntity:isValid() then
+    if not self.targetEntity or not self.targetEntity:is_valid() then
         perror('camera has no valid target entity')
     end
     if self.enableMouseLook and self.isFocused then
@@ -83,7 +83,7 @@ function camera:_computeCameraRotation()
     self.mouseAngles = self.mouseAngles + delta
     self.mouseAngles.y = gmath.clamp(self.mouseAngles.y, -clampYRad, clampYRad)
     self.rotation = quat.fromYawPitchRoll(self.mouseAngles.x, self.mouseAngles.y, 0.0)
-    self.targetEntity:getComponent(components.transform):set_rotation(self.rotation)
+    self.targetEntity:get_component(components.transform):set_rotation(self.rotation)
 end
 
 function camera:_computeMovement()
@@ -130,7 +130,7 @@ function camera:_computeMovement()
     end
 
     self.position = self.position * self.lockAxisMovement -- apply axis lock
-    self.targetEntity:getComponent(components.transform):set_position(self.position)
+    self.targetEntity:get_component(components.transform):set_position(self.position)
 end
 
 return camera

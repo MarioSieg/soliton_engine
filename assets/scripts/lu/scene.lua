@@ -117,7 +117,7 @@ function scene.__onTick()
 end
 
 function scene.spawn(name)
-    return entity:fromId(C.__lu_scene_spawn_entity(name))
+    return entity:from_native_id(C.__lu_scene_spawn_entity(name))
 end
 
 function scene.despawn(entity)
@@ -138,7 +138,7 @@ function scene.fullEntityQueryNextTable()
 end
 
 function scene.fullEntityQueryGet(i)
-    return entity:fromId(C.__lu_scene_full_entity_query_get(i))
+    return entity:from_native_id(C.__lu_scene_full_entity_query_get(i))
 end
 
 function scene.fullEntityQueryEnd()
@@ -150,7 +150,7 @@ function scene.setActiveCameraEntity(entity)
 end
 
 function scene.getActiveCameraEntity()
-    return entity:fromId(C.__lu_scene_get_active_camera_entity())
+    return entity:from_native_id(C.__lu_scene_get_active_camera_entity())
 end
 
 local function setLocalSceneProps(id, sceneName)

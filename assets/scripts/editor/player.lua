@@ -9,7 +9,7 @@ local vec2 = require 'vec2'
 local vec3 = require 'vec3'
 local quat = require 'quat'
 local time = require 'time'
-local EFLAGS = ENTITY_FLAGS
+local entity_flags = entity_flags
 
 local MOVEMENT_STATE = {
     IDLE = 0,
@@ -38,19 +38,19 @@ function Player:spawn(spawnPos)
     spawnPos = spawnPos or vec3(0, 10, 0)
 
     self.controller = scene.spawn('PlayerController')
-    self.controller:addFlag(EFLAGS.TRANSIENT)
-    self.controller:getComponent(components.character_controller)
-    self.controller:getComponent(components.transform):set_position(spawnPos)
+    self.controller:add_flag(entity_flags.transient)
+    self.controller:get_component(components.character_controller)
+    self.controller:get_component(components.transform):set_position(spawnPos)
 
     self.camera = scene.spawn('PlayerCamera')
-    self.camera:addFlag(EFLAGS.TRANSIENT)
-    self.camera:getComponent(components.transform)
-    self.camera:getComponent(components.camera):set_fov(75.0)
+    self.camera:add_flag(entity_flags.transient)
+    self.camera:get_component(components.transform)
+    self.camera:get_component(components.camera):set_fov(75.0)
 end
 
 function Player:updateCamera()
-    local transform = self.camera:getComponent(components.transform)
-    local newPos = self.controller:getComponent(components.transform):get_position()
+    local transform = self.camera:get_component(components.transform)
+    local newPos = self.controller:get_component(components.transform):get_position()
     newPos.y = newPos.y + 1.35 * 0.5 -- camera height
     transform:set_position(newPos) -- sync pos
 
@@ -91,8 +91,8 @@ function Player:updateCamera()
 end
 
 function Player:updateMovement()
-    local cameraTransform = self.camera:getComponent(components.transform)
-    local controller = self.controller:getComponent(components.character_controller)
+    local cameraTransform = self.camera:get_component(components.transform)
+    local controller = self.controller:get_component(components.character_controller)
     local isRunning = input.isKeyPressed(input.KEYS.W) and input.isKeyPressed(input.KEYS.LEFT_SHIFT)
     local speed = isRunning and self.runSpeed or self.walkSpeed
     local dir = vec3.ZERO

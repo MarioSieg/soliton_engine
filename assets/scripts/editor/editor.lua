@@ -71,7 +71,7 @@ local SOUND_FILE_FILTER = buildFilterString(SOUND_FILE_EXTS)
 local ICONS_FILE_FILTER = buildFilterString(ICONS_FILE_EXTS)
 local XAML_FILE_FILTER = buildFilterString(XAML_FILE_EXTS)
 
-local EFLAGS = ENTITY_FLAGS
+local entity_flags = entity_flags
 local DEBUG_MODE = {
     NONE = 0,
     SCENE = 1,
@@ -142,8 +142,8 @@ function Editor.gizmos:drawGizmos()
         return
     end
     local selected = EntityListView.selectedEntity
-    if selected and selected:isValid() then
-        debugdraw.enable_gizmo(not selected:hasFlag(EFLAGS.STATIC))
+    if selected and selected:is_valid() then
+        debugdraw.enable_gizmo(not selected:has_flag(entity_flags.static))
         debugdraw.draw_gizmo_manipulator(selected, self.gizmoOperation, self.gizmoMode, self.gizmoSnap[0], self.gizmoSnapStep[0], self.gizmoObbColor)
     end
     if self.showGrid then
@@ -180,9 +180,9 @@ function Editor:loadScene(file)
     else
         scene.new('Untitled scene')
     end
-    local mainCamera = scene.spawn('__EditorCamera') -- spawn editor camera
-    mainCamera:addFlag(EFLAGS.HIDDEN + EFLAGS.TRANSIENT) -- hide and don't save
-    mainCamera:getComponent(components.camera):set_fov(80)
+    local mainCamera = scene.spawn('__editor_camera__') -- spawn editor camera
+    mainCamera:add_flag(entity_flags.hidden + entity_flags.transient) -- hide and don't save
+    mainCamera:get_component(components.camera):set_fov(80)
     self.camera.targetEntity = mainCamera
     EntityListView:buildEntityList()
 end
@@ -512,8 +512,8 @@ function Editor:renderOverlay()
         UI.TextUnformatted(string.format(' | %02d.%02d.%02d %02d:%02d', time.day, time.month, time.year, time.hour, time.min))
         UI.Separator()
         local camera = scene.getActiveCameraEntity()
-        if camera:isValid() and camera:hasComponent(components.transform) then
-            local transform = camera:getComponent(components.transform)
+        if camera:is_valid() and camera:has_component(components.transform) then
+            local transform = camera:get_component(components.transform)
             UI.TextUnformatted(string.format('Pos: %s', transform:get_position()))
             UI.TextUnformatted(string.format('Dir: %s', transform:get_forward_dir()))
         end

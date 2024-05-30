@@ -5,9 +5,8 @@ local profile = require 'jit.p'
 
 local UI = require 'editor.imgui'
 local ICONS = require 'editor.icons'
-local time = require('time')
 local scene = require('scene')
-local EFLAGS = ENTITY_FLAGS
+local entity_flags = entity_flags
 
 local EntityListView = {
     name = ICONS.CUBES..' Entities',
@@ -24,11 +23,11 @@ function EntityListView:buildEntityList()
     scene.fullEntityQueryStart()
     for i=0, scene.fullEntityQueryNextTable() do
         local entity = scene.fullEntityQueryGet(i)
-        if entity:isValid() then
-            if not self.showHiddenEntities[0] and entity:hasFlag(EFLAGS.HIDDEN) then
+        if entity:is_valid() then
+            if not self.showHiddenEntities[0] and entity:has_flag(entity_flags.hidden) then
                 goto continue
             end
-            local name = entity:getName()
+            local name = entity:get_name()
             local isUnnamed = name == ''
             if isUnnamed then
                 name = 'Unnamed'
@@ -82,11 +81,11 @@ function EntityListView:render()
             while clipper:Step() do -- HOT LOOP
                 for i=clipper.DisplayStart+1, clipper.DisplayEnd do
                     local data = self.entityList[i]
-                    if data[1]:isValid() then
+                    if data[1]:is_valid() then
                         local isUnnamed = data[3]
-                        local isHidden = data[1]:hasFlag(EFLAGS.HIDDEN)
-                        local isStatic = data[1]:hasFlag(EFLAGS.STATIC)
-                        local isTransient = data[1]:hasFlag(EFLAGS.TRANSIENT)
+                        local isHidden = data[1]:has_flag(entity_flags.hidden)
+                        local isStatic = data[1]:has_flag(entity_flags.static)
+                        local isTransient = data[1]:has_flag(entity_flags.transient)
                         local color = isHidden and 0xff888888 or isStatic and 0xffff8888 or isTransient and 0xff88ff88 or 0xffffffff
                         UI.PushStyleColor_U32(ffi.C.ImGuiCol_Text, color)
                         if UI.Selectable(data[2], self.selectedEntity == data[1], 0, size) then

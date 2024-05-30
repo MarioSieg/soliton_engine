@@ -6,16 +6,11 @@
 ------------------------------------------------------------------------------
 
 local ffi = require 'ffi'
-local istype = ffi.istype
-local C = ffi.C
 local bit = require 'bit'
-local band = bit.band
-local bor = bit.bor
-local bxor = bit.bxor
-local bnot = bit.bnot
-local lshift = bit.lshift
+local band, bor, bxor, bnot = bit.band, bit.bor, bit.bxor, bit.bnot
+local cpp = ffi.C
 
-ffi.cdef[[
+ffi.cdef [[
     bool __lu_entity_is_valid(lua_entity_id id);
     const char* __lu_entity_get_name(lua_entity_id id);
     void __lu_entity_set_name(lua_entity_id id, const char* name);
@@ -24,12 +19,12 @@ ffi.cdef[[
 ]]
 
 --- entity flags for the entity class.
--- Keep in Sync with C++ com::entity_flags::$ in components.hpp
-ENTITY_FLAGS = {
-    NONE = 0, -- No flags
-    HIDDEN = 0x1, -- entity is hidden in editor
-    TRANSIENT = 0x2, -- entity is transient and will not be serialized
-    STATIC = 0x4, -- entity is static and will not be moved
+-- Keep in Sync with cpp++ com::entity_flags::$ in components.hpp
+entity_flags = {
+    none = 0, -- No flags
+    hidden = 0x1, -- entity is hidden in editor
+    transient = 0x2, -- entity is transient and will not be serialized
+    static = 0x4, -- entity is static and will not be moved
 }
 
 --- entity class
@@ -39,7 +34,7 @@ local entity = {
 
 --- Creates a new entity from an entity id.
 -- @tparam number id The valid entity id
-function entity:fromId(id)
+function entity:from_native_id(id)
     if type(id) ~= 'number' then
         error('entity id is not a number alias lua_entity_id, but a '..type(id))
     end
@@ -51,72 +46,68 @@ end
 
 --- Checks if the entity is valid and alive.
 -- @treturn bool True if the entity is valid and alive
-function entity:isValid()
-    return C.__lu_entity_is_valid(self.id)
+function entity:is_valid()
+    return cpp.__lu_entity_is_valid(self.id)
 end
 
 --- Gets the name of the entity.
 -- @treturn string The name of the entity
-function entity:getName()
-    return ffi.string(C.__lu_entity_get_name(self.id))
+function entity:get_name()
+    return ffi.string(cpp.__lu_entity_get_name(self.id))
 end
 
 --- Sets the name of the entity.
 -- @tparam string name The name of the entity
-function entity:setName(name)
-    C.__lu_entity_set_name(self.id, name)
+function entity:set_name(name)
+    cpp.__lu_entity_set_name(self.id, name)
 end
 
 --- Gets specified component from the entity or adds it if it does not exist.
 -- @tparam components.Component component The component class
-function entity:getComponent(component)
+function entity:get_component(component)
     return component:_new(self.id)
 end
 
 --- Checks if the entity has the specified component.
 -- @tparam components.Component component The component class
-function entity:hasComponent(component)
+function entity:has_component(component)
     return component._exists(self.id)
 end
 
 --- Gets the entity flags.
 -- @treturn ENTITY_FLAGS The entity flags
-function entity:getFlags()
-    return C.__lu_entity_get_flags(self.id)
+function entity:get_flags()
+    return cpp.__lu_entity_get_flags(self.id)
 end
 
 --- Sets the entity flags.
 -- @tparam ENTITY_FLAGS flags The entity flags
-function entity:setFlags(flags)
-    C.__lu_entity_set_flags(self.id, flags)
+function entity:set_flags(flags)
+    cpp.__lu_entity_set_flags(self.id, flags)
 end
 
 --- Checks if the entity has the specified flags.
 -- @tparam ENTITY_FLAGS flags The flags to check
-function entity:hasFlag(flags)
-    return band(self:getFlags(), flags) == flags
+function entity:has_flag(flags)
+    return band(self:get_flags(), flags) ~= 0
 end
 
 --- Adds the specified flags to the entity.
 -- @tparam ENTITY_FLAGS flags The flags to add
-function entity:addFlag(flags)
-    if not self:isValid() then
-        perror('entity id is invalid (0)')
-        return
-    end
-    self:setFlags(bor(self:getFlags(), flags))
+function entity:add_flag(flags)
+    self:set_flags(bor(self:get_flags(), flags))
 end
 
 --- Removes the specified flags from the entity.
 -- @tparam ENTITY_FLAGS flags The flags to remove
 function entity:removeFlag(flags)
-    self:setFlags(band(self:getFlags(), bnot(flags)))
+    self:set_flags(band(self:get_flags(), bnot(flags)))
 end
 
 --- Toggles the specified flags of the entity.
 -- @tparam ENTITY_FLAGS flags The flags to toggle
 function entity:toggleFlag(flags)
-    self:setFlags(bxor(self:getFlags(), flags))
+    self:set_flags(bxor(self:get_flags(), flags))
 end
 
 --- Checks if the entity is equal to another entity by comparing their ids.
