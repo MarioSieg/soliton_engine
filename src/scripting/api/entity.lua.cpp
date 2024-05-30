@@ -2,37 +2,32 @@
 
 #include "_prelude.hpp"
 
-LUA_INTEROP_API auto __lu_entity_is_valid(const flecs::id_t id) -> bool {
-    const flecs::entity ent {scene::get_active(), id};
-    return ent && ent.is_valid();
+LUA_INTEROP_API auto __lu_entity_is_valid(const lua_entity_id id) -> bool {
+    std::optional<flecs::entity> ent {resolve_entity(id)};
+    return ent.has_value();
 }
 
-LUA_INTEROP_API auto __lu_entity_is_alive(const flecs::id_t id) -> bool {
-    const flecs::entity ent {scene::get_active(), id};
-    return ent && ent.is_alive();
+LUA_INTEROP_API auto __lu_entity_get_name(const lua_entity_id id) -> const char* {
+    std::optional<flecs::entity> ent {resolve_entity(id)};
+    if (!ent) [[unlikely]] { return "Null Entity"; }
+    return ent->name().c_str();
 }
 
-LUA_INTEROP_API auto __lu_entity_get_name(const flecs::id_t id) -> const char* {
-    const flecs::entity ent {scene::get_active(), id};
-    if (!ent.is_alive()) [[unlikely]] return {};
-    return ent.name().c_str();
+LUA_INTEROP_API auto __lu_entity_set_name(const lua_entity_id id, const char* name) -> void {
+    std::optional<flecs::entity> ent {resolve_entity(id)};
+    if (!ent) [[unlikely]] { return; }
+    ent->set_name(name);
 }
 
-LUA_INTEROP_API auto __lu_entity_set_name(const flecs::id_t id, const char* name) -> void {
-    flecs::entity ent {scene::get_active(), id};
-    if (!ent.is_alive()) [[unlikely]] return;
-    ent.set_name(name);
+LUA_INTEROP_API auto __lu_entity_get_flags(const lua_entity_id id) -> std::uint32_t {
+    std::optional<flecs::entity> ent {resolve_entity(id)};
+    if (!ent) [[unlikely]] { return 0; }
+    return ent->get<com::metadata>()->flags;
 }
 
-LUA_INTEROP_API auto __lu_entity_get_flags(const flecs::id_t id) -> std::uint32_t {
-    const flecs::entity ent {scene::get_active(), id};
-    if (!ent.is_alive()) [[unlikely]] return {};
-    return ent.get<com::metadata>()->flags;
-}
-
-LUA_INTEROP_API auto __lu_entity_set_flags(const flecs::id_t id, const std::uint32_t flags) -> void {
-    const flecs::entity ent {scene::get_active(), id};
-    if (!ent.is_alive()) [[unlikely]] return;
-    ent.get_mut<com::metadata>()->flags = flags;
+LUA_INTEROP_API auto __lu_entity_set_flags(const lua_entity_id id, const std::uint32_t flags) -> void {
+    std::optional<flecs::entity> ent {resolve_entity(id)};
+    if (!ent) [[unlikely]] { return; }
+    ent->get_mut<com::metadata>()->flags = flags;
 }
 

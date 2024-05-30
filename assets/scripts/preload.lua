@@ -15,6 +15,7 @@ local MODULES = {
     ['Tween'] = 'lu/tween',
     ['Vec2'] = 'lu/vec2',
     ['Vec3'] = 'lu/vec3',
+    ['Ini'] = 'lu/ini',
 }
 
 local loaded = {}

@@ -8,12 +8,32 @@
 #if PLATFORM_WINDOWS
 #define LUA_INTEROP_API [[maybe_unused]] extern "C" __cdecl __declspec(dllexport)
 #elif PLATFORM_LINUX
-#define LUA_INTEROP_API extern "C" __attribute__((visibility("default")))
+#define LUA_INTEROP_API extern "C" __attribute__((visibility("default"), unused))
 #else
-#define LUA_INTEROP_API extern "C" __attribute__((visibility("default")))
+#define LUA_INTEROP_API extern "C" __attribute__((visibility("default"), unused))
 #endif
 
-static_assert(sizeof(flecs::id_t) == sizeof(std::uint64_t));
+using lua_entity_id = double;
+static_assert(sizeof(flecs::id_t) == sizeof(lua_entity_id));
+static_assert(alignof(flecs::id_t) == alignof(lua_entity_id));
+
+[[nodiscard]] inline __attribute__((always_inline)) auto resolve_entity(const lua_entity_id id) noexcept -> std::optional<flecs::entity> {
+    const auto f_id = std::bit_cast<flecs::id_t>(id);
+    if (f_id == 0) [[unlikely]] {
+        log_warn("Entity ID is null");
+        return std::nullopt;
+    }
+    const flecs::entity ent {scene::get_active(), f_id};
+    if (!ent.is_valid()) [[unlikely]] {
+        log_warn("Entity ID is invalid");
+        return std::nullopt;
+    }
+    if (!ent.is_alive()) [[unlikely]] {
+        log_warn("Entity ID is not alive");
+        return std::nullopt;
+    }
+    return ent;
+}
 
 // Vector2 for LUA interop
 // Only a proxy type holding the data and allowing implicit conversions to other vector types.
@@ -132,16 +152,19 @@ struct lua_vec4 {
 };
 static_assert(sizeof(lua_vec4) == sizeof(double) * 4 && std::is_standard_layout_v<lua_vec4>);
 
-#define impl_component_core(name) \
-    LUA_INTEROP_API auto __lu_com_##name##_exists(const flecs::id_t id) -> bool { \
-        const flecs::entity ent {scene::get_active(), id}; \
-        return ent.has<com::name>(); \
-    } \
-    LUA_INTEROP_API auto __lu_com_##name##_add(const flecs::id_t id) -> void { \
-        flecs::entity ent {scene::get_active(), id}; \
-        ent.add<com::name>(); \
-    } \
-    LUA_INTEROP_API auto __lu_com_##name##_remove(const flecs::id_t id) -> void { \
-        flecs::entity ent {scene::get_active(), id}; \
-        ent.remove<com::name>(); \
+#define impl_component_core(name)\
+    LUA_INTEROP_API auto __lu_com_##name##_exists(const lua_entity_id id) -> bool {\
+        const std::optional<flecs::entity> ent {resolve_entity(id)};\
+        if (!ent) [[unlikely]] { return false; }\
+        return ent->has<com::name>();\
+    }\
+    LUA_INTEROP_API auto __lu_com_##name##_add(const lua_entity_id id) -> void { \
+        std::optional<flecs::entity> ent {resolve_entity(id)};\
+        if (!ent) [[unlikely]] { return; }\
+        ent->add<com::name>();\
+    }\
+    LUA_INTEROP_API auto __lu_com_##name##_remove(const lua_entity_id id) -> void {\
+        std::optional<flecs::entity> ent {resolve_entity(id)};\
+        if (!ent) [[unlikely]] { return; }\
+        ent->remove<com::name>();\
     }

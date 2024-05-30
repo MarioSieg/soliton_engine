@@ -23,7 +23,7 @@ ffi.cdef[[
 ]]
 
 local Transform = {
-    _entity_id = nil,
+    _entity_id = 0,
     _new = function(self, entity_id)
         local o = {}
         setmetatable(o, {__index = self})

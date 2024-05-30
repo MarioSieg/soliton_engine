@@ -17,12 +17,18 @@ layout (location = 4) in mat3 outTBN;
 
 layout (location = 0) out vec4 outFragColor;
 
+layout (push_constant, std430) uniform PushConstants { // TODO: move to per frame cb
+  layout(offset = 128) float time;
+} pushConstants;
+
 void main() {
   const vec3 tex_color = texture(samplerAlbedoMap, outUV).rgb;
   const vec3 normal = normal_map(outTBN, texture(samplerNormalMap, outUV).xyz);
-  outFragColor.rgb = diffuse_lambert_lit(tex_color, normal);
-
-  // gamma correction
-  outFragColor.rgb = gamma_correct(tex_color);
+  //vec3 final = diffuse_lambert_lit(tex_color, normal);
+  vec3 final = tex_color;
+  final = color_saturation(final, 2.0);
+  final = gamma_correct(final);
+  final += vec3(film_noise(pushConstants.time*outUV)) * 0.075;
+  outFragColor.rgb = final;
   outFragColor.a = 1.0;
 }

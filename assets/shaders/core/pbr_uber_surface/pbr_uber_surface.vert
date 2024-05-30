@@ -10,7 +10,7 @@ layout (location = 2) in vec2 inUV;
 layout (location = 3) in vec3 inTangent;
 layout (location = 4) in vec3 inBiTangent;
 
-layout (push_constant) uniform PushConstants {
+layout (push_constant, std430) uniform PushConstants {
 	mat4 ModelViewProj;
 	mat4 NormalMatrix;
 } pushConstants;

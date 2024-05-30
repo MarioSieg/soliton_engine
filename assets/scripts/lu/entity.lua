@@ -17,7 +17,6 @@ local lshift = bit.lshift
 
 ffi.cdef[[
     bool __lu_entity_is_valid(lua_entity_id id);
-    bool __lu_entity_is_alive(lua_entity_id id);
     const char* __lu_entity_get_name(lua_entity_id id);
     void __lu_entity_set_name(lua_entity_id id, const char* name);
     uint32_t __lu_entity_get_flags(lua_entity_id id);
@@ -35,13 +34,15 @@ ENTITY_FLAGS = {
 
 --- Entity class
 local Entity = {
-    id = nil
+    id = 0
 }
 
 --- Creates a new entity from an entity id.
 -- @tparam number id The valid entity id
 function Entity:fromId(id)
-    assert(istype('lua_entity_id', id))
+    if type(id) ~= 'number' then
+        error('Entity id is not a number alias lua_entity_id, but a '..type(id))
+    end
     local o = {}
     setmetatable(o, {__index = self})   
     o.id = id
@@ -51,7 +52,7 @@ end
 --- Checks if the entity is valid and alive.
 -- @treturn bool True if the entity is valid and alive
 function Entity:isValid()
-    return self.id and C.__lu_entity_is_valid(self.id) and C.__lu_entity_is_alive(self.id)
+    return C.__lu_entity_is_valid(self.id)
 end
 
 --- Gets the name of the entity.
@@ -99,6 +100,10 @@ end
 --- Adds the specified flags to the entity.
 -- @tparam ENTITY_FLAGS flags The flags to add
 function Entity:addFlag(flags)
+    if not self:isValid() then
+        perror('Entity id is invalid (0)')
+        return
+    end
     self:setFlags(bor(self:getFlags(), flags))
 end
 
@@ -123,7 +128,7 @@ end
 --- Converts the entity to a string.
 -- @treturn string The string representation of the entity ID
 function Entity:__tostring()
-    return string.format('Entity(%d)', self.id)
+    return string.format('Entity(%x)', self.id)
 end
 
 return Entity
