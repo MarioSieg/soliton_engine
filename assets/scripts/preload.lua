@@ -3,7 +3,6 @@
 -- Preload all files in this directory: TODO make this better
 local module_cache = {
     ['app'] = 'lu/app',
-    ['color'] = 'lu/color',
     ['debugdraw'] = 'lu/debugdraw',
     ['entity'] = 'lu/entity',
     ['components'] = 'lu/components',

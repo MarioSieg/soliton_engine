@@ -3,13 +3,9 @@
 
 -- Import engine modules
 local app = require 'app'
-local color = require 'color'
-local debugdraw = require 'debugdraw'
-local entity = require 'entity'
 local input = require 'input'
 local gmath = require 'gmath'
 local quat = require 'quat'
-local scene = require 'scene'
 local time = require 'time'
 local vec2 = require 'vec2'
 local vec3 = require 'vec3'
