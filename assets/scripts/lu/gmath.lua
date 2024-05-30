@@ -5,29 +5,28 @@
 -- @module gmath
 ------------------------------------------------------------------------------
 
-local ffi = require 'ffi'
 local bit = require 'bit'
 
-local band, bor, bxor, lshift, rshift, arshift = bit.band, bit.bor, bit.bxor, bit.lshift, bit.rshift, bit.arshift
+local band = bit.band
 
 --- gmath Module
 local gmath = {
-    E = 2.7182818284590452354, -- e (Euler's number)
-    LOG2E = 1.4426950408889634074, -- log_2 e
-    LOG10E = 0.43429448190325182765, -- log_10 e
-    LN2 = 0.69314718055994530942, -- log_e 2
-    LN10 = 2.30258509299404568402, -- log_e 10
-    TAU = 6.28318530717958647692, -- pi * 2
-    PI = 3.14159265358979323846, -- pi (circle constant)- Archimedes' constant
-    PI_DIV2 = 1.57079632679489661923, -- pi/2
-    PI_DIV4 = 0.78539816339744830962, -- pi/4
-    ONE_DIV_PI = 0.31830988618379067154, -- 1/pi
-    TWO_DIV_PI = 0.63661977236758134308, -- 2/pi
-    TWO_SQRTPI = 1.12837916709551257390, -- 2/sqrt(pi)
-    SQRT2 = 1.41421356237309504880, -- sqrt(2)
-    SQRT1_2 = 0.70710678118654752440, -- 1/sqrt(2)
-    EULER_MASCHERONI = 0.57721566490153286060, -- Euler-Mascheroni constant
-    INFINITY = math.huge
+    e = 2.7182818284590452354, -- e (Euler's number)
+    log2e = 1.4426950408889634074, -- log_2 e
+    log10e = 0.43429448190325182765, -- log_10 e
+    ln2 = 0.69314718055994530942, -- log_e 2
+    ln10 = 2.30258509299404568402, -- log_e 10
+    tau = 6.28318530717958647692, -- pi * 2
+    pi = 3.14159265358979323846, -- pi (circle constant)- Archimedes' constant
+    pi_div2 = 1.57079632679489661923, -- pi/2
+    pi_div4 = 0.78539816339744830962, -- pi/4
+    one_div_pi = 0.31830988618379067154, -- 1/pi
+    two_div_pi = 0.63661977236758134308, -- 2/pi
+    two_sqrt_pi = 1.12837916709551257390, -- 2/sqrt(pi)
+    sqrt2 = 1.41421356237309504880, -- sqrt(2)
+    sqrt1_2 = 0.70710678118654752440, -- 1/sqrt(2)
+    gamma = 0.57721566490153286060, -- Euler-Mascheroni constant
+    infinity = math.huge
 }
 
 --- Returns the absolute value of a number.
@@ -84,23 +83,15 @@ function gmath.clamp(x, lower, upper)
     return gmath.max(lower, gmath.min(upper, x))
 end
 
-function gmath.isPowerOfTwo(x)
+function gmath.is_power_of_2(x)
     return band(x, x - 1) == 0 and x ~= 0
-end
-
-function gmath.ceilPowerOfTwo(x)
-    return 2.0 ^ gmath.ceil(gmath.log(x) / gmath.LN2)
-end
-
-function gmath.floorPowerOfTwo(x)
-    return 2.0 ^ gmath.floor(gmath.log(x) / gmath.LN2)
 end
 
 function gmath.lerp(x, y, t)
     return (1.0 - t) * x + t * y
 end
 
-function gmath.lerpInv(x, y, v)
+function gmath.lerp_inv(x, y, v)
     if x ~= y then
         return (v - x ) / (y - x)
     end
@@ -129,11 +120,11 @@ function gmath.saturate(x)
     return gmath.max(0.0, gmath.min(1.0, x))
 end
 
-function gmath.cameraLinearize(depth, znear, zfar)
+function gmath.camera_linearize(depth, znear, zfar)
     return - zfar * znear / (depth * (zfar - znear) - zfar)
 end
 
-function gmath.cameraSmoothstep(znear, zfar, depth)
+function gmath.camera_smoothstep(znear, zfar, depth)
     local x = gmath.saturate((depth - znear) / (zfar - znear))
     return (x ^ 2.0) * (3.0 - 2.0 * x)
 end
@@ -142,18 +133,18 @@ function gmath.loop(t, magnitude)
     return gmath.clamp(t - gmath.floor(t / magnitude) * magnitude, 0.0, magnitude)
 end
 
-function gmath.pingPong(t, magnitude)
+function gmath.ping_pong(t, magnitude)
     t = gmath.loop(t, magnitude * 2.0)
     return magnitude - gmath.abs(t - magnitude)
 end
 
-function gmath.deltaAngle(current, target, delay)
+function gmath.delta_angle(current, target, delay)
     local delta = gmath.loop(target - current, 360.0)
     if delay > 180.0 then delta = delta - 360.0 end
     return delta
 end
 
-function gmath.randomInterval(lower, greater)
+function gmath.random_interval(lower, greater)
     return lower + gmath.random() * (greater - lower);
 end
 
