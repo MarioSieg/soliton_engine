@@ -21,17 +21,17 @@ camera.fastMovementSpeed = 10*camera.defaultMovementSpeed-- movement speed when 
 
 camera.enableMouseLook = true -- enables/disables looking around
 camera.enableMouseButtonLook = true -- if true looking around is only working while a mouse button is down
-camera.lookMouseButton = input.MOUSE_BUTTONS.RIGHT -- the mouse button to look around if the above option is true
+camera.lookMouseButton = input.mouse_buttons.right -- the mouse button to look around if the above option is true
 
 camera.enableMovement = true -- enables/disables camera movement
 camera.movementKeys = { -- the keys to move the camera around
-    forward = input.KEYS.W,
-    backward = input.KEYS.S,
-    left = input.KEYS.A,
-    right = input.KEYS.D,
+    forward = input.keys.w,
+    backward = input.keys.s,
+    left = input.keys.a,
+    right = input.keys.d,
 }
 camera.enableFastMovement = true -- enable faster movement when the key below is pressed
-camera.fastMovementKey = input.KEYS.LEFT_SHIFT -- move fast when this key is pressed
+camera.fastMovementKey = input.keys.left_shift -- move fast when this key is pressed
 camera.lockAxisMovement = vec3.ONE -- enables to disable the movement on any axis, by setting the axis to 0
 camera.enableSmoothMovement = false
 camera.smoothMovementTime = 1.0
@@ -62,13 +62,13 @@ end
 function camera:_computeCameraRotation()
     local sens = gmath.abs(self.sensitivity) * 0.01
     local clampYRad = gmath.rad(gmath.abs(self.clampY))
-    local mousePos = input.getMousePos()
+    local mousePos = input.get_mouse_position()
 
     local delta = mousePos
     delta = delta - self.prevMousePos
     self.prevMousePos = mousePos
 
-    if self.enableMouseButtonLook and not input.isMouseButtonPressed(self.lookMouseButton) then
+    if self.enableMouseButtonLook and not input.is_mouse_button_pressed(self.lookMouseButton) then
         return
     end
 
@@ -91,7 +91,7 @@ function camera:_computeMovement()
     local speed = gmath.abs(self.defaultMovementSpeed)
 
     if self.enableFastMovement then
-        if input.isKeyPressed(input.KEYS.LEFT_SHIFT) then -- are we moving fast (sprinting?)
+        if input.is_key_pressed(input.keys.left_shift) then -- are we moving fast (sprinting?)
             speed = gmath.abs(self.fastMovementSpeed)
         end
     end
@@ -107,16 +107,16 @@ function camera:_computeMovement()
     end
 
     if self.isFocused then
-        if input.isKeyPressed(self.movementKeys.forward) then
+        if input.is_key_pressed(self.movementKeys.forward) then
             computePos(vec3.FORWARD)
         end
-        if input.isKeyPressed(self.movementKeys.backward) then
+        if input.is_key_pressed(self.movementKeys.backward) then
             computePos(vec3.BACKWARD)
         end
-        if input.isKeyPressed(self.movementKeys.left) then
+        if input.is_key_pressed(self.movementKeys.left) then
             computePos(vec3.LEFT)
         end
-        if input.isKeyPressed(self.movementKeys.right) then
+        if input.is_key_pressed(self.movementKeys.right) then
             computePos(vec3.RIGHT)
         end
     end

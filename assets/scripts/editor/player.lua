@@ -56,7 +56,7 @@ function Player:updateCamera()
 
     local sens = gmath.abs(self.sensitivity) * 0.01
     local clampYRad = gmath.rad(gmath.abs(self.clampY))
-    local mousePos = input.getMousePos()
+    local mousePos = input.get_mouse_position()
 
     local delta = mousePos
     delta = delta - self._prevMousePos
@@ -93,11 +93,11 @@ end
 function Player:updateMovement()
     local cameraTransform = self.camera:get_component(components.transform)
     local controller = self.controller:get_component(components.character_controller)
-    local isRunning = input.isKeyPressed(input.KEYS.W) and input.isKeyPressed(input.KEYS.LEFT_SHIFT)
+    local isRunning = input.is_key_pressed(input.keys.w) and input.is_key_pressed(input.keys.left_shift)
     local speed = isRunning and self.runSpeed or self.walkSpeed
     local dir = vec3.ZERO
     local move = function(key, tr_dir)
-        if input.isKeyPressed(key) then
+        if input.is_key_pressed(key) then
             tr_dir.y = 0
             dir = dir + vec3.norm(tr_dir) * speed
             return true
@@ -105,11 +105,11 @@ function Player:updateMovement()
         return false
     end
 
-    local isMoving = falsew
-    isMoving = isMoving or move(input.KEYS.W, cameraTransform:get_forward_dir())
-    isMoving = isMoving or move(input.KEYS.S, cameraTransform:get_backward_dir())
-    isMoving = isMoving or move(input.KEYS.A, cameraTransform:get_left_dir())
-    isMoving = isMoving or move(input.KEYS.D, cameraTransform:get_right_dir())
+    local isMoving = false
+    isMoving = isMoving or move(input.keys.w, cameraTransform:get_forward_dir())
+    isMoving = isMoving or move(input.keys.s, cameraTransform:get_backward_dir())
+    isMoving = isMoving or move(input.keys.a, cameraTransform:get_left_dir())
+    isMoving = isMoving or move(input.keys.d, cameraTransform:get_right_dir())
 
     if isMoving then
         self._movementState = isRunning and MOVEMENT_STATE.RUNNING or MOVEMENT_STATE.WALKING
@@ -117,7 +117,7 @@ function Player:updateMovement()
         self._movementState = MOVEMENT_STATE.IDLE
     end
 
-    if input.isKeyPressed(input.KEYS.SPACE) then -- Jump
+    if input.is_key_pressed(input.keys.space) then -- Jump
         dir = dir + vec3(0, self.jumpSpeed, 0)
     end
     

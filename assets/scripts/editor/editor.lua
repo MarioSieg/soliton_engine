@@ -568,7 +568,7 @@ function Editor:__onTick()
     if self.isPlaying then
         self:tickScene()
         self:renderOverlay()
-        if input.isKeyPressed(input.KEYS.ESCAPE) then
+        if input.is_key_pressed(input.keys.escape) then -- Exit game mode
             self:switchGameMode()
         end
     end
