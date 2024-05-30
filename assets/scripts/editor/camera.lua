@@ -4,7 +4,7 @@
 -- Import engine modules
 local app = require 'app'
 local color = require 'color'
-local debug = require 'debug'
+local debugdraw = require 'debugdraw'
 local entity = require 'entity'
 local input = require 'input'
 local gmath = require 'gmath'

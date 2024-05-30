@@ -4,11 +4,11 @@
 local module_cache = {
     ['app'] = 'lu/app',
     ['color'] = 'lu/color',
-    ['debug'] = 'lu/debug',
+    ['debugdraw'] = 'lu/debugdraw',
     ['entity'] = 'lu/entity',
     ['components'] = 'lu/components',
     ['input'] = 'lu/input',
-    ['math'] = 'lu/math',
+    ['gmath'] = 'lu/gmath',
     ['quat'] = 'lu/quat',
     ['scene'] = 'lu/scene',
     ['time'] = 'lu/time',

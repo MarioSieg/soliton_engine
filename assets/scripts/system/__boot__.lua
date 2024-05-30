@@ -60,7 +60,7 @@ function __on_prepare__()
         print('! JIT is disabled')
     end
 
-    -- Print some debug info
+    -- Print some debugdraw info
     print(string.format('%s %s %s', jit.version, jit.os, jit.arch))
     print('JIT active ->')
     print(jit.status())

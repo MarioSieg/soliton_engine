@@ -41,7 +41,7 @@ You can register event handlers by defining functions with the correct name: <br
 - Use `assert` to check for errors
 - Use `error` to throw errors
 - Use `panic` to throw fatal errors
-- Use `print` to print debug information
+- Use `print` to print debugdraw information
 
 ## Lua JIT
 Lunam engine uses LuaJIT, which is a Just-In-time compiler for Lua.<br>

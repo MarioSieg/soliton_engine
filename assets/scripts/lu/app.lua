@@ -115,7 +115,7 @@ function app.isUIHovered()
 end
 
 --- Hot reload the ingame UI and update changes
--- @tparam boolean|nil enable_wireframe Enable UI wireframe debug mode after reloading
+-- @tparam boolean|nil enable_wireframe Enable UI wireframe debugdraw mode after reloading
 function app.hotReloadUI(enable_wireframe)
     C.__lu_app_hot_reload_ui(enable_wireframe or false)
 end

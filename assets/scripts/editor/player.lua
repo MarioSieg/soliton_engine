@@ -45,7 +45,7 @@ function Player:spawn(spawnPos)
     self.camera = scene.spawn('PlayerCamera')
     self.camera:addFlag(EFLAGS.TRANSIENT)
     self.camera:getComponent(components.transform)
-    self.camera:getComponent(components.camera):setFov(75)
+    self.camera:getComponent(components.camera):set_fov(75.0)
 end
 
 function Player:updateCamera()

@@ -13,7 +13,7 @@ require 'editor.gconsts'
 
 local app = require 'app'
 local time = require 'time'
-local debug = require 'debug'
+local debugdraw = require 'debugdraw'
 local vec3 = require 'vec3'
 local quat = require 'quat'
 local scene = require 'scene'
@@ -109,8 +109,8 @@ local Editor = {
         gridFadeStart = 85,
         gridFadeRange = 25,
         gizmoObbColor = vec3(0, 1, 0),
-        gizmoOperation = debug.GIZMO_OPERATIONS.UNIVERSAL,
-        gizmoMode = debug.GIZMO_MODE.LOCAL,
+        gizmoOperation = debugdraw.GIZMO_OPERATIONS.UNIVERSAL,
+        gizmoMode = debugdraw.GIZMO_MODE.LOCAL,
         gizmoSnap = ffi.new('bool[1]', true),
         gizmoSnapStep = ffi.new('float[1]', 0.1),
         currentDebugMode = ffi.new('int[1]', DEBUG_MODE.NONE)
@@ -132,25 +132,25 @@ for _, tool in ipairs(Editor.tools) do
 end
 
 function Editor.gizmos:drawGizmos()
-    debug.start()
+    debugdraw.start()
     if self.currentDebugMode[0] == DEBUG_MODE.SCENE then
-        debug.drawSceneDebug(vec3(0, 1, 0))
+        debugdraw.drawSceneDebug(vec3(0, 1, 0))
     elseif self.currentDebugMode[0] == DEBUG_MODE.PHYSICS then
-        debug.drawPhysicsDebug()
+        debugdraw.drawPhysicsDebug()
     end
     if Editor.isPlaying then
         return
     end
     local selected = EntityListView.selectedEntity
     if selected and selected:isValid() then
-        debug.gizmoEnable(not selected:hasFlag(EFLAGS.STATIC))
-        debug.gizmoManipulator(selected, self.gizmoOperation, self.gizmoMode, self.gizmoSnap[0], self.gizmoSnapStep[0], self.gizmoObbColor)
+        debugdraw.gizmoEnable(not selected:hasFlag(EFLAGS.STATIC))
+        debugdraw.gizmoManipulator(selected, self.gizmoOperation, self.gizmoMode, self.gizmoSnap[0], self.gizmoSnapStep[0], self.gizmoObbColor)
     end
     if self.showGrid then
-        debug.enableFade(true)
-        debug.setFadeDistance(self.gridFadeStart, self.gridFadeStart+self.gridFadeRange)
-        debug.drawGrid(self.gridDims, self.gridStep, self.gridColor)
-        debug.enableFade(false)
+        debugdraw.enableFade(true)
+        debugdraw.setFadeDistance(self.gridFadeStart, self.gridFadeStart+self.gridFadeRange)
+        debugdraw.drawGrid(self.gridDims, self.gridStep, self.gridColor)
+        debugdraw.enableFade(false)
     end
 end
 
@@ -182,7 +182,7 @@ function Editor:loadScene(file)
     end
     local mainCamera = scene.spawn('__EditorCamera') -- spawn editor camera
     mainCamera:addFlag(EFLAGS.HIDDEN + EFLAGS.TRANSIENT) -- hide and don't save
-    mainCamera:getComponent(components.camera):setFov(80)
+    mainCamera:getComponent(components.camera):set_fov(80)
     self.camera.targetEntity = mainCamera
     EntityListView:buildEntityList()
 end
@@ -344,12 +344,12 @@ function Editor:renderMainMenu()
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_Button, 0)
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_BorderShadow, 0)
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_Border, 0)
-        if UI.SmallButton(self.gizmos.gizmoMode == debug.GIZMO_MODE.LOCAL and ICONS.HOUSE or ICONS.GLOBE) then
+        if UI.SmallButton(self.gizmos.gizmoMode == debugdraw.GIZMO_MODE.LOCAL and ICONS.HOUSE or ICONS.GLOBE) then
             self.gizmos.gizmoMode = band(self.gizmos.gizmoMode + 1, 1)
         end
         UI.PopStyleColor(3)
         if UI.IsItemHovered() then
-            UI.SetTooltip('Gizmo Mode: '..(self.gizmos.gizmoMode == debug.GIZMO_MODE.LOCAL and 'Local' or 'World'))
+            UI.SetTooltip('Gizmo Mode: '..(self.gizmos.gizmoMode == debugdraw.GIZMO_MODE.LOCAL and 'Local' or 'World'))
         end
         UI.Checkbox(ICONS.RULER, self.gizmos.gizmoSnap)
         if UI.IsItemHovered() then
@@ -373,7 +373,7 @@ function Editor:renderMainMenu()
         end
         UI.PopItemWidth()
         if UI.IsItemHovered() then
-            UI.SetTooltip('debug rendering mode')
+            UI.SetTooltip('debugdraw rendering mode')
         end
         UI.Separator()
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_Button, 0)
