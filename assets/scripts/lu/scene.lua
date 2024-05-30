@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------------
--- Lunam Engine Scene Module
+-- Lunam Engine scene Module
 --
 -- Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 ------------------------------------------------------------------------------
@@ -9,8 +9,8 @@ local C = ffi.C
 local bit = require 'bit'
 local bor = bit.bor
 local band = bit.band
-local Entity = require 'lu.entity'
-local Components = require 'lu.components'
+local entity = require 'lu.entity'
+local components = require 'lu.components'
 
 ffi.cdef[[
     typedef int lua_scene_id;
@@ -37,7 +37,7 @@ local function flagSetUnion(flags)
     return band(result, 0xffffffff)
 end
 
---- Scene import flags for post processing.
+--- scene import flags for post processing.
 --- Only applies if the scene is not a .lunam file.
 SCENE_IMPORT_FLAGS = {
     NONE = 0x0,
@@ -103,54 +103,54 @@ SCENE_IMPORT_FLAGS.DEFAULT_FLAGS = flagSetUnion({
     SCENE_IMPORT_FLAGS.PRESET_CONVERT_TO_LH
 })
 
-local Scene = {
+local scene = {
     name = 'Untitled',
     id = 0
 }
 
-function Scene.__onStart()
+function scene.__onStart()
     C.__lu_scene_start()
 end
 
-function Scene.__onTick()
+function scene.__onTick()
     C.__lu_scene_tick()
 end
 
-function Scene.spawn(name)
-    return Entity:fromId(C.__lu_scene_spawn_entity(name))
+function scene.spawn(name)
+    return entity:fromId(C.__lu_scene_spawn_entity(name))
 end
 
-function Scene.despawn(entity)
+function scene.despawn(entity)
     C.__lu_scene_despawn_entity(entity.id)
     entity.id = nil
 end
 
-function Scene.getEntityByName(name)
-    return Entity:fromId(C.__lu_scene_get_entity_by_name(name))
+function scene.getEntityByName(name)
+    return entity:fromId(C.__lu_scene_get_entity_by_name(name))
 end
 
-function Scene.fullEntityQueryStart()
+function scene.fullEntityQueryStart()
     C.__lu_scene_full_entity_query_start()
 end
 
-function Scene.fullEntityQueryNextTable()
+function scene.fullEntityQueryNextTable()
     return C.__lu_scene_full_entity_query_next_table()
 end
 
-function Scene.fullEntityQueryGet(i)
-    return Entity:fromId(C.__lu_scene_full_entity_query_get(i))
+function scene.fullEntityQueryGet(i)
+    return entity:fromId(C.__lu_scene_full_entity_query_get(i))
 end
 
-function Scene.fullEntityQueryEnd()
+function scene.fullEntityQueryEnd()
     C.__lu_scene_full_entity_query_end()
 end
 
-function Scene.setActiveCameraEntity(entity)
+function scene.setActiveCameraEntity(entity)
     C.__lu_scene_set_active_camera_entity(entity.id)
 end
 
-function Scene.getActiveCameraEntity()
-    return Entity:fromId(C.__lu_scene_get_active_camera_entity())
+function scene.getActiveCameraEntity()
+    return entity:fromId(C.__lu_scene_get_active_camera_entity())
 end
 
 local function setLocalSceneProps(id, sceneName)
@@ -163,9 +163,9 @@ local function setLocalSceneProps(id, sceneName)
     assert(sceneName and type(sceneName) == 'string')
 
     -- Make scene active
-    Scene.name = sceneName
-    Scene.id = id
-    Scene.__onStart() -- invoke start hook
+    scene.name = sceneName
+    scene.id = id
+    scene.__onStart() -- invoke start hook
     print(string.format('Created new scene: %s, id: %x', sceneName, id))
 
     -- Perform one full GC cycle to clean up any garbage
@@ -176,8 +176,8 @@ end
 
 --- Creates a new, empty scene with the given name and makes it the active scene.
 --- @param name: string, name of the new scene
-function Scene.new(sceneName)
-    sceneName = sceneName or 'Untitled Scene'
+function scene.new(sceneName)
+    sceneName = sceneName or 'Untitled scene'
     local id = C.__lu_scene_create(sceneName)
     return setLocalSceneProps(id, sceneName)
 end
@@ -188,7 +188,7 @@ end
 --- @param file: string, path to the file to load
 --- @param import_scale: number, scale factor to apply to the imported scene. Only applies if the scene is not a .lunam file
 --- @param import_flags: number, flags to control the import process. Only applies if the scene is not a .lunam file
-function Scene.load(file, import_scale, import_flags)
+function scene.load(file, import_scale, import_flags)
     if not file or type(file) ~= 'string' then
         eprint('scene name or source file must be provided')
         return false
@@ -210,8 +210,8 @@ end
 
 -- Do NOT remove this
 -- Create a default scene - Lunam requires to always have an active scene
-if not Scene.new('Untitled') then
+if not scene.new('Untitled') then
     panic('failed to create default scene')
 end
 
-return Scene
+return scene

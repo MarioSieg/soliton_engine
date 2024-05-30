@@ -6,8 +6,8 @@ local inspect = require 'ext.inspect'
 
 local UI = require 'editor.imgui'
 local ICONS = require 'editor.icons'
-local Time = require 'Time'
-local Scene = require 'Scene'
+local time = require 'time'
+local scene = require 'scene'
 local EFLAGS = ENTITY_FLAGS
 
 

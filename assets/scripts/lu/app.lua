@@ -1,8 +1,8 @@
 -- Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 ----------------------------------------------------------------------------
--- App Module - Functions for interacting with the host application, window and OS.
--- @module App
+-- app Module - Functions for interacting with the host application, window and OS.
+-- @module app
 ------------------------------------------------------------------------------
 
 local jit = require 'jit'
@@ -42,10 +42,10 @@ ffi.cdef [[
 
 local C = ffi.C
 
---- App Module
-local App = {
+--- app Module
+local app = {
     Info = { -- User defined application information
-        name = 'Untitled App', -- Name of the application
+        name = 'Untitled app', -- Name of the application
         appVersion = '0.1', -- Version of the application
         author = 'Anonymous', -- Author of the application
         copyright = '', -- Copyright of the application
@@ -70,26 +70,26 @@ local App = {
 
 --- Panic and terminate the application
 -- @tparam string msg Panic message
-function App.panic(msg)
+function app.panic(msg)
     C.__lu_panic(msg)
 end
 
 --- Get the FFI cookie
 -- @treturn number FFI cookie
-function App.ffiCookie()
+function app.ffiCookie()
     return C.__lu_ffi_cookie()
 end
 
 --- Get engine version as packed integer (major << 8 | minor)
 -- @treturn number Engine version packed as integer
-function App.engineVersionPacked()
+function app.engineVersionPacked()
     return C.__lu_engine_version()
 end
 
 --- Get engine version as unpacked integers (major, minor)
 -- @treturn {number, ...} Engine version unpacked as integers
-function App.engineVersionUnpacked()
-    local packed = App.engineVersionPacked()
+function app.engineVersionUnpacked()
+    local packed = app.engineVersionPacked()
     local major = bit.band(bit.rshift(packed, 8), 0xff)
     local minor = bit.band(packed, 0xff)
     return major, minor
@@ -97,132 +97,132 @@ end
 
 --- Get engine version string
 -- @treturn string Engine version string with format: v.major.minor
-function App.engineVersionStr()
-    local major, minor = App.engineVersionUnpacked()
+function app.engineVersionStr()
+    local major, minor = app.engineVersionUnpacked()
     return string.format('v.%d.%d', major, minor)
 end
 
 --- Check if the application is user focused
 -- @return (boolean): Is the application user focused
-function App.isFocused()
+function app.isFocused()
     return C.__lu_app_is_focused()
 end
 
 --- Check if the application UI is hovered (editor UI and ingame UI)
 -- @return (boolean): Is the application UI hovered
-function App.isUIHovered()
+function app.isUIHovered()
     return C.__lu_app_is_ui_hovered()
 end
 
 --- Hot reload the ingame UI and update changes
 -- @tparam boolean|nil enable_wireframe Enable UI wireframe debug mode after reloading
-function App.hotReloadUI(enable_wireframe)
+function app.hotReloadUI(enable_wireframe)
     C.__lu_app_hot_reload_ui(enable_wireframe or false)
 end
 
 --- Hot reload shaders and update changes
-function App.hotReloadShaders()
+function app.hotReloadShaders()
     C.__lu_app_hot_reload_shaders()
 end
 
 --- Maximize the window
-function App.Window.maximize()
+function app.Window.maximize()
     C.__lu_window_maximize()
-    App.Window.isMaximized = true
+    app.Window.isMaximized = true
 end
 
 --- Minimize the window
-function App.Window.minimize()
+function app.Window.minimize()
     C.__lu_window_minimize()
-    App.Window.isMaximized = false
+    app.Window.isMaximized = false
 end
 
 --- Enter fullscreen mode
-function App.Window.enterFullscreen()
+function app.Window.enterFullscreen()
     C.__lu_window_enter_fullscreen()
-    App.Window.isFullscreen = true
+    app.Window.isFullscreen = true
 end
 
 --- Leave fullscreen mode
-function App.Window.leaveFullscreen()
+function app.Window.leaveFullscreen()
     C.__lu_window_leave_fullscreen()
-    App.Window.isFullscreen = false
+    app.Window.isFullscreen = false
 end
 
 --- Set window title
 -- @tparam string title Title of the window
-function App.Window.setTitle(title)
+function app.Window.setTitle(title)
     C.__lu_window_set_title(title)
 end
 
 --- Set window size
 -- @tparam number width Width of the window
 -- @tparam number height Height of the window
-function App.Window.setSize(width, height)
+function app.Window.setSize(width, height)
     C.__lu_window_set_size(width, height)
 end
 
 --- Set window position
 -- @tparam number x X position of the window (from top left corner of the screen)
 -- @tparam number y Y position of the window (from top left corner of the screen)
-function App.Window.setPos(x, y)
+function app.Window.setPos(x, y)
     C.__lu_window_set_pos(x, y)
 end
 
 --- Show the window
-function App.Window.show()
+function app.Window.show()
     C.__lu_window_show()
-    App.Window.isVisible = true
+    app.Window.isVisible = true
 end
 
 --- Hide the window
-function App.Window.hide()
+function app.Window.hide()
     C.__lu_window_hide()
-    App.Window.isVisible = false
+    app.Window.isVisible = false
 end
 
 --- Allow window resize
 -- @tparam boolean allow Allow window resize
-function App.Window.allowResize(allow)
+function app.Window.allowResize(allow)
     C.__lu_window_allow_resize(allow)
 end
 
 --- Get window size
 -- @treturn {number, ...} Width and height of the window
-function App.Window.getSize()
+function app.Window.getSize()
     return C.__lu_window_get_size()
 end
 
 --- Get window frame buffer size
 -- @treturn {number, number} Width and height of the window frame buffer
-function App.Window.getFrameBufSize()
+function app.Window.getFrameBufSize()
     return C.__lu_window_get_framebuf_size()
 end
 
 --- Get window position
 -- @treturn {number, ...} X and Y position of the window
-function App.Window.getPos()
+function app.Window.getPos()
     return C.__lu_window_get_pos()
 end
 
 --- Set window title to include platform information
 -- @tparam string suffix Suffix to add to the title
-function App.Window.setPlatformTitle(suffix)
+function app.Window.setPlatformTitle(suffix)
     if suffix and type(suffix) == 'string' then
-        App.Window.setTitle(string.format('Lunam Engine %s - %s %s - %s', App.engineVersionStr(), jit.os, jit.arch, suffix))
+        app.Window.setTitle(string.format('Lunam Engine %s - %s %s - %s', app.engineVersionStr(), jit.os, jit.arch, suffix))
     else
-        App.Window.setTitle(string.format('Lunam Engine %s - %s %s', App.engineVersionStr(), jit.os, jit.arch))
+        app.Window.setTitle(string.format('Lunam Engine %s - %s %s', app.engineVersionStr(), jit.os, jit.arch))
     end
 end
 
 --- Enable or disable cursor
 -- @tparam boolean enable Enable or disable cursor
-function App.Window.enableCursor(enable)
+function app.Window.enableCursor(enable)
     C.__lu_window_enable_cursor(enable)
 end
 
 --- Exit the application
-function App.exit()
+function app.exit()
     C.__lu_app_exit()
 end
 
@@ -230,7 +230,7 @@ end
 -- @tparam string fileTypes File types to open
 -- @tparam string filters Filters for the file dialog
 -- @tparam string defaultPath Default path to open the file dialog
-function App.Utils.openFileDialog(fileTypes, filters, defaultPath)
+function app.Utils.openFileDialog(fileTypes, filters, defaultPath)
     filters = filters or ''
     defaultPath = defaultPath or ''
     return ffi.string(C.__lu_app_open_file_dialog(fileTypes, filters, defaultPath))
@@ -238,11 +238,11 @@ end
 
 --- Open native folder dialog
 -- @tparam string defaultPath Default path to open the folder dialog
-function App.Utils.openFolderDialog(defaultPath)
+function app.Utils.openFolderDialog(defaultPath)
     defaultPath = defaultPath or ''
     return ffi.string(C.__lu_app_open_folder_dialog(defaultPath))
 end
 
-App.Window.setPlatformTitle()
+app.Window.setPlatformTitle()
 
-return App
+return app

@@ -16,7 +16,7 @@
 --      * Provides limited well-formedness checking
 --        (checks for basic syntax & balanced tags only)
 --      * Flexible whitespace handling (selectable)
---      * Entity Handling (selectable)
+--      * entity Handling (selectable)
 --
 --  Limitations:
 --  ============

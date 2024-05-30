@@ -1,8 +1,8 @@
 -- Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 ----------------------------------------------------------------------------
--- Math Module - Math functions and constants.
--- @module Math
+-- gmath Module - gmath functions and constants.
+-- @module gmath
 ------------------------------------------------------------------------------
 
 local ffi = require 'ffi'
@@ -10,8 +10,8 @@ local bit = require 'bit'
 
 local band, bor, bxor, lshift, rshift, arshift = bit.band, bit.bor, bit.bxor, bit.lshift, bit.rshift, bit.arshift
 
---- Math Module
-local Math = {
+--- gmath Module
+local gmath = {
     E = 2.7182818284590452354, -- e (Euler's number)
     LOG2E = 1.4426950408889634074, -- log_2 e
     LOG10E = 0.43429448190325182765, -- log_10 e
@@ -33,131 +33,131 @@ local Math = {
 --- Returns the absolute value of a number.
 -- @tparam number x The number
 -- @treturn number The absolute value of x
-function Math.abs(x) return math.abs(x) end
+function gmath.abs(x) return math.abs(x) end
 
 --- Returns the arc cosine of a number.
 -- @tparam number x The number
 -- @treturn number The arc cosine of x
-function Math.acos(x) return math.acos(x) end
+function gmath.acos(x) return math.acos(x) end
 
 --- Returns the arc sine of a number.
 -- @tparam number x The number
 -- @treturn number The arc sine of x
-function Math.asin(x) return math.asin(x) end
+function gmath.asin(x) return math.asin(x) end
 
 --- Returns the arc tangent of a number.
 -- @tparam number y The y coordinate
-function Math.atan(y, x) return math.atan(y, x) end
+function gmath.atan(y, x) return math.atan(y, x) end
 
 --- Returns the arc tangent of a number.
 -- @tparam number y The y coordinate
-function Math.atan2(y, x) return math.atan2(y, x) end
+function gmath.atan2(y, x) return math.atan2(y, x) end
 
 --- Returns the smallest integer greater than or equal to a number.
 -- @tparam number x The number
-function Math.ceil(x) return math.ceil(x) end
-function Math.cos(x) return math.cos(x) end
-function Math.cosh(x) return math.cosh(x) end
-function Math.deg(x) return math.deg() end
-function Math.expEst(x) return math.exp(x) end
-function Math.floor(x) return math.floor(x) end
-function Math.fmod(x, y) return math.fmod(x, y) end
-function Math.frexp(x) return math.frexp(x) end
-function Math.ldexp(m, e) return math.ldexp(m, e) end
-function Math.log(x, base) return math.log(x, base) end
-function Math.max(x, y) return math.max(x, y) end
-function Math.min(x, y) return math.min(x, y) end
-function Math.modf(x) return math.modf(x) end
-function Math.rad(x) return math.rad(x) end
-function Math.random(m, n) return math.random(m, n) end
-function Math.randomSeed(x, y) return math.randomseed(x, y) end
-function Math.sin(x) return math.sin(x) end
-function Math.sinh(x) return math.sinh(x) end
-function Math.sqrt(x) return math.sqrt(x) end
-function Math.tan(x) return math.tan(x) end
-function Math.tanh(x) return math.tanh(x) end
-function Math.tointeger(x) return math.tointeger(x) end
-function Math.type(x) return math.type(x) end
-function Math.ult(m, n) return math.ult(m, n) end
+function gmath.ceil(x) return math.ceil(x) end
+function gmath.cos(x) return math.cos(x) end
+function gmath.cosh(x) return math.cosh(x) end
+function gmath.deg(x) return math.deg() end
+function gmath.expEst(x) return math.exp(x) end
+function gmath.floor(x) return math.floor(x) end
+function gmath.fmod(x, y) return math.fmod(x, y) end
+function gmath.frexp(x) return math.frexp(x) end
+function gmath.ldexp(m, e) return math.ldexp(m, e) end
+function gmath.log(x, base) return math.log(x, base) end
+function gmath.max(x, y) return math.max(x, y) end
+function gmath.min(x, y) return math.min(x, y) end
+function gmath.modf(x) return math.modf(x) end
+function gmath.rad(x) return math.rad(x) end
+function gmath.random(m, n) return math.random(m, n) end
+function gmath.randomSeed(x, y) return math.randomseed(x, y) end
+function gmath.sin(x) return math.sin(x) end
+function gmath.sinh(x) return math.sinh(x) end
+function gmath.sqrt(x) return math.sqrt(x) end
+function gmath.tan(x) return math.tan(x) end
+function gmath.tanh(x) return math.tanh(x) end
+function gmath.tointeger(x) return math.tointeger(x) end
+function gmath.type(x) return math.type(x) end
+function gmath.ult(m, n) return math.ult(m, n) end
 
-function Math.clamp(x, lower, upper)
-    return Math.max(lower, Math.min(upper, x))
+function gmath.clamp(x, lower, upper)
+    return gmath.max(lower, gmath.min(upper, x))
 end
 
-function Math.isPowerOfTwo(x)
+function gmath.isPowerOfTwo(x)
     return band(x, x - 1) == 0 and x ~= 0
 end
 
-function Math.ceilPowerOfTwo(x)
-    return 2.0 ^ Math.ceil(Math.log(x) / Math.LN2)
+function gmath.ceilPowerOfTwo(x)
+    return 2.0 ^ gmath.ceil(gmath.log(x) / gmath.LN2)
 end
 
-function Math.floorPowerOfTwo(x)
-    return 2.0 ^ Math.floor(Math.log(x) / Math.LN2)
+function gmath.floorPowerOfTwo(x)
+    return 2.0 ^ gmath.floor(gmath.log(x) / gmath.LN2)
 end
 
-function Math.lerp(x, y, t)
+function gmath.lerp(x, y, t)
     return (1.0 - t) * x + t * y
 end
 
-function Math.lerpInv(x, y, v)
+function gmath.lerpInv(x, y, v)
     if x ~= y then
         return (v - x ) / (y - x)
     end
     return 0.0
 end
 
-function Math.damp(x, y, lambda, dt)
-    return Math.lerp(x, y, 1.0 - Math.exp(-lambda * dt))
+function gmath.damp(x, y, lambda, dt)
+    return gmath.lerp(x, y, 1.0 - gmath.exp(-lambda * dt))
 end
 
-function Math.smoothstep(x, min, max)
+function gmath.smoothstep(x, min, max)
     if x <= min then return 0.0 end
     if x >= max then return 1.0 end
     x = (x - min) / (max - min)
     return (x ^ 2) * (3.0 - 2.0 * x)
 end
 
-function Math.smootherstep(x, min, max)
+function gmath.smootherstep(x, min, max)
     if x <= min then return 0.0 end
     if x >= max then return 1.0 end
     x = (x - min) / (max - min)
     return (x ^ 3) * (x * (x * 6.0 - 15.0) + 10.0)
 end
 
-function Math.saturate(x)
-    return Math.max(0.0, Math.min(1.0, x))
+function gmath.saturate(x)
+    return gmath.max(0.0, gmath.min(1.0, x))
 end
 
-function Math.cameraLinearize(depth, znear, zfar)
+function gmath.cameraLinearize(depth, znear, zfar)
     return - zfar * znear / (depth * (zfar - znear) - zfar)
 end
 
-function Math.cameraSmoothstep(znear, zfar, depth)
-    local x = Math.saturate((depth - znear) / (zfar - znear))
+function gmath.cameraSmoothstep(znear, zfar, depth)
+    local x = gmath.saturate((depth - znear) / (zfar - znear))
     return (x ^ 2.0) * (3.0 - 2.0 * x)
 end
 
-function Math.loop(t, magnitude)
-    return Math.clamp(t - Math.floor(t / magnitude) * magnitude, 0.0, magnitude)
+function gmath.loop(t, magnitude)
+    return gmath.clamp(t - gmath.floor(t / magnitude) * magnitude, 0.0, magnitude)
 end
 
-function Math.pingPong(t, magnitude)
-    t = Math.loop(t, magnitude * 2.0)
-    return magnitude - Math.abs(t - magnitude)
+function gmath.pingPong(t, magnitude)
+    t = gmath.loop(t, magnitude * 2.0)
+    return magnitude - gmath.abs(t - magnitude)
 end
 
-function Math.deltaAngle(current, target, delay)
-    local delta = Math.loop(target - current, 360.0)
+function gmath.deltaAngle(current, target, delay)
+    local delta = gmath.loop(target - current, 360.0)
     if delay > 180.0 then delta = delta - 360.0 end
     return delta
 end
 
-function Math.randomInterval(lower, greater)
-    return lower + Math.random() * (greater - lower);
+function gmath.randomInterval(lower, greater)
+    return lower + gmath.random() * (greater - lower);
 end
 
-function Math.factorial(n)
+function gmath.factorial(n)
     if n == 0 then return 1 end
     local r = 1
     for i=2, n do
@@ -166,8 +166,8 @@ function Math.factorial(n)
     return r
 end
 
-function Math.binomial(n, k)
-    return Math.factorial(n) / Math.factorial(k) * Math.factorial(n - k)
+function gmath.binomial(n, k)
+    return gmath.factorial(n) / gmath.factorial(k) * gmath.factorial(n - k)
 end
 
-return Math
+return gmath

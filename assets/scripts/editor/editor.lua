@@ -11,15 +11,15 @@ local Style = require 'editor.style'
 
 require 'editor.gconsts'
 
-local App = require 'App'
-local Time = require 'Time'
-local Debug = require 'Debug'
-local Vec3 = require 'Vec3'
-local Quat = require 'Quat'
-local Scene = require 'Scene'
-local Input = require 'Input'
-local Components = require 'Components'
-local Ini = require 'Ini'
+local app = require 'app'
+local time = require 'time'
+local debug = require 'debug'
+local vec3 = require 'vec3'
+local quat = require 'quat'
+local scene = require 'scene'
+local input = require 'input'
+local components = require 'components'
+local ini = require 'ini'
 
 local ICONS = require 'editor.icons'
 local Project = require 'editor.project'
@@ -31,9 +31,9 @@ local EntityListView = require 'editor.tools.entity_list_view'
 local Inspector = require 'editor.tools.inspector'
 local AssetExplorer = require 'editor.tools.asset_explorer'
 
-local HOST_INFO = App.Host.GRAPHICS_API..' | '..(App.Host.HOST)
-local CPU_NAME = 'CPU: '..App.Host.CPU_NAME
-local GPU_NAME = 'GPU: '..App.Host.GPU_NAME
+local HOST_INFO = app.Host.GRAPHICS_API..' | '..(app.Host.HOST)
+local CPU_NAME = 'CPU: '..app.Host.CPU_NAME
+local GPU_NAME = 'GPU: '..app.Host.GPU_NAME
 local DOCK_LEFT_RATIO = 0.6
 local DOCK_RIGHT_RATIO = 0.4
 local DOCK_BOTTOM_RATIO = 0.5
@@ -104,13 +104,13 @@ local Editor = {
     gizmos = {
         showGrid = true,
         gridStep = 1.0,
-        gridDims = Vec3(512, 0, 512),
-        gridColor = Vec3(0.8, 0.8, 0.8),
+        gridDims = vec3(512, 0, 512),
+        gridColor = vec3(0.8, 0.8, 0.8),
         gridFadeStart = 85,
         gridFadeRange = 25,
-        gizmoObbColor = Vec3(0, 1, 0),
-        gizmoOperation = Debug.GIZMO_OPERATIONS.UNIVERSAL,
-        gizmoMode = Debug.GIZMO_MODE.LOCAL,
+        gizmoObbColor = vec3(0, 1, 0),
+        gizmoOperation = debug.GIZMO_OPERATIONS.UNIVERSAL,
+        gizmoMode = debug.GIZMO_MODE.LOCAL,
         gizmoSnap = ffi.new('bool[1]', true),
         gizmoSnapStep = ffi.new('float[1]', 0.1),
         currentDebugMode = ffi.new('int[1]', DEBUG_MODE.NONE)
@@ -132,25 +132,25 @@ for _, tool in ipairs(Editor.tools) do
 end
 
 function Editor.gizmos:drawGizmos()
-    Debug.start()
+    debug.start()
     if self.currentDebugMode[0] == DEBUG_MODE.SCENE then
-        Debug.drawSceneDebug(Vec3(0, 1, 0))
+        debug.drawSceneDebug(vec3(0, 1, 0))
     elseif self.currentDebugMode[0] == DEBUG_MODE.PHYSICS then
-        Debug.drawPhysicsDebug()
+        debug.drawPhysicsDebug()
     end
     if Editor.isPlaying then
         return
     end
     local selected = EntityListView.selectedEntity
     if selected and selected:isValid() then
-        Debug.gizmoEnable(not selected:hasFlag(EFLAGS.STATIC))
-        Debug.gizmoManipulator(selected, self.gizmoOperation, self.gizmoMode, self.gizmoSnap[0], self.gizmoSnapStep[0], self.gizmoObbColor)
+        debug.gizmoEnable(not selected:hasFlag(EFLAGS.STATIC))
+        debug.gizmoManipulator(selected, self.gizmoOperation, self.gizmoMode, self.gizmoSnap[0], self.gizmoSnapStep[0], self.gizmoObbColor)
     end
     if self.showGrid then
-        Debug.enableFade(true)
-        Debug.setFadeDistance(self.gridFadeStart, self.gridFadeStart+self.gridFadeRange)
-        Debug.drawGrid(self.gridDims, self.gridStep, self.gridColor)
-        Debug.enableFade(false)
+        debug.enableFade(true)
+        debug.setFadeDistance(self.gridFadeStart, self.gridFadeStart+self.gridFadeRange)
+        debug.drawGrid(self.gridDims, self.gridStep, self.gridColor)
+        debug.enableFade(false)
     end
 end
 
@@ -176,13 +176,13 @@ end
 function Editor:loadScene(file)
     EntityListView.selectedEntity = nil
     if file then
-        Scene.load(file)
+        scene.load(file)
     else
-        Scene.new('Untitled Scene')
+        scene.new('Untitled scene')
     end
-    local mainCamera = Scene.spawn('__EditorCamera') -- spawn editor camera
+    local mainCamera = scene.spawn('__EditorCamera') -- spawn editor camera
     mainCamera:addFlag(EFLAGS.HIDDEN + EFLAGS.TRANSIENT) -- hide and don't save
-    mainCamera:getComponent(Components.Camera):setFov(80)
+    mainCamera:getComponent(components.camera):setFov(80)
     self.camera.targetEntity = mainCamera
     EntityListView:buildEntityList()
 end
@@ -191,13 +191,13 @@ local Player = require 'editor.player'
 
 function Editor:playScene()
     EntityListView:buildEntityList()
-    App.Window.enableCursor(false)
+    app.Window.enableCursor(false)
     self.camera.enableMovement = false
     self.camera.enableMouseLook = false
     local spawnPos = self.camera.position
     spawnPos.y = spawnPos.y + 2.0
     Player:spawn(spawnPos)
-    Scene.setActiveCameraEntity(Player.camera)
+    scene.setActiveCameraEntity(Player.camera)
     self.isVisible = false
 end
 
@@ -207,9 +207,9 @@ end
 
 function Editor:stopScene()
     Player:despawn()
-    Scene.setActiveCameraEntity(self.camera.targetEntity)
+    scene.setActiveCameraEntity(self.camera.targetEntity)
     EntityListView:buildEntityList()
-    App.Window.enableCursor(true)
+    app.Window.enableCursor(true)
     self.camera.enableMovement = true
     self.camera.enableMouseLook = true
     self.isVisible = true
@@ -237,29 +237,29 @@ function Editor:renderMainMenu()
                 UI.PopID()
             end
             if UI.MenuItem(ICONS.FOLDER_OPEN..' Open Project...') then
-                local selectedFile = App.Utils.openFileDialog('Lunam Projects', 'lupro', self.serializedConfig.general.prevProjectOpenDir)
+                local selectedFile = app.Utils.openFileDialog('Lunam Projects', 'lupro', self.serializedConfig.general.prevProjectOpenDir)
                 if selectedFile and lfs.attributes(selectedFile) then
                     self.serializedConfig.general.prevProjectOpenDir = selectedFile:match("(.*[/\\])")
                     local project = Project:open(selectedFile)
                     print('Opened project: '..project.transientFullPath)
                     self.activeProject = project
-                    App.Window.setPlatformTitle(string.format('Project: %s', project.serialized.name))
+                    app.Window.setPlatformTitle(string.format('Project: %s', project.serialized.name))
                     collectgarbage('collect')
                     collectgarbage('stop')
                 end
             end
-            if UI.MenuItem(ICONS.PLUS_CIRCLE..' New Scene') then
+            if UI.MenuItem(ICONS.PLUS_CIRCLE..' New scene') then
                 self:loadScene(nil)
             end
-            if UI.MenuItem(ICONS.FILE_IMPORT..' Open Scene') then
-                local selectedFile = App.Utils.openFileDialog('3D Scenes', MESH_FILE_FILTER, self.serializedConfig.general.prevSceneOpenDir)
+            if UI.MenuItem(ICONS.FILE_IMPORT..' Open scene') then
+                local selectedFile = app.Utils.openFileDialog('3D Scenes', MESH_FILE_FILTER, self.serializedConfig.general.prevSceneOpenDir)
                 if selectedFile and lfs.attributes(selectedFile) then
                     self.serializedConfig.general.prevSceneOpenDir = selectedFile:match("(.*[/\\])")
                     self:loadScene(selectedFile)
                 end
             end
             if UI.MenuItem(ICONS.PORTAL_EXIT..' Exit') then
-                App.exit()
+                app.exit()
             end
             UI.EndMenu()
         end
@@ -273,11 +273,11 @@ function Editor:renderMainMenu()
             UI.EndMenu()
         end
         if UI.BeginMenu('View') then
-            if UI.MenuItem('Fullscreen', nil, App.Window.isFullscreen) then
-                if App.Window.isFullscreen then
-                    App.Window.leaveFullscreen()
+            if UI.MenuItem('Fullscreen', nil, app.Window.isFullscreen) then
+                if app.Window.isFullscreen then
+                    app.Window.leaveFullscreen()
                 else
-                    App.Window.enterFullscreen()
+                    app.Window.enterFullscreen()
                 end
             end
             if UI.MenuItem(ICONS.RULER_TRIANGLE..' Show Grid', nil, self.gizmos.showGrid) then
@@ -344,12 +344,12 @@ function Editor:renderMainMenu()
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_Button, 0)
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_BorderShadow, 0)
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_Border, 0)
-        if UI.SmallButton(self.gizmos.gizmoMode == Debug.GIZMO_MODE.LOCAL and ICONS.HOUSE or ICONS.GLOBE) then
+        if UI.SmallButton(self.gizmos.gizmoMode == debug.GIZMO_MODE.LOCAL and ICONS.HOUSE or ICONS.GLOBE) then
             self.gizmos.gizmoMode = band(self.gizmos.gizmoMode + 1, 1)
         end
         UI.PopStyleColor(3)
         if UI.IsItemHovered() then
-            UI.SetTooltip('Gizmo Mode: '..(self.gizmos.gizmoMode == Debug.GIZMO_MODE.LOCAL and 'Local' or 'World'))
+            UI.SetTooltip('Gizmo Mode: '..(self.gizmos.gizmoMode == debug.GIZMO_MODE.LOCAL and 'Local' or 'World'))
         end
         UI.Checkbox(ICONS.RULER, self.gizmos.gizmoSnap)
         if UI.IsItemHovered() then
@@ -365,15 +365,15 @@ function Editor:renderMainMenu()
         if UI.Combo('##DebugRenderingMode', self.gizmos.currentDebugMode, DEBUG_MODE_NAMES_C, #DEBUG_MODE_NAMES) then
             if self.gizmos.currentDebugMode[0] == DEBUG_MODE.UI then
                 isUiWireframeEnabled = not isUiWireframeEnabled
-                App.hotReloadUI(isUiWireframeEnabled)
+                app.hotReloadUI(isUiWireframeEnabled)
             else
                 isUiWireframeEnabled = false
-                App.hotReloadUI(isUiWireframeEnabled)
+                app.hotReloadUI(isUiWireframeEnabled)
             end
         end
         UI.PopItemWidth()
         if UI.IsItemHovered() then
-            UI.SetTooltip('Debug rendering mode')
+            UI.SetTooltip('debug rendering mode')
         end
         UI.Separator()
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_Button, 0)
@@ -383,24 +383,24 @@ function Editor:renderMainMenu()
             self:switchGameMode()
         end
         if UI.IsItemHovered() then
-            UI.SetTooltip(self.isPlaying and 'Stop' or 'Play Scene')
+            UI.SetTooltip(self.isPlaying and 'Stop' or 'Play scene')
         end
         UI.PopStyleColor(3)
         UI.Separator()
         if UI.Button(ICONS.FLAME..' UI') then
-            App.hotReloadUI()
+            app.hotReloadUI()
         end
         if UI.IsItemHovered() then
             UI.SetTooltip('Reload game UI')
         end
         if UI.Button(ICONS.FLAME..' Shaders') then
-            App.hotReloadShaders()
+            app.hotReloadShaders()
         end
         if UI.IsItemHovered() then
             UI.SetTooltip('Reload shaders')
         end
         UI.Separator()
-        UI.Text('FPS: %g', math.floor(Time.fpsAvg))
+        UI.Text('FPS: %g', math.floor(time.fpsAvg))
         if Profiler.isProfilerRunning then
             UI.Separator()
             UI.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff0000ff)
@@ -436,7 +436,7 @@ function Editor:renderPopups()
         end
         UI.SameLine()
         if UI.Button('...') then
-            local dir = App.Utils.openFolderDialog(nil)
+            local dir = app.Utils.openFolderDialog(nil)
             if dir and lfs.attributes(dir) then
                 DEFAULT_PROJECT_DIR = dir
                 createdProjectDir = DEFAULT_PROJECT_DIR..ffi.string(createProjectTextBuf)
@@ -502,18 +502,18 @@ function Editor:renderOverlay()
     end
     UI.SetNextWindowBgAlpha(0.35)
     if UI.Begin('Overlay', nil, overlayFlags) then
-        UI.TextUnformatted(string.format('Sim Hz: %d, T: %.01f, %sT: %f', Time.fpsAvg, Time.time, ICONS.TRIANGLE, Time.deltaTime))
+        UI.TextUnformatted(string.format('Sim Hz: %d, T: %.01f, %sT: %f', time.fpsAvg, time.time, ICONS.TRIANGLE, time.deltaTime))
         UI.SameLine()
-        local size = App.Window.getFrameBufSize()
+        local size = app.Window.getFrameBufSize()
         UI.TextUnformatted(string.format(' | %d X %d', size.x, size.y))
         UI.TextUnformatted(string.format('GC Mem: %.03f MB', collectgarbage('count')/1000.0))
         UI.SameLine()
         local time = os.date('*t')
         UI.TextUnformatted(string.format(' | %02d.%02d.%02d %02d:%02d', time.day, time.month, time.year, time.hour, time.min))
         UI.Separator()
-        local camera = Scene.getActiveCameraEntity()
-        if camera:isValid() and camera:hasComponent(Components.Transform) then
-            local transform = camera:getComponent(Components.Transform)
+        local camera = scene.getActiveCameraEntity()
+        if camera:isValid() and camera:hasComponent(components.transform) then
+            local transform = camera:getComponent(components.transform)
             UI.TextUnformatted(string.format('Pos: %s', transform:getPosition()))
             UI.TextUnformatted(string.format('Dir: %s', transform:getForwardDir()))
         end
@@ -568,7 +568,7 @@ function Editor:__onTick()
     if self.isPlaying then
         self:tickScene()
         self:renderOverlay()
-        if Input.isKeyPressed(Input.KEYS.ESCAPE) then
+        if input.isKeyPressed(input.KEYS.ESCAPE) then
             self:switchGameMode()
         end
     end
@@ -579,12 +579,12 @@ function Editor:__onTick()
     self.camera:tick()
     local selectedE = EntityListView.selectedEntity
     if EntityListView.selectedWantsFocus and selectedE and selectedE:isValid() then
-        if selectedE:hasComponent(Components.Transform) then
-            local pos = selectedE:getComponent(Components.Transform):getPosition()
+        if selectedE:hasComponent(components.transform) then
+            local pos = selectedE:getComponent(components.transform):getPosition()
             pos.z = pos.z - 1.0
             if pos then
                 self.camera.position = pos
-                self.camera.rotation = Quat.IDENTITY
+                self.camera.rotation = quat.IDENTITY
             end
         end
         EntityListView.selectedWantsFocus = false
@@ -600,7 +600,7 @@ end
 
 function Editor:loadConfig() -- TODO: Save config on exit
     if lfs.attributes(CONFIG_FILE) then
-        self.serializedConfig = Ini.deserialize(CONFIG_FILE)
+        self.serializedConfig = ini.deserialize(CONFIG_FILE)
     else
         print('Creating new editor config file: '..CONFIG_FILE)
         self:saveConfig()
@@ -614,7 +614,7 @@ function Editor:loadConfig() -- TODO: Save config on exit
 end
 
 function Editor:saveConfig()
-    Ini.serialize(CONFIG_FILE, self.serializedConfig)
+    ini.serialize(CONFIG_FILE, self.serializedConfig)
 end
 
 Style.setup()

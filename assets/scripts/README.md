@@ -44,7 +44,7 @@ You can register event handlers by defining functions with the correct name: <br
 - Use `print` to print debug information
 
 ## Lua JIT
-Lunam engine uses LuaJIT, which is a Just-In-Time compiler for Lua.<br>
+Lunam engine uses LuaJIT, which is a Just-In-time compiler for Lua.<br>
 This means that Lua code is compiled to machine code at runtime,<br>
 which makes it much faster than the standard Lua interpreter.<br>
 LuaJIT is also compatible with the standard Lua interpreter,<br>

@@ -1,11 +1,11 @@
 -- Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 ----------------------------------------------------------------------------
--- Color Module - Functions for converting between color formats, rooms and manipulations.
--- @module Color
+-- color Module - Functions for converting between color formats, rooms and manipulations.
+-- @module color
 ------------------------------------------------------------------------------
 
-local Color = {}
+local color = {}
 
 local min = math.min
 local max = math.max
@@ -25,7 +25,7 @@ local function getColorArgs(first, ...)
   return first, ...
 end
 
-function Color.RGBtoHSL(...)
+function color.RGBtoHSL(...)
   local r,g,b,a = getColorArgs(...)
 
   local min = min(r,g,b)
@@ -64,7 +64,7 @@ function Color.RGBtoHSL(...)
   return h,s,l,a
 end
 
-function Color.RGBtoHSV(...)
+function color.RGBtoHSV(...)
   local r,g,b,a = getColorArgs(...)
 
   local min = min(r,g,b)
@@ -99,7 +99,7 @@ function Color.RGBtoHSV(...)
   return h,s,v,a
 end
 
-function Color.RGBtoXYZ(...)
+function color.RGBtoXYZ(...)
   --(Observer = 2°, Illuminant = D65)
   local r,g,b,a = getColorArgs(...)
 
@@ -131,20 +131,20 @@ function Color.RGBtoXYZ(...)
   return x,y,z,a
 end
 
-function Color.RGBtoLab(...)
-  return Color.XYZtoLab(Color.RGBtoXYZ(...))
+function color.RGBtoLab(...)
+  return color.XYZtoLab(color.RGBtoXYZ(...))
 end
 
-function Color.RGBtoLCH(...)
-  return Color.LabtoLCH(Color.RGBtoLab(...))
+function color.RGBtoLCH(...)
+  return color.LabtoLCH(color.RGBtoLab(...))
 end
 
-function Color.RGBtoLuv(...)
-  return Color.XYZtoLuv(Color.RGBtoXYZ(...))
+function color.RGBtoLuv(...)
+  return color.XYZtoLuv(color.RGBtoXYZ(...))
 end
 
 --`colorspace` to RGB
-function Color.HSLtoRGB(...)
+function color.HSLtoRGB(...)
   local h,s,l,a = getColorArgs(...)
   h,s,l = h,s,l
   local r,g,b
@@ -181,7 +181,7 @@ function Color.HSLtoRGB(...)
   return r,g,b,a
 end
 
-function Color.HSVtoRGB(...)
+function color.HSVtoRGB(...)
   local h,s,v,a = getColorArgs(...)
 
   local r,g,b
@@ -229,7 +229,7 @@ function Color.HSVtoRGB(...)
   return r,g,b,a
 end
 
-function Color.XYZtoRGB(...)
+function color.XYZtoRGB(...)
   --(Observer = 2°, Illuminant = D65)
   local x,y,z,a = getColorArgs(...)
   x,y,z = x/100,y/100,z/100
@@ -258,16 +258,16 @@ function Color.XYZtoRGB(...)
   return r,g,b,a
 end
 
-function Color.LabtoRGB(...)
-  return Color.XYZtoRGB(Color.LabtoXYZ(...))
+function color.LabtoRGB(...)
+  return color.XYZtoRGB(color.LabtoXYZ(...))
 end
 
-function Color.LCHtoRGB(...)
-  return Color.LabtoRGB(Color.LCHtoLab(...))
+function color.LCHtoRGB(...)
+  return color.LabtoRGB(color.LCHtoLab(...))
 end
 
-function Color.LuvtoRGB(...)
-  return Color.XYZtoRGB(Color.LuvtoXYZ(...))
+function color.LuvtoRGB(...)
+  return color.XYZtoRGB(color.LuvtoXYZ(...))
 end
 
 --Other conversions
@@ -275,7 +275,7 @@ local refx,refy,refz = 95.047,100.000,108.883
 local refu = (4 * refx) / (refx + (15 * refy) + (3 * refz))
 local refv = (9 * refy) / (refx + (15 * refy) + (3 * refz))
 
-function Color.XYZtoLab(...)
+function color.XYZtoLab(...)
   local x,y,z,alpha = getColorArgs(...)
   local L,a,b
   x,y,z = x/refx,y/refy,z/refz
@@ -301,7 +301,7 @@ function Color.XYZtoLab(...)
   return L,a,b,alpha
 end
 
-function Color.LabtoXYZ(...)
+function color.LabtoXYZ(...)
   local L,a,b,alpha = getColorArgs(...)
 
   local y = (L+16) / 116
@@ -326,7 +326,7 @@ function Color.LabtoXYZ(...)
   return refx*x,refy*y,refz*z,alpha
 end
 
-function Color.LabtoLCH(...)
+function color.LabtoLCH(...)
   local L,a,b,alpha = getColorArgs(...)
   local C,H
   H = atan2(b,a)
@@ -342,13 +342,13 @@ function Color.LabtoLCH(...)
   return L,C,H
 end
 
-function Color.LCHtoLab(...)
+function color.LCHtoLab(...)
   local L,C,H,alpha = getColorArgs(...)
 
   return L,cos(rad(H))*C,sin(rad(H))*C
 end
 
-function Color.XYZtoLuv(...)
+function color.XYZtoLuv(...)
   local x,y,z,alpha = getColorArgs(...)
   local L,u,v
   u = (4 * x) / (x + (15 * y) + (3 * z))
@@ -368,7 +368,7 @@ function Color.XYZtoLuv(...)
   return L,u,v
 end
 
-function Color.LuvtoXYZ(...)
+function color.LuvtoXYZ(...)
   local L,u,v,alpha = getColorArgs(...)
   local x,y,z
 
@@ -390,97 +390,97 @@ function Color.LuvtoXYZ(...)
 end
 
 --Manipulations:
-function Color.lighten(amount, ...)
-  local h,s,l,a = Color.RGBtoHSL(getColorArgs(...))
-  return Color.HSLtoRGB(h,s,l+amount,a)
+function color.lighten(amount, ...)
+  local h,s,l,a = color.RGBtoHSL(getColorArgs(...))
+  return color.HSLtoRGB(h,s,l+amount,a)
 end
-function Color.darken(amount, ...)
-  local h,s,l,a = Color.RGBtoHSL(getColorArgs(...))
-  return Color.HSLtoRGB(h,s,l-amount,a)
+function color.darken(amount, ...)
+  local h,s,l,a = color.RGBtoHSL(getColorArgs(...))
+  return color.HSLtoRGB(h,s,l-amount,a)
 end
-function Color.saturate(amount, ...)
-  local h,s,v,a = Color.RGBtoHSV(getColorArgs(...))
-  return Color.HSVtoRGB(h,s+amount,v,a)
+function color.saturate(amount, ...)
+  local h,s,v,a = color.RGBtoHSV(getColorArgs(...))
+  return color.HSVtoRGB(h,s+amount,v,a)
 end
-function Color.desaturate(amount, ...)
-  local h,s,v,a = Color.RGBtoHSV(getColorArgs(...))
-  return Color.HSVtoRGB(h,s-amount,v,a)
+function color.desaturate(amount, ...)
+  local h,s,v,a = color.RGBtoHSV(getColorArgs(...))
+  return color.HSVtoRGB(h,s-amount,v,a)
 end
-function Color.hue(hue, ...)
-  local h,s,l,a = Color.RGBtoHSL(getColorArgs(...))
-  return Color.HSLtoRGB(hue,s,l,a)
+function color.hue(hue, ...)
+  local h,s,l,a = color.RGBtoHSL(getColorArgs(...))
+  return color.HSLtoRGB(hue,s,l,a)
 end
-function Color.invert(...)
+function color.invert(...)
   local r,g,b,a = getColorArgs(...)
   return 1-r, 1-g, 1-b, a
 end
-function Color.invertHue(...)
-  local h,s,l,a = Color.RGBtoHSL(getColorArgs(...))
-  return Color.HSLtoRGB(1-h,s,l,a)
+function color.invertHue(...)
+  local h,s,l,a = color.RGBtoHSL(getColorArgs(...))
+  return color.HSLtoRGB(1-h,s,l,a)
 end
 
 --Spread
-function Color.HSLSpread(count,hoffset,s,l,a)
+function color.HSLSpread(count,hoffset,s,l,a)
   local incval = 1/count
   local colors = {}
 
   for i=0,count-1 do
-    table.insert(colors,{Color.HSLtoRGB((i*incval+hoffset)%1,s,l,a)})
+    table.insert(colors,{color.HSLtoRGB((i*incval+hoffset)%1,s,l,a)})
   end
 
   return colors
 end
-function Color.HSVSpread(count,hoffset,s,v,a)
+function color.HSVSpread(count,hoffset,s,v,a)
   local incval = 1/count
   local colors = {}
 
   for i=0,count-1 do
-    table.insert(colors,{Color.HSVtoRGB((i*incval+hoffset)%1,s,v,a)})
+    table.insert(colors,{color.HSVtoRGB((i*incval+hoffset)%1,s,v,a)})
   end
 
   return colors
 end
-function Color.LCHSpread(count,l,c,hoffset,a)
+function color.LCHSpread(count,l,c,hoffset,a)
   local incval = 360/count
   local colors = {}
 
   for i=0,count-1 do
-    table.insert(colors,{Color.LCHtoRGB(l,c,(i*incval+hoffset)%360,a)})
+    table.insert(colors,{color.LCHtoRGB(l,c,(i*incval+hoffset)%360,a)})
   end
 
   return colors
 end
 
 --Wrap functions:
-function Color.wrapHSV(fn)
+function color.wrapHSV(fn)
   return function(...)
-    return fn(Color.RGBtoHSV(...))
+    return fn(color.RGBtoHSV(...))
   end
 end
-function Color.wrapHSL(fn)
+function color.wrapHSL(fn)
   return function(...)
-    return fn(Color.RGBtoHSL(...))
+    return fn(color.RGBtoHSL(...))
   end
 end
-function Color.wrapXYZ(fn)
+function color.wrapXYZ(fn)
   return function(...)
-    return fn(Color.RGBtoXYZ(...))
+    return fn(color.RGBtoXYZ(...))
   end
 end
-function Color.wrapLab(fn)
+function color.wrapLab(fn)
   return function(...)
-    return fn(Color.RGBtoLab(...))
+    return fn(color.RGBtoLab(...))
   end
 end
-function Color.wrapLCH(fn)
+function color.wrapLCH(fn)
   return function(...)
-    return fn(Color.RGBtoLCH(...))
+    return fn(color.RGBtoLCH(...))
   end
 end
-function Color.wrapLuv(fn)
+function color.wrapLuv(fn)
   return function(...)
-    return fn(Color.RGBtoLuv(...))
+    return fn(color.RGBtoLuv(...))
   end
 end
 
-return Color
+return color

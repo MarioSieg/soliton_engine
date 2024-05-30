@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------------
--- Lunam Engine Time Module
+-- Lunam Engine time Module
 --
 -- Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 ------------------------------------------------------------------------------
@@ -13,7 +13,7 @@ local C = ffi.C
 
 local SAMPLES = 256
 
-local Time = {
+local time = {
     deltaTime = 0.0, -- in seconds
     time = 0.0, -- in seconds
     frameTime = 16.0, -- in milliseconds
@@ -32,7 +32,7 @@ local Time = {
 local prev = 0.0
 local idx = 1 -- ring buffer index
 
-function Time:__onTick()
+function time:__onTick()
     self.deltaTime = C.__lu_get_delta_time()
     self.time = self.time + self.deltaTime
     self.frameTime = self.deltaTime * 1000.0
@@ -40,7 +40,7 @@ function Time:__onTick()
     self.fps = math.abs(1000.0 / self.frameTime)
     self.fpsMin = math.abs(math.min(self.fpsMin, self.fps))
     self.fpsMax = math.abs(math.max(self.fpsMax, self.fps))
-    self.fpsAvgMin = math.abs(math.min(self.fpsAvgMin, Time.fpsAvg))
+    self.fpsAvgMin = math.abs(math.min(self.fpsAvgMin, time.fpsAvg))
     self.fpsAvgMax = math.abs(math.max(self.fpsAvgMax, self.fpsAvg))
 
     -- Update circular buffer with the current fps
@@ -58,4 +58,4 @@ function Time:__onTick()
     idx = ((idx - 1) % self.HISTOGRAM_SAMPLES) + 1
 end
 
-return Time
+return time

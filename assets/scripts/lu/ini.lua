@@ -1,12 +1,12 @@
 -- Copyright (c) 2022-2023 Mario 'Neo' Sieg. All Rights Reserved.
 -- Simple INI file parser and writer.
 
-local Ini = {}
+local ini = {}
 
 --- Deserialize INI file to table.
 --@tparam string fileName File path of the INI file to load.
 --@treturn table Table containing all INI data.
-function Ini.deserialize(fileName)
+function ini.deserialize(fileName)
 	assert(type(fileName) == 'string')
 	local file = assert(io.open(fileName, 'r'), 'Failed to open INI file: '..fileName)
 	local data = {}
@@ -39,7 +39,7 @@ end
 --- Serialize table to INI file.
 --@tparam string fileName File path of the INI file to save.
 --@tparam data Table containing all data to be stored in the INI file.
-function Ini.serialize(fileName, data)
+function ini.serialize(fileName, data)
 	assert(type(fileName) == 'string' and type(data) == 'table')
 	local file = assert(io.open(fileName, 'w+b'), 'Error loading file :' .. fileName)
 	local contents = ''
@@ -54,4 +54,4 @@ function Ini.serialize(fileName, data)
 	file:close()
 end
 
-return Ini
+return ini

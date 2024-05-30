@@ -5,8 +5,8 @@ local profile = require 'jit.p'
 
 local UI = require 'editor.imgui'
 local ICONS = require 'editor.icons'
-local Time = require('Time')
-local Scene = require('Scene')
+local time = require('time')
+local scene = require('scene')
 local EFLAGS = ENTITY_FLAGS
 
 local EntityListView = {
@@ -21,9 +21,9 @@ local EntityListView = {
 
 function EntityListView:buildEntityList()
     self.entityList = {}
-    Scene.fullEntityQueryStart()
-    for i=0, Scene.fullEntityQueryNextTable() do
-        local entity = Scene.fullEntityQueryGet(i)
+    scene.fullEntityQueryStart()
+    for i=0, scene.fullEntityQueryNextTable() do
+        local entity = scene.fullEntityQueryGet(i)
         if entity:isValid() then
             if not self.showHiddenEntities[0] and entity:hasFlag(EFLAGS.HIDDEN) then
                 goto continue
@@ -38,7 +38,7 @@ function EntityListView:buildEntityList()
             ::continue::
         end
     end
-    Scene.fullEntityQueryEnd()
+    scene.fullEntityQueryEnd()
 end
 
 function EntityListView:render()
@@ -46,14 +46,14 @@ function EntityListView:render()
     if UI.Begin(self.name, self.isVisible) then
         if UI.Button(ICONS.PLUS) then
             self.entityCounter = self.entityCounter + 1
-            local ent = Scene.spawn('New Entity '..self.entityCounter)
+            local ent = scene.spawn('New entity '..self.entityCounter)
             self.selectedEntity = ent
             self:buildEntityList()
         end
         UI.SameLine()
         if UI.Button(ICONS.TRASH) then
             if self.selectedEntity then
-                Scene.despawn(self.selectedEntity)
+                scene.despawn(self.selectedEntity)
                 self.selectedEntity = nil
                 self:buildEntityList()
             end
@@ -98,7 +98,7 @@ function EntityListView:render()
                         end
                         UI.PopStyleColor()
                         if UI.IsItemHovered() then
-                            UI.SetTooltip(isUnnamed and 'This entity has no name' or 'Entity ID: 0x'..string.format('%x', tonumber(data[1].id)))
+                            UI.SetTooltip(isUnnamed and 'This entity has no name' or 'entity ID: 0x'..string.format('%x', tonumber(data[1].id)))
                         end
                     end
                 end

@@ -2442,7 +2442,7 @@ struct ImGuiContext
     float FontSize;
     float FontBaseSize;
     ImDrawListSharedData DrawListSharedData;
-    double Time;
+    double time;
     int FrameCount;
     int FrameCountEnded;
     int FrameCountPlatformEnded;
@@ -4960,7 +4960,7 @@ typedef struct ImPlotDateTimeSpec ImPlotDateTimeSpec;
 struct ImPlotDateTimeSpec
 {
     ImPlotDateFmt Date;
-    ImPlotTimeFmt Time;
+    ImPlotTimeFmt time;
    _Bool         UseISO8601;
    _Bool         Use24HourClock;
 };
@@ -5098,7 +5098,7 @@ struct ImPlotAlignmentData
 struct ImPlotItem
 {
     ImGuiID ID;
-    ImU32 Color;
+    ImU32 color;
     ImRect LegendHoverRect;
     int NameOffset;
    _Bool         Show;
@@ -5256,7 +5256,7 @@ struct ImPlotContext
 typedef struct Formatter_Time_Data Formatter_Time_Data;
 struct Formatter_Time_Data
 {
-    ImPlotTime Time;
+    ImPlotTime time;
     ImPlotDateTimeSpec Spec;
     ImPlotFormatter UserFormatter;
     void* UserFormatterData;

@@ -16,7 +16,7 @@ ffi.cdef[[
     void __lu_com_camera_set_far_clip(lua_entity_id id, double far);
 ]]
 
-local Camera = {
+local camera = {
     _entity_id = 0,
     _new = function(self, entity_id)
         local o = {}
@@ -37,4 +37,4 @@ local Camera = {
     getMatrices = function(self, view, proj) C.__lu_com_camera_get_matrices(view, proj) end
 }
 
-return Camera
+return camera

@@ -5,7 +5,7 @@ local profile = require 'jit.p'
 
 local UI = require 'editor.imgui'
 local ICONS = require 'editor.icons'
-local Time = require('Time')
+local time = require('time')
 
 local Profiler = {
     name = ICONS.CLOCK..' Profiler',
@@ -42,24 +42,24 @@ function Profiler:render()
         if UI.BeginTabBar('##profiler_tabs') then
             if UI.BeginTabItem(ICONS.BEZIER_CURVE..' Histogram') then
                 local plot_size = UI.ImVec2(WINDOW_SIZE.x, 200.0)
-                UI.PlotHistogram_FloatPtr('##frame_times', Time.fpsHistogram, Time.HISTOGRAM_SAMPLES, 0, nil, 0.0, Time.fpsAvg * 2.0, plot_size)
+                UI.PlotHistogram_FloatPtr('##frame_times', time.fpsHistogram, time.HISTOGRAM_SAMPLES, 0, nil, 0.0, time.fpsAvg * 2.0, plot_size)
                 UI.EndTabItem()
             end
             if UI.BeginTabItem(ICONS.ALARM_CLOCK..' General') then
-                UI.Text(string.format('FPS: %d', Time.fpsAvg))
-                UI.Text(string.format('FPS avg: %d', Time.fpsAvg))
-                UI.Text(string.format('FPS min: %d', Time.fpsMin))
-                UI.Text(string.format('FPS max: %d', Time.fpsMax))
-                UI.Text(string.format('Time: %.3f s', Time.time))
-                UI.Text(string.format('Delta time: %f s', Time.deltaTime))
-                UI.Text(string.format('Frame time: %f ms', Time.frameTime))
-                UI.Text(string.format('Frame: %d', Time.frame))
+                UI.Text(string.format('FPS: %d', time.fpsAvg))
+                UI.Text(string.format('FPS avg: %d', time.fpsAvg))
+                UI.Text(string.format('FPS min: %d', time.fpsMin))
+                UI.Text(string.format('FPS max: %d', time.fpsMax))
+                UI.Text(string.format('time: %.3f s', time.time))
+                UI.Text(string.format('Delta time: %f s', time.deltaTime))
+                UI.Text(string.format('Frame time: %f ms', time.frameTime))
+                UI.Text(string.format('Frame: %d', time.frame))
                 UI.EndTabItem()
             end
             if UI.BeginTabItem(ICONS.CODE..' Scripting') then
                 if self.isProfilerRunning then
-                    table.insert(fpsPlot, Time.fps)
-                    startTime = startTime + Time.deltaTime
+                    table.insert(fpsPlot, time.fps)
+                    startTime = startTime + time.deltaTime
                     if startTime >= timeLimit then
                         print('Stopped profiling')
                         local sum = 0.0

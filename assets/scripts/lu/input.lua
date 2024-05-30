@@ -1,8 +1,8 @@
 -- Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 ----------------------------------------------------------------------------
--- Input Module - Functions for input handling.
--- @module Input
+-- input Module - Functions for input handling.
+-- @module input
 ------------------------------------------------------------------------------
 
 local ffi = require 'ffi'
@@ -17,8 +17,8 @@ ffi.cdef[[
 
 local C = ffi.C
 
---- Input Module
-local Input = {
+--- input Module
+local input = {
     --- Keyboard key codes
     KEYS = {
         SPACE = 32,
@@ -159,37 +159,37 @@ local Input = {
 }
 
 --- Checks if the specified key is pressed.
--- @tparam Input.KEYS key The key code
+-- @tparam input.KEYS key The key code
 -- @treturn bool True if the key is pressed
-function Input.isKeyPressed(key)
+function input.isKeyPressed(key)
     return C.__lu_input_is_key_pressed(key)
 end
 
 --- Checks if the specified key is released.
--- @tparam Input.KEYS key The key code
+-- @tparam input.KEYS key The key code
 -- @treturn bool True if the key is released
-function Input.isKeyReleased(key)
+function input.isKeyReleased(key)
     return C.__lu_input_is_key_released(key)
 end
 
 --- Checks if the specified mouse button is pressed.
--- @tparam Input.MOUSE_BUTTONS mb The mouse button code
+-- @tparam input.MOUSE_BUTTONS mb The mouse button code
 -- @treturn bool True if the mouse button is pressed
-function Input.isMouseButtonPressed(mb)
+function input.isMouseButtonPressed(mb)
     return C.__lu_input_is_mouse_button_pressed(mb)
 end
 
 --- Checks if the specified mouse button is released.
--- @tparam Input.MOUSE_BUTTONS mb The mouse button code
+-- @tparam input.MOUSE_BUTTONS mb The mouse button code
 -- @treturn bool True if the mouse button is released
-function Input.isMouseButtonReleased(mb)
+function input.isMouseButtonReleased(mb)
     return C.__lu_input_is_mouse_button_released(mb)
 end
 
 --- Gets the current mouse position.
--- @treturn Math.Vec2 The current mouse position
-function Input.getMousePos()
+-- @treturn gmath.vec2 The current mouse position
+function input.getMousePos()
     return C.__lu_input_get_mouse_pos()
 end
 
-return Input
+return input

@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------------
--- Lunam Engine Vector3 Math Module
+-- Lunam Engine Vector3 gmath Module
 --
 -- Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 ------------------------------------------------------------------------------
@@ -102,7 +102,7 @@ end
 
 local function rotate(v, theta)
     local c, s = cos(theta), sin(theta)
-    return Vec3.new(
+    return vec3.new(
         c*v.x - s*v.y,
         s*v.x + c*v.y,
         v.z
@@ -122,7 +122,7 @@ local function unpack(v)
 end
 
 local function tovec2(v)
-    return Vec2.new(v.x, v.y)
+    return vec2.new(v.x, v.y)
 end
 
 local function clone(v)
@@ -268,11 +268,11 @@ ffi.metatype('lua_vec3', {
         return is_vec3 and x.x == y.x and x.y == y.y and x.z == y.z
     end,
     __tostring = function(self)
-        return string.format('Vec3(%.3f, %.3f, %.3f)', self.x, self.y, self.z)
+        return string.format('vec3(%.3f, %.3f, %.3f)', self.x, self.y, self.z)
     end,
 })
 
-local Vec3 = setmetatable({
+local vec3 = setmetatable({
     new = new,
     randomXYZ = randomXYZ,
     randomXZ = randomXZ,
@@ -309,4 +309,4 @@ local Vec3 = setmetatable({
     end
 })
 
-return Vec3
+return vec3

@@ -20,7 +20,7 @@ CHARACTER_GROUND_STATE = { -- Keep in sync with C++: CharacterBase.h
     IN_AIR = 3 -- Character is in the air and is not touching anything.
 }
 
-local CharacterController = {
+local character_controller = {
     _entity_id = 0,
     _new = function(self, entity_id)
         local o = {}
@@ -38,4 +38,4 @@ local CharacterController = {
     getGroundNormal = function(self) return C.__lu_com_character_controller_get_ground_normal(self._entity_id) end
 }
 
-return CharacterController
+return character_controller

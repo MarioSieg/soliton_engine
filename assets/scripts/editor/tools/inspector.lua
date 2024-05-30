@@ -6,11 +6,11 @@ local bxor = bit.bxor
 
 local UI = require 'editor.imgui'
 local ICONS = require 'editor.icons'
-local Time = require 'Time'
-local Scene = require 'Scene'
-local Components = require 'Components'
-local Vec3 = require 'Vec3'
-local Quat = require 'Quat'
+local time = require 'time'
+local scene = require 'scene'
+local components = require 'components'
+local vec3 = require 'vec3'
+local quat = require 'quat'
 local EFLAGS = ENTITY_FLAGS
 
 local MAX_TEXT_INPUT_SIZE = 128
@@ -25,7 +25,7 @@ local Inspector = {
 }
 
 local COM_NAMES = {}
-for k, v in pairs(Components) do
+for k, v in pairs(components) do
     table.insert(COM_NAMES, k)
 end
 table.sort(COM_NAMES)
@@ -42,7 +42,7 @@ function Inspector:_setFloatManpitBufferFromVec3(vec3)
 end
 
 function Inspector:_getFloatManipBufferAsVec3()
-    return Vec3(self.manipBuf3[0], self.manipBuf3[1], self.manipBuf3[2])
+    return vec3(self.manipBuf3[0], self.manipBuf3[1], self.manipBuf3[2])
 end
 
 function Inspector:_inspectVec3(name, vec3, step)
@@ -78,9 +78,9 @@ function Inspector:_perComponentBaseTools(instance, id)
 end
 
 function Inspector:_inspectTransform()
-    local transform = self.selectedEntity:getComponent(Components.Transform)
-    if UI.CollapsingHeader(ICONS.ARROWS_ALT..' Transform', ffi.C.ImGuiTreeNodeFlags_DefaultOpen) then
-        if not self._perComponentBaseTools(transform, Components.Transform) then
+    local transform = self.selectedEntity:getComponent(components.transform)
+    if UI.CollapsingHeader(ICONS.ARROWS_ALT..' transform', ffi.C.ImGuiTreeNodeFlags_DefaultOpen) then
+        if not self._perComponentBaseTools(transform, components.transform) then
             return
         end
         local pos = transform:getPosition()
@@ -124,7 +124,7 @@ function Inspector:render()
             end
             UI.SameLine()
             if UI.Button(ICONS.PLUS..' Add') then
-                entity:getComponent(Components[COM_NAMES[selectedComponent[0]+1]])
+                entity:getComponent(components[COM_NAMES[selectedComponent[0]+1]])
                 self.propertiesChanged = true
             end
             if UI.IsItemHovered() then
@@ -168,7 +168,7 @@ function Inspector:render()
                 -- UI.TextUnformatted(string.format('ID Address: %p', entity.id))
                 -- UI.PopStyleColor()
             end
-            if entity:hasComponent(Components.Transform) then
+            if entity:hasComponent(components.transform) then
                 self:_inspectTransform()
             end
         end

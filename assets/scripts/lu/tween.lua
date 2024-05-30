@@ -1,10 +1,10 @@
 ----------------------------------------------------------------------------
--- Lunam Engine Animatiomn Tweening Math Module
+-- Lunam Engine Animatiomn Tweening gmath Module
 --
 -- Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 ------------------------------------------------------------------------------
 
-local Tween = {}
+local tween = {}
   
   local pow, sin, cos, pi, sqrt, abs, asin = math.pow, math.sin, math.cos, math.pi, math.sqrt, math.abs, math.asin
   
@@ -196,7 +196,7 @@ local Tween = {}
     return inBounce((t * 2) - d, b + c / 2, c / 2, d)
   end
   
-  Tween.easing = {
+  tween.easing = {
     linear    = linear,
     inQuad    = inQuad,    outQuad    = outQuad,    inOutQuad    = inOutQuad,    outInQuad    = outInQuad,
     inCubic   = inCubic,   outCubic   = outCubic,   inOutCubic   = inOutCubic,   outInCubic   = outInCubic,
@@ -259,7 +259,7 @@ local Tween = {}
     easing = easing or "linear"
     if type(easing) == 'string' then
       local name = easing
-      easing = Tween.easing[name]
+      easing = tween.easing[name]
       if type(easing) ~= 'function' then
         error("The easing function name '" .. name .. "' is invalid")
       end
@@ -279,12 +279,12 @@ local Tween = {}
     end
   end
   
-  -- Tween methods
+  -- tween methods
   
-  local Tween = {}
-  local Tween_mt = {__index = Tween}
+  local tween = {}
+  local Tween_mt = {__index = tween}
   
-  function Tween:set(clock)
+  function tween:set(clock)
     assert(type(clock) == 'number', "clock must be a positive number or 0")
   
     self.initial = self.initial or copyTables({}, self.target, self.subject)
@@ -309,11 +309,11 @@ local Tween = {}
     return self.clock >= self.duration
   end
   
-  function Tween:reset()
+  function tween:reset()
     return self:set(0)
   end
   
-  function Tween:update(dt)
+  function tween:update(dt)
     assert(type(dt) == 'number', "dt must be a number")
     return self:set(self.clock + dt)
   end
@@ -321,7 +321,7 @@ local Tween = {}
   
   -- Public interface
   
-  function Tween.new(duration, subject, target, easing)
+  function tween.new(duration, subject, target, easing)
     easing = getEasingFunction(easing)
     checkNewParams(duration, subject, target, easing)
     return setmetatable({
@@ -333,4 +333,4 @@ local Tween = {}
     }, Tween_mt)
   end
   
-  return Tween
+  return tween

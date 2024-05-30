@@ -22,7 +22,7 @@ ffi.cdef[[
     lua_vec3 __lu_com_transform_get_left(lua_entity_id id);
 ]]
 
-local Transform = {
+local transform = {
     _entity_id = 0,
     _new = function(self, entity_id)
         local o = {}
@@ -48,4 +48,4 @@ local Transform = {
     getLeftDir = function(self) return C.__lu_com_transform_get_left(self._entity_id) end,
 }
 
-return Transform
+return transform

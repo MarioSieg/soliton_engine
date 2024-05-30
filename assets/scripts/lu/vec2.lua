@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------------
--- Lunam Engine Vector2 Math Module
+-- Lunam Engine Vector2 gmath Module
 --
 -- Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 ------------------------------------------------------------------------------
@@ -65,7 +65,7 @@ end
 
 local function rotate(v, theta)
     local c, s = cos(theta), sin(theta)
-    return Vec2.new(
+    return vec2.new(
         c*v.x - s*v.y,
         s*v.x + c*v.y
     )
@@ -169,11 +169,11 @@ ffi.metatype('lua_vec2', {
         return is_vec2 and x.x == y.x and x.y == y.y
     end,
     __tostring = function(self)
-        return string.format('Vec2(%f, %f)', self.x, self.y)
+        return string.format('vec2(%f, %f)', self.x, self.y)
     end,
 })
 
-local Vec2 = setmetatable({
+local vec2 = setmetatable({
     new = new,
     fromAngle = fromAngle,
     mag = mag,
@@ -198,4 +198,4 @@ local Vec2 = setmetatable({
     end
 })
 
-return Vec2
+return vec2

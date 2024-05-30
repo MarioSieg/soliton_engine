@@ -60,7 +60,7 @@ local HookManager = {
 }
 local hooks = HookManager.hooks
 
-local Scene = require 'Scene'
+local scene = require 'scene'
 
 local function tickEngineSystems()
     for i = 1, #hooks do
@@ -74,7 +74,7 @@ end
 
 function HookManager:tick()
     tickEngineSystems()
-    Scene.__onTick()
+    scene.__onTick()
 end
 
 return HookManager

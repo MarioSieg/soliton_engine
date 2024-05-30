@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------------
--- Lunam Engine Quaternion Math Module
+-- Lunam Engine Quaternion gmath Module
 --
 -- Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 ------------------------------------------------------------------------------
@@ -95,9 +95,9 @@ local function axis(q)
     local len = q.x*q.x + q.y*q.y + q.z*q.z
     if len > 0.0 then
         local inv = 1.0 / sqrt(len)
-        return Vec3.new(q.x * inv, q.y * inv, q.z * inv)
+        return vec3.new(q.x * inv, q.y * inv, q.z * inv)
     else
-        return Vec3.UNIT_X
+        return vec3.UNIT_X
     end
 end
 
@@ -152,11 +152,11 @@ ffi.metatype('lua_vec4', {
         return is_vec4 and x.x == y.x and x.y == y.y and x.z == y.z and x.w == y.w
     end,
     __tostring = function(self)
-        return string.format('Quat(%f, %f, %f, %f)', self.x, self.y, self.z, self.w)
+        return string.format('quat(%f, %f, %f, %f)', self.x, self.y, self.z, self.w)
     end,
 })
 
-local Quat = setmetatable({
+local quat = setmetatable({
     new = new,
     norm = norm,
     fromAxisAngle = fromAxisAngle,
@@ -181,4 +181,4 @@ local Quat = setmetatable({
     end,
 })
 
-return Quat
+return quat
