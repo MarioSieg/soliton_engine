@@ -11,7 +11,6 @@ local module_cache = {
     ['quat'] = 'lu/quat',
     ['scene'] = 'lu/scene',
     ['time'] = 'lu/time',
-    ['tween'] = 'lu/tween',
     ['vec2'] = 'lu/vec2',
     ['vec3'] = 'lu/vec3',
     ['ini'] = 'lu/ini',
