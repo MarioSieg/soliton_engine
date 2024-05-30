@@ -29,7 +29,6 @@ local time = {
     HISTOGRAM_SAMPLES = SAMPLES
 }
 
-local prev = 0.0
 local idx = 1 -- ring buffer index
 
 function time:__onTick()
@@ -37,7 +36,7 @@ function time:__onTick()
     self.time = self.time + self.deltaTime
     self.frameTime = self.deltaTime * 1000.0
     self.frame = self.frame + 1
-    self.fps = math.abs(1000.0 / self.frameTime)
+    self.fps = 1000.0 / self.frameTime
     self.fpsMin = math.abs(math.min(self.fpsMin, self.fps))
     self.fpsMax = math.abs(math.max(self.fpsMax, self.fps))
     self.fpsAvgMin = math.abs(math.min(self.fpsAvgMin, time.fpsAvg))
@@ -53,7 +52,7 @@ function time:__onTick()
             sum = sum + self.fpsHistogram[i]
         end
     end
-    self.fpsAvg = sum / self.HISTOGRAM_SAMPLES
+    self.fpsAvg = sum / self.HISTOGRAM_SAMPLES -- TODO: fix something is wrong here
     idx = idx + 1
     idx = ((idx - 1) % self.HISTOGRAM_SAMPLES) + 1
 end

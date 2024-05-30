@@ -6,6 +6,8 @@
 #include "lfs/lfs.h"
 #include "convar.hpp"
 
+#include <mimalloc.h>
+
 namespace scripting {
     template <typename... Ts>
     static auto lua_log_info(const fmt::format_string<Ts...> fmt, Ts&&... args) -> void {
@@ -74,7 +76,9 @@ namespace scripting {
 
         // init lua
         passert(m_L == nullptr);
-        m_L = luaL_newstate();
+        m_L = lua_newstate(+[]([[maybe_unused]] void* ud, void* ptr, [[maybe_unused]] std::size_t osize, const std::size_t nsize) noexcept -> void* {
+            return mi_realloc(ptr, nsize);
+        }, nullptr);
         passert(m_L != nullptr);
         luaL_openlibs(m_L);
         passert(luaopen_lfs(m_L) == 1);
