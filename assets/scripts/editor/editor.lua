@@ -109,8 +109,8 @@ local Editor = {
         gridFadeStart = 85,
         gridFadeRange = 25,
         gizmoObbColor = vec3(0, 1, 0),
-        gizmoOperation = debugdraw.GIZMO_OPERATIONS.UNIVERSAL,
-        gizmoMode = debugdraw.GIZMO_MODE.LOCAL,
+        gizmoOperation = debugdraw.gizmo_operation.universal,
+        gizmoMode = debugdraw.gizmo_mode.local_space,
         gizmoSnap = ffi.new('bool[1]', true),
         gizmoSnapStep = ffi.new('float[1]', 0.1),
         currentDebugMode = ffi.new('int[1]', DEBUG_MODE.NONE)
@@ -143,14 +143,14 @@ function Editor.gizmos:drawGizmos()
     end
     local selected = EntityListView.selectedEntity
     if selected and selected:isValid() then
-        debugdraw.gizmoEnable(not selected:hasFlag(EFLAGS.STATIC))
-        debugdraw.gizmoManipulator(selected, self.gizmoOperation, self.gizmoMode, self.gizmoSnap[0], self.gizmoSnapStep[0], self.gizmoObbColor)
+        debugdraw.enable_gizmo(not selected:hasFlag(EFLAGS.STATIC))
+        debugdraw.draw_gizmo_manipulator(selected, self.gizmoOperation, self.gizmoMode, self.gizmoSnap[0], self.gizmoSnapStep[0], self.gizmoObbColor)
     end
     if self.showGrid then
-        debugdraw.enableFade(true)
-        debugdraw.setFadeDistance(self.gridFadeStart, self.gridFadeStart+self.gridFadeRange)
-        debugdraw.drawGrid(self.gridDims, self.gridStep, self.gridColor)
-        debugdraw.enableFade(false)
+        debugdraw.enable_fade(true)
+        debugdraw.set_fade_range(self.gridFadeStart, self.gridFadeStart+self.gridFadeRange)
+        debugdraw.draw_grid(self.gridDims, self.gridStep, self.gridColor)
+        debugdraw.enable_fade(false)
     end
 end
 
@@ -344,12 +344,12 @@ function Editor:renderMainMenu()
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_Button, 0)
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_BorderShadow, 0)
         UI.PushStyleColor_U32(ffi.C.ImGuiCol_Border, 0)
-        if UI.SmallButton(self.gizmos.gizmoMode == debugdraw.GIZMO_MODE.LOCAL and ICONS.HOUSE or ICONS.GLOBE) then
+        if UI.SmallButton(self.gizmos.gizmoMode == debugdraw.gizmo_mode.local_space and ICONS.HOUSE or ICONS.GLOBE) then
             self.gizmos.gizmoMode = band(self.gizmos.gizmoMode + 1, 1)
         end
         UI.PopStyleColor(3)
         if UI.IsItemHovered() then
-            UI.SetTooltip('Gizmo Mode: '..(self.gizmos.gizmoMode == debugdraw.GIZMO_MODE.LOCAL and 'Local' or 'World'))
+            UI.SetTooltip('Gizmo Mode: '..(self.gizmos.gizmoMode == debugdraw.gizmo_mode.local_space and 'Local' or 'World'))
         end
         UI.Checkbox(ICONS.RULER, self.gizmos.gizmoSnap)
         if UI.IsItemHovered() then
