@@ -3,7 +3,7 @@
 local ffi = require 'ffi'
 local cpp = ffi.C
 
-ffi.cdef[[
+ffi.cdef [[
     bool __lu_com_character_controller_exists(lua_entity_id id);
     void __lu_com_character_controller_add(lua_entity_id id);
     void __lu_com_character_controller_remove(lua_entity_id id);
