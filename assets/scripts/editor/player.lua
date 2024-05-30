@@ -27,6 +27,9 @@ local Player = {
     walkSpeed = 2,
     runSpeed = 5,
     jumpSpeed = 2,
+    enableViewBob = true,
+    viewBobSpeed = 10, -- Speed of oscillation
+    viewBobScale = 0.05, -- Magnitude of oscillation
     _movementState = MOVEMENT_STATE.IDLE,
     _isInAir = false,
     _prevMousePos = vec2.ZERO,
@@ -74,17 +77,11 @@ function Player:updateCamera()
     self._mouseAngles.y = gmath.clamp(self._mouseAngles.y, -clampYRad, clampYRad)
     local rot = quat.fromYawPitchRoll(self._mouseAngles.x, self._mouseAngles.y, 0.0)
     
-    if self._movementState ~= MOVEMENT_STATE.IDLE then
-        local walkFreq = 9.85
-        local walkAmplitude = 0.01
-        local runFreq = 15
-        local runApmlitude = 0.02
-        local freq = time.time * self._movementState == MOVEMENT_STATE.RUNNING and runFreq or walkFreq
-        local amplitude = self._movementState == MOVEMENT_STATE.RUNNING and runApmlitude or walkAmplitude
-        local bobX = amplitude * gmath.sin(freq)
-        local bobY = amplitude * gmath.cos(freq)
-        local bobQ = quat.fromYawPitchRoll(0, bobY, 0)
-        rot = rot * bobQ
+    if self._movementState ~= MOVEMENT_STATE.IDLE and self.enableViewBob then
+        local abs_velocity = #self.controller:get_component(components.character_controller):get_linear_velocity()
+        local x = gmath.sin(time.time * self.viewBobSpeed) * abs_velocity * self.viewBobSpeed / 100.0
+        local y = gmath.sin(2.0 * time.time * self.viewBobSpeed) * abs_velocity * self.viewBobSpeed / 400.0
+        rot = rot * quat.fromYawPitchRoll(gmath.rad(x), gmath.rad(y), 0)
     end
     
     transform:set_rotation(rot)
@@ -139,7 +136,7 @@ function Player:updateMovement()
     local new = 0.75 * current + 0.25 * desired
 
     -- Jump
-    if state == ground_state.on_ground and input.isKeyPressed(input.KEYS.SPACE) then
+    if state == ground_state.on_ground and input.is_key_pressed(input.keys.space) then
         new.y = 5.0
     end
 

@@ -237,7 +237,7 @@ function Editor:renderMainMenu()
                 UI.PopID()
             end
             if UI.MenuItem(ICONS.FOLDER_OPEN..' Open Project...') then
-                local selectedFile = app.Utils.openFileDialog('Lunam Projects', 'lupro', self.serializedConfig.general.prevProjectOpenDir)
+                local selectedFile = app.utils.open_file_dialog('Lunam Projects', 'lupro', self.serializedConfig.general.prevProjectOpenDir)
                 if selectedFile and lfs.attributes(selectedFile) then
                     self.serializedConfig.general.prevProjectOpenDir = selectedFile:match("(.*[/\\])")
                     local project = Project:open(selectedFile)
@@ -252,7 +252,7 @@ function Editor:renderMainMenu()
                 self:loadScene(nil)
             end
             if UI.MenuItem(ICONS.FILE_IMPORT..' Open scene') then
-                local selectedFile = app.Utils.openFileDialog('3D Scenes', MESH_FILE_FILTER, self.serializedConfig.general.prevSceneOpenDir)
+                local selectedFile = app.utils.open_file_dialog('3D Scenes', MESH_FILE_FILTER, self.serializedConfig.general.prevSceneOpenDir)
                 if selectedFile and lfs.attributes(selectedFile) then
                     self.serializedConfig.general.prevSceneOpenDir = selectedFile:match("(.*[/\\])")
                     self:loadScene(selectedFile)
@@ -436,7 +436,7 @@ function Editor:renderPopups()
         end
         UI.SameLine()
         if UI.Button('...') then
-            local dir = app.Utils.openFolderDialog(nil)
+            local dir = app.utils.openFolderDialog(nil)
             if dir and lfs.attributes(dir) then
                 DEFAULT_PROJECT_DIR = dir
                 createdProjectDir = DEFAULT_PROJECT_DIR..ffi.string(createProjectTextBuf)
