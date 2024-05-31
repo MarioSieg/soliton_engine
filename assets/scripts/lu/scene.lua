@@ -96,7 +96,7 @@ scene_import_flags.preset_convert_to_lh = combine_flags({
     scene_import_flags.flip_winding_order
 })
 
-scene_import_flags.default_flags = combine_flags({
+scene_import_flags.default = combine_flags({
     scene_import_flags.preset_realtime_quality ,
     scene_import_flags.preset_convert_to_lh
 })
@@ -106,11 +106,11 @@ local scene = {
     id = 0
 }
 
-function scene.__onStart()
+function scene._start()
     cpp.__lu_scene_start()
 end
 
-function scene.__onTick()
+function scene._update()
     cpp.__lu_scene_tick()
 end
 
@@ -163,7 +163,7 @@ local function setup_scene_class(id, name)
     -- Make scene active
     scene.name = name
     scene.id = id
-    scene.__onStart() -- invoke start hook
+    scene._start() -- invoke start hook
     print(string.format('Created new scene: %s, id: %x', name, id))
 
     -- Perform one full GC cycle to clean up any garbage
@@ -195,7 +195,7 @@ function scene.load(file, import_scale, import_flags)
         import_scale = 1
     end
     if not import_flags or type(import_flags) ~= 'number' then
-        import_flags = scene_import_flags.DEFAULT_FLAGS
+        import_flags = scene_import_flags.default
     end
     if not lfs.attributes(file) then
         eprint(string.format('scene file does not exist: %s', file))

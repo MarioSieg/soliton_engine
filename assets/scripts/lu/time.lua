@@ -35,7 +35,7 @@ for i=0, samples do time.fps_histogram[i] = 0.0 end
 
 local offset = 0 -- ring buffer index
 
-function time:__onTick()
+function time:_update()
     self.delta_time = cpp.__lu_get_delta_time()
     self.time = self.time + self.delta_time
     self.frame_time = self.delta_time * 1000.0

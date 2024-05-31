@@ -564,7 +564,7 @@ function Editor:drawTools()
     end
 end
 
-function Editor:__onTick()
+function Editor:_update()
     if self.isPlaying then
         self:tickScene()
         self:renderOverlay()
