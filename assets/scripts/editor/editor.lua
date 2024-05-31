@@ -273,11 +273,11 @@ function Editor:renderMainMenu()
             UI.EndMenu()
         end
         if UI.BeginMenu('View') then
-            if UI.MenuItem('Fullscreen', nil, app.Window.isFullscreen) then
-                if app.Window.isFullscreen then
-                    app.Window.leaveFullscreen()
+            if UI.MenuItem('Fullscreen', nil, app.window._is_fullscreen) then
+                if app.window._is_fullscreen then
+                    app.window.fillscreen_exit()
                 else
-                    app.Window.enterFullscreen()
+                    app.window.fillscreen_enter()
                 end
             end
             if UI.MenuItem(ICONS.RULER_TRIANGLE..' Show Grid', nil, self.gizmos.showGrid) then

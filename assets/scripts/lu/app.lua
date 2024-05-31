@@ -137,13 +137,13 @@ function app.window.minimize()
 end
 
 --- Enter fullscreen mode
-function app.window.enter_fullscreen()
+function app.window.fillscreen_enter()
     cpp.__lu_window_enter_fullscreen()
     app.window._is_fullscreen = true
 end
 
 --- Leave fullscreen mode
-function app.window.leave_fullscreen()
+function app.window.fillscreen_exit()
     cpp.__lu_window_leave_fullscreen()
     app.window._is_fullscreen = false
 end
