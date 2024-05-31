@@ -183,7 +183,7 @@ function Editor:loadScene(file)
     local mainCamera = scene.spawn('__editor_camera__') -- spawn editor camera
     mainCamera:add_flag(entity_flags.hidden + entity_flags.transient) -- hide and don't save
     mainCamera:get_component(components.camera):set_fov(80)
-    self.camera.targetEntity = mainCamera
+    self.camera.target_entity = mainCamera
     EntityListView:buildEntityList()
 end
 
@@ -192,9 +192,9 @@ local Player = require 'editor.player'
 function Editor:playScene()
     EntityListView:buildEntityList()
     app.window.enable_cursor(false)
-    self.camera.enableMovement = false
-    self.camera.enableMouseLook = false
-    local spawnPos = self.camera.position
+    self.camera.enable_movement = false
+    self.camera.enable_mouse_look = false
+    local spawnPos = self.camera._position
     spawnPos.y = spawnPos.y + 2.0
     Player:spawn(spawnPos)
     scene.set_active_camera_entity(Player.camera)
@@ -207,11 +207,11 @@ end
 
 function Editor:stopScene()
     Player:despawn()
-    scene.set_active_camera_entity(self.camera.targetEntity)
+    scene.set_active_camera_entity(self.camera.target_entity)
     EntityListView:buildEntityList()
     app.window.enable_cursor(true)
-    self.camera.enableMovement = true
-    self.camera.enableMouseLook = true
+    self.camera.enable_movement = true
+    self.camera.enable_mouse_look = true
     self.isVisible = true
 end
 
@@ -576,15 +576,15 @@ function Editor:_update()
     if not self.isVisible then
         return
     end
-    self.camera:tick()
+    self.camera:_update()
     local selectedE = EntityListView.selectedEntity
     if EntityListView.selectedWantsFocus and selectedE and selectedE:isValid() then
         if selectedE:hasComponent(components.transform) then
             local pos = selectedE:getComponent(components.transform):get_position()
             pos.z = pos.z - 1.0
             if pos then
-                self.camera.position = pos
-                self.camera.rotation = quat.IDENTITY
+                self.camera._position = pos
+                -- self.camera._rotation = quat.IDENTITY
             end
         end
         EntityListView.selectedWantsFocus = false

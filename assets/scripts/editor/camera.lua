@@ -13,124 +13,124 @@ local components = require 'components'
 
 local camera = {}
 
-camera.targetEntity = nil
+camera.target_entity = nil
 camera.sensitivity = 0.5 -- mouse look sensitivity
-camera.clampY = 80 -- mouse look Y-axis clamp
-camera.defaultMovementSpeed = 4 -- default movement speed
-camera.fastMovementSpeed = 10*camera.defaultMovementSpeed-- movement speed when pressing fast movement button (e.g. shift) (see below)
+camera.clamp_y = 80 -- mouse look Y-axis clamp
+camera.default_movement_speed = 4 -- default movement speed
+camera.fast_movement_speed = 10.0 * camera.default_movement_speed-- movement speed when pressing fast movement button (e.g. shift) (see below)
 
-camera.enableMouseLook = true -- enables/disables looking around
-camera.enableMouseButtonLook = true -- if true looking around is only working while a mouse button is down
-camera.lookMouseButton = input.mouse_buttons.right -- the mouse button to look around if the above option is true
+camera.enable_mouse_look = true -- enables/disables looking around
+camera.enable_mouse_button_look = true -- if true looking around is only working while a mouse button is down
+camera.look_mouse_button = input.mouse_buttons.right -- the mouse button to look around if the above option is true
 
-camera.enableMovement = true -- enables/disables camera movement
-camera.movementKeys = { -- the keys to move the camera around
+camera.enable_movement = true -- enables/disables camera movement
+camera.movement_keys = { -- the keys to move the camera around
     forward = input.keys.w,
     backward = input.keys.s,
     left = input.keys.a,
     right = input.keys.d,
 }
-camera.enableFastMovement = true -- enable faster movement when the key below is pressed
-camera.fastMovementKey = input.keys.left_shift -- move fast when this key is pressed
-camera.lockAxisMovement = vec3.one -- enables to disable the movement on any axis, by setting the axis to 0
-camera.enableSmoothMovement = false
-camera.smoothMovementTime = 1.0
-camera.enableSmoothLook = true
-camera.lookSnappiness = 15.0
-camera.prevMousePos = vec2.zero
-camera.mouseAngles = vec2.zero
-camera.smoothAngles = vec2.zero
-camera.rotation = quat.identity
-camera.position = vec3.zero
-camera.velocity = vec3.zero
-camera.isFocused = true
+camera.enable_fast_movement = true -- enable faster movement when the key below is pressed
+camera.fast_movement_key = input.keys.left_shift -- move fast when this key is pressed
+camera.lock_movement_axis = vec3.one -- enables to disable the movement on any axis, by setting the axis to 0
+camera.enable_smooth_movement = true
+camera.smooth_movement_time = 0.5
+camera.enable_smooth_look = true
+camera.smooth_look_snappiness = 12.0
+camera._prev_mous_pos = vec2.zero
+camera._mouse_angles = vec2.zero
+camera._smooth_angles = vec2.zero
+camera._rotation = quat.identity
+camera._position = vec3.zero
+camera._velocity = vec3.zero
+camera._is_focused = true
 
 -- invoked every frame
-function camera:tick()
-    self.isFocused = app.is_focused() and not app.is_any_ui_hovered()
-    if not self.targetEntity or not self.targetEntity:is_valid() then
+function camera:_update()
+    self._is_focused = app.is_focused() and not app.is_any_ui_hovered()
+    if not self.target_entity or not self.target_entity:is_valid() then
         perror('camera has no valid target entity')
     end
-    if self.enableMouseLook and self.isFocused then
-        self:_computeCameraRotation()
+    if self.enable_mouse_look and self._is_focused then
+        self:_compute_rotation()
     end
-    if self.enableMovement then
-        self:_computeMovement()
+    if self.enable_movement then
+        self:_compute_position()
     end
 end
 
-function camera:_computeCameraRotation()
+function camera:_compute_rotation()
     local sens = gmath.abs(self.sensitivity) * 0.01
-    local clampYRad = gmath.rad(gmath.abs(self.clampY))
+    local clampYRad = gmath.rad(gmath.abs(self.clamp_y))
     local mousePos = input.get_mouse_position()
 
     local delta = mousePos
-    delta = delta - self.prevMousePos
-    self.prevMousePos = mousePos
+    delta = delta - self._prev_mous_pos
+    self._prev_mous_pos = mousePos
 
-    if self.enableMouseButtonLook and not input.is_mouse_button_pressed(self.lookMouseButton) then
+    if self.enable_mouse_button_look and not input.is_mouse_button_pressed(self.look_mouse_button) then
         return
     end
 
-    if self.enableSmoothLook then
-        local factor = self.lookSnappiness * time.delta_time
-        self.smoothAngles.x = gmath.lerp(self.smoothAngles.x, delta.x, factor)
-        self.smoothAngles.y = gmath.lerp(self.smoothAngles.y, delta.y, factor)
-        delta = self.smoothAngles
+    if self.enable_smooth_look then
+        local factor = self.smooth_look_snappiness * time.delta_time
+        self._smooth_angles.x = gmath.lerp(self._smooth_angles.x, delta.x, factor)
+        self._smooth_angles.y = gmath.lerp(self._smooth_angles.y, delta.y, factor)
+        delta = self._smooth_angles
     end
 
     delta = delta * vec2(sens, sens)
-    self.mouseAngles = self.mouseAngles + delta
-    self.mouseAngles.y = gmath.clamp(self.mouseAngles.y, -clampYRad, clampYRad)
-    self.rotation = quat.from_yaw_pitch_roll(self.mouseAngles.x, self.mouseAngles.y, 0.0)
-    self.targetEntity:get_component(components.transform):set_rotation(self.rotation)
+    self._mouse_angles = self._mouse_angles + delta
+    self._mouse_angles.y = gmath.clamp(self._mouse_angles.y, -clampYRad, clampYRad)
+    self._rotation = quat.from_yaw_pitch_roll(self._mouse_angles.x, self._mouse_angles.y, 0.0)
+    self.target_entity:get_component(components.transform):set_rotation(self._rotation)
 end
 
-function camera:_computeMovement()
+function camera:_compute_position()
     local delta = time.delta_time
-    local speed = gmath.abs(self.defaultMovementSpeed)
+    local speed = gmath.abs(self.default_movement_speed)
 
-    if self.enableFastMovement then
+    if self.enable_fast_movement then
         if input.is_key_pressed(input.keys.left_shift) then -- are we moving fast (sprinting?)
-            speed = gmath.abs(self.fastMovementSpeed)
+            speed = gmath.abs(self.fast_movement_speed)
         end
     end
 
-    local target = self.position
+    local target = self._position
 
-    local function computePos(dir)
+    local function update_pos(dir)
         local movSpeed = speed
-        if not self.enableSmoothMovement then -- if we use raw movement, we have to apply the delta time here
+        if not self.enable_smooth_movement then -- if we use raw movement, we have to apply the delta time here
             movSpeed = movSpeed * delta
         end
-        target = target + (dir * self.rotation) * movSpeed
+        target = target + (dir * self._rotation) * movSpeed
     end
 
-    if self.isFocused then
-        if input.is_key_pressed(self.movementKeys.forward) then
-            computePos(vec3.forward)
+    if self._is_focused then
+        if input.is_key_pressed(self.movement_keys.forward) then
+            update_pos(vec3.forward)
         end
-        if input.is_key_pressed(self.movementKeys.backward) then
-            computePos(vec3.backward)
+        if input.is_key_pressed(self.movement_keys.backward) then
+            update_pos(vec3.backward)
         end
-        if input.is_key_pressed(self.movementKeys.left) then
-            computePos(vec3.left)
+        if input.is_key_pressed(self.movement_keys.left) then
+            update_pos(vec3.left)
         end
-        if input.is_key_pressed(self.movementKeys.right) then
-            computePos(vec3.right)
+        if input.is_key_pressed(self.movement_keys.right) then
+            update_pos(vec3.right)
         end
     end
 
-    if self.enableSmoothMovement then -- smooth movement
-        local position, velocity = vec3.smoothDamp(self.position, target, self.velocity, self.smoothMovementTime, gmath.INFINITY, delta) -- smooth damp and apply delta time
-        self.position = position
+    if self.enable_smooth_movement then -- smooth movement
+        local _position, _velocity = vec3.smooth_damp(self._position, target, self._velocity, self.smooth_movement_time, gmath.infinity, delta) -- smooth damp and apply delta time
+        self._position = _position
         -- self._velocity = vec3.clamp(self._velocity, -speed, speed)
     else -- raw movement
-        self.position = target
+        self._position = target
     end
 
-    self.position = self.position * self.lockAxisMovement -- apply axis lock
-    self.targetEntity:get_component(components.transform):set_position(self.position)
+    self._position = self._position * self.lock_movement_axis -- apply axis lock
+    self.target_entity:get_component(components.transform):set_position(self._position)
 end
 
 return camera
