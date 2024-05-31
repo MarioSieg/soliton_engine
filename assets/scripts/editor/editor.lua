@@ -578,9 +578,9 @@ function Editor:_update()
     end
     self.camera:_update()
     local selectedE = EntityListView.selectedEntity
-    if EntityListView.selectedWantsFocus and selectedE and selectedE:isValid() then
-        if selectedE:hasComponent(components.transform) then
-            local pos = selectedE:getComponent(components.transform):get_position()
+    if EntityListView.selectedWantsFocus and selectedE and selectedE:is_valid() then
+        if selectedE:has_component(components.transform) then
+            local pos = selectedE:get_component(components.transform):get_position()
             pos.z = pos.z - 1.0
             if pos then
                 self.camera._position = pos
