@@ -400,7 +400,7 @@ function Editor:renderMainMenu()
             UI.SetTooltip('Reload shaders')
         end
         UI.Separator()
-        UI.Text('FPS: %g', math.floor(time.fpsAvg))
+        UI.Text('FPS: %g', math.floor(time.fps_avg))
         if Profiler.isProfilerRunning then
             UI.Separator()
             UI.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff0000ff)
@@ -502,7 +502,7 @@ function Editor:renderOverlay()
     end
     UI.SetNextWindowBgAlpha(0.35)
     if UI.Begin('Overlay', nil, overlayFlags) then
-        UI.TextUnformatted(string.format('Sim Hz: %d, T: %.01f, %sT: %f', time.fpsAvg, time.time, ICONS.TRIANGLE, time.deltaTime))
+        UI.TextUnformatted(string.format('Sim Hz: %d, T: %.01f, %sT: %f', time.fps_avg, time.time, ICONS.TRIANGLE, time.delta_time))
         UI.SameLine()
         local size = app.window.get_frame_buffer_size()
         UI.TextUnformatted(string.format(' | %d X %d', size.x, size.y))

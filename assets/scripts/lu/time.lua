@@ -5,56 +5,57 @@
 ------------------------------------------------------------------------------
 
 local ffi = require 'ffi'
+local cpp = ffi.C
 
 ffi.cdef [[
     double __lu_get_delta_time(void);
 ]]
-local C = ffi.C
-local min, max = math.abs, math.min, math.max
 
-local SAMPLES = 128
+local min, max = math.min, math.max
+
+local samples = 128
 
 local time = {
-    deltaTime = 0.0, -- in seconds
+    delta_time = 0.0, -- in seconds
     time = 0.0, -- in seconds
-    frameTime = 16.0, -- in milliseconds
-    timeScale = 1.0, -- 1.0 = realtime, 0.0 = paused
+    frame_time = 16.0, -- in milliseconds
+    time_scale = 1.0, -- 1.0 = realtime, 0.0 = paused
     frame = 0, -- frame counter
     fps = 0.0, -- frames per second
-    fpsMin = 10.0^5, -- minimum frames per second
-    fpsMax = -10.0^5, -- maximum frames per second
-    fpsAvg = 0.0, -- average frames per second over N samples
-    fpsAvgMin = 10.0^5, -- minimum avg frames per second
-    fpsAvgMax = -10.0^5, -- maximum avg frames per second
-    fpsHistogram = ffi.new('float[?]', SAMPLES), -- frames per second histogram
-    HISTOGRAM_SAMPLES = SAMPLES
+    fps_min = 10.0^5, -- minimum frames per second
+    fps_max = -10.0^5, -- maximum frames per second
+    fps_avg = 0.0, -- average frames per second over N samples
+    fps_avg_min = 10.0^5, -- minimum avg frames per second
+    fps_avg_max = -10.0^5, -- maximum avg frames per second
+    fps_histogram = ffi.new('float[?]', samples), -- frames per second histogram
+    samples = samples
 }
 
-for i=0, SAMPLES do time.fpsHistogram[i] = 0.0 end
+for i=0, samples do time.fps_histogram[i] = 0.0 end
 
 local offset = 0 -- ring buffer index
 
 function time:__onTick()
-    self.deltaTime = C.__lu_get_delta_time()
-    self.time = self.time + self.deltaTime
-    self.frameTime = self.deltaTime * 1000.0
+    self.delta_time = cpp.__lu_get_delta_time()
+    self.time = self.time + self.delta_time
+    self.frame_time = self.delta_time * 1000.0
     self.frame = self.frame + 1
-    self.fps = 1000.0 / self.frameTime
-    self.fpsMin = min(self.fpsMin, self.fps)
-    self.fpsMax = max(self.fpsMax, self.fps)
+    self.fps = 1000.0 / self.frame_time
+    self.fps_min = min(self.fps_min, self.fps)
+    self.fps_max = max(self.fps_max, self.fps)
 
     -- Update circular buffer with the current fps
-    self.fpsHistogram[offset] = self.fps
-    offset = (offset+1) % SAMPLES
+    self.fps_histogram[offset] = self.fps
+    offset = (offset + 1) % samples
 
     -- Calculate the average fps over N samples
     local sum = 0.0
-    for i=0, SAMPLES do
-        sum = sum + self.fpsHistogram[i]
+    for i=0, samples do
+        sum = sum + self.fps_histogram[i]
     end
-    self.fpsAvg = sum / SAMPLES
-    self.fpsAvgMin = min(self.fpsAvgMin, self.fpsAvg)
-    self.fpsAvgMax = max(self.fpsAvgMax, self.fpsAvg)
+    self.fps_avg = sum / samples
+    self.fps_avg_min = min(self.fps_avg_min, self.fps_avg)
+    self.fps_avg_max = max(self.fps_avg_max, self.fps_avg)
 end
 
 return time

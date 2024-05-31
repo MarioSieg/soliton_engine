@@ -66,7 +66,7 @@ function Player:updateCamera()
     self._prevMousePos = mousePos
 
     if self.enableSmoothLook then
-        local factor = self.lookSnappiness * time.deltaTime
+        local factor = self.lookSnappiness * time.delta_time
         self._smoothAngles.x = gmath.lerp(self._smoothAngles.x, delta.x, factor)
         self._smoothAngles.y = gmath.lerp(self._smoothAngles.y, delta.y, factor)
         delta = self._smoothAngles

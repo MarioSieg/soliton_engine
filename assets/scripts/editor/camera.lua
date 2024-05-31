@@ -73,7 +73,7 @@ function camera:_computeCameraRotation()
     end
 
     if self.enableSmoothLook then
-        local factor = self.lookSnappiness * time.deltaTime
+        local factor = self.lookSnappiness * time.delta_time
         self.smoothAngles.x = gmath.lerp(self.smoothAngles.x, delta.x, factor)
         self.smoothAngles.y = gmath.lerp(self.smoothAngles.y, delta.y, factor)
         delta = self.smoothAngles
@@ -87,7 +87,7 @@ function camera:_computeCameraRotation()
 end
 
 function camera:_computeMovement()
-    local delta = time.deltaTime
+    local delta = time.delta_time
     local speed = gmath.abs(self.defaultMovementSpeed)
 
     if self.enableFastMovement then

@@ -42,17 +42,17 @@ function Profiler:render()
         if UI.BeginTabBar('##profiler_tabs') then
             if UI.BeginTabItem(ICONS.BEZIER_CURVE..' Histogram') then
                 local plot_size = UI.ImVec2(WINDOW_SIZE.x, 200.0)
-                UI.PlotHistogram_FloatPtr('##frame_times', time.fpsHistogram, time.HISTOGRAM_SAMPLES, 0, nil, 0.0, time.fpsAvg * 2.0, plot_size)
+                UI.PlotHistogram_FloatPtr('##frame_times', time.fps_histogram, time.samples, 0, nil, 0.0, time.fps_avg * 1.5, plot_size)
                 UI.EndTabItem()
             end
             if UI.BeginTabItem(ICONS.ALARM_CLOCK..' General') then
                 UI.Text(string.format('FPS: %d', time.fps))
-                UI.Text(string.format('FPS avg: %d', time.fpsAvg))
-                UI.Text(string.format('FPS min: %d', time.fpsMin))
-                UI.Text(string.format('FPS max: %d', time.fpsMax))
+                UI.Text(string.format('FPS avg: %d', time.fps_avg))
+                UI.Text(string.format('FPS min: %d', time.fps_min))
+                UI.Text(string.format('FPS max: %d', time.fps_max))
                 UI.Text(string.format('time: %.3f s', time.time))
-                UI.Text(string.format('Delta time: %f s', time.deltaTime))
-                UI.Text(string.format('Frame time: %f ms', time.frameTime))
+                UI.Text(string.format('Delta time: %f s', time.delta_time))
+                UI.Text(string.format('Frame time: %f ms', time.frame_time))
                 UI.Text(string.format('Frame: %d', time.frame))
                 UI.EndTabItem()
             end
