@@ -197,7 +197,7 @@ function Editor:playScene()
     local spawnPos = self.camera.position
     spawnPos.y = spawnPos.y + 2.0
     Player:spawn(spawnPos)
-    scene.setActiveCameraEntity(Player.camera)
+    scene.set_active_camera_entity(Player.camera)
     self.isVisible = false
 end
 
@@ -207,7 +207,7 @@ end
 
 function Editor:stopScene()
     Player:despawn()
-    scene.setActiveCameraEntity(self.camera.targetEntity)
+    scene.set_active_camera_entity(self.camera.targetEntity)
     EntityListView:buildEntityList()
     app.window.enable_cursor(true)
     self.camera.enableMovement = true
@@ -511,7 +511,7 @@ function Editor:renderOverlay()
         local time = os.date('*t')
         UI.TextUnformatted(string.format(' | %02d.%02d.%02d %02d:%02d', time.day, time.month, time.year, time.hour, time.min))
         UI.Separator()
-        local camera = scene.getActiveCameraEntity()
+        local camera = scene.get_active_camera_entity()
         if camera:is_valid() and camera:has_component(components.transform) then
             local transform = camera:get_component(components.transform)
             UI.TextUnformatted(string.format('Pos: %s', transform:get_position()))

@@ -5,12 +5,10 @@
 ------------------------------------------------------------------------------
 
 local ffi = require 'ffi'
-local C = ffi.C
+local cpp = ffi.C
 local bit = require 'bit'
-local bor = bit.bor
-local band = bit.band
+local bor, band = bit.bor, bit.band
 local entity = require 'lu.entity'
-local components = require 'lu.components'
 
 ffi.cdef[[
     typedef int lua_scene_id;
@@ -29,7 +27,7 @@ ffi.cdef[[
     lua_entity_id __lu_scene_get_active_camera_entity(void);
 ]]
 
-local function flagSetUnion(flags)
+local function combine_flags(flags)
     local result = 0
     for i=1, #flags do
         result = bor(result, flags[i])
@@ -39,68 +37,68 @@ end
 
 --- scene import flags for post processing.
 --- Only applies if the scene is not a .lunam file.
-SCENE_IMPORT_FLAGS = {
-    NONE = 0x0,
-    CALC_TANGENT_SPACE = 0x1,
-    JOIN_IDENTICAL_VERTICES = 0x2,
-    MAKE_LEFT_HANDED = 0x4,
-    TRIANGULATE = 0x8,
-    REMOVE_COMPONENT = 0x10,
-    GEN_NORMALS = 0x20,
-    GEN_SMOOTH_NORMALS = 0x40,
-    SPLIT_LARGE_MESHES = 0x80,
-    PRE_TRANSFORM_VERTICES = 0x100,
-    LIMIT_BONE_WEIGHTS = 0x200,
-    VALIDATE_DATA_STRUCTURE = 0x400,
-    IMPROVE_CACHE_LOCALITY = 0x800,
-    REMOVE_REDUNDANT_MATERIALS = 0x1000,
-    FIX_INFACING_NORMALS = 0x2000,
-    POPULATE_ARMATURE_DATA = 0x4000,
-    SORT_BY_PTYPE = 0x8000,
-    FIND_DEGENERATES = 0x10000,
-    FIND_INVALID_DATA = 0x20000,
-    GEN_UV_COORDS = 0x40000,
-    TRANSFORM_UV_COORDS = 0x80000,
-    FIND_INSTANCES = 0x100000,
-    OPTIMIZE_MESHES = 0x200000,
-    OPTIMIZE_GRAPH = 0x400000,
-    FLIP_UVS = 0x800000,
-    FLIP_WINDING_ORDER = 0x1000000,
-    SPLIT_BY_BONE_COUNT = 0x2000000,
-    DEBONE = 0x4000000,
-    GLOBAL_SCALE = 0x8000000,
-    EMBED_TEXTURES = 0x10000000,
-    FORCE_GEN_NORMALS = 0x20000000,
-    DROP_NORMALS = 0x40000000,
-    GEN_BOUNDING_BOXES = 0x80000000,
+scene_import_flags = {
+    none = 0x0,
+    calc_tangent_space = 0x1,
+    join_identical_vertices = 0x2,
+    make_left_handed = 0x4,
+    triangulate = 0x8,
+    remove_component = 0x10,
+    gen_normals = 0x20,
+    gen_smooth_normals = 0x40,
+    split_large_meshes = 0x80,
+    pre_transform_vertices = 0x100,
+    limit_bone_weights = 0x200,
+    validate_data_structure = 0x400,
+    improve_cache_locality = 0x800,
+    remove_redundant_materials = 0x1000,
+    fix_infacing_normals = 0x2000,
+    populate_armature_data = 0x4000,
+    sort_by_ptype = 0x8000,
+    find_degenerates = 0x10000,
+    find_invalid_data = 0x20000,
+    gen_uv_coords = 0x40000,
+    transform_uv_coords = 0x80000,
+    find_instances = 0x100000,
+    optimize_meshes = 0x200000,
+    optimize_graph = 0x400000,
+    flip_uvs = 0x800000,
+    flip_winding_order = 0x1000000,
+    split_by_bone_count = 0x2000000,
+    debone = 0x4000000,
+    global_scale = 0x8000000,
+    embed_textures = 0x10000000,
+    force_gen_normals = 0x20000000,
+    drop_normals = 0x40000000,
+    gen_bounding_boxes = 0x80000000,
 }
 
-SCENE_IMPORT_FLAGS.PRESET_REALTIME_QUALITY = flagSetUnion({
-    SCENE_IMPORT_FLAGS.CALC_TANGENT_SPACE,
-    SCENE_IMPORT_FLAGS.GEN_SMOOTH_NORMALS,
-    SCENE_IMPORT_FLAGS.JOIN_IDENTICAL_VERTICES,
-    SCENE_IMPORT_FLAGS.IMPROVE_CACHE_LOCALITY,
-    SCENE_IMPORT_FLAGS.LIMIT_BONE_WEIGHTS,
-    SCENE_IMPORT_FLAGS.REMOVE_REDUNDANT_MATERIALS,
-    SCENE_IMPORT_FLAGS.TRIANGULATE,
-    SCENE_IMPORT_FLAGS.GEN_UV_COORDS,
-    SCENE_IMPORT_FLAGS.SORT_BY_PTYPE,
-    SCENE_IMPORT_FLAGS.FIND_DEGENERATES,
-    SCENE_IMPORT_FLAGS.FIND_INVALID_DATA,
-    SCENE_IMPORT_FLAGS.FIND_INSTANCES,
-    SCENE_IMPORT_FLAGS.OPTIMIZE_MESHES,
-    -- SCENE_IMPORT_FLAGS.OPTIMIZE_GRAPH
+scene_import_flags.preset_realtime_quality = combine_flags({
+    scene_import_flags.calc_tangent_space,
+    scene_import_flags.gen_smooth_normals,
+    scene_import_flags.join_identical_vertices,
+    scene_import_flags.improve_cache_locality,
+    scene_import_flags.limit_bone_weights,
+    scene_import_flags.remove_redundant_materials,
+    scene_import_flags.triangulate,
+    scene_import_flags.gen_uv_coords,
+    scene_import_flags.sort_by_ptype,
+    scene_import_flags.find_degenerates,
+    scene_import_flags.find_invalid_data,
+    scene_import_flags.find_instances,
+    scene_import_flags.optimize_meshes,
+    -- scene_import_flags.optimize_graph
 })
 
-SCENE_IMPORT_FLAGS.PRESET_CONVERT_TO_LH = flagSetUnion({
-    SCENE_IMPORT_FLAGS.MAKE_LEFT_HANDED,
-    SCENE_IMPORT_FLAGS.FLIP_UVS,
-    SCENE_IMPORT_FLAGS.FLIP_WINDING_ORDER
+scene_import_flags.preset_convert_to_lh = combine_flags({
+    scene_import_flags.make_left_handed,
+    scene_import_flags.flip_uvs,
+    scene_import_flags.flip_winding_order
 })
 
-SCENE_IMPORT_FLAGS.DEFAULT_FLAGS = flagSetUnion({
-    SCENE_IMPORT_FLAGS.PRESET_REALTIME_QUALITY ,
-    SCENE_IMPORT_FLAGS.PRESET_CONVERT_TO_LH
+scene_import_flags.default_flags = combine_flags({
+    scene_import_flags.preset_realtime_quality ,
+    scene_import_flags.preset_convert_to_lh
 })
 
 local scene = {
@@ -109,64 +107,64 @@ local scene = {
 }
 
 function scene.__onStart()
-    C.__lu_scene_start()
+    cpp.__lu_scene_start()
 end
 
 function scene.__onTick()
-    C.__lu_scene_tick()
+    cpp.__lu_scene_tick()
 end
 
 function scene.spawn(name)
-    return entity:from_native_id(C.__lu_scene_spawn_entity(name))
+    return entity:from_native_id(cpp.__lu_scene_spawn_entity(name))
 end
 
 function scene.despawn(entity)
-    C.__lu_scene_despawn_entity(entity.id)
-    entity.id = nil
+    cpp.__lu_scene_despawn_entity(entity.id)
+    entity.id = 0
 end
 
-function scene.getEntityByName(name)
-    return entity:fromId(C.__lu_scene_get_entity_by_name(name))
+function scene.lookup_entity(name)
+    return entity:from_native_id(cpp.__lu_scene_get_entity_by_name(name))
 end
 
-function scene.fullEntityQueryStart()
-    C.__lu_scene_full_entity_query_start()
+function scene._entity_query_start()
+    cpp.__lu_scene_full_entity_query_start()
 end
 
-function scene.fullEntityQueryNextTable()
-    return C.__lu_scene_full_entity_query_next_table()
+function scene._entity_query_next()
+    return cpp.__lu_scene_full_entity_query_next_table()
 end
 
-function scene.fullEntityQueryGet(i)
-    return entity:from_native_id(C.__lu_scene_full_entity_query_get(i))
+function scene._entity_query_lookup(i)
+    return entity:from_native_id(cpp.__lu_scene_full_entity_query_get(i))
 end
 
-function scene.fullEntityQueryEnd()
-    C.__lu_scene_full_entity_query_end()
+function scene._entity_query_end()
+    cpp.__lu_scene_full_entity_query_end()
 end
 
-function scene.setActiveCameraEntity(entity)
-    C.__lu_scene_set_active_camera_entity(entity.id)
+function scene.set_active_camera_entity(entity)
+    cpp.__lu_scene_set_active_camera_entity(entity.id)
 end
 
-function scene.getActiveCameraEntity()
-    return entity:from_native_id(C.__lu_scene_get_active_camera_entity())
+function scene.get_active_camera_entity()
+    return entity:from_native_id(cpp.__lu_scene_get_active_camera_entity())
 end
 
-local function setLocalSceneProps(id, sceneName)
+local function setup_scene_class(id, name)
     -- Check if the id is valid
     if type(id) ~= 'number' or id == 0 then
-        eprint(string.format('Failed to create scene, invalid id returned: %s', sceneName))
+        eprint(string.format('Failed to create scene, invalid id returned: %s', name))
         return false
     end
 
-    assert(sceneName and type(sceneName) == 'string')
+    assert(name and type(name) == 'string')
 
     -- Make scene active
-    scene.name = sceneName
+    scene.name = name
     scene.id = id
     scene.__onStart() -- invoke start hook
-    print(string.format('Created new scene: %s, id: %x', sceneName, id))
+    print(string.format('Created new scene: %s, id: %x', name, id))
 
     -- Perform one full GC cycle to clean up any garbage
     collectgarbage('collect')
@@ -176,10 +174,10 @@ end
 
 --- Creates a new, empty scene with the given name and makes it the active scene.
 --- @param name: string, name of the new scene
-function scene.new(sceneName)
-    sceneName = sceneName or 'Untitled scene'
-    local id = C.__lu_scene_create(sceneName)
-    return setLocalSceneProps(id, sceneName)
+function scene.new(name)
+    name = name or 'Untitled scene'
+    local id = cpp.__lu_scene_create(name)
+    return setup_scene_class(id, name)
 end
 
 --- Loads a scene from a given file and makes it the active scene.
@@ -197,15 +195,15 @@ function scene.load(file, import_scale, import_flags)
         import_scale = 1
     end
     if not import_flags or type(import_flags) ~= 'number' then
-        import_flags = SCENE_IMPORT_FLAGS.DEFAULT_FLAGS
+        import_flags = scene_import_flags.DEFAULT_FLAGS
     end
     if not lfs.attributes(file) then
         eprint(string.format('scene file does not exist: %s', file))
         return false
     end
-    local sceneName = file:match("^.+/(.+)$"):match("(.+)%..+") -- extract scene name from file path
-    local id = C.__lu_scene_import(sceneName, file, import_scale, band(import_flags, 0xffffffff)) -- create native scene
-    return setLocalSceneProps(id, sceneName)
+    local name = file:match("^.+/(.+)$"):match("(.+)%..+") -- extract scene name from file path
+    local id = cpp.__lu_scene_import(name, file, import_scale, band(import_flags, 0xffffffff)) -- create native scene
+    return setup_scene_class(id, name)
 end
 
 -- Do NOT remove this

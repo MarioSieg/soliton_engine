@@ -20,9 +20,9 @@ local EntityListView = {
 
 function EntityListView:buildEntityList()
     self.entityList = {}
-    scene.fullEntityQueryStart()
-    for i=0, scene.fullEntityQueryNextTable() do
-        local entity = scene.fullEntityQueryGet(i)
+    scene._entity_query_start()
+    for i=0, scene._entity_query_next() do
+        local entity = scene._entity_query_lookup(i)
         if entity:is_valid() then
             if not self.showHiddenEntities[0] and entity:has_flag(entity_flags.hidden) then
                 goto continue
@@ -37,7 +37,7 @@ function EntityListView:buildEntityList()
             ::continue::
         end
     end
-    scene.fullEntityQueryEnd()
+    scene._entity_query_end()
 end
 
 function EntityListView:render()
