@@ -6,10 +6,10 @@ local stp = require 'ext.stack_trace_plus'
 debug.traceback = stp.stacktrace
 
 -- Init protocol logger.
-PROTOCOL = {}
-PROTOCOL_ERRORS = 0
+protocol = {}
+protocol_errs = 0
 
-local printProxy = _G.print
+local print_proxy = _G.print
 function _G.print(...)
     local args = {...}
     local str = string.format('[%s] ', os.date('%H:%M:%S'))
@@ -19,8 +19,8 @@ function _G.print(...)
         end
         str = str..tostring(arg)
     end
-    table.insert(PROTOCOL, {str, false})
-    printProxy(str)
+    table.insert(protocol, {str, false})
+    print_proxy(str)
 end
 
 function eprint(...)
@@ -32,11 +32,11 @@ function eprint(...)
         end
         str = str..tostring(arg)
     end
-    table.insert(PROTOCOL, {str, true})
-    PROTOCOL_ERRORS = PROTOCOL_ERRORS + 1
+    table.insert(protocol, {str, true})
+    protocol_errs = protocol_errs + 1
 end
 
-local errorProxy = _G.error
+local error_proxy = _G.error
 function _G.error(...)
     local args = {...}
     local str = string.format('[%s] ', os.date('%H:%M:%S'))
@@ -46,9 +46,9 @@ function _G.error(...)
         end
         str = str..tostring(arg)
     end
-    table.insert(PROTOCOL, {str, true})
-    PROTOCOL_ERRORS = PROTOCOL_ERRORS + 1
-    errorProxy(str)
+    table.insert(protocol, {str, true})
+    protocol_errs = protocol_errs + 1
+    error_proxy(str)
 end
 
 function printsep()
@@ -60,19 +60,19 @@ end
 -- Load global engine config
 require 'config.engine'
 
-if ENGINE_CONFIG.General.loadLuaStdlibExtensions then
+if engine_cfg.General.loadLuaStdlibExtensions then
     -- Init extensions
     require 'system.stdextend'
 end
 
 -- Print package paths
 print('Working dir: '..lfs.currentdir())
-for _, path in ipairs(INCLUDE_DIRS) do
+for _, path in ipairs(lua_include_dirs) do
     print('Additional script dir: ' .. path)
 end
 
 -- Verify filesystem
-if ENGINE_CONFIG.General.enableFilesystemValidation then
+if engine_cfg.General.enableFilesystemValidation then
     print('Verifying filesystem...')
     local numchecks = 0
     local function checkFsEntry(path)
@@ -103,26 +103,26 @@ for i = 1, math.random() * 10 do -- warm up the random generator
     math.random()
 end
 
-local EngineContext = {
+local engine_ctx = {
     hooks = nil
 }
 
-print('Lua mem: '..string.format("%.3f", collectgarbage('count')/1024.0)..' MiB')
+print(string.format('Lua mem limit: %.3f MiB', collectgarbage('count')/1024.0))
 
-function EngineContext:validateHookContext()
+function engine_ctx:validate()
     if not self.hooks then
         panic('Failed to load hookmgr, internal error!')
     end
 end
 
-function EngineContext:hookModules()
+function engine_ctx:inject_hooks()
     self.hooks = require 'system.hookmgr'
-    self:validateHookContext()
+    self:validate()
 end
 
-function EngineContext:tick()
-    self:validateHookContext()
+function engine_ctx:tick()
+    self:validate()
     self.hooks:tick()
 end
 
-return EngineContext
+return engine_ctx

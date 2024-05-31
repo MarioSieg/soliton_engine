@@ -18,7 +18,7 @@ local module_cache = {
 
 local loaded = {}
 
-local function loadMod(key, module)
+local function cache_module(key, module)
     print('Preloading module: '..key)
     assert(key ~= nil, 'Failed to preload module, missing key')
     assert(module ~= nil, 'Failed to preload module: '..key)
@@ -27,11 +27,12 @@ local function loadMod(key, module)
 end
 
 for key, module in pairs(module_cache) do
-    loadMod(key, module)
+    cache_module(key, module)
 end
 
-if ENGINE_CONFIG.General.enableEditor then
-    loadMod('Editor', 'editor/editor')
+if engine_cfg.General.enableEditor then
+    print('-- Editor is enabled --')
+    cache_module('editor', 'editor/editor')
 end
 
 return loaded

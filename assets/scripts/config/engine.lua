@@ -33,7 +33,7 @@ local UI_TESSELATION_PIXEL_ERROR = {
 
 -- Default engine config. Most of the variables are used on initialization and runtime changes might require a restart.
 -- Do NOT rename any variables in here, as some these are accessed from C++ code.
-ENGINE_CONFIG = {
+engine_cfg = {
     General = {
         enableEditor = true, -- Enable the editor.
         enableDebug = true, -- Enable debugdraw mode.
@@ -191,23 +191,31 @@ ENGINE_CONFIG = {
     }
 }
 
-if jit.os == 'OSX' then
-    print('Detected macOS, increasing UI font size...')
-    ENGINE_CONFIG.EditorUI.fontSize = ENGINE_CONFIG.EditorUI.fontSize * 2
+function engine_cfg:adjust_config_for_local_machine()
+    if jit.os == 'OSX' then
+        print('Detected macOS, increasing UI font size...')
+        self.EditorUI.fontSize = self.EditorUI.fontSize * 2
+    end
+
+    if self.Threads.autoPartitionEngineThreadCount then
+        local threads = self.Threads
+        local function clamp(x, min, max)
+            return math.min(math.max(x, min), max)
+        end
+        local cpus = math.max(1, ffi.C.__lu_app_host_get_num_cpus())
+        print(string.format('Detected %d logical cores.', cpus))
+        if threads.maxTotalEngineThreads > 0 then
+            cpus = math.min(cpus, threads.maxTotalEngineThreads)
+        end
+        local ratio = math.max(1, threads.partitionRatio)
+        threads.renderThreads = clamp(math.ceil(cpus / ratio), 1, threads.maxRenderThreads)
+        threads.physicsThreads = clamp(math.ceil(cpus / ratio), 1, threads.maxPhysicsThreads)
+        threads.simThreads = clamp(math.ceil(cpus / ratio), 1, threads.maxSimThreads)
+        print(string.format(
+            'Auto-partitioned engine thread count: Total %d threads, %d render threads, %d physics threads, %d ECS threads.',
+            cpus, threads.renderThreads, threads.physicsThreads, threads.simThreads
+        ))
+    end
 end
 
-if ENGINE_CONFIG.Threads.autoPartitionEngineThreadCount then
-    local function clamp(x, min, max)
-        return math.min(math.max(x, min), max)
-    end
-    local cpus = math.max(1, ffi.C.__lu_app_host_get_num_cpus())
-    print('Detected ' .. cpus .. ' logical cores.')
-    if ENGINE_CONFIG.Threads.maxTotalEngineThreads > 0 then
-        cpus = math.min(cpus, ENGINE_CONFIG.Threads.maxTotalEngineThreads)
-    end
-    local ratio = math.max(1, ENGINE_CONFIG.Threads.partitionRatio)
-    ENGINE_CONFIG.Threads.renderThreads = clamp(math.ceil(cpus / ratio), 1, ENGINE_CONFIG.Threads.maxRenderThreads)
-    ENGINE_CONFIG.Threads.physicsThreads = clamp(math.ceil(cpus / ratio), 1, ENGINE_CONFIG.Threads.maxPhysicsThreads)
-    ENGINE_CONFIG.Threads.simThreads = clamp(math.ceil(cpus / ratio), 1, ENGINE_CONFIG.Threads.maxSimThreads)
-    print('Auto-partitioned engine thread count: ' .. cpus .. ' threads, ' .. ENGINE_CONFIG.Threads.renderThreads .. ' render threads, ' .. ENGINE_CONFIG.Threads.physicsThreads .. ' physics threads, ' .. ENGINE_CONFIG.Threads.simThreads .. ' ECS threads.')
-end
+engine_cfg:adjust_config_for_local_machine() -- Adjust some engine config values for the local machine the engine is running on

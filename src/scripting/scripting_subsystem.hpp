@@ -39,7 +39,7 @@ namespace scripting {
         static constexpr const char* k_boot_script = "system/__boot__.lua";
         static constexpr const char* k_prepare_hook = "__on_prepare__";
         static constexpr const char* k_tick_hook = "__on_tick__";
-        static constexpr const char* k_engine_config_tab = "ENGINE_CONFIG";
+        static constexpr const char* k_engine_config_tab = "engine_cfg";
         static inline constinit lua_State* m_L = nullptr;
         static inline constinit std::optional<luabridge::LuaRef> m_config_table {};
         std::optional<luabridge::LuaRef> m_on_prepare {}; // Reference to __boot__.lua's on_prepare function
