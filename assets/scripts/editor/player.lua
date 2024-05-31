@@ -92,11 +92,11 @@ function Player:updateMovement()
     local controller = self.controller:get_component(components.character_controller)
     local isRunning = input.is_key_pressed(input.keys.w) and input.is_key_pressed(input.keys.left_shift)
     local speed = isRunning and self.runSpeed or self.walkSpeed
-    local dir = vec3.ZERO
+    local dir = vec3.zero
     local move = function(key, tr_dir)
         if input.is_key_pressed(key) then
             tr_dir.y = 0
-            dir = dir + vec3.norm(tr_dir) * speed
+            dir = dir + vec3.normalize(tr_dir) * speed
             return true
         end
         return false
@@ -125,7 +125,7 @@ function Player:updateMovement()
         local normal = controller:get_ground_normal()
         local dot = vec3.dot(normal, dir)
         if dot < 0 then
-            dir = dir - (dot * normal) / vec3.magSqr(normal)
+            dir = dir - (dot * normal) / vec3.sqr_magnitude(normal)
         end
     end
 

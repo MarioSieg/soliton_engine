@@ -32,7 +32,7 @@ camera.movementKeys = { -- the keys to move the camera around
 }
 camera.enableFastMovement = true -- enable faster movement when the key below is pressed
 camera.fastMovementKey = input.keys.left_shift -- move fast when this key is pressed
-camera.lockAxisMovement = vec3.ONE -- enables to disable the movement on any axis, by setting the axis to 0
+camera.lockAxisMovement = vec3.one -- enables to disable the movement on any axis, by setting the axis to 0
 camera.enableSmoothMovement = false
 camera.smoothMovementTime = 1.0
 camera.enableSmoothLook = true
@@ -41,8 +41,8 @@ camera.prevMousePos = vec2.zero
 camera.mouseAngles = vec2.zero
 camera.smoothAngles = vec2.zero
 camera.rotation = quat.identity
-camera.position = vec3.ZERO
-camera.velocity = vec3.ZERO
+camera.position = vec3.zero
+camera.velocity = vec3.zero
 camera.isFocused = true
 
 -- invoked every frame
@@ -108,16 +108,16 @@ function camera:_computeMovement()
 
     if self.isFocused then
         if input.is_key_pressed(self.movementKeys.forward) then
-            computePos(vec3.FORWARD)
+            computePos(vec3.forward)
         end
         if input.is_key_pressed(self.movementKeys.backward) then
-            computePos(vec3.BACKWARD)
+            computePos(vec3.backward)
         end
         if input.is_key_pressed(self.movementKeys.left) then
-            computePos(vec3.LEFT)
+            computePos(vec3.left)
         end
         if input.is_key_pressed(self.movementKeys.right) then
-            computePos(vec3.RIGHT)
+            computePos(vec3.right)
         end
     end
 
