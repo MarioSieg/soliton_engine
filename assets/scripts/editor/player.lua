@@ -32,9 +32,9 @@ local Player = {
     viewBobScale = 0.05, -- Magnitude of oscillation
     _movementState = MOVEMENT_STATE.IDLE,
     _isInAir = false,
-    _prevMousePos = vec2.ZERO,
-    _mouseAngles = vec2.ZERO,
-    _smoothAngles = vec2.ZERO
+    _prevMousePos = vec2.zero,
+    _mouseAngles = vec2.zero,
+    _smoothAngles = vec2.zero
 }
 
 function Player:spawn(spawnPos)
@@ -76,7 +76,7 @@ function Player:updateCamera()
     self._mouseAngles = self._mouseAngles + delta
     self._mouseAngles.y = gmath.clamp(self._mouseAngles.y, -clampYRad, clampYRad)
     local rot = quat.from_yaw_pitch_roll(self._mouseAngles.x, self._mouseAngles.y, 0.0)
-    
+
     if self._movementState ~= MOVEMENT_STATE.IDLE and self.enableViewBob then
         local abs_velocity = #self.controller:get_component(components.character_controller):get_linear_velocity()
         local x = gmath.sin(time.time * self.viewBobSpeed) * abs_velocity * self.viewBobSpeed / 100.0
