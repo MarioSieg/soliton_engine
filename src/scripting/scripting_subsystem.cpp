@@ -76,9 +76,13 @@ namespace scripting {
 
         // init lua
         passert(m_L == nullptr);
-        m_L = lua_newstate(+[]([[maybe_unused]] void* ud, void* ptr, [[maybe_unused]] std::size_t osize, const std::size_t nsize) noexcept -> void* {
-            return mi_realloc(ptr, nsize);
-        }, nullptr);
+        if constexpr (use_mimalloc) {
+            m_L = lua_newstate(+[]([[maybe_unused]] void* ud, void* ptr, [[maybe_unused]] std::size_t osize, const std::size_t nsize) noexcept -> void* {
+                return mi_realloc(ptr, nsize);
+            }, nullptr);
+        } else {
+            m_L = luaL_newstate();
+        }
         passert(m_L != nullptr);
         luaL_openlibs(m_L);
         passert(luaopen_lfs(m_L) == 1);

@@ -46,7 +46,7 @@ function Profiler:render()
                 UI.EndTabItem()
             end
             if UI.BeginTabItem(ICONS.ALARM_CLOCK..' General') then
-                UI.Text(string.format('FPS: %d', time.fpsAvg))
+                UI.Text(string.format('FPS: %d', time.fps))
                 UI.Text(string.format('FPS avg: %d', time.fpsAvg))
                 UI.Text(string.format('FPS min: %d', time.fpsMin))
                 UI.Text(string.format('FPS max: %d', time.fpsMax))
