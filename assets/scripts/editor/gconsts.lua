@@ -161,3 +161,9 @@ function determineAssetType(ext)
     if XAML_FILE_EXTS[ext] then return ASSET_TYPE.UI_XAML_SHEET end
     return ASSET_TYPE.UNKNOWN
 end
+
+function build_filter_string(items)
+    local r = ''
+    for k, _ in pairs(items) do r = r..k..',' end
+    return r
+end

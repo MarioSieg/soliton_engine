@@ -16,7 +16,7 @@ local entity_flags = entity_flags
 local MAX_TEXT_INPUT_SIZE = 128
 local Inspector = {
     name = ICONS.COGS..' Inspector',
-    isVisible = ffi.new('bool[1]', true),
+    is_visible = ffi.new('bool[1]', true),
     selectedEntity = nil,
     inputTextBuffer = ffi.new('char[?]', 1+MAX_TEXT_INPUT_SIZE),
     manipBuf3 = ffi.new('float[3]'),
@@ -113,7 +113,7 @@ end
 function Inspector:render()
     self.propertiesChanged = false
     UI.SetNextWindowSize(WINDOW_SIZE, ffi.C.ImGuiCond_FirstUseEver)
-    if UI.Begin(self.name, self.isVisible) then
+    if UI.Begin(self.name, self.is_visible) then
         local entity = self.selectedEntity
         if not entity or not entity:is_valid() then
             UI.TextUnformatted('No entity selected')

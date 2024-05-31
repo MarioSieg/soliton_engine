@@ -9,7 +9,7 @@ local time = require('time')
 
 local Profiler = {
     name = ICONS.CLOCK..' Profiler',
-    isVisible = ffi.new('bool[1]', true),
+    is_visible = ffi.new('bool[1]', true),
     isProfilerRunning = false,
 }
 
@@ -38,7 +38,7 @@ end
 function fileProxy:close() end
 
 function Profiler:render()
-    if UI.Begin(self.name, self.isVisible) then
+    if UI.Begin(self.name, self.is_visible) then
         if UI.BeginTabBar('##profiler_tabs') then
             if UI.BeginTabItem(ICONS.BEZIER_CURVE..' Histogram') then
                 local plot_size = UI.ImVec2(WINDOW_SIZE.x, 200.0)

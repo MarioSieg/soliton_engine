@@ -10,7 +10,7 @@ local entity_flags = entity_flags
 
 local EntityListView = {
     name = ICONS.CUBES..' Entities',
-    isVisible = ffi.new('bool[1]', true),
+    is_visible = ffi.new('bool[1]', true),
     selectedEntity = nil,
     entityList = {},
     entityCounter = 0,
@@ -42,7 +42,7 @@ end
 
 function EntityListView:render()
     UI.SetNextWindowSize(WINDOW_SIZE, ffi.C.ImGuiCond_FirstUseEver)
-    if UI.Begin(self.name, self.isVisible) then
+    if UI.Begin(self.name, self.is_visible) then
         if UI.Button(ICONS.PLUS) then
             self.entityCounter = self.entityCounter + 1
             local ent = scene.spawn('New entity '..self.entityCounter)

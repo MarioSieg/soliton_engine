@@ -17,7 +17,7 @@ COMMANDS['panic'] = {
 
 local Terminal = {
     name = ICONS.LINE_COLUMNS..' Terminal',
-    isVisible = ffi.new('bool[1]', true),
+    is_visible = ffi.new('bool[1]', true),
     cmdBufLen = 512,
     cmdBuf = ffi.new('char[?]', 512),
     scrollFlags = ffi.new('bool[2]', true, false),
@@ -27,7 +27,7 @@ function Terminal:render()
     UI.SetNextWindowSize(WINDOW_SIZE, ffi.C.ImGuiCond_FirstUseEver)
     local isLuaLogTab = false
     local protocol = protocol
-    if UI.Begin(self.name, self.isVisible, ffi.C.ImGuiWindowFlags_NoScrollbar) then
+    if UI.Begin(self.name, self.is_visible, ffi.C.ImGuiWindowFlags_NoScrollbar) then
         if UI.BeginTabBar('TerminalTabBar', ffi.C.ImGuiTabBarFlags_None) then
             if UI.BeginTabItem(ICONS.CODE..' Lua') then
                 isLuaLogTab = true

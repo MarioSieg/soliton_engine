@@ -102,7 +102,7 @@ end
 
 local ScriptEditor = {
     name = ICONS.CODE..' Script Editor',
-    isVisible = ffi.new('bool[1]', true),
+    is_visible = ffi.new('bool[1]', true),
     scripts = {
         ['New'] = (
             function()
@@ -117,7 +117,7 @@ local ScriptEditor = {
 
 function ScriptEditor:render()
     UI.SetNextWindowSize(WINDOW_SIZE, ffi.C.ImGuiCond_FirstUseEver)
-    if UI.Begin(ScriptEditor.name, ScriptEditor.isVisible, ffi.C.ImGuiWindowFlags_MenuBar) then
+    if UI.Begin(ScriptEditor.name, ScriptEditor.is_visible, ffi.C.ImGuiWindowFlags_MenuBar) then
         if UI.BeginMenuBar() then
             if UI.BeginMenu('File') then
                 UI.EndMenu()

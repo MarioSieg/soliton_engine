@@ -1,7 +1,7 @@
 --time_t needed for implot_internal
-local ffi = require"ffi"
-local IS_64_BIT = ffi.abi('64bit')
-local cdecl = ""
+local ffi = require'ffi'
+local is_64_bit = ffi.abi('64bit')
+local cdecl = ''
 cdecl = cdecl .. [[
 typedef struct tm
 {
@@ -16,8 +16,8 @@ typedef struct tm
    int tm_isdst ;
 } tm;
 ]]
-if ffi.os == "Windows" then
-	if IS_64_BIT then
+if ffi.os == 'Windows' then
+	if is_64_bit then
 		cdecl = cdecl..[[typedef __int64 time_t;]]
 	else
 		cdecl = cdecl..[[typedef __int32 time_t;]]
@@ -6637,7 +6637,7 @@ void Log_delete(Log* log);
 
 
 
-if jit.os == "Windows" then
+if jit.os == 'Windows' then
 cdecl = cdecl..[[
  
 // Helpers: UTF-8 <> wchar

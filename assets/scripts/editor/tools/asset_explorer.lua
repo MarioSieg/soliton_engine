@@ -13,7 +13,7 @@ local EFLAGS = ENTITY_FLAGS
 
 local AssetExplorer = {
     name = ICONS.FOLDER_TREE..' Asset View',
-    isVisible = ffi.new('bool[1]', true),
+    is_visible = ffi.new('bool[1]', true),
     scanDir = 'assets',
     assetList = {},
     dirTree = {},
@@ -111,7 +111,7 @@ end
 
 function AssetExplorer:render()
     UI.SetNextWindowSize(WINDOW_SIZE, ffi.C.ImGuiCond_FirstUseEver)
-    if UI.Begin(self.name, self.isVisible, ffi.C.ImGuiWindowFlags_MenuBar) then
+    if UI.Begin(self.name, self.is_visible, ffi.C.ImGuiWindowFlags_MenuBar) then
         if UI.BeginMenuBar() then
             if UI.SmallButton(ICONS.REDO_ALT..' Refresh') then
                 

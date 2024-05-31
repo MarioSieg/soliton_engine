@@ -1,4 +1,4 @@
-local ICONS = {
+local icons = {
     ABACUS = '\xef\x99\x80',
     ACORN = '\xef\x9a\xae',
     AD = '\xef\x99\x81',
@@ -900,7 +900,7 @@ local ICONS = {
     ICE_CREAM = '\xef\xa0\x90',
     ICE_SKATE = '\xef\x9e\xac',
     ICICLES = '\xef\x9e\xad',
-    ICONS = '\xef\xa1\xad',
+    icons = '\xef\xa1\xad',
     ICONS_ALT = '\xef\xa1\xae',
     ID_BADGE = '\xef\x8b\x81',
     ID_CARD = '\xef\x8b\x82',
@@ -1856,8 +1856,8 @@ local ICONS = {
 
 -- convert hex escapes to Lua-decimal escapes:
 
-for _, v in ipairs(ICONS) do
+for _, v in ipairs(icons) do
     v = s:gsub('\\x(%x%x)', function (x) return string.char(tonumber(x, 16)) end)
 end
 
-return ICONS
+return icons
