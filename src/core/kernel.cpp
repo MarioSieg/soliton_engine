@@ -191,6 +191,7 @@ kernel::~kernel() {
     log_info("Allocator Stats:\n{}", ss.str());
     log_info("System offline");
     spdlog::shutdown();
+    std::cout << "Lunam Engine says goodbye :(\n";
     std::cout.flush();
     std::fflush(stdout);
     g_kernel = nullptr;
