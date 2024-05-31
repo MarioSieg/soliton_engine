@@ -15,7 +15,7 @@
 namespace scripting {
     class scripting_subsystem final : public subsystem {
     public:
-        static constexpr bool use_mimalloc = false; // use mimalloc over LuaJIT's allocator
+        static constexpr bool use_mimalloc = true; // use mimalloc over LuaJIT's allocator
 
         scripting_subsystem();
         ~scripting_subsystem() override;
