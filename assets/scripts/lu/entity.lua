@@ -16,6 +16,8 @@ ffi.cdef [[
     void __lu_entity_set_name(lua_entity_id id, const char* name);
     uint32_t __lu_entity_get_flags(lua_entity_id id);
     void __lu_entity_set_flags(lua_entity_id id, uint32_t flags);
+
+    void __lu_scene_despawn_entity(lua_entity_id id);
 ]]
 
 --- entity flags for the entity class.
@@ -108,6 +110,12 @@ end
 -- @tparam ENTITY_FLAGS flags The flags to toggle
 function entity:toggleFlag(flags)
     self:set_flags(bxor(self:get_flags(), flags))
+end
+
+--- Despawns the entity. Same as scene.despawn(entity)
+--- @see scene.despawn
+function entity:despawn()
+    cpp.__lu_scene_despawn_entity(self.id)
 end
 
 --- Checks if the entity is equal to another entity by comparing their ids.
