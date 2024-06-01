@@ -18,6 +18,7 @@ local movement_state = {
 }
 
 local player = {
+    camera_fov = 65.0,
     mouse_sensitivity = 0.5,
     view_clamp_y = 80.0,
     enable_smooth_look = true,
@@ -51,7 +52,7 @@ function player:spawn(spawn_pos)
     self._camera = scene.spawn('player_camera')
     self._camera:add_flag(entity_flags.transient)
     self._camera:get_component(components.transform)
-    self._camera:get_component(components.camera):set_fov(85.0)
+    self._camera:get_component(components.camera):set_fov(self.camera_fov)
 end
 
 function player:_update_camera()
