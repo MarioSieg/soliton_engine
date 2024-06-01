@@ -2,11 +2,10 @@
 -- TODO: Fix
 
 local xml = require 'ext.xml'
-local xmlParser = require 'ext.xml_parser'
 
-local Project = { -- Project structure, NO tables allowed in this class because of serialization
-    serialized = {
-        name = 'Unnamed Project',
+local project = { -- project structure, NO tables allowed in this class because of serialization
+    serialized = { -- project meta data - everything within here is serialized to the lupro file
+        name = 'Unnamed project',
         id = 0,
         version = '0.0.1',
         type = 'game',
@@ -15,39 +14,39 @@ local Project = { -- Project structure, NO tables allowed in this class because 
         license = '',
         copyright = '',
         url = 'www.example.com',
-        assetDir = 'assets',
-        configDir = 'config',
-        hookDir = 'hooks',
-        tmpDir = 'tmp',
-        createdTimeStamp = nil,
-        lastModifiedTimeStamp = nil,
-        loadAccumulator = 0
+        asset_dir = 'assets',
+        config_dir = 'config',
+        hook_dir = 'hooks',
+        tmp_dir = 'tmp',
+        created_time_stamp = nil,
+        modifier_time_stamp = nil,
+        load_accumulator = 0
     },
-    transientFullPath = nil
+    full_path = nil
 }
 
-function Project:new(dir, name)
+function project:new(dir, name)
     if dir then assert(type(dir) == 'string') end
     if name then assert(type(name) == 'string') end
     local project = {}
     setmetatable(project, {__index = self})   
-    project.serialized.name = name or 'Unnamed Project'
-    project.transientFullPath = dir
+    project.serialized.name = name or 'Unnamed project'
+    project.full_path = dir
     project.serialized.id = os.time()
-    local timeStampString = os.date('%Y-%m-%d %H:%M:%S')
-    project.serialized.createdTimeStamp = timeStampString
-    project.serialized.lastModifiedTimeStamp = timeStampString
+    local stamp = os.date('%Y-%m-%d %H:%M:%S')
+    project.serialized.created_time_stamp = stamp
+    project.serialized.modifier_time_stamp = stamp
     return project
 end
 
-function Project:getProjectFile()
-    if not self.transientFullPath then
+function project:getProjectFile()
+    if not self.full_path then
         return nil
     end
-    return self.transientFullPath..'/project.lupro'
+    return self.full_path..'/project.lupro'
 end
 
-function Project:saveMetaDataToFile()
+function project:saveMetaDataToFile()
     local target = self:getProjectFile()
     if not target then
         error('No project file specified')
@@ -60,13 +59,13 @@ function Project:saveMetaDataToFile()
     file:close()
 end
 
-function Project:loadMetaDataFromFile()
+function project:loadMetaDataFromFile()
     local target = self:getProjectFile()
     if not target then
         error('No project file specified')
     end
     if not lfs.attributes(target) then
-        error('Project file not found: '..target)
+        error('project file not found: '..target)
     end
     local file = io.open(target, 'r')
     local content = file:read('*a')
@@ -81,12 +80,12 @@ function Project:loadMetaDataFromFile()
     self.serialized = target
 end
 
-function Project:open(projectRootFile)
+function project:open(projectRootFile)
     if not projectRootFile then
         error('No project file specified')
     end
     if not lfs.attributes(projectRootFile) then
-        error('Project file not found: '..projectRootFile)
+        error('project file not found: '..projectRootFile)
     end
     if not projectRootFile:endsWith('.lupro') then
         error('Invalid project file extension: '..projectRootFile)
@@ -97,17 +96,17 @@ function Project:open(projectRootFile)
         error('Failed to extract project root directory from: '..projectRootFile)
     end
     if not lfs.attributes(rootDir) then
-        error('Project root directory not found: '..rootDir)
+        error('project root directory not found: '..rootDir)
     end
-    local project = Project:new(rootDir, nil)
+    local project = project:new(rootDir, nil)
     project:loadMetaDataFromFile()
-    project.serialized.lastModifiedTimeStamp = os.date('%Y-%m-%d %H:%M:%S')
-    project.serialized.loadAccumulator = project.serialized.loadAccumulator + 1
+    project.serialized.modifier_time_stamp = os.date('%Y-%m-%d %H:%M:%S')
+    project.serialized.load_accumulator = project.serialized.load_accumulator + 1
     return project
 end
 
-function Project:getAssetDir()
-    return self.assetDir
+function project:getAssetDir()
+    return self.asset_dir
 end
 
 local PROJECT_TEMPLATE_DIR = 'templates/project'
@@ -162,7 +161,7 @@ local function copyDir(srcDir, dstDir)
     end
 end
 
-function Project:createOnDisk(rootDir)
+function project:createOnDisk(rootDir)
     if not lfs.attributes(rootDir) then
         lfs.mkdir(rootDir)
     end
@@ -171,21 +170,21 @@ function Project:createOnDisk(rootDir)
         fullPath = fullPath..'/'..self.serialized.name
     end
     if lfs.attributes(fullPath) then
-        error('Project already exists: '..fullPath)
+        error('project already exists: '..fullPath)
     end
     lfs.mkdir(fullPath)
     if not lfs.attributes(fullPath) then
         error('Failed to create project directory: '..fullPath)
     end
     if not lfs.attributes(PROJECT_TEMPLATE_DIR) then
-        error('Project template directory not found: '..PROJECT_TEMPLATE_DIR)
+        error('project template directory not found: '..PROJECT_TEMPLATE_DIR)
     end
     copyDir(PROJECT_TEMPLATE_DIR, fullPath)
     if not lfs.attributes(fullPath) then
         error('Failed to copy project template to: '..fullPath)
     end
-    self.transientFullPath = fullPath
+    self.full_path = fullPath
     self:saveMetaDataToFile()
 end
 
-return Project
+return project

@@ -1857,7 +1857,11 @@ local icons = {
 -- convert hex escapes to Lua-decimal escapes:
 
 for _, v in ipairs(icons) do
-    v = s:gsub('\\x(%x%x)', function (x) return string.char(tonumber(x, 16)) end)
+    v = s:gsub('\\x(%x%x)',
+        function (x)
+            return string.char(tonumber(x, 16))
+        end
+    )
 end
 
 return icons
