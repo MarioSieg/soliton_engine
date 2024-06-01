@@ -13,7 +13,8 @@ local module_cache = {
     ['time'] = 'lu/time',
     ['vec2'] = 'lu/vec2',
     ['vec3'] = 'lu/vec3',
-    ['ini'] = 'lu/ini',
+    ['json'] = 'lu/json',
+    ['inspect'] = 'ext/inspect'
 }
 
 local loaded = {}

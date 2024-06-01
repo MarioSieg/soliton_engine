@@ -16,7 +16,7 @@ local vec3 = require 'vec3'
 local scene = require 'scene'
 local input = require 'input'
 local components = require 'components'
-local ini = require 'ini'
+local json = require 'json'
 local icons = require 'editor.icons'
 local project = require 'editor.project'
 local terminal = require 'editor.tools.terminal'
@@ -76,11 +76,14 @@ end
 if not lfs.attributes(default_project_location) then
     default_project_location = ''
 end
-default_project_location = default_project_location..'lunam projects/'
+default_project_location = default_project_location..'lunam_projects/'
+if not lfs.attributes(default_project_location) then
+    lfs.mkdir(default_project_location)
+end
 
 local debug_mode_names_c = ffi.new("const char*[?]", #debug_mode_names)
 for i=1, #debug_mode_names do debug_mode_names_c[i-1] = ffi.cast("const char*", debug_mode_names[i]) end
-local config_file_name = 'config/editor.ini'
+local config_file_name = 'config/editor.json'
 
 local editor = {
     is_visible = true,
@@ -422,7 +425,7 @@ function editor:draw_pending_popups()
         end
         ui.SameLine()
         if ui.Button('...') then
-            local dir = app.utils.openFolderDialog(nil)
+            local dir = app.utils.open_folder_dialog(nil)
             if dir and lfs.attributes(dir) then
                 default_project_location = dir
                 created_project_dir = default_project_location..ffi.string(new_project_tmp)
@@ -435,12 +438,13 @@ function editor:draw_pending_popups()
             local name = ffi.string(new_project_tmp)
             local dir = default_project_location
             if dir and name and #name ~= 0 then
-                local project = project:new(dir, name)
+                local proj = project:new(dir, name)
                 print('Creating project on disk: '..dir)
-                if pcall(function() project:createOnDisk(dir) end) then
+                local success, err = pcall(function() proj:create_new_on_disk(dir) end)
+                if success then
                     print('project created: '..dir)
                 else
-                    eprint('Failed to create project')
+                    eprint('Failed to create project: '..err)
                 end
                 ui.CloseCurrentPopup()
                 new_project_tmp[0] = 0
@@ -580,7 +584,7 @@ end
 
 function editor:loadConfig() -- TODO: Save config on exit
     if lfs.attributes(config_file_name) then
-        self.serialized_config = ini.deserialize(config_file_name)
+        self.serialized_config = json.deserialize_from_file(config_file_name)
     else
         print('Creating new editor config file: '..config_file_name)
         self:saveConfig()
@@ -594,7 +598,7 @@ function editor:loadConfig() -- TODO: Save config on exit
 end
 
 function editor:saveConfig()
-    ini.serialize(config_file_name, self.serialized_config)
+    json.serialize_to_file(config_file_name, self.serialized_config)
 end
 
 style.setup()

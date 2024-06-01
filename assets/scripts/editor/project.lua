@@ -1,7 +1,8 @@
 -- Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
--- TODO: Fix
 
-local xml = require 'ext.xml'
+local json = require 'json'
+
+local template_dir = 'templates/project'
 
 local project = { -- project structure, NO tables allowed in this class because of serialization
     serialized = { -- project meta data - everything within here is serialized to the lupro file
@@ -28,163 +29,130 @@ local project = { -- project structure, NO tables allowed in this class because 
 function project:new(dir, name)
     if dir then assert(type(dir) == 'string') end
     if name then assert(type(name) == 'string') end
-    local project = {}
-    setmetatable(project, {__index = self})   
-    project.serialized.name = name or 'Unnamed project'
-    project.full_path = dir
-    project.serialized.id = os.time()
+    local proj = {}
+    setmetatable(proj, {__index = self})
+    proj.serialized.name = name or 'Unnamed project'
+    proj.full_path = dir
+    proj.serialized.id = os.time()
     local stamp = os.date('%Y-%m-%d %H:%M:%S')
-    project.serialized.created_time_stamp = stamp
-    project.serialized.modifier_time_stamp = stamp
-    return project
+    proj.serialized.created_time_stamp = stamp
+    proj.serialized.modifier_time_stamp = stamp
+    return proj
 end
 
-function project:getProjectFile()
+function project:get_lupro_file_path()
     if not self.full_path then
         return nil
     end
     return self.full_path..'/project.lupro'
 end
 
-function project:saveMetaDataToFile()
-    local target = self:getProjectFile()
+function project:serialize_config_to_lupro()
+    local target = self:get_lupro_file_path()
     if not target then
         error('No project file specified')
     end
     if lfs.attributes(target) then
         lfs.remove(target)
     end
-    local file = io.open(target, 'w')
-    file:write(xml.toXml(self.serialized, 'LunamProject'))
-    file:close()
+    json.serialize_to_file(target, self.serialized)
 end
 
-function project:loadMetaDataFromFile()
-    local target = self:getProjectFile()
+function project:deserialize_config_from_lupro()
+    local target = self:get_lupro_file_path()
     if not target then
         error('No project file specified')
     end
     if not lfs.attributes(target) then
         error('project file not found: '..target)
     end
-    local file = io.open(target, 'r')
-    local content = file:read('*a')
-    file:close()
-    local handler = require 'ext.xml_tree'
-    local parser = xml.parser(handler)
-    parser:parse(content)
-    local target = handler.root.LunamProject
-    if not target or type(target) ~= 'table' then
+    local deserialized_data = json.deserialize_from_file(target)
+    if not deserialized_data or type(deserialized_data) ~= 'table' then
         error('Failed to parse XML project file: '..target)
     end
-    self.serialized = target
+    self.serialized = deserialized_data
 end
 
-function project:open(projectRootFile)
-    if not projectRootFile then
+function project:open(lupro_file)
+    if not lupro_file then
         error('No project file specified')
     end
-    if not lfs.attributes(projectRootFile) then
-        error('project file not found: '..projectRootFile)
+    if not lfs.attributes(lupro_file) then
+        error('project file not found: '..lupro_file)
     end
-    if not projectRootFile:endsWith('.lupro') then
-        error('Invalid project file extension: '..projectRootFile)
+    if not lupro_file:endsWith('.lupro') then
+        error('Invalid project file extension: '..lupro_file)
     end
     -- Extract project root directory from file path
-    local rootDir = projectRootFile:match('^(.*)/')
-    if not rootDir then
-        error('Failed to extract project root directory from: '..projectRootFile)
+    local parent_dir = lupro_file:match('^(.*)/')
+    if not parent_dir then
+        error('Failed to extract project root directory from: '..lupro_file)
     end
-    if not lfs.attributes(rootDir) then
-        error('project root directory not found: '..rootDir)
+    if not lfs.attributes(parent_dir) then
+        error('project root directory not found: '..parent_dir)
     end
-    local project = project:new(rootDir, nil)
-    project:loadMetaDataFromFile()
-    project.serialized.modifier_time_stamp = os.date('%Y-%m-%d %H:%M:%S')
-    project.serialized.load_accumulator = project.serialized.load_accumulator + 1
-    return project
+    local proj = project:new(parent_dir, nil)
+    proj:deserialize_config_from_lupro()
+    proj.serialized.modifier_time_stamp = os.date('%Y-%m-%d %H:%M:%S')
+    proj.serialized.load_accumulator = proj.serialized.load_accumulator + 1
+    return proj
 end
 
-function project:getAssetDir()
-    return self.asset_dir
-end
-
-local PROJECT_TEMPLATE_DIR = 'templates/project'
-
-local function dirtree(dir)
-    local dirs = {}
-    local function yieldtree(dir)
-        for entry in lfs.dir(dir) do
-            if entry ~= '.' and entry ~= '..' then
-                local path = dir..'/'..entry
-                local attribs = lfs.attributes(path)
-                if attribs.mode == 'directory' then
-                    table.insert(dirs, path)
-                    yieldtree(path)
-                else
-                    coroutine.yield(path)
-                end
-            end
-        end
-    end
-    return coroutine.wrap(function() yieldtree(dir) end), dirs
-end
-
-local function copyFile(src, dst)
-    local inFile, err = io.open(src, 'rb')
-    if not inFile then
+local function copy_file(src, dst)
+    local file_in, err = io.open(src, 'rb')
+    if not file_in then
         error('Failed to open source file: ' .. err)
     end
-    local outFile, err = io.open(dst, 'wb')
-    if not outFile then
+    local file_out, err = io.open(dst, 'wb')
+    if not file_out then
         error('Failed to open destination file: ' .. err)
     end
-    local content = inFile:read('*a') -- Read the entire content of the source file
-    outFile:write(content) -- Write the content to the destination file 
-    inFile:close()
-    outFile:close()
+    local content = file_in:read('*a') -- Read the entire content of the source file
+    file_out:write(content) -- Write the content to the destination file 
+    file_in:close()
+    file_out:close()
 end
 
-local function copyDir(srcDir, dstDir)
+local function copy_dir_recursive(srcDir, dstDir)
     lfs.mkdir(dstDir) -- Make sure the destination directory exists
     for entry in lfs.dir(srcDir) do
         if entry ~= '.' and entry ~= '..' then
-            local srcPath = srcDir .. '/' .. entry
-            local dstPath = dstDir .. '/' .. entry
-            local mode = lfs.attributes(srcPath, 'mode')
+            local src = srcDir .. '/' .. entry
+            local dst = dstDir .. '/' .. entry
+            local mode = lfs.attributes(src, 'mode')
             if mode == 'directory' then
-                copyDir(srcPath, dstPath) -- Recursively copy subdirectories
+                copy_dir_recursive(src, dst) -- Recursively copy subdirectories
             elseif mode == 'file' then
-                copyFile(srcPath, dstPath) -- Copy files
+                copy_file(src, dst) -- Copy files
             end
         end
     end
 end
 
-function project:createOnDisk(rootDir)
-    if not lfs.attributes(rootDir) then
-        lfs.mkdir(rootDir)
+function project:create_new_on_disk(parent_dir)
+    if not lfs.attributes(parent_dir) then
+        lfs.mkdir(parent_dir)
     end
-    local fullPath = rootDir
-    if rootDir:match("([^/]+)$") ~= self.serialized.name then
-        fullPath = fullPath..'/'..self.serialized.name
+    local full_path = parent_dir
+    if parent_dir:match("([^/]+)$") ~= self.serialized.name then
+        full_path = full_path..'/'..self.serialized.name
     end
-    if lfs.attributes(fullPath) then
-        error('project already exists: '..fullPath)
+    if lfs.attributes(full_path) then
+        error('project already exists: '..full_path)
     end
-    lfs.mkdir(fullPath)
-    if not lfs.attributes(fullPath) then
-        error('Failed to create project directory: '..fullPath)
+    lfs.mkdir(full_path)
+    if not lfs.attributes(full_path) then
+        error('Failed to create project directory: '..full_path)
     end
-    if not lfs.attributes(PROJECT_TEMPLATE_DIR) then
-        error('project template directory not found: '..PROJECT_TEMPLATE_DIR)
+    if not lfs.attributes(template_dir) then
+        error('project template directory not found: '..template_dir)
     end
-    copyDir(PROJECT_TEMPLATE_DIR, fullPath)
-    if not lfs.attributes(fullPath) then
-        error('Failed to copy project template to: '..fullPath)
+    copy_dir_recursive(template_dir, full_path)
+    if not lfs.attributes(full_path) then
+        error('Failed to copy project template to: '..full_path)
     end
-    self.full_path = fullPath
-    self:saveMetaDataToFile()
+    self.full_path = full_path
+    self:serialize_config_to_lupro()
 end
 
 return project
