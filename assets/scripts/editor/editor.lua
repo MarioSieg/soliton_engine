@@ -420,7 +420,7 @@ function editor:draw_pending_popups()
             new_project_tmp = ffi.new('char[?]', new_project_max_math)
         end
         if not is_creating_project then
-            local defaultName = 'new project'
+            local defaultName = 'my project'
             created_project_dir = default_project_location..defaultName
             ffi.copy(new_project_tmp, defaultName)
             is_creating_project = true

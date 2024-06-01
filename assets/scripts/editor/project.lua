@@ -4,6 +4,39 @@ local json = require 'json'
 
 local template_dir = 'templates/project'
 
+-- TODO: move this to a separate file
+local function copy_file(src, dst)
+    local file_in, err = io.open(src, 'rb')
+    if not file_in then
+        error('Failed to open source file: ' .. err)
+    end
+    local file_out, err = io.open(dst, 'wb')
+    if not file_out then
+        error('Failed to open destination file: ' .. err)
+    end
+    local content = file_in:read('*a') -- Read the entire content of the source file
+    file_out:write(content) -- Write the content to the destination file
+    file_in:close()
+    file_out:close()
+end
+
+-- TODO: move this to a separate file
+local function copy_dir_recursive(srcDir, dstDir)
+    lfs.mkdir(dstDir) -- Make sure the destination directory exists
+    for entry in lfs.dir(srcDir) do
+        if entry ~= '.' and entry ~= '..' then
+            local src = srcDir .. '/' .. entry
+            local dst = dstDir .. '/' .. entry
+            local mode = lfs.attributes(src, 'mode')
+            if mode == 'directory' then
+                copy_dir_recursive(src, dst) -- Recursively copy subdirectories
+            elseif mode == 'file' then
+                copy_file(src, dst) -- Copy files
+            end
+        end
+    end
+end
+
 local project = { -- project structure, NO tables allowed in this class because of serialization
     serialized = { -- project meta data - everything within here is serialized to the lupro file
         name = 'Unnamed project',
@@ -38,11 +71,11 @@ function project:create(dir, name)
     local stamp = os.date('%Y-%m-%d %H:%M:%S')
     proj.serialized.created_time_stamp = stamp
     proj.serialized.modifier_time_stamp = stamp
-    if not lfs.attributes(parent_dir) then
-        lfs.mkdir(parent_dir)
+    if not lfs.attributes(dir) then
+        lfs.mkdir(dir)
     end
-    local full_path = parent_dir
-    if parent_dir:match("([^/]+)$") ~= proj.serialized.name then
+    local full_path = dir
+    if dir:match("([^/]+)$") ~= proj.serialized.name then
         full_path = full_path..'/'..proj.serialized.name
     end
     if lfs.attributes(full_path) then
@@ -141,37 +174,6 @@ function project:_deserialize_config_from_lupro()
         error('Failed to parse XML project file: '..target)
     end
     self.serialized = deserialized_data
-end
-
-local function copy_file(src, dst)
-    local file_in, err = io.open(src, 'rb')
-    if not file_in then
-        error('Failed to open source file: ' .. err)
-    end
-    local file_out, err = io.open(dst, 'wb')
-    if not file_out then
-        error('Failed to open destination file: ' .. err)
-    end
-    local content = file_in:read('*a') -- Read the entire content of the source file
-    file_out:write(content) -- Write the content to the destination file
-    file_in:close()
-    file_out:close()
-end
-
-local function copy_dir_recursive(srcDir, dstDir)
-    lfs.mkdir(dstDir) -- Make sure the destination directory exists
-    for entry in lfs.dir(srcDir) do
-        if entry ~= '.' and entry ~= '..' then
-            local src = srcDir .. '/' .. entry
-            local dst = dstDir .. '/' .. entry
-            local mode = lfs.attributes(src, 'mode')
-            if mode == 'directory' then
-                copy_dir_recursive(src, dst) -- Recursively copy subdirectories
-            elseif mode == 'file' then
-                copy_file(src, dst) -- Copy files
-            end
-        end
-    end
 end
 
 return project
