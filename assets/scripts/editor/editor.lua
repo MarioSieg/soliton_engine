@@ -39,7 +39,8 @@ local new_project_tmp = nil
 local is_creating_project = false
 local created_project_dir = ''
 local entity_flags = entity_flags
-local overlayLocation = 1 -- Top right is default
+local overlay_location = 1 -- Top right is default
+local restore_layout_guard = true
 local default_project_location = ''
 local texture_filter = build_filter_string(TEXTURE_FILE_EXTS)
 local mesh_filter = build_filter_string(MESH_FILE_EXTS)
@@ -133,7 +134,7 @@ function editor.gizmos:draw_gizmos()
     elseif self.active_debug_mode[0] == debug_mode.phsics_shapes then
         debugdraw.draw_all_physics_shapes()
     end
-    if editor.is_ingame then
+    if self.is_ingame then
         return
     end
     local selected = entity_list_view.selectedEntity
@@ -230,13 +231,17 @@ function editor:draw_main_menu_bar()
                 ui.PopID()
             end
             if ui.MenuItem(icons.FOLDER_OPEN..' Open project...') then
-                local selectedFile = app.utils.open_file_dialog('Lunam Projects', 'lupro', self.serialized_config.general.prev_project_location)
-                if selectedFile and lfs.attributes(selectedFile) then
-                    self.serialized_config.general.prev_project_location = selectedFile:match("(.*[/\\])")
-                    local project = project:open(selectedFile)
-                    print('Opened project: '..project.transientFullPath)
-                    self.active_project = project
-                    app.Window.setPlatformTitle(string.format('project: %s', project.serialized.name))
+                local selected_file = app.utils.open_file_dialog('Lunam Projects', 'lupro', self.serialized_config.general.prev_project_location)
+                if selected_file and lfs.attributes(selected_file) then
+                    self.serialized_config.general.prev_project_location = selected_file:match("(.*[/\\])")
+                    local proj = project:open(selected_file)
+                    print('Opened project: '..proj.full_path)
+                    if self.active_project then -- unload previous project
+                        self.active_project:unload()
+                        self.active_project = nil
+                    end
+                    self.active_project = proj
+                    app.Window.setPlatformTitle(string.format('project: %s', proj.serialized.name))
                     collectgarbage('collect')
                     collectgarbage('stop')
                 end
@@ -245,10 +250,10 @@ function editor:draw_main_menu_bar()
                 self:load_scene(nil)
             end
             if ui.MenuItem(icons.FILE_IMPORT..' Open scene') then
-                local selectedFile = app.utils.open_file_dialog('3D Scenes', mesh_filter, self.serialized_config.general.prev_scene_location)
-                if selectedFile and lfs.attributes(selectedFile) then
-                    self.serialized_config.general.prev_scene_location = selectedFile:match("(.*[/\\])")
-                    self:load_scene(selectedFile)
+                local selected_file = app.utils.open_file_dialog('3D Scenes', mesh_filter, self.serialized_config.general.prev_scene_location)
+                if selected_file and lfs.attributes(selected_file) then
+                    self.serialized_config.general.prev_scene_location = selected_file:match("(.*[/\\])")
+                    self:load_scene(selected_file)
                 end
             end
             if ui.MenuItem(icons.PORTAL_EXIT..' Exit') then
@@ -291,7 +296,7 @@ function editor:draw_main_menu_bar()
                         pcall(os.execute('open '..'"'..INDEX..'"'))
                     end
                 else
-                    perror('Lua API documentation not found: '..INDEX)
+                    eprint('Lua API documentation not found: '..INDEX)
                 end
             end
             if ui.MenuItem(icons.BOOK_OPEN..' Open C++ SDK Documentation') then
@@ -303,7 +308,7 @@ function editor:draw_main_menu_bar()
                         pcall(os.execute('open '..'"'..INDEX..'"'))
                     end
                 else
-                    perror('C++ SDK documentation not found: '..INDEX)
+                    eprint('C++ SDK documentation not found: '..INDEX)
                 end
             end
             if jit.os ~= 'Windows' then -- Currently only POSIX support
@@ -312,7 +317,7 @@ function editor:draw_main_menu_bar()
                     if lfs.attributes(GENERATOR) then
                         pcall(os.execute('bash '..'"'..GENERATOR..'" &'))
                     else
-                        perror('Lua API documentation generator not found: '..GENERATOR)
+                        eprint('Lua API documentation generator not found: '..GENERATOR)
                     end
                 end
                 if ui.MenuItem(icons.COGS..' Regenerate C++ API Documentation') then
@@ -320,7 +325,7 @@ function editor:draw_main_menu_bar()
                     if lfs.attributes(GENERATOR) then
                         pcall(os.execute('bash '..'"'..GENERATOR..'" &'))
                     else
-                        perror('C++ SDK documentation generator not found: '..GENERATOR)
+                        eprint('C++ SDK documentation generator not found: '..GENERATOR)
                     end
                 end
             end
@@ -438,17 +443,16 @@ function editor:draw_pending_popups()
             local name = ffi.string(new_project_tmp)
             local dir = default_project_location
             if dir and name and #name ~= 0 then
-                local proj = project:new(dir, name)
                 print('Creating project on disk: '..dir)
-                local success, err = pcall(function() proj:create_new_on_disk(dir) end)
+                local success, err = pcall(function() project:create(dir, name) end)
                 if success then
+                    ui.CloseCurrentPopup()
+                    new_project_tmp[0] = 0
+                    is_creating_project = false
                     print('project created: '..dir)
                 else
                     eprint('Failed to create project: '..err)
                 end
-                ui.CloseCurrentPopup()
-                new_project_tmp[0] = 0
-                is_creating_project = false
             else
                 eprint('Invalid project name or directory')
             end
@@ -466,20 +470,20 @@ end
 
 function editor:draw_ingame_overlay()
     local overlayFlags = overlay_flags
-    if overlayLocation >= 0 then
+    if overlay_location >= 0 then
         local PAD = 10.0
         local viewport = ui.GetMainViewport()
         local workPos = viewport.WorkPos
         local workSize = viewport.WorkSize
         local windowPos = ui.ImVec2(0, 0)
-        windowPos.x = band(overlayLocation, 1) ~= 0 and (workPos.x + workSize.x - PAD) or (workPos.x + PAD)
-        windowPos.y = band(overlayLocation, 2) ~= 0 and (workPos.y + workSize.y - PAD) or (workPos.y + PAD)
+        windowPos.x = band(overlay_location, 1) ~= 0 and (workPos.x + workSize.x - PAD) or (workPos.x + PAD)
+        windowPos.y = band(overlay_location, 2) ~= 0 and (workPos.y + workSize.y - PAD) or (workPos.y + PAD)
         local windowPosPivot = ui.ImVec2(0, 0)
-        windowPosPivot.x = band(overlayLocation, 1) ~= 0 and 1.0 or 0.0
-        windowPosPivot.y = band(overlayLocation, 2) ~= 0 and 1.0 or 0.0
+        windowPosPivot.x = band(overlay_location, 1) ~= 0 and 1.0 or 0.0
+        windowPosPivot.y = band(overlay_location, 2) ~= 0 and 1.0 or 0.0
         ui.SetNextWindowPos(windowPos, ffi.C.ImGuiCond_Always, windowPosPivot)
         overlayFlags = overlayFlags + ffi.C.ImGuiWindowFlags_NoMove
-    elseif overlayLocation == -2 then
+    elseif overlay_location == -2 then
         local viewport = ui.GetMainViewport()
         ui.SetNextWindowPos(viewport:GetCenter(), ffi.C.ImGuiCond_Always, ui.ImVec2(0.5, 0.5))
         overlayFlags = overlayFlags - ffi.C.ImGuiWindowFlags_NoMove
@@ -506,23 +510,23 @@ function editor:draw_ingame_overlay()
         ui.TextUnformatted(cpu_name)
         ui.TextUnformatted(gpu_name)
         if ui.BeginPopupContextWindow() then
-            if ui.MenuItem('Custom', nil, overlayLocation == -1) then
-                overlayLocation = -1
+            if ui.MenuItem('Custom', nil, overlay_location == -1) then
+                overlay_location = -1
             end
-            if ui.MenuItem('Center', nil, overlayLocation == -2) then
-                overlayLocation = -2
+            if ui.MenuItem('Center', nil, overlay_location == -2) then
+                overlay_location = -2
             end
-            if ui.MenuItem('Top-left', nil, overlayLocation == 0) then
-                overlayLocation = 0
+            if ui.MenuItem('Top-left', nil, overlay_location == 0) then
+                overlay_location = 0
             end
-            if ui.MenuItem('Top-right', nil, overlayLocation == 1) then
-                overlayLocation = 1
+            if ui.MenuItem('Top-right', nil, overlay_location == 1) then
+                overlay_location = 1
             end
-            if ui.MenuItem('Bottom-left', nil, overlayLocation == 2) then
-                overlayLocation = 2
+            if ui.MenuItem('Bottom-left', nil, overlay_location == 2) then
+                overlay_location = 2
             end
-            if ui.MenuItem('Bottom-right', nil, overlayLocation == 3) then
-                overlayLocation = 3
+            if ui.MenuItem('Bottom-right', nil, overlay_location == 3) then
+                overlay_location = 3
             end
             ui.EndPopup()
         end
@@ -530,11 +534,10 @@ function editor:draw_ingame_overlay()
     ui.End()
 end
 
-local restoreLayout = true
 function editor:drawTools()
     self.dock_id = ui.DockSpaceOverViewport(ui.GetMainViewport(), ffi.C.ImGuiDockNodeFlags_PassthruCentralNode)
-    if restoreLayout then
-        restoreLayout = false
+    if restore_layout_guard then
+        restore_layout_guard = false
         self:reset_ui_layout()
     end
     for i=1, #self.tools do

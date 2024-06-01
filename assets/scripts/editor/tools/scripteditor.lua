@@ -53,7 +53,7 @@ end
 local function readAllText(file)
     local f = io.open(file, "rb")
     if not f then
-        perror('Failed to open file: '..file)
+        eprint('Failed to open file: '..file)
         return ''
     end
     local content = f:read("*all")

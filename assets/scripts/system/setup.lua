@@ -75,18 +75,18 @@ end
 if engine_cfg.General.enableFilesystemValidation then
     print('Verifying filesystem...')
     local numchecks = 0
-    local function checkFsEntry(path)
+    local function check_fs_entry(path)
         numchecks = numchecks + 1
         if not lfs.attributes(path) then
             panic('Broken installation! Required file or directory not found: '..path)
         end
     end
-    checkFsEntry('assets')
+    check_fs_entry('assets')
     if lfs.attributes('assets/scripts/system/fsregistry.lua') then -- check if the fsregistry file exists
         local REQUIRED_FILES = require 'system.fsregistry' -- load the list of required files
         if type(REQUIRED_FILES) == 'table' then
             for _, path in ipairs(REQUIRED_FILES) do
-                checkFsEntry(path)
+                check_fs_entry(path)
             end
         end
         print('Filesystem OK, '..numchecks..' entries checked.')

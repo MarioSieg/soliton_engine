@@ -49,7 +49,7 @@ camera._is_focused = true
 function camera:_update()
     self._is_focused = app.is_focused() and not app.is_any_ui_hovered()
     if not self.target_entity or not self.target_entity:is_valid() then
-        perror('camera has no valid target entity')
+        eprint('camera has no valid target entity')
     end
     if self.enable_mouse_look and self._is_focused then
         self:_compute_rotation()

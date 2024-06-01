@@ -103,7 +103,7 @@ end
 function AssetExplorer:buildAssetList()
     self.assetList = {}
     if not lfs.attributes(self.scanDir) then
-        perror('AssetExplorer failed to scan directory: '..self.scanDir)
+        eprint('AssetExplorer failed to scan directory: '..self.scanDir)
         return
     end
     self:expandAssetListRecursive()
