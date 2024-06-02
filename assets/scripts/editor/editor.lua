@@ -573,8 +573,8 @@ function editor:_update()
             end
         end
         entity_list_view.selected_wants_focus = false
-        inspector.selected_entity = selected
     end
+    inspector.selected_entity = selected
     if inspector.properties_changed then
         entity_list_view:build_entity_list()
     end
