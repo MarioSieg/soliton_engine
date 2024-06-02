@@ -1,0 +1,1011 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html" />
+<title>Simd Library Release Notes (2022)</title>
+</head>
+<body> <center><table width=1024><tr><td>
+<a id="HOME"><a>
+<center>
+<img width="200" height="100" src="logo.png">
+<h1>Simd Library Release Notes (2022).</h1>
+<a href="index.html">Home</a> |
+<a href="2024.html">Release Notes</a> | 
+<a href="download.html">Download</a> | 
+<a href="help/index.html">Documentation</a> | 
+<a href="http://github.com/ermig1979/Simd/issues">Issues</a> | 
+<a href="http://github.com/ermig1979/Simd" target="_top">GitHub</a> 
+</center>
+<hr/> 
+</td></tr><tr><td>
+
+<center>
+ <a href="2024.html">2024</a> |
+ <a href="2023.html">2023</a> |
+ <a href="2022.html">2022</a> |
+ <a href="2021.html">2021</a> |
+ <a href="2020.html">2020</a> |
+ <a href="2019.html">2019</a> |
+ <a href="2018.html">2018</a> |
+ <a href="2017.html">2017</a> |
+ <a href="2016.html">2016</a> |
+ <a href="2015.html">2015</a> |
+ <a href="2014.html">2014</a> |
+ <a href="2013.html">2013</a>
+</center>
+
+<hr/>
+<h3 id="R120">December 1, 2022 (version 5.2.120)</h3>
+<h4>Algorithms</h4>
+<h5>New features</h5>
+<ul>
+ <li>AVX2 optimizations of class RecursiveBilateralFilterFast.</li>
+ <li>Base implementation of function SynetNormalizeLayerForward.</li>
+</ul>
+<h5>Bug fixing</h5>
+<ul>
+ <li>Error in SSE4.1 optimizations of function SynetSetInput.</li>
+ <li>MSVS compiler warning in AMX optimizations of class SynetConvolution8iNhwcDirect.</li>
+ <li>MSVS compiler warning in AMX optimizations of class SynetMergedConvolution8iCdc.</li>
+ <li>MSVS compiler warning in AMX optimizations of class SynetMergedConvolution8iCd.</li>
+ <li>MSVS compiler warning in AMX optimizations of class SynetMergedConvolution8iDc.</li>
+ <li>Error in AVX and AVX2 optimizations of function SynetInnerProductLayerForward.</li>
+ <li>Using of SIMD_CPP_2011_ENABLE macro outside of library.</li>
+</ul>
+
+<h4>Test framework</h4>
+<h5>New features</h5>
+<ul>
+ <li>Tests for verifying functionality of function SynetNormalizeLayerForward.</li>
+</ul>
+<h5>Removing</h5>
+<ul>
+ <li>Data test for function Fill.</li>
+ <li>Data test for function FillFrame.</li>
+ <li>Data test for function FillBgra.</li>
+ <li>Data test for function FillBgr.</li>
+ <li>Data test for function FillPixel.</li>
+ <li>Data test for function Float32ToFloat16.</li>
+ <li>Data test for function Float16ToFloat32.</li>
+ <li>Data test for function SquaredDifferenceSum16f.</li>
+ <li>Data test for function CosineDistance16f.</li>
+ <li>Data test for function Float32ToUint8.</li>
+ <li>Data test for function Uint8ToFloat32.</li>
+ <li>Data test for function MeanFilter3x3.</li>
+ <li>Data test for function MedianFilterRhomb3x3.</li>
+ <li>Data test for function MedianFilterRhomb5x5.</li>
+ <li>Data test for function MedianFilterSquare3x3.</li>
+ <li>Data test for function MedianFilterSquare5x5.</li>
+ <li>Data test for function GaussianBlur3x3.</li>
+ <li>Data test for function AbsGradientSaturatedSum.</li>
+ <li>Data test for function LbpEstimate.</li>
+ <li>Data test for function NormalizeHistogram.</li>
+ <li>Data test for function SobelDx.</li>
+ <li>Data test for function SobelDxAbs.</li>
+ <li>Data test for function SobelDy.</li>
+ <li>Data test for function SobelDyAbs.</li>
+ <li>Data test for function ContourMetrics.</li>
+ <li>Data test for function Laplace.</li>
+ <li>Data test for function LaplaceAbs.</li>
+ <li>Data test for function Histogram.</li>
+ <li>Data test for function HistogramMasked.</li>
+ <li>Data test for function HistogramConditional.</li>
+ <li>Data test for function AbsSecondDerivativeHistogram.</li>
+ <li>Data test for function ChangeColors.</li>
+ <li>Data test for function HogDirectionHistograms.</li>
+ <li>Data test for function HogExtractFeatures.</li>
+ <li>Data test for function HogDeinterleave.</li>
+ <li>Data test for function HogFilterSeparable.</li>
+ <li>Data test for function HogLiteExtractFeatures.</li>
+ <li>Data test for function HogLiteFilterFeatures.</li>
+ <li>Data test for function HogLiteResizeFeatures.</li>
+ <li>Data test for function HogLiteCompressFeatures.</li>
+ <li>Data test for function HogLiteFilterSeparable.</li>
+ <li>Data test for function HogLiteFindMax7x7.</li>
+ <li>Data test for function HogLiteCreateMask.</li>
+ <li>Data test for function Integral.</li>
+ <li>Data test for function InterferenceIncrement.</li>
+ <li>Data test for function InterferenceIncrementMasked.</li>
+ <li>Data test for function InterferenceDecrement.</li>
+ <li>Data test for function InterferenceDecrementMasked.</li>
+ <li>Data test for function InterleaveUv.</li>
+ <li>Data test for function InterleaveBgr.</li>
+ <li>Data test for function InterleaveBgra.</li>
+ <li>Data test for function NeuralConvert.</li>
+ <li>Data test for function NeuralProductSum.</li>
+ <li>Data test for function NeuralAddVectorMultipliedByValue.</li>
+ <li>Data test for function NeuralAddVector.</li>
+ <li>Data test for function NeuralAddValue.</li>
+ <li>Data test for function NeuralRoughSigmoid.</li>
+ <li>Data test for function NeuralRoughSigmoid2.</li>
+ <li>Data test for function NeuralDerivativeSigmoid.</li>
+ <li>Data test for function NeuralRoughTanh.</li>
+ <li>Data test for function NeuralDerivativeTanh.</li>
+ <li>Data test for function NeuralDerivativeRelu.</li>
+ <li>Data test for function NeuralPow.</li>
+ <li>Data test for function NeuralUpdateWeights.</li>
+ <li>Data test for function NeuralAdaptiveGradientUpdate.</li>
+ <li>Data test for function NeuralPooling1x1Max3x3.</li>
+ <li>Data test for function NeuralPooling2x2Max2x2.</li>
+ <li>Data test for function NeuralPooling2x2Max3x3.</li>
+ <li>Data test for function NeuralAddConvolution2x2Forward.</li>
+ <li>Data test for function NeuralAddConvolution3x3Forward.</li>
+ <li>Data test for function NeuralAddConvolution4x4Forward.</li>
+ <li>Data test for function NeuralAddConvolution5x5Forward.</li>
+ <li>Data test for function NeuralAddConvolution2x2Backward.</li>
+ <li>Data test for function NeuralAddConvolution3x3Backward.</li>
+ <li>Data test for function NeuralAddConvolution4x4Backward.</li>
+ <li>Data test for function NeuralAddConvolution5x5Backward.</li>
+ <li>Data test for function NeuralAddConvolution2x2Sum.</li>
+ <li>Data test for function NeuralAddConvolution3x3Sum.</li>
+ <li>Data test for function NeuralAddConvolution4x4Sum.</li>
+ <li>Data test for function NeuralAddConvolution5x5Sum.</li>
+ <li>Data test for function NeuralConvolutionForward.</li>
+ <li>Data test for function OperationBinary8u.</li>
+ <li>Data test for function OperationBinary16i.</li>
+ <li>Data test for function VectorProduct.</li>
+ <li>Data test for function ReduceColor2x2.</li>
+ <li>Data test for function ReduceGray2x2.</li>
+ <li>Data test for function ReduceGray3x3.</li>
+ <li>Data test for function ReduceGray4x4.</li>
+ <li>Data test for function ReduceGray5x5.</li>
+ <li>Data test for function Reorder16bit.</li>
+ <li>Data test for function Reorder32bit.</li>
+ <li>Data test for function Reorder64bit.</li>
+ <li>Data test for function ResizeBilinear.</li>
+ <li>Data test for function SegmentationShrinkRegion.</li>
+ <li>Data test for function SegmentationFillSingleHoles.</li>
+ <li>Data test for function SegmentationChangeIndex.</li>
+ <li>Data test for function SegmentationPropagate2x2.</li>
+ <li>Data test for function ShiftBilinear.</li>
+ <li>Data test for function GetStatistic.</li>
+ <li>Data test for function GetMoments.</li>
+ <li>Data test for function GetRowSums.</li>
+ <li>Data test for function GetColSums.</li>
+ <li>Data test for function GetAbsDyRowSums.</li>
+ <li>Data test for function GetAbsDxColSums.</li>
+ <li>Data test for function ValueSum.</li>
+ <li>Data test for function SquareSum.</li>
+ <li>Data test for function SobelDxAbsSum.</li>
+ <li>Data test for function SobelDyAbsSum.</li>
+ <li>Data test for function LaplaceAbsSum.</li>
+ <li>Data test for function ValueSquareSum.</li>
+ <li>Data test for function CorrelationSum.</li>
+ <li>Data test for function StretchGray2x2.</li>
+ <li>Data test for function SvmSumLinear.</li>
+ <li>Data test for function SynetEltwiseLayerForward.</li>
+ <li>Data test for function TextureBoostedSaturatedGradient.</li>
+ <li>Data test for function TextureBoostedUv.</li>
+ <li>Data test for function TextureGetDifferenceSum.</li>
+ <li>Data test for function TexturePerformCompensation.</li>
+ <li>Data test for function Yuv444pToBgr.</li>
+ <li>Data test for function Yuv422pToBgr.</li>
+ <li>Data test for function Yuv420pToBgr.</li>
+ <li>Data test for function Yuv444pToHsl.</li>
+ <li>Data test for function Yuv444pToHsv.</li>
+ <li>Data test for function Yuv444pToHue.</li>
+ <li>Data test for function Yuv420pToHue.</li>
+ <li>Data test for function Yuv444pToBgra.</li>
+ <li>Data test for function Yuv422pToBgra.</li>
+ <li>Data test for function Yuv420pToBgra.</li>
+ <li>Data test infrastructure.</li>
+</ul>
+
+<h4>Infrastructure</h4>
+<h5>New features</h5>
+<ul>
+ <li>SIMD_RUNTIME CMake build option.</li>
+</ul>
+
+<a href="#HOME">Home</a>
+<hr/>
+<h3 id="R119">November 1, 2022 (version 5.1.119)</h3>
+<h4>Algorithms</h4>
+<h5>New features</h5>
+<ul>
+ <li>AMX optimizations of class SynetConvolution8iNhwcDirect.</li>
+ <li>AMX optimizations of class SynetMergedConvolution8iCdc.</li>
+ <li>AMX optimizations of class SynetMergedConvolution8iCd.</li>
+ <li>AMX optimizations of class SynetMergedConvolution8iDc.</li>
+</ul>
+<h5>Improving</h5>
+<ul>
+ <li>Optimization of using of memory buffer in class SynetConvolution8iNhwcDirect.</li>
+</ul>
+<h5>Bug fixing</h5>
+<ul>
+ <li>MSVS compiler bug (Windows, Arm64).</li>
+</ul>
+<h5>Removing</h5>
+<ul>
+ <li>AVX-512VNNI optimizations of function SetDepthwise in class SynetConvolution8iNhwcDirect (it is equal to AVX-512BW version).</li>
+</ul>
+
+<h4>Test framework</h4>
+<h5>Removing</h5>
+<ul>
+ <li>Data test for function BayerToBgr.</li>
+ <li>Data test for function BayerToBgra.</li>
+ <li>Data test for function Bgr48pToBgra32.</li>
+ <li>Data test for function Binarization.</li>
+ <li>Data test for function AveragingBinarization.</li>
+ <li>Data test for function ConditionalCount8u.</li>
+ <li>Data test for function ConditionalCount16i.</li>
+ <li>Data test for function ConditionalSum.</li>
+ <li>Data test for function ConditionalSquareSum.</li>
+ <li>Data test for function ConditionalSquareGradientSum.</li>
+ <li>Data test for function ConditionalFill.</li>
+ <li>Data test for function Copy.</li>
+ <li>Data test for function CopyFrame.</li>
+ <li>Data test for function Crc32c.</li>
+ <li>Data test for function DeinterleaveUv.</li>
+ <li>Data test for function DeinterleaveBgr.</li>
+ <li>Data test for function DeinterleaveBgra.</li>
+ <li>Data test for function DetectionHaarDetect32fp.</li>
+ <li>Data test for function DetectionHaarDetect32fi.</li>
+ <li>Data test for function DetectionLbpDetect32fp.</li>
+ <li>Data test for function DetectionLbpDetect32fi.</li>
+ <li>Data test for function DetectionLbpDetect16ip.</li>
+ <li>Data test for function DetectionLbpDetect16ii.</li>
+ <li>Data test for function AbsDifferenceSum.</li>
+ <li>Data test for function AbsDifferenceSumMasked.</li>
+ <li>Data test for function AbsDifferenceSums3x3.</li>
+ <li>Data test for function AbsDifferenceSums3x3Masked.</li>
+ <li>Data test for function SquaredDifferenceSum.</li>
+ <li>Data test for function SquaredDifferenceSumMasked.</li>
+ <li>Data test for function SquaredDifferenceSum32f.</li>
+ <li>Data test for function SquaredDifferenceKahanSum32f.</li>
+ <li>Data test for function CosineDistance32f.</li>
+ <li>Data test for function AlphaBlending.</li>
+ <li>Data test for function AlphaFilling.</li>
+ <li>Data test for function EdgeBackgroundGrowRangeSlow.</li>
+ <li>Data test for function EdgeBackgroundGrowRangeFast.</li>
+ <li>Data test for function EdgeBackgroundIncrementCount.</li>
+ <li>Data test for function EdgeBackgroundAdjustRange.</li>
+ <li>Data test for function EdgeBackgroundAdjustRangeMasked.</li>
+ <li>Data test for function EdgeBackgroundShiftRange.</li>
+ <li>Data test for function EdgeBackgroundShiftRangeMasked.</li>
+</ul>
+
+<a href="#HOME">Home</a> 
+<hr/>
+<h3 id="R118">October 3, 2022 (version 5.1.118)</h3> 
+<h4>Algorithms</h4>
+<h5>New features</h5>
+<ul>
+ <li>Base implementation, SSE4.1 optimizations of RecursiveBilateralFilter engine.</li>
+ <li>Support of ARGB32 format in View.</li>
+ <li>Support of ARGB32 format in function AlphaPremultiply.</li>
+ <li>Support of ARGB32 format in function AlphaUnpremultiply.</li>
+ <li>AVX-512BW optimizations of function TileMatMul8u8i (AMX tile emulation).</li>
+</ul>
+<h5>Improving</h5>
+<ul>
+ <li>Base implementation of class ImagePngLoader.</li>
+</ul>
+<h5>Bug fixing</h5>
+<ul>
+ <li>Build errors on MacOS Arm64.</li>
+ <li>Clang compiler warning (-mfpu=neon -mfpu=neon-fp16).</li>
+ <li>Compiler errors (C++-98 specific).</li>
+</ul>
+
+<h4>Test framework</h4>
+<h5>New features</h5>
+<ul>
+ <li>Tests for verifying functionality of RecursiveBilateralFilter engine.</li>
+</ul>
+<h5>Removing</h5>
+<ul>
+ <li>Data test for function AbsDifference.</li>
+ <li>Data test for function AddFeatureDifference.</li>
+ <li>Data test for function BgraToBgr.</li>
+ <li>Data test for function BgraToGray.</li>
+ <li>Data test for function BgrToGray.</li>
+ <li>Data test for function BgrToHsl.</li>
+ <li>Data test for function BgrToHsv.</li>
+ <li>Data test for function GrayToBgr.</li>
+ <li>Data test for function Int16ToGray.</li>
+ <li>Data test for function BgrToBayer.</li>
+ <li>Data test for function BgraToBayer.</li>
+ <li>Data test for function BgrToBgra.</li>
+ <li>Data test for function GrayToBgra.</li>
+ <li>Data test for function BgraToYuv420p.</li>
+ <li>Data test for function BgraToYuv422p.</li>
+ <li>Data test for function BgraToYuv444p.</li>
+ <li>Data test for function BgrToYuv420p.</li>
+ <li>Data test for function BgrToYuv422p.</li>
+ <li>Data test for function BgrToYuv444p.</li>
+ <li>Data test for function BackgroundGrowRangeSlow.</li>
+ <li>Data test for function BackgroundGrowRangeFast.</li>
+ <li>Data test for function BackgroundIncrementCount.</li>
+ <li>Data test for function BackgroundAdjustRange.</li>
+ <li>Data test for function BackgroundAdjustRangeMasked.</li>
+ <li>Data test for function BackgroundShiftRange.</li>
+ <li>Data test for function BackgroundShiftRangeMasked.</li>
+ <li>Data test for function BackgroundInitMask.</li>
+ <li>Data test for function ContourMetricsMasked.</li>
+ <li>Data test for function ContourAnchors.</li>
+</ul>
+
+<a href="#HOME">Home</a> 
+<hr/>
+<h3 id="R117">September 1, 2022 (version 5.1.117)</h3> 
+<h4>Algorithms</h4>
+<h5>New features</h5>
+<ul>
+ <li>Base implementation, SSE4.1, AVX2 optimizations of function AlphaBlending2x.</li>
+</ul>
+<h5>Bug fixing</h5>
+<ul>
+ <li>Buffer overrun in Base implementation of function SynetFusedLayerForward9.</li>
+ <li>Buffer overrun in SSE4.1 optimization of class SynetScale8i.</li>
+ <li>Buffer overrun in AVX-512BW optimizations of class ResizerNearest.</li>
+ <li>Buffer overrun in AVX-512BW optimizations of class ResizerByteBilinear.</li>
+ <li>Buffer overrun in AVX-512BW optimizations of class ResizerByteBicubic.</li>
+ <li>Buffer overrun in AVX-512BW optimizations of class ResizerByteArea1x1.</li>
+ <li>Buffer overrun in AVX-512BW optimizations of class ResizerByteArea2x2.</li>
+ <li>Buffer overrun in AVX-512BW optimizations of function TransformImage.</li>
+ <li>Error in AVX-512BW optimizations of function Yuv420pToUyvy422.</li>
+ <li>Crash in std::unordered_map after calling of some Simd function (Simd does not clear MMX registers after using).</li>
+ <li>Error (possible negative output values) in AVX-512BW optimizations of function CosineDistancesMxNp16f.</li>
+ <li>Error (possible negative output values) in AVX-512BW optimizations of function CosineDistancesMxNa16f.</li>
+ <li>Error in AVX-512BW optimizations of function TransformImage.</li>
+ <li>Valgrind warning in OutputMemoryStream.</li>
+ <li>Memory leak in Base implementation of class ImagePngLoader.</li>
+</ul>
+<h5>Replacing</h5>
+<ul>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SegmentationChangeIndex.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SegmentationFillSingleHoles.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SegmentationPropagate2x2.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function ShiftBilinear.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SobelDx.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SobelDy.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function ContourAnchors.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SquaredDifferenceSum.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SquaredDifferenceSumMasked.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SquaredDifferenceSum32f.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SquaredDifferenceKahanSum32f.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function GetStatistic.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function GetMoments.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function GetObjectMoments.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function GetRowSums.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function GetColSums.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function GetAbsDyRowSums.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function GetAbsDxColSums.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function ValueSum.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SquareSum.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function ValueSquareSum.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function CorrelationSum.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function StretchGray2x2.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function TextureBoostedSaturatedGradient.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function TextureBoostedUv.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function TextureGetDifferenceSum.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function TexturePerformCompensation.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function Yuv420pToHue.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function Yuv444pToHue.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function Yuva420pToBgra.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function Yuv420pToBgra.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function Yuv420pToBgraV2.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function Yuv422pToBgra.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function Yuv444pToBgra.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function Yuv444pToBgraV2.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SynetPoolingAverage.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SynetScaleLayerForward.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SynetConvert32fTo8u.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SynetReorderImage.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SynetReorderFilter.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SynetFusedLayerForward0.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SynetFusedLayerForward1.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SynetFusedLayerForward2.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SynetFusedLayerForward3.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SynetFusedLayerForward4.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SynetFusedLayerForward8.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SynetFusedLayerForward9.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SynetDeconvolution32fInit.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for class SynetDeconvolution32fGemmNN.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for class SynetDeconvolution32fNhwcDirect2x2.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SynetConvolution32fInit.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for class SynetConvolution32fDepthwiseDotProduct.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for class SynetConvolution32fWinograd.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for class SynetConvolution32fDirectNchw.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for class SynetConvolution32fNhwcDirect.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for class SynetConvolution32fDirectNhwc.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for class SynetConvolution32fGemmNN.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for class SynetMergedConvolution32fCdc.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for class SynetMergedConvolution32fCd.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for class SynetMergedConvolution32fDc.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SynetMergedConvolution32fInit.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SynetAddBias.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SynetEltwiseLayerForward.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SynetInnerProductLayerForward.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SynetLrnLayerCrossChannels.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SynetShuffleLayerForward.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SynetSoftmaxLayerForward.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SynetElu32f.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SynetHardSigmoid32f.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SynetHswish32f.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SynetMish32f.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SynetPreluLayerForward.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SynetRelu32f.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SynetRestrictRange32f.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SynetSigmoid32f.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SynetSoftplus32f.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SynetSwish32f.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SynetTanh32f.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SynetGemm32fNN.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function WinogradKernel1x3Block1x4SetFilter.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function WinogradKernel1x3Block1x4SetInput.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function WinogradKernel1x3Block1x4SetOutput.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function WinogradKernel1x5Block1x4SetFilter.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function WinogradKernel1x5Block1x4SetInput.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function WinogradKernel1x5Block1x4SetOutput.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function WinogradKernel2x2Block2x2SetFilter.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function WinogradKernel2x2Block2x2SetInput.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function WinogradKernel2x2Block2x2SetOutput.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function WinogradKernel2x2Block4x4SetFilter.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function WinogradKernel2x2Block4x4SetInput.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function WinogradKernel2x2Block4x4SetOutput.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function WinogradKernel3x3Block2x2SetFilter.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function WinogradKernel3x3Block2x2SetInput.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function WinogradKernel3x3Block2x2SetOutput.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function WinogradKernel3x3Block3x3SetFilter.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function WinogradKernel3x3Block3x3SetInput.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function WinogradKernel3x3Block3x3SetOutput.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function WinogradKernel3x3Block4x4SetFilter.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function WinogradKernel3x3Block4x4SetInput.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function WinogradKernel3x3Block4x4SetOutput.</li>
+</ul>
+
+<h4>Test framework</h4>
+<h5>New features</h5>
+<ul>
+ <li>Command line argument '-tr=' - number of test execution repeats.</li>
+ <li>Special test for function CosineDistancesMxNp16fSpecialTest.</li>
+ <li>Tests for verifying functionality of function AlphaBlending2x.</li>
+</ul>
+<h5>Bug fixing</h5>
+<ul>
+ <li>Uninitialized source array in VectorNormNp16fAutoTest.</li>
+ <li>Uninitialized source array in CosineDistancesMxNp16fAutoTest.</li>
+ <li>Memory leak in ImageLoadFromMemorySpecialTest.</li>
+</ul>
+
+<h4>Infrastructure</h4>
+<h5>Removing</h5>
+<ul>
+ <li>Project Sse2 for Microsoft Visual Studio 2022.</li>
+ <li>Project Sse2 for Microsoft Visual Studio 2019.</li>
+</ul>
+
+<a href="#HOME">Home</a> 
+<hr/>
+<h3 id="R116">August 15, 2022 (version 5.0.116)</h3> 
+<h4>Algorithms</h4>
+<h5>New features</h5>
+<ul>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW optimizations of function Yuva444pToBgraV2.</li>
+ <li>Function SimdEmpty.</li>
+ <li>Checking of no man's land watermarks in function SimdFree.</li>
+</ul>
+<h5>Improving</h5>
+<ul>
+ <li>AVX-512BW optimizations of AMX tile emulation.</li>
+ <li>AMX optimizations of class SynetConvolution32fBf16Nhwc.</li>
+ <li>AMX optimizations of class SynetMergedConvolution32fBf16Cdc.</li>
+ <li>AMX optimizations of class SynetMergedConvolution32fBf16Cd.</li>
+</ul>
+<h5>Bug fixing</h5>
+<ul>
+ <li>GCC linker error when SIMD_AMX_EMULATE macro is switched on.</li>
+ <li>Error in SSE4.1, AVX2, AVX-512BW, AMX optimizations of class SynetConvolution32fBf16Nhwc.</li>
+ <li>Wrong assert in SSE4.1 and AVX-512BW optimizations of class ResizerNearest.</li>
+ <li>Error in AVX optimizations of class SynetMergedConvolution32fCdc.</li>
+ <li>Error in Base implementation, SSE4.1, AVX2, AVX-512BW, AVX-512BF16, AMX optimizations of class SynetMergedConvolution32fBf16Cdc.</li>
+ <li>External buffer reading overflow in class SynetMergedConvolution32fBf16Cdc.</li>
+ <li>External buffer reading overflow in class SynetMergedConvolution32fBf16Cd.</li>
+ <li>External buffer reading overflow in class SynetMergedConvolution32fBf16Dc.</li>
+ <li>FP32 overflow in SSE2, AVX2, AVX-512BW, NEON optimizations of function Tanh.</li>
+ <li>Error in function Base::SynetConvolution32fGemmNN::ImgToCol.</li>
+ <li>Error in SSE4.1, AVX2 optimizations of class ResizerByteArea2x2.</li>
+ <li>Buffer overrun in SSE4.1, AVX2 optimizations of class ResizerNearest.</li>
+ <li>Buffer overrun in SSE4.1, AVX2 optimizations of class ResizerByteBilinear.</li>
+ <li>Buffer overrun in SSE4.1, AVX2 optimizations of class ResizerByteBicubic.</li>
+ <li>Buffer overrun in SSE4.1, AVX2 optimizations of class ResizerByteArea1x1.</li>
+ <li>Buffer overrun in SSE4.1, AVX2 optimizations of class ResizerByteArea2x2.</li>
+</ul>
+<h5>Replacing</h5>
+<ul>
+ <li>Replace SSE2 optimizations to SSE4.1 for function SvmSumLinear.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function AbsDifference.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function AbsDifferenceSum.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function AbsDifferenceSumMasked.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function AbsDifferenceSums3x3.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function AbsDifferenceSums3x3Masked.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function AbsGradientSaturatedSum.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function AddFeatureDifference.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function AlphaBlending.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function AlphaBlendingUniform.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function AlphaFilling.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function AlphaPremultiply.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function BackgroundGrowRangeSlow.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function BackgroundGrowRangeFast.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function BackgroundIncrementCount.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function BackgroundAdjustRange.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function BackgroundAdjustRangeMasked.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function BackgroundShiftRange.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function BackgroundShiftRangeMasked.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function BackgroundInitMask.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function EdgeBackgroundGrowRangeSlow.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function EdgeBackgroundGrowRangeFast.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function EdgeBackgroundIncrementCount.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function EdgeBackgroundAdjustRange.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function EdgeBackgroundAdjustRangeMasked.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function EdgeBackgroundShiftRangeMasked.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function BayerToBgra.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function BgraToGray.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function BgraToYuv420p.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function BgraToYuv422p.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function BgraToYuv444p.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function BgraToYuva420p.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function BgrToGray.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function RgbaToGray.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function Bgr48pToBgra32.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function Binarization.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function AveragingBinarization.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function ConditionalCount8u.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function ConditionalCount16i.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function ConditionalSum.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function ConditionalSquareSum.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function ConditionalSquareGradientSum.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function ConditionalFill.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function DeinterleaveUv.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function Fill32f.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function FillBgr.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function FillBgra.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function FillPixel.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function CosineDistance32f.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function Float32ToUint8.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function Uint8ToFloat32.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function GaussianBlur3x3.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function GrayToBgra.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function AbsSecondDerivativeHistogram.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function HistogramMasked.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function HistogramConditional.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function HogDirectionHistograms.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function HogDeinterleave.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function HogFilterSeparable.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function Int16ToGray.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function InterferenceIncrement.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function InterferenceIncrementMasked.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function InterferenceDecrement.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function InterferenceDecrementMasked.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function InterleaveUv.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function Laplace.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function LbpEstimate.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function MeanFilter3x3.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function MedianFilterRhomb3x3.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function MedianFilterRhomb5x5.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function MedianFilterSquare3x3.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function MedianFilterSquare5x5.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function NeuralAddConvolution2x2Forward.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function NeuralAddConvolution3x3Forward.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function NeuralAddConvolution4x4Forward.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function NeuralAddConvolution5x5Forward.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function NeuralAddConvolution2x2Backward.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function NeuralAddConvolution3x3Backward.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function NeuralAddConvolution4x4Backward.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function NeuralAddConvolution5x5Backward.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function NeuralAddConvolution2x2Sum.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function NeuralAddConvolution3x3Sum.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function NeuralAddConvolution4x4Sum.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function NeuralAddConvolution5x5Sum.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function NeuralAdaptiveGradientUpdate.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function NeuralAddVectorMultipliedByValue.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function NeuralAddVector.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function NeuralAddValue.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function NeuralConvert.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function NeuralDerivativeRelu.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function NeuralDerivativeSigmoid.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function NeuralDerivativeTanh.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function NeuralPooling1x1Max3x3.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function NeuralPooling2x2Max2x2.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function NeuralPooling2x2Max3x3.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function NeuralPow.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function NeuralProductSum.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function NeuralRoughSigmoid.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function NeuralRoughSigmoid2.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function NeuralRoughTanh.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function NeuralUpdateWeights.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function OperationBinary8u.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function OperationBinary16i.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function VectorProduct.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function ReduceColor2x2.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function ReduceGray2x2.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function ReduceGray3x3.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function ReduceGray4x4.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function ReduceGray5x5.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function Reorder16bit.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function Reorder32bit.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function Reorder64bit.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function ResizeBilinear.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for function ResizerInit.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for class ResizerByteBilinear.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for class ResizerFloatBilinear.</li>
+ <li>Replace SSE2 optimizations to SSE4.1 for class ResizerByteArea1x1.</li>
+</ul>
+
+<h4>Test framework</h4>
+<h5>New features</h5>
+<ul>
+ <li>Tests for verifying functionality of function Yuva444pToBgraV2.</li>
+</ul>
+
+<h4>Infrastructure</h4>
+<h5>New features</h5>
+<ul>
+ <li>Cmake parameter SIMD_AMX_EMULATE.</li>
+</ul>
+
+<h4>Documentation</h4>
+<h5>Improving</h5>
+<ul>
+ <li>Description of function SynetSetInput.</li>
+</ul>
+
+<a href="#HOME">Home</a> 
+<hr/>
+<h3 id="R115">July 1, 2022 (version 5.0.115)</h3> 
+<h4>Algorithms</h4>
+<h5>New features</h5>
+<ul>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW, AVX-512BF16, AMX optimizations of class SynetMergedConvolution32fBf16Cdc.</li>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW, AVX-512BF16, AMX optimizations of class SynetMergedConvolution32fBf16Cd.</li>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW, AVX-512BF16, AMX optimizations of class SynetMergedConvolution32fBf16Dc.</li>
+ <li>AVX-512BF16 extension support.</li>
+ <li>AVX-512BF16 optimizations of function Float32ToBFloat16.</li>
+ <li>AVX-512BF16, AMX optimizations of class SynetConvolution32fBf16Nhwc.</li>
+ <li>AMX extension support.</li>
+ <li>Support of 3D pooling in Base implementation, SSE4.1, AVX2, AVX-512BW optimizations of function SynetPoolingMax32f.</li>
+</ul>
+<h5>Improving</h5>
+<ul>
+ <li>AVX-512BW optimizations of function Fill32f.</li>
+</ul>
+<h5>Renaming</h5>
+<ul>
+ <li>Rename function SynetPoolingForwardAverage to SynetPoolingAverage.</li>
+ <li>Rename function SynetPoolingForwardMax32f to SynetPoolingMax32f.</li>
+ <li>Rename function SynetPoolingForwardMax8u to SynetPoolingMax8u.</li>
+</ul>
+<h5>Replacing</h5>
+<ul>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function SvmSumLinear.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function Fill32f.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for class ResizerNearest.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for class ResizerFloatBilinear.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function SquaredDifferenceSum32f.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function SquaredDifferenceKahanSum32f.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function NeuralConvolutionForward.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function NeuralAddConvolution2x2Forward.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function NeuralAddConvolution2x2Backward.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function NeuralAddConvolution2x2Sum.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function NeuralAddConvolution3x3Forward.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function NeuralAddConvolution3x3Backward.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function NeuralAddConvolution3x3Sum.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function NeuralAddConvolution4x4Forward.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function NeuralAddConvolution4x4Backward.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function NeuralAddConvolution4x4Sum.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function NeuralAddConvolution5x5Forward.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function NeuralAddConvolution5x5Backward.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function NeuralAddConvolution5x5Sum.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function NeuralProductSum.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function NeuralAdaptiveGradientUpdate.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function NeuralPooling1x1Max3x3.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function NeuralPooling2x2Max2x2.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function NeuralPooling2x2Max3x3.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function NeuralUpdateWeights.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function NeuralAddValue.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function NeuralAddVector.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function NeuralAddVectorMultipliedByValue.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function NeuralRoughSigmoid.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function NeuralRoughSigmoid2.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function NeuralDerivativeSigmoid.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function NeuralRoughTanh.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function NeuralDerivativeTanh.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function NeuralDerivativeRelu.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function NeuralPow.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for class SynetConvolution32fGemmNN.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for class SynetConvolution32fGemmNT.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for class SynetConvolution32fWinograd.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for class SynetDeconvolution32fGemmNN.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for class SynetDeconvolution32fNhwcDirect2x2.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function SynetDeconvolution32fInit.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for class SynetInnerProduct32fGemm.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for class SynetInnerProduct32fProd.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function SynetInnerProduct32fInit.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function ConvolutionBiasAndActivation.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function SynetReorderImage.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function SynetReorderFilter.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function Gemm32fNN.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function Gemm32fNT.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function SynetFusedLayerForward0.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function SynetFusedLayerForward1.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function SynetFusedLayerForward2.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function SynetFusedLayerForward3.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function SynetFusedLayerForward4.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function SynetFusedLayerForward8.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function SynetFusedLayerForward9.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function WinogradKernel1x3Block1x4SetFilter.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function WinogradKernel1x3Block1x4SetInput.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function WinogradKernel1x3Block1x4SetOutput.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function WinogradKernel1x5Block1x4SetFilter.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function WinogradKernel1x5Block1x4SetInput.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function WinogradKernel1x5Block1x4SetOutput.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function WinogradKernel2x2Block2x2SetFilter.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function WinogradKernel2x2Block2x2SetInput.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function WinogradKernel2x2Block2x2SetOutput.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function WinogradKernel2x2Block4x4SetFilter.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function WinogradKernel2x2Block4x4SetInput.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function WinogradKernel2x2Block4x4SetOutput.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function WinogradKernel3x3Block2x2SetFilter.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function WinogradKernel3x3Block2x2SetInput.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function WinogradKernel3x3Block2x2SetOutput.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function WinogradKernel3x3Block3x3SetFilter.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function WinogradKernel3x3Block3x3SetInput.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function WinogradKernel3x3Block3x3SetOutput.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function WinogradKernel3x3Block4x4SetFilter.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function WinogradKernel3x3Block4x4SetInput.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function WinogradKernel3x3Block4x4SetOutput.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function SynetElu32f.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function SynetHardSigmoid32f.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function SynetHswish32f.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function SynetMish32f.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function SynetPreluLayerForward.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function SynetRelu32f.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function SynetRestrictRange32f.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function SynetSigmoid32f.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function SynetSoftplus32f.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function SynetSwish32f.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function SynetTanh32f.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function SynetScaleLayerForward.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function SynetPoolingAverage.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function SynetAddBias.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function SynetEltwiseLayerForward.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function SynetInnerProductLayerForward.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function SynetLrnLayerCrossChannels.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function SynetShuffleLayerForward.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function SynetSoftmaxLayerForward.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for function SynetUnaryOperation32fLayerForward.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for class SynetConvolution32fDirectNchw.</li> 
+ <li>Replace AVX-512F optimizations to AVX-512BW for class SynetConvolution32fDirectNhwc.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for class SynetConvolution32fNhwcDirect.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for class SynetMergedConvolution32fCdc.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for class SynetMergedConvolution32fCd.</li>
+ <li>Replace AVX-512F optimizations to AVX-512BW for class SynetMergedConvolution32fDc.</li>
+</ul>
+
+<h4>Infrastructure</h4>
+<h5>New features</h5>
+<ul>
+ <li>Project Avx512bf16 for Microsoft Visual Studio 2022.</li>
+ <li>Project Avx512bf16 for Microsoft Visual Studio 2019.</li>
+ <li>Project Amx for Microsoft Visual Studio 2022.</li>
+ <li>Project Amx for Microsoft Visual Studio 2019.</li>
+</ul>
+<h5>Removing</h5>
+<ul>
+ <li>Project Avx512f for Microsoft Visual Studio 2022.</li>
+ <li>Project Avx512f for Microsoft Visual Studio 2019.</li>
+</ul>
+
+<a href="#HOME">Home</a> 
+<hr/>
+<h3 id="R114">June 1, 2022 (version 4.10.114)</h3> 
+<h4>Algorithms</h4>
+<h5>New features</h5>
+<ul>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW, NEON optimizations of function Yuv420pToUyvy422.</li>
+ <li>AVX-512BW, NEON optimizations of function Uyvy422ToYuv420p.</li>
+ <li>AVX-512BW, NEON optimizations of function Uyvy422ToBgr.</li>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW optimizations of function Float32ToBFloat16.</li>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW optimizations of function BFloat16ToFloat32.</li>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW optimizations of function BFloat16ToFloat32.</li>
+ <li>Base implementation of class SynetConvolution32fBf16Gemm.</li>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW optimizations of class SynetConvolution32fBf16Nhwc.</li>
+ <li>Base implementation of class SynetMergedConvolution32fBf16.</li>
+</ul>
+<h5>Removing</h5>
+<ul>
+ <li>Remove external GEMM function parameter from function SynetConvolution32fInit.</li>
+ <li>Remove external GEMM function parameter from function SynetDeconvolution32fInit.</li>
+</ul>
+
+<h4>Test framework</h4>
+<h5>New features</h5>
+<ul>
+ <li>Tests for verifying functionality of function Yuv420pToUyvy422.</li>
+ <li>Tests for verifying functionality of function Float32ToBFloat16.</li>
+ <li>Tests for verifying functionality of function BFloat16ToFloat32.</li>
+</ul>
+
+<h4>Infrastructure</h4>
+<h5>New features</h5>
+<ul>
+ <li>Project files for Microsoft Visual Studio 2022.</li>
+</ul>
+
+<a href="#HOME">Home</a> 
+<hr/>
+<h3 id="R113">May 4, 2022 (version 4.9.113)</h3> 
+<h4>Algorithms</h4>
+<h5>New features</h5>
+<ul>
+ <li>SSE4.1, AVX2, AVX-512BW optimizations of class ResizerByteArea2x2.</li>
+</ul>
+<h5>Improving</h5>
+<ul>
+ <li>Base implementation of class ResizerByteArea1x1.</li>
+</ul>
+<h5>Bug fixing</h5>
+<ul>
+ <li>Error in Base implementation of class ResizerByteArea2x2.</li>
+ <li>Error in AVX optimizations of class SynetConvolution32fDirectNchw.</li>
+</ul>
+<h5>Removing</h5>
+<ul>
+ <li>SimdSynetCompatibilityFloatZero flag.</li>
+</ul>
+
+<h4>Infrastructure</h4>
+<h5>New features</h5>
+<ul>
+ <li>Git commit ID info in function SimdVersion.</li>
+ <li>Git branch name in function SimdVersion.</li>
+</ul>
+
+<a href="#HOME">Home</a> 
+<hr/>
+<h3 id="R112">April 1, 2022 (version 4.9.112)</h3> 
+<h4>Algorithms</h4>
+<h5>New features</h5>
+<ul>
+ <li>NEON optimizations of function Base64Encode.</li>
+ <li>NEON optimizations of ImageJpegSaver class.</li>
+ <li>NEON optimizations of function Yuv420pSaveAsJpegToMemory.</li>
+ <li>NEON optimizations of function Nv12SaveAsJpegToMemory.</li>
+ <li>Owner method in View structure.</li>
+ <li>Owner method in Frame structure.</li>
+ <li>Capture method in View structure.</li>
+ <li>Capture method in Frame structure.</li>
+ <li>Base implementation of class ResizerByteArea2x2.</li>
+</ul>
+<h5>Bug fixing</h5>
+<ul>
+ <li>MSVS compiler error in AVX-512BW optimizations of function Yuv420pToBgraV2.</li>
+ <li>Error in AVX2 optimizations of function BgraToRgb.</li>
+ <li>Error (aligned reading of unaligned memory) in SSE4.1, AVX2, AVX-512BW optimizations of function InterleaveBgra.</li>
+ <li>Error in function View::ToOcv.</li>
+ <li>Error in View copy constructor (from OpenCV Mat).</li>
+</ul>
+
+<h4>Test framework</h4>
+<h5>Bug fixing</h5>
+<ul>
+ <li>Wrong default ROOT_PATH for Linux.</li>
+ <li>Error in test SynetConvert32fTo8uAutoTest.</li>
+ <li>Special test ResizeYuv420pSpecialTest.</li>
+</ul>
+
+<a href="#HOME">Home</a> 
+<hr/>
+<h3 id="R111">March 3, 2022 (version 4.9.111)</h3> 
+<h4>Algorithms</h4>
+<h5>New features</h5>
+<ul>
+ <li>AVX2, AVX-512BW optimizations of ResizerByteBicubic class.</li>
+ <li>SSE4.1, AVX2, AVX-512BW, NEON optimizations of function Base64Decode.</li>
+ <li>NEON optimizations of function SynetSwish32f.</li>
+ <li>Swish activation function to NEON optimizations of SynetConvolution32f framework.</li>
+ <li>Swish activation function to NEON optimizations of SynetDeconvolution32f framework.</li>
+ <li>Swish activation function to NEON optimizations of SynetMergedConvolution32f framework.</li>
+ <li>Swish activation function to NEON optimizations of SynetConvolution8i framework.</li>
+ <li>Swish activation function to NEON optimizations of SynetMergedConvolution8i framework.</li>
+ <li>NEON optimizations of function Yuv444pToBgraV2.</li>
+ <li>SSE2, AVX2, AVX-512BW, NEON optimizations of function Yuv420pToBgraV2.</li>
+</ul>
+<h5>Improving</h5>
+<ul>
+ <li>SSE4.1 optimizations of ResizerByteBicubic class.</li>
+</ul>
+<h5>Bug fixing</h5>
+<ul>
+ <li>Compiler error in NEON optimizations of function AlphaUnpremultiply.</li>
+ <li>MSVS compiler warnings in SSE4.1, AVX2, AVX-512BW optimizations of function TransformImage.</li>
+</ul>
+
+<a href="#HOME">Home</a> 
+<hr/>
+<h3 id="R110">February 1, 2022 (version 4.9.110)</h3> 
+<h4>Algorithms</h4>
+<h5>New features</h5>
+<ul>
+ <li>Base implementation, SSE4.1 optimizations of ResizerByteBicubic class.</li>
+ <li>Base implementation of function BgraToYuv444pV2.</li>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW optimizations of function Nv12SaveAsJpegToMemory.</li>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW optimizations of function Yuv420pSaveAsJpegToMemory.</li>
+ <li>Base implementation of function BgraToYuv420pV2.</li>
+</ul>
+<h5>Bug fixing</h5>
+<ul>
+ <li>Error in SSE4.1, AVX2, AVX-512BW optimizations of function BgraToRgba.</li>
+ <li>Error in SSE4.1, AVX2 optimizations of function BgraToBgr.</li>
+ <li>Error in SSE4.1, AVX2 optimizations of function BgraToRgb.</li>
+ <li>Error in Base implementation, SSE4.1, AVX2, AVX-512BW, NEON optimizations of function AlphaUnpremultiply.</li>
+</ul>
+
+<h4>Test framework</h4>
+<h5>New features</h5>
+<ul>
+ <li>Tests for verifying functionality of function BgraToYuv444pV2.</li>
+ <li>Tests for verifying functionality of function Nv12SaveAsJpegToMemory.</li>
+ <li>Tests for verifying functionality of function Yuv420pSaveAsJpegToMemory.</li>
+ <li>Tests for verifying functionality of function BgraToYuv420pV2.</li>
+</ul>
+
+<a href="#HOME">Home</a> 
+<hr/>
+<h3 id="R109">January 3, 2022 (version 4.9.109)</h3> 
+<h4>Algorithms</h4>
+<h5>New features</h5>
+<ul>
+ <li>Parameter Uyvy422ToBgr to function.</li>
+ <li>SSE4.1, AVX2 optimizations of function Uyvy422ToBgr.</li>
+ <li>Base implementation, SSE4.1, AVX2 optimizations of function Uyvy422ToYuv420p.</li>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW optimizations of function Base64Encode.</li>
+ <li>Base implementation of function Base64Decode.</li>
+</ul>
+<h5>Improving</h5>
+<ul>
+ <li>AVX2 optimizations of class ResizerNearest for Bgr24, Uv16.</li>
+</ul>
+<h5>Renaming</h5>
+<ul>
+ <li>Function UyvyToBgr to Uyvy422ToBgr.</li>
+</ul>
+
+<h4>Test framework</h4>
+<h5>New features</h5>
+<ul>
+ <li>Tests for verifying functionality of function Uyvy422ToYuv420p.</li>
+ <li>Tests for verifying functionality of function Base64Encode.</li>
+ <li>Tests for verifying functionality of function Base64Decode.</li>
+</ul>
+
+<h4>Documentation</h4>
+<h5>Changes</h5>
+<ul>
+ <li>Updating of developers list.</li>
+</ul>
+
+<a href="#HOME">Home</a> 
+<hr/> 
+
+<center>
+ <a href="2024.html">2024</a> |
+ <a href="2023.html">2023</a> |
+ <a href="2022.html">2022</a> |
+ <a href="2021.html">2021</a> |
+ <a href="2020.html">2020</a> |
+ <a href="2019.html">2019</a> |
+ <a href="2018.html">2018</a> |
+ <a href="2017.html">2017</a> |
+ <a href="2016.html">2016</a> |
+ <a href="2015.html">2015</a> |
+ <a href="2014.html">2014</a> |
+ <a href="2013.html">2013</a>
+</center>
+
+<hr/> 
+
+</td> </tr> </table> </center> </body> </html>
