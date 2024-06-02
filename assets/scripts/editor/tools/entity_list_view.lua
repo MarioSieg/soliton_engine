@@ -1,113 +1,113 @@
 -- Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 local ffi = require 'ffi'
-local profile = require 'jit.p'
 
-local UI = require 'editor.imgui'
+local ui = require 'editor.imgui'
 local icons = require 'editor.icons'
 local scene = require('scene')
 local entity_flags = entity_flags
 
-local EntityListView = {
+local entity_list_view = {
     name = icons.i_cubes .. ' Entities',
     is_visible = ffi.new('bool[1]', true),
-    selectedEntity = nil,
-    entityList = {},
-    entityCounter = 0,
-    showHiddenEntities = ffi.new('bool[1]', false),
-    selectedWantsFocus = false,
+    selected_entity = nil,
+    show_hidden_entities = ffi.new('bool[1]', false),
+
+    _entity_list = {},
+    _entity_acc = 0,
+    _wants_focus = false,
 }
 
-function EntityListView:buildEntityList()
-    self.entityList = {}
+function entity_list_view:build_entity_list()
+    self._entity_list = {}
     scene._entity_query_start()
     for i = 0, scene._entity_query_next() do
         local entity = scene._entity_query_lookup(i)
         if entity:is_valid() then
-            if not self.showHiddenEntities[0] and entity:has_flag(entity_flags.hidden) then
+            if not self.show_hidden_entities[0] and entity:has_flag(entity_flags.hidden) then
                 goto continue
             end
             local name = entity:get_name()
-            local isUnnamed = name == ''
-            if isUnnamed then
+            local is_anonymous = name == ''
+            if is_anonymous then
                 name = 'Unnamed'
             end
             name = icons.i_cube .. ' ' .. name
-            table.insert(self.entityList, { entity, name, isUnnamed })
+            table.insert(self._entity_list, { entity, name, is_anonymous })
             ::continue::
         end
     end
     scene._entity_query_end()
 end
 
-function EntityListView:render()
-    UI.SetNextWindowSize(default_window_size, ffi.C.ImGuiCond_FirstUseEver)
-    if UI.Begin(self.name, self.is_visible) then
-        if UI.Button(icons.i_plus) then
-            self.entityCounter = self.entityCounter + 1
-            local ent = scene.spawn('New entity ' .. self.entityCounter)
-            self.selectedEntity = ent
-            self:buildEntityList()
+function entity_list_view:render()
+    ui.SetNextWindowSize(default_window_size, ffi.C.ImGuiCond_FirstUseEver)
+    if ui.Begin(self.name, self.is_visible) then
+        if ui.Button(icons.i_plus) then
+            self._entity_acc = self._entity_acc + 1
+            local ent = scene.spawn('New entity ' .. self._entity_acc)
+            self.selected_entity = ent
+            self:build_entity_list()
         end
-        UI.SameLine()
-        if UI.Button(icons.i_trash) then
-            if self.selectedEntity then
-                scene.despawn(self.selectedEntity)
-                self.selectedEntity = nil
-                self:buildEntityList()
+        ui.SameLine()
+        if ui.Button(icons.i_trash) then
+            if self.selected_entity then
+                scene.despawn(self.selected_entity)
+                self.selected_entity = nil
+                self:build_entity_list()
             end
         end
-        UI.SameLine()
-        if UI.Button(icons.i_redo_alt) then
-            self:buildEntityList()
+        ui.SameLine()
+        if ui.Button(icons.i_redo_alt) then
+            self:build_entity_list()
         end
-        UI.SameLine()
-        if UI.Checkbox((self.showHiddenEntities[0] and icons.i_eye or icons.i_eye_slash), self.showHiddenEntities) then
-            self:buildEntityList()
+        ui.SameLine()
+        if ui.Checkbox((self.show_hidden_entities[0] and icons.i_eye or icons.i_eye_slash), self.show_hidden_entities) then
+            self:build_entity_list()
         end
-        if UI.IsItemHovered() then
-            UI.SetTooltip('Show hidden entities')
+        if ui.IsItemHovered() then
+            ui.SetTooltip('Show hidden entities')
         end
-        UI.SameLine()
-        UI.Spacing()
-        UI.SameLine()
-        UI.Text('Entities: ' .. #self.entityList)
-        UI.Separator()
-        local size = UI.ImVec2(0, 0)
-        if UI.BeginChild('EntityScrollingRegion', UI.ImVec2(0, -UI.GetFrameHeightWithSpacing()), false, ffi.C.ImGuiWindowFlags_HorizontalScrollbar) then
-            UI.PushStyleVar(ffi.C.ImGuiStyleVar_ItemSpacing, UI.ImVec2(4.0, 1.0))
-            local clipper = UI.ImGuiListClipper()
-            clipper:Begin(#self.entityList, UI.GetTextLineHeightWithSpacing())
+        ui.SameLine()
+        ui.Spacing()
+        ui.SameLine()
+        ui.Text('Entities: ' .. #self._entity_list)
+        ui.Separator()
+        local size = ui.ImVec2(0, 0)
+        if ui.BeginChild('EntityScrollingRegion', ui.ImVec2(0, -ui.GetFrameHeightWithSpacing()), false, ffi.C.ImGuiWindowFlags_HorizontalScrollbar) then
+            ui.PushStyleVar(ffi.C.ImGuiStyleVar_ItemSpacing, ui.ImVec2(4.0, 1.0))
+            local clipper = ui.ImGuiListClipper()
+            clipper:Begin(#self._entity_list, ui.GetTextLineHeightWithSpacing())
             while clipper:Step() do
                 for i = clipper.DisplayStart + 1, clipper.DisplayEnd do
-                    local data = self.entityList[i]
+                    local data = self._entity_list[i]
                     if data[1]:is_valid() then
-                        local isUnnamed = data[3]
-                        local isHidden = data[1]:has_flag(entity_flags.hidden)
-                        local isStatic = data[1]:has_flag(entity_flags.static)
-                        local isTransient = data[1]:has_flag(entity_flags.transient)
-                        local color = isHidden and 0xff888888 or isStatic and 0xffff8888 or isTransient and 0xff88ff88 or 0xffffffff
-                        UI.PushStyleColor_U32(ffi.C.ImGuiCol_Text, color)
-                        if UI.Selectable(data[2], self.selectedEntity == data[1], 0, size) then
-                            self.selectedEntity = data[1]
+                        local is_anonymous = data[3]
+                        local is_hidden = data[1]:has_flag(entity_flags.hidden)
+                        local is_static = data[1]:has_flag(entity_flags.static)
+                        local is_transient = data[1]:has_flag(entity_flags.transient)
+                        local color = is_hidden and 0xff888888 or is_static and 0xffff8888 or is_transient and 0xff88ff88 or 0xffffffff
+                        ui.PushStyleColor_U32(ffi.C.ImGuiCol_Text, color)
+                        if ui.Selectable(data[2], self.selected_entity == data[1], 0, size) then
+                            self.selected_entity = data[1]
                         end
-                        if UI.IsItemHovered() and UI.IsMouseDoubleClicked(0) then
-                            self.selectedEntity = data[1]
-                            self.selectedWantsFocus = true
+                        if ui.IsItemHovered() and ui.IsMouseDoubleClicked(0) then
+                            self.selected_entity = data[1]
+                            self._wants_focus = true
                         end
-                        UI.PopStyleColor()
-                        if UI.IsItemHovered() then
-                            UI.SetTooltip(isUnnamed and 'This entity has no name' or string.format('entity ID: 0x %x', tonumber(data[1].id)))
+                        ui.PopStyleColor()
+                        if ui.IsItemHovered() then
+                            ui.SetTooltip(is_anonymous and 'This entity has no name' or string.format('entity ID: 0x %x', tonumber(data[1].id)))
                         end
                     end
                 end
             end
             clipper:End()
-            UI.PopStyleVar()
-            UI.EndChild()
+            ui.PopStyleVar()
+            ui.EndChild()
         end
     end
-    UI.End()
+    ui.End()
 end
 
-return EntityListView
+return entity_list_view

@@ -135,7 +135,7 @@ function editor.gizmos:draw_gizmos()
     if self.is_ingame then
         return
     end
-    local selected = entity_list_view.selectedEntity
+    local selected = entity_list_view.selected_entity
     if selected and selected:is_valid() then
         debugdraw.enable_gizmo(not selected:has_flag(entity_flags.static))
         debugdraw.draw_gizmo_manipulator(selected, self.gizmo_operation, self.gizmo_mode, self.gizmo_snap[0], self.gizmo_snap_step[0], self.gizmo_obb_color)
@@ -168,7 +168,7 @@ function editor:reset_ui_layout()
 end
 
 function editor:load_scene(file)
-    entity_list_view.selectedEntity = nil
+    entity_list_view.selected_entity = nil
     if file then
         scene.load(file)
     else
@@ -178,13 +178,13 @@ function editor:load_scene(file)
     main_camera:add_flag(entity_flags.hidden + entity_flags.transient) -- hide and don't save
     main_camera:get_component(components.camera):set_fov(80)
     self.camera.target_entity = main_camera
-    entity_list_view:buildEntityList()
+    entity_list_view:build_entity_list()
 end
 
 local player = require 'editor.player' -- TODO: hacky
 
 function editor:start_game_mode()
-    entity_list_view:buildEntityList()
+    entity_list_view:build_entity_list()
     app.window.enable_cursor(false)
     self.camera.enable_movement = false
     self.camera.enable_mouse_look = false
@@ -562,7 +562,7 @@ function editor:_update()
         return
     end
     self.camera:_update()
-    local selectedE = entity_list_view.selectedEntity
+    local selectedE = entity_list_view.selected_entity
     if entity_list_view.selectedWantsFocus and selectedE and selectedE:is_valid() then
         if selectedE:has_component(components.transform) then
             local pos = selectedE:get_component(components.transform):get_position()
@@ -574,7 +574,7 @@ function editor:_update()
         end
         entity_list_view.selectedWantsFocus = false
     end
-    inspector.selectedEntity = selectedE
+    inspector.selected_entity = selectedE
     if inspector.propertiesChanged then
         entity_list_view:buildEntityList()
     end
