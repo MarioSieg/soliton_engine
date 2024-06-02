@@ -76,21 +76,21 @@ function project:create(dir, name)
     end
     local full_path = dir
     if dir:match("([^/]+)$") ~= proj.serialized.name then
-        full_path = full_path..'/'..proj.serialized.name
+        full_path = full_path .. '/' .. proj.serialized.name
     end
     if lfs.attributes(full_path) then
-        error('project already exists: '..full_path)
+        error('project already exists: ' .. full_path)
     end
     lfs.mkdir(full_path)
     if not lfs.attributes(full_path) then
-        error('Failed to create project directory: '..full_path)
+        error('Failed to create project directory: ' .. full_path)
     end
     if not lfs.attributes(template_dir) then
-        error('project template directory not found: '..template_dir)
+        error('project template directory not found: ' .. template_dir)
     end
     copy_dir_recursive(template_dir, full_path)
     if not lfs.attributes(full_path) then
-        error('Failed to copy project template to: '..full_path)
+        error('Failed to copy project template to: ' .. full_path)
     end
     proj.full_path = full_path
     proj:_serialize_config_to_lupro()
@@ -103,20 +103,22 @@ function project:open(lupro_file)
         error('No project file specified')
     end
     if not lfs.attributes(lupro_file) then
-        error('project file not found: '..lupro_file)
+        error('project file not found: ' .. lupro_file)
     end
     if not lupro_file:ends_with('.lupro') then
-        error('Invalid project file extension: '..lupro_file)
+        error('Invalid project file extension: ' .. lupro_file)
     end
     -- Extract project root directory from file path
     local parent_dir = lupro_file:match('^(.*)/')
     if not parent_dir then
-        error('Failed to extract project root directory from: '..lupro_file)
+        error('Failed to extract project root directory from: ' .. lupro_file)
     end
     if not lfs.attributes(parent_dir) then
-        error('project root directory not found: '..parent_dir)
+        error('project root directory not found: ' .. parent_dir)
     end
-    local proj = project:new(parent_dir, nil)
+    local proj = {}
+    setmetatable(proj, { __index = self })
+    proj.full_path = parent_dir
     proj:_deserialize_config_from_lupro()
     proj.serialized.modifier_time_stamp = os.date('%Y-%m-%d %H:%M:%S')
     proj.serialized.load_accumulator = proj.serialized.load_accumulator + 1

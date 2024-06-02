@@ -241,7 +241,7 @@ function editor:draw_main_menu_bar()
                         self.active_project = nil
                     end
                     self.active_project = proj
-                    app.Window.setPlatformTitle(string.format('project: %s', proj.serialized.name))
+                    app.window.set_platform_title(string.format('%s', proj.serialized.name))
                     collectgarbage('collect')
                     collectgarbage('stop')
                 end

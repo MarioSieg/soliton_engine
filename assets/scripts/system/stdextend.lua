@@ -6,7 +6,7 @@ function string.starts_with(str, start)
     return string.sub(str, 1, string.len(start)) == start
 end
 
-function string.end_with(str, ending)
+function string.ends_with(str, ending)
     return ending == '' or string.sub(str, -string.len(ending)) == ending
 end
 
