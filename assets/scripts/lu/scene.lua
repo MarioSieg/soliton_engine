@@ -167,8 +167,7 @@ local function setup_scene_class(id, name)
     print(string.format('Created new scene: %s, id: %x', name, id))
 
     -- Perform one full GC cycle to clean up any garbage
-    collectgarbage('collect')
-    collectgarbage('stop')
+    collectgarbage_full_cycle()
     return true
 end
 

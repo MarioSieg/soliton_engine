@@ -83,6 +83,10 @@ function gmath.clamp(x, lower, upper)
     return gmath.max(lower, gmath.min(upper, x))
 end
 
+function gmath.within_interval(x, lower, upper) -- Note: closed interval
+    return x >= lower and x <= upper
+end
+
 function gmath.is_power_of_2(x)
     return band(x, x - 1) == 0 and x ~= 0
 end

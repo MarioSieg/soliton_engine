@@ -66,8 +66,7 @@ function __on_prepare__()
     print('JIT active ->')
     print(jit.status())
 
-    collectgarbage('collect') -- manually execute GC cycle last time
-    collectgarbage('stop') -- stop the GC, we run it manually every frame
+    collectgarbage_full_cycle()
 end
 
 local clock = os.clock

@@ -4,7 +4,8 @@ local ffi = require 'ffi'
 
 local ui = require 'editor.imgui'
 local icons = require 'editor.icons'
-local scene = require('scene')
+local scene = require 'scene'
+local gmath = require 'gmath'
 local entity_flags = entity_flags
 
 local entity_list_view = {
@@ -15,11 +16,23 @@ local entity_list_view = {
     selected_wants_focus = false,
     
     _entity_list = {},
+    _selected_entity_idx = 1,
     _entity_acc = 0,
 }
 
+function entity_list_view:update_name_of_active_entity()
+    if self.selected_entity ~= nil then
+        local name = self.selected_entity:get_name()
+        if name == '' then
+            name = 'Unnamed'
+        end
+        self._entity_list[self._selected_entity_idx].name = icons.i_cube .. ' ' .. name
+    end
+end
+
 function entity_list_view:build_entity_list()
     self._entity_list = {}
+    self.selected_entity = nil
     scene._entity_query_start()
     for i = 0, scene._entity_query_next() do
         local entity = scene._entity_query_lookup(i)
@@ -38,6 +51,12 @@ function entity_list_view:build_entity_list()
         end
     end
     scene._entity_query_end()
+    if gmath.within_interval(self._selected_entity_idx, 1, #self._entity_list) then
+        self.selected_entity = self._entity_list[self._selected_entity_idx].entity
+    elseif #self._entity_list > 0 then
+        self._selected_entity_idx = #self._entity_list
+        self.selected_entity = self._entity_list[self._selected_entity_idx].entity
+    end
 end
 
 function entity_list_view:render()
@@ -45,9 +64,15 @@ function entity_list_view:render()
     if ui.Begin(self.name, self.is_visible) then
         if ui.Button(icons.i_plus) then
             self._entity_acc = self._entity_acc + 1
-            scene.spawn('New entity ' .. self._entity_acc)
+            local new_ent = scene.spawn('New entity ' .. self._entity_acc)
             self:build_entity_list()
-            self.selected_entity = self._entity_list[#self._entity_list].entity
+            for i = 1, #self._entity_list do
+                if self._entity_list[i].entity.id == new_ent.id then
+                    self._selected_entity_idx = i
+                    self.selected_entity = self._entity_list[i].entity
+                    break
+                end
+            end
         end
         ui.SameLine()
         if ui.Button(icons.i_trash) then
@@ -56,7 +81,13 @@ function entity_list_view:render()
                 self.selected_entity = nil
                 self:build_entity_list()
                 if #self._entity_list ~= 0 then
-                    self.selected_entity = self._entity_list[#self._entity_list].entity
+                    if #self._entity_list >= 1 and self._selected_entity_idx > 1 then
+                        self._selected_entity_idx = self._selected_entity_idx - 1
+                        self.selected_entity = self._entity_list[self._selected_entity_idx].entity
+                    else
+                        self._selected_entity_idx = #self._entity_list
+                        self.selected_entity = self._entity_list[self._selected_entity_idx].entity
+                    end
                 end
             end
         end
@@ -95,10 +126,12 @@ function entity_list_view:render()
                         ui.PushStyleColor_U32(ffi.C.ImGuiCol_Text, color)
                         if ui.Selectable(name, self.selected_entity == ent, 0, size) then
                             self.selected_entity = ent
+                            self._selected_entity_idx = i
                         end
                         if ui.IsItemHovered() and ui.IsMouseDoubleClicked(0) then
                             self.selected_entity = ent
                             self.selected_wants_focus = true
+                            self._selected_entity_idx = i
                         end
                         ui.PopStyleColor()
                         if ui.IsItemHovered() then

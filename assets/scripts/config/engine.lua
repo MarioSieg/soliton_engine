@@ -40,7 +40,6 @@ engine_cfg = {
         enableJit = true, -- Enable Just-In-time compilation.
         enableJitAssemblyDump = false, -- Enable JIT assembly dump to jit.log output file.
         enableFilesystemValidation = true, -- Enable filesystem validation.
-        loadLuaStdlibExtensions = true, -- Load Lua standard library extensions.
         smartFramerateDependentGCStepping = false, -- Enable smart garbage collection stepping based on framerate.
         smartFramerateDependentGCSteppingCollectionLimit = 0.01, -- Variable number of seconds to reserve for other things that won’t be caught in diff (experimented with everywhere from 0.002 to 0.01).
         targetFramerate = 0, -- Target framerate. Set to 0 to set to the display refresh rate.

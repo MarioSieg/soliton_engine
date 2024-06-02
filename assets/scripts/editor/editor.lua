@@ -240,8 +240,7 @@ function editor:draw_main_menu_bar()
                     end
                     self.active_project = proj
                     app.window.set_platform_title(string.format('%s', proj.serialized.name))
-                    collectgarbage('collect')
-                    collectgarbage('stop')
+                    collectgarbage_full_cycle()
                 end
             end
             if ui.MenuItem(icons.i_plus_circle .. ' New scene') then
@@ -328,8 +327,7 @@ function editor:draw_main_menu_bar()
                 end
             end
             if ui.MenuItem('Perform Full GC Cycle') then
-                collectgarbage('collect')
-                collectgarbage('stop')
+                collectgarbage_full_cycle()
             end
             if ui.MenuItem('Show ui Demo Window', nil, self.show_demo_window) then
                 self.show_demo_window = not self.show_demo_window
@@ -575,8 +573,8 @@ function editor:_update()
         entity_list_view.selected_wants_focus = false
     end
     inspector.selected_entity = selected
-    if inspector.properties_changed then
-        entity_list_view:build_entity_list()
+    if inspector.name_changed then
+        entity_list_view:update_name_of_active_entity()
     end
     self:draw_tools()
     self:draw_main_menu_bar()

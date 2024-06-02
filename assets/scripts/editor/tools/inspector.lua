@@ -12,12 +12,15 @@ local vec3 = require 'vec3'
 local entity_flags = entity_flags
 
 local max_name_text_len = 256
+local header_buttons_offset = 60.0 -- TODO: calculate from button sizes
+local inspector_header_flags = ffi.C.ImGuiTreeNodeFlags_DefaultOpen + ffi.C.ImGuiTreeNodeFlags_AllowOverlap
 local inspector = {
     name = icons.i_cogs .. ' Inspector',
     is_visible = ffi.new('bool[1]', true),
     selected_entity = nil,
     properties_changed = false,
-    
+    name_changed = false,
+
     _text_buf = ffi.new('char[?]', 1 + max_name_text_len),
     _vec3_buf = ffi.new('float[3]'),
     _bool_buf = ffi.new('bool[1]'),
@@ -73,7 +76,24 @@ function inspector:_inspect_vec3(name, vec3, step)
 end
 
 function inspector:_component_base_header(instance)
-    if ui.Button(icons.i_trash) then
+    ui.PushStyleColor(ffi.C.ImGuiCol_Border, 0)
+    ui.PushStyleColor(ffi.C.ImGuiCol_Button, 0)
+    ui.SameLine(ui.GetWindowWidth() - header_buttons_offset)
+    if ui.SmallButton(icons.i_trash_restore) then
+        if instance ~= nil then
+            instance:remove()
+            -- TODO: add component again with default values
+            self.properties_changed = true
+            return false
+        else
+            eprint('component instance is nil')
+        end
+    end
+    if ui.IsItemHovered() then
+        ui.SetTooltip('Reset component to default values')
+    end
+    ui.SameLine()
+    if ui.SmallButton(icons.i_trash) then
         if instance ~= nil then
             instance:remove()
             self.properties_changed = true
@@ -85,26 +105,13 @@ function inspector:_component_base_header(instance)
     if ui.IsItemHovered() then
         ui.SetTooltip('Remove component')
     end
-    ui.SameLine()
-    if ui.Button(icons.i_trash_restore .. ' Reset') then
-        if instance ~= nil then
-            instance:remove()
-            -- TODO: add component again with default values
-            self.properties_changed = true
-            return false
-        else
-            eprint('component instance is nil')
-        end
-    end
-    if ui.IsItemHovered() then
-        ui.SetTooltip('Reset component')
-    end
+    ui.PopStyleColor(2)
     return true
 end
 
 function inspector:_inspect_component_transform()
     local tra = self.selected_entity:get_component(components.transform)
-    if ui.CollapsingHeader(icons.i_arrows_alt .. ' Transform', ffi.C.ImGuiTreeNodeFlags_DefaultOpen) then
+    if ui.CollapsingHeader(icons.i_arrows_alt .. ' Transform', inspector_header_flags) then
         if not self._component_base_header(tra) then
             return
         end
@@ -137,6 +144,7 @@ end
 
 function inspector:render()
     self.properties_changed = false
+    self.name_changed = false
     ui.SetNextWindowSize(default_window_size, ffi.C.ImGuiCond_FirstUseEver)
     if ui.Begin(self.name, self.is_visible) then
         local entity = self.selected_entity
@@ -162,8 +170,8 @@ function inspector:render()
                 end
                 ffi.copy(self._text_buf, name)
                 if ui.InputText('Name', self._text_buf, max_name_text_len) then
-                    entity:setName(ffi.string(self._text_buf))
-                    self.properties_changed = true
+                    entity:set_name(ffi.string(self._text_buf))
+                    self.name_changed = true
                 end
                 local hidden = entity:has_flag(entity_flags.hidden)
                 self._bool_buf[0] = hidden
