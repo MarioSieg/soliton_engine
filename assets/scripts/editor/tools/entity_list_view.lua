@@ -33,7 +33,7 @@ function entity_list_view:build_entity_list()
                 name = 'Unnamed'
             end
             name = icons.i_cube .. ' ' .. name
-            table.insert(self._entity_list, { entity, name, is_anonymous })
+            table.insert(self._entity_list, { entity=entity, name=name, is_anonymous=is_anonymous })
             ::continue::
         end
     end
@@ -45,16 +45,19 @@ function entity_list_view:render()
     if ui.Begin(self.name, self.is_visible) then
         if ui.Button(icons.i_plus) then
             self._entity_acc = self._entity_acc + 1
-            local ent = scene.spawn('New entity ' .. self._entity_acc)
-            self.selected_entity = ent
+            scene.spawn('New entity ' .. self._entity_acc)
             self:build_entity_list()
+            self.selected_entity = self._entity_list[#self._entity_list].entity
         end
         ui.SameLine()
         if ui.Button(icons.i_trash) then
-            if self.selected_entity then
-                scene.despawn(self.selected_entity)
+            if self.selected_entity ~= nil then
+                self.selected_entity:despawn()
                 self.selected_entity = nil
                 self:build_entity_list()
+                if #self._entity_list ~= 0 then
+                    self.selected_entity = self._entity_list[#self._entity_list].entity
+                end
             end
         end
         ui.SameLine()
@@ -80,24 +83,26 @@ function entity_list_view:render()
             clipper:Begin(#self._entity_list, ui.GetTextLineHeightWithSpacing())
             while clipper:Step() do
                 for i = clipper.DisplayStart + 1, clipper.DisplayEnd do
-                    local data = self._entity_list[i]
-                    if data[1]:is_valid() then
-                        local is_anonymous = data[3]
-                        local is_hidden = data[1]:has_flag(entity_flags.hidden)
-                        local is_static = data[1]:has_flag(entity_flags.static)
-                        local is_transient = data[1]:has_flag(entity_flags.transient)
+                    local tuple = self._entity_list[i]
+                    local ent = tuple.entity
+                    if ent:is_valid() then
+                        local name = tuple.name
+                        local is_anonymous = tuple.is_anonymous
+                        local is_hidden = ent:has_flag(entity_flags.hidden)
+                        local is_static = ent:has_flag(entity_flags.static)
+                        local is_transient = ent:has_flag(entity_flags.transient)
                         local color = is_hidden and 0xff888888 or is_static and 0xffff8888 or is_transient and 0xff88ff88 or 0xffffffff
                         ui.PushStyleColor_U32(ffi.C.ImGuiCol_Text, color)
-                        if ui.Selectable(data[2], self.selected_entity == data[1], 0, size) then
-                            self.selected_entity = data[1]
+                        if ui.Selectable(name, self.selected_entity == ent, 0, size) then
+                            self.selected_entity = ent
                         end
                         if ui.IsItemHovered() and ui.IsMouseDoubleClicked(0) then
-                            self.selected_entity = data[1]
+                            self.selected_entity = ent
                             self.selected_wants_focus = true
                         end
                         ui.PopStyleColor()
                         if ui.IsItemHovered() then
-                            ui.SetTooltip(is_anonymous and 'This entity has no name' or string.format('entity ID: 0x %x', tonumber(data[1].id)))
+                            ui.SetTooltip(is_anonymous and 'This entity has no name' or string.format('entity ID: 0x %x', ent.id))
                         end
                     end
                 end

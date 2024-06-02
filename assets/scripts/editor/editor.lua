@@ -132,11 +132,11 @@ function editor.gizmos:draw_gizmos()
     elseif self.active_debug_mode[0] == debug_mode.physics_shapes then
         debugdraw.draw_all_physics_shapes()
     end
-    if self.is_ingame then
+    if editor.is_ingame then
         return
     end
     local selected = entity_list_view.selected_entity
-    if selected and selected:is_valid() then
+    if selected ~= nil and selected:is_valid() then
         debugdraw.enable_gizmo(not selected:has_flag(entity_flags.static))
         debugdraw.draw_gizmo_manipulator(selected, self.gizmo_operation, self.gizmo_mode, self.gizmo_snap[0], self.gizmo_snap_step[0], self.gizmo_obb_color)
     end
@@ -361,10 +361,10 @@ function editor:draw_main_menu_bar()
         if ui.Combo('##DebugRenderingMode', self.gizmos.active_debug_mode, debug_mode_names_c, #debug_mode_names) then
             if self.gizmos.active_debug_mode[0] == debug_mode.ui then
                 is_ingame_ui_wireframe_on = not is_ingame_ui_wireframe_on
-                app.hotReloadUI(is_ingame_ui_wireframe_on)
+                app.hot_reload_game_ui(is_ingame_ui_wireframe_on)
             else
                 is_ingame_ui_wireframe_on = false
-                app.hotReloadUI(is_ingame_ui_wireframe_on)
+                app.hot_reload_game_ui(is_ingame_ui_wireframe_on)
             end
         end
         ui.PopItemWidth()
@@ -383,17 +383,17 @@ function editor:draw_main_menu_bar()
         end
         ui.PopStyleColor(3)
         ui.Separator()
-        if ui.Button(icons.i_flame .. ' ui') then
-            app.hotReloadUI()
+        if ui.BeginMenu(icons.i_flame .. ' Hot Reload') then
+            if ui.MenuItem(icons.i_flame .. ' Ingame UI') then
+                app.hot_reload_game_ui(false)
+            end
+            if ui.MenuItem(icons.i_flame .. ' Shaders') then
+                app.hot_reload_shaders()
+            end
+            ui.EndMenu()
         end
         if ui.IsItemHovered() then
-            ui.SetTooltip('Reload game ui')
-        end
-        if ui.Button(icons.i_flame .. ' Shaders') then
-            app.hotReloadShaders()
-        end
-        if ui.IsItemHovered() then
-            ui.SetTooltip('Reload shaders')
+            ui.SetTooltip('Reload specific subsystems')
         end
         ui.Separator()
         ui.Text('FPS: %g', math.floor(time.fps_avg))

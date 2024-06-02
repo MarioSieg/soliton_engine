@@ -30,8 +30,16 @@ namespace graphics {
         for (auto&& entry : recursive_directory_iterator{m_shader_dir}) {
             if (entry.is_directory()) continue;
             const auto& path = entry.path();
-            if (path.has_extension() && path.extension() == ".glsli") // ignore shader headers
+            if (const auto ex = path.extension(); ex == ".glsli" || [&ex] {
+                for (auto&& [sex, _] : vkb::shader::k_extensions) {
+                    if (sex == ex) {
+                        return false;
+                    }
+                }
+                return true;
+            }()) { // ignore shader headers or unknown files
                 continue;
+            }
             auto name = path.filename().string();
             futures.emplace_back(std::async(parallel ? std::launch::async : std::launch::deferred, [](std::string&& name, std::string&& path) {
                 log_info("Compiling shader: {} from {}", name, path);
