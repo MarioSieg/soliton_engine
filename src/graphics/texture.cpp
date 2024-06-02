@@ -13,6 +13,7 @@
 namespace graphics {
     // Textures are converted to this format when native format is not supported on the GPU
     static constexpr bimg::TextureFormat::Enum k_fallback_format = bimg::TextureFormat::RGBA8;
+    static constexpr bool k_enable_simd_cvt = true;
 
     struct texture_format_info final {
         VkFormat fmt {};
@@ -242,7 +243,7 @@ namespace graphics {
             const auto now = std::chrono::high_resolution_clock::now();
 
             bimg::ImageContainer* original = image;
-            if (original->m_format == bimg::TextureFormat::RGB8) { // User faster SIMD for conversion of common formats
+            if (k_enable_simd_cvt && original->m_format == bimg::TextureFormat::RGB8) { // User faster SIMD for conversion of common formats
                 static_assert(k_fallback_format == bimg::TextureFormat::RGBA8, "Fallback format must be RGBA8 for SIMD conversion");
                 image = bimg::imageAlloc(
                     &s_texture_allocator,
@@ -267,18 +268,18 @@ namespace graphics {
                                 src,
                                 src_mip.m_width,
                                 src_mip.m_height,
-                                (src_mip.m_width * src_mip.m_bpp) >> 4,
+                                src_mip.m_width * 3,
                                 dst,
-                                (dst_mip.m_width * dst_mip.m_bpp) >> 4,
+                                dst_mip.m_width * 4,
                                 0xff
                             );
                             SimdBgraToRgba(
                                 dst,
                                 dst_mip.m_width,
                                 dst_mip.m_height,
-                                (dst_mip.m_width * dst_mip.m_bpp) >> 4,
+                                dst_mip.m_width * 4,
                                 dst,
-                                (dst_mip.m_width * dst_mip.m_bpp) >> 4
+                                dst_mip.m_width * 4
                             );
                         } else {
                             log_warn("Failed to get raw data for mip level {}", lod);
