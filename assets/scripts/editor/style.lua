@@ -7,7 +7,7 @@ function Style.setup()
     local style = UI.GetStyle()
     local colors = style.Colors
 
-    local sty = ENGINE_CONFIG.EditorUI.style
+    local sty = engine_cfg.EditorUI.style
     style.WindowPadding     = UI.ImVec2(sty.windowPadding.x, sty.windowPadding.y)
     style.FramePadding      = UI.ImVec2(sty.framePadding.x, sty.framePadding.y)
     style.CellPadding       = UI.ImVec2(sty.cellPadding.x, sty.cellPadding.y)

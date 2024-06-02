@@ -9,6 +9,17 @@
 namespace vkb {
     class shader : public no_copy, public no_move {
     public:
+        static constexpr std::array<const std::pair<std::string_view, std::optional<shaderc_shader_kind>>, 8> k_extensions {
+            std::make_pair(".vert", std::make_optional(shaderc_shader_kind::shaderc_glsl_vertex_shader)),
+            std::make_pair(".tesc", std::make_optional(shaderc_shader_kind::shaderc_glsl_tess_control_shader)),
+            std::make_pair(".tese", std::make_optional(shaderc_shader_kind::shaderc_tess_evaluation_shader)),
+            std::make_pair(".geom", std::make_optional(shaderc_shader_kind::shaderc_geometry_shader)),
+            std::make_pair(".frag", std::make_optional(shaderc_shader_kind::shaderc_fragment_shader)),
+            std::make_pair(".comp", std::make_optional(shaderc_shader_kind::shaderc_compute_shader)),
+            std::make_pair(".glsl", std::make_optional(shaderc_shader_kind::shaderc_glsl_infer_from_source)),
+            std::make_pair(".glsli", std::nullopt)
+        };
+
         [[nodiscard]] static auto compile(
             std::string&& file_name,
             bool keep_assembly = false,

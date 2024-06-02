@@ -4,17 +4,15 @@
 
 #include "../core/subsystem.hpp"
 
-#include "jit/lua.hpp"
+#include <lua.hpp>
 
-#ifndef OPENRESTY_LUAJIT
-#   error "OpenResty's LuaJIT branch is required"
-#endif
-
-#include "bridge/LuaBridge.h"
+#include <LuaBridge/LuaBridge.h>
 
 namespace scripting {
     class scripting_subsystem final : public subsystem {
     public:
+        static constexpr bool use_mimalloc = false; // use mimalloc over LuaJIT's allocator
+
         scripting_subsystem();
         ~scripting_subsystem() override;
 
@@ -37,7 +35,7 @@ namespace scripting {
         static constexpr const char* k_boot_script = "system/__boot__.lua";
         static constexpr const char* k_prepare_hook = "__on_prepare__";
         static constexpr const char* k_tick_hook = "__on_tick__";
-        static constexpr const char* k_engine_config_tab = "ENGINE_CONFIG";
+        static constexpr const char* k_engine_config_tab = "engine_cfg";
         static inline constinit lua_State* m_L = nullptr;
         static inline constinit std::optional<luabridge::LuaRef> m_config_table {};
         std::optional<luabridge::LuaRef> m_on_prepare {}; // Reference to __boot__.lua's on_prepare function

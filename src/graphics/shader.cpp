@@ -162,14 +162,19 @@ namespace vkb {
 
         shaderc_shader_kind kind = shaderc_glsl_infer_from_source;
         if (std::filesystem::path fspath {file_name}; fspath.has_extension()) { // try to infer shader kind from file extension
-            if (std::string ext {fspath.extension().string()}; ext == ".vert") { kind = shaderc_glsl_vertex_shader; }
-            else if (ext == ".tesc") { kind = shaderc_glsl_tess_control_shader; }
-            else if (ext == ".tese") { kind = shaderc_glsl_tess_evaluation_shader; }
-            else if (ext == ".geom") { kind = shaderc_glsl_geometry_shader; }
-            else if (ext == ".frag") { kind = shaderc_glsl_fragment_shader; }
-            else if (ext == ".comp") { kind = shaderc_glsl_compute_shader; }
-            else if (ext == ".glsl") { kind = shaderc_glsl_infer_from_source; }
-            else { log_warn("Unsupported shader file extension: {}", ext); }
+            const std::string ext {fspath.extension().string()};
+            bool found = false;
+            for (auto&& [sex, skind] : k_extensions) {
+                if (ext == sex && skind) {
+                    kind = *skind;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) [[unlikely]] {
+                log_error("Unknown shader file extension: {}", fspath.string());
+                return nullptr;
+            }
         }
 
         if (!preprocess_shader(compiler, file_name, kind, buffer, options, buffer)) [[unlikely]] {

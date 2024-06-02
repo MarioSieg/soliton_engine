@@ -22,6 +22,7 @@ namespace graphics {
 
     auto shader_registry::compile_all(const bool parallel) -> bool {
         using namespace std::filesystem;
+        const auto now = std::chrono::high_resolution_clock::now();
         if (!parallel) [[unlikely]] {
             log_warn("Parallel shader compilation disabled - compiling shaders sequentially");
         }
@@ -30,8 +31,16 @@ namespace graphics {
         for (auto&& entry : recursive_directory_iterator{m_shader_dir}) {
             if (entry.is_directory()) continue;
             const auto& path = entry.path();
-            if (path.has_extension() && path.extension() == ".glsli") // ignore shader headers
+            if (const auto ex = path.extension(); ex == ".glsli" || [&ex] {
+                for (auto&& [sex, _] : vkb::shader::k_extensions) {
+                    if (sex == ex) {
+                        return false;
+                    }
+                }
+                return true;
+            }()) { // ignore shader headers or unknown files
                 continue;
+            }
             auto name = path.filename().string();
             futures.emplace_back(std::async(parallel ? std::launch::async : std::launch::deferred, [](std::string&& name, std::string&& path) {
                 log_info("Compiling shader: {} from {}", name, path);
@@ -48,6 +57,7 @@ namespace graphics {
             }
             m_shaders[name] = std::move(shader);
         }
+        log_info("Compiled {} shaders in {:.03f}ms", m_shaders.size(), std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(std::chrono::high_resolution_clock::now() - now).count());
         return all_successful;
     }
 

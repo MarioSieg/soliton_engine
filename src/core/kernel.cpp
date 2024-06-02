@@ -183,7 +183,15 @@ kernel::~kernel() {
     log_info("Patching core engine config...");
     update_core_config(true);
     assetmgr::shutdown();
+    mi_stats_merge();
+    static std::stringstream ss;
+    mi_stats_print_out(+[](const char* msg, [[maybe_unused]] void* ud) {
+        ss << msg;
+    }, nullptr);
+    log_info("Allocator Stats:\n{}", ss.str());
     log_info("System offline");
+    spdlog::shutdown();
+    std::cout << "Lunam Engine says goodbye :(\n";
     std::cout.flush();
     std::fflush(stdout);
     g_kernel = nullptr;

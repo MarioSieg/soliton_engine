@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------------
--- Lunam Engine Quaternion Math Module
+-- Lunam Engine Quaternion gmath Module
 --
 -- Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 ------------------------------------------------------------------------------
@@ -8,12 +8,12 @@ local ffi = require 'ffi'
 
 local istype = ffi.istype
 local rawnew = ffi.typeof('lua_vec4')
-local sqrt, cos, sin, atan2, min, max, acos, abs = math.sqrt, math.cos, math.sin, math.atan2, math.min, math.max, math.acos, math.abs
+local sqrt, cos, sin, min, max, acos, abs = math.sqrt, math.cos, math.sin, math.min, math.max, math.acos, math.abs
 
-local ZERO = rawnew(0.0, 0.0, 0.0, 0.0)
-local ONE = rawnew(1.0, 1.0, 1.0, 1.0)
-local IDENTITY = rawnew(0.0, 0.0, 0.0, 1.0)
-local EPSILON = 1e-6
+local zero = rawnew(0.0, 0.0, 0.0, 0.0)
+local one = rawnew(1.0, 1.0, 1.0, 1.0)
+local identity = rawnew(0.0, 0.0, 0.0, 1.0)
+local eps = 1e-6
 
 local function new(x, y, z, w)
     x = x or 0.0
@@ -23,31 +23,31 @@ local function new(x, y, z, w)
     return rawnew(x, y, z, w)
 end
 
-local function mag(q)
+local function magnitude(q)
     local x, y, z, w = q.x, q.y, q.z, q.w
     return sqrt(x*x + y*y + z*z + w*w)
 end
 
-local function magSqr(q)
+local function sqr_magnitude(q)
     local x, y, z, w = q.x, q.y, q.z, q.w
     return x*x + y*y + z*z + w*w
 end
 
-local function norm(q)
-    return q / mag(q)
+local function normalize(q)
+    return q / magnitude(q)
 end
 
-local function fromAxisAngle(vec)
+local function from_axis_angle(vec)
     local angle = #vec
     if angle == 0.0 then
-        return IDENTITY
+        return identity
     end
     local axis = vec / angle
     local s, c = sin(angle * 0.5), cos(angle * 0.5)
-    return norm(new(axis.x * s, axis.y * s, axis.z * s, c))
+    return normalize(new(axis.x * s, axis.y * s, axis.z * s, c))
 end
 
-local function fromYawPitchRoll(yaw, pitch, roll)
+local function from_yaw_pitch_roll(yaw, pitch, roll)
     local hp = pitch * 0.5
     local cp = cos(hp)
     local sp = sin(hp)
@@ -72,14 +72,14 @@ end
 
 local function slerp(x, y, i)
     if x == y then return x end
-    local cosHalfTheta = dot(x, y)
-    local halfTheta = acos(cosHalfTheta)
-    local sinHalfTheta = sqrt(1.0 - cosHalfTheta ^ 2.0)
-    return x * (sin((1.0 - i) * halfTheta) / sinHalfTheta) + y * (sin(i * halfTheta) / sinHalfTheta)
+    local cos_theta = dot(x, y)
+    local half_theta = acos(cos_theta)
+    local sin_theta = sqrt(1.0 - cos_theta ^ 2.0)
+    return x * (sin((1.0 - i) * half_theta) / sin_theta) + y * (sin(i * half_theta) / sin_theta)
 end
 
 local function is_norm(q)
-    return abs(magSqr(q) - 1.0) < EPSILON
+    return abs(sqr_magnitude(q) - 1.0) < eps
 end
 
 local function angle(q)
@@ -95,9 +95,9 @@ local function axis(q)
     local len = q.x*q.x + q.y*q.y + q.z*q.z
     if len > 0.0 then
         local inv = 1.0 / sqrt(len)
-        return Vec3.new(q.x * inv, q.y * inv, q.z * inv)
+        return vec3.new(q.x * inv, q.y * inv, q.z * inv)
     else
-        return Vec3.UNIT_X
+        return vec3.unit_x
     end
 end
 
@@ -106,12 +106,12 @@ local function conjugate(q)
 end
 
 local function invert(q)
-    local len = magSqr(q)
+    local len = sqr_magnitude(q)
     if len > 0.0 then
         local inv = 1.0 / len
         return rawnew(-q.x * inv, -q.y * inv, -q.z * inv, q.w * inv)
     else
-        return ZERO
+        return zero
     end
 end
 
@@ -145,24 +145,24 @@ ffi.metatype('lua_vec4', {
         return rawnew(-v.x, -v.y, -v.z, -v.w)
     end,
     __len = function(self)
-        return mag(self)
+        return magnitude(self)
     end,
     __eq = function(x, y)
         local is_vec4 = type(y) == 'cdata' and istype('lua_vec4', y)
         return is_vec4 and x.x == y.x and x.y == y.y and x.z == y.z and x.w == y.w
     end,
     __tostring = function(self)
-        return string.format('Quat(%f, %f, %f, %f)', self.x, self.y, self.z, self.w)
+        return string.format('quat(%f, %f, %f, %f)', self.x, self.y, self.z, self.w)
     end,
 })
 
-local Quat = setmetatable({
+local quat = setmetatable({
     new = new,
-    norm = norm,
-    fromAxisAngle = fromAxisAngle,
-    fromYawPitchRoll = fromYawPitchRoll,
-    mag = mag,
-    magSqr = magSqr,
+    normalize = normalize,
+    from_axis_angle = from_axis_angle,
+    from_yaw_pitch_roll = from_yaw_pitch_roll,
+    magnitude = magnitude,
+    sqr_magnitude = sqr_magnitude,
     dot = dot,
     is_norm = is_norm,
     angle = angle,
@@ -172,13 +172,13 @@ local Quat = setmetatable({
     slerp = slerp,
     unpack = unpack,
     clone = clone,
-    ZERO = ZERO,
-    ONE = ONE,
-    IDENTITY = IDENTITY,
+    zero = zero,
+    one = one,
+    identity = identity,
 }, {
     __call = function(_, x, y, z, w)
         return new(x, y, z, w)
     end,
 })
 
-return Quat
+return quat

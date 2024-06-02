@@ -103,6 +103,11 @@ target_link_libraries(lunam simdutf)
 
 target_include_directories(lunam PRIVATE extern/mINI/src)
 
+add_subdirectory(extern/LuaBridge3)
+target_include_directories(lunam PRIVATE extern/LuaBridge3/Source)
+
+target_include_directories(lunam PRIVATE extern/lunam_jit/src)
+
 # Assimp must be last
 add_subdirectory(extern/assimp)
 target_include_directories(lunam PRIVATE extern/assimp/include)

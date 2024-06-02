@@ -33,14 +33,13 @@ local UI_TESSELATION_PIXEL_ERROR = {
 
 -- Default engine config. Most of the variables are used on initialization and runtime changes might require a restart.
 -- Do NOT rename any variables in here, as some these are accessed from C++ code.
-ENGINE_CONFIG = {
+engine_cfg = {
     General = {
         enableEditor = true, -- Enable the editor.
-        enableDebug = true, -- Enable debug mode.
-        enableJit = true, -- Enable Just-In-Time compilation.
+        enableDebug = true, -- Enable debugdraw mode.
+        enableJit = true, -- Enable Just-In-time compilation.
         enableJitAssemblyDump = false, -- Enable JIT assembly dump to jit.log output file.
         enableFilesystemValidation = true, -- Enable filesystem validation.
-        loadLuaStdlibExtensions = true, -- Load Lua standard library extensions.
         smartFramerateDependentGCStepping = false, -- Enable smart garbage collection stepping based on framerate.
         smartFramerateDependentGCSteppingCollectionLimit = 0.01, -- Variable number of seconds to reserve for other things that won’t be caught in diff (experimented with everywhere from 0.002 to 0.01).
         targetFramerate = 0, -- Target framerate. Set to 0 to set to the display refresh rate.
@@ -71,7 +70,7 @@ ENGINE_CONFIG = {
         shaderDir = 'assets/shaders', -- Shader directory.
         enableParallelShaderCompilation = true, -- Enable shader compilation using multiple threads.
         enableVulkanValidationLayers = true, -- Enable Vulkan validation layers.
-        maxDebugDrawVertices = 1000000, -- Maximum amount of debug draw vertices.
+        maxDebugDrawVertices = 1000000, -- Maximum amount of debugdraw draw vertices.
         fallbackTexture = 'assets/textures/system/error.png', -- Fallback texture when a texture is not found.
         flatNormalTexture = 'assets/textures/system/flatnormal.png', -- Flat normal texture.
         brdfLutSize = 512, -- Width and height of the BRDF integration LUT texture: LUT x LUT.
@@ -94,13 +93,13 @@ ENGINE_CONFIG = {
             frameBorderSize          = 1,
             tabBorderSize            = 1,
             logSliderDeadzone        = 4,
-            windowRounding           = 5,
-            childRounding            = 5,
-            frameRounding            = 5,
-            popupRounding            = 5,
-            scrollbarRounding        = 5,
-            grabRounding             = 5,
-            tabRounding              = 5,
+            windowRounding           = 3,
+            childRounding            = 3,
+            frameRounding            = 3,
+            popupRounding            = 3,
+            scrollbarRounding        = 3,
+            grabRounding             = 3,
+            tabRounding              = 3,
             text                     = {a=1.00, g=1.00, b=1.00, r=1.00},
             textDisabled             = {a=0.50, g=0.50, b=0.50, r=1.00},
             windowBg                 = {a=0.10, g=0.10, b=0.10, r=1.00},
@@ -191,23 +190,31 @@ ENGINE_CONFIG = {
     }
 }
 
-if jit.os == 'OSX' then
-    print('Detected macOS, increasing UI font size...')
-    ENGINE_CONFIG.EditorUI.fontSize = ENGINE_CONFIG.EditorUI.fontSize * 2
+function engine_cfg:adjust_config_for_local_machine()
+    if jit.os == 'OSX' then
+        print('Detected macOS, increasing UI font size...')
+        self.EditorUI.fontSize = self.EditorUI.fontSize * 2
+    end
+
+    if self.Threads.autoPartitionEngineThreadCount then
+        local threads = self.Threads
+        local function clamp(x, min, max)
+            return math.min(math.max(x, min), max)
+        end
+        local cpus = math.max(1, ffi.C.__lu_app_host_get_num_cpus())
+        print(string.format('Detected %d logical cores.', cpus))
+        if threads.maxTotalEngineThreads > 0 then
+            cpus = math.min(cpus, threads.maxTotalEngineThreads)
+        end
+        local ratio = math.max(1, threads.partitionRatio)
+        threads.renderThreads = clamp(math.ceil(cpus / ratio), 1, threads.maxRenderThreads)
+        threads.physicsThreads = clamp(math.ceil(cpus / ratio), 1, threads.maxPhysicsThreads)
+        threads.simThreads = clamp(math.ceil(cpus / ratio), 1, threads.maxSimThreads)
+        print(string.format(
+            'Auto-partitioned engine thread count: Total %d threads, %d render threads, %d physics threads, %d ECS threads.',
+            cpus, threads.renderThreads, threads.physicsThreads, threads.simThreads
+        ))
+    end
 end
 
-if ENGINE_CONFIG.Threads.autoPartitionEngineThreadCount then
-    local function clamp(x, min, max)
-        return math.min(math.max(x, min), max)
-    end
-    local cpus = math.max(1, ffi.C.__lu_app_host_get_num_cpus())
-    print('Detected ' .. cpus .. ' logical cores.')
-    if ENGINE_CONFIG.Threads.maxTotalEngineThreads > 0 then
-        cpus = math.min(cpus, ENGINE_CONFIG.Threads.maxTotalEngineThreads)
-    end
-    local ratio = math.max(1, ENGINE_CONFIG.Threads.partitionRatio)
-    ENGINE_CONFIG.Threads.renderThreads = clamp(math.ceil(cpus / ratio), 1, ENGINE_CONFIG.Threads.maxRenderThreads)
-    ENGINE_CONFIG.Threads.physicsThreads = clamp(math.ceil(cpus / ratio), 1, ENGINE_CONFIG.Threads.maxPhysicsThreads)
-    ENGINE_CONFIG.Threads.simThreads = clamp(math.ceil(cpus / ratio), 1, ENGINE_CONFIG.Threads.maxSimThreads)
-    print('Auto-partitioned engine thread count: ' .. cpus .. ' threads, ' .. ENGINE_CONFIG.Threads.renderThreads .. ' render threads, ' .. ENGINE_CONFIG.Threads.physicsThreads .. ' physics threads, ' .. ENGINE_CONFIG.Threads.simThreads .. ' ECS threads.')
-end
+engine_cfg:adjust_config_for_local_machine() -- Adjust some engine config values for the local machine the engine is running on

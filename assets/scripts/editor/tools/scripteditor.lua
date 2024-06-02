@@ -2,7 +2,7 @@
 
 local ffi = require 'ffi'
 
-local ICONS = require 'editor.icons'
+local icons = require 'editor.icons'
 local UI = require 'editor.imgui'
 
 ffi.cdef [[
@@ -53,7 +53,7 @@ end
 local function readAllText(file)
     local f = io.open(file, "rb")
     if not f then
-        perror('Failed to open file: '..file)
+        eprint('Failed to open file: '..file)
         return ''
     end
     local content = f:read("*all")
@@ -101,8 +101,8 @@ local function newScript(str, name)
 end
 
 local ScriptEditor = {
-    name = ICONS.CODE..' Script Editor',
-    isVisible = ffi.new('bool[1]', true),
+    name = icons.i_code .. ' Script Editor',
+    is_visible = ffi.new('bool[1]', true),
     scripts = {
         ['New'] = (
             function()
@@ -116,8 +116,8 @@ local ScriptEditor = {
 }
 
 function ScriptEditor:render()
-    UI.SetNextWindowSize(WINDOW_SIZE, ffi.C.ImGuiCond_FirstUseEver)
-    if UI.Begin(ScriptEditor.name, ScriptEditor.isVisible, ffi.C.ImGuiWindowFlags_MenuBar) then
+    UI.SetNextWindowSize(default_window_size, ffi.C.ImGuiCond_FirstUseEver)
+    if UI.Begin(ScriptEditor.name, ScriptEditor.is_visible, ffi.C.ImGuiWindowFlags_MenuBar) then
         if UI.BeginMenuBar() then
             if UI.BeginMenu('File') then
                 UI.EndMenu()
@@ -129,7 +129,7 @@ function ScriptEditor:render()
                 UI.EndMenu()
             end
             UI.Separator()
-            if UI.Button(ICONS.PLAY_CIRCLE..' Run') then
+            if UI.Button(icons.i_play_circle .. ' Run') then
                 local script = ScriptEditor.scripts[ScriptEditor.activeScriptName]
                 assert(script)
                 script:exec()

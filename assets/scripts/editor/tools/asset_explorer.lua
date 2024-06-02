@@ -1,32 +1,26 @@
 -- Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 local ffi = require 'ffi'
-local profile = require 'jit.p'
-local inspect = require 'ext.inspect'
 
-local UI = require 'editor.imgui'
-local ICONS = require 'editor.icons'
-local Time = require 'Time'
-local Scene = require 'Scene'
-local EFLAGS = ENTITY_FLAGS
+local ui = require 'editor.imgui'
+local icons = require 'editor.icons'
 
-
-local AssetExplorer = {
-    name = ICONS.FOLDER_TREE..' Asset View',
-    isVisible = ffi.new('bool[1]', true),
-    scanDir = 'assets',
-    assetList = {},
-    dirTree = {},
+local asset_explorer = {
+    name = icons.i_folder_tree .. ' Asset View',
+    is_visible = ffi.new('bool[1]', true),
+    target_scan_dir = 'assets',
+    asset_list = {},
+    dir_tree = {},
     columns = ffi.new('int[1]', 10),
-    columsRange = {min=4, max=15}
+    columns_range = { min = 4, max = 15 }
 }
 
-function AssetExplorer:buildDirTreeRecursive(path, parent)
-    path = path or self.scanDir
-    parent = parent or self.dirTree
+function asset_explorer:build_asset_dir_recursive(path, parent)
+    path = path or self.target_scan_dir
+    parent = parent or self.dir_tree
     for entry in lfs.dir(path) do
         if entry ~= '.' and entry ~= '..' then
-            local fullPath = path..'/'..entry
+            local fullPath = path .. '/' .. entry
             local attr = lfs.attributes(fullPath)
             if attr and (attr.mode == 'directory' or attr.mode == 'file') then
                 local node = {
@@ -36,120 +30,120 @@ function AssetExplorer:buildDirTreeRecursive(path, parent)
                 }
                 table.insert(parent, node)
                 if not node.is_file then
-                    self:buildDirTreeRecursive(fullPath, node.children)
+                    self:build_asset_dir_recursive(fullPath, node.children)
                 end
             end
         end
     end
 end
 
-function AssetExplorer:renderTree()
-    UI.SetNextWindowSize(WINDOW_SIZE, ffi.C.ImGuiCond_FirstUseEver)
+function asset_explorer:draw_asset_tree_structure()
+    ui.SetNextWindowSize(default_window_size, ffi.C.ImGuiCond_FirstUseEver)
     local DIR_COLOR = 0xffaaaaaa
     local FILE_COLOR = 0xffcccccc
-    UI.PushStyleColor(ffi.C.ImGuiCol_Text, DIR_COLOR)
-    if UI.BeginChild('AssetTree') then
-        for i=1, #self.dirTree do
-            local node = self.dirTree[i]
-            if UI.TreeNode(node.name) then
+    ui.PushStyleColor(ffi.C.ImGuiCol_Text, DIR_COLOR)
+    if ui.BeginChild('AssetTree') then
+        for i = 1, #self.dir_tree do
+            local node = self.dir_tree[i]
+            if ui.TreeNode(node.name) then
                 for j=1, #node.children do
                     local child = node.children[j]
                     if child.is_file then
-                        UI.PushStyleColor(ffi.C.ImGuiCol_Text, FILE_COLOR)
-                        UI.Indent()
-                        UI.TextUnformatted(child.name)
-                        UI.Unindent()
-                        UI.PopStyleColor()
+                        ui.PushStyleColor(ffi.C.ImGuiCol_Text, FILE_COLOR)
+                        ui.Indent()
+                        ui.TextUnformatted(child.name)
+                        ui.Unindent()
+                        ui.PopStyleColor()
                     else
-                        if UI.TreeNode(child.name) then
-                            UI.TreePop()
+                        if ui.TreeNode(child.name) then
+                            ui.TreePop()
                         end
                     end
                 end
-                UI.TreePop()
+                ui.TreePop()
             end
         end
     end
-    UI.EndChild()
-    UI.PopStyleColor()
+    ui.EndChild()
+    ui.PopStyleColor()
 end
 
-function AssetExplorer:expandAssetListRecursive(path) -- TODO: Only do for top directory and expand on demand
-    path = path or self.scanDir
+function asset_explorer:expand_asst_list_recursive_within_dir(path) -- TODO: Only do for top directory and expand on demand
+    path = path or self.target_scan_dir
     for entry in lfs.dir(path) do
         if entry ~= '.' and entry ~= '..' then
-            local fullPath = path..'/'..entry
+            local fullPath = path .. '/' .. entry
             local attr = lfs.attributes(fullPath)
             if attr.mode == 'directory' then
-                self:expandAssetListRecursive(fullPath)
+                self:expand_asst_list_recursive_within_dir(fullPath)
             else
                 local fileExt = string.match(entry, '[^.]+$')
                 if not fileExt then
                     fileExt = 'unknown'
                 end
                 
-                table.insert(self.assetList, {
+                table.insert(self.asset_list, {
                     path = fullPath,
                     name = entry,
                     size = attr.size,
                     date = attr.modification,
-                    type = determineAssetType(fileExt)
+                    type = determine_asset_type(fileExt)
                 })
             end
         end
     end
 end
 
-function AssetExplorer:buildAssetList()
-    self.assetList = {}
-    if not lfs.attributes(self.scanDir) then
-        perror('AssetExplorer failed to scan directory: '..self.scanDir)
+function asset_explorer:build_asset_list_in_dir()
+    self.asset_list = {}
+    if not lfs.attributes(self.target_scan_dir) then
+        eprint('asset_explorer failed to scan directory: ' .. self.target_scan_dir)
         return
     end
-    self:expandAssetListRecursive()
+    self:expand_asst_list_recursive_within_dir()
 end
 
-function AssetExplorer:render()
-    UI.SetNextWindowSize(WINDOW_SIZE, ffi.C.ImGuiCond_FirstUseEver)
-    if UI.Begin(self.name, self.isVisible, ffi.C.ImGuiWindowFlags_MenuBar) then
-        if UI.BeginMenuBar() then
-            if UI.SmallButton(ICONS.REDO_ALT..' Refresh') then
+function asset_explorer:render()
+    ui.SetNextWindowSize(default_window_size, ffi.C.ImGuiCond_FirstUseEver)
+    if ui.Begin(self.name, self.is_visible, ffi.C.ImGuiWindowFlags_MenuBar) then
+        if ui.BeginMenuBar() then
+            if ui.SmallButton(icons.i_redo_alt .. ' Refresh') then
                 
             end
-            UI.PushItemWidth(75)
-            UI.SliderInt('##AssetExplorerColumns', self.columns, self.columsRange.min, self.columsRange.max, '%d Cols')
-            UI.PopItemWidth()
-            UI.EndMenuBar()
+            ui.PushItemWidth(75)
+            ui.SliderInt('##AssetExplorerColumns', self.columns, self.columns_range.min, self.columns_range.max, '%d Cols')
+            ui.PopItemWidth()
+            ui.EndMenuBar()
         end
-        self:renderTree()
-        local win_size = UI.GetWindowSize()
+        self:draw_asset_tree_structure()
+        local win_size = ui.GetWindowSize()
         local cols = self.columns[0]
-        local tile = (win_size.x/cols)-32
-        local grid_size = UI.ImVec2(tile, tile)
-        if UI.BeginChild('AssetScrollingRegion', UI.ImVec2(0, -UI.GetFrameHeightWithSpacing()), false, 0) then
-            UI.Columns(cols, 'AssetColumns', true)
+        local tile = (win_size.x / cols) - 32
+        local grid_size = ui.ImVec2(tile, tile)
+        if ui.BeginChild('AssetScrollingRegion', ui.ImVec2(0, -ui.GetFrameHeightWithSpacing()), false, 0) then
+            ui.Columns(cols, 'AssetColumns', true)
             local r = math.random()
-            for i=1, #self.assetList do
-                local asset = self.assetList[i]
+            for i = 1, #self.asset_list do
+                local asset = self.asset_list[i]
                 local label = asset.name
-                UI.PushID(i*r)
+                ui.PushID(i * r)
                 -- Render icon with file name in a grid:
-                if UI.Button(label, grid_size) then
-                    print('Clicked on asset: '..label)
+                if ui.Button(label, grid_size) then
+                    print('Clicked on asset: ' .. label)
                 end
-                if UI.IsItemHovered() then
-                    UI.SetTooltip(label..' - '..ASSET_TYPE_NAMES[asset.type])
+                if ui.IsItemHovered() then
+                    ui.SetTooltip(label .. ' - ' .. asset_type_names[asset.type])
                 end
-                UI.PopID()
-                UI.NextColumn()
+                ui.PopID()
+                ui.NextColumn()
             end
-            UI.EndChild()
+            ui.EndChild()
         end
     end
-    UI.End()
+    ui.End()
 end
 
-AssetExplorer:buildDirTreeRecursive() -- Build directory tree once on start
-AssetExplorer:buildAssetList() -- Build asset list once on start
+asset_explorer:build_asset_dir_recursive() -- Build directory tree once on start
+asset_explorer:build_asset_list_in_dir() -- Build asset list once on start
 
-return AssetExplorer
+return asset_explorer

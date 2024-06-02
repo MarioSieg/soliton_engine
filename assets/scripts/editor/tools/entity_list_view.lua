@@ -1,114 +1,151 @@
 -- Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 local ffi = require 'ffi'
-local profile = require 'jit.p'
 
-local UI = require 'editor.imgui'
-local ICONS = require 'editor.icons'
-local Time = require('Time')
-local Scene = require('Scene')
-local EFLAGS = ENTITY_FLAGS
+local ui = require 'editor.imgui'
+local icons = require 'editor.icons'
+local scene = require 'scene'
+local gmath = require 'gmath'
+local entity_flags = entity_flags
 
-local EntityListView = {
-    name = ICONS.CUBES..' Entities',
-    isVisible = ffi.new('bool[1]', true),
-    selectedEntity = nil,
-    entityList = {},
-    entityCounter = 0,
-    showHiddenEntities = ffi.new('bool[1]', false),
-    selectedWantsFocus = false,
+local entity_list_view = {
+    name = icons.i_cubes .. ' Entities',
+    is_visible = ffi.new('bool[1]', true),
+    selected_entity = nil,
+    show_hidden_entities = ffi.new('bool[1]', false),
+    selected_wants_focus = false,
+    
+    _entity_list = {},
+    _selected_entity_idx = 1,
+    _entity_acc = 0,
 }
 
-function EntityListView:buildEntityList()
-    self.entityList = {}
-    Scene.fullEntityQueryStart()
-    for i=0, Scene.fullEntityQueryNextTable() do
-        local entity = Scene.fullEntityQueryGet(i)
-        if entity:isValid() then
-            if not self.showHiddenEntities[0] and entity:hasFlag(EFLAGS.HIDDEN) then
+function entity_list_view:update_name_of_active_entity()
+    if self.selected_entity ~= nil then
+        local name = self.selected_entity:get_name()
+        if name == '' then
+            name = 'Unnamed'
+        end
+        self._entity_list[self._selected_entity_idx].name = icons.i_cube .. ' ' .. name
+    end
+end
+
+function entity_list_view:build_entity_list()
+    self._entity_list = {}
+    self.selected_entity = nil
+    scene._entity_query_start()
+    for i = 0, scene._entity_query_next() do
+        local entity = scene._entity_query_lookup(i)
+        if entity:is_valid() then
+            if not self.show_hidden_entities[0] and entity:has_flag(entity_flags.hidden) then
                 goto continue
             end
-            local name = entity:getName()
-            local isUnnamed = name == ''
-            if isUnnamed then
+            local name = entity:get_name()
+            local is_anonymous = name == ''
+            if is_anonymous then
                 name = 'Unnamed'
             end
-            name = ICONS.CUBE..' '..name
-            table.insert(self.entityList, {entity, name, isUnnamed})
+            name = icons.i_cube .. ' ' .. name
+            table.insert(self._entity_list, { entity=entity, name=name, is_anonymous=is_anonymous })
             ::continue::
         end
     end
-    Scene.fullEntityQueryEnd()
+    scene._entity_query_end()
+    if gmath.within_interval(self._selected_entity_idx, 1, #self._entity_list) then
+        self.selected_entity = self._entity_list[self._selected_entity_idx].entity
+    elseif #self._entity_list > 0 then
+        self._selected_entity_idx = #self._entity_list
+        self.selected_entity = self._entity_list[self._selected_entity_idx].entity
+    end
 end
 
-function EntityListView:render()
-    UI.SetNextWindowSize(WINDOW_SIZE, ffi.C.ImGuiCond_FirstUseEver)
-    if UI.Begin(self.name, self.isVisible) then
-        if UI.Button(ICONS.PLUS) then
-            self.entityCounter = self.entityCounter + 1
-            local ent = Scene.spawn('New Entity '..self.entityCounter)
-            self.selectedEntity = ent
-            self:buildEntityList()
-        end
-        UI.SameLine()
-        if UI.Button(ICONS.TRASH) then
-            if self.selectedEntity then
-                Scene.despawn(self.selectedEntity)
-                self.selectedEntity = nil
-                self:buildEntityList()
+function entity_list_view:render()
+    ui.SetNextWindowSize(default_window_size, ffi.C.ImGuiCond_FirstUseEver)
+    if ui.Begin(self.name, self.is_visible) then
+        if ui.Button(icons.i_plus) then
+            self._entity_acc = self._entity_acc + 1
+            local new_ent = scene.spawn('New entity ' .. self._entity_acc)
+            self:build_entity_list()
+            for i = 1, #self._entity_list do
+                if self._entity_list[i].entity.id == new_ent.id then
+                    self._selected_entity_idx = i
+                    self.selected_entity = self._entity_list[i].entity
+                    break
+                end
             end
         end
-        UI.SameLine()
-        if UI.Button(ICONS.REDO_ALT) then
-            self:buildEntityList()
+        ui.SameLine()
+        if ui.Button(icons.i_trash) then
+            if self.selected_entity ~= nil then
+                self.selected_entity:despawn()
+                self.selected_entity = nil
+                self:build_entity_list()
+                if #self._entity_list ~= 0 then
+                    if #self._entity_list >= 1 and self._selected_entity_idx > 1 then
+                        self._selected_entity_idx = self._selected_entity_idx - 1
+                        self.selected_entity = self._entity_list[self._selected_entity_idx].entity
+                    else
+                        self._selected_entity_idx = #self._entity_list
+                        self.selected_entity = self._entity_list[self._selected_entity_idx].entity
+                    end
+                end
+            end
         end
-        UI.SameLine()
-        if UI.Checkbox((self.showHiddenEntities[0] and ICONS.EYE or ICONS.EYE_SLASH), self.showHiddenEntities) then
-            self:buildEntityList()
+        ui.SameLine()
+        if ui.Button(icons.i_redo_alt) then
+            self:build_entity_list()
         end
-        if UI.IsItemHovered() then
-            UI.SetTooltip('Show hidden entities')
+        ui.SameLine()
+        if ui.Checkbox((self.show_hidden_entities[0] and icons.i_eye or icons.i_eye_slash), self.show_hidden_entities) then
+            self:build_entity_list()
         end
-        UI.SameLine()
-        UI.Spacing()
-        UI.SameLine()
-        UI.Text('Entities: '..#self.entityList)
-        UI.Separator()
-        local size = UI.ImVec2(0, 0)
-        if UI.BeginChild('EntityScrollingRegion', UI.ImVec2(0, -UI.GetFrameHeightWithSpacing()), false, ffi.C.ImGuiWindowFlags_HorizontalScrollbar) then
-            UI.PushStyleVar(ffi.C.ImGuiStyleVar_ItemSpacing, UI.ImVec2(4.0, 1.0))
-            local clipper = UI.ImGuiListClipper()
-            clipper:Begin(#self.entityList, UI.GetTextLineHeightWithSpacing())
-            while clipper:Step() do -- HOT LOOP
-                for i=clipper.DisplayStart+1, clipper.DisplayEnd do
-                    local data = self.entityList[i]
-                    if data[1]:isValid() then
-                        local isUnnamed = data[3]
-                        local isHidden = data[1]:hasFlag(EFLAGS.HIDDEN)
-                        local isStatic = data[1]:hasFlag(EFLAGS.STATIC)
-                        local isTransient = data[1]:hasFlag(EFLAGS.TRANSIENT)
-                        local color = isHidden and 0xff888888 or isStatic and 0xffff8888 or isTransient and 0xff88ff88 or 0xffffffff
-                        UI.PushStyleColor_U32(ffi.C.ImGuiCol_Text, color)
-                        if UI.Selectable(data[2], self.selectedEntity == data[1], 0, size) then
-                            self.selectedEntity = data[1]
+        if ui.IsItemHovered() then
+            ui.SetTooltip('Show hidden entities')
+        end
+        ui.SameLine()
+        ui.Spacing()
+        ui.SameLine()
+        ui.Text('Entities: ' .. #self._entity_list)
+        ui.Separator()
+        local size = ui.ImVec2(0, 0)
+        if ui.BeginChild('EntityScrollingRegion', ui.ImVec2(0, -ui.GetFrameHeightWithSpacing()), false, ffi.C.ImGuiWindowFlags_HorizontalScrollbar) then
+            ui.PushStyleVar(ffi.C.ImGuiStyleVar_ItemSpacing, ui.ImVec2(4.0, 1.0))
+            local clipper = ui.ImGuiListClipper()
+            clipper:Begin(#self._entity_list, ui.GetTextLineHeightWithSpacing())
+            while clipper:Step() do
+                for i = clipper.DisplayStart + 1, clipper.DisplayEnd do
+                    local tuple = self._entity_list[i]
+                    local ent = tuple.entity
+                    if ent:is_valid() then
+                        local name = tuple.name
+                        local is_anonymous = tuple.is_anonymous
+                        local is_hidden = ent:has_flag(entity_flags.hidden)
+                        local is_static = ent:has_flag(entity_flags.static)
+                        local is_transient = ent:has_flag(entity_flags.transient)
+                        local color = is_hidden and 0xff888888 or is_static and 0xffff8888 or is_transient and 0xff88ff88 or 0xffffffff
+                        ui.PushStyleColor_U32(ffi.C.ImGuiCol_Text, color)
+                        if ui.Selectable(name, self.selected_entity == ent, 0, size) then
+                            self.selected_entity = ent
+                            self._selected_entity_idx = i
                         end
-                        if UI.IsItemHovered() and UI.IsMouseDoubleClicked(0) then
-                            self.selectedEntity = data[1]
-                            self.selectedWantsFocus = true
+                        if ui.IsItemHovered() and ui.IsMouseDoubleClicked(0) then
+                            self.selected_entity = ent
+                            self.selected_wants_focus = true
+                            self._selected_entity_idx = i
                         end
-                        UI.PopStyleColor()
-                        if UI.IsItemHovered() then
-                            UI.SetTooltip(isUnnamed and 'This entity has no name' or 'Entity ID: 0x'..string.format('%x', tonumber(data[1].id)))
+                        ui.PopStyleColor()
+                        if ui.IsItemHovered() then
+                            ui.SetTooltip(is_anonymous and 'This entity has no name' or string.format('entity ID: 0x %x', ent.id))
                         end
                     end
                 end
             end
             clipper:End()
-            UI.PopStyleVar()
-            UI.EndChild()
+            ui.PopStyleVar()
+            ui.EndChild()
         end
     end
-    UI.End()
+    ui.End()
 end
 
-return EntityListView
+return entity_list_view

@@ -8,6 +8,9 @@
 #include <sstream>
 
 namespace scripting {
+    // TODO: This file is a mess, needs to be cleaned up and refactored (use template specializations for each type)
+    // I wrote this in hurry when I had no sleep for 24 hours, so it's a bit of a mess
+
     template <typename T>
     concept is_con_var_type = requires {
         std::is_default_constructible_v<T>;

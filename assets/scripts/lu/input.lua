@@ -1,13 +1,14 @@
 -- Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 ----------------------------------------------------------------------------
--- Input Module - Functions for input handling.
--- @module Input
+-- input Module - Functions for input handling.
+-- @module input
 ------------------------------------------------------------------------------
 
 local ffi = require 'ffi'
+local cpp = ffi.C
 
-ffi.cdef[[
+ffi.cdef [[
     bool __lu_input_is_key_pressed(int key_code);
     bool __lu_input_is_key_released(int key_code);
     bool __lu_input_is_mouse_button_pressed(int mb_code);
@@ -15,181 +16,179 @@ ffi.cdef[[
     lua_vec2 __lu_input_get_mouse_pos(void);
 ]]
 
-local C = ffi.C
-
---- Input Module
-local Input = {
-    --- Keyboard key codes
-    KEYS = {
-        SPACE = 32,
-        APOSTROPHE = 39,
-        COMMA = 44,
-        MINUS = 45,
-        PERIOD = 46,
-        SLASH = 47,
-        KEY0 = 48,
-        KEY1 = 49,
-        KEY2 = 50,
-        KEY3 = 51,
-        KEY4 = 52,
-        KEY5 = 53,
-        KEY6 = 54,
-        KEY7 = 55,
-        KEY8 = 56,
-        KEY9 = 57,
-        SEMICOLON = 59,
-        EQUAL = 61,
-        A = 65,
-        B = 66,
-        C = 67,
-        D = 68,
-        E = 69,
-        F = 70,
-        G = 71,
-        H = 72,
-        I = 73,
-        J = 74,
-        K = 75,
-        L = 76,
-        M = 77,
-        N = 78,
-        O = 79,
-        P = 80,
-        Q = 81,
-        R = 82,
-        S = 83,
-        T = 84,
-        U = 85,
-        V = 86,
-        W = 87,
-        X = 88,
-        Y = 89,
-        Z = 90,
-        LEFT_BRACKET = 91,
-        BACKSLASH = 92,
-        RIGHT_BRACKET = 93,
-        GRAVEACCENT = 96,
-        WORLD1 = 161,
-        WORLD2 = 162,
-        ESCAPE = 256,
-        ENTER = 257,
-        TAB = 258,
-        BACKSPACE = 259,
-        INSERT = 260,
-        DELETE = 261,
-        RIGHT = 262,
-        LEFT = 263,
-        DOWN = 264,
-        UP = 265,
-        PAGEUP = 266,
-        PAGEDOWN = 267,
-        HOME = 268,
-        END = 269,
-        CAPSLOCK = 280,
-        SCROLLLOCK = 281,
-        NUMLOCK = 282,
-        PRINTSCREEN = 283,
-        PAUSE = 284,
-        F1 = 290,
-        F2 = 291,
-        F3 = 292,
-        F4 = 293,
-        F5 = 294,
-        F6 = 295,
-        F7 = 296,
-        F8 = 297,
-        F9 = 298,
-        F10 = 299,
-        F11 = 300,
-        F12 = 301,
-        F13 = 302,
-        F14 = 303,
-        F15 = 304,
-        F16 = 305,
-        F17 = 306,
-        F18 = 307,
-        F19 = 308,
-        F20 = 309,
-        F21 = 310,
-        F22 = 311,
-        F23 = 312,
-        F24 = 313,
-        F25 = 314,
-        KP0 = 320,
-        KP1 = 321,
-        KP2 = 322,
-        KP3 = 323,
-        KP4 = 324,
-        KP5 = 325,
-        KP6 = 326,
-        KP7 = 327,
-        KP8 = 328,
-        KP9 = 329,
-        KEYPAD_DECIMAL = 330,
-        KEYPAD_DIVIDE = 331,
-        KEYPAD_MULTIPLY = 332,
-        KEYPAD_SUBTRACT = 333,
-        KEYPAD_ADD = 334,
-        KEYPAD_ENTER = 335,
-        KEYPAD_EQUAL = 336,
-        LEFT_SHIFT = 340,
-        LEFT_CONTROL = 341,
-        LEFT_ALT = 342,
-        LEFT_SUPER = 343,
-        RIGHT_SHIFT = 344,
-        RIGHT_CONTROL = 345,
-        RIGHT_ALT = 346,
-        RIGHT_SUPER = 347,
-        MENU = 348
+--- input Module
+local input = {
+    --- keyboard key codes
+    keys = {
+        space = 32,
+        apostrophe = 39,
+        comma = 44,
+        minus = 45,
+        period = 46,
+        slash = 47,
+        key0 = 48,
+        key1 = 49,
+        key2 = 50,
+        key3 = 51,
+        key4 = 52,
+        key5 = 53,
+        key6 = 54,
+        key7 = 55,
+        key8 = 56,
+        key9 = 57,
+        semicolon = 59,
+        equal = 61,
+        a = 65,
+        b = 66,
+        cpp = 67,
+        d = 68,
+        e = 69,
+        f = 70,
+        g = 71,
+        h = 72,
+        i = 73,
+        j = 74,
+        k = 75,
+        l = 76,
+        m = 77,
+        n = 78,
+        o = 79,
+        p = 80,
+        q = 81,
+        r = 82,
+        s = 83,
+        t = 84,
+        u = 85,
+        v = 86,
+        w = 87,
+        x = 88,
+        y = 89,
+        z = 90,
+        left_bracket = 91,
+        backslash = 92,
+        right_bracket = 93,
+        graveaccent = 96,
+        world1 = 161,
+        world2 = 162,
+        escape = 256,
+        enter = 257,
+        tab = 258,
+        backspace = 259,
+        insert = 260,
+        delete = 261,
+        right = 262,
+        left = 263,
+        down = 264,
+        up = 265,
+        pageup = 266,
+        pagedown = 267,
+        home = 268,
+        kend = 269,
+        capslock = 280,
+        scrolllock = 281,
+        numlock = 282,
+        printscreen = 283,
+        pause = 284,
+        f1 = 290,
+        f2 = 291,
+        f3 = 292,
+        f4 = 293,
+        f5 = 294,
+        f6 = 295,
+        f7 = 296,
+        f8 = 297,
+        f9 = 298,
+        f10 = 299,
+        f11 = 300,
+        f12 = 301,
+        f13 = 302,
+        f14 = 303,
+        f15 = 304,
+        f16 = 305,
+        f17 = 306,
+        f18 = 307,
+        f19 = 308,
+        f20 = 309,
+        f21 = 310,
+        f22 = 311,
+        f23 = 312,
+        f24 = 313,
+        f25 = 314,
+        kp0 = 320,
+        kp1 = 321,
+        kp2 = 322,
+        kp3 = 323,
+        kp4 = 324,
+        kp5 = 325,
+        kp6 = 326,
+        kp7 = 327,
+        kp8 = 328,
+        kp9 = 329,
+        keypad_decimal = 330,
+        keypad_divide = 331,
+        keypad_multiply = 332,
+        keypad_subtract = 333,
+        keypad_add = 334,
+        keypad_enter = 335,
+        keypad_equal = 336,
+        left_shift = 340,
+        left_control = 341,
+        left_alt = 342,
+        left_super = 343,
+        right_shift = 344,
+        right_control = 345,
+        right_alt = 346,
+        right_super = 347,
+        menu = 348
     },
-    --- Mouse button codes
-    MOUSE_BUTTONS = {
-        MB1 = 0,
-        MB2 = 1,
-        MB3 = 2,
-        MB4 = 3,
-        MB5 = 4,
-        MB6 = 5,
-        MB7 = 6,
-        MB8 = 7,
-        LEFT = 0,
-        RIGHT = 1,
-        MIDDLE = 2
+    --- mouse button codes
+    mouse_buttons = {
+        mb1 = 0,
+        mb2 = 1,
+        mb3 = 2,
+        mb4 = 3,
+        mb5 = 4,
+        mb6 = 5,
+        mb7 = 6,
+        mb8 = 7,
+        left = 0,
+        right = 1,
+        middle = 2
     }
 }
 
 --- Checks if the specified key is pressed.
--- @tparam Input.KEYS key The key code
+-- @tparam input.KEYS key The key code
 -- @treturn bool True if the key is pressed
-function Input.isKeyPressed(key)
-    return C.__lu_input_is_key_pressed(key)
+function input.is_key_pressed(key)
+    return cpp.__lu_input_is_key_pressed(key)
 end
 
 --- Checks if the specified key is released.
--- @tparam Input.KEYS key The key code
+-- @tparam input.KEYS key The key code
 -- @treturn bool True if the key is released
-function Input.isKeyReleased(key)
-    return C.__lu_input_is_key_released(key)
+function input.is_key_released(key)
+    return cpp.__lu_input_is_key_released(key)
 end
 
 --- Checks if the specified mouse button is pressed.
--- @tparam Input.MOUSE_BUTTONS mb The mouse button code
+-- @tparam input.MOUSE_BUTTONS mb The mouse button code
 -- @treturn bool True if the mouse button is pressed
-function Input.isMouseButtonPressed(mb)
-    return C.__lu_input_is_mouse_button_pressed(mb)
+function input.is_mouse_button_pressed(mb)
+    return cpp.__lu_input_is_mouse_button_pressed(mb)
 end
 
 --- Checks if the specified mouse button is released.
--- @tparam Input.MOUSE_BUTTONS mb The mouse button code
+-- @tparam input.MOUSE_BUTTONS mb The mouse button code
 -- @treturn bool True if the mouse button is released
-function Input.isMouseButtonReleased(mb)
-    return C.__lu_input_is_mouse_button_released(mb)
+function input.is_mouse_button_released(mb)
+    return cpp.__lu_input_is_mouse_button_released(mb)
 end
 
 --- Gets the current mouse position.
--- @treturn Math.Vec2 The current mouse position
-function Input.getMousePos()
-    return C.__lu_input_get_mouse_pos()
+-- @treturn gmath.vec2 The current mouse position
+function input.get_mouse_position()
+    return cpp.__lu_input_get_mouse_pos()
 end
 
-return Input
+return input

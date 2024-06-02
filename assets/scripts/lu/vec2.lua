@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------------
--- Lunam Engine Vector2 Math Module
+-- Lunam Engine Vector2 gmath Module
 --
 -- Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 ------------------------------------------------------------------------------
@@ -10,10 +10,10 @@ local istype = ffi.istype
 local rawnew = ffi.typeof('lua_vec2')
 local sqrt, cos, sin, atan2, min, max = math.sqrt, math.cos, math.sin, math.atan2, math.min, math.max
 
-local ZERO = rawnew(0.0, 0.0)
-local ONE = rawnew(1.0, 1.0)
-local UNIT_X = rawnew(1.0, 0.0)
-local UNIT_Y = rawnew(0.0, 1.0)
+local zero = rawnew(0.0, 0.0)
+local one = rawnew(1.0, 1.0)
+local unit_x = rawnew(1.0, 0.0)
+local unit_y = rawnew(0.0, 1.0)
 
 local function new(x, y)
     x = x or 0.0
@@ -21,26 +21,26 @@ local function new(x, y)
     return rawnew(x, y)
 end
 
-local function fromAngle(theta)
+local function from_angle(theta)
     return rawnew(cos(theta), sin(theta))
 end
 
-local function mag(v)
+local function magnitude(v)
     local x, y = v.x, v.y
     return sqrt(x*x + y*y)
 end
 
-local function magSqr(v)
+local function sqr_magnitude(v)
     local x, y = v.x, v.y
     return x*x + y*y
 end
 
-local function dist(v, other)
+local function distance(v, other)
     local x, y = other.x - v.x, other.y - v.y
     return sqrt(x*x + y*y)
 end
 
-local function distSqr(v, other)
+local function sqr_distance(v, other)
     local x, y = other.x - v.x, other.y - v.y
     return x*x + y*y
 end
@@ -51,8 +51,8 @@ local function dot(v, other)
     return xx*ox + yy*oy
 end
 
-local function norm(v)
-    return v / mag(v)
+local function normalize(v)
+    return v / magnitude(v)
 end
 
 local function reflect(v, normal)
@@ -65,7 +65,7 @@ end
 
 local function rotate(v, theta)
     local c, s = cos(theta), sin(theta)
-    return Vec2.new(
+    return vec2.new(
         c*v.x - s*v.y,
         s*v.x + c*v.y
     )
@@ -162,40 +162,40 @@ ffi.metatype('lua_vec2', {
         return rawnew(-v.x, -v.y)
     end,
     __len = function(self)
-        return mag(self)
+        return magnitude(self)
     end,
     __eq = function(x, y)
         local is_vec2 = type(y) == 'cdata' and istype('lua_vec2', y)
         return is_vec2 and x.x == y.x and x.y == y.y
     end,
     __tostring = function(self)
-        return string.format('Vec2(%f, %f)', self.x, self.y)
+        return string.format('vec2(%f, %f)', self.x, self.y)
     end,
 })
 
-local Vec2 = setmetatable({
+local vec2 = setmetatable({
     new = new,
-    fromAngle = fromAngle,
-    mag = mag,
-    magSqr = magSqr,
-    dist = dist,
-    distSqr = distSqr,
+    from_angle = from_angle,
+    magnitude = magnitude,
+    sqr_magnitude = sqr_magnitude,
+    distance = distance,
+    sqr_distance = sqr_distance,
     dot = dot,
-    norm = norm,
+    normalize = normalize,
     reflect = reflect,
     angle = angle,
     rotate = rotate,
     clamp = clamp,
     unpack = unpack,
     clone = clone,
-    ZERO = ZERO,
-    ONE = ONE,
-    UNIT_X = UNIT_X,
-    UNIT_Y = UNIT_Y
+    zero = zero,
+    one = one,
+    unit_x = unit_x,
+    unit_y = unit_y
 }, {
     __call = function(_, x, y)
         return rawnew(x, y)
     end
 })
 
-return Vec2
+return vec2
