@@ -6,6 +6,8 @@
 
 #include "shaderc/shaderc.hpp"
 
+#include <optional>
+
 namespace vkb {
     class shader : public no_copy, public no_move {
     public:
