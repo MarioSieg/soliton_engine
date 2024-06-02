@@ -67,12 +67,14 @@ end
 --- Gets specified component from the entity or adds it if it does not exist.
 -- @tparam components.Component component The component class
 function entity:get_component(component)
+    assert(component ~= nil)
     return component:_new(self.id)
 end
 
 --- Checks if the entity has the specified component.
 -- @tparam components.Component component The component class
 function entity:has_component(component)
+    assert(component ~= nil)
     return component._exists(self.id)
 end
 

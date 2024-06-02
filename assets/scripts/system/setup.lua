@@ -1,10 +1,6 @@
 -- Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 -- Core engine setup which runs after boot but before the hook scripts are loaded.
 
--- Init stack trace plus and redirect debugdraw.traceback to it
-local stp = require 'ext.stack_trace_plus'
-debug.traceback = stp.stacktrace
-
 -- Init protocol logger.
 protocol = {}
 protocol_errs = 0

@@ -90,7 +90,7 @@ namespace scripting {
         luabridge::register_main_thread(m_L);
 
         static constexpr auto print_proxy = [](lua_State* l) -> int {
-            for (int i  = 1; i <= lua_gettop(l); ++i) {
+            for (int i = 1; i <= lua_gettop(l); ++i) {
                 switch (lua_type(l, i)) {
                     case LUA_TNIL: lua_log_info("nil"); break;
                     case LUA_TNUMBER: lua_log_info("{}", lua_tonumber(l, i)); break;

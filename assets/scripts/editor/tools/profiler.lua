@@ -4,30 +4,29 @@ local ffi = require 'ffi'
 local profile = require 'jit.p'
 
 local UI = require 'editor.imgui'
-local ICONS = require 'editor.icons'
+local icons = require 'editor.icons'
 local time = require('time')
 
 local Profiler = {
-    name = ICONS.CLOCK..' Profiler',
+    name = icons.i_clock .. ' Profiler',
     is_visible = ffi.new('bool[1]', true),
     isProfilerRunning = false,
 }
 
 local profileDataRoutines = {}
-local MAX_TIME = 60^2 -- 1 hour
+local MAX_TIME = 60 ^ 2 -- 1 hour
 local TIMINGS = {
     [15]    = '15 Seconds',
     [30]    = '30 Seconds',
     [60]    = '1 Minute',
-    [60*5]  = '5 Minute',
-    [60*10] = '10 Minute',
-    [60^2]  = '1 Hour'
+    [60 * 5]  = '5 Minute',
+    [60 * 10] = '10 Minute',
+    [60 ^ 2]  = '1 Hour'
 }
 local MAX_WIDTH = #TIMINGS[30] * 12.0
 
 local timeLimit = 30
 local startTime = 0.0
-local startTimePtr = ffi.new('double[1]', 0.0)
 local fileProxy = {}
 local fpsPlot = {}
 local fpsAvg = 0.0
@@ -40,12 +39,12 @@ function fileProxy:close() end
 function Profiler:render()
     if UI.Begin(self.name, self.is_visible) then
         if UI.BeginTabBar('##profiler_tabs') then
-            if UI.BeginTabItem(ICONS.BEZIER_CURVE..' Histogram') then
+            if UI.BeginTabItem(icons.i_bezier_curve .. ' Histogram') then
                 local plot_size = UI.ImVec2(WINDOW_SIZE.x, 200.0)
                 UI.PlotHistogram_FloatPtr('##frame_times', time.fps_histogram, time.samples, 0, nil, 0.0, time.fps_avg * 1.5, plot_size)
                 UI.EndTabItem()
             end
-            if UI.BeginTabItem(ICONS.ALARM_CLOCK..' General') then
+            if UI.BeginTabItem(icons.i_alarm_clock .. ' General') then
                 UI.Text(string.format('FPS: %d', time.fps))
                 UI.Text(string.format('FPS avg: %d', time.fps_avg))
                 UI.Text(string.format('FPS min: %d', time.fps_min))
@@ -56,7 +55,7 @@ function Profiler:render()
                 UI.Text(string.format('Frame: %d', time.frame))
                 UI.EndTabItem()
             end
-            if UI.BeginTabItem(ICONS.CODE..' Scripting') then
+            if UI.BeginTabItem(icons.i_code .. ' Scripting') then
                 if self.isProfilerRunning then
                     table.insert(fpsPlot, time.fps)
                     startTime = startTime + time.deltaTime
@@ -72,7 +71,7 @@ function Profiler:render()
                         self.isProfilerRunning = false
                     end
                 end
-                local title = self.isProfilerRunning and ICONS.STOP_CIRCLE..' Stop' or ICONS.PLAY_CIRCLE..' Record'
+                local title = self.isProfilerRunning and icons.i_stop_circle .. ' Stop' or icons.i_play_circle .. ' Record'
                 UI.PushStyleColor_U32(ffi.C.ImGuiCol_Button, self.isProfilerRunning and 0xff000088 or 0xff008800)
                 if UI.Button(title) then
                     if self.isProfilerRunning then
@@ -88,7 +87,7 @@ function Profiler:render()
                 end
                 UI.PopStyleColor()
                 UI.SameLine()
-                UI.Text(string.format(ICONS.STOPWATCH..' %d s', startTime))
+                UI.Text(string.format(icons.i_stopwatch .. ' %d s', startTime))
                 UI.SameLine()
                 UI.PushItemWidth(MAX_WIDTH)
                 if UI.BeginCombo('##profiler_time_limit', TIMINGS[timeLimit] or '?', ffi.C.ImGuiComboFlags_HeightSmall) then

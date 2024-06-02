@@ -62,10 +62,10 @@ local debug_mode = {
     ui = 3
 }
 local debug_mode_names = {
-    icons.ADJUST..' PBR',
-    icons.GLOBE_EUROPE..' Entities',
-    icons.CAR..' Physics',
-    icons.WINDOW_FRAME..' ui',
+    icons.i_adjust .. ' PBR',
+    icons.i_globe_europe .. ' Entities',
+    icons.i_car .. ' Physics',
+    icons.i_window_frame .. ' ui',
 }
 
 if jit.os == 'Windows' then
@@ -225,17 +225,17 @@ function editor:draw_main_menu_bar()
     if ui.BeginMainMenuBar() then
         ui.PopStyleVar(1)
         if ui.BeginMenu('File') then
-            if ui.MenuItem(icons.FOLDER_PLUS..' Create project...') then
+            if ui.MenuItem(icons.i_folder_plus .. ' Create project...') then
                 ui.PushOverrideID(popupid_new_project)
-                ui.OpenPopup(icons.FOLDER_PLUS..' New project')
+                ui.OpenPopup(icons.i_folder_plus .. ' New project')
                 ui.PopID()
             end
-            if ui.MenuItem(icons.FOLDER_OPEN..' Open project...') then
+            if ui.MenuItem(icons.i_folder_open .. ' Open project...') then
                 local selected_file = app.utils.open_file_dialog('Lunam Projects', 'lupro', self.serialized_config.general.prev_project_location)
                 if selected_file and lfs.attributes(selected_file) then
                     self.serialized_config.general.prev_project_location = selected_file:match("(.*[/\\])")
                     local proj = project:open(selected_file)
-                    print('Opened project: '..proj.full_path)
+                    print('Opened project: ' .. proj.full_path)
                     if self.active_project then -- unload previous project
                         self.active_project:unload()
                         self.active_project = nil
@@ -246,17 +246,17 @@ function editor:draw_main_menu_bar()
                     collectgarbage('stop')
                 end
             end
-            if ui.MenuItem(icons.PLUS_CIRCLE..' New scene') then
+            if ui.MenuItem(icons.i_plus_circle .. ' New scene') then
                 self:load_scene(nil)
             end
-            if ui.MenuItem(icons.FILE_IMPORT..' Open scene') then
+            if ui.MenuItem(icons.i_file_import .. ' Open scene') then
                 local selected_file = app.utils.open_file_dialog('3D Scenes', mesh_filter, self.serialized_config.general.prev_scene_location)
                 if selected_file and lfs.attributes(selected_file) then
                     self.serialized_config.general.prev_scene_location = selected_file:match("(.*[/\\])")
                     self:load_scene(selected_file)
                 end
             end
-            if ui.MenuItem(icons.PORTAL_EXIT..' Exit') then
+            if ui.MenuItem(icons.i_portal_exit .. ' Exit') then
                 app.exit()
             end
             ui.EndMenu()
@@ -278,54 +278,54 @@ function editor:draw_main_menu_bar()
                     app.window.fillscreen_enter()
                 end
             end
-            if ui.MenuItem(icons.RULER_TRIANGLE..' Show Grid', nil, self.gizmos.show_grid) then
+            if ui.MenuItem(icons.i_ruler_triangle .. ' Show Grid', nil, self.gizmos.show_grid) then
                 self.gizmos.show_grid = not self.gizmos.show_grid
             end
-            if ui.MenuItem(icons.ARROW_UP..' Show Center Axis', nil, self.gizmos.showCenterAxis) then
+            if ui.MenuItem(icons.i_arrow_up .. ' Show Center Axis', nil, self.gizmos.showCenterAxis) then
                 self.gizmos.showCenterAxis = not self.gizmos.showCenterAxis
             end
             ui.EndMenu()
         end
         if ui.BeginMenu('Help') then
-            if ui.MenuItem(icons.BOOK_OPEN..' Open Lua API Documentation') then
+            if ui.MenuItem(icons.i_book_open .. ' Open Lua API Documentation') then
                 local INDEX = 'docs/lua/index.html'
                 if lfs.attributes(INDEX) then
                     if jit.os == 'Windows' then
-                        pcall(os.execute('start "" '..'"'..INDEX..'"'))
+                        pcall(os.execute('start "" ' .. '"' .. INDEX .. '"'))
                     else
-                        pcall(os.execute('open '..'"'..INDEX..'"'))
+                        pcall(os.execute('open ' .. '"' .. INDEX .. '"'))
                     end
                 else
-                    eprint('Lua API documentation not found: '..INDEX)
+                    eprint('Lua API documentation not found: ' .. INDEX)
                 end
             end
-            if ui.MenuItem(icons.BOOK_OPEN..' Open C++ SDK Documentation') then
+            if ui.MenuItem(icons.i_book_open .. ' Open C++ SDK Documentation') then
                 local INDEX = 'docs/html/index.html'
                 if lfs.attributes(INDEX) then
                     if jit.os == 'Windows' then
-                        pcall(os.execute('start "" '..'"'..INDEX..'"'))
+                        pcall(os.execute('start "" ' .. '"' .. INDEX .. '"'))
                     else
-                        pcall(os.execute('open '..'"'..INDEX..'"'))
+                        pcall(os.execute('open ' .. '"' .. INDEX .. '"'))
                     end
                 else
-                    eprint('C++ SDK documentation not found: '..INDEX)
+                    eprint('C++ SDK documentation not found: ' .. INDEX)
                 end
             end
             if jit.os ~= 'Windows' then -- Currently only POSIX support
-                if ui.MenuItem(icons.COGS..' Regenerate Lua API Documentation') then
+                if ui.MenuItem(icons.i_cogs .. ' Regenerate Lua API Documentation') then
                     local GENERATOR = 'gen_lua_docs.sh'
                     if lfs.attributes(GENERATOR) then
-                        pcall(os.execute('bash '..'"'..GENERATOR..'" &'))
+                        pcall(os.execute('bash ' .. '"' .. GENERATOR .. '" &'))
                     else
-                        eprint('Lua API documentation generator not found: '..GENERATOR)
+                        eprint('Lua API documentation generator not found: ' .. GENERATOR)
                     end
                 end
-                if ui.MenuItem(icons.COGS..' Regenerate C++ API Documentation') then
+                if ui.MenuItem(icons.i_cogs .. ' Regenerate C++ API Documentation') then
                     local GENERATOR = 'gen_cpp_docs.sh'
                     if lfs.attributes(GENERATOR) then
-                        pcall(os.execute('bash '..'"'..GENERATOR..'" &'))
+                        pcall(os.execute('bash ' .. '"' .. GENERATOR .. '" &'))
                     else
-                        eprint('C++ SDK documentation generator not found: '..GENERATOR)
+                        eprint('C++ SDK documentation generator not found: ' .. GENERATOR)
                     end
                 end
             end
@@ -342,14 +342,14 @@ function editor:draw_main_menu_bar()
         ui.PushStyleColor_U32(ffi.C.ImGuiCol_Button, 0)
         ui.PushStyleColor_U32(ffi.C.ImGuiCol_BorderShadow, 0)
         ui.PushStyleColor_U32(ffi.C.ImGuiCol_Border, 0)
-        if ui.SmallButton(self.gizmos.gizmo_mode == debugdraw.gizmo_mode.local_space and icons.HOUSE or icons.GLOBE) then
+        if ui.SmallButton(self.gizmos.gizmo_mode == debugdraw.gizmo_mode.local_space and icons.i_house or icons.i_globe) then
             self.gizmos.gizmo_mode = band(self.gizmos.gizmo_mode + 1, 1)
         end
         ui.PopStyleColor(3)
         if ui.IsItemHovered() then
             ui.SetTooltip('Gizmo Mode: '..(self.gizmos.gizmo_mode == debugdraw.gizmo_mode.local_space and 'Local' or 'World'))
         end
-        ui.Checkbox(icons.RULER, self.gizmos.gizmo_snap)
+        ui.Checkbox(icons.i_ruler, self.gizmos.gizmo_snap)
         if ui.IsItemHovered() then
             ui.SetTooltip('Enable/Disable Gizmo Snap')
         end
@@ -377,7 +377,7 @@ function editor:draw_main_menu_bar()
         ui.PushStyleColor_U32(ffi.C.ImGuiCol_Button, 0)
         ui.PushStyleColor_U32(ffi.C.ImGuiCol_BorderShadow, 0)
         ui.PushStyleColor_U32(ffi.C.ImGuiCol_Border, 0)
-        if ui.SmallButton(self.is_ingame and icons.STOP_CIRCLE or icons.PLAY_CIRCLE) then
+        if ui.SmallButton(self.is_ingame and icons.i_stop_circle or icons.i_play_circle) then
             self:toggle_game_mode()
         end
         if ui.IsItemHovered() then
@@ -385,13 +385,13 @@ function editor:draw_main_menu_bar()
         end
         ui.PopStyleColor(3)
         ui.Separator()
-        if ui.Button(icons.FLAME..' ui') then
+        if ui.Button(icons.i_flame .. ' ui') then
             app.hotReloadUI()
         end
         if ui.IsItemHovered() then
             ui.SetTooltip('Reload game ui')
         end
-        if ui.Button(icons.FLAME..' Shaders') then
+        if ui.Button(icons.i_flame .. ' Shaders') then
             app.hotReloadShaders()
         end
         if ui.IsItemHovered() then
@@ -402,7 +402,7 @@ function editor:draw_main_menu_bar()
         if profiler.isProfilerRunning then
             ui.Separator()
             ui.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff0000ff)
-            ui.TextUnformatted(icons.STOPWATCH)
+            ui.TextUnformatted(icons.i_stopwatch)
             ui.PopStyleColor()
             if ui.IsItemHovered() and ui.BeginTooltip() then
                 ui.TextUnformatted('profiler is running')
@@ -415,43 +415,43 @@ end
 
 function editor:draw_pending_popups()
     ui.PushOverrideID(popupid_new_project)
-    if ui.BeginPopupModal(icons.FOLDER_PLUS..' New project') then
+    if ui.BeginPopupModal(icons.i_folder_plus .. ' New project') then
         if not new_project_tmp then
             new_project_tmp = ffi.new('char[?]', new_project_max_math)
         end
         if not is_creating_project then
             local defaultName = 'my project'
-            created_project_dir = default_project_location..defaultName
+            created_project_dir = default_project_location .. defaultName
             ffi.copy(new_project_tmp, defaultName)
             is_creating_project = true
         end
         if ui.InputText('##ProjName', new_project_tmp, new_project_max_math) then
-            created_project_dir = default_project_location..ffi.string(new_project_tmp)
+            created_project_dir = default_project_location .. ffi.string(new_project_tmp)
         end
         ui.SameLine()
         if ui.Button('...') then
             local dir = app.utils.open_folder_dialog(nil)
             if dir and lfs.attributes(dir) then
                 default_project_location = dir
-                created_project_dir = default_project_location..ffi.string(new_project_tmp)
+                created_project_dir = default_project_location .. ffi.string(new_project_tmp)
             end
         end
         ui.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff999999)
-        ui.Text('Final path: '..created_project_dir)
+        ui.Text('Final path: ' .. created_project_dir)
         ui.PopStyleColor()
         if ui.Button('Create ') then
             local name = ffi.string(new_project_tmp)
             local dir = default_project_location
             if dir and name and #name ~= 0 then
-                print('Creating project on disk: '..dir)
+                print('Creating project on disk: ' .. dir)
                 local success, err = pcall(function() project:create(dir, name) end)
                 if success then
                     ui.CloseCurrentPopup()
                     new_project_tmp[0] = 0
                     is_creating_project = false
-                    print('project created: '..dir)
+                    print('project created: ' .. dir)
                 else
-                    eprint('Failed to create project: '..err)
+                    eprint('Failed to create project: ' .. err)
                 end
             else
                 eprint('Invalid project name or directory')
@@ -568,8 +568,8 @@ function editor:_update()
     if entity_list_view.selectedWantsFocus and selectedE and selectedE:is_valid() then
         if selectedE:has_component(components.transform) then
             local pos = selectedE:get_component(components.transform):get_position()
-            pos.z = pos.z - 1.0
             if pos then
+                pos.z = pos.z - 1.0
                 self.camera._position = pos
                 -- self.camera._rotation = quat.IDENTITY
             end

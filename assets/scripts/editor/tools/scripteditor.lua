@@ -2,7 +2,7 @@
 
 local ffi = require 'ffi'
 
-local ICONS = require 'editor.icons'
+local icons = require 'editor.icons'
 local UI = require 'editor.imgui'
 
 ffi.cdef [[
@@ -101,7 +101,7 @@ local function newScript(str, name)
 end
 
 local ScriptEditor = {
-    name = ICONS.CODE..' Script Editor',
+    name = icons.i_code .. ' Script Editor',
     is_visible = ffi.new('bool[1]', true),
     scripts = {
         ['New'] = (
@@ -129,7 +129,7 @@ function ScriptEditor:render()
                 UI.EndMenu()
             end
             UI.Separator()
-            if UI.Button(ICONS.PLAY_CIRCLE..' Run') then
+            if UI.Button(icons.i_play_circle .. ' Run') then
                 local script = ScriptEditor.scripts[ScriptEditor.activeScriptName]
                 assert(script)
                 script:exec()

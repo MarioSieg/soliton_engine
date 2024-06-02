@@ -5,20 +5,16 @@ local profile = require 'jit.p'
 local inspect = require 'ext.inspect'
 
 local UI = require 'editor.imgui'
-local ICONS = require 'editor.icons'
-local time = require 'time'
-local scene = require 'scene'
-local EFLAGS = ENTITY_FLAGS
-
+local icons = require 'editor.icons'
 
 local AssetExplorer = {
-    name = ICONS.FOLDER_TREE..' Asset View',
+    name = icons.i_folder_tree .. ' Asset View',
     is_visible = ffi.new('bool[1]', true),
     scanDir = 'assets',
     assetList = {},
     dirTree = {},
     columns = ffi.new('int[1]', 10),
-    columsRange = {min=4, max=15}
+    columsRange = { min = 4, max = 15 }
 }
 
 function AssetExplorer:buildDirTreeRecursive(path, parent)
@@ -26,7 +22,7 @@ function AssetExplorer:buildDirTreeRecursive(path, parent)
     parent = parent or self.dirTree
     for entry in lfs.dir(path) do
         if entry ~= '.' and entry ~= '..' then
-            local fullPath = path..'/'..entry
+            local fullPath = path .. '/' .. entry
             local attr = lfs.attributes(fullPath)
             if attr and (attr.mode == 'directory' or attr.mode == 'file') then
                 local node = {
@@ -49,7 +45,7 @@ function AssetExplorer:renderTree()
     local FILE_COLOR = 0xffcccccc
     UI.PushStyleColor(ffi.C.ImGuiCol_Text, DIR_COLOR)
     if UI.BeginChild('AssetTree') then
-        for i=1, #self.dirTree do
+        for i = 1, #self.dirTree do
             local node = self.dirTree[i]
             if UI.TreeNode(node.name) then
                 for j=1, #node.children do
@@ -78,7 +74,7 @@ function AssetExplorer:expandAssetListRecursive(path) -- TODO: Only do for top d
     path = path or self.scanDir
     for entry in lfs.dir(path) do
         if entry ~= '.' and entry ~= '..' then
-            local fullPath = path..'/'..entry
+            local fullPath = path .. '/' .. entry
             local attr = lfs.attributes(fullPath)
             if attr.mode == 'directory' then
                 self:expandAssetListRecursive(fullPath)
@@ -103,7 +99,7 @@ end
 function AssetExplorer:buildAssetList()
     self.assetList = {}
     if not lfs.attributes(self.scanDir) then
-        eprint('AssetExplorer failed to scan directory: '..self.scanDir)
+        eprint('AssetExplorer failed to scan directory: ' .. self.scanDir)
         return
     end
     self:expandAssetListRecursive()
@@ -113,7 +109,7 @@ function AssetExplorer:render()
     UI.SetNextWindowSize(WINDOW_SIZE, ffi.C.ImGuiCond_FirstUseEver)
     if UI.Begin(self.name, self.is_visible, ffi.C.ImGuiWindowFlags_MenuBar) then
         if UI.BeginMenuBar() then
-            if UI.SmallButton(ICONS.REDO_ALT..' Refresh') then
+            if UI.SmallButton(icons.i_redo_alt .. ' Refresh') then
                 
             end
             UI.PushItemWidth(75)
@@ -124,21 +120,21 @@ function AssetExplorer:render()
         self:renderTree()
         local win_size = UI.GetWindowSize()
         local cols = self.columns[0]
-        local tile = (win_size.x/cols)-32
+        local tile = (win_size.x / cols) - 32
         local grid_size = UI.ImVec2(tile, tile)
         if UI.BeginChild('AssetScrollingRegion', UI.ImVec2(0, -UI.GetFrameHeightWithSpacing()), false, 0) then
             UI.Columns(cols, 'AssetColumns', true)
             local r = math.random()
-            for i=1, #self.assetList do
+            for i = 1, #self.assetList do
                 local asset = self.assetList[i]
                 local label = asset.name
-                UI.PushID(i*r)
+                UI.PushID(i * r)
                 -- Render icon with file name in a grid:
                 if UI.Button(label, grid_size) then
-                    print('Clicked on asset: '..label)
+                    print('Clicked on asset: ' .. label)
                 end
                 if UI.IsItemHovered() then
-                    UI.SetTooltip(label..' - '..ASSET_TYPE_NAMES[asset.type])
+                    UI.SetTooltip(label .. ' - ' .. ASSET_TYPE_NAMES[asset.type])
                 end
                 UI.PopID()
                 UI.NextColumn()
