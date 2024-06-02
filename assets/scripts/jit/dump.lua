@@ -552,7 +552,12 @@ local recdepth = 0
 local function fmterr(err, info)
   if type(err) == "number" then
     if type(info) == "function" then info = fmtfunc(info) end
-    err = format(vmdef.traceerr[err], info)
+    local fmt = vmdef.traceerr[err]
+    if fmt == "NYI: bytecode %s" then
+      local oidx = 6 * info
+      info = sub(vmdef.bcnames, oidx+1, oidx+6)
+    end
+    err = format(fmt, info)
   end
   return err
 end
@@ -602,9 +607,6 @@ local function dump_record(tr, func, pc, depth)
   if pc >= 0 then
     line = bcline(func, pc, recprefix)
     if dumpmode.H then line = gsub(line, "[<>&]", html_escape) end
-    if pc > 0 then
-      line = sub(line, 1, -2) .. "       (" .. fmtfunc(func, pc) .. ")\n"
-    end
   else
     line = "0000 "..recprefix.." FUNCC      \n"
   end

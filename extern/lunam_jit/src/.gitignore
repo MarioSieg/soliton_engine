@@ -1,5 +1,4 @@
 luajit
-luajit.h
 luajit_relver.txt
 lj_bcdef.h
 lj_ffdef.h
