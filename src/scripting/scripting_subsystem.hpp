@@ -4,13 +4,9 @@
 
 #include "../core/subsystem.hpp"
 
-#include "jit/lua.hpp"
+#include <lua.hpp>
 
-#ifndef OPENRESTY_LUAJIT
-#   error "OpenResty's LuaJIT branch is required"
-#endif
-
-#include "bridge/LuaBridge.h"
+#include <LuaBridge/LuaBridge.h>
 
 namespace scripting {
     class scripting_subsystem final : public subsystem {
