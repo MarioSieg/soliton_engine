@@ -12,10 +12,10 @@ local entity_list_view = {
     is_visible = ffi.new('bool[1]', true),
     selected_entity = nil,
     show_hidden_entities = ffi.new('bool[1]', false),
-
+    selected_wants_focus = false,
+    
     _entity_list = {},
     _entity_acc = 0,
-    _wants_focus = false,
 }
 
 function entity_list_view:build_entity_list()
@@ -93,7 +93,7 @@ function entity_list_view:render()
                         end
                         if ui.IsItemHovered() and ui.IsMouseDoubleClicked(0) then
                             self.selected_entity = data[1]
-                            self._wants_focus = true
+                            self.selected_wants_focus = true
                         end
                         ui.PopStyleColor()
                         if ui.IsItemHovered() then

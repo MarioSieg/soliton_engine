@@ -202,7 +202,7 @@ end
 function editor:stop_game_mode()
     player:despawn()
     scene.set_active_camera_entity(self.camera.target_entity)
-    entity_list_view:buildEntityList()
+    entity_list_view:build_entity_list()
     app.window.enable_cursor(true)
     self.camera.enable_movement = true
     self.camera.enable_mouse_look = true
@@ -210,12 +210,12 @@ function editor:stop_game_mode()
 end
 
 function editor:toggle_game_mode()
-    self.is_ingame = not self.is_ingame
     if self.is_ingame then
-        self:start_game_mode()
-    else
         self:stop_game_mode()
+    else
+        self:start_game_mode()
     end
+    self.is_ingame = not self.is_ingame
 end
 
 function editor:draw_main_menu_bar()
@@ -532,7 +532,7 @@ function editor:draw_ingame_overlay()
     ui.End()
 end
 
-function editor:drawTools()
+function editor:draw_tools()
     self.dock_id = ui.DockSpaceOverViewport(ui.GetMainViewport(), ffi.C.ImGuiDockNodeFlags_PassthruCentralNode)
     if restore_layout_guard then
         restore_layout_guard = false
@@ -562,23 +562,23 @@ function editor:_update()
         return
     end
     self.camera:_update()
-    local selectedE = entity_list_view.selected_entity
-    if entity_list_view.selectedWantsFocus and selectedE and selectedE:is_valid() then
-        if selectedE:has_component(components.transform) then
-            local pos = selectedE:get_component(components.transform):get_position()
+    local selected = entity_list_view.selected_entity
+    if selected ~= nil and entity_list_view.selected_wants_focus and selected:is_valid() then
+        if selected:has_component(components.transform) then
+            local pos = selected:get_component(components.transform):get_position()
             if pos then
                 pos.z = pos.z - 1.0
                 self.camera._position = pos
                 -- self.camera._rotation = quat.IDENTITY
             end
         end
-        entity_list_view.selectedWantsFocus = false
+        entity_list_view.selected_wants_focus = false
+        inspector.selected_entity = selected
     end
-    inspector.selected_entity = selectedE
-    if inspector.propertiesChanged then
-        entity_list_view:buildEntityList()
+    if inspector.properties_changed then
+        entity_list_view:build_entity_list()
     end
-    self:drawTools()
+    self:draw_tools()
     self:draw_main_menu_bar()
     self:draw_pending_popups()
 end
