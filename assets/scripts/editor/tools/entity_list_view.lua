@@ -46,11 +46,13 @@ function entity_list_view:build_entity_list()
                 name = 'Unnamed'
             end
             name = icons.i_cube .. ' ' .. name
-            table.insert(self._entity_list, { entity=entity, name=name, is_anonymous=is_anonymous })
+            table.insert(self._entity_list, { entity = entity, name = name, is_anonymous = is_anonymous })
             ::continue::
         end
     end
     scene._entity_query_end()
+    -- sort alphabetically
+    table.sort(self._entity_list, function(a, b) return a.name:lower() < b.name:lower() end)
     if gmath.within_interval(self._selected_entity_idx, 1, #self._entity_list) then
         self.selected_entity = self._entity_list[self._selected_entity_idx].entity
     elseif #self._entity_list > 0 then
