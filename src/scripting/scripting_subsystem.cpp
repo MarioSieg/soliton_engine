@@ -77,6 +77,16 @@ namespace scripting {
         // init lua
         passert(m_L == nullptr);
         if constexpr (use_mimalloc) {
+            panic("mimalloc is not supported for LuaJIT"); // todo make this work
+            /*
+             * LuaJIT requires that allocated memory is in the first 47 bits of address space.
+             * System malloc/mimalloc has no such guarantee of this, and hence can't (in general) be used.
+             *
+             * mimalloc most certainly doesn't support address-range restrictions.
+             * If you really want to link with mimalloc, use the GC64 mode in the v2.1 branch, which doesn't have this limitation.
+             * And do some performance testing, because it's unlikely it'll be better/faster/smaller than the built-in allocator.
+             *
+             */
             m_L = lua_newstate(+[]([[maybe_unused]] void* ud, void* ptr, [[maybe_unused]] std::size_t osize, const std::size_t nsize) noexcept -> void* {
                 return mi_realloc(ptr, nsize);
             }, nullptr);
