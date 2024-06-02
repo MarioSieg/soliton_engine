@@ -11,39 +11,40 @@ local vec2 = require 'vec2'
 local vec3 = require 'vec3'
 local components = require 'components'
 
-local camera = {}
+local camera = {
+    target_entity = nil,
+    sensitivity = 0.5, -- mouse look sensitivity
+    clamp_y = 80, -- mouse look Y-axis clamp
+    default_movement_speed = 4, -- default movement speed
+    fast_movement_speed = 10.0 * camera.default_movement_speed, -- movement speed when pressing fast movement button (e.g. shift) (see below)
 
-camera.target_entity = nil
-camera.sensitivity = 0.5 -- mouse look sensitivity
-camera.clamp_y = 80 -- mouse look Y-axis clamp
-camera.default_movement_speed = 4 -- default movement speed
-camera.fast_movement_speed = 10.0 * camera.default_movement_speed-- movement speed when pressing fast movement button (e.g. shift) (see below)
+    enable_mouse_look = true, -- enables/disables looking around
+    enable_mouse_button_look = true, -- if true looking around is only working while a mouse button is down
+    look_mouse_button = input.mouse_buttons.right, -- the mouse button to look around if the above option is true
 
-camera.enable_mouse_look = true -- enables/disables looking around
-camera.enable_mouse_button_look = true -- if true looking around is only working while a mouse button is down
-camera.look_mouse_button = input.mouse_buttons.right -- the mouse button to look around if the above option is true
+    enable_movement = true, -- enables/disables camera movement
+    movement_keys = { -- the keys to move the camera around
+        forward = input.keys.w,
+        backward = input.keys.s,
+        left = input.keys.a,
+        right = input.keys.d,
+    },
+    enable_fast_movement = true, -- enable faster movement when the key below is pressed
+    fast_movement_key = input.keys.left_shift, -- move fast when this key is pressed
+    lock_movement_axis = vec3.one, -- enables to disable the movement on any axis, by setting the axis to 0
+    enable_smooth_movement = true,
+    smooth_movement_time = 0.5,
+    enable_smooth_look = true,
+    smooth_look_snappiness = 12.0,
 
-camera.enable_movement = true -- enables/disables camera movement
-camera.movement_keys = { -- the keys to move the camera around
-    forward = input.keys.w,
-    backward = input.keys.s,
-    left = input.keys.a,
-    right = input.keys.d,
+    _prev_mous_pos = vec2.zero,
+    _mouse_angles = vec2.zero,
+    _smooth_angles = vec2.zero,
+    _rotation = quat.identity,
+    _position = vec3.zero,
+    _velocity = vec3.zero,
+    _is_focused = true
 }
-camera.enable_fast_movement = true -- enable faster movement when the key below is pressed
-camera.fast_movement_key = input.keys.left_shift -- move fast when this key is pressed
-camera.lock_movement_axis = vec3.one -- enables to disable the movement on any axis, by setting the axis to 0
-camera.enable_smooth_movement = true
-camera.smooth_movement_time = 0.5
-camera.enable_smooth_look = true
-camera.smooth_look_snappiness = 12.0
-camera._prev_mous_pos = vec2.zero
-camera._mouse_angles = vec2.zero
-camera._smooth_angles = vec2.zero
-camera._rotation = quat.identity
-camera._position = vec3.zero
-camera._velocity = vec3.zero
-camera._is_focused = true
 
 -- invoked every frame
 function camera:_update()
@@ -61,12 +62,12 @@ end
 
 function camera:_compute_rotation()
     local sens = gmath.abs(self.sensitivity) * 0.01
-    local clampYRad = gmath.rad(gmath.abs(self.clamp_y))
-    local mousePos = input.get_mouse_position()
+    local clamp_y_rad = gmath.rad(gmath.abs(self.clamp_y))
+    local mouse_pos = input.get_mouse_position()
 
-    local delta = mousePos
+    local delta = mouse_pos
     delta = delta - self._prev_mous_pos
-    self._prev_mous_pos = mousePos
+    self._prev_mous_pos = mouse_pos
 
     if self.enable_mouse_button_look and not input.is_mouse_button_pressed(self.look_mouse_button) then
         return
@@ -81,7 +82,7 @@ function camera:_compute_rotation()
 
     delta = delta * vec2(sens, sens)
     self._mouse_angles = self._mouse_angles + delta
-    self._mouse_angles.y = gmath.clamp(self._mouse_angles.y, -clampYRad, clampYRad)
+    self._mouse_angles.y = gmath.clamp(self._mouse_angles.y, -clamp_y_rad, clamp_y_rad)
     self._rotation = quat.from_yaw_pitch_roll(self._mouse_angles.x, self._mouse_angles.y, 0.0)
     self.target_entity:get_component(components.transform):set_rotation(self._rotation)
 end

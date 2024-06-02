@@ -1,6 +1,5 @@
 -- Copyright (c) 2022-2023 Mario 'Neo' Sieg. All Rights Reserved.
 
-local app = require 'app'
 local scene = require 'scene'
 local components = require 'components'
 local input = require 'input'

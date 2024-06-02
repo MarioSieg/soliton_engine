@@ -25,13 +25,13 @@ local script_editor = require 'editor.tools.scripteditor'
 local entity_list_view = require 'editor.tools.entity_list_view'
 local inspector = require 'editor.tools.inspector'
 local asset_explorer = require 'editor.tools.asset_explorer'
-local host_info = app.host.graphics_api..' | '..(app.host.host_string)
-local cpu_name = 'CPU: '..app.host.cpu_name
-local gpu_name = 'GPU: '..app.host.gpu_name
+local host_info = app.host.graphics_api .. ' | ' .. (app.host.host_string)
+local cpu_name = 'CPU: ' .. app.host.cpu_name
+local gpu_name = 'GPU: ' .. app.host.gpu_name
 local dock_left = 0.6
 local dock_right = 0.4
 local dock_bottom = 0.5
-local popupid_new_project = 0xffffffff-1
+local popupid_new_project = 0xffffffff - 1
 local menu_padding = ui.GetStyle().FramePadding
 local is_ingame_ui_wireframe_on = false
 local new_project_max_math = 512
@@ -58,7 +58,7 @@ local overlay_flags = ffi.C.ImGuiWindowFlags_NoDecoration
 local debug_mode = {
     none = 0,
     scene_aabbs = 1,
-    phsics_shapes = 2,
+    physics_shapes = 2,
     ui = 3
 }
 local debug_mode_names = {
@@ -69,21 +69,21 @@ local debug_mode_names = {
 }
 
 if jit.os == 'Windows' then
-    default_project_location = os.getenv('USERPROFILE')..'/Documents/'
+    default_project_location = os.getenv('USERPROFILE') .. '/Documents/'
     default_project_location = string.gsub(default_project_location, '\\', '/')
 else -- Linux, MacOS
-    default_project_location = os.getenv('HOME')..'/Documents/'
+    default_project_location = os.getenv('HOME') .. '/Documents/'
 end
 if not lfs.attributes(default_project_location) then
     default_project_location = ''
 end
-default_project_location = default_project_location..'lunam_projects/'
+default_project_location = default_project_location .. 'lunam_projects/'
 if not lfs.attributes(default_project_location) then
     lfs.mkdir(default_project_location)
 end
 
 local debug_mode_names_c = ffi.new("const char*[?]", #debug_mode_names)
-for i=1, #debug_mode_names do debug_mode_names_c[i-1] = ffi.cast("const char*", debug_mode_names[i]) end
+for i = 1, #debug_mode_names do debug_mode_names_c[i - 1] = ffi.cast("const char*", debug_mode_names[i]) end
 local config_file_name = 'config/editor.json'
 
 local editor = {
@@ -123,15 +123,13 @@ local editor = {
     show_demo_window = false,
 }
 
-for _, tool in ipairs(editor.tools) do
-    tool.is_visible[0] = true
-end
+for _, tool in ipairs(editor.tools) do tool.is_visible[0] = true end
 
 function editor.gizmos:draw_gizmos()
     debugdraw.start()
     if self.active_debug_mode[0] == debug_mode.scene_aabbs then
         debugdraw.draw_all_aabbs(vec3(0, 1, 0))
-    elseif self.active_debug_mode[0] == debug_mode.phsics_shapes then
+    elseif self.active_debug_mode[0] == debug_mode.physics_shapes then
         debugdraw.draw_all_physics_shapes()
     end
     if self.is_ingame then
@@ -262,7 +260,7 @@ function editor:draw_main_menu_bar()
             ui.EndMenu()
         end
         if ui.BeginMenu('Tools') then
-            for i=1, #self.tools do
+            for i = 1, #self.tools do
                 local tool = self.tools[i]
                 if ui.MenuItem(tool.name, nil, tool.is_visible[0]) then
                     tool.is_visible[0] = not tool.is_visible[0]
@@ -347,7 +345,7 @@ function editor:draw_main_menu_bar()
         end
         ui.PopStyleColor(3)
         if ui.IsItemHovered() then
-            ui.SetTooltip('Gizmo Mode: '..(self.gizmos.gizmo_mode == debugdraw.gizmo_mode.local_space and 'Local' or 'World'))
+            ui.SetTooltip('Gizmo Mode: ' .. (self.gizmos.gizmo_mode == debugdraw.gizmo_mode.local_space and 'Local' or 'World'))
         end
         ui.Checkbox(icons.i_ruler, self.gizmos.gizmo_snap)
         if ui.IsItemHovered() then
@@ -540,7 +538,7 @@ function editor:drawTools()
         restore_layout_guard = false
         self:reset_ui_layout()
     end
-    for i=1, #self.tools do
+    for i = 1, #self.tools do
         local tool = self.tools[i]
         if tool.is_visible[0] then
             tool:render()
@@ -585,12 +583,12 @@ function editor:_update()
     self:draw_pending_popups()
 end
 
-function editor:loadConfig() -- TODO: Save config on exit
+function editor:deserialize_config() -- TODO: Save config on exit
     if lfs.attributes(config_file_name) then
         self.serialized_config = json.deserialize_from_file(config_file_name)
     else
         print('Creating new editor config file: '..config_file_name)
-        self:saveConfig()
+        self:serialize_config()
     end
     if not self.serialized_config.general.prev_project_location or not lfs.attributes(self.serialized_config.general.prev_project_location) then
         self.serialized_config.general.prev_project_location = default_project_location
@@ -600,13 +598,13 @@ function editor:loadConfig() -- TODO: Save config on exit
     end
 end
 
-function editor:saveConfig()
+function editor:serialize_config()
     json.serialize_to_file(config_file_name, self.serialized_config)
 end
 
 style.setup()
 
-editor:loadConfig()
+editor:deserialize_config()
 editor:load_scene(nil)
 
 return editor
