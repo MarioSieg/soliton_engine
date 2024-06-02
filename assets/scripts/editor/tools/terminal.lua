@@ -24,7 +24,7 @@ local Terminal = {
 }
 
 function Terminal:render()
-    UI.SetNextWindowSize(WINDOW_SIZE, ffi.C.ImGuiCond_FirstUseEver)
+    UI.SetNextWindowSize(default_window_size, ffi.C.ImGuiCond_FirstUseEver)
     local isLuaLogTab = false
     local protocol = protocol
     if UI.Begin(self.name, self.is_visible, ffi.C.ImGuiWindowFlags_NoScrollbar) then

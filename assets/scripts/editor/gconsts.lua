@@ -2,7 +2,7 @@
 
 local UI = require 'editor.imgui'
 
-WINDOW_SIZE = UI.ImVec2(800, 600)
+default_window_size = UI.ImVec2(800, 600)
 
 local function set_identity(list)
     local set = {}
@@ -12,7 +12,7 @@ local function set_identity(list)
     return set
 end
 
-MESH_FILE_EXTS = {
+mesh_file_exts = {
     '3d',
     '3ds',
     '3mf',
@@ -71,9 +71,9 @@ MESH_FILE_EXTS = {
     'xgl',
     'zgl'
 }
-MESH_FILE_EXTS = set_identity(MESH_FILE_EXTS)
+mesh_file_exts = set_identity(mesh_file_exts)
 
-TEXTURE_FILE_EXTS = {
+texture_file_exts = {
     'bmp',
     'dds',
     'exr',
@@ -86,14 +86,14 @@ TEXTURE_FILE_EXTS = {
     'tiff',
     'webp'
 }
-TEXTURE_FILE_EXTS = set_identity(TEXTURE_FILE_EXTS)
+texture_file_exts = set_identity(texture_file_exts)
 
-SCRIPT_FILE_EXTS = {
+script_file_exts = {
     'lua'
 }
-SCRIPT_FILE_EXTS = set_identity(SCRIPT_FILE_EXTS)
+script_file_exts = set_identity(script_file_exts)
 
-SOUND_FILE_EXTS = {
+sound_file_exts = {
     'wav',
     'mp3',
     'ogg',
@@ -101,33 +101,33 @@ SOUND_FILE_EXTS = {
     'aiff',
     'wma'
 }
-SOUND_FILE_EXTS = set_identity(SOUND_FILE_EXTS)
+sound_file_exts = set_identity(sound_file_exts)
 
-FONT_FILE_EXTS = {
+font_file_exts = {
     'ttf',
     'otf',
     'woff',
     'woff2'
 }
-FONT_FILE_EXTS = set_identity(FONT_FILE_EXTS)
+font_file_exts = set_identity(font_file_exts)
 
-MATERIAL_FILE_EXTS = {
+material_file_exts = {
     'mat'
 }
-MATERIAL_FILE_EXTS = set_identity(MATERIAL_FILE_EXTS)
+material_file_exts = set_identity(material_file_exts)
 
-ICONS_FILE_EXTS = {
+icons_file_exts = {
     'ico',
     'icns'
 }
-ICONS_FILE_EXTS = set_identity(ICONS_FILE_EXTS)
+icons_file_exts = set_identity(icons_file_exts)
 
-XAML_FILE_EXTS = {
+xaml_file_exts = {
     'xaml'
 }
-XAML_FILE_EXTS = set_identity(XAML_FILE_EXTS)
+xaml_file_exts = set_identity(xaml_file_exts)
 
-ASSET_TYPE = {
+asset_type = {
     MESH = 0,
     TEXTURE = 1,
     SCRIPT = 2,
@@ -138,32 +138,32 @@ ASSET_TYPE = {
     UI_XAML_SHEET = 7,
     UNKNOWN = 8
 }
-ASSET_TYPE_NAMES = {
-    [ASSET_TYPE.MESH] = 'Mesh',
-    [ASSET_TYPE.TEXTURE] = 'Texture',
-    [ASSET_TYPE.SCRIPT] = 'Lua Script',
-    [ASSET_TYPE.FONT] = 'Font',
-    [ASSET_TYPE.MATERIAL] = 'Material',
-    [ASSET_TYPE.SOUND] = 'Sound',
-    [ASSET_TYPE.ICON] = 'Icon',
-    [ASSET_TYPE.UI_XAML_SHEET] = 'UI XAML Sheet',
-    [ASSET_TYPE.UNKNOWN] = 'Unknown'
+asset_type_names = {
+    [asset_type.MESH] = 'Mesh',
+    [asset_type.TEXTURE] = 'Texture',
+    [asset_type.SCRIPT] = 'Lua Script',
+    [asset_type.FONT] = 'Font',
+    [asset_type.MATERIAL] = 'Material',
+    [asset_type.SOUND] = 'Sound',
+    [asset_type.ICON] = 'Icon',
+    [asset_type.UI_XAML_SHEET] = 'UI XAML Sheet',
+    [asset_type.UNKNOWN] = 'Unknown'
 }
 
-function determineAssetType(ext)
-    if TEXTURE_FILE_EXTS[ext] then return ASSET_TYPE.TEXTURE end
-    if MESH_FILE_EXTS[ext] then return ASSET_TYPE.MESH end
-    if SCRIPT_FILE_EXTS[ext] then return ASSET_TYPE.SCRIPT end
-    if FONT_FILE_EXTS[ext] then return ASSET_TYPE.FONT end
-    if MATERIAL_FILE_EXTS[ext] then return ASSET_TYPE.MATERIAL end
-    if SOUND_FILE_EXTS[ext] then return ASSET_TYPE.SOUND end
-    if ICONS_FILE_EXTS[ext] then return ASSET_TYPE.ICON end
-    if XAML_FILE_EXTS[ext] then return ASSET_TYPE.UI_XAML_SHEET end
-    return ASSET_TYPE.UNKNOWN
+function determine_asset_type(ext)
+    if texture_file_exts[ext] then return asset_type.TEXTURE end
+    if mesh_file_exts[ext] then return asset_type.MESH end
+    if script_file_exts[ext] then return asset_type.SCRIPT end
+    if font_file_exts[ext] then return asset_type.FONT end
+    if material_file_exts[ext] then return asset_type.MATERIAL end
+    if sound_file_exts[ext] then return asset_type.SOUND end
+    if icons_file_exts[ext] then return asset_type.ICON end
+    if xaml_file_exts[ext] then return asset_type.UI_XAML_SHEET end
+    return asset_type.UNKNOWN
 end
 
 function build_filter_string(items)
     local r = ''
-    for k, _ in pairs(items) do r = r..k..',' end
+    for k, _ in pairs(items) do r = r .. k .. ',' end
     return r
 end

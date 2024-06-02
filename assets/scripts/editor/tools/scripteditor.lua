@@ -116,7 +116,7 @@ local ScriptEditor = {
 }
 
 function ScriptEditor:render()
-    UI.SetNextWindowSize(WINDOW_SIZE, ffi.C.ImGuiCond_FirstUseEver)
+    UI.SetNextWindowSize(default_window_size, ffi.C.ImGuiCond_FirstUseEver)
     if UI.Begin(ScriptEditor.name, ScriptEditor.is_visible, ffi.C.ImGuiWindowFlags_MenuBar) then
         if UI.BeginMenuBar() then
             if UI.BeginMenu('File') then

@@ -41,7 +41,7 @@ function EntityListView:buildEntityList()
 end
 
 function EntityListView:render()
-    UI.SetNextWindowSize(WINDOW_SIZE, ffi.C.ImGuiCond_FirstUseEver)
+    UI.SetNextWindowSize(default_window_size, ffi.C.ImGuiCond_FirstUseEver)
     if UI.Begin(self.name, self.is_visible) then
         if UI.Button(icons.i_plus) then
             self.entityCounter = self.entityCounter + 1

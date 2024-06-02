@@ -14,9 +14,9 @@ local components = require 'components'
 local camera = {
     target_entity = nil,
     sensitivity = 0.5, -- mouse look sensitivity
-    clamp_y = 80, -- mouse look Y-axis clamp
-    default_movement_speed = 4, -- default movement speed
-    fast_movement_speed = 10.0 * camera.default_movement_speed, -- movement speed when pressing fast movement button (e.g. shift) (see below)
+    clamp_y = 80.0, -- mouse look Y-axis clamp
+    default_movement_speed = 4.0, -- default movement speed
+    fast_movement_speed = 10.0 * 4.0, -- movement speed when pressing fast movement button (e.g. shift) (see below)
 
     enable_mouse_look = true, -- enables/disables looking around
     enable_mouse_button_look = true, -- if true looking around is only working while a mouse button is down

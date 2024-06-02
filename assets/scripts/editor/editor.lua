@@ -42,14 +42,14 @@ local entity_flags = entity_flags
 local overlay_location = 1 -- Top right is default
 local restore_layout_guard = true
 local default_project_location = ''
-local texture_filter = build_filter_string(TEXTURE_FILE_EXTS)
-local mesh_filter = build_filter_string(MESH_FILE_EXTS)
-local script_filter = build_filter_string(SCRIPT_FILE_EXTS)
-local font_filter = build_filter_string(FONT_FILE_EXTS)
-local material_filter = build_filter_string(MATERIAL_FILE_EXTS)
-local sound_filter = build_filter_string(SOUND_FILE_EXTS)
-local icons_filter = build_filter_string(ICONS_FILE_EXTS)
-local xaml_filter = build_filter_string(XAML_FILE_EXTS)
+local texture_filter = build_filter_string(texture_file_exts)
+local mesh_filter = build_filter_string(mesh_file_exts)
+local script_filter = build_filter_string(script_file_exts)
+local font_filter = build_filter_string(font_file_exts)
+local material_filter = build_filter_string(material_file_exts)
+local sound_filter = build_filter_string(sound_file_exts)
+local icons_filter = build_filter_string(icons_file_exts)
+local xaml_filter = build_filter_string(xaml_file_exts)
 local overlay_flags = ffi.C.ImGuiWindowFlags_NoDecoration
     + ffi.C.ImGuiWindowFlags_AlwaysAutoResize
     + ffi.C.ImGuiWindowFlags_NoSavedSettings

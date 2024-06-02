@@ -108,7 +108,7 @@ end
 
 function Inspector:render()
     self.propertiesChanged = false
-    UI.SetNextWindowSize(WINDOW_SIZE, ffi.C.ImGuiCond_FirstUseEver)
+    UI.SetNextWindowSize(default_window_size, ffi.C.ImGuiCond_FirstUseEver)
     if UI.Begin(self.name, self.is_visible) then
         local entity = self.selectedEntity
         if not entity or not entity:is_valid() then
