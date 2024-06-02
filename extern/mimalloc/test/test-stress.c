@@ -37,11 +37,12 @@ static int ITER    = 50;      // N full iterations destructing and re-creating a
 // static int THREADS = 8;    // more repeatable if THREADS <= #processors
 // static int SCALE   = 100;  // scaling factor
 
-#define STRESS   // undefine for leak test
+#define STRESS                // undefine for leak test
 
 static bool   allow_large_objects = true;     // allow very large objects? (set to `true` if SCALE>100)
 static size_t use_one_size = 0;               // use single object size of `N * sizeof(uintptr_t)`?
 
+static bool   main_participates = false;       // main thread participates as a worker too
 
 // #define USE_STD_MALLOC
 #ifdef USE_STD_MALLOC
@@ -189,7 +190,7 @@ static void run_os_threads(size_t nthreads, void (*entry)(intptr_t tid));
 static void test_stress(void) {
   uintptr_t r = rand();
   for (int n = 0; n < ITER; n++) {
-    run_os_threads(THREADS, &stress);    
+    run_os_threads(THREADS, &stress);
     for (int i = 0; i < TRANSFERS; i++) {
       if (chance(50, &r) || n + 1 == ITER) { // free all on last run, otherwise free half of the transfers
         void* p = atomic_exchange_ptr(&transfer[i], NULL);
@@ -261,23 +262,17 @@ int main(int argc, char** argv) {
 
   // Run ITER full iterations where half the objects in the transfer buffer survive to the next round.
   srand(0x7feb352d);
-  
-  //mi_reserve_os_memory(512ULL << 20, true, true);
-
-#if !defined(NDEBUG) && !defined(USE_STD_MALLOC)
-  mi_stats_reset();
-#endif
-
+  // mi_stats_reset();
 #ifdef STRESS
-  test_stress();
+    test_stress();
 #else
-  test_leak();
+    test_leak();
 #endif
 
 #ifndef USE_STD_MALLOC
   #ifndef NDEBUG
-  mi_collect(true);
-  //mi_debug_show_arenas();
+  // mi_collect(true);
+  mi_debug_show_arenas(true,true,true);
   #endif
   mi_stats_print(NULL);
 #endif
@@ -301,13 +296,15 @@ static void run_os_threads(size_t nthreads, void (*fun)(intptr_t)) {
   thread_entry_fun = fun;
   DWORD* tids = (DWORD*)custom_calloc(nthreads,sizeof(DWORD));
   HANDLE* thandles = (HANDLE*)custom_calloc(nthreads,sizeof(HANDLE));
-  for (uintptr_t i = 0; i < nthreads; i++) {
+  const size_t start = (main_participates ? 1 : 0);
+  for (size_t i = start; i < nthreads; i++) {
     thandles[i] = CreateThread(0, 8*1024, &thread_entry, (void*)(i), 0, &tids[i]);
   }
-  for (size_t i = 0; i < nthreads; i++) {
+  if (main_participates) fun(0); // run the main thread as well
+  for (size_t i = start; i < nthreads; i++) {
     WaitForSingleObject(thandles[i], INFINITE);
   }
-  for (size_t i = 0; i < nthreads; i++) {
+  for (size_t i = start; i < nthreads; i++) {
     CloseHandle(thandles[i]);
   }
   custom_free(tids);
@@ -334,11 +331,13 @@ static void run_os_threads(size_t nthreads, void (*fun)(intptr_t)) {
   thread_entry_fun = fun;
   pthread_t* threads = (pthread_t*)custom_calloc(nthreads,sizeof(pthread_t));
   memset(threads, 0, sizeof(pthread_t) * nthreads);
+  const size_t start = (main_participates ? 1 : 0);
   //pthread_setconcurrency(nthreads);
-  for (size_t i = 0; i < nthreads; i++) {
+  for (size_t i = start; i < nthreads; i++) {
     pthread_create(&threads[i], NULL, &thread_entry, (void*)i);
   }
-  for (size_t i = 0; i < nthreads; i++) {
+  if (main_participates) fun(0); // run the main thread as well
+  for (size_t i = start; i < nthreads; i++) {
     pthread_join(threads[i], NULL);
   }
   custom_free(threads);
