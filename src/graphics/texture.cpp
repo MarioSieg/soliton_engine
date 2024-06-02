@@ -12,7 +12,7 @@
 namespace graphics {
     static constexpr bimg::TextureFormat::Enum k_fallback_format = bimg::TextureFormat::RGBA8; // Textures are converted to this when native format is not supported
 
-    struct texture_format_info {
+    struct texture_format_info final {
         VkFormat fmt {};
         VkFormat fmt_srv {};
         VkFormat fmt_dsv {};
@@ -349,20 +349,26 @@ namespace graphics {
             is_format_mipgen_supported
         );
         bool conversion_required = !is_format_supported; // if the hardware doesn't support the format, we'll convert it to a supported format
-        if (image->m_numMips <= 1 && !is_format_mipgen_supported) { // if the hardware doesn't support mipgen for the format, we'll convert it to a supported format
-            conversion_required = true;
-            log_warn("Texture format mipgen not supported: {}", string_VkFormat(static_cast<VkFormat>(format)));
-        }
-        if (conversion_required) {
-            log_warn("Texture format not supported: {} converting -> {}", string_VkFormat(static_cast<VkFormat>(format)), string_VkFormat(k_texture_format_map[k_fallback_format].fmt));
+        if (!is_format_supported || (image->m_numMips <= 1 && !is_format_mipgen_supported)) {
+            const auto now = std::chrono::high_resolution_clock::now();
             bimg::ImageContainer* original = image;
             // TODO: conversion currently happens on CPU -> maybe move to GPU using compute shaders or automatic blitting?
             // On the other hand most scenes converted to .lunam scenes have ktx/dds textures anyway so
             // the conversion mainly happens on scene import. Exception might be network streamed content or modded content
             // or when assets are not processed and used in original form in the editor.
             image = bimg::imageConvert(&s_texture_allocator, k_fallback_format, *original, true);
-            bimg::imageFree(original);
             passert(image != nullptr);
+            log_warn(
+                "Texture format of image {} x {} x {} not supported by GPU: {} converted to fallback format {} in {:.03f}ms",
+                original->m_width,
+                original->m_height,
+                original->m_depth,
+                string_VkFormat(static_cast<VkFormat>(format)),
+                string_VkFormat(k_texture_format_map[k_fallback_format].fmt),
+                std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(std::chrono::high_resolution_clock::now() - now).count()
+            );
+            bimg::imageFree(original);
+            original = nullptr;
             format = static_cast<vk::Format>(k_texture_format_map[k_fallback_format].fmt);
         }
         const exit_guard img_free {

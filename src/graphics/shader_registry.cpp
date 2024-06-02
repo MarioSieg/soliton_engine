@@ -22,6 +22,7 @@ namespace graphics {
 
     auto shader_registry::compile_all(const bool parallel) -> bool {
         using namespace std::filesystem;
+        const auto now = std::chrono::high_resolution_clock::now();
         if (!parallel) [[unlikely]] {
             log_warn("Parallel shader compilation disabled - compiling shaders sequentially");
         }
@@ -56,6 +57,7 @@ namespace graphics {
             }
             m_shaders[name] = std::move(shader);
         }
+        log_info("Compiled {} shaders in {:.03f}ms", m_shaders.size(), std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(std::chrono::high_resolution_clock::now() - now).count());
         return all_successful;
     }
 
