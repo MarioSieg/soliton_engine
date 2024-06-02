@@ -13,6 +13,17 @@
 namespace graphics {
     // Textures are converted to this format when native format is not supported on the GPU
     static constexpr bimg::TextureFormat::Enum k_fallback_format = bimg::TextureFormat::RGBA8;
+
+    /*
+     * Enables SIMD conversion for common formats (RGB8 -> RGBA8) using runtime CPU detection and vectorized algorithms.
+     * This makes the importing of external scenes with raw .png or .jpg images noteably faster.
+     * Example (a big interior scene with some raw images) (RELEASE):
+     * ON: 1.98S
+     * OFF: 2.54s
+     * In DEBUG mode the difference is even bigger, which allows for faster iteration times:
+     * ON: 6.19s
+     * OFF: 18.2s
+     */
     static constexpr bool k_enable_simd_cvt = true;
 
     struct texture_format_info final {
