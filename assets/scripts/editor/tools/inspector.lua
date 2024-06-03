@@ -22,6 +22,8 @@ local inspector = {
     name_changed = false,
 
     _text_buf = ffi.new('char[?]', 1 + max_name_text_len),
+    _float_buf = ffi.new('float[1]'),
+    _vec2_buf = ffi.new('float[2]'),
     _vec3_buf = ffi.new('float[3]'),
     _bool_buf = ffi.new('bool[1]'),
 }
@@ -55,24 +57,46 @@ for i = 1, #component_names_with_icons do
 end
 local selected_component_idx = ffi.new('int[1]', 0)
 
-function inspector:_set_float3_buf(vec3)
-    self._vec3_buf[0] = vec3.x
-    self._vec3_buf[1] = vec3.y
-    self._vec3_buf[2] = vec3.z
-end
-
-function inspector:_get_float3_buf()
-    return vec3(self._vec3_buf[0], self._vec3_buf[1], self._vec3_buf[2])
-end
-
-function inspector:_inspect_vec3(name, vec3, step)
+function inspector:_inspect_float(name, value, step, min, max, fmt)
     step = step or 0.1
-    self:_set_float3_buf(vec3)
-    local changed = ui.DragFloat3(name, self._vec3_buf, step)
-    if changed then
-        return changed, self:_get_float3_buf()
+    min = min or -math.huge
+    max = max or math.huge
+    fmt = fmt or '%.3f'
+    self._float_buf[0] = value
+    local updated = ui.DragFloat(name, self._float_buf, step, min, max, fmt)
+    if updated then
+        return updated, self._float_buf[0]
     end
-    return changed, vec3
+    return updated, value
+end
+
+function inspector:_inspect_vec2(name, vector2, step, min, max, fmt)
+    step = step or 0.1
+    min = min or -math.huge
+    max = max or math.huge
+    fmt = fmt or '%.3f'
+    self._vec2_buf[0] = vector2.x
+    self._vec2_buf[1] = vector2.y
+    local updated = ui.DragFloat2(name, self._vec2_buf, step, min, max, fmt)
+    if updated then
+        return updated, vec2(self._vec2_buf[0], self._vec2_buf[1])
+    end
+    return updated, vector2
+end
+
+function inspector:_inspect_vec3(name, vector3, step, min, max, fmt)
+    step = step or 0.1
+    min = min or -math.huge
+    max = max or math.huge
+    fmt = fmt or '%.3f'
+    self._vec3_buf[0] = vector3.x
+    self._vec3_buf[1] = vector3.y
+    self._vec3_buf[2] = vector3.z
+    local updated = ui.DragFloat3(name, self._vec3_buf, step, min, max, fmt)
+    if updated then
+        return updated, vec3(self._vec3_buf[0], self._vec3_buf[1], self._vec3_buf[2])
+    end
+    return updated, vector3
 end
 
 function inspector:_component_base_header(instance)
@@ -116,29 +140,56 @@ function inspector:_inspect_component_transform()
             return
         end
         local pos = tra:get_position()
-        local rot = tra:get_rotation()
+        local rot = tra:get_rotation() -- TODO: use euler angles
         local scale = tra:get_scale()
         ui.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff88ff88)
-        local changed, pos = self:_inspect_vec3(icons.i_arrows_alt .. ' Position', pos)
-        if changed then
+        local updated, pos = self:_inspect_vec3(icons.i_arrows_alt .. ' Position', pos)
+        if updated then
             tra:set_position(pos)
             self.properties_changed = true
         end
         ui.PopStyleColor()
         ui.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff8888ff)
-        local changed, rot = self:_inspect_vec3(icons.i_redo_alt .. ' Rotation', rot)
-        if changed then
+        local updated, rot = self:_inspect_vec3(icons.i_redo_alt .. ' Rotation', rot)
+        if updated then
             tra:set_rotation(rot)
             self.properties_changed = true
         end
         ui.PopStyleColor()
         ui.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff88ffff)
-        local changed, scale = self:_inspect_vec3(icons.i_expand_arrows .. ' Scale', scale)
-        if changed then
+        local updated, scale = self:_inspect_vec3(icons.i_expand_arrows .. ' Scale', scale)
+        if updated then
             tra:set_scale(scale)
             self.properties_changed = true
         end
         ui.PopStyleColor()
+    end
+end
+
+function inspector:_inspect_component_camera()
+    local cam = self.selected_entity:get_component(components.camera)
+    if ui.CollapsingHeader(icons.i_camera .. ' Camera', inspector_header_flags) then
+        if not self._component_base_header(cam) then
+            return
+        end
+        local fov = cam:get_fov()
+        local updated, fov = self:_inspect_float(icons.i_eye .. ' FOV', fov, 0.1, 1.0, 180.0, '%.0f')
+        if updated then
+            cam:set_fov(fov)
+            self.properties_changed = true
+        end
+        local near_z_clip = cam:get_near_clip()
+        local updated, near_z_clip = self:_inspect_float(icons.i_sign_in_alt .. ' Near Clip', near_z_clip, 1.0, 0.1, 10000.0, '%.0f')
+        if updated then
+            cam:set_near_clip(near_z_clip)
+            self.properties_changed = true
+        end
+        local far_z_clip = cam:get_far_clip()
+        local updated, far_z_clip = self:_inspect_float(icons.i_sign_out_alt .. ' Far Clip', far_z_clip, 1.0, 0.1, 10000.0, '%.0f')
+        if updated then
+            cam:set_far_clip(far_z_clip)
+            self.properties_changed = true
+        end
     end
 end
 
@@ -201,8 +252,11 @@ function inspector:render()
                 -- ui.TextUnformatted(string.format('ID Address: %p', entity.id))
                 -- ui.PopStyleColor()
             end
-            if entity:has_component(components.transform) then
+            if entity:has_component(components.transform) then -- TODO: replace by lookup table
                 self:_inspect_component_transform()
+            end
+            if entity:has_component(components.camera) then
+                self:_inspect_component_camera()
             end
         end
     end
