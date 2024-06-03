@@ -80,7 +80,7 @@ namespace com {
 
         camera() noexcept {
             DirectX::XMStoreFloat2(&viewport, DirectX::XMVectorZero());
-            DirectX::XMStoreFloat3(&clear_color, DirectX::XMVectorZero());
+            DirectX::XMStoreFloat3(&clear_color, DirectX::XMVectorSplatOne());
         }
 
         static inline flecs::entity active_camera = flecs::entity::null(); // main camera, resetted every frame
