@@ -65,6 +65,7 @@ function __on_prepare__()
     print(string.format('%s %s %s', jit.version, jit.os, jit.arch))
     print('JIT active ->')
     print(jit.status())
+    print('GC64: ' .. (ffi.abi('gc64') and 'yes' or 'no'))
 
     collectgarbage_full_cycle()
 end
