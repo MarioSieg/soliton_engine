@@ -26,7 +26,7 @@ void main() {
   const vec3 normal = normal_map(outTBN, texture(samplerNormalMap, outUV).xyz);
   //vec3 final = diffuse_lambert_lit(tex_color, normal);
   vec3 final = tex_color;
-  final = color_saturation(final, 0.7);
+  final = color_saturation(final, 1.0);
   final = gamma_correct(final);
   final += vec3(film_noise(pushConstants.time*outUV)) * 0.1;
   outFragColor.rgb = final * 0.9;
