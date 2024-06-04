@@ -155,7 +155,7 @@ function inspector:_inspect_component_transform()
         ui.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff8888ff)
         local updated, rot = self:_inspect_vec3(icons.i_redo_alt .. ' Rotation', rot)
         if updated then
-            tra:set_rotation(quat.from_yaw_pitch_roll(rad(rot.x), rad(rot.y), rad(rot.z)))
+            tra:set_rotation(quat.from_euler(rad(rot.x), rad(rot.y), rad(rot.z)))
             self.properties_changed = true
         end
         ui.PopStyleColor()

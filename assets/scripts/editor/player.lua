@@ -78,13 +78,13 @@ function player:_update_camera()
     delta = delta * vec2(sens, sens)
     self._mouse_angles = self._mouse_angles + delta
     self._mouse_angles.y = gmath.clamp(self._mouse_angles.y, -clamp_y_rad, clamp_y_rad)
-    local rot = quat.from_yaw_pitch_roll(self._mouse_angles.x, self._mouse_angles.y, 0.0)
+    local rot = quat.from_euler(self._mouse_angles.y, self._mouse_angles.x, 0.0)
 
     if self._movement_state ~= movement_state.idle and self.enable_view_bob then
         local abs_velocity = #self._controller:get_component(components.character_controller):get_linear_velocity()
         local x = gmath.sin(time.time * self.view_bob_speed) * abs_velocity * self.view_bob_scale / 100.0
         local y = gmath.sin(2.0 * time.time * self.view_bob_speed) * abs_velocity * self.view_bob_scale / 400.0
-        rot = rot * quat.from_yaw_pitch_roll(x, y, 0)
+        rot = rot * quat.from_euler(y, x, 0)
     end
     
     transform:set_rotation(rot)

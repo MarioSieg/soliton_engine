@@ -14,7 +14,7 @@ local zero = rawnew(0.0, 0.0, 0.0, 0.0)
 local one = rawnew(1.0, 1.0, 1.0, 1.0)
 local identity = rawnew(0.0, 0.0, 0.0, 1.0)
 local eps = 1e-6
-local neg_inv_pi = -math.pi / 2
+local inv_pi = math.pi * 0.5
 
 local function new(x, y, z, w)
     x = x or 0.0
@@ -40,7 +40,7 @@ end
 
 local function from_axis_angle(vec)
     local angle = #vec
-    if angle == 0.0 then
+    if angle == 0 then
         return identity
     end
     local axis = vec / angle
@@ -48,27 +48,33 @@ local function from_axis_angle(vec)
     return normalize(new(axis.x * s, axis.y * s, axis.z * s, c))
 end
 
-local function from_yaw_pitch_roll(yaw, pitch, roll)
-    local hp = pitch * 0.5
-    local cp = cos(hp)
-    local sp = sin(hp)
-    local hy = yaw * 0.5
-    local cy = cos(hy)
-    local sy = sin(hy)
-    local hr = roll * 0.5
-    local cr = cos(hr)
-    local sr = sin(hr)
-    local x = cr*sp*cy + sr*cp*sy
-    local y = cr*cp*sy - sr*sp*cy
-    local z = sr*cp*cy - cr*sp*sy
-    local w = cr*cp*cy + sr*sp*sy
-    return rawnew(x, y, z, w)
+local function from_euler(x, y, z)
+    local hx = x * 0.5
+    local hy = y * 0.5
+    local hz = z * 0.5
+    local cr = cos(hx)
+    local sr = sin(hx)
+    local cp = cos(hy)
+    local sp = sin(hy)
+    local cy = cos(hz)
+    local sy = sin(hz)
+    local rw = cr*cp*cy + sr*sp*sy
+    local rx = sr*cp*cy - cr*sp*sy
+    local ry = cr*sp*cy + sr*cp*sy
+    local rz = cr*cp*sy - sr*sp*cy
+    return rawnew(rx, ry, rz, rw)
 end
 
 local function to_euler(q)
-    local x = atan2(2*(q.w*q.x + q.y*q.z), 1 - 2*(q.x^2 + q.y^2))
-    local y = neg_inv_pi + 2*atan2(sqrt(1 + 2*(q.w*q.y - q.x*q.z)), sqrt(1 - 2*(q.w*q.y - q.x*q.z)))
-    local z = atan2(2*(q.w*q.z + q.x*q.y), 1 - 2*(q.y^2 + q.z^2))
+    local sinr_cosp = 2 * (q.w*q.x + q.y*q.z)
+    local cosr_cosp = 1 - 2 * (q.x*q.x + q.y*q.y)
+    local sinp = sqrt(1 + 2*(q.w*q.y - q.x*q.z))
+    local cosp = sqrt(1 - 2*(q.w*q.y - q.x*q.z))
+    local siny_cosp = 2 * (q.w*q.z + q.x*q.y)
+    local cosy_cosp = 1 - 2*(q.y*q.y + q.z*q.z)
+    local x = atan2(sinr_cosp, cosr_cosp)
+    local y = 2 * atan2(sinp, cosp) - inv_pi
+    local z = atan2(siny_cosp, cosy_cosp)
     return x, y, z
 end
 
@@ -168,7 +174,7 @@ local quat = setmetatable({
     new = new,
     normalize = normalize,
     from_axis_angle = from_axis_angle,
-    from_yaw_pitch_roll = from_yaw_pitch_roll,
+    from_euler = from_euler,
     to_euler = to_euler,
     magnitude = magnitude,
     sqr_magnitude = sqr_magnitude,

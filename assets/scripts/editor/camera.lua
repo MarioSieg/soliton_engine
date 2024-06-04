@@ -83,7 +83,7 @@ function camera:_compute_rotation()
     delta = delta * vec2(sens, sens)
     self._mouse_angles = self._mouse_angles + delta
     self._mouse_angles.y = gmath.clamp(self._mouse_angles.y, -clamp_y_rad, clamp_y_rad)
-    self._rotation = quat.from_yaw_pitch_roll(self._mouse_angles.x, self._mouse_angles.y, 0.0)
+    self._rotation = quat.from_euler(self._mouse_angles.y, self._mouse_angles.x, 0)
     self.target_entity:get_component(components.transform):set_rotation(self._rotation)
 end
 
