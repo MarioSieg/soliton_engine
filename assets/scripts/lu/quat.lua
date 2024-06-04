@@ -8,12 +8,13 @@ local ffi = require 'ffi'
 
 local istype = ffi.istype
 local rawnew = ffi.typeof('lua_vec4')
-local sqrt, cos, sin, min, max, acos, abs = math.sqrt, math.cos, math.sin, math.min, math.max, math.acos, math.abs
+local sqrt, cos, sin, min, max, acos, abs, atan2 = math.sqrt, math.cos, math.sin, math.min, math.max, math.acos, math.abs, math.atan2
 
 local zero = rawnew(0.0, 0.0, 0.0, 0.0)
 local one = rawnew(1.0, 1.0, 1.0, 1.0)
 local identity = rawnew(0.0, 0.0, 0.0, 1.0)
 local eps = 1e-6
+local neg_inv_pi = -math.pi / 2
 
 local function new(x, y, z, w)
     x = x or 0.0
@@ -62,6 +63,13 @@ local function from_yaw_pitch_roll(yaw, pitch, roll)
     local z = sr*cp*cy - cr*sp*sy
     local w = cr*cp*cy + sr*sp*sy
     return rawnew(x, y, z, w)
+end
+
+local function to_euler(q)
+    local x = atan2(2*(q.w*q.x + q.y*q.z), 1 - 2*(q.x^2 + q.y^2))
+    local y = neg_inv_pi + 2*atan2(sqrt(1 + 2*(q.w*q.y - q.x*q.z)), sqrt(1 - 2*(q.w*q.y - q.x*q.z)))
+    local z = atan2(2*(q.w*q.z + q.x*q.y), 1 - 2*(q.y^2 + q.z^2))
+    return x, y, z
 end
 
 local function dot(q, other)
@@ -161,6 +169,7 @@ local quat = setmetatable({
     normalize = normalize,
     from_axis_angle = from_axis_angle,
     from_yaw_pitch_roll = from_yaw_pitch_roll,
+    to_euler = to_euler,
     magnitude = magnitude,
     sqr_magnitude = sqr_magnitude,
     dot = dot,

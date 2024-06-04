@@ -134,7 +134,7 @@ local function smooth_damp(current, target, velocity, smooth_t, max_speed, delta
     smooth_t = max(0.0001, smooth_t)
     local omega = 2.0 / smooth_t
     local x = omega * delta_t
-    local exp = 1.0 / (1.0 + x + 0.48 * x * x + 0.235 * x * x * x)
+    local exp = 1.0 / (1.0 + x + 0.48*x*x + 0.235*x*x*x)
     local change_x = current.x - target.x
     local change_y = current.y - target.y
     local change_z = current.z - target.z
@@ -160,13 +160,13 @@ local function smooth_damp(current, target, velocity, smooth_t, max_speed, delta
     out_x = target.x + (change_x + temp_x)*exp
     out_y = target.y + (change_y + temp_y)*exp
     out_z = target.z + (change_z + temp_z)*exp
-    local origMinusCurrent_x = origin.x - current.x
-    local origMinusCurrent_y = origin.y - current.y
-    local origMinusCurrent_z = origin.z - current.z
-    local outMinusOrig_x = out_x - origin.x
-    local outMinusOrig_y = out_y - origin.y
-    local outMinusOrig_z = out_z - origin.z
-    if origMinusCurrent_x * outMinusOrig_x + origMinusCurrent_y * outMinusOrig_y + origMinusCurrent_z * outMinusOrig_z > 0 then
+    local orig_delta_x = origin.x - current.x
+    local orig_delta_y = origin.y - current.y
+    local orig_delta_z = origin.z - current.z
+    local out_delta_x = out_x - origin.x
+    local out_delta_y = out_y - origin.y
+    local out_delta_z = out_z - origin.z
+    if orig_delta_x*out_delta_x + orig_delta_y*out_delta_y + orig_delta_z*out_delta_z > 0 then
         out_x = origin.x
         out_y = origin.y
         out_z = origin.z

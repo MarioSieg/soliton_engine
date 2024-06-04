@@ -9,6 +9,8 @@ local icons = require 'editor.icons'
 local components = require 'components'
 local gmath = require 'gmath'
 local vec3 = require 'vec3'
+local quat = require 'quat'
+local rad, deg = math.rad, math.deg
 local entity_flags = entity_flags
 
 local max_name_text_len = 256
@@ -140,7 +142,8 @@ function inspector:_inspect_component_transform()
             return
         end
         local pos = tra:get_position()
-        local rot = tra:get_rotation() -- TODO: use euler angles
+        local rx, ry, rz = quat.to_euler(tra:get_rotation())
+        local rot = vec3(deg(rx), deg(ry), deg(rz))
         local scale = tra:get_scale()
         ui.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff88ff88)
         local updated, pos = self:_inspect_vec3(icons.i_arrows_alt .. ' Position', pos)
@@ -152,7 +155,7 @@ function inspector:_inspect_component_transform()
         ui.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff8888ff)
         local updated, rot = self:_inspect_vec3(icons.i_redo_alt .. ' Rotation', rot)
         if updated then
-            tra:set_rotation(rot)
+            tra:set_rotation(quat.from_yaw_pitch_roll(rad(rot.x), rad(rot.y), rad(rot.z)))
             self.properties_changed = true
         end
         ui.PopStyleColor()
