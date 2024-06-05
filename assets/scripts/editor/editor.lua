@@ -486,7 +486,7 @@ function editor:draw_ingame_overlay()
     end
     ui.SetNextWindowBgAlpha(0.35)
     if ui.Begin('Overlay', nil, overlayFlags) then
-        ui.TextUnformatted(string.format('Sim Hz: %d, T: %.01f, %sT: %f', time.fps_avg, time.time, icons.TRIANGLE, time.delta_time))
+        ui.TextUnformatted(string.format('Sim Hz: %d, T: %.01f, %sT: %f', time.fps_avg, time.time, icons.i_triangle, time.delta_time))
         ui.SameLine()
         local size = app.window.get_frame_buffer_size()
         ui.TextUnformatted(string.format(' | %d X %d', size.x, size.y))

@@ -143,6 +143,9 @@ function inspector:_inspect_component_transform()
         end
         local pos = tra:get_position()
         local rx, ry, rz = quat.to_euler(tra:get_rotation())
+        if rx == 0 then rx = 0 end -- convert -0.0 to 0.0
+        if ry == 0 then ry = 0 end -- convert -0.0 to 0.0
+        if rz == 0 then rz = 0 end -- convert -0.0 to 0.0
         local rot = vec3(deg(rx), deg(ry), deg(rz))
         local scale = tra:get_scale()
         ui.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff88ff88)
@@ -217,7 +220,7 @@ function inspector:render()
             if ui.IsItemHovered() then
                 ui.SetTooltip('Add new component')
             end
-            if ui.CollapsingHeader(icons.i_info_circle .. ' General', ffi.C.ImGuiTreeNodeFlags_DefaultOpen) then
+            if ui.CollapsingHeader(icons.i_cogs .. ' Entity', ffi.C.ImGuiTreeNodeFlags_DefaultOpen) then
                 local name = entity:get_name()
                 if #name >= max_name_text_len then
                     name = name:sub(1, max_name_text_len-1)
