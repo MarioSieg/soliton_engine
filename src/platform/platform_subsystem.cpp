@@ -205,29 +205,29 @@ namespace platform {
     auto dump_cpu_info() -> void {
         static const std::string name = iware::cpu::model_name();
         static const std::string vendor = iware::cpu::vendor();
-        static const std::string vendorId = iware::cpu::vendor_id();
-        static const  auto [logical, physical, packages] = iware::cpu::quantities();
+        static const std::string vendor_id = iware::cpu::vendor_id();
+        static const auto [logical, physical, packages] = iware::cpu::quantities();
         static const std::string_view arch = architecture_name(iware::cpu::architecture());
-        static const double baseFrequencyGHz = static_cast<double>(iware::cpu::frequency()) / 1e9;
+        static const double base_freq_ghz = static_cast<double>(iware::cpu::frequency()) / std::pow(1024.0, 3);
         static const std::string_view endianness = endianness_name(iware::cpu::endianness());
-        static const iware::cpu::cache_t l1Cache = iware::cpu::cache(1);
-        static const iware::cpu::cache_t l2Cache = iware::cpu::cache(2);
-        static const iware::cpu::cache_t l3Cache = iware::cpu::cache(3);
+        static const iware::cpu::cache_t cache_l1 = iware::cpu::cache(1);
+        static const iware::cpu::cache_t cache_l2 = iware::cpu::cache(2);
+        static const iware::cpu::cache_t cache_l3 = iware::cpu::cache(3);
 
         log_info("CPU(s): {} X {}", packages, name);
         log_info("CPU Architecture: {}", arch);
-        log_info("CPU Base frequency: {:.02F} ghz", baseFrequencyGHz);
+        log_info("CPU Base frequency: {:.02F} ghz", base_freq_ghz);
         log_info("CPU Endianness: {}",  endianness);
         log_info("CPU Logical cores: {}", logical);
         log_info("CPU Physical cores: {}", physical);
         log_info("CPU Sockets: {}", packages);
         log_info("CPU Vendor: {}", vendor);
-        log_info("CPU Vendor ID: {}", vendorId);
+        log_info("CPU Vendor ID: {}", vendor_id);
 
         const std::size_t hwc = std::thread::hardware_concurrency();
         log_info("Hardware concurrency: {}, machine class: {}", hwc, hwc >= 12 ? "EXCELLENT" : hwc >= 8 ? "GOOD" : "BAD");
 
-        static constexpr auto dumpCache = [](unsigned level, const iware::cpu::cache_t& cache) {
+        static constexpr auto dump_cache_info = [](unsigned level, const iware::cpu::cache_t& cache) {
             const auto [size, line_size, associativity, type] {cache};
             log_info("L{} Cache size: {} KiB", level, static_cast<double>(size) / 1024.0);
             log_info("L{} Cache line size: {} B", level, line_size);
@@ -235,9 +235,9 @@ namespace platform {
             log_info("L{} Cache type: {}", level, cache_type_name(type));
         };
 
-        dumpCache(1, l1Cache);
-        dumpCache(2, l2Cache);
-        dumpCache(3, l3Cache);
+        dump_cache_info(1, cache_l1);
+        dump_cache_info(2, cache_l2);
+        dump_cache_info(3, cache_l3);
 
 
     #if CPU_X86 // TODO: AArch64
