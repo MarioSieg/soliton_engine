@@ -3,12 +3,16 @@
 --
 -- Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 ------------------------------------------------------------------------------
+-- Vector3 which is also used RGB color.
+------------------------------------------------------------------------------
 
 local ffi = require 'ffi'
+local bit = require 'bit'
 
 local istype = ffi.istype
 local rawnew = ffi.typeof('lua_vec3')
 local sqrt, cos, sin, atan2, min, max, random = math.sqrt, math.cos, math.sin, math.atan2, math.min, math.max, math.random
+local band, bor, bxor, lshift, rshift = bit.band, bit.bor, bit.bxor, bit.lshift, bit.rshift
 
 local zero = rawnew(0.0, 0.0, 0.0)
 local one = rawnew(1.0, 1.0, 1.0)
@@ -22,6 +26,158 @@ local down = rawnew(0.0, -1.0, 0.0)
 local forward = rawnew(0.0, 0.0, 1.0)
 local backward = rawnew(0.0, 0.0, -1.0)
 
+local function _from_bgra(bgra)
+    local b = band(bgra, 255) / 255.0
+    local g = band(rshift(bgra, 8), 255) / 255.0
+    local r = band(rshift(bgra, 16), 255) / 255.0
+    return rawnew(r, g, b)
+end
+
+colors = {
+    zero = _from_bgra(0x00000000),
+    transparent = _from_bgra(0x00000000),
+    aliceblue = _from_bgra(0xfff0f8ff),
+    antiquewhite = _from_bgra(0xfffaebd7),
+    aqua = _from_bgra(0xff00ffff),
+    aquamarine = _from_bgra(0xff7fffd4),
+    azure = _from_bgra(0xfff0ffff),
+    beige = _from_bgra(0xfff5f5dc),
+    bisque = _from_bgra(0xffffe4c4),
+    black = _from_bgra(0xff000000),
+    blanchedalmond = _from_bgra(0xffffebcd),
+    blue = _from_bgra(0xff0000ff),
+    blueviolet = _from_bgra(0xff8a2be2),
+    brown = _from_bgra(0xffa52a2a),
+    burlywood = _from_bgra(0xffdeb887),
+    cadetblue = _from_bgra(0xff5f9ea0),
+    chartreuse = _from_bgra(0xff7fff00),
+    chocolate = _from_bgra(0xffd2691e),
+    coral = _from_bgra(0xffff7f50),
+    cornflowerblue = _from_bgra(0xff6495ed),
+    cornsilk = _from_bgra(0xfffff8dc),
+    crimson = _from_bgra(0xffdc143c),
+    cyan = _from_bgra(0xff00ffff),
+    darkblue = _from_bgra(0xff00008b),
+    darkcyan = _from_bgra(0xff008b8b),
+    darkgoldenrod = _from_bgra(0xffb8860b),
+    darkgray = _from_bgra(0xffa9a9a9),
+    darkgreen = _from_bgra(0xff006400),
+    darkkhaki = _from_bgra(0xffbdb76b),
+    darkmagenta = _from_bgra(0xff8b008b),
+    darkolivegreen = _from_bgra(0xff556b2f),
+    darkorange = _from_bgra(0xffff8c00),
+    darkorchid = _from_bgra(0xff9932cc),
+    darkred = _from_bgra(0xff8b0000),
+    darksalmon = _from_bgra(0xffe9967a),
+    darkseagreen = _from_bgra(0xff8fbc8b),
+    darkslateblue = _from_bgra(0xff483d8b),
+    darkslategray = _from_bgra(0xff2f4f4f),
+    darkturquoise = _from_bgra(0xff00ced1),
+    darkviolet = _from_bgra(0xff9400d3),
+    deeppink = _from_bgra(0xffff1493),
+    deepskyblue = _from_bgra(0xff00bfff),
+    dimgray = _from_bgra(0xff696969),
+    dodgerblue = _from_bgra(0xff1e90ff),
+    firebrick = _from_bgra(0xffb22222),
+    floralwhite = _from_bgra(0xfffffaf0),
+    forestgreen = _from_bgra(0xff228b22),
+    fuchsia = _from_bgra(0xffff00ff),
+    gainsboro = _from_bgra(0xffdcdcdc),
+    ghostwhite = _from_bgra(0xfff8f8ff),
+    gold = _from_bgra(0xffffd700),
+    goldenrod = _from_bgra(0xffdaa520),
+    gray = _from_bgra(0xff808080),
+    green = _from_bgra(0xff008000),
+    greenyellow = _from_bgra(0xffadff2f),
+    honeydew = _from_bgra(0xfff0fff0),
+    hotpink = _from_bgra(0xffff69b4),
+    indianred = _from_bgra(0xffcd5c5c),
+    indigo = _from_bgra(0xff4b0082),
+    ivory = _from_bgra(0xfffffff0),
+    khaki = _from_bgra(0xfff0e68c),
+    lavender = _from_bgra(0xffe6e6fa),
+    lavenderblush = _from_bgra(0xfffff0f5),
+    lawngreen = _from_bgra(0xff7cfc00),
+    lemonchiffon = _from_bgra(0xfffffacd),
+    lightblue = _from_bgra(0xffadd8e6),
+    lightcoral = _from_bgra(0xfff08080),
+    lightcyan = _from_bgra(0xffe0ffff),
+    lightgoldenrodyellow = _from_bgra(0xfffafad2),
+    lightgray = _from_bgra(0xffd3d3d3),
+    lightgreen = _from_bgra(0xff90ee90),
+    lightpink = _from_bgra(0xffffb6c1),
+    lightsalmon = _from_bgra(0xffffa07a),
+    lightseagreen = _from_bgra(0xff20b2aa),
+    lightskyblue = _from_bgra(0xff87cefa),
+    lightslategray = _from_bgra(0xff778899),
+    lightsteelblue = _from_bgra(0xffb0c4de),
+    lightyellow = _from_bgra(0xffffffe0),
+    lime = _from_bgra(0xff00ff00),
+    limegreen = _from_bgra(0xff32cd32),
+    linen = _from_bgra(0xfffaf0e6),
+    magenta = _from_bgra(0xffff00ff),
+    maroon = _from_bgra(0xff800000),
+    mediumaquamarine = _from_bgra(0xff66cdaa),
+    mediumblue = _from_bgra(0xff0000cd),
+    mediumorchid = _from_bgra(0xffba55d3),
+    mediumpurple = _from_bgra(0xff9370db),
+    mediumseagreen = _from_bgra(0xff3cb371),
+    mediumslateblue = _from_bgra(0xff7b68ee),
+    mediumspringgreen = _from_bgra(0xff00fa9a),
+    mediumturquoise = _from_bgra(0xff48d1cc),
+    mediumvioletred = _from_bgra(0xffc71585),
+    midnightblue = _from_bgra(0xff191970),
+    mintcream = _from_bgra(0xfff5fffa),
+    mistyrose = _from_bgra(0xffffe4e1),
+    moccasin = _from_bgra(0xffffe4b5),
+    navajowhite = _from_bgra(0xffffdead),
+    navy = _from_bgra(0xff000080),
+    oldlace = _from_bgra(0xfffdf5e6),
+    olive = _from_bgra(0xff808000),
+    olivedrab = _from_bgra(0xff6b8e23),
+    orange = _from_bgra(0xffffa500),
+    orangered = _from_bgra(0xffff4500),
+    orchid = _from_bgra(0xffda70d6),
+    palegoldenrod = _from_bgra(0xffeee8aa),
+    palegreen = _from_bgra(0xff98fb98),
+    paleturquoise = _from_bgra(0xffafeeee),
+    palevioletred = _from_bgra(0xffdb7093),
+    papayawhip = _from_bgra(0xffffefd5),
+    peachpuff = _from_bgra(0xffffdab9),
+    peru = _from_bgra(0xffcd853f),
+    pink = _from_bgra(0xffffc0cb),
+    plum = _from_bgra(0xffdda0dd),
+    powderblue = _from_bgra(0xffb0e0e6),
+    purple = _from_bgra(0xff800080),
+    red = _from_bgra(0xffff0000),
+    rosybrown = _from_bgra(0xffbc8f8f),
+    royalblue = _from_bgra(0xff4169e1),
+    saddlebrown = _from_bgra(0xff8b4513),
+    salmon = _from_bgra(0xfffa8072),
+    sandybrown = _from_bgra(0xfff4a460),
+    seagreen = _from_bgra(0xff2e8b57),
+    seashell = _from_bgra(0xfffff5ee),
+    sienna = _from_bgra(0xffa0522d),
+    silver = _from_bgra(0xffc0c0c0),
+    skyblue = _from_bgra(0xff87ceeb),
+    slateblue = _from_bgra(0xff6a5acd),
+    slategray = _from_bgra(0xff708090),
+    snow = _from_bgra(0xfffffafa),
+    springgreen = _from_bgra(0xff00ff7f),
+    steelblue = _from_bgra(0xff4682b4),
+    tan = _from_bgra(0xffd2b48c),
+    teal = _from_bgra(0xff008080),
+    thistle = _from_bgra(0xffd8bfd8),
+    tomato = _from_bgra(0xffff6347),
+    turquoise = _from_bgra(0xff40e0d0),
+    violet = _from_bgra(0xffee82ee),
+    wheat = _from_bgra(0xfff5deb3),
+    white = _from_bgra(0xffffffff),
+    whitesmoke = _from_bgra(0xfff5f5f5),
+    yellow = _from_bgra(0xffffff00),
+    yellowgreen = _from_bgra(0xff9acd32)
+}
+
 local function new(x, y, z)
     x = x or 0.0
     y = y or x
@@ -29,16 +185,50 @@ local function new(x, y, z)
     return rawnew(x, y, z)
 end
 
-local function random_scalar_range(min, max)
+local function from_rgb(rgb)
+    local r = band(rshift(rgb, 24), 255) / 255.0
+    local g = band(rshift(rgb, 16), 255) / 255.0
+    local b = band(rshift(rgb, 8), 255) / 255.0
+    return rawnew(r, g, b)
+end
+
+local function to_rgb(v)
+    local r = band(v.x * 255.0, 255)
+    local g = band(v.y * 255.0, 255)
+    local b = band(v.z * 255.0, 255)
+    local rgb = r
+    rgb = bor(rgb, lshift(g, 8))
+    rgb = bor(rgb, lshift(b, 16))
+    return rgb
+end
+
+local function adjust_contract(v, contrast)
+    local r, g, b = v.x, v.y, v.z
+    r = 0.5 + contrast*(r - 0.5)
+    g = 0.5 + contrast*(g - 0.5)
+    b = 0.5 + contrast*(b - 0.5)
+    return rawnew(r, g, b)
+end
+
+local function adjust_saturation(v, saturation)
+    local r, g, b = v.x, v.y, v.z
+    local grey = r*0.2125 + g*0.7154 + b*0.0721
+    r = grey + saturation*(r - grey)
+    g = grey + saturation*(g - grey)
+    b = grey + saturation*(b - grey)
+    return rawnew(r, g, b)
+end
+
+local function _random_scalar_range(min, max)
     return min + random() * (max - min);
 end
 
 local function random_range(from, to)
     from = from or 0.0
     to = to or 1.0
-    local x = random_scalar_range(from, to)
-    local y = random_scalar_range(from, to)
-    local z = random_scalar_range(from, to)
+    local x = _random_scalar_range(from, to)
+    local y = _random_scalar_range(from, to)
+    local z = _random_scalar_range(from, to)
     return rawnew(x, y, z)
 end
 
@@ -46,8 +236,8 @@ local function random_range_xz(from, to, y)
     from = from or 0.0
     to = to or 1.0
     y = y or 0.0
-    local x = random_scalar_range(from, to)
-    local z = random_scalar_range(from, to)
+    local x = _random_scalar_range(from, to)
+    local z = _random_scalar_range(from, to)
     return rawnew(x, y, z)
 end
 
@@ -274,6 +464,9 @@ ffi.metatype('lua_vec3', {
 
 local vec3 = setmetatable({
     new = new,
+    from_rgb = from_rgb,
+    to_rgb = to_rgb,
+    adjust_contract = adjust_contract,
     random_range = random_range,
     random_range_xz = random_range_xz,
     from_angles = from_angles,
