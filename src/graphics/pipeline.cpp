@@ -10,8 +10,8 @@ namespace graphics {
     pipeline_base::~pipeline_base() {
         const vk::Device device = vkb::ctx().get_device();
         if (m_pipeline && m_layout) { // Destroy old pipeline and layout
-            device.destroyPipeline(m_pipeline, &vkb::s_allocator);
-            device.destroyPipelineLayout(m_layout, &vkb::s_allocator);
+            device.destroyPipeline(m_pipeline, vkb::get_alloc());
+            device.destroyPipelineLayout(m_layout, vkb::get_alloc());
             m_pipeline = nullptr;
             m_layout = nullptr;
         }
@@ -111,19 +111,19 @@ namespace graphics {
         layout_info.pSetLayouts = layouts.data();
         layout_info.pushConstantRangeCount = static_cast<std::uint32_t>(ranges.size());
         layout_info.pPushConstantRanges = ranges.data();
-        vkcheck(device.createPipelineLayout(&layout_info, &vkb::s_allocator, &m_layout));
+        vkcheck(device.createPipelineLayout(&layout_info, vkb::get_alloc(), &m_layout));
         pipeline_info.layout = m_layout;
 
         // create pipeline
-        vkcheck(device.createGraphicsPipelines(cache, 1, &pipeline_info, &vkb::s_allocator, &m_pipeline));
+        vkcheck(device.createGraphicsPipelines(cache, 1, &pipeline_info, vkb::get_alloc(), &m_pipeline));
 
         log_info("Created graphics pipeline '{}' in {:.03}s", name, std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - now).count());
 
         post_configure();
 
         if (prev_pipeline && prev_layout) { // Destroy old pipeline and layout now that the new one is created
-            device.destroyPipeline(prev_pipeline, &vkb::s_allocator);
-            device.destroyPipelineLayout(prev_layout, &vkb::s_allocator);
+            device.destroyPipeline(prev_pipeline, vkb::get_alloc());
+            device.destroyPipelineLayout(prev_layout, vkb::get_alloc());
         }
     }
 
@@ -206,13 +206,13 @@ namespace graphics {
     pipeline_registry::pipeline_registry(const vk::Device device) : m_device{device} {
         passert(device);
         vk::PipelineCacheCreateInfo cache_info {};
-        vkcheck(device.createPipelineCache(&cache_info, &vkb::s_allocator, &m_cache));
+        vkcheck(device.createPipelineCache(&cache_info, vkb::get_alloc(), &m_cache));
     }
 
     pipeline_registry::~pipeline_registry() {
         m_pipelines.clear();
         if (m_cache) {
-            m_device.destroyPipelineCache(m_cache, &vkb::s_allocator);
+            m_device.destroyPipelineCache(m_cache, vkb::get_alloc());
             m_cache = nullptr;
         }
     }

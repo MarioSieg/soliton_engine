@@ -19,7 +19,9 @@
 #elif PLATFORM_LINUX
 #include <link.h>
 #endif
+#if USE_MIMALLOC
 #include <mimalloc.h>
+#endif
 #include <infoware/infoware.hpp>
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -129,8 +131,8 @@ namespace platform {
     #endif
 
     auto dump_os_info() -> void {
-        const auto osInfo = iware::system::OS_info();
-        log_info("OS: {}, v.{}.{}.{}.{}", osInfo.full_name, osInfo.major, osInfo.minor, osInfo.patch, osInfo.build_number);
+        const static auto os_info = iware::system::OS_info();
+        log_info("OS: {}, v.{}.{}.{}.{}", os_info.full_name, os_info.major, os_info.minor, os_info.patch, os_info.build_number);
     #if PLATFORM_WINDOWS
         TCHAR username[UNLEN+1];
         DWORD username_len = UNLEN+1;
@@ -201,16 +203,16 @@ namespace platform {
     #endif
 
     auto dump_cpu_info() -> void {
-        std::string name = iware::cpu::model_name();
-        std::string vendor = iware::cpu::vendor();
-        std::string vendorId = iware::cpu::vendor_id();
-        auto [logical, physical, packages] = iware::cpu::quantities();
-        std::string_view arch = architecture_name(iware::cpu::architecture());
-        double baseFrequencyGHz = static_cast<double>(iware::cpu::frequency()) / 1e9;
-        std::string_view endianness = endianness_name(iware::cpu::endianness());
-        iware::cpu::cache_t l1Cache = iware::cpu::cache(1);
-        iware::cpu::cache_t l2Cache = iware::cpu::cache(2);
-        iware::cpu::cache_t l3Cache = iware::cpu::cache(3);
+        static const std::string name = iware::cpu::model_name();
+        static const std::string vendor = iware::cpu::vendor();
+        static const std::string vendorId = iware::cpu::vendor_id();
+        static const  auto [logical, physical, packages] = iware::cpu::quantities();
+        static const std::string_view arch = architecture_name(iware::cpu::architecture());
+        static const double baseFrequencyGHz = static_cast<double>(iware::cpu::frequency()) / 1e9;
+        static const std::string_view endianness = endianness_name(iware::cpu::endianness());
+        static const iware::cpu::cache_t l1Cache = iware::cpu::cache(1);
+        static const iware::cpu::cache_t l2Cache = iware::cpu::cache(2);
+        static const iware::cpu::cache_t l3Cache = iware::cpu::cache(3);
 
         log_info("CPU(s): {} X {}", packages, name);
         log_info("CPU Architecture: {}", arch);
@@ -363,6 +365,7 @@ namespace platform {
         glfwSetErrorCallback([](const int code, const char* desc) {
             log_error("Platform error: {} ({:#X})", desc, code);
         });
+#if USE_MIMALLOC
         static GLFWallocator allocator {};
         allocator.allocate = [](const std::size_t size, [[maybe_unused]] void* usr) -> void* {
             return mi_malloc(size);
@@ -374,6 +377,7 @@ namespace platform {
             return mi_realloc(ptr, size);
         };
         glfwInitAllocator(&allocator);
+#endif
         const bool is_glfw_online = glfwInit() == GLFW_TRUE;
         if (!is_glfw_online) [[unlikely]] {
             char const* desc;

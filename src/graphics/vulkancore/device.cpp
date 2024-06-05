@@ -26,13 +26,13 @@ namespace vkb {
 
     device::~device() {
         vmaDestroyAllocator(m_allocator);
-        m_logical_device.destroy(&s_allocator);
+        m_logical_device.destroy(vkb::get_alloc());
         log_info("Destroying Vulkan device...");
         if (m_debug_utils_messenger != nullptr) {
-            (*m_destroy_debug_utils_messenger_ext)(m_instance, m_debug_utils_messenger, reinterpret_cast<const VkAllocationCallbacks*>(&s_allocator));
+            (*m_destroy_debug_utils_messenger_ext)(m_instance, m_debug_utils_messenger, reinterpret_cast<const VkAllocationCallbacks*>(vkb::get_alloc()));
             log_info("Destroyed Vulkan debug utils messenger");
         }
-        m_instance.destroy(&s_allocator);
+        m_instance.destroy(vkb::get_alloc());
         log_info("Destroyed Vulkan instance");
     }
 
@@ -224,7 +224,7 @@ namespace vkb {
             }
         }
 
-        vkcheck(vk::createInstance(&instance_create_info, &s_allocator, &m_instance));
+        vkcheck(vk::createInstance(&instance_create_info, get_alloc(), &m_instance));
 
         if (m_enable_validation) {
             m_create_debug_utils_messenger_ext = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(m_instance.getProcAddr("vkCreateDebugUtilsMessengerEXT"));
@@ -233,7 +233,7 @@ namespace vkb {
             vkccheck((*m_create_debug_utils_messenger_ext)(
                 m_instance,
                 &static_cast<VkDebugUtilsMessengerCreateInfoEXT&>(m_debug_utils_messenger_ci),
-                reinterpret_cast<const VkAllocationCallbacks*>(&s_allocator),
+                reinterpret_cast<const VkAllocationCallbacks*>(vkb::get_alloc()),
                 &dst
             ));
             m_debug_utils_messenger = dst;
@@ -391,7 +391,7 @@ namespace vkb {
         m_enabled_features = enabled_features;
 
         log_info("Creating Vulkan logical device...");
-        vkcheck(m_physical_device.createDevice(&device_create_info, &s_allocator, &m_logical_device));
+        vkcheck(m_physical_device.createDevice(&device_create_info, get_alloc(), &m_logical_device));
 
         // Fetch queues
         m_logical_device.getQueue(m_queue_families.graphics, 0, &m_graphics_queue);
@@ -441,7 +441,7 @@ namespace vkb {
         allocator_info.physicalDevice = m_physical_device;
         allocator_info.device = m_logical_device;
         allocator_info.instance = m_instance;
-        allocator_info.pAllocationCallbacks = reinterpret_cast<const VkAllocationCallbacks*>(&s_allocator);
+        allocator_info.pAllocationCallbacks = reinterpret_cast<const VkAllocationCallbacks*>(vkb::get_alloc());
         vkccheck(vmaCreateAllocator(&allocator_info, &m_allocator));
     }
 

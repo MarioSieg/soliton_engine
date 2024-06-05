@@ -72,9 +72,9 @@ namespace graphics::pipelines {
 
     pbr_pipeline::~pbr_pipeline() {
         const vk::Device device = vkb::ctx().get_device();
-        device.destroyImageView(m_brdf_lut.m_image_view, &vkb::s_allocator);
-        device.destroyImage(m_brdf_lut.image, &vkb::s_allocator);
-        device.freeMemory(m_brdf_lut.memory, &vkb::s_allocator);
+        device.destroyImageView(m_brdf_lut.m_image_view, vkb::get_alloc());
+        device.destroyImage(m_brdf_lut.image, vkb::get_alloc());
+        device.freeMemory(m_brdf_lut.memory, vkb::get_alloc());
     }
 
     auto pbr_pipeline::configure_shaders(std::vector<std::pair<std::shared_ptr<vkb::shader>, vk::ShaderStageFlagBits>>& cfg) -> void {

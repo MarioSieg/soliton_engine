@@ -19,6 +19,7 @@ namespace imgui {
     static convar<float> cv_font_size {"EditorUI.fontSize", 18.0f, scripting::convar_flags::read_only};
 
     context::context() {
+#if USE_MIMALLOC
         ImGui::SetAllocatorFunctions(
             +[](size_t size, [[maybe_unused]] void* usr) -> void* {
                 return mi_malloc(size);
@@ -27,6 +28,7 @@ namespace imgui {
                 mi_free(ptr);
             }
         );
+#endif
         ImGui::CreateContext();
         ImPlot::CreateContext();
         auto& io = ImGui::GetIO();
@@ -64,7 +66,7 @@ namespace imgui {
         pool_info.poolSizeCount = k_pool_sizes.size();
         pool_info.pPoolSizes = k_pool_sizes.data();
 
-        vkcheck(vdevice.createDescriptorPool(&pool_info, &vkb::s_allocator, &m_imgui_descriptor_pool));
+        vkcheck(vdevice.createDescriptorPool(&pool_info, vkb::get_alloc(), &m_imgui_descriptor_pool));
 
         ImGui_ImplVulkan_InitInfo init_info {};
         init_info.Instance = device.get_instance();
@@ -77,7 +79,7 @@ namespace imgui {
         init_info.ImageCount = vkb::context::k_max_concurrent_frames;
         init_info.MinImageCount = vkb::context::k_max_concurrent_frames;
         init_info.MSAASamples = static_cast<VkSampleCountFlagBits>(vkb::k_msaa_sample_count);
-        init_info.Allocator = reinterpret_cast<const VkAllocationCallbacks*>(&vkb::s_allocator);
+        init_info.Allocator = reinterpret_cast<const VkAllocationCallbacks*>(vkb::get_alloc());
         init_info.CheckVkResultFn = [](const VkResult result) {
             vkccheck(result);
         };
@@ -135,7 +137,7 @@ namespace imgui {
     context::~context() {
         ImGui_ImplVulkan_Shutdown();
         ImGui_ImplGlfw_Shutdown();
-        vkb::vkdvc().destroyDescriptorPool(m_imgui_descriptor_pool, &vkb::s_allocator);
+        vkb::vkdvc().destroyDescriptorPool(m_imgui_descriptor_pool, vkb::get_alloc());
         ImPlot::DestroyContext();
         ImGui::DestroyContext();
     }

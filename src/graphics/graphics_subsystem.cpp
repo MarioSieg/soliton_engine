@@ -5,7 +5,9 @@
 #include "../platform/platform_subsystem.hpp"
 #include "../scripting/convar.hpp"
 
+#if USE_MIMALLOC
 #include <mimalloc.h>
+#endif
 
 #include "material.hpp"
 #include "shader_registry.hpp"
@@ -251,7 +253,7 @@ namespace graphics {
         descriptor_pool_ci.poolSizeCount = static_cast<std::uint32_t>(sizes.size());
         descriptor_pool_ci.pPoolSizes = sizes.data();
         descriptor_pool_ci.maxSets = 32; // TODO max sets Allocate one set for each frame
-        vkcheck(device.createDescriptorPool(&descriptor_pool_ci, &vkb::s_allocator, &m_descriptor_pool));
+        vkcheck(device.createDescriptorPool(&descriptor_pool_ci, vkb::get_alloc(), &m_descriptor_pool));
     }
 
     auto graphics_subsystem::render_uis() -> void {

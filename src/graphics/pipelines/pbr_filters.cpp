@@ -27,7 +27,7 @@ namespace graphics::pipelines {
         image_ci.tiling = vk::ImageTiling::eOptimal;
         image_ci.usage = vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eColorAttachment;
 
-        vkcheck(dvc.createImage(&image_ci, &vkb::s_allocator, &m_brdf_lut.image));
+        vkcheck(dvc.createImage(&image_ci, vkb::get_alloc(), &m_brdf_lut.image));
 
         vk::MemoryAllocateInfo mem_alloc {}; // TODO: VMA
         vk::MemoryRequirements mem_reqs {};
@@ -36,7 +36,7 @@ namespace graphics::pipelines {
         vk::Bool32 found = vk::False;
         mem_alloc.memoryTypeIndex = vkb::ctx().get_device().get_mem_type_idx(mem_reqs.memoryTypeBits, vk::MemoryPropertyFlagBits::eDeviceLocal, found);
         passert(found == vk::True);
-        vkcheck(dvc.allocateMemory(&mem_alloc, &vkb::s_allocator, &m_brdf_lut.memory));
+        vkcheck(dvc.allocateMemory(&mem_alloc, vkb::get_alloc(), &m_brdf_lut.memory));
         vkcheck(dvc.bindImageMemory(m_brdf_lut.image, m_brdf_lut.memory, 0));
 
         vk::ImageViewCreateInfo view_ci {};
@@ -48,7 +48,7 @@ namespace graphics::pipelines {
         view_ci.subresourceRange.levelCount = 1;
         view_ci.subresourceRange.baseArrayLayer = 0;
         view_ci.subresourceRange.layerCount = 1;
-        vkcheck(dvc.createImageView(&view_ci, &vkb::s_allocator, &m_brdf_lut.m_image_view));
+        vkcheck(dvc.createImageView(&view_ci, vkb::get_alloc(), &m_brdf_lut.m_image_view));
 
         vk::SamplerCreateInfo sampler_ci {};
         sampler_ci.magFilter = vk::Filter::eLinear;
@@ -62,7 +62,7 @@ namespace graphics::pipelines {
         sampler_ci.minLod = .0F;
         sampler_ci.maxLod = 1.F;
         sampler_ci.borderColor = vk::BorderColor::eFloatOpaqueWhite;
-        vkcheck(dvc.createSampler(&sampler_ci, &vkb::s_allocator, &sampler));
+        vkcheck(dvc.createSampler(&sampler_ci, vkb::get_alloc(), &sampler));
 
         vk::DescriptorImageInfo image_info {};
         image_info.imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
@@ -113,7 +113,7 @@ namespace graphics::pipelines {
         render_pass_ci.pDependencies = dependencies.data();
 
         vk::RenderPass render_pass {};
-        vkcheck(dvc.createRenderPass(&render_pass_ci, &vkb::s_allocator, &render_pass));
+        vkcheck(dvc.createRenderPass(&render_pass_ci, vkb::get_alloc(), &render_pass));
 
         vk::FramebufferCreateInfo framebuffer_ci {};
         framebuffer_ci.renderPass = render_pass;
@@ -124,11 +124,11 @@ namespace graphics::pipelines {
         framebuffer_ci.layers = 1;
 
         vk::Framebuffer framebuffer {};
-        vkcheck(dvc.createFramebuffer(&framebuffer_ci, &vkb::s_allocator, &framebuffer));
+        vkcheck(dvc.createFramebuffer(&framebuffer_ci, vkb::get_alloc(), &framebuffer));
 
         vk::DescriptorSetLayout descriptor_set_layout {};
         vk::DescriptorSetLayoutCreateInfo descriptor_set_layout_ci {};
-        vkcheck(dvc.createDescriptorSetLayout(&descriptor_set_layout_ci, &vkb::s_allocator, &descriptor_set_layout));
+        vkcheck(dvc.createDescriptorSetLayout(&descriptor_set_layout_ci, vkb::get_alloc(), &descriptor_set_layout));
 
         vk::DescriptorPool descriptor_pool {};
         vk::DescriptorPoolSize pool_size {};
@@ -138,7 +138,7 @@ namespace graphics::pipelines {
         descriptor_pool_ci.maxSets = 2;
         descriptor_pool_ci.poolSizeCount = 1;
         descriptor_pool_ci.pPoolSizes = &pool_size;
-        vkcheck(dvc.createDescriptorPool(&descriptor_pool_ci, &vkb::s_allocator, &descriptor_pool));
+        vkcheck(dvc.createDescriptorPool(&descriptor_pool_ci, vkb::get_alloc(), &descriptor_pool));
 
         vk::DescriptorSet descriptor_set {};
         vk::DescriptorSetAllocateInfo descriptor_set_ai {};
@@ -151,7 +151,7 @@ namespace graphics::pipelines {
         vk::PipelineLayoutCreateInfo pipeline_layout_ci {};
         pipeline_layout_ci.setLayoutCount = 1;
         pipeline_layout_ci.pSetLayouts = &descriptor_set_layout;
-        vkcheck(dvc.createPipelineLayout(&pipeline_layout_ci, &vkb::s_allocator, &pipeline_layout));
+        vkcheck(dvc.createPipelineLayout(&pipeline_layout_ci, vkb::get_alloc(), &pipeline_layout));
 
         vk::PipelineInputAssemblyStateCreateInfo input_assembly_ci {};
         input_assembly_ci.topology = vk::PrimitiveTopology::eTriangleList;
@@ -221,7 +221,7 @@ namespace graphics::pipelines {
         pipeline_ci.layout = pipeline_layout;
         pipeline_ci.renderPass = render_pass;
         pipeline_ci.subpass = 0;
-        vkcheck(dvc.createGraphicsPipelines(nullptr, 1, &pipeline_ci, &vkb::s_allocator, &shader_pipeline));
+        vkcheck(dvc.createGraphicsPipelines(nullptr, 1, &pipeline_ci, vkb::get_alloc(), &shader_pipeline));
 
         // now render
         vk::ClearValue clear_value {};
@@ -256,12 +256,12 @@ namespace graphics::pipelines {
 
         vkcheck(dvc.waitIdle());
 
-        dvc.destroyPipeline(shader_pipeline, &vkb::s_allocator);
-        dvc.destroyPipelineLayout(pipeline_layout, &vkb::s_allocator);
-        dvc.destroyRenderPass(render_pass, &vkb::s_allocator);
-        dvc.destroyFramebuffer(framebuffer, &vkb::s_allocator);
-        dvc.destroyDescriptorSetLayout(descriptor_set_layout, &vkb::s_allocator);
-        dvc.destroyDescriptorPool(descriptor_pool, &vkb::s_allocator);
+        dvc.destroyPipeline(shader_pipeline, vkb::get_alloc());
+        dvc.destroyPipelineLayout(pipeline_layout, vkb::get_alloc());
+        dvc.destroyRenderPass(render_pass, vkb::get_alloc());
+        dvc.destroyFramebuffer(framebuffer, vkb::get_alloc());
+        dvc.destroyDescriptorSetLayout(descriptor_set_layout, vkb::get_alloc());
+        dvc.destroyDescriptorPool(descriptor_pool, vkb::get_alloc());
 
         log_info("BRDF LUT generated in {} ms", std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(std::chrono::high_resolution_clock::now() - now).count());
     }

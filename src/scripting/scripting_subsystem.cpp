@@ -6,7 +6,9 @@
 #include "lfs/lfs.h"
 #include "convar.hpp"
 
+#if USE_MIMALLOC
 #include <mimalloc.h>
+#endif
 
 namespace scripting {
     template <typename... Ts>
@@ -76,6 +78,7 @@ namespace scripting {
 
         // init lua
         passert(m_L == nullptr);
+#if USE_MIMALLOC
         if constexpr (use_mimalloc) {
             panic("mimalloc is not supported for LuaJIT"); // todo make this work
             /*
@@ -90,7 +93,9 @@ namespace scripting {
             m_L = lua_newstate(+[]([[maybe_unused]] void* ud, void* ptr, [[maybe_unused]] std::size_t osize, const std::size_t nsize) noexcept -> void* {
                 return mi_realloc(ptr, nsize);
             }, nullptr);
-        } else {
+        } else
+#endif
+        {
             m_L = luaL_newstate();
         }
         passert(m_L != nullptr);

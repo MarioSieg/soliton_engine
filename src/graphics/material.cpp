@@ -85,7 +85,7 @@ namespace graphics {
         descriptor_pool_create_info.maxSets = lim;
         descriptor_pool_create_info.poolSizeCount = static_cast<std::uint32_t>(pool_sizes.size());
         descriptor_pool_create_info.pPoolSizes = pool_sizes.data();
-        vkcheck(vkb::vkdvc().createDescriptorPool(&descriptor_pool_create_info, &vkb::s_allocator, &s_descriptor_pool));
+        vkcheck(vkb::vkdvc().createDescriptorPool(&descriptor_pool_create_info, vkb::get_alloc(), &s_descriptor_pool));
 
         auto get_texture_binding = [i = 0] () mutable -> vk::DescriptorSetLayoutBinding {
             vk::DescriptorSetLayoutBinding binding {};
@@ -106,12 +106,12 @@ namespace graphics {
         vk::DescriptorSetLayoutCreateInfo descriptor_set_layout_create_info {};
         descriptor_set_layout_create_info.bindingCount = static_cast<std::uint32_t>(bindings.size());
         descriptor_set_layout_create_info.pBindings = bindings.data();
-        vkcheck(vkb::vkdvc().createDescriptorSetLayout(&descriptor_set_layout_create_info, &vkb::s_allocator, &s_descriptor_set_layout));
+        vkcheck(vkb::vkdvc().createDescriptorSetLayout(&descriptor_set_layout_create_info, vkb::get_alloc(), &s_descriptor_set_layout));
     }
 
     auto material::free_static_resources() -> void {
-        vkb::vkdvc().destroyDescriptorSetLayout(s_descriptor_set_layout, &vkb::s_allocator);
-        vkb::vkdvc().destroyDescriptorPool(s_descriptor_pool, &vkb::s_allocator);
+        vkb::vkdvc().destroyDescriptorSetLayout(s_descriptor_set_layout, vkb::get_alloc());
+        vkb::vkdvc().destroyDescriptorPool(s_descriptor_pool, vkb::get_alloc());
         s_error_texture.reset();
         s_flat_normal.reset();
     }

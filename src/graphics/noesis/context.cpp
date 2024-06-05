@@ -229,6 +229,7 @@ namespace noesis {
     }
 
     context::context() {
+#if USE_MIMALLOC
         static constexpr Noesis::MemoryCallbacks k_allocator {
             .user = nullptr,
             .alloc = +[]([[maybe_unused]] void*, const Noesis::SizeT size) noexcept -> void* { return mi_malloc(size); },
@@ -237,6 +238,7 @@ namespace noesis {
             .allocSize = +[]([[maybe_unused]] void*, void* const block) noexcept -> Noesis::SizeT { return mi_malloc_size(block); }
         };
         Noesis::GUI::SetMemoryCallbacks(k_allocator);
+#endif
         Noesis::SetLogHandler([](const char* const file, const uint32_t line, const uint32_t level, const char* const abc, const char* const msg) -> void {
             std::string file_name {std::filesystem::path{file}.filename().string()};
             std::transform(file_name.begin(), file_name.end(), file_name.begin(), [](const char c) noexcept -> char { return static_cast<char>(std::tolower(c)); });

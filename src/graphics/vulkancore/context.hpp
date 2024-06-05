@@ -71,7 +71,7 @@ namespace vkb {
             }
             constexpr vk::FenceCreateInfo fence_info {};
             vk::Fence fence {};
-            vkcheck(device.createFence(&fence_info, &vkb::s_allocator, &fence));
+            vkcheck(device.createFence(&fence_info, vkb::get_alloc(), &fence));
             vk::SubmitInfo submit_info {};
             submit_info.commandBufferCount = 1;
             submit_info.pCommandBuffers = &cmd;
@@ -87,7 +87,7 @@ namespace vkb {
             }
             vkcheck(queue.submit(1, &submit_info, fence));// TODO: not thread safe, use transfer queue
             vkcheck(device.waitForFences(1, &fence, vk::True, std::numeric_limits<std::uint64_t>::max()));
-            device.destroyFence(fence, &vkb::s_allocator);
+            device.destroyFence(fence, vkb::get_alloc());
             if constexpr (Owned) {
                 vk::CommandPool pool {};
                 if constexpr (QueueType == vk::QueueFlagBits::eGraphics) {

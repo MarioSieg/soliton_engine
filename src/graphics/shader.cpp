@@ -193,7 +193,7 @@ namespace vkb {
         vk::ShaderModuleCreateInfo create_info {};
         create_info.codeSize = bytecode.size() * sizeof(std::uint32_t);
         create_info.pCode = bytecode.data();
-        if (vk::Result::eSuccess != vkb::ctx().get_device().get_logical_device().createShaderModule(&create_info, &s_allocator, &shader->m_module)) [[unlikely]] {
+        if (vk::Result::eSuccess != vkb::ctx().get_device().get_logical_device().createShaderModule(&create_info, get_alloc(), &shader->m_module)) [[unlikely]] {
             log_error("Failed to create shader module: {}", file_name);
             return nullptr;
         }
@@ -214,6 +214,6 @@ namespace vkb {
     }
 
     shader::~shader() noexcept {
-        vkb::vkdvc().destroyShaderModule(m_module, &s_allocator);
+        vkb::vkdvc().destroyShaderModule(m_module, vkb::get_alloc());
     }
 }

@@ -12,7 +12,9 @@
 #define VULKAN_HPP_NO_STRUCT_CONSTRUCTORS
 #include <vulkan/vulkan.hpp>
 #include <vulkan/vk_enum_string_helper.h>
+#if USE_MIMALLOC
 #include <mimalloc.h>
+#endif
 
 #include <vk_mem_alloc.h>
 
@@ -25,7 +27,8 @@ namespace vkb {
 
     extern auto dump_physical_device_props(const vk::PhysicalDeviceProperties& props) -> void;
 
-    constexpr vk::AllocationCallbacks s_allocator = [] {
+#if USE_MIMALLOC
+    constexpr vk::AllocationCallbacks s_vk_alloc = [] {
         vk::AllocationCallbacks allocator {};
         allocator.pfnAllocation = +[]([[maybe_unused]] void* usr, const std::size_t size, const std::size_t alignment, [[maybe_unused]] VkSystemAllocationScope scope) -> void* {
             return mi_malloc_aligned(size, alignment);
@@ -38,6 +41,15 @@ namespace vkb {
         };
         return allocator;
     }();
+#endif
+
+    [[nodiscard]] consteval auto get_alloc() noexcept -> const vk::AllocationCallbacks* {
+#if USE_MIMALLOC
+        return &s_vk_alloc;
+#else
+        return nullptr;
+#endif
+    }
 }
 
 #define vkcheck(f) \

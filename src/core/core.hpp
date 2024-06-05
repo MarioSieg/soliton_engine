@@ -73,3 +73,5 @@ template <typename... Args>
 			panic("Assertion failed: {} in {}:{}", #expr, __FILE__, __LINE__); \
 		} \
 	} while (false)
+
+#define USE_MIMALLOC 1

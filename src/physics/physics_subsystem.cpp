@@ -3,7 +3,10 @@
 #include "physics_subsystem.hpp"
 #include "../core/kernel.hpp"
 
+#if USE_MIMALLOC
 #include <mimalloc.h>
+#endif
+
 #define RND_IMPLEMENTATION
 #include <execution>
 #include <rnd.h>
@@ -136,7 +139,7 @@ namespace physics {
     static convar<std::uint32_t> cv_max_contacts {"Physics.maxContacts", 0x1000u, convar_flags::read_only};
 
     physics_subsystem::physics_subsystem() : subsystem{"Physics"} {
-        JPH::RegisterDefaultAllocator(); // TODO mimalloc
+#if USE_MIMALLOC
         JPH::Allocate = +[](const std::size_t size) -> void* {
               return mi_malloc(size);
         };
@@ -149,6 +152,9 @@ namespace physics {
         JPH::AlignedFree = +[](void* ptr) -> void {
             mi_free(ptr);
         };
+#else
+        JPH::RegisterDefaultAllocator();
+#endif
         JPH::Trace = &trace_proc;
         JPH::Factory::sInstance = new JPH::Factory();
         JPH::RegisterTypes();

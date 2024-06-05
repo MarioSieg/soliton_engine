@@ -17,16 +17,16 @@ local movement_state = {
 }
 
 local player = {
-    camera_fov = 65.0,
+    camera_fov = 70,
     mouse_sensitivity = 0.5,
-    view_clamp_y = 80.0,
+    view_clamp_y = 85,
     enable_smooth_look = true,
     look_snappiness = 14.0,
     walk_speed = 1.8,
     run_speed = 3.5,
     jump_speed = 5.0,
     enable_view_bob = true,
-    view_bob_speed = 10, -- Speed of oscillation
+    view_bob_speed = 9, -- Speed of oscillation
     view_bob_scale = 0.15, -- Magnitude of oscillation
     can_jump = true,
     can_run = true,

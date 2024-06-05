@@ -23,17 +23,17 @@ namespace vkb {
 
     swapchain::~swapchain() {
         for (std::uint32_t i = 0; i < m_image_count; ++i) {
-            m_logical_device.destroyImageView(m_buffers[i].view, &s_allocator);
+            m_logical_device.destroyImageView(m_buffers[i].view, get_alloc());
         }
-        m_logical_device.destroySwapchainKHR(m_swapchain, &s_allocator);
-        m_instance.destroySurfaceKHR(m_surface, &s_allocator);
+        m_logical_device.destroySwapchainKHR(m_swapchain, get_alloc());
+        m_instance.destroySurfaceKHR(m_surface, get_alloc());
     }
 
     auto swapchain::init_surface(GLFWwindow* window) -> void {
         log_info("Initializing swapchain surface");
         passert(window != nullptr);
 
-        vkccheck(glfwCreateWindowSurface(m_instance, window, reinterpret_cast<const VkAllocationCallbacks*>(&vkb::s_allocator), reinterpret_cast<VkSurfaceKHR*>(&m_surface)));
+        vkccheck(glfwCreateWindowSurface(m_instance, window, reinterpret_cast<const VkAllocationCallbacks*>(vkb::get_alloc()), reinterpret_cast<VkSurfaceKHR*>(&m_surface)));
 
         // Get available queue family properties
         std::uint32_t num_qeueues = 0;
@@ -212,15 +212,15 @@ namespace vkb {
             swapchain_ci.imageUsage |= vk::ImageUsageFlagBits::eTransferDst;
         }
 
-        vkcheck(m_logical_device.createSwapchainKHR(&swapchain_ci, &s_allocator, &m_swapchain));
+        vkcheck(m_logical_device.createSwapchainKHR(&swapchain_ci, get_alloc(), &m_swapchain));
 
         // If an existing swap chain is re-created, destroy the old swap chain
         // This also cleans up all the presentable images
         if (old_swapchain) {
             for (std::uint32_t i = 0; i < m_image_count; ++i) {
-                m_logical_device.destroyImageView(m_buffers[i].view, &s_allocator);
+                m_logical_device.destroyImageView(m_buffers[i].view, get_alloc());
             }
-            m_logical_device.destroySwapchainKHR(old_swapchain, &s_allocator);
+            m_logical_device.destroySwapchainKHR(old_swapchain, get_alloc());
         }
 
         // Get the swap chain images
@@ -248,7 +248,7 @@ namespace vkb {
             color_image_view.flags = {};
             m_buffers[i].image = m_images[i];
             color_image_view.image = m_images[i];
-            vkcheck(m_logical_device.createImageView(&color_image_view, &s_allocator, &m_buffers[i].view));
+            vkcheck(m_logical_device.createImageView(&color_image_view, get_alloc(), &m_buffers[i].view));
         }
     }
 

@@ -9,7 +9,9 @@
 #include <filesystem>
 #include <iostream>
 
+#if USE_MIMALLOC
 #include <mimalloc.h>
+#endif
 
 #include <spdlog/spdlog.h>
 #include <spdlog/async.h>
@@ -151,7 +153,9 @@ kernel::kernel(const int argc, const char** argv, const char** $environ) {
     log_info("Booting Engine Kernel...");
     log_info("Build date: {}", __DATE__);
     log_info("Build time: {}", __TIME__);
-    log_info("MIMAL version: {:#X}", mi_version());
+#if USE_MIMALLOC
+    log_info("Allocator version: {:#X}", mi_version());
+#endif
     log_info("Working dir: {}", std::filesystem::current_path().string());
     log_info("ARG VEC");
     for (int i = 0; i < argc; ++i) {
@@ -183,12 +187,14 @@ kernel::~kernel() {
     log_info("Patching core engine config...");
     update_core_config(true);
     assetmgr::shutdown();
+#if USE_MIMALLOC
     mi_stats_merge();
     static std::stringstream ss;
     mi_stats_print_out(+[](const char* msg, [[maybe_unused]] void* ud) {
         ss << msg;
     }, nullptr);
     log_info("Allocator Stats:\n{}", ss.str());
+#endif
     log_info("System offline");
     spdlog::shutdown();
     std::cout << "Lunam Engine says goodbye :(\n";

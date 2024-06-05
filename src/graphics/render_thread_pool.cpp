@@ -22,7 +22,7 @@ namespace graphics {
             .flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer,
             .queueFamilyIndex = vkb::dvc().get_graphics_queue_idx()
         };
-        vkcheck(device.createCommandPool(&pool_info, &vkb::s_allocator, &m_command_pool));
+        vkcheck(device.createCommandPool(&pool_info, vkb::get_alloc(), &m_command_pool));
 
         const vk::CommandBufferAllocateInfo alloc_info {
             .commandPool = m_command_pool,
@@ -42,7 +42,7 @@ namespace graphics {
         }
         const vk::Device device = vkb::vkdvc();
         device.freeCommandBuffers(m_command_pool, vkb::context::k_max_concurrent_frames, m_command_buffers.data());
-        device.destroyCommandPool(m_command_pool, &vkb::s_allocator);
+        device.destroyCommandPool(m_command_pool, vkb::get_alloc());
     }
 
     HOTPROC auto render_thread::thread_routine() -> void {

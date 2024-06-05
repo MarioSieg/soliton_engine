@@ -35,6 +35,7 @@ namespace graphics {
     };
     extern const std::array<texture_format_info, 96> k_texture_format_map;
 
+#if USE_MIMALLOC
     static constexpr std::size_t k_natural_align = 8;
     auto texture_allocator::realloc(void* p, const std::size_t size, const std::size_t align, const char*, std::uint32_t) -> void* {
         if (0 == size) {
@@ -60,6 +61,17 @@ namespace graphics {
     }
 
     constinit texture_allocator s_texture_allocator {};
+#else
+    static bx::DefaultAllocator s_def_texture_allocator {};
+#endif
+
+    [[nodiscard]] consteval auto get_tex_alloc() noexcept -> bx::AllocatorI* {
+#if USE_MIMALLOC
+        return &s_texture_allocator;
+#else
+        return &s_def_texture_allocator;
+#endif
+    }
 
     texture::texture(std::string&& asset_path) : asset {assetmgr::asset_source::filesystem, std::move(asset_path)} {
         std::vector<std::uint8_t> texels {};
@@ -110,8 +122,8 @@ namespace graphics {
 
     texture::~texture() {
         if (m_image) {
-            vkb::vkdvc().destroySampler(m_sampler, &vkb::s_allocator);
-            vkb::vkdvc().destroyImageView(m_image_view, &vkb::s_allocator);
+            vkb::vkdvc().destroySampler(m_sampler, vkb::get_alloc());
+            vkb::vkdvc().destroyImageView(m_image_view, vkb::get_alloc());
             vmaDestroyImage(m_allocator, m_image, m_allocation);
             m_image = nullptr;
         }
@@ -222,14 +234,14 @@ namespace graphics {
         image_view_ci.subresourceRange.layerCount = m_array_size;
         image_view_ci.subresourceRange.levelCount = m_mip_levels;
         image_view_ci.image = m_image;
-        vkcheck(vkb::vkdvc().createImageView(&image_view_ci, &vkb::s_allocator, &m_image_view));
+        vkcheck(vkb::vkdvc().createImageView(&image_view_ci, vkb::get_alloc(), &m_image_view));
 
         create_sampler();
     }
 
     auto texture::parse_from_raw_memory(const std::span<const std::uint8_t> texels) -> void {
         passert(texels.size() <= std::numeric_limits<std::uint32_t>::max());
-        bimg::ImageContainer* image = bimg::imageParse(&s_texture_allocator, texels.data(), static_cast<std::uint32_t>(texels.size()));
+        bimg::ImageContainer* image = bimg::imageParse(get_tex_alloc(), texels.data(), static_cast<std::uint32_t>(texels.size()));
         passert(image != nullptr);
 
         constexpr vk::ImageUsageFlags usage = vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eTransferSrc;
@@ -257,7 +269,7 @@ namespace graphics {
             if (k_enable_simd_cvt && original->m_format == bimg::TextureFormat::RGB8) { // User faster SIMD for conversion of common formats
                 static_assert(k_fallback_format == bimg::TextureFormat::RGBA8, "Fallback format must be RGBA8 for SIMD conversion");
                 image = bimg::imageAlloc(
-                    &s_texture_allocator,
+                    get_tex_alloc(),
                     k_fallback_format,
                     original->m_width,
                     original->m_height,
@@ -298,7 +310,7 @@ namespace graphics {
                     }
                 }
             } else {
-                image = bimg::imageConvert(&s_texture_allocator, k_fallback_format, *original, true);
+                image = bimg::imageConvert(get_tex_alloc(), k_fallback_format, *original, true);
                 passert(image != nullptr);
             }
             bimg::imageFree(original);
@@ -536,7 +548,7 @@ namespace graphics {
         sampler_info.anisotropyEnable = supports_anisotropy ? vk::True : vk::False;
         sampler_info.borderColor = vk::BorderColor::eFloatOpaqueBlack;
         sampler_info.unnormalizedCoordinates = vk::False;
-        vkcheck(vkb::vkdvc().createSampler(&sampler_info, &vkb::s_allocator, &m_sampler));
+        vkcheck(vkb::vkdvc().createSampler(&sampler_info, vkb::get_alloc(), &m_sampler));
     }
 
     auto texture::set_image_layout_barrier(

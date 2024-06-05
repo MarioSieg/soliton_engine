@@ -25,7 +25,7 @@ namespace graphics::pipelines {
         vk::DescriptorSetLayoutCreateInfo descriptor_layout {};
         descriptor_layout.bindingCount = static_cast<std::uint32_t>(bindings.size());
         descriptor_layout.pBindings = bindings.data();
-        vkcheck(device.createDescriptorSetLayout(&descriptor_layout, &vkb::s_allocator, &m_descriptor_set_layout));
+        vkcheck(device.createDescriptorSetLayout(&descriptor_layout, vkb::get_alloc(), &m_descriptor_set_layout));
 
         vk::DescriptorPoolSize pool_size {};
         pool_size.type = vk::DescriptorType::eCombinedImageSampler;
@@ -37,7 +37,7 @@ namespace graphics::pipelines {
             .poolSizeCount = 1u,
             .pPoolSizes = &pool_size
         };
-        vkcheck(device.createDescriptorPool(&pool_info, &vkb::s_allocator, &m_descriptor_pool));
+        vkcheck(device.createDescriptorPool(&pool_info, vkb::get_alloc(), &m_descriptor_pool));
 
         vk::DescriptorSetAllocateInfo alloc_info {};
         alloc_info.descriptorPool = m_descriptor_pool;
@@ -62,7 +62,7 @@ namespace graphics::pipelines {
 
     sky_pipeline::~sky_pipeline() {
         const vk::Device device = vkb::vkdvc();
-        device.destroyDescriptorSetLayout(m_descriptor_set_layout, &vkb::s_allocator);
+        device.destroyDescriptorSetLayout(m_descriptor_set_layout, vkb::get_alloc());
     }
 
     auto sky_pipeline::configure_shaders(std::vector<std::pair<std::shared_ptr<vkb::shader>, vk::ShaderStageFlagBits>>& cfg) -> void {
