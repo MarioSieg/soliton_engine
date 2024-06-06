@@ -11,7 +11,7 @@ local asset_explorer = {
     target_scan_dir = 'assets',
     asset_list = {},
     dir_tree = {},
-    columns = ffi.new('int[1]', 10),
+    columns = ffi.new('int[1]', 12),
     columns_range = { min = 4, max = 15 },
 
     _tree_ratio = 0.2,
