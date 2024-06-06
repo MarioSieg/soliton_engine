@@ -69,6 +69,14 @@ namespace vkb {
         return true;
     }
 
+    static const shaderc_util::FileFinder finder {
+        [] {
+            shaderc_util::FileFinder f {};
+            f.search_path().emplace_back("assets/shaders/shaderlib/"); // todo make configurable
+            return f;
+        }()
+    };
+
     auto shader::compile(
         std::string&& file_name,
         const bool keep_assembly,
@@ -79,6 +87,7 @@ namespace vkb {
         const auto start = std::chrono::high_resolution_clock::now();
 
         shaderc::Compiler compiler {};
+        passert(compiler.IsValid());
 
         // Load string BLOB from file
         std::string buffer {};
@@ -87,7 +96,7 @@ namespace vkb {
         shaderc::CompileOptions options {};
         options.SetOptimizationLevel(shaderc_optimization_level_performance);
         options.SetSourceLanguage(shaderc_source_language_glsl);
-        static constexpr shaderc_util::FileFinder finder {};
+
         options.SetIncluder(std::make_unique<graphics::FileIncluder>(&finder)); // todo make shared
         std::uint32_t vk_version = 0;
         switch (device::k_vulkan_api_version) {
