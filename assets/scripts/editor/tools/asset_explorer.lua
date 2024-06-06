@@ -12,7 +12,10 @@ local asset_explorer = {
     asset_list = {},
     dir_tree = {},
     columns = ffi.new('int[1]', 10),
-    columns_range = { min = 4, max = 15 }
+    columns_range = { min = 4, max = 15 },
+
+    _tree_ratio = 0.2,
+    _padding = 8
 }
 
 function asset_explorer:build_asset_dir_recursive(path, parent)
@@ -37,12 +40,11 @@ function asset_explorer:build_asset_dir_recursive(path, parent)
     end
 end
 
-function asset_explorer:draw_asset_tree_structure()
-    ui.SetNextWindowSize(default_window_size, ffi.C.ImGuiCond_FirstUseEver)
+function asset_explorer:draw_asset_tree_structure(ratio)
     local DIR_COLOR = 0xffaaaaaa
     local FILE_COLOR = 0xffcccccc
     ui.PushStyleColor(ffi.C.ImGuiCol_Text, DIR_COLOR)
-    if ui.BeginChild('AssetTree') then
+    if ui.BeginChild('AssetTree', ui.ImVec2(ratio * ui.GetWindowSize().x, 0)) then
         for i = 1, #self.dir_tree do
             local node = self.dir_tree[i]
             if ui.TreeNode(node.name) then
@@ -77,9 +79,9 @@ function asset_explorer:expand_asst_list_recursive_within_dir(path) -- TODO: Onl
             if attr.mode == 'directory' then
                 self:expand_asst_list_recursive_within_dir(fullPath)
             else
-                local fileExt = string.match(entry, '[^.]+$')
-                if not fileExt then
-                    fileExt = 'unknown'
+                local ext = string.match(entry, '[^.]+$')
+                if not ext then
+                    ext = 'unknown'
                 end
                 
                 table.insert(self.asset_list, {
@@ -87,7 +89,7 @@ function asset_explorer:expand_asst_list_recursive_within_dir(path) -- TODO: Onl
                     name = entry,
                     size = attr.size,
                     date = attr.modification,
-                    type = determine_asset_type(fileExt)
+                    type = determine_asset_type(ext)
                 })
             end
         end
@@ -115,13 +117,14 @@ function asset_explorer:render()
             ui.PopItemWidth()
             ui.EndMenuBar()
         end
-        self:draw_asset_tree_structure()
-        local win_size = ui.GetWindowSize()
         local cols = self.columns[0]
-        local tile = (win_size.x / cols) - 32
+        local win_size_x = (1 - self._tree_ratio) * ui.GetWindowSize().x
+        local tile = (win_size_x / cols) - self._padding
         local grid_size = ui.ImVec2(tile, tile)
-        if ui.BeginChild('AssetScrollingRegion', ui.ImVec2(0, -ui.GetFrameHeightWithSpacing()), false, 0) then
-            ui.Columns(cols, 'AssetColumns', true)
+        self:draw_asset_tree_structure(self._tree_ratio)
+        ui.SameLine()
+        if ui.BeginChild('AssetScrollingRegion', ui.ImVec2(win_size_x, 0), false) then
+            ui.Columns(cols, 'AssetColumns', false)
             local r = math.random()
             for i = 1, #self.asset_list do
                 local asset = self.asset_list[i]

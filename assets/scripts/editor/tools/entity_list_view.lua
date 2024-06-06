@@ -137,7 +137,7 @@ function entity_list_view:render()
                         end
                         ui.PopStyleColor()
                         if ui.IsItemHovered() then
-                            ui.SetTooltip(is_anonymous and 'This entity has no name' or string.format('entity ID: 0x %x', ent.id))
+                            ui.SetTooltip(is_anonymous and 'This entity has no name' or string.format('ID: %f', ent.id))
                         end
                     end
                 end
