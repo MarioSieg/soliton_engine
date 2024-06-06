@@ -3,66 +3,11 @@
 #include "shader.hpp"
 #include "vulkancore/context.hpp"
 
-#include <fstream>
-#include <filesystem>
+#include "file_includer.hpp"
 
 #include "../assetmgr/assetmgr.hpp"
 
 namespace vkb {
-    class shader_includer final : public shaderc::CompileOptions::IncluderInterface {
-        static constexpr const char* const err = "Requested include file does not exist";
-
-        virtual auto GetInclude(
-            const char* requested_source_name,
-            shaderc_include_type type,
-            const char* requesting_source,
-            std::size_t include_depth
-        ) -> shaderc_include_result* override {
-            using namespace std::filesystem;
-            if (type == shaderc_include_type_relative) {
-                panic("Relative shader includes are not supported: {}", requested_source_name);
-            }
-            const std::string requested_source {
-                assetmgr::cfg().asset_root + "/shaders/shaderlib/" + requested_source_name
-            };
-            log_info("Resolving shader include: {}", requested_source);
-            if (!exists(requested_source) || !is_regular_file(requested_source)) [[unlikely]] {
-                log_error("Requested include file does not exist: {}", requested_source);
-                return new shaderc_include_result {
-                    .source_name = "",
-                    .source_name_length = 0,
-                    .content = err,
-                    .content_length = std::strlen(err),
-                };
-            }
-
-            static constexpr auto heap_clone = [](const std::string& str) -> std::pair<char*, std::size_t> {
-                const std::size_t len = str.size();
-                char* const data = new char[1+len];
-                std::copy(str.begin(), str.end(), data);
-                data[len] = '\0';
-                return {data, len};
-            };
-
-            std::string buf {};
-            assetmgr::load_asset_text_or_panic(requested_source, buf);
-            const auto [src, src_len] = heap_clone(requested_source);
-            const auto [data, data_len] = heap_clone(buf);
-            return new shaderc_include_result {
-                .source_name = src,
-                .source_name_length = src_len,
-                .content = data,
-                .content_length = buf.size(),
-            };
-        }
-        virtual auto ReleaseInclude(shaderc_include_result* data) -> void override {
-            if (data->source_name_length) delete[] data->source_name;
-            if (data->content_length && std::strncmp(data->content, err, data->content_length) != 0)
-                delete[] data->content;
-            delete data;
-        }
-    };
-
     // Returns GLSL shader source text after preprocessing.
     [[nodiscard]] static auto preprocess_shader(
         shaderc::Compiler& com,
@@ -75,8 +20,8 @@ namespace vkb {
         const shaderc::PreprocessedSourceCompilationResult result =
             com.PreprocessGlsl(source, kind, source_name.c_str(), options);
         if (result.GetCompilationStatus() != shaderc_compilation_status_success) [[unlikely]] {
-            log_error(result.GetErrorMessage());
             log_error("Failed to preprocess shader: {}", source_name);
+            log_error(result.GetErrorMessage());
             return false;
         }
         out = {result.cbegin(), result.cend()};
@@ -142,7 +87,8 @@ namespace vkb {
         shaderc::CompileOptions options {};
         options.SetOptimizationLevel(shaderc_optimization_level_performance);
         options.SetSourceLanguage(shaderc_source_language_glsl);
-        options.SetIncluder(std::make_unique<shader_includer>());
+        static constexpr shaderc_util::FileFinder finder {};
+        options.SetIncluder(std::make_unique<graphics::FileIncluder>(&finder)); // todo make shared
         std::uint32_t vk_version = 0;
         switch (device::k_vulkan_api_version) {
             case VK_API_VERSION_1_0: vk_version = shaderc_env_version_vulkan_1_0; break;

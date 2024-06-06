@@ -63,6 +63,7 @@ add_subdirectory(extern/SPIRV-Tools)
 add_subdirectory(extern/glslang)
 add_subdirectory(extern/shaderc)
 target_include_directories(lunam PRIVATE extern/shaderc/libshaderc/include)
+target_include_directories(lunam PRIVATE extern/shaderc/libshaderc_util/include)
 target_link_libraries(lunam vulkan)
 target_link_libraries(lunam shaderc)
 
