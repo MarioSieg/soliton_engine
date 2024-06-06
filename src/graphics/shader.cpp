@@ -69,7 +69,7 @@ namespace vkb {
         return true;
     }
 
-    static const shaderc_util::FileFinder finder {
+    static const shaderc_util::FileFinder s_file_finder {
         [] {
             shaderc_util::FileFinder f {};
             f.search_path().emplace_back("assets/shaders/shaderlib/"); // todo make configurable
@@ -97,7 +97,7 @@ namespace vkb {
         options.SetOptimizationLevel(shaderc_optimization_level_performance);
         options.SetSourceLanguage(shaderc_source_language_glsl);
 
-        options.SetIncluder(std::make_unique<graphics::FileIncluder>(&finder)); // todo make shared
+        options.SetIncluder(std::make_unique<graphics::FileIncluder>(&s_file_finder)); // todo make shared
         std::uint32_t vk_version = 0;
         switch (device::k_vulkan_api_version) {
             case VK_API_VERSION_1_0: vk_version = shaderc_env_version_vulkan_1_0; break;
