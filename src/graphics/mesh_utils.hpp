@@ -65,6 +65,6 @@ class assimp_logger final : public Assimp::LogStream {
         auto* copy = static_cast<char*>(alloca(len));
         std::memcpy(copy, message, len);
         copy[len-1] = '\0'; // replace \n with \0
-        log_info("[Scene Importeur]: {}", copy);
+        log_info("[Mesh Import]: {}", copy);
     }
 };

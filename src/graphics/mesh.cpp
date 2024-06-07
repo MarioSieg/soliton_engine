@@ -13,8 +13,8 @@ namespace graphics {
 	using namespace DirectX;
 
 	static auto compute_aabb(BoundingBox& aabb, const std::span<const mesh::vertex> vertices) noexcept -> void {
-		auto min = XMVectorReplicate(1e10f);
-		auto max = XMVectorReplicate(-1e10f);
+		DirectX::XMVECTOR min = XMVectorReplicate(1e10f);
+        DirectX::XMVECTOR max = XMVectorReplicate(-1e10f);
 		for (const auto& v : vertices) {
 			const auto pos = XMLoadFloat3(&v.position);
 			min = XMVectorMin(min, pos);
