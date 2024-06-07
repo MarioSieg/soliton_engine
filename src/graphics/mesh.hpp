@@ -37,7 +37,7 @@ class mesh final : public assetmgr::asset {
         };
 
         explicit mesh(std::string&& path);
-        mesh(std::span<const aiMesh*> meshes);
+        explicit mesh(std::span<const aiMesh*> meshes);
         ~mesh() override = default;
 
         [[nodiscard]] auto get_primitives() const noexcept -> std::span<const primitive> { return m_primitives; }

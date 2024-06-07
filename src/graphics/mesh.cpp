@@ -57,7 +57,10 @@ namespace graphics {
 					indices.emplace_back(face.mIndices[j]);
 				}
 			} else {
-                log_error("Face with {} indices found in mesh '{}' - mesh should be triangulated", face.mNumIndices, mesh->mName.C_Str());
+                log_error("{}-gon in mesh '{}' - mesh should be triangulated", face.mNumIndices, mesh->mName.C_Str());
+                for (unsigned j = 0; j < 3; ++j) {
+                    indices.emplace_back(i + j);
+                }
             }
 		}
 		prim_info.index_count = indices.size() - prim_info.index_start;
