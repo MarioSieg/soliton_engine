@@ -8,6 +8,7 @@
 #include <fstream>
 #include <vector>
 
+#include <uuid.h>
 #include <ankerl/unordered_dense.h>
 
 #include "../core/core.hpp"
@@ -22,19 +23,20 @@ namespace assetmgr {
     class asset : public no_copy, public no_move {
     protected:
         explicit asset(
-                const asset_source source,
-                std::string&& asset_path = {}
-        ) noexcept :
-            m_source{source}, m_asset_path{std::move(asset_path)} { }
+            asset_source source,
+            std::string&& asset_path = {}
+        ) noexcept;
 
     public:
         virtual ~asset() = default;
 
+        [[nodiscard]] auto get_uuid() const noexcept -> const uuids::uuid& { return m_uuid; }
         [[nodiscard]] auto get_source() const noexcept -> asset_source { return m_source; }
         [[nodiscard]] auto get_asset_path() const noexcept -> const std::string& { return m_asset_path; }
         [[nodiscard]] auto get_approx_byte_size() const noexcept -> std::size_t { return m_approx_byte_size; }
 
     private:
+        const uuids::uuid m_uuid;
         const asset_source m_source;
         const std::string m_asset_path;
 
@@ -48,27 +50,13 @@ namespace assetmgr {
     template <typename  T> requires is_asset<T>
     class asset_registry final {
     public:
-        template <typename S>
-        [[nodiscard]] static auto asset_id_from_scalar(S&& s) -> std::string {
-            return fmt::format("tmp_{}", s);
-        }
-
         explicit asset_registry(std::size_t capacity = 32) {
             m_registry.reserve(capacity);
         }
 
-        [[nodiscard]] auto contains_ptr(const T* ptr) const noexcept -> bool {
-            for (const auto& [_, p] : m_registry) {
-                if (&*p == ptr) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
         template <typename... Args>
         [[nodiscard]] auto load_from_memory(Args&&... args) -> T* {
-            std::unique_ptr<T> ptr = std::make_unique<T>(std::forward<Args>(args)...);
+            std::unique_ptr<T> ptr {std::make_unique<T>(std::forward<Args>(args)...)};
             ++m_cache_misses;
             return &*m_registry.emplace(fmt::format("mem_{:#X}", ++m_id_gen), std::move(ptr)).first->second;
         }
@@ -79,8 +67,8 @@ namespace assetmgr {
                 ++m_cache_hits;
                 return &*m_registry[path];
             }
-            std::string key = path;
-            std::unique_ptr<T> ptr = std::make_unique<T>(std::move(path), std::forward<Args>(args)...);
+            std::string key {path};
+            std::unique_ptr<T> ptr {std::make_unique<T>(std::move(path), std::forward<Args>(args)...)};
             ++m_cache_misses;
             return &*m_registry.emplace(std::move(key), std::move(ptr)).first->second;
         }

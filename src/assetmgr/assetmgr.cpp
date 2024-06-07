@@ -10,6 +10,12 @@
 namespace assetmgr {
     using namespace std::filesystem;
 
+    static thread_local std::mt19937 s_rng{std::random_device{}()};
+    static thread_local uuids::uuid_random_generator s_uuid_gen{s_rng};
+
+    asset::asset(const asset_source source, std::string&& asset_path) noexcept
+        : m_uuid{s_uuid_gen()}, m_source{source}, m_asset_path{std::move(asset_path)} { }
+
     static mgr_config s_cfg;
     static constinit std::atomic_bool s_is_initialized = false;
     static constinit std::atomic_size_t s_asset_requests = 0;

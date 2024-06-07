@@ -109,6 +109,10 @@ target_include_directories(lunam PRIVATE extern/LuaBridge3/Source)
 
 target_include_directories(lunam PRIVATE extern/lunam_jit/src)
 
+add_subdirectory(extern/stduuid)
+target_include_directories(lunam PRIVATE extern/stduuid/include)
+target_link_libraries(lunam stduuid)
+
 ##################################################################################################
 # Libraries, which sadly requires C++ exceptions and have no way to disable them
 ##################################################################################################
