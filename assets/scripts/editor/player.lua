@@ -80,7 +80,7 @@ function player:_update_camera()
     self._mouse_angles.y = gmath.clamp(self._mouse_angles.y, -clamp_y_rad, clamp_y_rad)
     local rot = quat.from_euler(self._mouse_angles.y, self._mouse_angles.x, 0.0)
 
-    if self._movement_state ~= movement_state.idle and self.enable_view_bob then
+    if self._movement_state ~= movement_state.idle and not self._is_flying and self.enable_view_bob then
         local abs_velocity = #self._controller:get_component(components.character_controller):get_linear_velocity()
         local x = gmath.sin(time.time * self.view_bob_speed) * abs_velocity * self.view_bob_scale / 100.0
         local y = gmath.sin(2.0 * time.time * self.view_bob_speed) * abs_velocity * self.view_bob_scale / 400.0
