@@ -31,11 +31,8 @@ local hook_mgr = {
 }
 local hooks = hook_mgr.hooks
 
-local scene = require 'scene'
-assert(scene ~= nil)
-
-local function execute_hooks()
-    for i=1, #hooks do
+local function tick_all_hooks()
+    for i = 1, #hooks do
         local hook = hooks[i]
         local routine = hook[tick_hook_id]
         if routine ~= nil then -- check if the hook has a tick function
@@ -45,8 +42,7 @@ local function execute_hooks()
 end
 
 function hook_mgr:tick()
-    execute_hooks()
-    scene._update()
+    tick_all_hooks()
 end
 
 return hook_mgr
