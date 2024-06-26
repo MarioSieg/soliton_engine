@@ -192,8 +192,8 @@ engine_cfg = {
 
 function engine_cfg:adjust_config_for_local_machine()
     if jit.os == 'OSX' then
-        print('Detected macOS, increasing UI font size...')
-        self.EditorUI.fontSize = self.EditorUI.fontSize * 2
+        self.EditorUI.fontSize = 2 * self.EditorUI.fontSize
+        self.General.enableJit = false -- Disable JIT on OSX for now, see: https://github.com/LuaJIT/LuaJIT/issues/285
     end
 
     if self.Threads.autoPartitionEngineThreadCount then
