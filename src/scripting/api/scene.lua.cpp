@@ -79,7 +79,7 @@ LUA_INTEROP_API auto __lu_scene_full_entity_query_next_table() -> std::int32_t {
 
 LUA_INTEROP_API auto __lu_scene_full_entity_query_get(const std::int32_t i) -> lua_entity_id {
     auto& ctx = s_scene_iter_context;
-    return ctx && !ctx->data.empty() ? std::bit_cast<lua_entity_id>(ctx->data[i]) : 0.0;
+    return ctx && !ctx->data.empty() ? std::bit_cast<lua_entity_id>(ctx->data[std::clamp<std::size_t>(i, 0, ctx->data.size())]) : 0.0;
 }
 
 LUA_INTEROP_API auto __lu_scene_full_entity_query_end() -> void {
