@@ -34,7 +34,7 @@ function entity_list_view:build_entity_list()
     self._entity_list = {}
     self.selected_entity = nil
     scene._entity_query_start()
-    for i = 0, scene._entity_query_next() do
+    for i = 0, scene._entity_query_next() - 1 do
         local entity = scene._entity_query_lookup(i)
         if entity:is_valid() then
             if not self.show_hidden_entities[0] and entity:has_flag(entity_flags.hidden) then

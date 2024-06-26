@@ -31,7 +31,7 @@ local time = {
     samples = samples
 }
 
-for i=0, samples do time.fps_histogram[i] = 0.0 end
+for i = 0, samples - 1 do time.fps_histogram[i] = 0.0 end
 
 local offset = 0 -- ring buffer index
 
@@ -50,7 +50,7 @@ function time:_update()
 
     -- Calculate the average fps over N samples
     local sum = 0.0
-    for i=0, samples do
+    for i = 0, samples - 1 do
         sum = sum + self.fps_histogram[i]
     end
     self.fps_avg = sum / samples

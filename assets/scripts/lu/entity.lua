@@ -37,9 +37,6 @@ local entity = {
 --- Creates a new entity from an entity id.
 -- @tparam number id The valid entity id
 function entity:from_native_id(id)
-    if type(id) ~= 'number' then
-        error('entity id is not a number alias lua_entity_id, but a '..type(id))
-    end
     local o = {}
     setmetatable(o, {__index = self})   
     o.id = id
