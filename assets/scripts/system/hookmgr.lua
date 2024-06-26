@@ -9,18 +9,20 @@
 local start_hook_id = '_start' -- hook id for start function
 local tick_hook_id = '_update' -- hook id for tick function
 
--- Load all hook scripts in a directory
+-- Load all hook from all currently loaded module
 local function preload_all_hooks()
-    local preload = require 'preload'
-    assert(preload ~= nil and type(preload) == 'table')
+    local entry = require '../entry' -- load preload entry
     local hooks = {}
-    for _, module in pairs(preload) do
+    for key, module in pairs(package.loaded) do
         -- check if the script has a hook
-        if module ~= nil and type(module) == 'table' and (module[start_hook_id] or module[tick_hook_id]) then
-            table.insert(hooks, module)
+        if module ~= nil and type(module) == 'table' then
+            if (module[start_hook_id] or module[tick_hook_id]) then -- check if the module has a start or tick function
+                print('Found hook in module ' .. key)
+                table.insert(hooks, module)
+            end
         end
     end
-    print('Loaded '..#hooks..' hooks')
+    print('Loaded ' .. #hooks .. ' hooks')
     return hooks
 end
 
