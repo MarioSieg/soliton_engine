@@ -29,7 +29,8 @@ if cookie ~= 0xfefec0c0 then
 end
 
 lua_include_dirs = {
-    'assets/scripts'
+    'assets/scripts',
+    'assets/scripts/lu'
 }
 
 -- add all other directories to package paths

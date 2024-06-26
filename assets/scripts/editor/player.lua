@@ -156,7 +156,7 @@ function player:_update_movement()
     controller:set_linear_velocity(target_velocity)
 end
 
-function player:_update()
+function player:update()
     self:_update_camera()
     self:_update_movement()
 end

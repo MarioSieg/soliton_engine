@@ -196,7 +196,7 @@ function editor:start_game_mode()
 end
 
 function editor:update_scene()
-    player:_update()
+    player:update()
 end
 
 function editor:stop_game_mode()
