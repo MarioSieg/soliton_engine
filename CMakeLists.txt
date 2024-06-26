@@ -5,12 +5,6 @@ project(lunam LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-if (APPLE)
-    add_compile_options(-march=native)
-else()
-    add_compile_options(-march=haswell)
-endif()
-
 if (WIN32)
     add_compile_options(-Xclang -fvisibility=hidden -Wno-defaulted-function-deleted)
     add_compile_options(/GR-)

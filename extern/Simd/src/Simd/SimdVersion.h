@@ -34,7 +34,7 @@
 #ifndef __SimdVersion_h__
 #define __SimdVersion_h__
 
-#define SIMD_VERSION "@VERSION@"
+#define SIMD_VERSION "6.1.137.develop-c9905875"
 
 #endif//__SimdVersion_h__
 
