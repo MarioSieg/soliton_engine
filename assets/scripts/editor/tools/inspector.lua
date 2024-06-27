@@ -30,35 +30,6 @@ local inspector = {
     _bool_buf = ffi.new('bool[1]'),
 }
 
--- TODO: move to gconsts
-local component_names = {}
-for k, _ in pairs(components) do
-    table.insert(component_names, k)
-end
-table.sort(component_names)
-local function get_component_by_name(name)
-    return components[name]
-end
-local function get_component_by_index(i)
-    return get_component_by_name(component_names[gmath.clamp(i, 1, #component_names)])
-end
-
-local component_names_with_icons = {}
-for k, _ in pairs(components) do
-    table.insert(component_names_with_icons, k)
-end
-
-component_names_with_icons['transform'] = icons.i_arrows_alt .. ' Transform'
-component_names_with_icons['camera'] = icons.i_camera .. ' Camera'
-component_names_with_icons['light'] = icons.i_lightbulb .. ' Light'
-
-table.sort(component_names_with_icons)
-local component_names_c = ffi.new("const char*[?]", #component_names_with_icons)
-for i = 1, #component_names_with_icons do
-    component_names_c[i - 1] = ffi.cast("const char*", component_names_with_icons[i])
-end
-local selected_component_idx = ffi.new('int[1]', 0)
-
 function inspector:_inspect_float(name, value, step, min, max, fmt)
     step = step or 0.1
     min = min or -math.huge
@@ -105,9 +76,10 @@ function inspector:_component_base_header()
     ui.PushStyleColor(ffi.C.ImGuiCol_Border, 0)
     ui.PushStyleColor(ffi.C.ImGuiCol_Button, 0)
     ui.SameLine(ui.GetWindowWidth() - header_buttons_offset)
+    local keep_component = true
     if ui.SmallButton(icons.i_trash_restore) then
         self.properties_changed = true
-        return false
+        keep_component = false
     end
     if ui.IsItemHovered() then
         ui.SetTooltip('Reset component to default values')
@@ -115,13 +87,13 @@ function inspector:_component_base_header()
     ui.SameLine()
     if ui.SmallButton(icons.i_trash) then
         self.properties_changed = true
-        return false
+        keep_component = false
     end
     if ui.IsItemHovered() then
         ui.SetTooltip('Remove component')
     end
     ui.PopStyleColor(2)
-    return true
+    return keep_component
 end
 
 function inspector:_inspect_component_transform()
@@ -187,6 +159,47 @@ function inspector:_inspect_component_camera()
     end
 end
 
+function inspector:_entity_base_header(entity)
+    if ui.CollapsingHeader(icons.i_cogs .. ' Entity', ffi.C.ImGuiTreeNodeFlags_DefaultOpen) then
+        local name = entity:get_name()
+        if #name >= max_name_text_len then
+            name = name:sub(1, max_name_text_len-1)
+        end
+        ffi.copy(self._text_buf, name)
+        if ui.InputText('Name', self._text_buf, max_name_text_len) then
+            entity:set_name(ffi.string(self._text_buf))
+            self.name_changed = true
+        end
+        local hidden = entity:has_flag(entity_flags.hidden)
+        self._bool_buf[0] = hidden
+        ui.Checkbox(icons.i_eye_slash .. ' Hidden', self._bool_buf)
+        if hidden ~= self._bool_buf[0] then
+            entity:set_flags(bxor(entity:get_flags(), entity_flags.hidden))
+            self.properties_changed = true
+        end
+        local static = entity:has_flag(entity_flags.static)
+        self._bool_buf[0] = static
+        ui.Checkbox(icons.i_do_not_enter .. ' Static', self._bool_buf)
+        if static ~= self._bool_buf[0] then
+            entity:set_flags(bxor(entity:get_flags(), entity_flags.static))
+            self.properties_changed = true
+        end
+        local transient = entity:has_flag(entity_flags.transient)
+        self._bool_buf[0] = transient
+        ui.Checkbox(icons.i_alarm_clock .. ' Transient', self._bool_buf)
+        if transient ~= self._bool_buf[0] then
+            entity:set_flags(bxor(entity:get_flags(), entity_flags.transient))
+            self.properties_changed = true
+        end
+        -- ui.Separator()
+        -- ui.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff888888)
+        -- ui.TextUnformatted(string.format('ID: 0x%x', tonumber(entity.id)))
+        -- ui.TextUnformatted(string.format('Valid: %s', entity:isValid() and 'yes' or 'no'))
+        -- ui.TextUnformatted(string.format('ID Address: %p', entity.id))
+        -- ui.PopStyleColor()
+    end
+end
+
 function inspector:render()
     self.properties_changed = false
     self.name_changed = false
@@ -196,61 +209,20 @@ function inspector:render()
         if not entity or not entity:is_valid() then
             ui.TextUnformatted('No entity selected')
         else
-            ui.Combo('##ComponentType', selected_component_idx, component_names_c, #component_names_with_icons)
-            if ui.IsItemHovered() then
-                ui.SetTooltip('New component type to add')
-            end
-            ui.SameLine()
-            if ui.Button(icons.i_plus .. ' Add') then
-                entity:get_component(get_component_by_index(selected_component_idx[0] + 1))
-                self.properties_changed = true
-            end
-            if ui.IsItemHovered() then
-                ui.SetTooltip('Add new component')
-            end
-            if ui.CollapsingHeader(icons.i_cogs .. ' Entity', ffi.C.ImGuiTreeNodeFlags_DefaultOpen) then
-                local name = entity:get_name()
-                if #name >= max_name_text_len then
-                    name = name:sub(1, max_name_text_len-1)
-                end
-                ffi.copy(self._text_buf, name)
-                if ui.InputText('Name', self._text_buf, max_name_text_len) then
-                    entity:set_name(ffi.string(self._text_buf))
-                    self.name_changed = true
-                end
-                local hidden = entity:has_flag(entity_flags.hidden)
-                self._bool_buf[0] = hidden
-                ui.Checkbox(icons.i_eye_slash .. ' Hidden', self._bool_buf)
-                if hidden ~= self._bool_buf[0] then
-                    entity:set_flags(bxor(entity:get_flags(), entity_flags.hidden))
-                    self.properties_changed = true
-                end
-                local static = entity:has_flag(entity_flags.static)
-                self._bool_buf[0] = static
-                ui.Checkbox(icons.i_do_not_enter .. ' Static', self._bool_buf)
-                if static ~= self._bool_buf[0] then
-                    entity:set_flags(bxor(entity:get_flags(), entity_flags.static))
-                    self.properties_changed = true
-                end
-                local transient = entity:has_flag(entity_flags.transient)
-                self._bool_buf[0] = transient
-                ui.Checkbox(icons.i_alarm_clock .. ' Transient', self._bool_buf)
-                if transient ~= self._bool_buf[0] then
-                    entity:set_flags(bxor(entity:get_flags(), entity_flags.transient))
-                    self.properties_changed = true
-                end
-                -- ui.Separator()
-                -- ui.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff888888)
-                -- ui.TextUnformatted(string.format('ID: 0x%x', tonumber(entity.id)))
-                -- ui.TextUnformatted(string.format('Valid: %s', entity:isValid() and 'yes' or 'no'))
-                -- ui.TextUnformatted(string.format('ID Address: %p', entity.id))
-                -- ui.PopStyleColor()
-            end
+            self:_entity_base_header(entity)
             if entity:has_component(components.transform) then -- TODO: replace by lookup table
                 self:_inspect_component_transform()
             end
             if entity:has_component(components.camera) then
                 self:_inspect_component_camera()
+            end
+            ui.Spacing()
+            ui.Separator()
+            ui.Spacing()
+            if ui.Button(icons.i_plus_circle .. ' Add Component') then
+                ui.PushOverrideID(popupid_add_component)
+                ui.OpenPopup(icons.i_database .. ' Component Library')
+                ui.PopID()
             end
         end
     end

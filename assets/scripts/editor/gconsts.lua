@@ -1,8 +1,33 @@
 -- Copyright (c) 2022-2023 Mario 'Neo' Sieg. All Rights Reserved.
 
-local UI = require 'editor.imgui'
+local components = require 'components'
+local icons = require 'editor.icons'
+local ui = require 'editor.imgui'
 
-default_window_size = UI.ImVec2(800, 600)
+-- Components that can be added to entities sorted by category
+editor_components = {
+    [icons.i_toolbox .. ' Core'] = {
+        [components.transform._id] = {
+            full_name = icons.i_arrows_alt .. ' Transform',
+            component = components.transform,
+        },
+        [components.camera._id] = {
+            full_name = icons.i_video .. ' Camera',
+            component = components.camera
+        }
+    },
+    [icons.i_basketball_ball .. ' Physics'] = {
+        [components.character_controller._id] = {
+            full_name = icons.i_person_sign .. ' Character Controller',
+            component = components.character_controller
+        }
+    }
+}
+
+default_window_size = ui.ImVec2(800, 600)
+
+popupid_new_project = 1
+popupid_add_component = 2
 
 local function set_identity(list)
     local set = {}
@@ -146,7 +171,7 @@ asset_type_names = {
     [asset_type.MATERIAL] = 'Material',
     [asset_type.SOUND] = 'Sound',
     [asset_type.ICON] = 'Icon',
-    [asset_type.UI_XAML_SHEET] = 'UI XAML Sheet',
+    [asset_type.UI_XAML_SHEET] = 'ui XAML Sheet',
     [asset_type.UNKNOWN] = 'Unknown'
 }
 

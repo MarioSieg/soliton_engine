@@ -31,7 +31,6 @@ local gpu_name = 'GPU: ' .. app.host.gpu_name
 local dock_left = 0.6
 local dock_right = 0.4
 local dock_bottom = 0.5
-local popupid_new_project = 0xffffffff - 1
 local menu_padding = ui.GetStyle().FramePadding
 local is_ingame_ui_wireframe_on = false
 local new_project_max_math = 512
@@ -50,6 +49,9 @@ local material_filter = build_filter_string(material_file_exts)
 local sound_filter = build_filter_string(sound_file_exts)
 local icons_filter = build_filter_string(icons_file_exts)
 local xaml_filter = build_filter_string(xaml_file_exts)
+local config_file_name = 'config/editor.json'
+local component_window_size = ui.ImVec2(default_window_size.x * 0.5, default_window_size.y * 0.5)
+local selected_component = nil
 local overlay_flags = ffi.C.ImGuiWindowFlags_NoDecoration
     + ffi.C.ImGuiWindowFlags_AlwaysAutoResize
     + ffi.C.ImGuiWindowFlags_NoSavedSettings
@@ -84,7 +86,6 @@ end
 
 local debug_mode_names_c = ffi.new("const char*[?]", #debug_mode_names)
 for i = 1, #debug_mode_names do debug_mode_names_c[i - 1] = ffi.cast("const char*", debug_mode_names[i]) end
-local config_file_name = 'config/editor.json'
 
 local editor = {
     is_visible = true,
@@ -410,6 +411,7 @@ function editor:draw_main_menu_bar()
 end
 
 function editor:draw_pending_popups()
+    -- new project popup
     ui.PushOverrideID(popupid_new_project)
     if ui.BeginPopupModal(icons.i_folder_plus .. ' New project') then
         if not new_project_tmp then
@@ -458,6 +460,43 @@ function editor:draw_pending_popups()
             ui.CloseCurrentPopup()
             new_project_tmp[0] = 0
             is_creating_project = false
+        end
+        ui.EndPopup()
+    end
+    ui.PopID()
+
+    -- component library popup
+    ui.PushOverrideID(popupid_add_component)
+    if ui.BeginPopupModal(icons.i_database .. ' Component Library') then
+        if ui.BeginTabBar('##components_tabs') then
+            for category, components in pairs(editor_components) do
+                if ui.BeginTabItem(category) then
+                    if ui.BeginChild('##components_child', component_window_size, true) then
+                        for _, comp in pairs(components) do
+                            if ui.Selectable(comp.full_name, selected_component == comp) then
+                                selected_component = comp
+                            end
+                            ui.Separator()
+                        end
+                        ui.EndChild()
+                    end
+                    ui.EndTabItem()
+                end
+            end
+            ui.EndTabBar()
+        end
+        ui.Separator()
+        if ui.Button(icons.i_plus_circle .. ' Add') then
+            if inspector.selected_entity ~= nil and inspector.selected_entity:is_valid() and selected_component ~= nil and selected_component.component ~= nil then
+                inspector.selected_entity:get_component(selected_component.component)
+                inspector.properties_changed = true
+            end
+            selected_component = nil
+            ui.CloseCurrentPopup()
+        end
+        ui.SameLine()
+        if ui.Button('Cancel') then
+            ui.CloseCurrentPopup()
         end
         ui.EndPopup()
     end
