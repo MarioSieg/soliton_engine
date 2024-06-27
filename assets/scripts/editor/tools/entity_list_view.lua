@@ -117,27 +117,27 @@ function entity_list_view:render()
             while clipper:Step() do
                 for i = clipper.DisplayStart + 1, clipper.DisplayEnd do
                     local tuple = self._entity_list[i]
-                    local ent = tuple.entity
-                    if ent:is_valid() then
+                    local entity = tuple.entity
+                    if entity:is_valid() then
                         local name = tuple.name
                         local is_anonymous = tuple.is_anonymous
-                        local is_hidden = ent:has_flag(entity_flags.hidden)
-                        local is_static = ent:has_flag(entity_flags.static)
-                        local is_transient = ent:has_flag(entity_flags.transient)
+                        local is_hidden = entity:has_flag(entity_flags.hidden)
+                        local is_static = entity:has_flag(entity_flags.static)
+                        local is_transient = entity:has_flag(entity_flags.transient)
                         local color = is_hidden and 0xff888888 or is_static and 0xffff8888 or is_transient and 0xff88ff88 or 0xffffffff
                         ui.PushStyleColor_U32(ffi.C.ImGuiCol_Text, color)
-                        if ui.Selectable(name, self.selected_entity == ent, 0, size) then
-                            self.selected_entity = ent
+                        if ui.Selectable(name, self.selected_entity == entity, 0, size) then
+                            self.selected_entity = entity
                             self._selected_entity_idx = i
                         end
                         if ui.IsItemHovered() and ui.IsMouseDoubleClicked(0) then
-                            self.selected_entity = ent
+                            self.selected_entity = entity
                             self.selected_wants_focus = true
                             self._selected_entity_idx = i
                         end
                         ui.PopStyleColor()
                         if ui.IsItemHovered() then
-                            ui.SetTooltip(is_anonymous and 'This entity has no name' or string.format('ID: %x', tonumber(ent.id)))
+                            ui.SetTooltip(is_anonymous and 'This entity has no name' or string.format('ID: %x', tonumber(entity._id)))
                         end
                     end
                 end

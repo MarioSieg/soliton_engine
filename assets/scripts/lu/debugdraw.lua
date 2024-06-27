@@ -85,7 +85,7 @@ end
 -- @tparam number snap_x The snap value.
 -- @tparam gmath.vec3 obb_color The color of the OBB.
 function debugdraw.draw_gizmo_manipulator(entity, op, mode, enable_snap, snap_x, obb_color)
-    cpp.__lu_dd_gizmo_manipulator(entity.id, op, mode, enable_snap, snap_x, obb_color)
+    cpp.__lu_dd_gizmo_manipulator(entity._id, op, mode, enable_snap, snap_x, obb_color)
 end
 
 --- Enables or disables the depth test.

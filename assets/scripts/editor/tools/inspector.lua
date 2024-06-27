@@ -101,32 +101,21 @@ function inspector:_inspect_vec3(name, vector3, step, min, max, fmt)
     return updated, vector3
 end
 
-function inspector:_component_base_header(instance)
+function inspector:_component_base_header()
     ui.PushStyleColor(ffi.C.ImGuiCol_Border, 0)
     ui.PushStyleColor(ffi.C.ImGuiCol_Button, 0)
     ui.SameLine(ui.GetWindowWidth() - header_buttons_offset)
     if ui.SmallButton(icons.i_trash_restore) then
-        if instance ~= nil then
-            instance:remove()
-            -- TODO: add component again with default values
-            self.properties_changed = true
-            return false
-        else
-            eprint('component instance is nil')
-        end
+        self.properties_changed = true
+        return false
     end
     if ui.IsItemHovered() then
         ui.SetTooltip('Reset component to default values')
     end
     ui.SameLine()
     if ui.SmallButton(icons.i_trash) then
-        if instance ~= nil then
-            instance:remove()
-            self.properties_changed = true
-            return false
-        else
-            eprint('component instance is nil')
-        end
+        self.properties_changed = true
+        return false
     end
     if ui.IsItemHovered() then
         ui.SetTooltip('Remove component')
@@ -136,36 +125,34 @@ function inspector:_component_base_header(instance)
 end
 
 function inspector:_inspect_component_transform()
-    local tra = self.selected_entity:get_component(components.transform)
+    local c_transform = self.selected_entity:get_component(components.transform)
     if ui.CollapsingHeader(icons.i_arrows_alt .. ' Transform', inspector_header_flags) then
-        if not self._component_base_header(tra) then
+        if not self:_component_base_header() then
+            self.selected_entity:remove_component(components.transform)
             return
         end
-        local pos = tra:get_position()
-        local rx, ry, rz = quat.to_euler(tra:get_rotation())
-        if rx == 0 then rx = 0 end -- convert -0.0 to 0.0
-        if ry == 0 then ry = 0 end -- convert -0.0 to 0.0
-        if rz == 0 then rz = 0 end -- convert -0.0 to 0.0
+        local pos = c_transform:get_position()
+        local rx, ry, rz = quat.to_euler(c_transform:get_rotation())
         local rot = vec3(deg(rx), deg(ry), deg(rz))
-        local scale = tra:get_scale()
+        local scale = c_transform:get_scale()
         ui.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff88ff88)
         local updated, pos = self:_inspect_vec3(icons.i_arrows_alt .. ' Position', pos)
         if updated then
-            tra:set_position(pos)
+            c_transform:set_position(pos)
             self.properties_changed = true
         end
         ui.PopStyleColor()
         ui.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff8888ff)
         local updated, rot = self:_inspect_vec3(icons.i_redo_alt .. ' Rotation', rot)
         if updated then
-            tra:set_rotation(quat.from_euler(rad(rot.x), rad(rot.y), rad(rot.z)))
+            c_transform:set_rotation(quat.from_euler(rad(rot.x), rad(rot.y), rad(rot.z)))
             self.properties_changed = true
         end
         ui.PopStyleColor()
         ui.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff88ffff)
         local updated, scale = self:_inspect_vec3(icons.i_expand_arrows .. ' Scale', scale)
         if updated then
-            tra:set_scale(scale)
+            c_transform:set_scale(scale)
             self.properties_changed = true
         end
         ui.PopStyleColor()
@@ -173,27 +160,28 @@ function inspector:_inspect_component_transform()
 end
 
 function inspector:_inspect_component_camera()
-    local cam = self.selected_entity:get_component(components.camera)
+    local c_camera = self.selected_entity:get_component(components.camera)
     if ui.CollapsingHeader(icons.i_camera .. ' Camera', inspector_header_flags) then
-        if not self._component_base_header(cam) then
+        if not self:_component_base_header() then
+            self.selected_entity:remove_component(components.camera)
             return
         end
-        local fov = cam:get_fov()
+        local fov = c_camera:get_fov()
         local updated, fov = self:_inspect_float(icons.i_eye .. ' FOV', fov, 0.1, 1.0, 180.0, '%.0f')
         if updated then
-            cam:set_fov(fov)
+            c_camera:set_fov(fov)
             self.properties_changed = true
         end
-        local near_z_clip = cam:get_near_clip()
+        local near_z_clip = c_camera:get_near_clip()
         local updated, near_z_clip = self:_inspect_float(icons.i_sign_in_alt .. ' Near Clip', near_z_clip, 1.0, 0.1, 10000.0, '%.0f')
         if updated then
-            cam:set_near_clip(near_z_clip)
+            c_camera:set_near_clip(near_z_clip)
             self.properties_changed = true
         end
-        local far_z_clip = cam:get_far_clip()
+        local far_z_clip = c_camera:get_far_clip()
         local updated, far_z_clip = self:_inspect_float(icons.i_sign_out_alt .. ' Far Clip', far_z_clip, 1.0, 0.1, 10000.0, '%.0f')
         if updated then
-            cam:set_far_clip(far_z_clip)
+            c_camera:set_far_clip(far_z_clip)
             self.properties_changed = true
         end
     end

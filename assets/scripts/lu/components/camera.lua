@@ -17,16 +17,17 @@ ffi.cdef [[
 ]]
 
 local camera = {
+    _id = 0x17df,
     _entity_id = 0,
     _new = function(self, entity_id)
         local o = {}
-        setmetatable(o, {__index = self})
+        setmetatable(o, { __index = self })
         o._entity_id = entity_id
         cpp.__lu_com_camera_add(entity_id)
         return o
     end,
     _exists = function(entity_id) return cpp.__lu_com_camera_exists(entity_id) end,
-    remove = function(self) cpp.__lu_com_camera_remove(self._entity_id) end,
+    _remove = function(entity_id) cpp.__lu_com_camera_remove(entity_id) end,
 
     get_fov = function(self) return cpp.__lu_com_camera_get_fov(self._entity_id) end,
     set_fov = function(self, fov) cpp.__lu_com_camera_set_fov(self._entity_id, fov) end,

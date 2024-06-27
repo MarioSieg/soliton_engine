@@ -23,16 +23,17 @@ ffi.cdef [[
 ]]
 
 local transform = {
+    _id = 0x6434,
     _entity_id = 0,
     _new = function(self, entity_id)
         local o = {}
-        setmetatable(o, {__index = self})
+        setmetatable(o, { __index = self })
         o._entity_id = entity_id
         cpp.__lu_com_transform_add(entity_id)
         return o
     end,
     _exists = function(entity_id) return cpp.__lu_com_transform_exists(entity_id) end,
-    remove = function(self) cpp.__lu_com_transform_remove(self._entity_id) end,
+    _remove = function(entity_id) cpp.__lu_com_transform_remove(entity_id) end,
 
     set_position = function(self, pos) cpp.__lu_com_transform_set_pos(self._entity_id, pos.x, pos.y, pos.z) end,
     get_position = function(self) return cpp.__lu_com_transform_get_pos(self._entity_id) end,

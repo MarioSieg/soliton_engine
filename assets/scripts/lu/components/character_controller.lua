@@ -21,16 +21,17 @@ ground_state = { -- Keep in sync with cpp++: CharacterBase.h
 }
 
 local character_controller = {
+    _id = 0x5527,
     _entity_id = 0,
     _new = function(self, entity_id)
         local o = {}
-        setmetatable(o, {__index = self})
+        setmetatable(o, { __index = self })
         o._entity_id = entity_id
         cpp.__lu_com_character_controller_add(entity_id)
         return o
     end,
     _exists = function(entity_id) return cpp.__lu_com_character_controller_exists(entity_id) end,
-    remove = function(self) cpp.__lu_com_character_controller_remove(self._entity_id) end,
+    _remove = function(entity_id) cpp.__lu_com_character_controller_remove(entity_id) end,
 
     get_linear_velocity = function(self) return cpp.__lu_com_character_controller_get_linear_velocity(self._entity_id) end,
     set_linear_velocity = function(self, velocity) cpp.__lu_com_character_controller_set_linear_velocity(self._entity_id, velocity) end,
