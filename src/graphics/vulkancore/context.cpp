@@ -358,7 +358,7 @@ namespace vkb {
     }
 
     auto context::recreate_swapchain() -> void {
-        m_swapchain->create(m_width, m_height, false, false);
+        m_swapchain->create(m_width, m_height, true, false);
     }
 
     auto context::create_msaa_target() -> void {
