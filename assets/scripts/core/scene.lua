@@ -8,7 +8,7 @@ local ffi = require 'ffi'
 local cpp = ffi.C
 local bit = require 'bit'
 local bor, band = bit.bor, bit.band
-local entity = require 'lu.entity'
+local entity = require 'entity'
 
 ffi.cdef[[
     typedef int lua_scene_id;

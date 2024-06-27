@@ -30,7 +30,7 @@ end
 
 lua_include_dirs = {
     'assets/scripts',
-    'assets/scripts/lu'
+    'assets/scripts/core'
 }
 
 -- add all other directories to package paths

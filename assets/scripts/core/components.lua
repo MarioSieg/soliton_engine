@@ -7,9 +7,9 @@
 
 --- components Module
 local components = {
-    transform = require 'lu.components.transform', -- transform component
-    camera = require 'lu.components.camera', -- camera component
-    character_controller = require 'lu.components.character_controller', -- Character controller component
+    transform = require 'components.transform', -- transform component
+    camera = require 'components.camera', -- camera component
+    character_controller = require 'components.character_controller', -- Character controller component
 }
 
 return components
