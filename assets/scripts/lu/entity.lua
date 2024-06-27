@@ -66,7 +66,7 @@ end
 --- Gets specified component from the entity or adds it if it does not exist.
 --- @tparam components.Component component The component class
 function entity:get_component(component)
-    if not component then return nil end
+    assert(component ~= nil)
     local com_id = component._id
     if self._component_cache[com_id] then
         return self._component_cache[com_id]
@@ -80,7 +80,7 @@ end
 --- Removes the specified component from the entity.
 --- @tparam components.Component component The component class
 function entity:remove_component(component)
-    if not component then return end
+    assert(component ~= nil)
     local com_id = component._id
     if self:has_component(component) then
         component._remove(self._id)
@@ -91,7 +91,7 @@ end
 --- Checks if the entity has the specified component.
 --- @tparam components.Component component The component class
 function entity:has_component(component)
-    if not component then return false end
+    assert(component ~= nil)
     local com_id = component._id
     return self._component_cache[com_id] ~= nil or component._exists(self._id)
 end

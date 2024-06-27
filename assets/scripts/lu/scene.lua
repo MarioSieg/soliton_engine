@@ -143,8 +143,9 @@ function scene._entity_query_end()
     cpp.__lu_scene_full_entity_query_end()
 end
 
-function scene.set_active_camera_entity(ent)
-    cpp.__lu_scene_set_active_camera_entity(ent.id)
+function scene.set_active_camera_entity(entity)
+    assert(entity ~= nil)
+    cpp.__lu_scene_set_active_camera_entity(entity._id)
 end
 
 function scene.get_active_camera_entity()
