@@ -58,11 +58,11 @@ function profiler:render()
             if ui.BeginTabItem(icons.i_code .. ' Scripting') then
                 if self.isProfilerRunning then
                     table.insert(fpsPlot, time.fps)
-                    startTime = startTime + time.deltaTime
+                    startTime = startTime + time.delta_time
                     if startTime >= timeLimit then
                         print('Stopped profiling')
                         local sum = 0.0
-                        for i=1, #fpsPlot do
+                        for i = 1, #fpsPlot do
                             sum = sum + fpsPlot[i]
                         end
                         fpsAvg = sum / #fpsPlot
