@@ -1,8 +1,8 @@
 -- Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 ----------------------------------------------------------------------------
--- debugdraw Module - Functions for debugging drawing and visualization.
--- @module debugdraw
+--- debugdraw Module - Functions for debugging drawing and visualization.
+--- @module debugdraw
 ------------------------------------------------------------------------------
 
 local ffi = require 'ffi'

@@ -1,8 +1,8 @@
 -- Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 ----------------------------------------------------------------------------
--- app Module - Functions for interacting with the host application, window and OS.
--- @module app
+--- app Module - Functions for interacting with the host application, window and OS.
+--- @module app
 ------------------------------------------------------------------------------
 
 local jit = require 'jit'

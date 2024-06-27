@@ -1,8 +1,8 @@
 -- Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 ----------------------------------------------------------------------------
--- input Module - Functions for input handling.
--- @module input
+--- input Module - Functions for input handling.
+--- @module input
 ------------------------------------------------------------------------------
 
 local ffi = require 'ffi'

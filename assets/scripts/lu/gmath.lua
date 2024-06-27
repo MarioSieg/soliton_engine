@@ -1,8 +1,8 @@
 -- Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 ----------------------------------------------------------------------------
--- gmath Module - gmath functions and constants.
--- @module gmath
+--- gmath Module - gmath functions and constants.
+--- @module gmath
 ------------------------------------------------------------------------------
 
 local bit = require 'bit'

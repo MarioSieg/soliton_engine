@@ -1,8 +1,8 @@
 -- Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 ----------------------------------------------------------------------------
--- components Module - Bundles all components for the entity-component-system.
--- @module components
+--- components Module - Bundles all components for the entity-component-system.
+--- @module components
 ------------------------------------------------------------------------------
 
 --- components Module
