@@ -14,7 +14,7 @@ var namespacegraphics =
     [ "texture_format_info", "structgraphics_1_1texture__format__info.html", "structgraphics_1_1texture__format__info" ],
     [ "thread_shared_ctx", "structgraphics_1_1thread__shared__ctx.html", "structgraphics_1_1thread__shared__ctx" ],
     [ "thread_sig", "classgraphics_1_1thread__sig.html", "classgraphics_1_1thread__sig" ],
-    [ "render_bucket_callback", "namespacegraphics.html#ab5fef6b3b8381f338a305431c196c79e", null ],
+    [ "render_bucket_callback", "namespacegraphics.html#a9f8debfb85c1984bd04c53a8207ae22d", null ],
     [ "pipeline_type", "namespacegraphics.html#aa75145e4cda86d7a66d6739ccd38aeae", [
       [ "graphics", "namespacegraphics.html#aa75145e4cda86d7a66d6739ccd38aeaea73b0472d43069103642ffa07997ff20a", null ]
     ] ],

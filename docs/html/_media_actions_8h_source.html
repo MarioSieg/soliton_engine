@@ -119,72 +119,64 @@ $(function(){initNavTree('_media_actions_8h_source.html',''); initResizable(); }
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;<a class="code" href="_media_element_8h.html">NsApp/MediaElement.h</a>&gt;</span></div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespace_noesis_app.html">NoesisApp</a></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span>NoesisApp</div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>{</div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>NS_WARNING_PUSH</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>NS_CLANG_WARNING_DISABLE(<span class="stringliteral">&quot;-Wdocumentation&quot;</span>)</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
-<div class="foldopen" id="foldopen00042" data-start="{" data-end="};">
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_play_media_action.html">   42</a></span>class <a class="code hl_define" href="_interactivity_api_8h.html#a19ef9be0d7b903c63e87d626acc9db84">NS_APP_INTERACTIVITY_API</a> <a class="code hl_class" href="class_noesis_app_1_1_play_media_action.html">PlayMediaAction</a>: public <a class="code hl_class" href="class_noesis_app_1_1_targeted_trigger_action_t.html">TargetedTriggerActionT</a>&lt;<a class="code hl_class" href="class_noesis_app_1_1_media_element.html">MediaElement</a>&gt;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>class <a class="code hl_define" href="_interactivity_api_8h.html#a19ef9be0d7b903c63e87d626acc9db84">NS_APP_INTERACTIVITY_API</a> PlayMediaAction: public TargetedTriggerActionT&lt;MediaElement&gt;</div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>{</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="keyword">protected</span>:</div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <a class="code hl_class" href="class_noesis_1_1_ptr.html">Noesis::Ptr&lt;Noesis::Freezable&gt;</a> CreateInstanceCore() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    Noesis::Ptr&lt;Noesis::Freezable&gt; CreateInstanceCore() <span class="keyword">const override</span>;</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordtype">void</span> Invoke(Noesis::BaseComponent* parameter) <span class="keyword">override</span>;</div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="comment">//}</span></div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    NS_DECLARE_REFLECTION(<a class="code hl_class" href="class_noesis_app_1_1_play_media_action.html">PlayMediaAction</a>, <a class="code hl_class" href="class_noesis_app_1_1_targeted_trigger_action_t.html">TargetedTriggerActionT&lt;MediaElement&gt;</a>)</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    NS_DECLARE_REFLECTION(PlayMediaAction, TargetedTriggerActionT&lt;MediaElement&gt;)</div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>};</div>
-</div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
-<div class="foldopen" id="foldopen00077" data-start="{" data-end="};">
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_pause_media_action.html">   77</a></span><span class="keyword">class </span><a class="code hl_define" href="_interactivity_api_8h.html#a19ef9be0d7b903c63e87d626acc9db84">NS_APP_INTERACTIVITY_API</a> <a class="code hl_class" href="class_noesis_app_1_1_pause_media_action.html">PauseMediaAction</a>: <span class="keyword">public</span> <a class="code hl_class" href="class_noesis_app_1_1_targeted_trigger_action_t.html">TargetedTriggerActionT</a>&lt;MediaElement&gt;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span><span class="keyword">class </span><a class="code hl_define" href="_interactivity_api_8h.html#a19ef9be0d7b903c63e87d626acc9db84">NS_APP_INTERACTIVITY_API</a> PauseMediaAction: <span class="keyword">public</span> TargetedTriggerActionT&lt;MediaElement&gt;</div>
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>{</div>
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span><span class="keyword">protected</span>:</div>
 <div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <a class="code hl_class" href="class_noesis_1_1_ptr.html">Noesis::Ptr&lt;Noesis::Freezable&gt;</a> CreateInstanceCore() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    Noesis::Ptr&lt;Noesis::Freezable&gt; CreateInstanceCore() <span class="keyword">const override</span>;</div>
 <div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
 <div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
 <div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keywordtype">void</span> Invoke(Noesis::BaseComponent* parameter) <span class="keyword">override</span>;</div>
 <div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="comment">//}</span></div>
 <div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    NS_DECLARE_REFLECTION(<a class="code hl_class" href="class_noesis_app_1_1_pause_media_action.html">PauseMediaAction</a>, <a class="code hl_class" href="class_noesis_app_1_1_targeted_trigger_action_t.html">TargetedTriggerActionT&lt;MediaElement&gt;</a>)</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    NS_DECLARE_REFLECTION(PauseMediaAction, TargetedTriggerActionT&lt;MediaElement&gt;)</div>
 <div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>};</div>
-</div>
 <div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
-<div class="foldopen" id="foldopen00112" data-start="{" data-end="};">
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_rewind_media_action.html">  112</a></span><span class="keyword">class </span><a class="code hl_define" href="_interactivity_api_8h.html#a19ef9be0d7b903c63e87d626acc9db84">NS_APP_INTERACTIVITY_API</a> <a class="code hl_class" href="class_noesis_app_1_1_rewind_media_action.html">RewindMediaAction</a>: <span class="keyword">public</span> <a class="code hl_class" href="class_noesis_app_1_1_targeted_trigger_action_t.html">TargetedTriggerActionT</a>&lt;MediaElement&gt;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span><span class="keyword">class </span><a class="code hl_define" href="_interactivity_api_8h.html#a19ef9be0d7b903c63e87d626acc9db84">NS_APP_INTERACTIVITY_API</a> RewindMediaAction: <span class="keyword">public</span> TargetedTriggerActionT&lt;MediaElement&gt;</div>
 <div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>{</div>
 <div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span><span class="keyword">protected</span>:</div>
 <div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <a class="code hl_class" href="class_noesis_1_1_ptr.html">Noesis::Ptr&lt;Noesis::Freezable&gt;</a> CreateInstanceCore() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    Noesis::Ptr&lt;Noesis::Freezable&gt; CreateInstanceCore() <span class="keyword">const override</span>;</div>
 <div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
 <div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
 <div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="keywordtype">void</span> Invoke(Noesis::BaseComponent* parameter) <span class="keyword">override</span>;</div>
 <div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="comment">//}</span></div>
 <div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    NS_DECLARE_REFLECTION(<a class="code hl_class" href="class_noesis_app_1_1_rewind_media_action.html">RewindMediaAction</a>, <a class="code hl_class" href="class_noesis_app_1_1_targeted_trigger_action_t.html">TargetedTriggerActionT&lt;MediaElement&gt;</a>)</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    NS_DECLARE_REFLECTION(RewindMediaAction, TargetedTriggerActionT&lt;MediaElement&gt;)</div>
 <div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>};</div>
-</div>
 <div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
-<div class="foldopen" id="foldopen00147" data-start="{" data-end="};">
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_stop_media_action.html">  147</a></span><span class="keyword">class </span><a class="code hl_define" href="_interactivity_api_8h.html#a19ef9be0d7b903c63e87d626acc9db84">NS_APP_INTERACTIVITY_API</a> <a class="code hl_class" href="class_noesis_app_1_1_stop_media_action.html">StopMediaAction</a>: <span class="keyword">public</span> <a class="code hl_class" href="class_noesis_app_1_1_targeted_trigger_action_t.html">TargetedTriggerActionT</a>&lt;MediaElement&gt;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span><span class="keyword">class </span><a class="code hl_define" href="_interactivity_api_8h.html#a19ef9be0d7b903c63e87d626acc9db84">NS_APP_INTERACTIVITY_API</a> StopMediaAction: <span class="keyword">public</span> TargetedTriggerActionT&lt;MediaElement&gt;</div>
 <div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>{</div>
 <div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span><span class="keyword">protected</span>:</div>
 <div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span> </div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    <a class="code hl_class" href="class_noesis_1_1_ptr.html">Noesis::Ptr&lt;Noesis::Freezable&gt;</a> CreateInstanceCore() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    Noesis::Ptr&lt;Noesis::Freezable&gt; CreateInstanceCore() <span class="keyword">const override</span>;</div>
 <div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span> </div>
 <div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span> </div>
 <div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    <span class="keywordtype">void</span> Invoke(Noesis::BaseComponent* parameter) <span class="keyword">override</span>;</div>
 <div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    <span class="comment">//}</span></div>
 <div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span> </div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    NS_DECLARE_REFLECTION(<a class="code hl_class" href="class_noesis_app_1_1_stop_media_action.html">StopMediaAction</a>, <a class="code hl_class" href="class_noesis_app_1_1_targeted_trigger_action_t.html">TargetedTriggerActionT&lt;MediaElement&gt;</a>)</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    NS_DECLARE_REFLECTION(StopMediaAction, TargetedTriggerActionT&lt;MediaElement&gt;)</div>
 <div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>};</div>
-</div>
 <div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span> </div>
 <div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>NS_WARNING_POP</div>
 <div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span> </div>
@@ -196,14 +188,6 @@ $(function(){initNavTree('_media_actions_8h_source.html',''); initResizable(); }
 <div class="ttc" id="a_interactivity_api_8h_html_a19ef9be0d7b903c63e87d626acc9db84"><div class="ttname"><a href="_interactivity_api_8h.html#a19ef9be0d7b903c63e87d626acc9db84">NS_APP_INTERACTIVITY_API</a></div><div class="ttdeci">#define NS_APP_INTERACTIVITY_API</div><div class="ttdef"><b>Definition</b> InteractivityApi.h:15</div></div>
 <div class="ttc" id="a_media_element_8h_html"><div class="ttname"><a href="_media_element_8h.html">MediaElement.h</a></div></div>
 <div class="ttc" id="a_targeted_trigger_action_8h_html"><div class="ttname"><a href="_targeted_trigger_action_8h.html">TargetedTriggerAction.h</a></div></div>
-<div class="ttc" id="aclass_noesis_1_1_ptr_html"><div class="ttname"><a href="class_noesis_1_1_ptr.html">Noesis::Ptr</a></div><div class="ttdef"><b>Definition</b> ComparisonLogic.h:19</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_media_element_html"><div class="ttname"><a href="class_noesis_app_1_1_media_element.html">NoesisApp::MediaElement</a></div><div class="ttdef"><b>Definition</b> MediaElement.h:95</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_pause_media_action_html"><div class="ttname"><a href="class_noesis_app_1_1_pause_media_action.html">NoesisApp::PauseMediaAction</a></div><div class="ttdef"><b>Definition</b> MediaActions.h:78</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_play_media_action_html"><div class="ttname"><a href="class_noesis_app_1_1_play_media_action.html">NoesisApp::PlayMediaAction</a></div><div class="ttdef"><b>Definition</b> MediaActions.h:43</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_rewind_media_action_html"><div class="ttname"><a href="class_noesis_app_1_1_rewind_media_action.html">NoesisApp::RewindMediaAction</a></div><div class="ttdef"><b>Definition</b> MediaActions.h:113</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_stop_media_action_html"><div class="ttname"><a href="class_noesis_app_1_1_stop_media_action.html">NoesisApp::StopMediaAction</a></div><div class="ttdef"><b>Definition</b> MediaActions.h:148</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_targeted_trigger_action_t_html"><div class="ttname"><a href="class_noesis_app_1_1_targeted_trigger_action_t.html">NoesisApp::TargetedTriggerActionT</a></div><div class="ttdoc">Templatized base class for TargetedTriggerAction.</div><div class="ttdef"><b>Definition</b> TargetedTriggerAction.h:89</div></div>
-<div class="ttc" id="anamespace_noesis_app_html"><div class="ttname"><a href="namespace_noesis_app.html">NoesisApp</a></div><div class="ttdef"><b>Definition</b> Application.cpp:21</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

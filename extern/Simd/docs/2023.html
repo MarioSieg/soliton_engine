@@ -1,0 +1,784 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html" />
+<title>Simd Library Release Notes (2023)</title>
+</head>
+<body> <center><table width=1024><tr><td>
+<a id="HOME"><a>
+<center>
+<img width="200" height="100" src="logo.png">
+<h1>Simd Library Release Notes (2023).</h1>
+<a href="index.html">Home</a> |
+<a href="2024.html">Release Notes</a> | 
+<a href="download.html">Download</a> | 
+<a href="help/index.html">Documentation</a> | 
+<a href="http://github.com/ermig1979/Simd/issues">Issues</a> | 
+<a href="http://github.com/ermig1979/Simd" target="_top">GitHub</a> 
+</center>
+<hr/> 
+</td></tr><tr><td>
+
+<center>
+ <a href="2024.html">2024</a> |
+ <a href="2023.html">2023</a> |
+ <a href="2022.html">2022</a> |
+ <a href="2021.html">2021</a> |
+ <a href="2020.html">2020</a> |
+ <a href="2019.html">2019</a> |
+ <a href="2018.html">2018</a> |
+ <a href="2017.html">2017</a> |
+ <a href="2016.html">2016</a> |
+ <a href="2015.html">2015</a> |
+ <a href="2014.html">2014</a> |
+ <a href="2013.html">2013</a>
+</center>
+
+<hr/>
+<h3 id="R132">December 2, 2023 (version 5.4.132)</h3>
+<h4>Algorithms</h4>
+<h5>New features</h5>
+<ul>
+ <li>Support of RGBA-32 input image format in base implementation, SSE4.1, AVX2, AVX-512BW, NEON optimizations of function SynetSetInput.</li>
+</ul>
+
+<h5>Bug fixing</h5>
+<ul>
+ <li>Wrong order of SIMD_DEPRECATED macro.</li>
+ <li>Error in AVX-512BW optimizations of function SynetSoftmaxLayerForward.</li>
+</ul>
+
+<h4>Python wrapper</h4>
+<h5>New features</h5>
+<ul>
+ <li>Wrapper for function SimdVersion.</li>
+ <li>Wrapper for function SimdRelease.</li>
+ <li>Wrapper for function SimdCpuDesc.</li>
+ <li>Wrapper for function SimdCpuInfo.</li>
+ <li>Wrapper for enumeration SimdCpuDescType.</li>
+ <li>Wrapper for enumeration SimdCpuInfoType.</li>
+ <li>Wrapper for function SimdPerformanceStatistic.</li>
+ <li>Wrapper for function SimdAllocate.</li>
+ <li>Wrapper for function SimdFree.</li>
+ <li>Wrapper for function SimdAlign.</li>
+ <li>Wrapper for function SimdAlignment.</li>
+ <li>Wrapper for function SimdGetThreadNumber.</li>
+ <li>Wrapper for function SimdSetThreadNumber.</li>
+ <li>Wrapper for function SimdEmpty.</li>
+ <li>Wrapper for function SimdGetFastMode.</li>
+ <li>Wrapper for function SimdSetFastMode.</li>
+ <li>Wrapper for enumeration SimdPixelFormatType.</li>
+ <li>Class Simd.Image.</li>
+ <li>Wrapper for function SimdCrc32.</li>
+ <li>Wrapper for function SimdCrc32c.</li>
+ <li>Wrapper for enumeration SimdImageFileType.</li>
+ <li>Wrapper for function SimdImageSaveToFile.</li>
+ <li>Wrapper for function SimdImageLoadFromFile.</li>
+ <li>Wrapper for enumeration Simd::View::Position.</li>
+ <li>Method Simd.Image.Region.</li>
+ <li>Method Simd.Image.RegionAt.</li>
+ <li>Wrapper for enumeration Simd.ResizeMethod.</li>
+ <li>Wrapper for enumeration Simd.ResizeChannel.</li>
+ <li>Wrapper for function SimdResizerInit.</li>
+ <li>Wrapper for function SimdResizerRun.</li>
+ <li>Function Simd.Resize.</li>
+ <li>Function Simd.Resized.</li>
+ <li>Wrapper for function SimdSynetSetInput.</li>
+ <li>Function Simd.SynetSetInput.</li>
+ <li>Wrapper for enumeration Simd.TensorFormat.</li>
+ <li>Wrapper for enumeration Simd.TensorData.</li>
+ <li>Wrapper for enumeration Simd.YuvType.</li>
+ <li>Wrapper for function SimdFillPixel.</li>
+ <li>Function Simd.FillPixel.</li>
+</ul>
+
+<h4>Infrastructure</h4>
+<h5>New features</h5>
+<ul>
+ <li>SimdPy MSVS project.</li>
+</ul>
+
+<h4>Documentation</h4>
+<h5>New features</h5>
+<ul>
+ <li>Doxygen generation of documentation for Python wrapper.</li>
+</ul>
+
+<a href="#HOME">Home</a>
+<hr/>
+<h3 id="R131">November 1, 2023 (version 5.3.131)</h3>
+<h4>Algorithms</h4>
+<h5>New features</h5>
+<ul>
+ <li>NEON optimizations of function DescrIntCosineDistance.</li>
+ <li>NEON optimizations of function DescrIntCosineDistancesMxNa.</li>
+ <li>NEON optimizations of function DescrIntCosineDistancesMxNp.</li>
+</ul>
+<h5>Improving</h5>
+<ul>
+ <li>NEON optimizations of function DescrIntDecode32f.</li>
+ <li>NEON optimizations of function CorrelationSum.</li>
+ <li>Base implementation and SSE4.1 optimizations of ImageJpegLoader class.</li>
+</ul>
+<h5>Bug fixing</h5>
+<ul>
+ <li>Error in defenition of SIMD_CPP_2011_ENABLE macro for Visual Studio.</li>
+ <li>Error in defenition of SIMD_CPP_2014_ENABLE macro for Visual Studio.</li>
+ <li>Error in defenition of SIMD_CPP_2017_ENABLE macro for Visual Studio.</li>
+ <li>Compiler warning in method Detection::InitLevels.</li>
+ <li>Compiler warning in method Detection::FillLevels.</li>
+</ul>
+
+<h4>Infrastructure</h4>
+<h5>New features</h5>
+<ul>
+ <li>Cmake SIMD_UNINSTALL option.</li>
+ <li>Cmake SIMD_INSTALL option.</li>
+</ul>
+
+<h4>The use examples</h4>
+<h5>New features</h5>
+<ul>
+ <li>An example how to use Simd::ImageMatcher to find image duplicates.</li>
+</ul>
+
+<a href="#HOME">Home</a>
+<hr/>
+<h3 id="R130">October 2, 2023 (version 5.3.130)</h3>
+<h4>Algorithms</h4>
+<h5>New features</h5>
+<ul>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW, NEON optimizations of function BgrToYuv420pV2.</li>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW, NEON optimizations of function BgrToYuv422pV2.</li>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW, NEON optimizations of function BgrToYuv444pV2.</li>
+ <li>Parameter yuvType in function Simd::BgrToYuv420p.</li>
+ <li>Parameter yuvType in function Simd::BgrToYuv422p.</li>
+ <li>Parameter yuvType in function Simd::BgrToYuv444p.</li>
+ <li>The mark of function SimdBgrToYuv420p as deprecated.</li>
+ <li>The mark of function SimdBgrToYuv422p as deprecated.</li>
+ <li>The mark of function SimdBgrToYuv444p as deprecated.</li>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW, NEON optimizations of function Yuv420pToRgbV2.</li>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW, NEON optimizations of function Yuv422pToRgbV2.</li>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW, NEON optimizations of function Yuv444pToRgbV2.</li>
+ <li>Parameter yuvType in function Simd::Yuv420pToRgb.</li>
+ <li>Parameter yuvType in function Simd::Yuv422pToRgb.</li>
+ <li>Parameter yuvType in function Simd::Yuv444pToRgb</li>
+ <li>The mark of function SimdYuv420pToRgb as deprecated.</li>
+ <li>The mark of function SimdYuv422pToRgb as deprecated.</li>
+ <li>The mark of function SimdYuv444pToRgb as deprecated.</li>
+ <li>NEON optimizations of function AlphaBlendingBgraToYuv420p.</li>
+ <li>NEON optimizations of function DescrIntEncode32f.</li>
+ <li>NEON optimizations of function DescrIntEncode16f.</li>
+ <li>NEON optimizations of function DescrIntDecode32f.</li>
+ <li>NEON optimizations of function DescrIntDecode16f.</li>
+</ul>
+<h5>Bug fixing</h5>
+<ul>
+ <li>Error in AVX-512BW optimizations of function SynetSoftmaxLayerForward.</li>
+ <li>Error in AVX2 optimizations of class ResizerByteArea2x2 (internal buffer overflow).</li>
+ <li>Error in function Simd::BgraToYuv420p.</li>
+ <li>Error in function Simd::BgraToYuv422p.</li>
+ <li>Error in function Simd::BgraToYuv444p.</li>
+ <li>Error in NEON optimizations of class MergedConvolution32fCd.</li>
+</ul>
+
+<h4>Test framework</h4>
+<h5>New features</h5>
+<ul>
+ <li>Tests for verifying functionality of function BgrToYuv420pV2.</li>
+ <li>Tests for verifying functionality of function BgrToYuv422pV2.</li>
+ <li>Tests for verifying functionality of function BgrToYuv444pV2.</li>
+ <li>Tests for verifying functionality of function Yuv420pToRgbV2.</li>
+ <li>Tests for verifying functionality of function Yuv422pToRgbV2.</li>
+ <li>Tests for verifying functionality of function Yuv444pToRgbV2.</li>
+</ul>
+
+<a href="#HOME">Home</a>
+<hr/>
+<h3 id="R129">September 4, 2023 (version 5.3.129)</h3>
+<h4>Algorithms</h4>
+<h5>New features</h5>
+<ul>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW, NEON optimizations of function Yuv420pToBgrV2.</li>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW, NEON optimizations of function Yuv422pToBgrV2.</li>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW, NEON optimizations of function Yuv444pToBgrV2.</li>
+ <li>Parameter yuvType in function Simd::Yuv420pToBgr.</li>
+ <li>Parameter yuvType in function Simd::Yuv422pToBgr.</li>
+ <li>Parameter yuvType in function Simd::Yuv444pToBgr.</li>
+ <li>The mark of function SimdYuv420pToBgr as deprecated.</li>
+ <li>The mark of function SimdYuv422pToBgr as deprecated.</li>
+ <li>The mark of function SimdYuv444pToBgr as deprecated.</li>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW, NEON optimizations of function Yuv422pToBgraV2.</li>
+ <li>Parameter yuvType in function Simd::Yuv420pToBgra.</li>
+ <li>Parameter yuvType in function Simd::Yuv422pToBgra.</li>
+ <li>Parameter yuvType in function Simd::Yuv444pToBgra.</li>
+ <li>The mark of function SimdYuv420pToBgra as deprecated.</li>
+ <li>The mark of function SimdYuv422pToBgra as deprecated.</li>
+ <li>The mark of function SimdYuv444pToBgra as deprecated.</li>
+ <li>Parameter yuvType in function Simd::BgraToYuv420p.</li>
+ <li>Parameter yuvType in function Simd::BgraToYuv422p.</li>
+ <li>Parameter yuvType in function Simd::BgraToYuv444p.</li>
+ <li>Parameter yuvType in function Simd::BgraToYuva420p.</li>
+ <li>The mark of function SimdBgraToYuv420p as deprecated.</li>
+ <li>The mark of function SimdBgraToYuv422p as deprecated.</li>
+ <li>The mark of function SimdBgraToYuv444p as deprecated.</li>
+ <li>The mark of function SimdBgraToYuva420p as deprecated.</li>
+ <li>The mark of function SimdResizeBilinear as deprecated.</li>
+ <li>The mark of function Simd::ResizeBilinear as deprecated.</li>
+ <li>The mark of function Simd::ResizeAreaGray as deprecated.</li>
+ <li>The mark of function Simd::ResizeArea as deprecated.</li>
+ <li>The mark of function Simd::InterferenceIncrement as deprecated.</li>
+ <li>The mark of function Simd::InterferenceIncrementMasked as deprecated.</li>
+ <li>The mark of function Simd::InterferenceDecrement as deprecated.</li>
+ <li>The mark of function Simd::InterferenceDecrementMasked as deprecated.</li>
+ <li>The mark of function SimdSynetFusedLayerForward0 as deprecated.</li>
+ <li>The mark of function SimdSynetFusedLayerForward1 as deprecated.</li>
+ <li>The mark of function SimdSynetFusedLayerForward2 as deprecated.</li>
+ <li>The mark of function SimdSynetFusedLayerForward3 as deprecated.</li>
+ <li>The mark of function SimdSynetFusedLayerForward4 as deprecated.</li>
+ <li>The mark of function SimdSynetFusedLayerForward8 as deprecated.</li>
+ <li>The mark of function SimdSynetFusedLayerForward9 as deprecated.</li>
+</ul>
+<h5>Bug fixing</h5>
+<ul>
+ <li>Error in NEON optimizations of Resizer engine.</li>
+ <li>The memory reading outside border of input array in Base implementation, SSE4.1, AVX2, AVX-512BW optimizations of function DescrIntDecode32f.</li>
+ <li>The memory reading outside border of input array in Base implementation, SSE4.1, AVX2, AVX-512BW optimizations of function DescrIntDecode16f.</li>
+ <li>The memory reading outside border of input array in Base implementation, SSE4.1, AVX2 optimizations of function DescrIntCosineDistance.</li>
+ <li>The memory reading outside border of input array in Base implementation, SSE4.1, AVX2 optimizations of function DescrIntCosineDistancesMxNa.</li>
+ <li>The memory reading outside border of input array in Base implementation, SSE4.1, AVX2 optimizations of function DescrIntCosineDistancesMxNp.</li>
+ <li>Error in AVX-512BW optimizations of function DescrIntEncode32f.</li>
+ <li>Error in AVX-512BW optimizations of function DescrIntEncode16f.</li>
+ <li>Compiler error in function Simd::ResizeArea.</li>
+ <li>Error in SSE4.1, AVX, AVX2, AVX-512BW, NEON optimizations of class MergedConvolution32fCd.</li>
+</ul>
+
+<h4>Test framework</h4>
+<h5>New features</h5>
+<ul>
+ <li>Tests for verifying functionality of function Yuv420pToBgrV2.</li>
+ <li>Tests for verifying functionality of function Yuv422pToBgrV2.</li>
+ <li>Tests for verifying functionality of function Yuv444pToBgrV2.</li>
+ <li>Tests for verifying functionality of function Yuv422pToBgraV2.</li>
+ <li>Special test for verifying functionality of function Simd::ResizeAreaGray.</li>
+ <li>Special test for verifying functionality of function Simd::ResizeArea.</li>
+</ul>
+
+<a href="#HOME">Home</a>
+<hr/>
+<h3 id="R128">August 1, 2023 (version 5.3.128)</h3>
+<h4>Algorithms</h4>
+<h5>New features</h5>
+<ul>
+ <li>Support of SimdCpuInfoRam in function SimdCpuInfo.</li>
+ <li>Support of SimdCpuInfoRam in function Simd::PrintInfo.</li>
+ <li>Base implementation of function SimdCpuDesc.</li>
+ <li>Base implementation of SynetGridSample2dRef class.</li>
+ <li>Base implementation, SSE4.1, AVX2 optimizations of SynetGridSample2d32fBlZ class.</li>
+</ul>
+<h5>Bug fixing</h5>
+<ul>
+ <li>Error in AVX-512VNNI optimizations of class SynetMergedConvolution8iCdc.</li>
+ <li>Error in AVX-512VNNI optimizations of class SynetMergedConvolution8iCd.</li>
+ <li>Error in AVX-512VNNI optimizations of class SynetMergedConvolution8iDc.</li>
+ <li>Error (assert) in Base implementation of class ResizerNearest.</li>
+ <li>Error in SSE4.1, AVX, AVX2, AVX-512BW optimizations of class SynetMergedConvolution32fCd.</li>
+</ul>
+
+<h4>Test framework</h4>
+<h5>New features</h5>
+<ul>
+ <li>Tests for verifying functionality of SynetGridSample2d engine.</li>
+</ul>
+<h5>Improving</h5>
+<ul>
+ <li>WIN32 performance report.</li>
+</ul>
+
+<h4>Infrastructure</h4>
+<h5>New features</h5>
+<ul>
+ <li>Github actions script for CMake (build and test for GCC-13 (instead of GCC-12), Linux).</li>
+</ul>
+
+<h4>Documentation</h4>
+<h5>Bug fixing</h5>
+<ul>
+ <li>Wrong description of function SimdDescrIntInit.</li>
+</ul>
+
+<a href="#HOME">Home</a>
+<hr/>
+<h3 id="R127">July 4, 2023 (version 5.3.127)</h3>
+<h4>Algorithms</h4>
+<h5>New features</h5>
+<ul>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW optimizations of function DescrIntEncode16f.</li>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW optimizations of function DescrIntDecode16f.</li>
+ <li>Support of 4-bit and 5-bit depth in Base implementation, SSE4.1, AVX2, AVX-512BW optimizations of function DescrIntEncode32f.</li>
+ <li>Support of 4-bit and 5-bit depth in Base implementation, SSE4.1, AVX2, AVX-512BW optimizations of function DescrIntEncode16f.</li>
+ <li>Support of 4-bit and 5-bit depth in Base implementation, SSE4.1, AVX2, AVX-512BW optimizations of function DescrIntDecode32f.</li>
+ <li>Support of 4-bit and 5-bit depth in Base implementation, SSE4.1, AVX2, AVX-512BW optimizations of function DescrIntDecode16f.</li>
+ <li>Support of 4-bit and 5-bit depth in Base implementation, SSE4.1, AVX2, AVX-512BW optimizations of function DescrIntCosineDistance.</li>
+ <li>Support of 4-bit and 5-bit depth in Base implementation, SSE4.1, AVX2, AVX-512BW, AVX-512VNNI optimizations of function DescrIntCosineDistancesMxNp.</li>
+ <li>Support of 4-bit and 5-bit depth in Base implementation, SSE4.1, AVX2, AVX-512BW, AVX-512VNNI optimizations of function DescrIntCosineDistancesMxNa.</li>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW optimizations of function SynetNormalizeLayerForwardV3.</li>
+</ul>
+<h5>Improving</h5>
+<ul>
+ <li>SSE4.1, AVX2, AVX-512BW optimizations of function DescrIntCosineDistancesMxNp for 4, 5, 6, 7-bits depth.</li>
+ <li>SSE4.1, AVX2, AVX-512BW optimizations of function DescrIntCosineDistancesMxNa for 4, 5, 6, 7-bits depth.</li>
+</ul>
+<h5>Bug fixing</h5>
+<ul>
+ <li>Compiler error in file SimdYuvToBgr.h.</li>
+</ul>
+<h5>Renaming</h5>
+<ul>
+ <li>Function DescrIntEncode to DescrIntEncode32f.</li>
+ <li>Function DescrIntDecode to DescrIntDecode32f.</li>
+</ul>
+
+<h4>Test framework</h4>
+<h5>New features</h5>
+<ul>
+ <li>Tests for verifying functionality of function DescrIntEncode16f.</li>
+ <li>Tests for verifying functionality of function DescrIntDecode16f.</li>
+ <li>Tests for verifying functionality of function SynetNormalizeLayerForwardV3</li>
+</ul>
+<h5>Improving</h5>
+<ul>
+ <li>WIN32 exception handling.</li>
+</ul>
+
+<h4>Infrastructure</h4>
+<h5>Improving</h5>
+<ul>
+ <li>Host Properties step in Github actions script for MSBuild.</li>
+</ul>
+
+<a href="#HOME">Home</a>
+<hr/>
+<h3 id="R126">June 5, 2023 (version 5.3.126)</h3>
+<h4>Algorithms</h4>
+<h5>New features</h5>
+<ul>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW optimizations of function DescrIntEncode.</li>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW optimizations of function DescrIntDecode.</li>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW optimizations of function DescrIntCosineDistance.</li>
+ <li>Base implementation optimizations of function DescrIntVectorNorm.</li>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW optimizations of function DescrIntCosineDistancesMxNp.</li>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW optimizations of function DescrIntCosineDistancesMxNa.</li>
+ <li>SimdSynetUnaryOperation32fRcp member in enumeration SimdSynetUnaryOperationType.</li>
+ <li>Support of SimdSynetUnaryOperation32fRcp in Base implementation, SSE4.1, AVX2, AVX-512BW, NEON optimizations of function SynetUnaryOperation32f.</li>
+ <li>SimdSynetUnaryOperation32fNot member in enumeration SimdSynetUnaryOperationType.</li>
+ <li>Support of SimdSynetUnaryOperation32fNot in Base implementation, SSE4.1, AVX2, AVX-512BW, NEON optimizations of function SynetUnaryOperation32f.</li>
+ <li>Support of SimdSynetUnaryOperation32fNot in Base implementation, SSE4.1, AVX2, AVX-512BW, NEON optimizations of function SynetUnaryOperation32f.</li>
+ <li>Helper function Simd::InvertAffineTransform.</li>
+</ul>
+<h5>Improving</h5>
+<ul>
+ <li>SSE4.1, AVX, AVX-512BW optimizations of method SynetDeconvolution32fGemmNN::RowToImg.</li>
+ <li>AVX-512BW optimizations of function SynetUnaryOperation32f (case of SimdSynetUnaryOperation32fLog, SimdSynetUnaryOperation32fExp).</li>
+ <li>AVX-512BW optimizations of function SynetSoftplus32f.</li>
+</ul>
+<h5>Bug fixing</h5>
+<ul>
+ <li>Error in AVX2 optimizations of function SynetSoftmaxLayerForward.</li>
+ <li>GCC compiler error in file SimdDrawing.hpp (Windows, MinGW).</li>
+ <li>GCC compiler error in function Test::FileExists (Windows, MinGW).</li>
+ <li>Crash in function SimdSynetDeconvolution32fForward (Linux, GCC-12, GCC-13).</li>
+ <li>Crash in function Base::AlgCacheL3 (Windows, MinGW).</li>
+ <li>Using of _WIN32 macro instead of WIN32.</li>
+</ul>
+
+<h4>Test framework</h4>
+<h5>New features</h5>
+<ul>
+ <li>Tests for verifying functionality of function DescrIntEncode.</li>
+ <li>Tests for verifying functionality of function DescrIntDecode.</li>
+ <li>Tests for verifying functionality of function DescrIntCosineDistance.</li>
+ <li>Tests for verifying functionality of function DescrIntCosineDistancesMxNp.</li>
+ <li>Tests for verifying functionality of function DescrIntCosineDistancesMxNa.</li>
+ <li>Test command line argument '-cc' to run CheckCpp tests.</li>
+</ul>
+<h5>Bug fixing</h5>
+<ul>
+ <li>Test log messages after test error stoppage (multithreaded run).</li>
+ <li>Error in CheckCpp tests.</li>
+</ul>
+
+<h4>Infrastructure</h4>
+<h5>New features</h5>
+<ul>
+ <li>Github actions script for CMake (build and test for MinGW, Windows).</li>
+ <li>Github actions script for CMake (build and test for GCC-12, Linux).</li>
+</ul>
+
+
+<a href="#HOME">Home</a>
+<hr/>
+<h3 id="R125">May 1, 2023 (version 5.2.125)</h3>
+<h4>Algorithms</h4>
+<h5>New features</h5>
+<ul>
+ <li>AVX-512BW, NEON optimizations of function SynetGelu32f.</li>
+ <li>SimdConvolutionActivationGelu member in enumeration SimdConvolutionActivationType.</li>
+ <li>Support of SynetUnaryOperation32fErf in NEON optimizations of function SynetUnaryOperation32f.</li>
+ <li>Support of SimdConvolutionActivationGelu in Base implementation, SSE4.1, AVX2, AVX-512BW, NEON optimizations of class SynetConvolution32fGemmNN.</li>
+ <li>Support of SimdConvolutionActivationGelu in Base implementation, SSE4.1, AVX2, AVX-512BW, NEON optimizations of class SynetConvolution32fWinograd.</li>
+ <li>Support of SimdConvolutionActivationGelu in Base implementation, SSE4.1, AVX2, AVX-512BW, NEON optimizations of class SynetConvolution32fGemmNT.</li>
+ <li>Support of SimdConvolutionActivationGelu in Base implementation, SSE4.1, AVX2, AVX-512BW, NEON optimizations of class SynetConvolution32fDirectNchw.</li>
+ <li>Support of SimdConvolutionActivationGelu in Base implementation, SSE4.1, AVX2, AVX-512BW, NEON optimizations of class SynetConvolution32fDirectNhwc.</li>
+ <li>Support of SimdConvolutionActivationGelu in Base implementation, SSE4.1, AVX2, AVX-512BW, NEON optimizations of class SynetConvolution32fDepthwiseDotProduct.</li>
+ <li>Support of SimdConvolutionActivationGelu in Base implementation, SSE4.1, AVX2, AVX-512BW, NEON optimizations of class SynetConvolution32fNhwcDirect.</li>
+ <li>Support of SimdConvolutionActivationGelu in Base implementation, SSE4.1, AVX2, AVX-512BW, AVX-512BF16, AMX-BF16 optimizations of class SynetConvolution32fBf16Gemm.</li>
+ <li>Support of SimdConvolutionActivationGelu in Base implementation, SSE4.1, AVX2, AVX-512BW, AVX-512BF16, AMX-BF16 optimizations of class SynetConvolution32fBf16Nhwc.</li>
+ <li>Support of SimdConvolutionActivationGelu in Base implementation, SSE4.1, AVX2, AVX-512BW, NEON optimizations of class SynetDeconvolution32fGemmNN.</li>
+ <li>Support of SimdConvolutionActivationGelu in Base implementation, SSE4.1, AVX2, AVX-512BW, NEON optimizations of class SynetDeconvolution32fNhwcDirect2x2.</li>
+ <li>Support of SimdConvolutionActivationGelu in Base implementation, SSE4.1, AVX2, AVX-512BW, AVX-512VNNI, AMX-INT8, NEON optimizations of class SynetConvolution8iGemmNN.</li>
+ <li>Support of SimdConvolutionActivationGelu in Base implementation, SSE4.1, AVX2, AVX-512BW, AVX-512VNNI, AMX-INT8, NEON optimizations of class SynetConvolution8iNhwcDirect.</li>
+ <li>Support of SimdConvolutionActivationGelu in Base implementation, SSE4.1, AVX2, AVX-512BW, AVX-512VNNI, AMX-INT8, NEON optimizations of class SynetConvolution8iNhwcDepthwise.</li>
+ <li>Support of SimdConvolutionActivationGelu in Base implementation, SSE4.1, AVX, AVX2, AVX-512BW, NEON optimizations of class SynetMergedConvolution32fCd.</li>
+ <li>Support of SimdConvolutionActivationGelu in Base implementation, SSE4.1, AVX, AVX2, AVX-512BW, NEON optimizations of class SynetMergedConvolution32fCdc.</li>
+ <li>Support of SimdConvolutionActivationGelu in Base implementation, SSE4.1, AVX, AVX2, AVX-512BW, NEON optimizations of class SynetMergedConvolution32fDc.</li>
+ <li>Support of SimdConvolutionActivationGelu in Base implementation, SSE4.1, AVX2, AVX-512BW, AVX-512BF16, AMX-BF16 optimizations of class SynetMergedConvolution32fBf16Cd.</li>
+ <li>Support of SimdConvolutionActivationGelu in Base implementation, SSE4.1, AVX2, AVX-512BW, AVX-512BF16, AMX-BF16 optimizations of class SynetMergedConvolution32fBf16Cdc.</li>
+ <li>Support of SimdConvolutionActivationGelu in Base implementation, SSE4.1, AVX2, AVX-512BW, AVX-512BF16, AMX-BF16 optimizations of class SynetMergedConvolution32fBf16Dc.</li>
+ <li>Support of SimdConvolutionActivationGelu in Base implementation, SSE4.1, AVX2, AVX-512BW, AVX-512VNNI, AMX-INT8 optimizations of class SynetMergedConvolution8iCd.</li>
+ <li>Support of SimdConvolutionActivationGelu in Base implementation, SSE4.1, AVX2, AVX-512BW, AVX-512VNNI, AMX-INT8 optimizations of class SynetMergedConvolution8iCdc.</li>
+ <li>Support of SimdConvolutionActivationGelu in Base implementation, SSE4.1, AVX2, AVX-512BW, AVX-512VNNI, AMX-INT8 optimizations of class SynetMergedConvolution8iDc.</li>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW optimizations of function SynetNormalizeLayerForwardV2.</li>
+</ul>
+<h5>Improving</h5>
+<ul>
+ <li>SSE4.1, AVX2, AVX-512BW, NEON optimizations of function Erf.</li>
+ <li>Performance of function Simd::Parallel.</li>
+ <li>Using of resize method SimdResizeMethodArea in ImageMatcher::Create (more precise than SimdResizeMethodBilinear).</li>
+</ul>
+<h5>Bug fixing</h5>
+<ul>
+ <li>Compiler error in SimdImageMatcher.hpp (using of internal functions).</li>
+ <li>Wrong API of function ImageMatcher.Skip().</li>
+</ul>
+
+<h4>Test framework</h4>
+<h5>New features</h5>
+<ul>
+ <li>Tests for verifying functionality of function SynetNormalizeLayerForwardV2.</li>
+</ul>
+
+<h4>Infrastructure</h4>
+<h5>Bug fixing</h5>
+<ul>
+ <li>Github actions script for MSBuild (Restore NuGet packages timeout exit).</li>
+</ul>
+
+<a href="#HOME">Home</a>
+<hr/>
+<h3 id="R124">April 3, 2023 (version 5.2.124)</h3>
+<h4>Algorithms</h4>
+<h5>New features</h5>
+<ul>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW, NEON optimizations of function BgraToYuv422pV2.</li>
+ <li>NEON optimizations of function BgraToYuv444pV2.</li>
+ <li>NEON optimizations of function BgraToYuv420pV2.</li>
+ <li>NEON optimizations of function Float32ToBFloat16.</li>
+ <li>NEON optimizations of function BFloat16ToFloat32.</li>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW, NEON optimizations of function BgraToYuva420pV2.</li>
+ <li>Support of SynetUnaryOperation32fErf in Base implementation, SSE4.1, AVX2, AVX-512BW optimizations of function SynetUnaryOperation32f.</li>
+ <li>Base implementation, SSE4.1, AVX2 optimizations of function SynetGelu32f.</li>
+</ul>
+<h5>Improving</h5>
+<ul>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW optimizations of function SynetSoftmaxLayerForward.</li>
+</ul>
+<h5>Bug fixing</h5>
+<ul>
+ <li>Error in method View::ToOcv.</li>
+</ul>
+<h5>Removing</h5>
+<ul>
+ <li>Support of all formats besides NHWC and NCHW for function SynetAddBias.</li>
+ <li>Support of all formats besides NHWC and NCHW for function SynetLrnLayerCrossChannels.</li>
+ <li>Support of all formats besides NHWC and NCHW for function SynetPreluLayerForward.</li>
+ <li>Support of all formats besides NHWC and NCHW for function SynetScaleLayerForward.</li>
+ <li>Support of all formats besides NHWC and NCHW for function SynetFusedLayerForward0.</li>
+ <li>Support of all formats besides NHWC and NCHW for function SynetFusedLayerForward1.</li>
+ <li>Support of all formats besides NHWC and NCHW for function SynetFusedLayerForward2.</li>
+ <li>Support of all formats besides NHWC and NCHW for function SynetFusedLayerForward3.</li>
+ <li>Support of all formats besides NHWC and NCHW for function SynetFusedLayerForward4.</li>
+ <li>Support of all formats besides NHWC and NCHW for function SynetFusedLayerForward8.</li>
+ <li>Support of all formats besides NHWC and NCHW for function SynetFusedLayerForward9.</li>
+ <li>Function SynetReorderFilter.</li>
+ <li>Function SynetReorderImage.</li>
+ <li>Function SynetTensorAlignment.</li>
+ <li>Function SynetSpecifyTensorFormat.</li>
+ <li>Support of all formats besides NHWC and NCHW for enumeration SimdTensorFormatType.</li>
+</ul>
+<h5>Renaming</h5>
+<ul>
+ <li>Function from SynetUnaryOperation32fLayerForward to SynetUnaryOperation32f.</li>
+</ul>
+ 
+<h4>Test framework</h4>
+<h5>New features</h5>
+<ul>
+ <li>Test command line argument '-ts' to print statistics of time of tests execution.</li>
+ <li>Tests for verifying functionality of function BgraToYuv422pV2.</li>
+ <li>Tests for verifying functionality of function BgraToYuva420pV2.</li>
+ <li>Improving header of performance report.</li>
+ <li>Tests for verifying functionality of function SynetGelu32f.</li>
+</ul>
+<h5>Bug fixing</h5>
+<ul>
+ <li>Error in test SynetUnaryOperation32fLayerForward.</li>
+</ul>
+
+<a href="#HOME">Home</a>
+<hr/>
+<h3 id="R123">Match 9, 2023 (version 5.2.123)</h3> 
+<h4>Algorithms</h4>
+<h5>Bug fixing</h5>
+<ul>
+ <li>MSVS-2022 compiler errors in AmxBf16 project.</li>
+ <li>Clang compiler error in method Array::Release.</li>
+ <li>MSVS-2022 compiler warnings in file SimdSse41ResizerNearest.cpp.</li>
+ <li>MSVS-2022 compiler warnings in file SimdAvx512bwResizerNearest.cpp.</li>
+ <li>Error in SSE4.1, AVX, AVX2, AVX-512BW kernels of ConvolutionNhwcDirect_2 (fixed type).</li>
+ <li>MSVS-2022 compiler warnings in file SimdAvx2RecursiveBilateralFilter.cpp.</li>
+ <li>Error in file SimdFrame.hpp (function Simd::Convert).</li>
+ <li>Error in AVX2 optimizations of class RecursiveBilateralFilterFast (x86 only).</li>
+ <li>MSVS-2022 compiler error in file SimdInit.h (ARM64).</li>
+ <li>MSVS-2022 compiler errors in file SimdLog.h (ARM64).</li>
+ <li>MSVS-2022 compiler errors in file SimdConversion.h (ARM64).</li>
+ <li>MSVS-2022 compiler errors in file SimdNeonYuvToHue.cpp (ARM64).</li>
+ <li>MSVS-2022 compiler errors in file SimdNeonAbsDifferenceSum.cpp (ARM64).</li>
+ <li>MSVS-2022 compiler errors in file SimdNeonDetection.cpp (ARM64).</li>
+ <li>MSVS-2022 compiler errors in file SimdNeonHog.cpp (ARM64).</li>
+ <li>MSVS-2022 compiler errors in file SimdNeonLaplace.cpp (ARM64).</li>
+ <li>MSVS-2022 compiler errors in file SimdNeonMeanFilter3x3.cpp (ARM64).</li>
+ <li>MSVS-2022 compiler errors in file SimdNeonNeural.cpp (ARM64).</li>
+ <li>MSVS-2022 compiler warnings in file SimdNeonNeuralConvolution.cpp (ARM64).</li>
+ <li>MSVS-2022 compiler errors in file SimdNeonSobel.cpp (ARM64).</li>
+ <li>MSVS-2022 compiler errors in file SimdNeonSynetConversion.cpp (ARM64).</li>
+ <li>MSVS-2022 compiler errors in file SimdNeonSynetConvolution8i.cpp (ARM64).</li>
+ <li>MSVS-2022 compiler errors in file SimdNeonYuvToHue.cpp (ARM64).</li>
+ <li>Wrong assert in AVX-512BW optimization of function BgraToYuv420pV2.</li>
+ <li>MSVS-2017 compiler errors in AVX-512BW optimizations of function AlphaBlendingBgraToYuv420p.</li>
+ <li>MSVS-2017 compiler errors in AVX-512BW optimizations of WarpAffine engine.</li>
+ <li>MSVS-2015 compiler errors in file SimdFmadd.h (Win32).</li>
+ <li>MSVS-2015 compiler errors in SSE4.1 and AVX2 optimizations of WarpAffine engine (Win32).</li>
+ <li>Crash in AVX2 optimizations of function CosineDistance16f.</li>
+ <li>Crash in SSE4.1, AVX2, AVX-512BW, NEON optimizations of function HogLiteResizeFeatures.</li>
+ <li>Clang compiler warnings in file SimdBaseRecursiveBilateralFilter.cpp.</li>
+ <li>Clang compiler warnings in file SimdSse41RecursiveBilateralFilter.cpp.</li>
+ <li>Clang linker error in method Motion::Detector::GenerateSearchRegionScanlines.</li>
+ <li>Crashes in AVX-512BW optimizations of WarpAffine engine (MSVS-2022, Release).</li>
+ <li>Internal compiler error in file SimdAvx512bwSynetConvolution32f.cpp (MSVS-2017, Release).</li>
+ <li>Error in SSE4.1, AVX2 optimizations of function BgraToYuv444pV2 (MSVS-2015, Release, Win32).</li>
+ <li>Error in SSE4.1, AVX2 optimizations of function BgraToYuv420pV2 (MSVS-2015, Release, Win32).</li>
+ <li>Error in AVX2 optimizations of function Yuva444pToBgraV2 (MSVS-2015, Release, Win32).</li>
+ <li>Error in AVX2 optimizations of function Yuv444pToBgraV2 (MSVS-2015, Release, Win32).</li>
+ <li>Error in AVX2 optimizations of function Yuv420pToBgraV2 (MSVS-2015, Release, Win32).</li>
+ <li>Error in AVX2 optimizations of function AlphaBlendingBgraToYuv420p (MSVS-2015, Release, Win32).</li>
+ <li>Error in AVX2 optimizations of class ResizerByteArea2x2 (MSVS-2015, Release, Win32).</li>
+ <li>Error in AVX2 optimizations of function Uyvy422ToBgr (MSVS-2015, Release, Win32).</li>
+</ul>
+
+<h4>Test framework</h4>
+<h5>New features</h5>
+<ul>
+ <li>Handling of Windows exceptions in AutoTest.</li>
+</ul>
+<h5>Bug fixing</h5>
+<ul>
+ <li>Error in test Nv12SaveAsJpegToMemoryAutoTest.</li>
+ <li>Error in test SynetAdd8iAutoTest.</li>
+ <li>Error in test SynetConvolution8iForwardAutoTest.</li>
+ <li>Error in test SynetScale8iForwardAutoTest.</li>
+ <li>Error in test WarpAffineAutoTest.</li>
+ <li>Error in test ResizeBilinearAutoTest.</li>
+ <li>Error in test SynetMergedConvolution8iForwardAutoTest.</li>
+ <li>Error in function MakeAutoTests (multithreaded environment).</li>
+ <li>Error in test Float32ToBFloat16AutoTest.</li>
+ <li>Error in test SynetConvert32fTo8uAutoTest (MSVS-2015 and MSVS-2017, Release, Win32).</li>
+ <li>Error in test SynetMergedConvolution32fForwardAutoTest (MSVS-2015 and MSVS-2017, Release, Win32).</li>
+ <li>Error in test CosineDistancesMxNp16fAutoTest.</li>
+ <li>Error in test VectorNormNp16fAutoTest.</li>
+</ul>
+
+<h4>Infrastructure</h4>
+<h5>New features</h5>
+<ul>
+ <li>Script BuildAll.cmd to build MSVS solution for all configurations and platforms.</li>
+ <li>Github actions script for CMake (build and test for x86_x64, Linux).</li>
+ <li>Github actions script for CMake (cross platform build for ARM, Linux).</li>
+ <li>Github actions script for Cmake (cross platform build for ARM64, Linux).</li>
+ <li>Github actions script for CMake (cross platform build for PowerPC, Linux).</li>
+ <li>Github actions script for CMake (build and test for clang, Linux).</li>
+ <li>Github actions script for MSBuild (build and test for Visual Studio 2022, Windows).</li>
+ <li>Script GetThreadCount.cmd.</li>
+ <li>Github actions script for MSBuild (build and test for Visual Studio 2019, Windows).</li>
+ <li>Github actions script for MSBuild (build and test for Visual Studio 2017, Windows).</li>
+ <li>Github actions script for MSBuild (build and test for Visual Studio 2015, Windows).</li>
+</ul>
+<h5>Renaming</h5>
+<ul>
+ <li>Script TestVisualStudio.cmd to TestAll.cmd.</li>
+</ul>
+
+<h4>Documentation</h4>
+<h5>Bug fixing</h5>
+<ul>
+ <li>Wrong description of Cmake parameters.</li>
+</ul>
+
+<a href="#HOME">Home</a>
+<hr/>
+<h3 id="R122">February 1, 2023 (version 5.2.122)</h3> 
+<h4>Algorithms</h4>
+<h5>New features</h5>
+<ul>
+ <li>New API of function Avx512bw::TileZero (AMX emulation).</li>
+ <li>New API of function Avx512bw::TileLoad (AMX emulation).</li>
+ <li>New API of function Avx512bw::TileStore (AMX emulation).</li>
+ <li>New API of function Avx512bw::TileMatMulBf16 (AMX emulation).</li>
+ <li>New API of function Avx512bw::TileMatMul8u8i (AMX emulation).</li>
+ <li>Function Avx512bw::TileMatMulFp16(AMX emulation).</li>
+ <li>The mark of function SimdInterferenceIncrement as deprecated.</li>
+ <li>The mark of function SimdInterferenceIncrementMasked as deprecated.</li>
+ <li>The mark of function SimdInterferenceDecrement as deprecated.</li>
+ <li>The mark of function SimdInterferenceDecrementMasked as deprecated.</li>
+ <li>The mark of function SimdSynetReorderImage as deprecated.</li>
+ <li>The mark of function SimdSynetReorderFilter as deprecated.</li>
+ <li>SimdTensorData16f (16-bit floating point) tensor type.</li>
+ <li>The mark of function SimdSynetSpecifyTensorFormat as deprecated.</li>
+ <li>The mark of function SimdSynetTensorAlignment as deprecated.</li>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW, NEON optimizations of SynetPermute engine.</li>
+ <li>NEON optimizations of function Yuva444pToBgraV2.</li>
+ <li>NEON optimizations of function AlphaBlending2x.</li>
+ <li>SSE4.1, AVX2, AVX-512BW optimizations of function BgraToYuv444pV2.</li>
+ <li>SSE4.1, AVX2, AVX-512BW optimizations of function BgraToYuv420pV2.</li>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW optimizations of function AlphaBlendingBgraToYuv420p.</li>
+ <li>Parameter 'copy' to View::Capure.</li> 
+ <li>Method Array::Release.</li> 
+</ul>
+<h5>Improving</h5>
+<ul>
+ <li>NEON optimizations of function TransformImage.</li>
+</ul>
+<h5>Bug fixing</h5>
+<ul>
+ <li>Clang compiler error in function Simd::WarpAffine.</li>
+ <li>MSVS-2022 compiler warnings in file SimdBaseRecursiveBilateralFilter.cpp.</li>
+ <li>MSVS-2022 compiler warnings in file SimdSse41RecursiveBilateralFilter.cpp.</li>
+ <li>MSVS-2015 compiler error in file SimdAvx2RecursiveBilateralFilter.cpp.</li>
+ <li>Error in method MergConvParam32f::Valid.</li>
+ <li>Crash in constructor of Simd::TileConf.</li>
+ <li>Crash in AVX and AVX2 optimizations of function SynetInnerProductLayerForward.</li>
+ <li>MSVS-2022 compiler error in file SimdAvx2RecursiveBilateralFilter.cpp (Win32 target).</li>
+ <li>GCC compiler error in file SimdParallel.hpp (for AVX2 optimizations).</li>
+</ul>
+
+<h4>Test framework</h4>
+<h5>New features</h5>
+<ul>
+ <li>Tests for verifying functionality of SynetPermut engine.</li>
+ <li>Tests for verifying functionality of function AlphaBlendingBgraToYuv420p.</li>
+</ul>
+<h5>Bug fixing</h5>
+<ul>
+ <li>Crash in test GaussianBlurAutoTest.</li>
+</ul>
+
+<h4>Infrastructure</h4>
+<h5>New features</h5>
+<ul>
+ <li>Install target in Cmake.</li>
+ <li>Uninstall target in Cmake.</li>
+</ul>
+<h5>Renaming</h5>
+<ul>
+ <li>Project Amx to AmxBf16.</li>
+</ul>
+
+<a href="#HOME">Home</a>
+<hr/>
+<h3 id="R121">January 3, 2023 (version 5.2.121)</h3> 
+<h4>Algorithms</h4>
+<h5>New features</h5>
+<ul>
+ <li>SIMD_DEPRECATED macro.</li>
+ <li>The mark of function SimdSvmSumLinear as deprecated.</li>
+ <li>SSE4.1, AVX2, AVX-512BW optimizations of function SynetNormalizeLayerForward.</li>
+ <li>Enumeration SimdWarpAffineFlags.</li>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW optimizations of class WarpAffineNearest.</li>
+ <li>Base implementation, SSE4.1, AVX2, AVX-512BW  optimizations of class WarpAffineBilinear.</li>
+ <li>Multi-threaded optimizations of class WarpAffineNearest.</li>
+ <li>Multi-threaded optimizations of class WarpAffineBilinear.</li>
+ <li>Function Simd::WarpAffine.</li>
+ <li>Function Simd::Mean.</li>
+ <li>Function Simd::OtsuThreshold.</li>
+ <li>Function Simd::RecursiveBilateralFilter.</li>
+ <li>The mark of function SimdEdgeBackgroundGrowRangeSlow as deprecated.</li>
+ <li>The mark of function SimdEdgeBackgroundGrowRangeFast as deprecated.</li>
+ <li>The mark of function SimdEdgeBackgroundIncrementCount as deprecated.</li>
+ <li>The mark of function SimdEdgeBackgroundAdjustRange as deprecated.</li>
+ <li>The mark of function SimdEdgeBackgroundAdjustRangeMasked as deprecated.</li>
+ <li>The mark of function SimdEdgeBackgroundShiftRange as deprecated.</li>
+ <li>The mark of function SimdEdgeBackgroundShiftRangeMasked as deprecated.</li>
+ <li>The mark of function Simd::EdgeBackgroundGrowRangeSlow as deprecated.</li>
+ <li>The mark of function Simd::EdgeBackgroundGrowRangeFast as deprecated.</li>
+ <li>The mark of function Simd::EdgeBackgroundIncrementCount as deprecated.</li>
+ <li>The mark of function Simd::EdgeBackgroundAdjustRange as deprecated.</li>
+ <li>The mark of function Simd::EdgeBackgroundAdjustRangeMasked as deprecated.</li>
+ <li>The mark of function Simd::EdgeBackgroundShiftRange as deprecated.</li>
+ <li>The mark of function Simd::EdgeBackgroundShiftRangeMasked as deprecated.</li>
+</ul>
+<h5>Bug fixing</h5>
+<ul>
+ <li>Wrong assert in AVX-512BW optimizations of function BgrToRgb.</li>
+ <li>MSVS compiler bug (Windows, Arm64).</li>
+ <li>Error in function Simd::DrawLine.</li>
+</ul>
+
+<h4>Test framework</h4>
+<h5>New features</h5>
+<ul>
+ <li>Tests for verifying functionality of WarpAffine engine.</li>
+ <li>Special tests for verifying functionality of WarpAffine engine.</li>
+</ul>
+
+<h4>Infrastructure</h4>
+<h5>New features</h5>
+<ul>
+ <li>SIMD_OPENCV Cmake option to test Simd with OpenCV support.</li>
+</ul>
+
+<h4>Documentation</h4>
+<h5>Improving</h5>
+<ul>
+ <li>Using example in description of function RecursiveBilateralFilterInit.</li>
+</ul>
+
+<a href="#HOME">Home</a> 
+<hr/> 
+
+<center>
+ <a href="2024.html">2024</a> |
+ <a href="2023.html">2023</a> |
+ <a href="2022.html">2022</a> |
+ <a href="2021.html">2021</a> |
+ <a href="2020.html">2020</a> |
+ <a href="2019.html">2019</a> |
+ <a href="2018.html">2018</a> |
+ <a href="2017.html">2017</a> |
+ <a href="2016.html">2016</a> |
+ <a href="2015.html">2015</a> |
+ <a href="2014.html">2014</a> |
+ <a href="2013.html">2013</a>
+</center>
+
+<hr/> 
+
+</td> </tr> </table> </center> </body> </html>

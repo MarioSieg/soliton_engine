@@ -1078,7 +1078,7 @@ EXCLUDE_PATTERNS       =
 # wildcard * is used, a substring. Examples: ANamespace, AClass,
 # ANamespace::AClass, ANamespace::*Test
 
-EXCLUDE_SYMBOLS        = Im*, stb*, STB*, Stb*, Example*, IMGUIZMO*, std*, _*
+EXCLUDE_SYMBOLS        = Im*, stb*, STB*, Stb*, Example*, IMGUIZMO*, std*, _*, Noesis*, noesis*, tar*, Theme*, My*, luabridge*, legit*, imgui*, bin2h*, Menu3D*, System*, simdutf*, TextEditor*
 
 # The EXAMPLE_PATH tag can be used to specify one or more files or directories
 # that contain example code fragments that are included (see the \include

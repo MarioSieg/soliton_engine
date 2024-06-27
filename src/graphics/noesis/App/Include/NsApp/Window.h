@@ -17,7 +17,7 @@ namespace NoesisApp
         auto operator =(Window&&) -> Window& = delete;
         virtual ~Window() override;
 
-        auto Init(Noesis::RenderDevice* device, std::uint16_t width, std::uint16_t height) -> void;
+        auto Init(Noesis::RenderDevice* device, std::uint16_t width, std::uint16_t height, bool wireframe) -> void;
         auto Tick() -> void;
         auto Resize(std::uint16_t width, std::uint16_t height) -> void;
         [[nodiscard]] auto GetView() const noexcept -> Noesis::IView* {

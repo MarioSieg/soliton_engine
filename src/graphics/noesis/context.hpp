@@ -21,12 +21,15 @@ namespace noesis {
         auto operator =(context&&) -> context& = delete;
         ~context();
 
-        auto load_ui_from_xaml(const std::string& path) -> void;
-        auto render(vk::CommandBuffer cmd) -> void;
+        auto load_ui_from_xaml(std::string&& path) -> void;
+        auto reload_ui(bool render_wireframe = false) -> void;
+        auto render_offscreen(vk::CommandBuffer cmd) -> void;
+        auto render_onscreen(vk::RenderPass pass) -> void;
         auto tick() -> void;
         auto on_resize() -> void;
 
     private:
+        std::string m_xaml_path {};
         Noesis::Ptr<NoesisApp::Application> m_app {};
         Noesis::Ptr<Noesis::RenderDevice> m_device {};
     };

@@ -137,12 +137,12 @@
     </UserControl.Resources>
     <b:Interaction.Triggers>
         <b:DataTrigger Binding="{Binding State}" Value="{x:Static local:State.Settings}">
-            <b:ChangePropertyAction TargetName="TexDetailContent" PropertyName="MinHeight" Value="1"/>
+            <b:ChangePropertyAction TargetName="OverallQualityContent" PropertyName="MinHeight" Value="1"/>
             <b:ControlStoryboardAction Storyboard="{StaticResource FadeIn}"/>
         </b:DataTrigger>
         <b:StoryboardCompletedTrigger Storyboard="{StaticResource FadeIn}">
-            <noesis:SetFocusAction TargetName="TexDetailContent"/>
-            <b:ChangePropertyAction TargetName="TexDetailContent" PropertyName="MinHeight" Value="0"/>
+            <noesis:SetFocusAction TargetName="OverallQualityContent"/>
+            <b:ChangePropertyAction TargetName="OverallQualityContent" PropertyName="MinHeight" Value="0"/>
         </b:StoryboardCompletedTrigger>
         <b:DataTrigger Binding="{Binding State}" Comparison="NotEqual" Value="{x:Static local:State.Settings}">
             <b:ControlStoryboardAction Storyboard="{StaticResource FadeOut}"/>
@@ -173,16 +173,6 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <StackPanel x:Name="MenuTitle" Orientation="Vertical" HorizontalAlignment="Left">
-                    <Viewbox x:Name="Logo" Stretch="Uniform" Height="100" Margin="0,-9,0,0">
-                        <StackPanel Orientation="Horizontal">
-                            <Path Data="{StaticResource NoesisLogoGeometry}" Fill="{StaticResource NoesisLogoBlue}" Stretch="Uniform"/>
-                            <Path Data="{StaticResource NoesisTextGeometry}" Fill="White" Stretch="Uniform" Margin="40,0,0,0" VerticalAlignment="Center"/>
-                            <Path Data="{StaticResource NoesisGuiTextGeometry}" Fill="{StaticResource NoesisLogoBlue}" Stretch="Uniform" Margin="40,0,0,0" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Viewbox>
-                    <TextBlock Text="MENU DEMO" FontSize="50" HorizontalAlignment="Right" Margin="0,-19,-2,0" Foreground="{StaticResource TransparentWhiteBrush95}"/>
-                </StackPanel>
                 <Grid x:Name="MenuOptions" Grid.Row="1" Margin="0,30,0,0" RenderTransformOrigin="0.5,0.5"
                     KeyboardNavigation.TabNavigation="Cycle"
                     KeyboardNavigation.ControlTabNavigation="Cycle"
@@ -209,36 +199,8 @@
                     </Border>
                     <StackPanel>
                         <Rectangle Height="2" Margin="0,0,0,2" Fill="{StaticResource HorizontalLineBg}"/>
-                        <HeaderedContentControl x:Name="TexDetail" Header="Texture Detail" Style="{StaticResource SettingContentStyle}">
-                            <local:OptionSelector x:Name="TexDetailContent" SelectedIndex="1" Style="{StaticResource OptionSelectorStyle}">
-                                <local:OptionSelector.Options>
-                                    <TextBlock Text="Low"/>
-                                    <TextBlock Text="Medium"/>
-                                    <TextBlock Text="High"/>
-                                </local:OptionSelector.Options>
-                            </local:OptionSelector>
-                        </HeaderedContentControl>
-                        <HeaderedContentControl x:Name="AAlias" Header="Anti-Aliasing" Style="{StaticResource SettingContentStyle}">
-                            <CheckBox VerticalAlignment="Center" Style="{StaticResource CheckBoxStyle}"/>
-                        </HeaderedContentControl>
-                        <HeaderedContentControl x:Name="SoundVol" Header="Sound Volume" Style="{StaticResource SettingContentStyle}">
-                            <local:OptionSelector SelectedIndex="5" Style="{StaticResource OptionSelectorStyle}">
-                                <local:OptionSelector.Options>
-                                    <TextBlock Text="0"/>
-                                    <TextBlock Text="1"/>
-                                    <TextBlock Text="2"/>
-                                    <TextBlock Text="3"/>
-                                    <TextBlock Text="4"/>
-                                    <TextBlock Text="5"/>
-                                    <TextBlock Text="6"/>
-                                    <TextBlock Text="7"/>
-                                    <TextBlock Text="8"/>
-                                    <TextBlock Text="9"/>
-                                </local:OptionSelector.Options>
-                            </local:OptionSelector>
-                        </HeaderedContentControl>
-                        <HeaderedContentControl x:Name="VideoRes" Header="Video Resolution" Style="{StaticResource SettingContentStyle}">
-                            <local:OptionSelector SelectedIndex="2" Style="{StaticResource OptionSelectorStyle}">
+                        <HeaderedContentControl x:Name="VideoRes" Header="Resolution" Style="{StaticResource SettingContentStyle}">
+                            <local:OptionSelector SelectedIndex="6" Style="{StaticResource OptionSelectorStyle}">
                                 <local:OptionSelector.Options>
                                     <TextBlock Text="800x600"/>
                                     <TextBlock Text="1024x768"/>
@@ -251,35 +213,65 @@
                                 </local:OptionSelector.Options>
                             </local:OptionSelector>
                         </HeaderedContentControl>
-                        <HeaderedContentControl x:Name="Gamma" Header="Gamma Correction" Style="{StaticResource SettingContentStyle}">
-                            <local:OptionSelector SelectedIndex="5" Style="{StaticResource OptionSelectorStyle}">
+                        <HeaderedContentControl x:Name="WindowMode" Header="Window Mode" Style="{StaticResource SettingContentStyle}">
+                            <local:OptionSelector SelectedIndex="0" Style="{StaticResource OptionSelectorStyle}">
                                 <local:OptionSelector.Options>
-                                    <TextBlock Text="0"/>
-                                    <TextBlock Text="1"/>
-                                    <TextBlock Text="2"/>
-                                    <TextBlock Text="3"/>
-                                    <TextBlock Text="4"/>
-                                    <TextBlock Text="5"/>
-                                    <TextBlock Text="6"/>
-                                    <TextBlock Text="7"/>
-                                    <TextBlock Text="8"/>
-                                    <TextBlock Text="9"/>
+                                    <TextBlock Text="Windowed"/>
+                                    <TextBlock Text="Borderless"/>
+                                    <TextBlock Text="Fullscreen"/>
                                 </local:OptionSelector.Options>
                             </local:OptionSelector>
                         </HeaderedContentControl>
-                        <HeaderedContentControl x:Name="Subtitles" Header="Subtitles" Style="{StaticResource SettingContentStyle}">
+                        <HeaderedContentControl x:Name="OverallQuality" Header="Overall Graphics Quality" Style="{StaticResource SettingContentStyle}">
+                            <local:OptionSelector x:Name="OverallQualityContent" SelectedIndex="3" Style="{StaticResource OptionSelectorStyle}">
+                                <local:OptionSelector.Options>
+                                    <TextBlock Text="Low"/>
+                                    <TextBlock Text="Medium"/>
+                                    <TextBlock Text="High"/>
+                                    <TextBlock Text="Very High"/>
+                                </local:OptionSelector.Options>
+                            </local:OptionSelector>
+                        </HeaderedContentControl>
+                        <HeaderedContentControl x:Name="AAlias" Header="Anti-Aliasing" Style="{StaticResource SettingContentStyle}">
+                            <local:OptionSelector SelectedIndex="3" Style="{StaticResource OptionSelectorStyle}">
+                                <local:OptionSelector.Options>
+                                    <TextBlock Text="Off"/>
+                                    <TextBlock Text="MSAA X2"/>
+                                    <TextBlock Text="MSAA X4"/>
+                                    <TextBlock Text="MSAA X8"/>
+                                </local:OptionSelector.Options>
+                            </local:OptionSelector>
+                        </HeaderedContentControl>
+                        <HeaderedContentControl x:Name="SoundVol" Header="Sound Volume" Style="{StaticResource SettingContentStyle}">
+                            <local:OptionSelector SelectedIndex="11" Style="{StaticResource OptionSelectorStyle}">
+                                <local:OptionSelector.Options>
+                                    <TextBlock Text="Off"/>
+                                    <TextBlock Text="10 %"/>
+                                    <TextBlock Text="20 %"/>
+                                    <TextBlock Text="30 %"/>
+                                    <TextBlock Text="40 %"/>
+                                    <TextBlock Text="50 %"/>
+                                    <TextBlock Text="60 %"/>
+                                    <TextBlock Text="70 %"/>
+                                    <TextBlock Text="80 %"/>
+                                    <TextBlock Text="90 %"/>
+                                    <TextBlock Text="100 %"/>
+                                </local:OptionSelector.Options>
+                            </local:OptionSelector>
+                        </HeaderedContentControl>
+                        <HeaderedContentControl x:Name="VSync" Header="V-Sync" Style="{StaticResource SettingContentStyle}">
                             <CheckBox VerticalAlignment="Center" Style="{StaticResource CheckBoxStyle}"/>
                         </HeaderedContentControl>
                         <Rectangle Height="2" Margin="0,70,0,2" Fill="{StaticResource HorizontalLineBg}"/>
                         <ToggleButton x:Name="Back" Style="{StaticResource MenuButtonStyle}" Content="BACK" Margin="2,0,26,2" Command="{Binding Back}"/>
                         <Rectangle Height="2" Margin="0,0,0,2" Fill="{StaticResource HorizontalLineBg}"/>
                         <Grid x:Name="ToolTips" Margin="18,4,0,0">
-                            <ContentControl Style="{StaticResource MenuToolTipStyle}" Content="Adjust the texture detail for the application." IsEnabled="{Binding IsKeyboardFocusWithin, ElementName=TexDetail}"/>
+                            <ContentControl Style="{StaticResource MenuToolTipStyle}" Content="Adjust the texture detail for the application." IsEnabled="{Binding IsKeyboardFocusWithin, ElementName=OverallQuality}"/>
                             <ContentControl Style="{StaticResource MenuToolTipStyle}" Content="Toggles the anti-aliasing." IsEnabled="{Binding IsKeyboardFocusWithin, ElementName=AAlias}"/>
                             <ContentControl Style="{StaticResource MenuToolTipStyle}" Content="Changes the volume level for the application." IsEnabled="{Binding IsKeyboardFocusWithin, ElementName=SoundVol}"/>
                             <ContentControl Style="{StaticResource MenuToolTipStyle}" Content="Changes the application's resolution." IsEnabled="{Binding IsKeyboardFocusWithin, ElementName=VideoRes}"/>
-                            <ContentControl Style="{StaticResource MenuToolTipStyle}" Content="Adjust the gamma correction for the application." IsEnabled="{Binding IsKeyboardFocusWithin, ElementName=Gamma}"/>
-                            <ContentControl Style="{StaticResource MenuToolTipStyle}" Content="Toggles English subtitles." IsEnabled="{Binding IsKeyboardFocusWithin, ElementName=Subtitles}"/>
+                            <ContentControl Style="{StaticResource MenuToolTipStyle}" Content="Changes the application's window mode." IsEnabled="{Binding IsKeyboardFocusWithin, ElementName=WindowMode}"/>
+                            <ContentControl Style="{StaticResource MenuToolTipStyle}" Content="Enabled or disabled vertical synchronization (V-Sync)." IsEnabled="{Binding IsKeyboardFocusWithin, ElementName=VSync}"/>
                         </Grid>
                     </StackPanel>
                 </Grid>

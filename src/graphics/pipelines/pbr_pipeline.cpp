@@ -4,94 +4,101 @@
 #include "../mesh.hpp"
 #include "../material.hpp"
 #include "../vulkancore/context.hpp"
+#include "../../core/kernel.hpp"
+#include "../shader_registry.hpp"
 
 namespace graphics::pipelines {
-    pbr_pipeline::pbr_pipeline() : pipeline_base{"pbr", pipeline_type::graphics} {
+    // WARNING! RENDER THREAD LOCAL
+    HOTPROC auto pbr_pipeline::render_mesh(
+        const vk::CommandBuffer cmd_buf,
+        const vk::PipelineLayout layout,
+        const com::transform& transform,
+        const com::mesh_renderer& renderer,
+        const DirectX::BoundingFrustum& frustum,
+        DirectX::FXMMATRIX vp
+    ) const -> void {
+        if (renderer.meshes.empty() || renderer.materials.empty()) [[unlikely]] {
+            log_warn("Mesh renderer has no meshes or materials");
+            return;
+        }
+        if (renderer.flags & com::render_flags::skip_rendering) [[unlikely]] {
+            return;
+        }
+        const DirectX::XMMATRIX model = transform.compute_matrix();
+        for (const mesh* mesh : renderer.meshes) {
+            if (!mesh) [[unlikely]] {
+                log_warn("Mesh renderer has a null mesh");
+                continue;
+            }
 
+            // Frustum Culling
+            DirectX::BoundingOrientedBox obb {};
+            obb.CreateFromBoundingBox(obb, mesh->get_aabb());
+            obb.Transform(obb, model);
+            if ((renderer.flags & com::render_flags::skip_frustum_culling) == 0) [[likely]] {
+                if (frustum.Contains(obb) == DirectX::ContainmentType::DISJOINT) { // Object is culled
+                    return;
+                }
+            }
+
+            push_constants_vs pc_vs {};
+            DirectX::XMStoreFloat4x4A(&pc_vs.model_view_proj, DirectX::XMMatrixMultiply(model, vp));
+            DirectX::XMStoreFloat4x4A(&pc_vs.normal_matrix, DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(nullptr, model)));
+            cmd_buf.pushConstants(
+                layout,
+                vk::ShaderStageFlagBits::eVertex,
+                0,
+                sizeof(pc_vs),
+                &pc_vs
+            );
+
+            push_constants_fs pc_fs {};
+            pc_fs.time = static_cast<float>(kernel::get().get_time());
+            cmd_buf.pushConstants(
+                layout,
+                vk::ShaderStageFlagBits::eFragment,
+                sizeof(pc_vs),
+                sizeof(pc_fs),
+                &pc_fs
+            );
+
+            draw_mesh(*mesh, cmd_buf, renderer.materials, layout);
+        }
+    }
+
+    pbr_pipeline::pbr_pipeline() : pipeline_base{"pbr", pipeline_type::graphics} {
+        generate_brdf_lut();
     }
 
     pbr_pipeline::~pbr_pipeline() {
         const vk::Device device = vkb::ctx().get_device();
-        device.destroyDescriptorSetLayout(m_descriptor_set_layout, &vkb::s_allocator);
-
+        device.destroyImageView(m_brdf_lut.m_image_view, vkb::get_alloc());
+        device.destroyImage(m_brdf_lut.image, vkb::get_alloc());
+        device.freeMemory(m_brdf_lut.memory, vkb::get_alloc());
     }
 
-    void pbr_pipeline::pre_configure() {
-        const vk::Device device = vkb::ctx().get_device();
-
-        // Binding 0: Uniform buffer (Vertex shader)
-        vk::DescriptorSetLayoutBinding layout_binding {};
-        layout_binding.descriptorType = vk::DescriptorType::eUniformBuffer;
-        layout_binding.descriptorCount = 1;
-        layout_binding.stageFlags = vk::ShaderStageFlagBits::eVertex;
-        layout_binding.pImmutableSamplers = nullptr;
-
-        constexpr std::array<vk::DescriptorSetLayoutBinding, 1> bindings {
-            vk::DescriptorSetLayoutBinding {
-                .binding = 0u,
-                .descriptorType = vk::DescriptorType::eUniformBuffer,
-                .descriptorCount = 1u,
-                .stageFlags = vk::ShaderStageFlagBits::eVertex,
-                .pImmutableSamplers = nullptr
-            }
-        };
-
-        vk::DescriptorSetLayoutCreateInfo descriptor_layout {};
-        descriptor_layout.bindingCount = static_cast<std::uint32_t>(bindings.size());
-        descriptor_layout.pBindings = bindings.data();
-        vkcheck(device.createDescriptorSetLayout(&descriptor_layout, &vkb::s_allocator, &m_descriptor_set_layout));
-    }
-
-    auto pbr_pipeline::configure_shaders(std::vector<std::pair<std::unique_ptr<vkb::shader>, vk::ShaderStageFlagBits>>& cfg) -> void {
-        cfg.emplace_back(std::make_unique<vkb::shader>("triangle.vert"), vk::ShaderStageFlagBits::eVertex);
-        cfg.emplace_back(std::make_unique<vkb::shader>("triangle.frag"), vk::ShaderStageFlagBits::eFragment);
-    }
-
-    auto pbr_pipeline::configure_vertex_info(
-        std::vector<vk::VertexInputBindingDescription>& cfg,
-        std::vector<vk::VertexInputAttributeDescription>& bindings
-    ) -> void {
-        cfg.emplace_back(vk::VertexInputBindingDescription {
-            .binding = 0,
-            .stride = sizeof(mesh::vertex),
-            .inputRate = vk::VertexInputRate::eVertex
-        });
-
-        auto push_attribute = [&](const vk::Format format, const std::uint32_t offset) mutable  {
-            vk::VertexInputAttributeDescription& desc = bindings.emplace_back();
-            desc.location = bindings.size() - 1;
-            desc.binding = 0;
-            desc.format = format;
-            desc.offset = offset;
-        };
-        push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(mesh::vertex, position));
-        push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(mesh::vertex, normal));
-        push_attribute(vk::Format::eR32G32Sfloat, offsetof(mesh::vertex, uv));
-        push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(mesh::vertex, tangent));
-        push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(mesh::vertex, bitangent));
+    auto pbr_pipeline::configure_shaders(std::vector<std::pair<std::shared_ptr<vkb::shader>, vk::ShaderStageFlagBits>>& cfg) -> void {
+        auto vs = shader_registry::get().get_shader("pbr_uber_surface.vert");
+        auto fs = shader_registry::get().get_shader("pbr_uber_surface.frag");
+        cfg.emplace_back(vs, vk::ShaderStageFlagBits::eVertex);
+        cfg.emplace_back(fs, vk::ShaderStageFlagBits::eFragment);
     }
 
     auto pbr_pipeline::configure_pipeline_layout(
         std::vector<vk::DescriptorSetLayout>& layouts,
         std::vector<vk::PushConstantRange>& ranges
     ) -> void {
-        layouts.emplace_back(m_descriptor_set_layout);
         layouts.emplace_back(material::get_descriptor_set_layout());
 
         vk::PushConstantRange push_constant_range {};
         push_constant_range.stageFlags = vk::ShaderStageFlagBits::eVertex;
         push_constant_range.offset = 0;
-        push_constant_range.size = sizeof(gpu_vertex_push_constants);
+        push_constant_range.size = sizeof(push_constants_vs);
         ranges.emplace_back(push_constant_range);
-    }
 
-    auto pbr_pipeline::configure_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> void {
-        pipeline_base::configure_color_blending(cfg);
-        cfg.blendEnable = vk::True;
-    }
-
-    void pbr_pipeline::configure_multisampling(vk::PipelineMultisampleStateCreateInfo& cfg) {
-        pipeline_base::configure_multisampling(cfg);
-        cfg.alphaToCoverageEnable = vk::True;
+        push_constant_range.stageFlags = vk::ShaderStageFlagBits::eFragment;
+        push_constant_range.offset = sizeof(push_constants_vs);
+        push_constant_range.size = sizeof(push_constants_fs);
+        ranges.emplace_back(push_constant_range);
     }
 }

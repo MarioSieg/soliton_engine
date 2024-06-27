@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['keywords_0',['Keywords',['../class_text_editor.html#a0b28c26a8de0ef1762e229d515901c5d',1,'TextEditor']]]
+  ['palette_0',['Palette',['../class_text_editor.html#af17c3c98577d3b2b921b78c6dfd0b742',1,'TextEditor']]]
 ];

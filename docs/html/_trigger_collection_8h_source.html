@@ -119,38 +119,36 @@ $(function(){initNavTree('_trigger_collection_8h_source.html',''); initResizable
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;<a class="code" href="_trigger_base_8h.html">NsApp/TriggerBase.h</a>&gt;</span></div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespace_noesis_app.html">NoesisApp</a></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span>NoesisApp</div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>{</div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>NS_WARNING_PUSH</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>NS_MSVC_WARNING_DISABLE(4275)</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
-<div class="foldopen" id="foldopen00027" data-start="{" data-end="};">
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_trigger_collection.html">   27</a></span>class <a class="code hl_define" href="_interactivity_api_8h.html#a19ef9be0d7b903c63e87d626acc9db84">NS_APP_INTERACTIVITY_API</a> <a class="code hl_class" href="class_noesis_app_1_1_trigger_collection.html">TriggerCollection</a> final: public <a class="code hl_class" href="class_noesis_app_1_1_attachable_collection.html">AttachableCollection</a>&lt;<a class="code hl_class" href="class_noesis_app_1_1_trigger_base.html">TriggerBase</a>&gt;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>class <a class="code hl_define" href="_interactivity_api_8h.html#a19ef9be0d7b903c63e87d626acc9db84">NS_APP_INTERACTIVITY_API</a> TriggerCollection final: public AttachableCollection&lt;TriggerBase&gt;</div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>{</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <a class="code hl_class" href="class_noesis_app_1_1_trigger_collection.html">TriggerCollection</a>();</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <a class="code hl_class" href="class_noesis_app_1_1_trigger_collection.html">~TriggerCollection</a>();</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    TriggerCollection();</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    ~TriggerCollection();</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="comment">// Hides Freezable methods for convenience</span></div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <a class="code hl_class" href="class_noesis_1_1_ptr.html">Noesis::Ptr&lt;TriggerCollection&gt;</a> Clone() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <a class="code hl_class" href="class_noesis_1_1_ptr.html">Noesis::Ptr&lt;TriggerCollection&gt;</a> CloneCurrentValue() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    Noesis::Ptr&lt;TriggerCollection&gt; Clone() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    Noesis::Ptr&lt;TriggerCollection&gt; CloneCurrentValue() <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="keyword">private</span>:</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="comment">// From Freezable</span></div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <a class="code hl_class" href="class_noesis_1_1_ptr.html">Noesis::Ptr&lt;Noesis::Freezable&gt;</a> CreateInstanceCore() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    Noesis::Ptr&lt;Noesis::Freezable&gt; CreateInstanceCore() <span class="keyword">const override</span>;</div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordtype">bool</span> FreezeCore(<span class="keywordtype">bool</span> isChecking) <span class="keyword">override</span>;</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="comment">// From AttachableCollection</span></div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordtype">void</span> OnAttached() <span class="keyword">override</span>;</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordtype">void</span> OnDetaching() <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordtype">void</span> ItemAdded(<a class="code hl_class" href="class_noesis_app_1_1_trigger_base.html">TriggerBase</a>* item) <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordtype">void</span> ItemRemoved(<a class="code hl_class" href="class_noesis_app_1_1_trigger_base.html">TriggerBase</a>* item) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordtype">void</span> ItemAdded(TriggerBase* item) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordtype">void</span> ItemRemoved(TriggerBase* item) <span class="keyword">override</span>;</div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    NS_DECLARE_REFLECTION(<a class="code hl_class" href="class_noesis_app_1_1_trigger_collection.html">TriggerCollection</a>, <a class="code hl_class" href="class_noesis_app_1_1_attachable_collection.html">AttachableCollection</a>)</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    NS_DECLARE_REFLECTION(TriggerCollection, AttachableCollection)</div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>};</div>
-</div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>NS_WARNING_POP</div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
@@ -162,11 +160,6 @@ $(function(){initNavTree('_trigger_collection_8h_source.html',''); initResizable
 <div class="ttc" id="a_interactivity_api_8h_html"><div class="ttname"><a href="_interactivity_api_8h.html">InteractivityApi.h</a></div></div>
 <div class="ttc" id="a_interactivity_api_8h_html_a19ef9be0d7b903c63e87d626acc9db84"><div class="ttname"><a href="_interactivity_api_8h.html#a19ef9be0d7b903c63e87d626acc9db84">NS_APP_INTERACTIVITY_API</a></div><div class="ttdeci">#define NS_APP_INTERACTIVITY_API</div><div class="ttdef"><b>Definition</b> InteractivityApi.h:15</div></div>
 <div class="ttc" id="a_trigger_base_8h_html"><div class="ttname"><a href="_trigger_base_8h.html">TriggerBase.h</a></div></div>
-<div class="ttc" id="aclass_noesis_1_1_ptr_html"><div class="ttname"><a href="class_noesis_1_1_ptr.html">Noesis::Ptr</a></div><div class="ttdef"><b>Definition</b> ComparisonLogic.h:19</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_attachable_collection_html"><div class="ttname"><a href="class_noesis_app_1_1_attachable_collection.html">NoesisApp::AttachableCollection</a></div><div class="ttdef"><b>Definition</b> AttachableCollection.h:26</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_trigger_base_html"><div class="ttname"><a href="class_noesis_app_1_1_trigger_base.html">NoesisApp::TriggerBase</a></div><div class="ttdoc">Represents an object that can invoke Actions conditionally.</div><div class="ttdef"><b>Definition</b> TriggerBase.h:41</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_trigger_collection_html"><div class="ttname"><a href="class_noesis_app_1_1_trigger_collection.html">NoesisApp::TriggerCollection</a></div><div class="ttdef"><b>Definition</b> TriggerCollection.h:28</div></div>
-<div class="ttc" id="anamespace_noesis_app_html"><div class="ttname"><a href="namespace_noesis_app.html">NoesisApp</a></div><div class="ttdef"><b>Definition</b> Application.cpp:21</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

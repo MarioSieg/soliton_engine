@@ -114,7 +114,7 @@ $(function(){initNavTree('_set_8h_source.html',''); initResizable(); });
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;set&gt;</span></div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceluabridge.html">luabridge</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span>luabridge {</div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="comment">//=================================================================================================</span></div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> K&gt;</div>
@@ -122,11 +122,11 @@ $(function(){initNavTree('_set_8h_source.html',''); initResizable(); });
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>{</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keyword">using </span>Type = std::set&lt;K&gt;;</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    </div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    [[nodiscard]] <span class="keyword">static</span> Result <a class="code hl_function" href="structluabridge_1_1_stack.html#ae944a13a4c3de18ff300a39a31c53561">push</a>(<a class="code hl_typedef" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a>* L, <span class="keyword">const</span> Type&amp; set)</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    [[nodiscard]] <span class="keyword">static</span> Result push(<a class="code hl_typedef" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a>* L, <span class="keyword">const</span> Type&amp; set)</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    {</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#if LUABRIDGE_SAFE_STACK_CHECKS</span></div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <span class="keywordflow">if</span> (! <a class="code hl_function" href="lua_8h.html#af1b14bec994e0775eb48898ecaaf9313">lua_checkstack</a>(L, 3))</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceluabridge.html#ad0ed633aeb5ff2da5a3e8a5bfdbb698e">makeErrorCode</a>(<a class="code hl_enumvalue" href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926a2ba028e9483ca53848ba8846d753c2d9">ErrorCode::LuaStackOverflow</a>);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>            <span class="keywordflow">return</span> makeErrorCode(ErrorCode::LuaStackOverflow);</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="preprocessor">#endif</span></div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        StackRestore stackRestore(L);</div>
@@ -138,7 +138,7 @@ $(function(){initNavTree('_set_8h_source.html',''); initResizable(); });
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        {</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>            <a class="code hl_function" href="lua_8h.html#adcec46ff05dfee9a3c4c05828b40c213">lua_pushinteger</a>(L, tableIndex);</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>            <span class="keyword">auto</span> result = <a class="code hl_function" href="structluabridge_1_1_stack.html#ae944a13a4c3de18ff300a39a31c53561">Stack&lt;K&gt;::push</a>(L, *it);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>            <span class="keyword">auto</span> result = Stack&lt;K&gt;::push(L, *it);</div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>            <span class="keywordflow">if</span> (! result)</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>                <span class="keywordflow">return</span> result;</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
@@ -149,23 +149,23 @@ $(function(){initNavTree('_set_8h_source.html',''); initResizable(); });
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keywordflow">return</span> {};</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    }</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    [[nodiscard]] <span class="keyword">static</span> TypeResult&lt;Type&gt; <a class="code hl_function" href="structluabridge_1_1_stack.html#af837da7a0647a543dc3b709b17f0f8a2">get</a>(<a class="code hl_typedef" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a>* L, <span class="keywordtype">int</span> index)</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    [[nodiscard]] <span class="keyword">static</span> TypeResult&lt;Type&gt; get(<a class="code hl_typedef" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a>* L, <span class="keywordtype">int</span> index)</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    {</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keywordflow">if</span> (!<a class="code hl_define" href="lua_8h.html#a161af51893c5f79dacc1c382416a5f27">lua_istable</a>(L, index))</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceluabridge.html#ad0ed633aeb5ff2da5a3e8a5bfdbb698e">makeErrorCode</a>(<a class="code hl_enumvalue" href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926a623e6b1baa255aa4a31350088c322625">ErrorCode::InvalidTypeCast</a>);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            <span class="keywordflow">return</span> makeErrorCode(ErrorCode::InvalidTypeCast);</div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keyword">const</span> StackRestore stackRestore(L);</div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        Type set;</div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keywordtype">int</span> absIndex = <a class="code hl_function" href="namespaceluabridge.html#a42b5ee6964ff1a9ec8fb03a6decb179a">lua_absindex</a>(L, index);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keywordtype">int</span> absIndex = lua_absindex(L, index);</div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        <a class="code hl_function" href="lua_8h.html#a1b4cd0d80f51e5545a97ca6c28c03c50">lua_pushnil</a>(L);</div>
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <span class="keywordflow">while</span> (<a class="code hl_function" href="lua_8h.html#aa8bf464b98335a075732200ad91ce1de">lua_next</a>(L, absIndex) != 0)</div>
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        {</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            <span class="keyword">auto</span> item = <a class="code hl_function" href="structluabridge_1_1_stack.html#af837da7a0647a543dc3b709b17f0f8a2">Stack&lt;K&gt;::get</a>(L, -1);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            <span class="keyword">auto</span> item = Stack&lt;K&gt;::get(L, -1);</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            <span class="keywordflow">if</span> (! item)</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceluabridge.html#ad0ed633aeb5ff2da5a3e8a5bfdbb698e">makeErrorCode</a>(<a class="code hl_enumvalue" href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926a623e6b1baa255aa4a31350088c322625">ErrorCode::InvalidTypeCast</a>);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                <span class="keywordflow">return</span> makeErrorCode(ErrorCode::InvalidTypeCast);</div>
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            set.emplace(*item);</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>            <a class="code hl_define" href="lua_8h.html#abb8eae2164badeafdb037bc1e03cc822">lua_pop</a>(L, 1);</div>
@@ -174,7 +174,7 @@ $(function(){initNavTree('_set_8h_source.html',''); initResizable(); });
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="keywordflow">return</span> set;</div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    }</div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    [[nodiscard]] <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="structluabridge_1_1_stack.html#aefffd49b8d733332aa111cb2f0b96144">isInstance</a>(<a class="code hl_typedef" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a>* L, <span class="keywordtype">int</span> index)</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    [[nodiscard]] <span class="keyword">static</span> <span class="keywordtype">bool</span> isInstance(<a class="code hl_typedef" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a>* L, <span class="keywordtype">int</span> index)</div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    {</div>
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="keywordflow">return</span> <a class="code hl_define" href="lua_8h.html#a161af51893c5f79dacc1c382416a5f27">lua_istable</a>(L, index);</div>
 <div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    }</div>
@@ -192,14 +192,6 @@ $(function(){initNavTree('_set_8h_source.html',''); initResizable(); });
 <div class="ttc" id="alua_8h_html_abb8eae2164badeafdb037bc1e03cc822"><div class="ttname"><a href="lua_8h.html#abb8eae2164badeafdb037bc1e03cc822">lua_pop</a></div><div class="ttdeci">#define lua_pop(L, n)</div><div class="ttdef"><b>Definition</b> lua.h:264</div></div>
 <div class="ttc" id="alua_8h_html_adcec46ff05dfee9a3c4c05828b40c213"><div class="ttname"><a href="lua_8h.html#adcec46ff05dfee9a3c4c05828b40c213">lua_pushinteger</a></div><div class="ttdeci">LUA_API void lua_pushinteger(lua_State *L, lua_Integer n)</div></div>
 <div class="ttc" id="alua_8h_html_af1b14bec994e0775eb48898ecaaf9313"><div class="ttname"><a href="lua_8h.html#af1b14bec994e0775eb48898ecaaf9313">lua_checkstack</a></div><div class="ttdeci">LUA_API int lua_checkstack(lua_State *L, int sz)</div></div>
-<div class="ttc" id="anamespaceluabridge_html"><div class="ttname"><a href="namespaceluabridge.html">luabridge</a></div><div class="ttdef"><b>Definition</b> Array.h:12</div></div>
-<div class="ttc" id="anamespaceluabridge_html_a42b5ee6964ff1a9ec8fb03a6decb179a"><div class="ttname"><a href="namespaceluabridge.html#a42b5ee6964ff1a9ec8fb03a6decb179a">luabridge::lua_absindex</a></div><div class="ttdeci">int lua_absindex(lua_State *L, int idx)</div><div class="ttdef"><b>Definition</b> LuaHelpers.h:164</div></div>
-<div class="ttc" id="anamespaceluabridge_html_a9c453c5b0bb31b35710e481e0d580926a2ba028e9483ca53848ba8846d753c2d9"><div class="ttname"><a href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926a2ba028e9483ca53848ba8846d753c2d9">luabridge::ErrorCode::LuaStackOverflow</a></div><div class="ttdeci">@ LuaStackOverflow</div></div>
-<div class="ttc" id="anamespaceluabridge_html_a9c453c5b0bb31b35710e481e0d580926a623e6b1baa255aa4a31350088c322625"><div class="ttname"><a href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926a623e6b1baa255aa4a31350088c322625">luabridge::ErrorCode::InvalidTypeCast</a></div><div class="ttdeci">@ InvalidTypeCast</div></div>
-<div class="ttc" id="anamespaceluabridge_html_ad0ed633aeb5ff2da5a3e8a5bfdbb698e"><div class="ttname"><a href="namespaceluabridge.html#ad0ed633aeb5ff2da5a3e8a5bfdbb698e">luabridge::makeErrorCode</a></div><div class="ttdeci">std::error_code makeErrorCode(ErrorCode e)</div><div class="ttdoc">Construct an error code from the error enum.</div><div class="ttdef"><b>Definition</b> Errors.h:92</div></div>
-<div class="ttc" id="astructluabridge_1_1_stack_html_ae944a13a4c3de18ff300a39a31c53561"><div class="ttname"><a href="structluabridge_1_1_stack.html#ae944a13a4c3de18ff300a39a31c53561">luabridge::Stack::push</a></div><div class="ttdeci">static Result push(lua_State *L, const T &amp;value)</div><div class="ttdef"><b>Definition</b> Userdata.h:928</div></div>
-<div class="ttc" id="astructluabridge_1_1_stack_html_aefffd49b8d733332aa111cb2f0b96144"><div class="ttname"><a href="structluabridge_1_1_stack.html#aefffd49b8d733332aa111cb2f0b96144">luabridge::Stack::isInstance</a></div><div class="ttdeci">static bool isInstance(lua_State *L, int index)</div><div class="ttdef"><b>Definition</b> Userdata.h:943</div></div>
-<div class="ttc" id="astructluabridge_1_1_stack_html_af837da7a0647a543dc3b709b17f0f8a2"><div class="ttname"><a href="structluabridge_1_1_stack.html#af837da7a0647a543dc3b709b17f0f8a2">luabridge::Stack::get</a></div><div class="ttdeci">static ReturnType get(lua_State *L, int index)</div><div class="ttdef"><b>Definition</b> Userdata.h:938</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

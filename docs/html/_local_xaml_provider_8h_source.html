@@ -120,31 +120,29 @@ $(function(){initNavTree('_local_xaml_provider_8h_source.html',''); initResizabl
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">class </span><a class="code hl_class" href="class_provider_file_watcher.html">ProviderFileWatcher</a>;</div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespace_noesis.html">Noesis</a> { <span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt; <span class="keyword">class </span>Ptr; }</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">namespace </span>Noesis { <span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt; <span class="keyword">class </span>Ptr; }</div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespace_noesis_app.html">NoesisApp</a></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">namespace </span>NoesisApp</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>{</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>NS_WARNING_PUSH</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>NS_MSVC_WARNING_DISABLE(4251 4275)</div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
-<div class="foldopen" id="foldopen00029" data-start="{" data-end="};">
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_local_xaml_provider.html">   29</a></span>class <a class="code hl_define" href="_providers_api_8h.html#a2e77886ac35d91a1d3f9686bf046f803">NS_APP_PROVIDERS_API</a> <a class="code hl_class" href="class_noesis_app_1_1_local_xaml_provider.html">LocalXamlProvider</a>: public <a class="code hl_namespace" href="namespace_noesis.html">Noesis</a>::XamlProvider</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>class <a class="code hl_define" href="_providers_api_8h.html#a2e77886ac35d91a1d3f9686bf046f803">NS_APP_PROVIDERS_API</a> LocalXamlProvider: public Noesis::XamlProvider</div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>{</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <a class="code hl_class" href="class_noesis_app_1_1_local_xaml_provider.html">LocalXamlProvider</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* rootPath = <span class="stringliteral">&quot;&quot;</span>);</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <a class="code hl_class" href="class_noesis_app_1_1_local_xaml_provider.html">~LocalXamlProvider</a>();</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    LocalXamlProvider(<span class="keyword">const</span> <span class="keywordtype">char</span>* rootPath = <span class="stringliteral">&quot;&quot;</span>);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    ~LocalXamlProvider();</div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="keyword">private</span>:</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <a class="code hl_class" href="class_noesis_1_1_ptr.html">Noesis::Ptr&lt;Noesis::Stream&gt;</a> LoadXaml(<span class="keyword">const</span> Noesis::Uri&amp; uri) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    Noesis::Ptr&lt;Noesis::Stream&gt; LoadXaml(<span class="keyword">const</span> Noesis::Uri&amp; uri) <span class="keyword">override</span>;</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_local_xaml_provider.html#a2a98318c3e6caca3bcbd5885b97d78b2">   42</a></span>    <a class="code hl_class" href="class_noesis_1_1_ptr.html">Noesis::Ptr&lt;ProviderFileWatcher&gt;</a> <a class="code hl_variable" href="class_noesis_app_1_1_local_xaml_provider.html#a2a98318c3e6caca3bcbd5885b97d78b2">mWatcher</a>;</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_local_xaml_provider.html#a1578239af7bb779766ed548beb8296a6">   43</a></span>    <span class="keywordtype">char</span> mRootPath[512];</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    Noesis::Ptr&lt;ProviderFileWatcher&gt; mWatcher;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordtype">char</span> mRootPath[512];</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>};</div>
-</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>NS_WARNING_POP</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
@@ -153,12 +151,7 @@ $(function(){initNavTree('_local_xaml_provider_8h_source.html',''); initResizabl
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="a_providers_api_8h_html"><div class="ttname"><a href="_providers_api_8h.html">ProvidersApi.h</a></div></div>
 <div class="ttc" id="a_providers_api_8h_html_a2e77886ac35d91a1d3f9686bf046f803"><div class="ttname"><a href="_providers_api_8h.html#a2e77886ac35d91a1d3f9686bf046f803">NS_APP_PROVIDERS_API</a></div><div class="ttdeci">#define NS_APP_PROVIDERS_API</div><div class="ttdef"><b>Definition</b> ProvidersApi.h:15</div></div>
-<div class="ttc" id="aclass_noesis_1_1_ptr_html"><div class="ttname"><a href="class_noesis_1_1_ptr.html">Noesis::Ptr</a></div><div class="ttdef"><b>Definition</b> ComparisonLogic.h:19</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_local_xaml_provider_html"><div class="ttname"><a href="class_noesis_app_1_1_local_xaml_provider.html">NoesisApp::LocalXamlProvider</a></div><div class="ttdoc">A XAML provider that searches in local directories.</div><div class="ttdef"><b>Definition</b> LocalXamlProvider.h:30</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_local_xaml_provider_html_a2a98318c3e6caca3bcbd5885b97d78b2"><div class="ttname"><a href="class_noesis_app_1_1_local_xaml_provider.html#a2a98318c3e6caca3bcbd5885b97d78b2">NoesisApp::LocalXamlProvider::mWatcher</a></div><div class="ttdeci">Noesis::Ptr&lt; ProviderFileWatcher &gt; mWatcher</div><div class="ttdef"><b>Definition</b> LocalXamlProvider.h:42</div></div>
 <div class="ttc" id="aclass_provider_file_watcher_html"><div class="ttname"><a href="class_provider_file_watcher.html">ProviderFileWatcher</a></div><div class="ttdef"><b>Definition</b> ProviderFileWatcher.h:21</div></div>
-<div class="ttc" id="anamespace_noesis_app_html"><div class="ttname"><a href="namespace_noesis_app.html">NoesisApp</a></div><div class="ttdef"><b>Definition</b> Application.cpp:21</div></div>
-<div class="ttc" id="anamespace_noesis_html"><div class="ttname"><a href="namespace_noesis.html">Noesis</a></div><div class="ttdef"><b>Definition</b> AttachableObject.h:18</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

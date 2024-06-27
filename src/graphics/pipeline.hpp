@@ -6,9 +6,12 @@
 
 #include <ankerl/unordered_dense.h>
 
-#include "vulkancore/shader.hpp"
+#include "shader.hpp"
 
 namespace graphics {
+    class mesh;
+    class material;
+
     enum class pipeline_type : std::uint8_t {
         graphics
     };
@@ -28,10 +31,21 @@ namespace graphics {
     protected:
         explicit pipeline_base(std::string&& name, pipeline_type type);
 
+        HOTPROC static auto draw_mesh(
+            const mesh& mesh,
+            const vk::CommandBuffer cmd,
+            const std::vector<material*>& mats,
+            const vk::PipelineLayout layout
+        ) -> void;
+        HOTPROC static auto draw_mesh(
+            const mesh& mesh,
+            const vk::CommandBuffer cmd
+        ) -> void;
+
         virtual auto pre_configure() -> void;
-        virtual auto configure_shaders(std::vector<std::pair<std::unique_ptr<vkb::shader>, vk::ShaderStageFlagBits>>& cfg) -> void = 0;
-        virtual auto configure_vertex_info(std::vector<vk::VertexInputBindingDescription>& cfg, std::vector<vk::VertexInputAttributeDescription>& bindings) -> void = 0;
+        virtual auto configure_shaders(std::vector<std::pair<std::shared_ptr<vkb::shader>, vk::ShaderStageFlagBits>>& cfg) -> void = 0;
         virtual auto configure_pipeline_layout(std::vector<vk::DescriptorSetLayout>& layouts, std::vector<vk::PushConstantRange>& ranges) -> void = 0;
+        virtual auto configure_vertex_info(std::vector<vk::VertexInputBindingDescription>& cfg, std::vector<vk::VertexInputAttributeDescription>& bindings) -> void;
         virtual auto configure_viewport_state(vk::PipelineViewportStateCreateInfo& cfg) -> void;
         virtual auto configure_input_assembly(vk::PipelineInputAssemblyStateCreateInfo& cfg) -> void;
         virtual auto configure_rasterizer(vk::PipelineRasterizationStateCreateInfo& cfg) -> void;
@@ -53,21 +67,30 @@ namespace graphics {
         explicit pipeline_registry(vk::Device device);
         ~pipeline_registry();
 
-        [[nodiscard]] auto get_pipelines() const -> const ankerl::unordered_dense::map<std::string_view, std::unique_ptr<pipeline_base>>& { return m_pipelines; }
-        [[nodiscard]] auto get_pipeline(const std::string_view name) -> pipeline_base& {
-            passert(m_pipelines.contains(name));
-            return *m_pipelines[name];
+        [[nodiscard]] auto get_pipelines() const -> const ankerl::unordered_dense::map<std::string, std::unique_ptr<pipeline_base>>& { return m_pipelines; }
+        [[nodiscard]] auto get_pipeline(std::string&& name) -> pipeline_base& {
+            if (!m_pipelines.contains(name)) [[unlikely]] {
+                log_error("Pipeline not found in registry: '{}'", name);
+                for (const auto& [key, value] : m_pipelines) {
+                    log_error("Available pipeline: '{}'", key);
+                }
+                panic("Pipeline not found in registry: '{}'", name);
+            }
+            return *m_pipelines.at(name);
         }
 
         template<typename T, typename... Args> requires std::is_base_of_v<pipeline_base, T>
         auto register_pipeline(Args&&... args) -> T& {
             auto instance = std::make_unique<T>(std::forward<Args>(args)...);
             passert(!m_pipelines.contains(instance->name));
+            auto name = instance->name;
             instance->create(m_cache);
-            m_names.emplace_back(std::string{instance->name});
-            m_pipelines[m_names.back()] = std::move(instance);
-            return *static_cast<T*>(&*m_pipelines[m_names.back()]);
+            m_pipelines[name] = std::move(instance);
+            return *static_cast<T*>(&*m_pipelines[name]);
         }
+
+        auto invalidate_all() -> void;
+        auto try_recreate_all() -> void;
 
         [[nodiscard]] auto get_cache() const -> vk::PipelineCache { return m_cache; }
 
@@ -76,11 +99,12 @@ namespace graphics {
             return *s_instance;
         }
 
+        static auto init() -> void;
+        static auto shutdown() -> void;
+
     private:
-        friend class graphics_subsystem;
         static inline constinit std::unique_ptr<pipeline_registry> s_instance {};
-        std::vector<std::string> m_names {};
-        ankerl::unordered_dense::map<std::string_view, std::unique_ptr<pipeline_base>> m_pipelines {};
+        ankerl::unordered_dense::map<std::string, std::unique_ptr<pipeline_base>> m_pipelines {};
         const vk::Device m_device;
         vk::PipelineCache m_cache {};
     };

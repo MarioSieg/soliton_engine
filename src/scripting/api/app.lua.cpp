@@ -41,8 +41,12 @@ LUA_INTEROP_API auto __lu_app_is_ui_hovered() -> bool {
     return ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow);
 }
 
-LUA_INTEROP_API auto __lu_app_hot_reload_ui() -> void {
-    graphics_subsystem::s_instance->get_noesis_context().load_ui_from_xaml("App.xaml");
+LUA_INTEROP_API auto __lu_app_hot_reload_ui(const bool render_wireframe) -> void {
+    graphics_subsystem::get().get_noesis_context().reload_ui(render_wireframe);
+}
+
+LUA_INTEROP_API auto __lu_app_hot_reload_shaders() -> void {
+    graphics_subsystem::get().hot_reload_pipelines();
 }
 
 LUA_INTEROP_API auto __lu_window_maximize() -> void {
@@ -126,11 +130,11 @@ LUA_INTEROP_API auto __lu_app_host_get_cpu_name() -> const char* {
 }
 
 LUA_INTEROP_API auto __lu_app_host_get_gpu_name() -> const char* {
-    return vkb::context::s_instance->get_device().get_physical_device_props().deviceName;
+    return vkb::ctx().get_device().get_physical_device_props().deviceName;
 }
 
 LUA_INTEROP_API auto __lu_app_host_get_gapi_name() -> const char* {
-    const std::uint32_t api = vkb::context::s_instance->get_device().get_physical_device_props().apiVersion;
+    const std::uint32_t api = vkb::ctx().get_device().get_physical_device_props().apiVersion;
     const std::uint32_t major = VK_API_VERSION_MAJOR(api);
     const std::uint32_t minor = VK_API_VERSION_MINOR(api);
     const std::uint32_t patch = VK_API_VERSION_PATCH(api);

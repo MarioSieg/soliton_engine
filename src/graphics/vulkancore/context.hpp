@@ -9,6 +9,10 @@
 
 #include <DirectXMath.h>
 
+namespace graphics {
+    class graphics_subsystem;
+}
+
 namespace vkb {
     template <const vk::QueueFlagBits QueueType>
     concept is_queue_type = requires {
@@ -21,7 +25,6 @@ namespace vkb {
     class context final : public no_copy, public no_move {
     public:
         static constexpr std::uint32_t k_max_concurrent_frames = 3;
-        inline constinit static std::unique_ptr<context> s_instance {};
         explicit context(
             GLFWwindow* window
         );
@@ -34,6 +37,7 @@ namespace vkb {
         [[nodiscard]] auto get_graphics_command_pool() const noexcept -> vk::CommandPool { return m_graphics_command_pool; }
         [[nodiscard]] auto get_compute_command_pool() const noexcept -> vk::CommandPool { return m_compute_command_pool; }
         [[nodiscard]] auto get_transfer_command_pool() const noexcept -> vk::CommandPool { return m_transfer_command_pool; }
+
         template <const vk::QueueFlagBits QueueType> requires is_queue_type<QueueType>
         [[nodiscard]] auto start_command_buffer() const -> vk::CommandBuffer {
             vk::CommandBuffer cmd {};
@@ -58,6 +62,7 @@ namespace vkb {
             vkcheck(cmd.begin(&cmd_begin_info));
             return cmd;
         }
+
         template <const vk::QueueFlagBits QueueType, const bool Owned = true> requires is_queue_type<QueueType>
         auto flush_command_buffer(const vk::CommandBuffer cmd) const -> void {
             const vk::Device device = m_device->get_logical_device();
@@ -66,7 +71,7 @@ namespace vkb {
             }
             constexpr vk::FenceCreateInfo fence_info {};
             vk::Fence fence {};
-            vkcheck(device.createFence(&fence_info, &vkb::s_allocator, &fence));
+            vkcheck(device.createFence(&fence_info, vkb::get_alloc(), &fence));
             vk::SubmitInfo submit_info {};
             submit_info.commandBufferCount = 1;
             submit_info.pCommandBuffers = &cmd;
@@ -82,7 +87,7 @@ namespace vkb {
             }
             vkcheck(queue.submit(1, &submit_info, fence));// TODO: not thread safe, use transfer queue
             vkcheck(device.waitForFences(1, &fence, vk::True, std::numeric_limits<std::uint64_t>::max()));
-            device.destroyFence(fence, &vkb::s_allocator);
+            device.destroyFence(fence, vkb::get_alloc());
             if constexpr (Owned) {
                 vk::CommandPool pool {};
                 if constexpr (QueueType == vk::QueueFlagBits::eGraphics) {
@@ -97,12 +102,14 @@ namespace vkb {
                 device.freeCommandBuffers(pool, 1, &cmd);
             }
         }
+
         [[nodiscard]] auto get_command_buffers() const noexcept -> std::span<const vk::CommandBuffer> { return m_command_buffers; }
         [[nodiscard]] auto get_current_frame() const noexcept -> std::uint32_t { return m_current_frame; }
         [[nodiscard]] auto get_image_index() const noexcept -> std::uint32_t { return m_image_index; }
         [[nodiscard]] auto get_pipeline_cache() const noexcept -> vk::PipelineCache { return m_pipeline_cache; }
         [[nodiscard]] auto get_imgui_descriptor_pool() const noexcept -> vk::DescriptorPool { return m_imgui_descriptor_pool; }
-        [[nodiscard]] auto get_render_pass() const noexcept -> vk::RenderPass { return m_render_pass; }
+        [[nodiscard]] auto get_scene_render_pass() const noexcept -> vk::RenderPass { return m_scene_render_pass; }
+        [[nodiscard]] auto get_ui_render_pass() const noexcept -> vk::RenderPass { return m_ui_render_pass; }
         [[nodiscard]] auto get_framebuffers() const noexcept -> std::span<const vk::Framebuffer> { return m_framebuffers; }
         [[nodiscard]] auto get_swapchain_image() const noexcept -> vk::Image { return m_swapchain->get_images()[m_image_index]; }
         [[nodiscard]] auto get_swapchain_image_view() const noexcept -> vk::ImageView { return m_swapchain->get_buffer(m_image_index).view; }
@@ -116,10 +123,17 @@ namespace vkb {
         [[nodiscard]] auto get_swapchain_image_depth_stencil_view() const noexcept -> vk::ImageView { return m_depth_stencil.view; }
 
         HOTPROC auto begin_frame(const DirectX::XMFLOAT4A& clear_color, vk::CommandBufferInheritanceInfo* out_inheritance_info = nullptr) -> vk::CommandBuffer;
-        HOTPROC auto end_frame(vk::CommandBuffer cmd_buf) -> void;
+        HOTPROC auto end_frame(vk::CommandBuffer cmd) -> void;
+        auto begin_render_pass(vk::CommandBuffer cmd, vk::RenderPass pass, vk::SubpassContents contents) -> void;
+        auto end_render_pass(vk::CommandBuffer cmd) -> void;
         auto on_resize() -> void;
 
+        static auto init(GLFWwindow* window) -> void;
+        static auto shutdown() -> void;
+
     private:
+        friend auto ctx() noexcept -> context&;
+
         auto boot_vulkan_core() -> void;
         auto create_sync_prims() -> void;
         auto create_command_pools() -> void;
@@ -137,6 +151,7 @@ namespace vkb {
         auto destroy_command_buffers() const -> void;
         auto destroy_sync_prims() const -> void;
 
+        inline constinit static std::unique_ptr<context> s_instance {};
         GLFWwindow* m_window = nullptr;
         std::uint32_t m_width = 0;
         std::uint32_t m_height = 0;
@@ -156,7 +171,8 @@ namespace vkb {
             vk::ImageView view {};
             VmaAllocation memory {};
         } m_depth_stencil {};
-        vk::RenderPass m_render_pass {};
+        vk::RenderPass m_scene_render_pass {};
+        vk::RenderPass m_ui_render_pass {};
         std::vector<vk::Framebuffer> m_framebuffers {};
         vk::PipelineCache m_pipeline_cache {};
         std::uint32_t m_current_frame = 0; // To select the correct sync objects, we need to keep track of the current frame
@@ -174,6 +190,7 @@ namespace vkb {
                 VmaAllocation memory {};
             } depth {};
         } m_msaa_target {};
+        std::array<vk::ClearValue, 3> m_clear_values {};
     };
 
     // Get global vulkan context wrapper class

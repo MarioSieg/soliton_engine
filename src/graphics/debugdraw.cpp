@@ -2,10 +2,16 @@
 
 #include "debugdraw.hpp"
 
-#include "../scripting/scripting_subsystem.hpp"
+#include "../scripting/convar.hpp"
 #include "vulkancore/context.hpp"
 
 namespace graphics {
+    static convar<std::uint32_t> k_debug_draw_max_verts {
+        "Renderer.maxDebugDrawVertices",
+        100'000u,
+        scripting::convar_flags::read_only
+    };
+
     using namespace DirectX;
 
     static constexpr std::array<const std::uint32_t, 1532 / 4> k_debug_draw_vs_spirv {
@@ -873,29 +879,6 @@ namespace graphics {
         0x00010038,
     };
 
-    debugdraw::debugdraw(const vk::DescriptorPool pool)
-        : k_max_vertices{scripting::scripting_subsystem::get_config_table()["Renderer"]["maxDebugDrawVertices"].cast<std::uint32_t>().valueOr(250'000)} {
-        m_vertices.reserve(k_max_vertices);
-        m_draw_commands.reserve(k_max_vertices / 2);
-        const vk::Device device = vkb::ctx().get_device();
-        create_uniform_buffer();
-        create_vertex_buffer();
-        create_descriptor_set_layout(device);
-        create_descriptor_set(device, pool);
-        create_pipeline_states(device, vkb::context::s_instance->get_render_pass());
-        log_info("Created debug draw context");
-    }
-
-    debugdraw::~debugdraw() {
-        const vk::Device device = vkb::ctx().get_device();
-        device.destroyPipelineLayout(m_pipeline_layout, &vkb::s_allocator);
-        device.destroyDescriptorSetLayout(m_descriptor_set_layout, &vkb::s_allocator);
-        device.destroyPipeline(m_line_depth_pipeline, &vkb::s_allocator);
-        device.destroyPipeline(m_line_no_depth_pipeline, &vkb::s_allocator);
-        device.destroyPipeline(m_line_strip_depth_pipeline, &vkb::s_allocator);
-        device.destroyPipeline(m_line_strip_no_depth_pipeline, &vkb::s_allocator);
-    }
-
     auto debugdraw::render(
         const vk::CommandBuffer cmd,
         const FXMMATRIX view_proj,
@@ -1065,7 +1048,7 @@ namespace graphics {
         vk::DescriptorSetLayoutCreateInfo layout_info {};
         layout_info.bindingCount = 1;
         layout_info.pBindings = &binding;
-        vkcheck(device.createDescriptorSetLayout(&layout_info, &vkb::s_allocator, &m_descriptor_set_layout));
+        vkcheck(device.createDescriptorSetLayout(&layout_info, vkb::get_alloc(), &m_descriptor_set_layout));
     }
 
     auto debugdraw::create_descriptor_set(const vk::Device device, const vk::DescriptorPool pool) -> void {
@@ -1118,12 +1101,12 @@ namespace graphics {
         shader_create_info.pCode = k_debug_draw_vs_spirv.data();
 
         vk::ShaderModule vs;
-        vkcheck(device.createShaderModule(&shader_create_info, &vkb::s_allocator, &vs));
+        vkcheck(device.createShaderModule(&shader_create_info, vkb::get_alloc(), &vs));
 
         shader_create_info.codeSize = k_debug_draw_fs_spirv.size() * sizeof(std::uint32_t);
         shader_create_info.pCode = k_debug_draw_fs_spirv.data();
         vk::ShaderModule fs;
-        vkcheck(device.createShaderModule(&shader_create_info, &vkb::s_allocator, &fs));
+        vkcheck(device.createShaderModule(&shader_create_info, vkb::get_alloc(), &fs));
 
         vk::GraphicsPipelineCreateInfo pipeline_info {};
 
@@ -1250,7 +1233,7 @@ namespace graphics {
         push_constant_range.size = sizeof(XMFLOAT4) * 2;
         pipeline_layout_create_info.pushConstantRangeCount = 1;
         pipeline_layout_create_info.pPushConstantRanges = &push_constant_range;
-        vkcheck(device.createPipelineLayout(&pipeline_layout_create_info, &vkb::s_allocator, &m_pipeline_layout));
+        vkcheck(device.createPipelineLayout(&pipeline_layout_create_info, vkb::get_alloc(), &m_pipeline_layout));
 
         pipeline_info.renderPass = pass;
         pipeline_info.pDepthStencilState = &depth_stencil_state;
@@ -1261,30 +1244,52 @@ namespace graphics {
         depth_stencil_state.depthWriteEnable = vk::False;
         input_assembly_state.topology = vk::PrimitiveTopology::eLineList;
         rasterization_state.cullMode = vk::CullModeFlagBits::eNone;
-        vkcheck(device.createGraphicsPipelines(nullptr, 1, &pipeline_info, &vkb::s_allocator, &m_line_depth_pipeline));
+        vkcheck(device.createGraphicsPipelines(nullptr, 1, &pipeline_info, vkb::get_alloc(), &m_line_depth_pipeline));
 
         // Line list depth test disabled pipeline
         depth_stencil_state.depthTestEnable = vk::True;
         depth_stencil_state.depthWriteEnable = vk::True;
         input_assembly_state.topology = vk::PrimitiveTopology::eLineList;
         rasterization_state.cullMode = vk::CullModeFlagBits::eNone;
-        vkcheck(device.createGraphicsPipelines(nullptr, 1, &pipeline_info, &vkb::s_allocator, &m_line_no_depth_pipeline));
+        vkcheck(device.createGraphicsPipelines(nullptr, 1, &pipeline_info, vkb::get_alloc(), &m_line_no_depth_pipeline));
 
         // Line strip depth test enable pipeline
         depth_stencil_state.depthTestEnable = vk::True;
         depth_stencil_state.depthWriteEnable = vk::True;
         input_assembly_state.topology = vk::PrimitiveTopology::eLineStrip;
         rasterization_state.cullMode = vk::CullModeFlagBits::eNone;
-        vkcheck(device.createGraphicsPipelines(nullptr, 1, &pipeline_info, &vkb::s_allocator, &m_line_strip_depth_pipeline));
+        vkcheck(device.createGraphicsPipelines(nullptr, 1, &pipeline_info, vkb::get_alloc(), &m_line_strip_depth_pipeline));
 
         // Line strip depth test disable pipeline
         depth_stencil_state.depthTestEnable = vk::False;
         depth_stencil_state.depthWriteEnable = vk::False;
         input_assembly_state.topology = vk::PrimitiveTopology::eLineStrip;
         rasterization_state.cullMode = vk::CullModeFlagBits::eNone;
-        vkcheck(device.createGraphicsPipelines(nullptr, 1, &pipeline_info, &vkb::s_allocator, &m_line_strip_no_depth_pipeline));
+        vkcheck(device.createGraphicsPipelines(nullptr, 1, &pipeline_info, vkb::get_alloc(), &m_line_strip_no_depth_pipeline));
 
-        device.destroyShaderModule(vs, &vkb::s_allocator);
-        device.destroyShaderModule(fs, &vkb::s_allocator);
+        device.destroyShaderModule(vs, vkb::get_alloc());
+        device.destroyShaderModule(fs, vkb::get_alloc());
+    }
+
+    debugdraw::debugdraw(const vk::DescriptorPool pool) : k_max_vertices{k_debug_draw_max_verts()} {
+        m_vertices.reserve(k_max_vertices);
+        m_draw_commands.reserve(k_max_vertices / 2);
+        const vk::Device device = vkb::ctx().get_device();
+        create_uniform_buffer();
+        create_vertex_buffer();
+        create_descriptor_set_layout(device);
+        create_descriptor_set(device, pool);
+        create_pipeline_states(device, vkb::ctx().get_scene_render_pass());
+        log_info("Created debug draw context");
+    }
+
+    debugdraw::~debugdraw() {
+        const vk::Device device = vkb::ctx().get_device();
+        device.destroyPipelineLayout(m_pipeline_layout, vkb::get_alloc());
+        device.destroyDescriptorSetLayout(m_descriptor_set_layout, vkb::get_alloc());
+        device.destroyPipeline(m_line_depth_pipeline, vkb::get_alloc());
+        device.destroyPipeline(m_line_no_depth_pipeline, vkb::get_alloc());
+        device.destroyPipeline(m_line_strip_depth_pipeline, vkb::get_alloc());
+        device.destroyPipeline(m_line_strip_no_depth_pipeline, vkb::get_alloc());
     }
 }

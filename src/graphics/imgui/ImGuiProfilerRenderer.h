@@ -199,67 +199,6 @@ namespace ImGuiUtils
         Text(drawList, markerRightRectMax + textMargin, textColor, timeText.str().c_str());
         Text(drawList, markerRightRectMax + textMargin + glm::vec2(nameOffset, 0.0f), textColor, (std::string("ms] ") + task.name).c_str());
       }
-
-      /*
-      struct PriorityEntry
-      {
-        bool isUsed;
-        legit::ProfilerTask task;
-      };
-      std::map<std::string, PriorityEntry> priorityEntries;
-      for (auto priorityTask : priorityTasks)
-      {
-        PriorityEntry entry;
-        entry.task = frames[priorityTask.frameIndex].tasks[priorityTask.taskIndex];
-        entry.isUsed = false;
-        priorityEntries[entry.task.name] = entry;
-      }
-      size_t shownTasksCount = 0;
-      for (size_t taskIndex = 0; taskIndex < currFrame.tasks.size(); taskIndex++)
-      {
-        auto &task = currFrame.tasks[taskIndex];
-        auto it = priorityEntries.find(task.name);
-        if (it != priorityEntries.end() && !it->second.isUsed)
-        {
-          it->second.isUsed = true;
-
-          float taskStartHeight = (float(task.startTime) / maxFrameTime) * legendSize.y;
-          float taskEndHeight = (float(task.endTime) / maxFrameTime) * legendSize.y;
-
-
-          glm::vec2 markerLeftRectMin = legendPos + glm::vec2(markerLeftRectMargin, legendSize.y);
-          glm::vec2 markerLeftRectMax = markerLeftRectMin + glm::vec2(markerLeftRectWidth, 0.0f);
-          markerLeftRectMin.y -= taskStartHeight;
-          markerLeftRectMax.y -= taskEndHeight;
-
-          glm::vec2 markerRightRectMin = legendPos + glm::vec2(markerLeftRectMargin + markerLeftRectWidth + markerMidWidth, legendSize.y - markerRigthRectMargin - (markerRightRectHeight + markerRightRectSpacing) * shownTasksCount);
-          glm::vec2 markerRightRectMax = markerRightRectMin + glm::vec2(markerRightRectWidth, -markerRightRectHeight);
-          RenderTaskMarker(drawList, markerLeftRectMin, markerLeftRectMax, markerRightRectMin, markerRightRectMax, task.color);
-
-          uint32_t textColor = legit::Colors::imguiText;// task.color;
-
-          float taskTimeMs = float(task.endTime - task.startTime);
-          std::ostringstream timeText;
-          timeText.precision(2);
-          timeText << std::fixed << std::string("[") << (taskTimeMs * 1000.0f);
-
-          Text(drawList, markerRightRectMax + textMargin, textColor, timeText.str().c_str());
-          Text(drawList, markerRightRectMax + textMargin + glm::vec2(nameOffset, 0.0f), textColor, (std::string("ms] ") + task.name).c_str());
-          shownTasksCount++;
-        }
-      }*/
-
-      /*for (size_t priorityTaskIndex = 0; priorityTaskIndex < priorityTasks.size(); priorityTaskIndex++)
-      {
-        auto &priorityTask = priorityTasks[priorityTaskIndex];
-        auto &globalTask = frames[priorityTask.frameIndex].tasks[priorityTask.taskIndex];
-
-        size_t lastFrameTaskIndex = currFrame.FindTask(globalTask.name);
-
-        glm::vec2 taskPos = legendPos + marginSpacing + glm::vec2(0.0f, markerHeight) + glm::vec2(0.0f, (markerHeight + itemSpacing) * priorityTaskIndex);
-        Rect(drawList, taskPos, taskPos + glm::vec2(markerHeight, -markerHeight), task.color, true);
-        Text(drawList, taskPos + textOffset, 0xffffffff, task.name.c_str());
-      }*/
     }
 
     static void Rect(ImDrawList *drawList, glm::vec2 minPoint, glm::vec2 maxPoint, uint32_t col, bool filled = true)
@@ -294,32 +233,8 @@ namespace ImGuiUtils
     }
     struct FrameData
     {
-      /*void BuildPriorityTasks(size_t maxPriorityTasksCount)
-      {
-        priorityTaskIndices.clear();
-        std::set<std::string> usedTaskNames;
-
-        for (size_t priorityIndex = 0; priorityIndex < maxPriorityTasksCount; priorityIndex++)
-        {
-          size_t bestTaskIndex = size_t(-1);
-          for (size_t taskIndex = 0; taskIndex < tasks.size(); taskIndex++)
-          {
-            auto &task = tasks[taskIndex];
-            auto it = usedTaskNames.find(tasks[taskIndex].name);
-            if (it == usedTaskNames.end() && (bestTaskIndex == size_t(-1) || tasks[bestTaskIndex].GetLength() < task.GetLength()))
-            {
-              bestTaskIndex = taskIndex;
-            }
-          }
-          if (bestTaskIndex == size_t(-1))
-            break;
-          priorityTaskIndices.push_back(bestTaskIndex);
-          usedTaskNames.insert(tasks[bestTaskIndex].name);
-        }
-      }*/
       std::vector<legit::ProfilerTask> tasks;
       std::vector<size_t> taskStatsIndex;
-      //std::vector<size_t> priorityTaskIndices;
     };
 
     struct TaskStats
@@ -331,12 +246,6 @@ namespace ImGuiUtils
     std::vector<TaskStats> taskStats;
     std::map<std::string, size_t> taskNameToStatsIndex;
 
-    /*struct PriorityTask
-    {
-      size_t frameIndex;
-      size_t taskIndex;
-    };
-    std::vector<PriorityTask> priorityTasks;*/
     std::vector<FrameData> frames;
     size_t currFrameIndex = 0;
   };
@@ -345,8 +254,7 @@ namespace ImGuiUtils
   {
   public:
     ProfilersWindow():
-      cpuGraph(300),
-      gpuGraph(300)
+      cpuGraph(300)
     {
       stopProfiling = false;
       frameOffset = 0;
@@ -371,47 +279,23 @@ namespace ImGuiUtils
         }
       }
 
-      ImGui::Begin("Native Profiler###ProfilerWindow", 0, ImGuiWindowFlags_NoScrollbar);
       ImVec2 canvasSize = ImGui::GetContentRegionAvail();
-
       int sizeMargin = int(ImGui::GetStyle().ItemSpacing.y);
       int maxGraphHeight = 300;
       int availableGraphHeight = (int(canvasSize.y) - sizeMargin) / 2;
       int graphHeight = std::min(maxGraphHeight, availableGraphHeight);
       int legendWidth = 200;
       int graphWidth = int(canvasSize.x) - legendWidth;
-      gpuGraph.RenderTimings(graphWidth, legendWidth, graphHeight, frameOffset);
       cpuGraph.RenderTimings(graphWidth, legendWidth, graphHeight, frameOffset);
-      if (graphHeight * 2 + sizeMargin + sizeMargin < canvasSize.y)
-      {
-        ImGui::Columns(2);
-        size_t textSize = 50;
-        ImGui::Checkbox("Stop profiling", &stopProfiling);
-        //ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - textSize);
-        ImGui::Checkbox("Colored legend text", &useColoredLegendText);
-        ImGui::DragInt("Frame offset", &frameOffset, 1.0f, 0, 400);
-        ImGui::NextColumn();
-
-        ImGui::SliderInt("Frame width", &frameWidth, 1, 4);
-        ImGui::SliderInt("Frame spacing", &frameSpacing, 0, 2);
-        ImGui::SliderFloat("Transparency", &ImGui::GetStyle().Colors[ImGuiCol_WindowBg].w, 0.0f, 1.0f);
-        ImGui::Columns(1);
-      }
       if (!stopProfiling)
         frameOffset = 0;
-      gpuGraph.frameWidth = frameWidth;
-      gpuGraph.frameSpacing = frameSpacing;
-      gpuGraph.useColoredLegendText = useColoredLegendText;
       cpuGraph.frameWidth = frameWidth;
       cpuGraph.frameSpacing = frameSpacing;
       cpuGraph.useColoredLegendText = useColoredLegendText;
-
-      ImGui::End();
     }
     bool stopProfiling;
     int frameOffset;
     ProfilerGraph cpuGraph;
-    ProfilerGraph gpuGraph;
     int frameWidth;
     int frameSpacing;
     bool useColoredLegendText;

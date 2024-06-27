@@ -16,7 +16,7 @@
 namespace graphics {
     class material;
 
-    class mesh final : public asset {
+class mesh final : public assetmgr::asset {
     public:
         struct vertex final {
             DirectX::XMFLOAT3 position;
@@ -26,7 +26,7 @@ namespace graphics {
             DirectX::XMFLOAT3 bitangent;
         };
 
-        using index = std::uint32_t;
+        using index = std::uint32_t; // Meshes generally use 32-bit indices, 16-bit indices are used internally, when possible
 
         struct primitive final {
             std::uint32_t index_start = 0;
@@ -37,7 +37,7 @@ namespace graphics {
         };
 
         explicit mesh(std::string&& path);
-        mesh(std::span<const aiMesh*> meshes);
+        explicit mesh(std::span<const aiMesh*> meshes);
         ~mesh() override = default;
 
         [[nodiscard]] auto get_primitives() const noexcept -> std::span<const primitive> { return m_primitives; }
@@ -51,9 +51,7 @@ namespace graphics {
         static constexpr std::uint32_t k_import_flags = []() noexcept -> std::uint32_t { // TODO use flags from lua
             std::uint32_t k_import_flags = aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_ConvertToLeftHanded;
             k_import_flags |= aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_GenBoundingBoxes;
-            //k_import_flags |= aiProcess_FixInfacingNormals;
-            //k_import_flags |= aiProcess_PreTransformVertices; // do we need this?
-            k_import_flags &= ~(aiProcess_ValidateDataStructure | aiProcess_SplitLargeMeshes);
+            k_import_flags |= aiProcess_FixInfacingNormals;
             return k_import_flags;
         }();
 

@@ -1,161 +1,171 @@
 -- Copyright (c) 2022-2023 Mario 'Neo' Sieg. All Rights Reserved.
 
-local App = require 'App'
-local Scene = require 'Scene'
-local Components = require 'Components'
-local Input = require 'Input'
-local Math = require 'Math'
-local Vec2 = require 'Vec2'
-local Vec3 = require 'Vec3'
-local Quat = require 'Quat'
-local Time = require 'Time'
-local EFLAGS = ENTITY_FLAGS
+local scene = require 'scene'
+local components = require 'components'
+local input = require 'input'
+local gmath = require 'gmath'
+local vec2 = require 'vec2'
+local vec3 = require 'vec3'
+local quat = require 'quat'
+local time = require 'time'
+local entity_flags = entity_flags
 
-local MOVEMENT_STATE = {
-    IDLE = 0,
-    WALKING = 1,
-    RUNNING = 2
+local movement_state = {
+    idle = 0,
+    walking = 1,
+    running = 2
 }
 
-local Player = {
-    controller = nil,
-    camera = nil,
-    sensitivity = 0.5,
-    clampY = 80,
-    enableSmoothLook = true,
-    lookSnappiness = 15.0,
-    walkSpeed = 2,
-    runSpeed = 5,
-    jumpSpeed = 2,
-    _movementState = MOVEMENT_STATE.IDLE,
-    _isInAir = false,
-    _prevMousePos = Vec2.ZERO,
-    _mouseAngles = Vec2.ZERO,
-    _smoothAngles = Vec2.ZERO
+local player = {
+    camera_fov = 70,
+    mouse_sensitivity = 0.5,
+    view_clamp_y = 85,
+    enable_smooth_look = true,
+    look_snappiness = 14.0,
+    walk_speed = 1.8,
+    run_speed = 3.5,
+    jump_speed = 5.0,
+    enable_view_bob = true,
+    view_bob_speed = 9, -- Speed of oscillation
+    view_bob_scale = 0.15, -- Magnitude of oscillation
+    can_jump = true,
+    can_run = true,
+    
+    _controller = nil,
+    _camera = nil,
+    _movement_state = movement_state.idle,
+    _is_flying = false,
+    _prev_mouse_pos = vec2.zero,
+    _mouse_angles = vec2.zero,
+    _smooth_angles = vec2.zero
 }
 
-function Player:spawn(spawnPos)
-    spawnPos = spawnPos or Vec3(0, 10, 0)
+function player:spawn(spawn_pos)
+    spawn_pos = spawn_pos or vec3(0, 2, 0)
 
-    self.controller = Scene.spawn('PlayerController')
-    self.controller:addFlag(EFLAGS.TRANSIENT)
-    self.controller:getComponent(Components.CharacterController)
-    self.controller:getComponent(Components.Transform):setPosition(spawnPos)
+    self._controller = scene.spawn('player_controller')
+    self._controller:add_flag(entity_flags.transient)
+    self._controller:get_component(components.character_controller)
+    self._controller:get_component(components.transform):set_position(spawn_pos)
 
-    self.camera = Scene.spawn('PlayerCamera')
-    self.camera:addFlag(EFLAGS.TRANSIENT)
-    self.camera:getComponent(Components.Transform)
-    self.camera:getComponent(Components.Camera):setFov(75)
+    self._camera = scene.spawn('player_camera')
+    self._camera:add_flag(entity_flags.transient)
+    self._camera:get_component(components.transform)
+    self._camera:get_component(components.camera):set_fov(self.camera_fov)
 end
 
-function Player:updateCamera()
-    local transform = self.camera:getComponent(Components.Transform)
-    local newPos = self.controller:getComponent(Components.Transform):getPosition()
-    newPos.y = newPos.y + 1.35 * 0.5 -- camera height
-    transform:setPosition(newPos) -- sync pos
+function player:_update_camera()
+    local transform = self._camera:get_component(components.transform)
+    local fixed_pos = self._controller:get_component(components.transform):get_position()
+    fixed_pos.y = fixed_pos.y + 1.35 * 0.5 -- _camera height
+    transform:set_position(fixed_pos) -- sync pos
 
-    local sens = Math.abs(self.sensitivity) * 0.01
-    local clampYRad = Math.rad(Math.abs(self.clampY))
-    local mousePos = Input.getMousePos()
+    local sens = gmath.abs(self.mouse_sensitivity) * 0.01
+    local clamp_y_rad = gmath.rad(gmath.abs(self.view_clamp_y))
+    local mouse_pos = input.get_mouse_position()
 
-    local delta = mousePos
-    delta = delta - self._prevMousePos
-    self._prevMousePos = mousePos
+    local delta = mouse_pos
+    delta = delta - self._prev_mouse_pos
+    self._prev_mouse_pos = mouse_pos
 
-    if self.enableSmoothLook then
-        local factor = self.lookSnappiness * Time.deltaTime
-        self._smoothAngles.x = Math.lerp(self._smoothAngles.x, delta.x, factor)
-        self._smoothAngles.y = Math.lerp(self._smoothAngles.y, delta.y, factor)
-        delta = self._smoothAngles
+    if self.enable_smooth_look then
+        local factor = self.look_snappiness * time.delta_time
+        self._smooth_angles.x = gmath.lerp(self._smooth_angles.x, delta.x, factor)
+        self._smooth_angles.y = gmath.lerp(self._smooth_angles.y, delta.y, factor)
+        delta = self._smooth_angles
     end
 
-    delta = delta * Vec2(sens, sens)
-    self._mouseAngles = self._mouseAngles + delta
-    self._mouseAngles.y = Math.clamp(self._mouseAngles.y, -clampYRad, clampYRad)
-    local quat = Quat.fromYawPitchRoll(self._mouseAngles.x, self._mouseAngles.y, 0.0)
-    
-    if self._movementState ~= MOVEMENT_STATE.IDLE then
-        local walkFreq = 9.85
-        local walkAmplitude = 0.01
-        local runFreq = 15
-        local runApmlitude = 0.02
-        local freq = Time.time * self._movementState == MOVEMENT_STATE.RUNNING and runFreq or walkFreq
-        local amplitude = self._movementState == MOVEMENT_STATE.RUNNING and runApmlitude or walkAmplitude
-        local bobX = amplitude * Math.sin(freq)
-        local bobY = amplitude * Math.cos(freq)
-        local bobQ = Quat.fromYawPitchRoll(0, bobY, 0)
-        quat = quat * bobQ
+    delta = delta * vec2(sens, sens)
+    self._mouse_angles = self._mouse_angles + delta
+    self._mouse_angles.y = gmath.clamp(self._mouse_angles.y, -clamp_y_rad, clamp_y_rad)
+    local rot = quat.from_euler(self._mouse_angles.y, self._mouse_angles.x, 0.0)
+
+    if self._movement_state ~= movement_state.idle and not self._is_flying and self.enable_view_bob then
+        local abs_velocity = #self._controller:get_component(components.character_controller):get_linear_velocity()
+        local x = gmath.sin(time.time * self.view_bob_speed) * abs_velocity * self.view_bob_scale / 100.0
+        local y = gmath.sin(2.0 * time.time * self.view_bob_speed) * abs_velocity * self.view_bob_scale / 400.0
+        rot = rot * quat.from_euler(y, x, 0)
     end
     
-    transform:setRotation(quat)
+    transform:set_rotation(rot)
 end
 
-function Player:updateMovement()
-    local cameraTransform = self.camera:getComponent(Components.Transform)
-    local controller = self.controller:getComponent(Components.CharacterController)
-    local isRunning = Input.isKeyPressed(Input.KEYS.W) and Input.isKeyPressed(Input.KEYS.LEFT_SHIFT)
-    local speed = isRunning and self.runSpeed or self.walkSpeed
-    local dir = Vec3.ZERO
-    local move = function(key, tr_dir)
-        if Input.isKeyPressed(key) then
-            tr_dir.y = 0
-            dir = dir + Vec3.norm(tr_dir) * speed
-            return true
-        end
-        return false
+function player:_update_movement()
+    local cam_transform = self._camera:get_component(components.transform)
+    local controller = self._controller:get_component(components.character_controller)
+    local is_running = self.can_run and input.is_key_pressed(input.keys.w) and input.is_key_pressed(input.keys.left_shift)
+    local speed = is_running and self.run_speed or self.walk_speed
+
+    local dir = vec3.zero
+    local is_moving = false
+
+    if input.is_key_pressed(input.keys.w) then --  Forward
+        local unit_dir = cam_transform:get_forward_dir()
+        unit_dir.y = 0.0
+        dir = dir + vec3.normalize(unit_dir) * speed
+        is_moving = true
+    end
+    if input.is_key_pressed(input.keys.s) then --  Backward
+        local unit_dir = cam_transform:get_backward_dir()
+        unit_dir.y = 0.0
+        dir = dir + vec3.normalize(unit_dir) * speed
+        is_moving = true
+    end
+    if input.is_key_pressed(input.keys.a) then --  Left
+        local unit_dir = cam_transform:get_left_dir()
+        unit_dir.y = 0.0
+        dir = dir + vec3.normalize(unit_dir) * speed
+        is_moving = true
+    end
+    if input.is_key_pressed(input.keys.d) then --  Right
+        local unit_dir = cam_transform:get_right_dir()
+        unit_dir.y = 0.0
+        dir = dir + vec3.normalize(unit_dir) * speed
+        is_moving = true
     end
 
-    local isMoving = false
-    isMoving = isMoving or move(Input.KEYS.W, cameraTransform:getForwardDir())
-    isMoving = isMoving or move(Input.KEYS.S, cameraTransform:getBackwardDir())
-    isMoving = isMoving or move(Input.KEYS.A, cameraTransform:getLeftDir())
-    isMoving = isMoving or move(Input.KEYS.D, cameraTransform:getRightDir())
-
-    if isMoving then
-        self._movementState = isRunning and MOVEMENT_STATE.RUNNING or MOVEMENT_STATE.WALKING
+    if is_moving then
+        self._movement_state = is_running and movement_state.running or movement_state.walking
     else
-        self._movementState = MOVEMENT_STATE.IDLE
-    end
-
-    if Input.isKeyPressed(Input.KEYS.SPACE) then -- Jump
-        dir = dir + Vec3(0, self.jumpSpeed, 0)
+        self._movement_state = movement_state.idle
     end
     
-    local groundState = controller:getGroundState()
-    self._isInAir = groundState == CHARACTER_GROUND_STATE.IN_AIR
+    local state = controller:get_ground_state()
+    self._is_flying = state == ground_state.flying
+    
     --  Cancel movement in opposite direction of normal when touching something we can't walk up
-    if groundState == CHARACTER_GROUND_STATE.ON_STEEP_GROUND or groundState == CHARACTER_GROUND_STATE.NOT_SUPPORTED then
-        local normal = controller:getGroundNormal()
-        local dot = Vec3.dot(normal, dir)
-        if dot < 0 then
-            dir = dir - (dot * normal) / Vec3.magSqr(normal)
+    if state == ground_state.on_steep_ground or state == ground_state.not_supported then
+        local normal = controller:get_ground_normal()
+        local dot = vec3.dot(normal, dir)
+        if dot < 0.0 then
+            dir = dir - (dot * normal) / vec3.sqr_magnitude(normal)
         end
     end
 
     -- Update velocity
-    local current = controller:getLinearVelocity()
+    local current_velocity = controller:get_linear_velocity()
     local desired = dir * 2.0
-    desired.y = current.y
-    local new = 0.75 * current + 0.25 * desired
+    desired.y = current_velocity.y
+    local target_velocity = 0.75 * current_velocity + 0.25 * desired
 
     -- Jump
-    if groundState == CHARACTER_GROUND_STATE.ON_GROUND and Input.isKeyPressed(Input.KEYS.SPACE) then
-        new.y = 5.0
+    if self.can_jump and state == ground_state.on_ground and input.is_key_pressed(input.keys.space) then
+        target_velocity.y = self.jump_speed
     end
 
-    controller:setLinearVelocity(new)
+    controller:set_linear_velocity(target_velocity)
 end
 
-function Player:tick()
-    self:updateCamera()
-    self:updateMovement()
+function player:update()
+    self:_update_camera()
+    self:_update_movement()
 end
 
-function Player:despawn()
-    Scene.despawn(self.controller)
-    Scene.despawn(self.camera)
-    self.controller = nil
-    self.camera = nil
+function player:despawn()
+    self._controller:despawn()
+    self._camera:despawn()
+    self._controller = nil
+    self._camera = nil
 end
 
-return Player
+return player

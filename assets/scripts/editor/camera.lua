@@ -2,139 +2,136 @@
 -- Created on 2/12/23.
 
 -- Import engine modules
-local App = require 'App'
-local Color = require 'Color'
-local Debug = require 'Debug'
-local Entity = require 'Entity'
-local Input = require 'Input'
-local Math = require 'Math'
-local Quat = require 'Quat'
-local Scene = require 'Scene'
-local Time = require 'Time'
-local Vec2 = require 'Vec2'
-local Vec3 = require 'Vec3'
-local Components = require 'Components'
+local app = require 'app'
+local input = require 'input'
+local gmath = require 'gmath'
+local quat = require 'quat'
+local time = require 'time'
+local vec2 = require 'vec2'
+local vec3 = require 'vec3'
+local components = require 'components'
 
-local Camera = {}
+local camera = {
+    target_entity = nil,
+    sensitivity = 0.5, -- mouse look sensitivity
+    clamp_y = 80.0, -- mouse look Y-axis clamp
+    default_movement_speed = 4.0, -- default movement speed
+    fast_movement_speed = 10.0 * 4.0, -- movement speed when pressing fast movement button (e.g. shift) (see below)
 
-Camera.targetEntity = 0
-Camera.sensitivity = 0.5 -- mouse look sensitivity
-Camera.clampY = 80 -- mouse look Y-axis clamp
-Camera.defaultMovementSpeed = 4 -- default movement speed
-Camera.fastMovementSpeed = 10*Camera.defaultMovementSpeed-- movement speed when pressing fast movement button (e.g. shift) (see below)
+    enable_mouse_look = true, -- enables/disables looking around
+    enable_mouse_button_look = true, -- if true looking around is only working while a mouse button is down
+    look_mouse_button = input.mouse_buttons.right, -- the mouse button to look around if the above option is true
 
-Camera.enableMouseLook = true -- enables/disables looking around
-Camera.enableMouseButtonLook = true -- if true looking around is only working while a mouse button is down
-Camera.lookMouseButton = Input.MOUSE_BUTTONS.RIGHT -- the mouse button to look around if the above option is true
+    enable_movement = true, -- enables/disables camera movement
+    movement_keys = { -- the keys to move the camera around
+        forward = input.keys.w,
+        backward = input.keys.s,
+        left = input.keys.a,
+        right = input.keys.d,
+    },
+    enable_fast_movement = true, -- enable faster movement when the key below is pressed
+    fast_movement_key = input.keys.left_shift, -- move fast when this key is pressed
+    lock_movement_axis = vec3.one, -- enables to disable the movement on any axis, by setting the axis to 0
+    enable_smooth_movement = true,
+    smooth_movement_time = 0.5,
+    enable_smooth_look = true,
+    smooth_look_snappiness = 12.0,
 
-Camera.enableMovement = true -- enables/disables camera movement
-Camera.movementKeys = { -- the keys to move the camera around
-    forward = Input.KEYS.W,
-    backward = Input.KEYS.S,
-    left = Input.KEYS.A,
-    right = Input.KEYS.D,
+    _prev_mous_pos = vec2.zero,
+    _mouse_angles = vec2.zero,
+    _smooth_angles = vec2.zero,
+    _rotation = quat.identity,
+    _position = vec3.zero,
+    _velocity = vec3.zero,
+    _is_focused = true
 }
-Camera.enableFastMovement = true -- enable faster movement when the key below is pressed
-Camera.fastMovementKey = Input.KEYS.LEFT_SHIFT -- move fast when this key is pressed
-Camera.lockAxisMovement = Vec3.ONE -- enables to disable the movement on any axis, by setting the axis to 0
-Camera.enableSmoothMovement = false
-Camera.smoothMovementTime = 1.0
-Camera.enableSmoothLook = true
-Camera.lookSnappiness = 15.0
-Camera.prevMousePos = Vec2.ZERO
-Camera.mouseAngles = Vec2.ZERO
-Camera.smoothAngles = Vec2.ZERO
-Camera.rotation = Quat.IDENTITY
-Camera.position = Vec3.ZERO
-Camera.velocity = Vec3.ZERO
-Camera.isFocused = true
 
 -- invoked every frame
-function Camera:tick()
-    self.isFocused = App.isFocused() and not App.isUIHovered()
-    if not self.targetEntity:isValid() then
-        print('Camera has no target entity')
+function camera:_update()
+    self._is_focused = app.is_focused() and not app.is_any_ui_hovered()
+    if not self.target_entity or not self.target_entity:is_valid() then
+        eprint('camera has no valid target entity')
     end
-    if self.enableMouseLook and self.isFocused then
-        self:_computeCameraRotation()
+    if self.enable_mouse_look and self._is_focused then
+        self:_compute_rotation()
     end
-    if self.enableMovement then
-        self:_computeMovement()
+    if self.enable_movement then
+        self:_compute_position()
     end
 end
 
-function Camera:_computeCameraRotation()
-    local sens = Math.abs(self.sensitivity) * 0.01
-    local clampYRad = Math.rad(Math.abs(self.clampY))
-    local mousePos = Input.getMousePos()
+function camera:_compute_rotation()
+    local sens = gmath.abs(self.sensitivity) * 0.01
+    local clamp_y_rad = gmath.rad(gmath.abs(self.clamp_y))
+    local mouse_pos = input.get_mouse_position()
 
-    local delta = mousePos
-    delta = delta - self.prevMousePos
-    self.prevMousePos = mousePos
+    local delta = mouse_pos
+    delta = delta - self._prev_mous_pos
+    self._prev_mous_pos = mouse_pos
 
-    if self.enableMouseButtonLook and not Input.isMouseButtonPressed(self.lookMouseButton) then
+    if self.enable_mouse_button_look and not input.is_mouse_button_pressed(self.look_mouse_button) then
         return
     end
 
-    if self.enableSmoothLook then
-        local factor = self.lookSnappiness * Time.deltaTime
-        self.smoothAngles.x = Math.lerp(self.smoothAngles.x, delta.x, factor)
-        self.smoothAngles.y = Math.lerp(self.smoothAngles.y, delta.y, factor)
-        delta = self.smoothAngles
+    if self.enable_smooth_look then
+        local factor = self.smooth_look_snappiness * time.delta_time
+        self._smooth_angles.x = gmath.lerp(self._smooth_angles.x, delta.x, factor)
+        self._smooth_angles.y = gmath.lerp(self._smooth_angles.y, delta.y, factor)
+        delta = self._smooth_angles
     end
 
-    delta = delta * Vec2(sens, sens)
-    self.mouseAngles = self.mouseAngles + delta
-    self.mouseAngles.y = Math.clamp(self.mouseAngles.y, -clampYRad, clampYRad)
-    self.rotation = Quat.fromYawPitchRoll(self.mouseAngles.x, self.mouseAngles.y, 0.0)
-    self.targetEntity:getComponent(Components.Transform):setRotation(self.rotation)
+    delta = delta * vec2(sens, sens)
+    self._mouse_angles = self._mouse_angles + delta
+    self._mouse_angles.y = gmath.clamp(self._mouse_angles.y, -clamp_y_rad, clamp_y_rad)
+    self._rotation = quat.from_euler(self._mouse_angles.y, self._mouse_angles.x, 0)
+    self.target_entity:get_component(components.transform):set_rotation(self._rotation)
 end
 
-function Camera:_computeMovement()
-    local delta = Time.deltaTime
-    local speed = Math.abs(self.defaultMovementSpeed)
+function camera:_compute_position()
+    local delta = time.delta_time
+    local speed = gmath.abs(self.default_movement_speed)
 
-    if self.enableFastMovement then
-        if Input.isKeyPressed(Input.KEYS.LEFT_SHIFT) then -- are we moving fast (sprinting?)
-            speed = Math.abs(self.fastMovementSpeed)
+    if self.enable_fast_movement then
+        if input.is_key_pressed(input.keys.left_shift) then -- are we moving fast (sprinting?)
+            speed = gmath.abs(self.fast_movement_speed)
         end
     end
 
-    local target = self.position
+    local target = self._position
 
-    local function computePos(dir)
+    local function update_pos(dir)
         local movSpeed = speed
-        if not self.enableSmoothMovement then -- if we use raw movement, we have to apply the delta time here
+        if not self.enable_smooth_movement then -- if we use raw movement, we have to apply the delta time here
             movSpeed = movSpeed * delta
         end
-        target = target + (dir * self.rotation) * movSpeed
+        target = target + (dir * self._rotation) * movSpeed
     end
 
-    if self.isFocused then
-        if Input.isKeyPressed(self.movementKeys.forward) then
-            computePos(Vec3.FORWARD)
+    if self._is_focused then
+        if input.is_key_pressed(self.movement_keys.forward) then
+            update_pos(vec3.forward)
         end
-        if Input.isKeyPressed(self.movementKeys.backward) then
-            computePos(Vec3.BACKWARD)
+        if input.is_key_pressed(self.movement_keys.backward) then
+            update_pos(vec3.backward)
         end
-        if Input.isKeyPressed(self.movementKeys.left) then
-            computePos(Vec3.LEFT)
+        if input.is_key_pressed(self.movement_keys.left) then
+            update_pos(vec3.left)
         end
-        if Input.isKeyPressed(self.movementKeys.right) then
-            computePos(Vec3.RIGHT)
+        if input.is_key_pressed(self.movement_keys.right) then
+            update_pos(vec3.right)
         end
     end
 
-    if self.enableSmoothMovement then -- smooth movement
-        local position, velocity = Vec3.smoothDamp(self.position, target, self.velocity, self.smoothMovementTime, Math.INFINITY, delta) -- smooth damp and apply delta time
-        self.position = position
-        -- self._velocity = Vec3.clamp(self._velocity, -speed, speed)
+    if self.enable_smooth_movement then -- smooth movement
+        local _position, _velocity = vec3.smooth_damp(self._position, target, self._velocity, self.smooth_movement_time, gmath.infinity, delta) -- smooth damp and apply delta time
+        self._position = _position
+        -- self._velocity = vec3.clamp(self._velocity, -speed, speed)
     else -- raw movement
-        self.position = target
+        self._position = target
     end
 
-    self.position = self.position * self.lockAxisMovement -- apply axis lock
-    self.targetEntity:getComponent(Components.Transform):setPosition(self.position)
+    self._position = self._position * self.lock_movement_axis -- apply axis lock
+    self.target_entity:get_component(components.transform):set_position(self._position)
 end
 
-return Camera
+return camera

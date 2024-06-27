@@ -4,6 +4,11 @@
 
 #include "../scene/scene.hpp"
 #include "lfs/lfs.h"
+#include "convar.hpp"
+
+#if USE_MIMALLOC
+#include <mimalloc.h>
+#endif
 
 namespace scripting {
     template <typename... Ts>
@@ -23,6 +28,7 @@ namespace scripting {
     }
 
     scripting_subsystem::~scripting_subsystem() {
+        detail::disconnect_all_convars();
         lua_host_disconnect();
     }
 
@@ -41,25 +47,25 @@ namespace scripting {
     }
 
     auto scripting_subsystem::exec_file(const std::string& file) -> bool {
-        std::string source {};
-        assetmgr::load_asset_text_or_panic(asset_category::script, file, source);
-        if (luaL_dostring(m_L, source.c_str()) != LUA_OK) [[unlikely]] {
-            lua_log_error("script error in {}: {}", file, lua_tostring(m_L, -1));
+        // this file must be loaded without asset mgr, as asset mgr is not yet initialized and
+        // assetmgr needs access to the engine config which is stored in a lua script
+        std::string full_path {"assets/scripts/" + file};
+        std::ifstream ifs { full_path }; // todo: make this configurable
+        if (!ifs.is_open()) [[unlikely]] {
+            panic("Failed to open initial boot Lua file: {}", full_path);
+        }
+        std::string lua_script {};
+        ifs.seekg(0, std::ios::end);
+        lua_script.resize(ifs.tellg());
+        ifs.seekg(0, std::ios::beg);
+        ifs.read(lua_script.data(), static_cast<std::streamsize>(lua_script.size()));
+        ifs.close();
+        if (luaL_dostring(m_L, lua_script.c_str()) != LUA_OK) [[unlikely]] {
+            lua_log_error("script error in {}: {}", full_path, lua_tostring(m_L, -1));
             lua_pop(m_L, 1);
             return false;
         }
         return true;
-    }
-
-    auto scripting_subsystem::reconnect_lua_host_impl() -> void {
-        const auto now = std::chrono::high_resolution_clock::now();
-        log_info("Reconnecting to Lua host");
-        if (m_is_lua_host_online) {
-            lua_host_disconnect();
-        }
-        lua_host_connect();
-        const auto elapsed = std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(std::chrono::high_resolution_clock::now() - now).count();
-        log_info("Reconnected to Lua host in {}ms", elapsed);
     }
 
     auto scripting_subsystem::lua_host_connect() -> void {
@@ -72,7 +78,25 @@ namespace scripting {
 
         // init lua
         passert(m_L == nullptr);
-        m_L = luaL_newstate();
+#if USE_MIMALLOC
+        if constexpr (use_mimalloc) {
+            /*
+             * LuaJIT requires that allocated memory is in the first 47 bits of address space.
+             * System malloc/mimalloc has no such guarantee of this, and hence can't (in general) be used.
+             *
+             * mimalloc most certainly doesn't support address-range restrictions.
+             * If you really want to link with mimalloc, use the GC64 mode in the v2.1 branch, which doesn't have this limitation.
+             * And do some performance testing, because it's unlikely it'll be better/faster/smaller than the built-in allocator.
+             *
+             */
+            m_L = lua_newstate(+[]([[maybe_unused]] void* ud, void* ptr, [[maybe_unused]] std::size_t osize, const std::size_t nsize) noexcept -> void* {
+                return mi_realloc(ptr, nsize);
+            }, nullptr);
+        } else
+#endif
+        {
+            m_L = luaL_newstate();
+        }
         passert(m_L != nullptr);
         luaL_openlibs(m_L);
         passert(luaopen_lfs(m_L) == 1);
@@ -80,7 +104,7 @@ namespace scripting {
         luabridge::register_main_thread(m_L);
 
         static constexpr auto print_proxy = [](lua_State* l) -> int {
-            for (int i  = 1; i <= lua_gettop(l); ++i) {
+            for (int i = 1; i <= lua_gettop(l); ++i) {
                 switch (lua_type(l, i)) {
                     case LUA_TNIL: lua_log_info("nil"); break;
                     case LUA_TNUMBER: lua_log_info("{}", lua_tonumber(l, i)); break;

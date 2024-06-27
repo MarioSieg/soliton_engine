@@ -121,43 +121,37 @@ $(function(){initNavTree('_style_interaction_8h_source.html',''); initResizable(
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;NsGui/FreezableCollection.h&gt;</span></div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespace_noesis.html">Noesis</a></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">namespace </span>Noesis</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>{</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">class </span>DependencyObject;</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">class </span>DependencyProperty;</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">struct </span>DependencyPropertyChangedEventArgs;</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>}</div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespace_noesis_app.html">NoesisApp</a></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">namespace </span>NoesisApp</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>{</div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
-<div class="foldopen" id="foldopen00030" data-start="{" data-end="};">
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_style_behavior_collection.html">   30</a></span><span class="keyword">class </span><a class="code hl_class" href="class_noesis_app_1_1_style_behavior_collection.html">StyleBehaviorCollection</a>: <span class="keyword">public</span> <a class="code hl_class" href="class_noesis_1_1_freezable_collection.html">Noesis::FreezableCollection</a>&lt;Behavior&gt;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keyword">class </span>StyleBehaviorCollection: <span class="keyword">public</span> Noesis::FreezableCollection&lt;Behavior&gt;</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>{</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    NS_DECLARE_REFLECTION(<a class="code hl_class" href="class_noesis_app_1_1_style_behavior_collection.html">StyleBehaviorCollection</a>, Noesis::BaseFreezableCollection)</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    NS_DECLARE_REFLECTION(StyleBehaviorCollection, Noesis::BaseFreezableCollection)</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>};</div>
-</div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
-<div class="foldopen" id="foldopen00036" data-start="{" data-end="};">
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_style_trigger_collection.html">   36</a></span><span class="keyword">class </span><a class="code hl_class" href="class_noesis_app_1_1_style_trigger_collection.html">StyleTriggerCollection</a>: <span class="keyword">public</span> <a class="code hl_class" href="class_noesis_1_1_freezable_collection.html">Noesis::FreezableCollection</a>&lt;TriggerBase&gt;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="keyword">class </span>StyleTriggerCollection: <span class="keyword">public</span> Noesis::FreezableCollection&lt;TriggerBase&gt;</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>{</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    NS_DECLARE_REFLECTION(<a class="code hl_class" href="class_noesis_app_1_1_style_trigger_collection.html">StyleTriggerCollection</a>, Noesis::BaseFreezableCollection)</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    NS_DECLARE_REFLECTION(StyleTriggerCollection, Noesis::BaseFreezableCollection)</div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>};</div>
-</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>NS_WARNING_PUSH</div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>NS_CLANG_WARNING_DISABLE(<span class="stringliteral">&quot;-Wdocumentation&quot;</span>)</div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
-<div class="foldopen" id="foldopen00071" data-start="{" data-end="};">
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="struct_noesis_app_1_1_style_interaction.html">   71</a></span>struct <a class="code hl_define" href="_interactivity_api_8h.html#a19ef9be0d7b903c63e87d626acc9db84">NS_APP_INTERACTIVITY_API</a> <a class="code hl_struct" href="struct_noesis_app_1_1_style_interaction.html">StyleInteraction</a></div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>struct <a class="code hl_define" href="_interactivity_api_8h.html#a19ef9be0d7b903c63e87d626acc9db84">NS_APP_INTERACTIVITY_API</a> StyleInteraction</div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>{</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="struct_noesis_app_1_1_style_interaction.html#afe9ff03eb7943f41bc6b958c8df51f5f">   73</a></span>    <span class="keyword">static</span> <span class="keyword">const</span> Noesis::DependencyProperty* <a class="code hl_variable" href="struct_noesis_app_1_1_style_interaction.html#afe9ff03eb7943f41bc6b958c8df51f5f">BehaviorsProperty</a>;</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="struct_noesis_app_1_1_style_interaction.html#ae8d4170526a6725cbcf30f4145c9646d">   74</a></span>    <span class="keyword">static</span> <span class="keyword">const</span> Noesis::DependencyProperty* <a class="code hl_variable" href="struct_noesis_app_1_1_style_interaction.html#ae8d4170526a6725cbcf30f4145c9646d">TriggersProperty</a>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keyword">static</span> <span class="keyword">const</span> Noesis::DependencyProperty* BehaviorsProperty;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keyword">static</span> <span class="keyword">const</span> Noesis::DependencyProperty* TriggersProperty;</div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="struct_noesis_app_1_1_style_interaction.html#abcee9c44d3fb9423f8192964ba995353">   76</a></span>    <a class="code hl_function" href="struct_noesis_app_1_1_style_interaction.html#abcee9c44d3fb9423f8192964ba995353">NS_DECLARE_REFLECTION</a>(<a class="code hl_struct" href="struct_noesis_app_1_1_style_interaction.html">StyleInteraction</a>, Noesis::NoParent);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    NS_DECLARE_REFLECTION(StyleInteraction, Noesis::NoParent);</div>
 <div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>};</div>
-</div>
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>NS_WARNING_POP</div>
 <div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
@@ -169,15 +163,6 @@ $(function(){initNavTree('_style_interaction_8h_source.html',''); initResizable(
 <div class="ttc" id="a_interactivity_api_8h_html"><div class="ttname"><a href="_interactivity_api_8h.html">InteractivityApi.h</a></div></div>
 <div class="ttc" id="a_interactivity_api_8h_html_a19ef9be0d7b903c63e87d626acc9db84"><div class="ttname"><a href="_interactivity_api_8h.html#a19ef9be0d7b903c63e87d626acc9db84">NS_APP_INTERACTIVITY_API</a></div><div class="ttdeci">#define NS_APP_INTERACTIVITY_API</div><div class="ttdef"><b>Definition</b> InteractivityApi.h:15</div></div>
 <div class="ttc" id="a_trigger_base_8h_html"><div class="ttname"><a href="_trigger_base_8h.html">TriggerBase.h</a></div></div>
-<div class="ttc" id="aclass_noesis_1_1_freezable_collection_html"><div class="ttname"><a href="class_noesis_1_1_freezable_collection.html">Noesis::FreezableCollection</a></div><div class="ttdef"><b>Definition</b> ConditionalExpression.h:20</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_style_behavior_collection_html"><div class="ttname"><a href="class_noesis_app_1_1_style_behavior_collection.html">NoesisApp::StyleBehaviorCollection</a></div><div class="ttdef"><b>Definition</b> StyleInteraction.h:31</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_style_trigger_collection_html"><div class="ttname"><a href="class_noesis_app_1_1_style_trigger_collection.html">NoesisApp::StyleTriggerCollection</a></div><div class="ttdef"><b>Definition</b> StyleInteraction.h:37</div></div>
-<div class="ttc" id="anamespace_noesis_app_html"><div class="ttname"><a href="namespace_noesis_app.html">NoesisApp</a></div><div class="ttdef"><b>Definition</b> Application.cpp:21</div></div>
-<div class="ttc" id="anamespace_noesis_html"><div class="ttname"><a href="namespace_noesis.html">Noesis</a></div><div class="ttdef"><b>Definition</b> AttachableObject.h:18</div></div>
-<div class="ttc" id="astruct_noesis_app_1_1_style_interaction_html"><div class="ttname"><a href="struct_noesis_app_1_1_style_interaction.html">NoesisApp::StyleInteraction</a></div><div class="ttdef"><b>Definition</b> StyleInteraction.h:72</div></div>
-<div class="ttc" id="astruct_noesis_app_1_1_style_interaction_html_abcee9c44d3fb9423f8192964ba995353"><div class="ttname"><a href="struct_noesis_app_1_1_style_interaction.html#abcee9c44d3fb9423f8192964ba995353">NoesisApp::StyleInteraction::NS_DECLARE_REFLECTION</a></div><div class="ttdeci">NS_DECLARE_REFLECTION(StyleInteraction, Noesis::NoParent)</div></div>
-<div class="ttc" id="astruct_noesis_app_1_1_style_interaction_html_ae8d4170526a6725cbcf30f4145c9646d"><div class="ttname"><a href="struct_noesis_app_1_1_style_interaction.html#ae8d4170526a6725cbcf30f4145c9646d">NoesisApp::StyleInteraction::TriggersProperty</a></div><div class="ttdeci">static const Noesis::DependencyProperty * TriggersProperty</div><div class="ttdef"><b>Definition</b> StyleInteraction.h:74</div></div>
-<div class="ttc" id="astruct_noesis_app_1_1_style_interaction_html_afe9ff03eb7943f41bc6b958c8df51f5f"><div class="ttname"><a href="struct_noesis_app_1_1_style_interaction.html#afe9ff03eb7943f41bc6b958c8df51f5f">NoesisApp::StyleInteraction::BehaviorsProperty</a></div><div class="ttdeci">static const Noesis::DependencyProperty * BehaviorsProperty</div><div class="ttdef"><b>Definition</b> StyleInteraction.h:73</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

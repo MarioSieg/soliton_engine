@@ -1,6 +1,5 @@
 var imgui__demo_8cpp =
 [
-    [ "MyDocument", "struct_my_document.html", "struct_my_document" ],
     [ "IM_CLAMP", "imgui__demo_8cpp.html#a25d1e4d29150e7587f99e0723493a004", null ],
     [ "IM_MAX", "imgui__demo_8cpp.html#a9d0693fad89638629beea97300c8f8f6", null ],
     [ "IM_MIN", "imgui__demo_8cpp.html#af25a13a96600f1a018104f6c2d3da645", null ],

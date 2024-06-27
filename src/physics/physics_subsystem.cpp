@@ -3,7 +3,10 @@
 #include "physics_subsystem.hpp"
 #include "../core/kernel.hpp"
 
+#if USE_MIMALLOC
 #include <mimalloc.h>
+#endif
+
 #define RND_IMPLEMENTATION
 #include <execution>
 #include <rnd.h>
@@ -26,7 +29,7 @@
 #include <Jolt/Physics/Collision/Shape/SphereShape.h>
 
 #include "../graphics/graphics_subsystem.hpp"
-#include "../scripting/scripting_subsystem.hpp"
+#include "../scripting/convar.hpp"
 #include "Jolt/Physics/Collision/Shape/ScaledShape.h"
 
 using scripting::scripting_subsystem;
@@ -128,8 +131,15 @@ namespace physics {
         log_info("[Physics]: {}", buf);
     }
 
+    static convar<std::uint64_t> cv_tmp_allocator_buffer_size {"Physics.tempAllocatorBufferSize", 32ull << 20, convar_flags::read_only};
+    static convar<std::uint32_t> cv_num_physics_threads {"Threads.physicsThreads", 1u, convar_flags::read_only};
+    static convar<std::uint32_t> cv_max_rigid_bodies {"Physics.maxRigidBodies", 0x1000u, convar_flags::read_only};
+    static convar<std::uint32_t> cv_num_mutexes {"Physics.numMutexes", 0x1000u, convar_flags::read_only};
+    static convar<std::uint32_t> cv_max_body_pairs {"Physics.maxBodyPairs", 0x1000u, convar_flags::read_only};
+    static convar<std::uint32_t> cv_max_contacts {"Physics.maxContacts", 0x1000u, convar_flags::read_only};
+
     physics_subsystem::physics_subsystem() : subsystem{"Physics"} {
-        JPH::RegisterDefaultAllocator(); // TODO mimalloc
+#if USE_MIMALLOC
         JPH::Allocate = +[](const std::size_t size) -> void* {
               return mi_malloc(size);
         };
@@ -142,17 +152,17 @@ namespace physics {
         JPH::AlignedFree = +[](void* ptr) -> void {
             mi_free(ptr);
         };
+#else
+        JPH::RegisterDefaultAllocator();
+#endif
         JPH::Trace = &trace_proc;
         JPH::Factory::sInstance = new JPH::Factory();
         JPH::RegisterTypes();
-        m_temp_allocator = std::make_unique<JPH::TempAllocatorImpl>(
-			scripting_subsystem::get_config_table()["Physics"]["tempAllocatorBufferSize"].cast<std::size_t>().valueOr(32ull << 20)
-        );
-    	const auto num_threads = scripting_subsystem::get_config_table()["Threads"]["physicsThreads"].cast<std::uint32_t>().valueOr(1);
+        m_temp_allocator = std::make_unique<JPH::TempAllocatorImpl>(cv_tmp_allocator_buffer_size());
         m_job_system = std::make_unique<JPH::JobSystemThreadPool>(
         	JPH::cMaxPhysicsJobs,
         	JPH::cMaxPhysicsBarriers,
-        	num_threads
+            cv_num_physics_threads()
         );
     	m_broad_phase = std::make_unique<BPLayerInterfaceImpl>();
 		m_broad_phase_filter = std::make_unique<ObjectVsBroadPhaseLayerFilterImpl>();
@@ -160,10 +170,10 @@ namespace physics {
     	m_contact_listener = std::make_unique<ContactListenerImpl>();
 
     	m_physics_system.Init(
-    		scripting_subsystem::get_config_table()["Physics"]["maxRigidBodies"].cast<std::uint32_t>().valueOr(0x1000),
-    		scripting_subsystem::get_config_table()["Physics"]["numMutexes"].cast<std::uint32_t>().valueOr(0x1000),
-    		scripting_subsystem::get_config_table()["Physics"]["maxBodyPairs"].cast<std::uint32_t>().valueOr(0x1000),
-    		scripting_subsystem::get_config_table()["Physics"]["maxContacts"].cast<std::uint32_t>().valueOr(0x1000),
+            cv_max_rigid_bodies(),
+            cv_num_mutexes(),
+            cv_max_body_pairs(),
+            cv_max_contacts(),
     		*m_broad_phase,
     		*m_broad_phase_filter,
     		*m_object_layer_pair_filter

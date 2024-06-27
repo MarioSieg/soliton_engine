@@ -6,9 +6,12 @@
 
 #include "../scene/scene.hpp"
 
+#include <filesystem>
 #include <iostream>
 
+#if USE_MIMALLOC
 #include <mimalloc.h>
+#endif
 
 #include <spdlog/spdlog.h>
 #include <spdlog/async.h>
@@ -17,6 +20,8 @@
 #include <spdlog/sinks/base_sink.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
+
+using namespace std::filesystem;
 
 static constexpr std::size_t k_log_threads = 1;
 static constexpr std::size_t k_log_queue_size = 8192;
@@ -27,7 +32,7 @@ static constexpr std::size_t k_log_queue_size = 8192;
     std::vector<std::shared_ptr<spdlog::sinks::sink>> sinks = {
         std::make_shared<buffered_sink>(k_log_queue_size),
         std::make_shared<spdlog::sinks::basic_file_sink_mt>(
-            fmt::format("log/session {:%d-%m-%Y  %H-%M-%S}/{}.log", time, name)),
+            fmt::format("{}/session {:%d-%m-%Y  %H-%M-%S}/{}.log", kernel::log_dir, time, name)),
     };
     if (print_stdout) {
         sinks.emplace_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
@@ -44,6 +49,43 @@ static constexpr std::size_t k_log_queue_size = 8192;
         register_logger(result);
     }
     return result;
+}
+
+static auto inject_default_config(mINI::INIStructure& config) -> void {
+    std::string engine_v = fmt::format("{}.{}", major_version(k_lunam_engine_v), minor_version(k_lunam_engine_v));
+    config["kernel"]["engine_version"] = engine_v;
+    config["asset_mgr"]["asset_root"] = "assets";
+    config["asset_mgr"]["allow_standalone_asset_loading"] = "true";
+    config["asset_mgr"]["allow_source_asset_loading"] = "true";
+    config["asset_mgr"]["validate_paths"] = "true";
+    config["asset_mgr"]["validate_file_system_on_boot"] = "true";
+}
+
+static auto extract_assetmgr_config_from_kernel_config(const mINI::INIStructure& config, assetmgr::mgr_config& out) -> void {
+    out.asset_root = config.get("asset_mgr").get("asset_root");
+    out.allow_standalone_asset_loading = config.get("asset_mgr").get("allow_standalone_asset_loading") == "true";
+    out.allow_source_asset_loading = config.get("asset_mgr").get("allow_source_asset_loading") == "true";
+    out.validate_paths = config.get("asset_mgr").get("validate_paths") == "true";
+    out.validate_fs = config.get("asset_mgr").get("validate_file_system_on_boot") == "true";
+}
+
+auto kernel::update_core_config(const bool update_file) -> void {
+    if (!exists(kernel::config_dir)) [[unlikely]] {
+        log_warn("Config directory does not exist, creating: {}", kernel::config_dir);
+        create_directory(kernel::config_dir);
+    }
+    if (!update_file && exists(kernel::config_file)) {
+        log_info("Loading core config file: {}", kernel::config_file);
+        mINI::INIFile file {kernel::config_file};
+        file.read(m_config);
+    } else {
+        log_warn("Core config file does not exist, creating: {}", kernel::config_file);
+
+        inject_default_config(m_config);
+
+        mINI::INIFile file {kernel::config_file};
+        file.write(m_config);
+    }
 }
 
 #if PLATFORM_WINDOWS
@@ -111,7 +153,9 @@ kernel::kernel(const int argc, const char** argv, const char** $environ) {
     log_info("Booting Engine Kernel...");
     log_info("Build date: {}", __DATE__);
     log_info("Build time: {}", __TIME__);
-    log_info("MIMAL version: {:#X}", mi_version());
+#if USE_MIMALLOC
+    log_info("Allocator version: {:#X}", mi_version());
+#endif
     log_info("Working dir: {}", std::filesystem::current_path().string());
     log_info("ARG VEC");
     for (int i = 0; i < argc; ++i) {
@@ -121,6 +165,16 @@ kernel::kernel(const int argc, const char** argv, const char** $environ) {
     for (int i = 0; $environ[i] != nullptr; ++i) {
         log_info("  {}: {}", i, $environ[i]);
     }
+    log_info("Engine config dir: {}", config_dir);
+    log_info("Engine core config file: {}", config_file);
+    log_info("Engine log dir: {}", log_dir);
+
+    log_info("Loading engine core config");
+    update_core_config(false);
+    assetmgr::mgr_config amgr_config {};
+    log_info("Applying engine core config");
+    extract_assetmgr_config_from_kernel_config(m_config, amgr_config);
+    assetmgr::init(std::move(amgr_config));
 }
 
 kernel::~kernel() {
@@ -130,23 +184,34 @@ kernel::~kernel() {
     scene::s_active.reset();
     log_info("Killing subsystems...");
     m_subsystems.clear();
-    // Print asset manager infos
-    log_info("Asset manager stats:");
-    log_info("  Total assets requests: {}", assetmgr::get_asset_request_count());
-    log_info("  Total data loaded: {:.03f} GiB", static_cast<double>(assetmgr::get_total_bytes_loaded()) / std::pow(1024.0, 3.0));
+    log_info("Patching core engine config...");
+    update_core_config(true);
+    assetmgr::shutdown();
+#if USE_MIMALLOC
+    mi_stats_merge();
+    static std::stringstream ss;
+    mi_stats_print_out(+[](const char* msg, [[maybe_unused]] void* ud) {
+        ss << msg;
+    }, nullptr);
+    log_info("Allocator Stats:\n{}", ss.str());
+#endif
     log_info("System offline");
+    spdlog::shutdown();
+    std::cout << "Lunam Engine says goodbye :(\n";
     std::cout.flush();
     std::fflush(stdout);
     g_kernel = nullptr;
 }
 
-static constinit double delta_time;
+static constinit double g_delta_time, g_time;
+
 static auto compute_delta_time() noexcept {
     static auto prev = std::chrono::high_resolution_clock::now();
     auto now = std::chrono::high_resolution_clock::now();
     auto delta = std::chrono::duration_cast<std::chrono::high_resolution_clock::duration>(now - prev);
-    delta_time = std::chrono::duration_cast<std::chrono::duration<double>>(delta).count();
+    g_delta_time = std::chrono::duration_cast<std::chrono::duration<double>>(delta).count();
     prev = now;
+    g_time += g_delta_time;
 }
 
 auto kernel::get() noexcept -> kernel& {
@@ -155,7 +220,11 @@ auto kernel::get() noexcept -> kernel& {
 }
 
 auto kernel::get_delta_time() noexcept -> double {
-    return delta_time;
+    return g_delta_time;
+}
+
+auto kernel::get_time() noexcept -> double {
+    return g_time;
 }
 
 static constinit bool g_kernel_online = true;
@@ -178,7 +247,7 @@ HOTPROC auto kernel::run() -> void {
     log_info("Boot time: {}ms", std::chrono::duration_cast<std::chrono::milliseconds>(now - boot_stamp).count());
 
     // simulation loop
-    while(tick()) [[likely]] {}
+    while (tick());
 }
 
 HOTPROC auto kernel::tick() -> bool {
@@ -186,7 +255,7 @@ HOTPROC auto kernel::tick() -> bool {
     compute_delta_time();
     profiler_new_frame();
     std::for_each(m_subsystems.cbegin(), m_subsystems.cend(), [&flag](const std::shared_ptr<subsystem>& sys) {
-        scoped_profiler_sample ps {std::string{sys->name}};
+        //scoped_profiler_sample ps {std::string{sys->name}};
         if (!sys->on_pre_tick()) [[unlikely]]
             flag = false;
     });
@@ -196,6 +265,7 @@ HOTPROC auto kernel::tick() -> bool {
     std::for_each(m_subsystems.crbegin(), m_subsystems.crend(), [](const std::shared_ptr<subsystem>& sys) {
         sys->on_post_tick();
     });
+    ++m_frame;
     return flag;
 }
 

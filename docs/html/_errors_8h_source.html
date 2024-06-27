@@ -114,126 +114,96 @@ $(function(){initNavTree('_errors_8h_source.html',''); initResizable(); });
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;system_error&gt;</span></div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceluabridge.html">luabridge</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span>luabridge {</div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="comment">//=================================================================================================</span></div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span>detail {</div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="namespaceluabridge_1_1detail.html#abca718dfe2257327a6f7f0a9f74f81cf">   16</a></span><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">char</span> <a class="code hl_variable" href="namespaceluabridge_1_1detail.html#abca718dfe2257327a6f7f0a9f74f81cf">error_lua_stack_overflow</a>[] = <span class="stringliteral">&quot;stack overflow&quot;</span>;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">char</span> error_lua_stack_overflow[] = <span class="stringliteral">&quot;stack overflow&quot;</span>;</div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>} <span class="comment">// namespace detail</span></div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="comment">//=================================================================================================</span></div>
-<div class="foldopen" id="foldopen00024" data-start="{" data-end="};">
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926">   24</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926">ErrorCode</a></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">enum class</span> ErrorCode</div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>{</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <a class="code hl_enumvalue" href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926a73d7c07d7cbd7d2ace0ceb86bfe26ab2">ClassNotRegistered</a> = 1,</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    ClassNotRegistered = 1,</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <a class="code hl_enumvalue" href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926a2ba028e9483ca53848ba8846d753c2d9">LuaStackOverflow</a>,</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    LuaStackOverflow,</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <a class="code hl_enumvalue" href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926a5795573056fbe054c01edb693efc1dc2">LuaFunctionCallFailed</a>,</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    LuaFunctionCallFailed,</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <a class="code hl_enumvalue" href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926a158135ee278da81a6291c88105bb8d8c">IntegerDoesntFitIntoLuaInteger</a>,</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    IntegerDoesntFitIntoLuaInteger,</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    </div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <a class="code hl_enumvalue" href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926a7b7a4a55e258f7628097b7e52937e153">FloatingPointDoesntFitIntoLuaNumber</a>,</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    FloatingPointDoesntFitIntoLuaNumber,</div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <a class="code hl_enumvalue" href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926a623e6b1baa255aa4a31350088c322625">InvalidTypeCast</a>,</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    InvalidTypeCast,</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <a class="code hl_enumvalue" href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926aac6a0ba7a83d44cf8fc532fedf2b6cf1">InvalidTableSizeInCast</a></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    InvalidTableSizeInCast</div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>};</div>
-</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="comment">//=================================================================================================</span></div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="keyword">namespace </span>detail {</div>
-<div class="foldopen" id="foldopen00043" data-start="{" data-end="};">
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structluabridge_1_1detail_1_1_error_category.html">   43</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structluabridge_1_1detail_1_1_error_category.html">ErrorCategory</a> : std::error_category</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="keyword">struct </span>ErrorCategory : std::error_category</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>{</div>
-<div class="foldopen" id="foldopen00045" data-start="{" data-end="}">
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structluabridge_1_1detail_1_1_error_category.html#a50ae52002e162db3922a1e06db79030d">   45</a></span>    <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_function" href="structluabridge_1_1detail_1_1_error_category.html#a50ae52002e162db3922a1e06db79030d">name</a>() const noexcept<span class="keyword"> override</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keyword">const</span> <span class="keywordtype">char</span>* name() const noexcept<span class="keyword"> override</span></div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="keyword">    </span>{</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keywordflow">return</span> <span class="stringliteral">&quot;luabridge&quot;</span>;</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    }</div>
-</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
-<div class="foldopen" id="foldopen00050" data-start="{" data-end="}">
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structluabridge_1_1detail_1_1_error_category.html#a1301340b24c395a16f50a5528b45d91f">   50</a></span>    std::string <a class="code hl_function" href="structluabridge_1_1detail_1_1_error_category.html#a1301340b24c395a16f50a5528b45d91f">message</a>(<span class="keywordtype">int</span> ev)<span class="keyword"> const override</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    std::string message(<span class="keywordtype">int</span> ev)<span class="keyword"> const override</span></div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="keyword">    </span>{</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keywordflow">switch</span> (<span class="keyword">static_cast&lt;</span><a class="code hl_enumeration" href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926">ErrorCode</a><span class="keyword">&gt;</span>(ev))</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keywordflow">switch</span> (<span class="keyword">static_cast&lt;</span>ErrorCode<span class="keyword">&gt;</span>(ev))</div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        {</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926a73d7c07d7cbd7d2ace0ceb86bfe26ab2">ErrorCode::ClassNotRegistered</a>:</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keywordflow">case</span> ErrorCode::ClassNotRegistered:</div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>            <span class="keywordflow">return</span> <span class="stringliteral">&quot;The class is not registered in LuaBridge&quot;</span>;</div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926a2ba028e9483ca53848ba8846d753c2d9">ErrorCode::LuaStackOverflow</a>:</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <span class="keywordflow">case</span> ErrorCode::LuaStackOverflow:</div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            <span class="keywordflow">return</span> <span class="stringliteral">&quot;The lua stack has overflow&quot;</span>;</div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926a5795573056fbe054c01edb693efc1dc2">ErrorCode::LuaFunctionCallFailed</a>:</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <span class="keywordflow">case</span> ErrorCode::LuaFunctionCallFailed:</div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            <span class="keywordflow">return</span> <span class="stringliteral">&quot;The lua function invocation raised an error&quot;</span>;</div>
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926a158135ee278da81a6291c88105bb8d8c">ErrorCode::IntegerDoesntFitIntoLuaInteger</a>:</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <span class="keywordflow">case</span> ErrorCode::IntegerDoesntFitIntoLuaInteger:</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            <span class="keywordflow">return</span> <span class="stringliteral">&quot;The native integer can&#39;t fit inside a lua integer&quot;</span>;</div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926a7b7a4a55e258f7628097b7e52937e153">ErrorCode::FloatingPointDoesntFitIntoLuaNumber</a>:</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <span class="keywordflow">case</span> ErrorCode::FloatingPointDoesntFitIntoLuaNumber:</div>
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            <span class="keywordflow">return</span> <span class="stringliteral">&quot;The native floating point can&#39;t fit inside a lua number&quot;</span>;</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926a623e6b1baa255aa4a31350088c322625">ErrorCode::InvalidTypeCast</a>:</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keywordflow">case</span> ErrorCode::InvalidTypeCast:</div>
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            <span class="keywordflow">return</span> <span class="stringliteral">&quot;The lua object can&#39;t be cast to desired type&quot;</span>;</div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926aac6a0ba7a83d44cf8fc532fedf2b6cf1">ErrorCode::InvalidTableSizeInCast</a>:</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keywordflow">case</span> ErrorCode::InvalidTableSizeInCast:</div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>            <span class="keywordflow">return</span> <span class="stringliteral">&quot;The lua table has different size than expected&quot;</span>;</div>
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <span class="keywordflow">default</span>:</div>
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            <span class="keywordflow">return</span> <span class="stringliteral">&quot;Unknown error&quot;</span>;</div>
 <div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        }</div>
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    }</div>
-</div>
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
-<div class="foldopen" id="foldopen00080" data-start="{" data-end="}">
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="structluabridge_1_1detail_1_1_error_category.html#aa4979c61beff8ae84023391453878357">   80</a></span>    <span class="keyword">static</span> <span class="keyword">const</span> <a class="code hl_struct" href="structluabridge_1_1detail_1_1_error_category.html">ErrorCategory</a>&amp; <a class="code hl_function" href="structluabridge_1_1detail_1_1_error_category.html#aa4979c61beff8ae84023391453878357">getInstance</a>() noexcept</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keyword">static</span> <span class="keyword">const</span> ErrorCategory&amp; getInstance() noexcept</div>
 <div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    {</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        <span class="keyword">static</span> <a class="code hl_struct" href="structluabridge_1_1detail_1_1_error_category.html">ErrorCategory</a> category;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        <span class="keyword">static</span> ErrorCategory category;</div>
 <div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        <span class="keywordflow">return</span> category;</div>
 <div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    }</div>
-</div>
 <div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>};</div>
-</div>
 <div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>} <span class="comment">// namespace detail</span></div>
 <div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
 <div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span><span class="comment">//=================================================================================================</span></div>
-<div class="foldopen" id="foldopen00092" data-start="{" data-end="}">
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="namespaceluabridge.html#ad0ed633aeb5ff2da5a3e8a5bfdbb698e">   92</a></span><span class="keyword">inline</span> std::error_code <a class="code hl_function" href="namespaceluabridge.html#ad0ed633aeb5ff2da5a3e8a5bfdbb698e">makeErrorCode</a>(<a class="code hl_enumeration" href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926">ErrorCode</a> e)</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span><span class="keyword">inline</span> std::error_code makeErrorCode(ErrorCode e)</div>
 <div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>{</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordflow">return</span> { <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(e), <a class="code hl_function" href="structluabridge_1_1detail_1_1_error_category.html#aa4979c61beff8ae84023391453878357">detail::ErrorCategory::getInstance</a>() };</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordflow">return</span> { <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(e), detail::ErrorCategory::getInstance() };</div>
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>}</div>
-</div>
 <div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
-<div class="foldopen" id="foldopen00100" data-start="{" data-end="}">
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="namespaceluabridge.html#a1c0ea97797bbae69ca03b7bb7908e494">  100</a></span><span class="keyword">inline</span> std::error_code <a class="code hl_function" href="namespaceluabridge.html#a1c0ea97797bbae69ca03b7bb7908e494">make_error_code</a>(<a class="code hl_enumeration" href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926">ErrorCode</a> e)</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span><span class="keyword">inline</span> std::error_code make_error_code(ErrorCode e)</div>
 <div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>{</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keywordflow">return</span> { <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(e), <a class="code hl_function" href="structluabridge_1_1detail_1_1_error_category.html#aa4979c61beff8ae84023391453878357">detail::ErrorCategory::getInstance</a>() };</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keywordflow">return</span> { <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(e), detail::ErrorCategory::getInstance() };</div>
 <div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>}</div>
-</div>
 <div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>} <span class="comment">// namespace luabridge</span></div>
 <div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
 <div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span><span class="keyword">namespace </span>std {</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span><span class="keyword">template</span> &lt;&gt; <span class="keyword">struct </span>is_error_code_enum&lt;<a class="code hl_namespace" href="namespaceluabridge.html">luabridge</a>::<a class="code hl_enumeration" href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926">ErrorCode</a>&gt; : true_type {};</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span><span class="keyword">template</span> &lt;&gt; <span class="keyword">struct </span>is_error_code_enum&lt;luabridge::ErrorCode&gt; : true_type {};</div>
 <div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>} <span class="comment">// namespace std</span></div>
 <div class="ttc" id="a_config_8h_html"><div class="ttname"><a href="_config_8h.html">Config.h</a></div></div>
-<div class="ttc" id="anamespaceluabridge_1_1detail_html_abca718dfe2257327a6f7f0a9f74f81cf"><div class="ttname"><a href="namespaceluabridge_1_1detail.html#abca718dfe2257327a6f7f0a9f74f81cf">luabridge::detail::error_lua_stack_overflow</a></div><div class="ttdeci">static constexpr char error_lua_stack_overflow[]</div><div class="ttdef"><b>Definition</b> Errors.h:16</div></div>
-<div class="ttc" id="anamespaceluabridge_html"><div class="ttname"><a href="namespaceluabridge.html">luabridge</a></div><div class="ttdef"><b>Definition</b> Array.h:12</div></div>
-<div class="ttc" id="anamespaceluabridge_html_a1c0ea97797bbae69ca03b7bb7908e494"><div class="ttname"><a href="namespaceluabridge.html#a1c0ea97797bbae69ca03b7bb7908e494">luabridge::make_error_code</a></div><div class="ttdeci">std::error_code make_error_code(ErrorCode e)</div><div class="ttdoc">Supports std::error_code construction.</div><div class="ttdef"><b>Definition</b> Errors.h:100</div></div>
-<div class="ttc" id="anamespaceluabridge_html_a9c453c5b0bb31b35710e481e0d580926"><div class="ttname"><a href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926">luabridge::ErrorCode</a></div><div class="ttdeci">ErrorCode</div><div class="ttdoc">LuaBridge error codes.</div><div class="ttdef"><b>Definition</b> Errors.h:25</div></div>
-<div class="ttc" id="anamespaceluabridge_html_a9c453c5b0bb31b35710e481e0d580926a158135ee278da81a6291c88105bb8d8c"><div class="ttname"><a href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926a158135ee278da81a6291c88105bb8d8c">luabridge::ErrorCode::IntegerDoesntFitIntoLuaInteger</a></div><div class="ttdeci">@ IntegerDoesntFitIntoLuaInteger</div></div>
-<div class="ttc" id="anamespaceluabridge_html_a9c453c5b0bb31b35710e481e0d580926a2ba028e9483ca53848ba8846d753c2d9"><div class="ttname"><a href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926a2ba028e9483ca53848ba8846d753c2d9">luabridge::ErrorCode::LuaStackOverflow</a></div><div class="ttdeci">@ LuaStackOverflow</div></div>
-<div class="ttc" id="anamespaceluabridge_html_a9c453c5b0bb31b35710e481e0d580926a5795573056fbe054c01edb693efc1dc2"><div class="ttname"><a href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926a5795573056fbe054c01edb693efc1dc2">luabridge::ErrorCode::LuaFunctionCallFailed</a></div><div class="ttdeci">@ LuaFunctionCallFailed</div></div>
-<div class="ttc" id="anamespaceluabridge_html_a9c453c5b0bb31b35710e481e0d580926a623e6b1baa255aa4a31350088c322625"><div class="ttname"><a href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926a623e6b1baa255aa4a31350088c322625">luabridge::ErrorCode::InvalidTypeCast</a></div><div class="ttdeci">@ InvalidTypeCast</div></div>
-<div class="ttc" id="anamespaceluabridge_html_a9c453c5b0bb31b35710e481e0d580926a73d7c07d7cbd7d2ace0ceb86bfe26ab2"><div class="ttname"><a href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926a73d7c07d7cbd7d2ace0ceb86bfe26ab2">luabridge::ErrorCode::ClassNotRegistered</a></div><div class="ttdeci">@ ClassNotRegistered</div></div>
-<div class="ttc" id="anamespaceluabridge_html_a9c453c5b0bb31b35710e481e0d580926a7b7a4a55e258f7628097b7e52937e153"><div class="ttname"><a href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926a7b7a4a55e258f7628097b7e52937e153">luabridge::ErrorCode::FloatingPointDoesntFitIntoLuaNumber</a></div><div class="ttdeci">@ FloatingPointDoesntFitIntoLuaNumber</div></div>
-<div class="ttc" id="anamespaceluabridge_html_a9c453c5b0bb31b35710e481e0d580926aac6a0ba7a83d44cf8fc532fedf2b6cf1"><div class="ttname"><a href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926aac6a0ba7a83d44cf8fc532fedf2b6cf1">luabridge::ErrorCode::InvalidTableSizeInCast</a></div><div class="ttdeci">@ InvalidTableSizeInCast</div></div>
-<div class="ttc" id="anamespaceluabridge_html_ad0ed633aeb5ff2da5a3e8a5bfdbb698e"><div class="ttname"><a href="namespaceluabridge.html#ad0ed633aeb5ff2da5a3e8a5bfdbb698e">luabridge::makeErrorCode</a></div><div class="ttdeci">std::error_code makeErrorCode(ErrorCode e)</div><div class="ttdoc">Construct an error code from the error enum.</div><div class="ttdef"><b>Definition</b> Errors.h:92</div></div>
-<div class="ttc" id="astructluabridge_1_1detail_1_1_error_category_html"><div class="ttname"><a href="structluabridge_1_1detail_1_1_error_category.html">luabridge::detail::ErrorCategory</a></div><div class="ttdef"><b>Definition</b> Errors.h:44</div></div>
-<div class="ttc" id="astructluabridge_1_1detail_1_1_error_category_html_a1301340b24c395a16f50a5528b45d91f"><div class="ttname"><a href="structluabridge_1_1detail_1_1_error_category.html#a1301340b24c395a16f50a5528b45d91f">luabridge::detail::ErrorCategory::message</a></div><div class="ttdeci">std::string message(int ev) const override</div><div class="ttdef"><b>Definition</b> Errors.h:50</div></div>
-<div class="ttc" id="astructluabridge_1_1detail_1_1_error_category_html_a50ae52002e162db3922a1e06db79030d"><div class="ttname"><a href="structluabridge_1_1detail_1_1_error_category.html#a50ae52002e162db3922a1e06db79030d">luabridge::detail::ErrorCategory::name</a></div><div class="ttdeci">const char * name() const noexcept override</div><div class="ttdef"><b>Definition</b> Errors.h:45</div></div>
-<div class="ttc" id="astructluabridge_1_1detail_1_1_error_category_html_aa4979c61beff8ae84023391453878357"><div class="ttname"><a href="structluabridge_1_1detail_1_1_error_category.html#aa4979c61beff8ae84023391453878357">luabridge::detail::ErrorCategory::getInstance</a></div><div class="ttdeci">static const ErrorCategory &amp; getInstance() noexcept</div><div class="ttdef"><b>Definition</b> Errors.h:80</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

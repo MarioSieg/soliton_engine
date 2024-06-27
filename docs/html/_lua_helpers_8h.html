@@ -97,11 +97,7 @@ $(function(){initNavTree('_lua_helpers_8h.html',''); initResizable(); });
 
 <div class="header">
   <div class="summary">
-<a href="#namespaces">Namespaces</a> &#124;
-<a href="#define-members">Macros</a> &#124;
-<a href="#typedef-members">Typedefs</a> &#124;
-<a href="#func-members">Functions</a> &#124;
-<a href="#var-members">Variables</a>  </div>
+<a href="#define-members">Macros</a>  </div>
   <div class="headertitle"><div class="title">LuaHelpers.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -115,11 +111,6 @@ $(function(){initNavTree('_lua_helpers_8h.html',''); initResizable(); });
 </div>
 <p><a href="_lua_helpers_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
-Namespaces</h2></td></tr>
-<tr class="memitem:namespaceluabridge" id="r_namespaceluabridge"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html">luabridge</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
 Macros</h2></td></tr>
 <tr class="memitem:ac03b3a20eb47ae78f0ba9de673dbbc18" id="r_ac03b3a20eb47ae78f0ba9de673dbbc18"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac03b3a20eb47ae78f0ba9de673dbbc18">LUA_OPEQ</a>&#160;&#160;&#160;1</td></tr>
@@ -130,129 +121,6 @@ Macros</h2></td></tr>
 <tr class="separator:a110fe48591b6c46a89fdb0028a461717"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa52575834dccd5472a6a272a06e537be" id="r_aa52575834dccd5472a6a272a06e537be"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa52575834dccd5472a6a272a06e537be">LUABRIDGE_LUA_OK</a>&#160;&#160;&#160;0</td></tr>
 <tr class="separator:aa52575834dccd5472a6a272a06e537be"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:a1b2716e16d4fa2d0461282b88048ebfd" id="r_a1b2716e16d4fa2d0461282b88048ebfd"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#a1b2716e16d4fa2d0461282b88048ebfd">luabridge::lua_Unsigned</a> = std::make_unsigned_t&lt;<a class="el" href="lua_8h.html#a362144baa0cfb14dc38fd21438053d73">lua_Integer</a>&gt;</td></tr>
-<tr class="separator:a1b2716e16d4fa2d0461282b88048ebfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
-Functions</h2></td></tr>
-<tr class="memitem:aa970c2ba6a1cb1e6746417cd3104e7ee" id="r_aa970c2ba6a1cb1e6746417cd3104e7ee"><td class="memTemplParams" colspan="2">template&lt;class... Args&gt; </td></tr>
-<tr class="memitem:aa970c2ba6a1cb1e6746417cd3104e7ee"><td class="memTemplItemLeft" align="right" valign="top">constexpr void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#aa970c2ba6a1cb1e6746417cd3104e7ee">luabridge::unused</a> (Args &amp;&amp;...)</td></tr>
-<tr class="memdesc:aa970c2ba6a1cb1e6746417cd3104e7ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper for unused vars.  <br /></td></tr>
-<tr class="separator:aa970c2ba6a1cb1e6746417cd3104e7ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae90433971ef8f8016d8032664e162dca" id="r_ae90433971ef8f8016d8032664e162dca"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
-<tr class="memitem:ae90433971ef8f8016d8032664e162dca"><td class="memTemplItemLeft" align="right" valign="top">void *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#ae90433971ef8f8016d8032664e162dca">luabridge::lua_newuserdata_x</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, size_t sz)</td></tr>
-<tr class="separator:ae90433971ef8f8016d8032664e162dca"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2880d997a8b94ad55d58c4f9f15b343d" id="r_a2880d997a8b94ad55d58c4f9f15b343d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#a2880d997a8b94ad55d58c4f9f15b343d">luabridge::lua_pushcfunction_x</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, <a class="el" href="lua_8h.html#a878b7e392e78661a374cf1c3073029b9">lua_CFunction</a> fn)</td></tr>
-<tr class="separator:a2880d997a8b94ad55d58c4f9f15b343d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab3ddea3f309bc9ab63efb8f9b6f82006" id="r_ab3ddea3f309bc9ab63efb8f9b6f82006"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#ab3ddea3f309bc9ab63efb8f9b6f82006">luabridge::lua_pushcclosure_x</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, <a class="el" href="lua_8h.html#a878b7e392e78661a374cf1c3073029b9">lua_CFunction</a> fn, int n)</td></tr>
-<tr class="separator:ab3ddea3f309bc9ab63efb8f9b6f82006"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae4fa84b21c441d665429cd80224b07d0" id="r_ae4fa84b21c441d665429cd80224b07d0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#ae4fa84b21c441d665429cd80224b07d0">luabridge::lua_error_x</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L)</td></tr>
-<tr class="separator:ae4fa84b21c441d665429cd80224b07d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a221810b12435edc9448b3c3b69c81379" id="r_a221810b12435edc9448b3c3b69c81379"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#a221810b12435edc9448b3c3b69c81379">luabridge::lua_getstack_x</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, int level, <a class="el" href="structlua___debug.html">lua_Debug</a> *ar)</td></tr>
-<tr class="separator:a221810b12435edc9448b3c3b69c81379"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a19de94fda9e44c1e6198d07fee80925b" id="r_a19de94fda9e44c1e6198d07fee80925b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#a19de94fda9e44c1e6198d07fee80925b">luabridge::lua_getstack_info_x</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, int level, const char *what, <a class="el" href="structlua___debug.html">lua_Debug</a> *ar)</td></tr>
-<tr class="separator:a19de94fda9e44c1e6198d07fee80925b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a31c548a675fa2137cd3a0961a8435f38" id="r_a31c548a675fa2137cd3a0961a8435f38"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lua_8h.html#af0a6ed3b852d680769cfc410a0672172">lua_Number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#a31c548a675fa2137cd3a0961a8435f38">luabridge::to_numberx</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, int idx, int *isnum)</td></tr>
-<tr class="separator:a31c548a675fa2137cd3a0961a8435f38"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1facc6f199c2abe69845db2287b903f9" id="r_a1facc6f199c2abe69845db2287b903f9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lua_8h.html#a362144baa0cfb14dc38fd21438053d73">lua_Integer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#a1facc6f199c2abe69845db2287b903f9">luabridge::to_integerx</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, int idx, int *isnum)</td></tr>
-<tr class="separator:a1facc6f199c2abe69845db2287b903f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a42b5ee6964ff1a9ec8fb03a6decb179a" id="r_a42b5ee6964ff1a9ec8fb03a6decb179a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#a42b5ee6964ff1a9ec8fb03a6decb179a">luabridge::lua_absindex</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, int idx)</td></tr>
-<tr class="separator:a42b5ee6964ff1a9ec8fb03a6decb179a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7d0ea44c1db7aac1cc68a84eaabc9720" id="r_a7d0ea44c1db7aac1cc68a84eaabc9720"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#a7d0ea44c1db7aac1cc68a84eaabc9720">luabridge::lua_rawgetp</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, int idx, const void *p)</td></tr>
-<tr class="separator:a7d0ea44c1db7aac1cc68a84eaabc9720"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4cbc77c8030c1eb1337787ac9c233015" id="r_a4cbc77c8030c1eb1337787ac9c233015"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#a4cbc77c8030c1eb1337787ac9c233015">luabridge::lua_rawsetp</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, int idx, const void *p)</td></tr>
-<tr class="separator:a4cbc77c8030c1eb1337787ac9c233015"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac2fedce39b0e39fa1ed4ad023d07cf12" id="r_ac2fedce39b0e39fa1ed4ad023d07cf12"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#ac2fedce39b0e39fa1ed4ad023d07cf12">luabridge::lua_compare</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, int idx1, int idx2, int op)</td></tr>
-<tr class="separator:ac2fedce39b0e39fa1ed4ad023d07cf12"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5dd0eec8d426dddd0223dad9336dc970" id="r_a5dd0eec8d426dddd0223dad9336dc970"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#a5dd0eec8d426dddd0223dad9336dc970">luabridge::get_length</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, int idx)</td></tr>
-<tr class="separator:a5dd0eec8d426dddd0223dad9336dc970"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa30ed11de56e1b56a531f116903321df" id="r_aa30ed11de56e1b56a531f116903321df"><td class="memTemplParams" colspan="2">template&lt;class T , class ErrorType &gt; </td></tr>
-<tr class="memitem:aa30ed11de56e1b56a531f116903321df"><td class="memTemplItemLeft" align="right" valign="top">std::error_code&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#aa30ed11de56e1b56a531f116903321df">luabridge::throw_or_error_code</a> (ErrorType error)</td></tr>
-<tr class="memdesc:aa30ed11de56e1b56a531f116903321df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper to throw or return an error code.  <br /></td></tr>
-<tr class="separator:aa30ed11de56e1b56a531f116903321df"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7c54400a9e02b37e1231a8d3958da3cd" id="r_a7c54400a9e02b37e1231a8d3958da3cd"><td class="memTemplParams" colspan="2">template&lt;class T , class ErrorType &gt; </td></tr>
-<tr class="memitem:a7c54400a9e02b37e1231a8d3958da3cd"><td class="memTemplItemLeft" align="right" valign="top">std::error_code&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#a7c54400a9e02b37e1231a8d3958da3cd">luabridge::throw_or_error_code</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, ErrorType error)</td></tr>
-<tr class="separator:a7c54400a9e02b37e1231a8d3958da3cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adb4733ba08313078b8cb4c32f7c18b22" id="r_adb4733ba08313078b8cb4c32f7c18b22"><td class="memTemplParams" colspan="2">template&lt;class T , class... Args&gt; </td></tr>
-<tr class="memitem:adb4733ba08313078b8cb4c32f7c18b22"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#adb4733ba08313078b8cb4c32f7c18b22">luabridge::throw_or_assert</a> (Args &amp;&amp;... args)</td></tr>
-<tr class="memdesc:adb4733ba08313078b8cb4c32f7c18b22"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper to throw or LUABRIDGE_ASSERT.  <br /></td></tr>
-<tr class="separator:adb4733ba08313078b8cb4c32f7c18b22"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6b55c4aeb44618d94d684aad6f504cf9" id="r_a6b55c4aeb44618d94d684aad6f504cf9"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
-<tr class="memitem:a6b55c4aeb44618d94d684aad6f504cf9"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#a6b55c4aeb44618d94d684aad6f504cf9">luabridge::pushunsigned</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, T value)</td></tr>
-<tr class="memdesc:a6b55c4aeb44618d94d684aad6f504cf9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper to set unsigned.  <br /></td></tr>
-<tr class="separator:a6b55c4aeb44618d94d684aad6f504cf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a73bc6fac9c5430b9d3d81d8d47a5987a" id="r_a73bc6fac9c5430b9d3d81d8d47a5987a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lua_8h.html#af0a6ed3b852d680769cfc410a0672172">lua_Number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#a73bc6fac9c5430b9d3d81d8d47a5987a">luabridge::tonumber</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, int idx, int *isnum)</td></tr>
-<tr class="memdesc:a73bc6fac9c5430b9d3d81d8d47a5987a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper to convert to integer.  <br /></td></tr>
-<tr class="separator:a73bc6fac9c5430b9d3d81d8d47a5987a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a68c7f16453cf01df0471bfff336901aa" id="r_a68c7f16453cf01df0471bfff336901aa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lua_8h.html#a362144baa0cfb14dc38fd21438053d73">lua_Integer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#a68c7f16453cf01df0471bfff336901aa">luabridge::tointeger</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, int idx, int *isnum)</td></tr>
-<tr class="memdesc:a68c7f16453cf01df0471bfff336901aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper to convert to integer.  <br /></td></tr>
-<tr class="separator:a68c7f16453cf01df0471bfff336901aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a75bdd1d87a7c3f6028d10708a9e52113" id="r_a75bdd1d87a7c3f6028d10708a9e52113"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#a75bdd1d87a7c3f6028d10708a9e52113">luabridge::register_main_thread</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *threadL)</td></tr>
-<tr class="separator:a75bdd1d87a7c3f6028d10708a9e52113"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3e1d479c04df9bb04c9c87ae9ecaaa11" id="r_a3e1d479c04df9bb04c9c87ae9ecaaa11"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#a3e1d479c04df9bb04c9c87ae9ecaaa11">luabridge::main_thread</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *threadL)</td></tr>
-<tr class="memdesc:a3e1d479c04df9bb04c9c87ae9ecaaa11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get main thread, not supported on 5.1.  <br /></td></tr>
-<tr class="separator:a3e1d479c04df9bb04c9c87ae9ecaaa11"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac39534a2eff9814222540f5ff75d79aa" id="r_ac39534a2eff9814222540f5ff75d79aa"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#ac39534a2eff9814222540f5ff75d79aa">luabridge::rawgetfield</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, int index, const char *key)</td></tr>
-<tr class="memdesc:ac39534a2eff9814222540f5ff75d79aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a table value, bypassing metamethods.  <br /></td></tr>
-<tr class="separator:ac39534a2eff9814222540f5ff75d79aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abce2601e971bde300a05eb7424a908a8" id="r_abce2601e971bde300a05eb7424a908a8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#abce2601e971bde300a05eb7424a908a8">luabridge::rawsetfield</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, int index, const char *key)</td></tr>
-<tr class="memdesc:abce2601e971bde300a05eb7424a908a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a table value, bypassing metamethods.  <br /></td></tr>
-<tr class="separator:abce2601e971bde300a05eb7424a908a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a44c374388da4170ad5e9368c35eb3985" id="r_a44c374388da4170ad5e9368c35eb3985"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#a44c374388da4170ad5e9368c35eb3985">luabridge::isfulluserdata</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, int index)</td></tr>
-<tr class="memdesc:a44c374388da4170ad5e9368c35eb3985"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the value is a full userdata (not light).  <br /></td></tr>
-<tr class="separator:a44c374388da4170ad5e9368c35eb3985"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4966f3b47ad5cbe384f4081e3a7df466" id="r_a4966f3b47ad5cbe384f4081e3a7df466"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#a4966f3b47ad5cbe384f4081e3a7df466">luabridge::equalstates</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L1, <a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L2)</td></tr>
-<tr class="memdesc:a4966f3b47ad5cbe384f4081e3a7df466"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test lua_State objects for global equality.  <br /></td></tr>
-<tr class="separator:a4966f3b47ad5cbe384f4081e3a7df466"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4ec5d6d3ed1c29a87f5845d7347f2df0" id="r_a4ec5d6d3ed1c29a87f5845d7347f2df0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#a4ec5d6d3ed1c29a87f5845d7347f2df0">luabridge::table_length</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, int index)</td></tr>
-<tr class="memdesc:a4ec5d6d3ed1c29a87f5845d7347f2df0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the size of lua table, even if not a sequence { 1=x, 2=y, 3=... }.  <br /></td></tr>
-<tr class="separator:a4ec5d6d3ed1c29a87f5845d7347f2df0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a67c1a92590e202342ed109ce02002770" id="r_a67c1a92590e202342ed109ce02002770"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
-<tr class="memitem:a67c1a92590e202342ed109ce02002770"><td class="memTemplItemLeft" align="right" valign="top">T *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#a67c1a92590e202342ed109ce02002770">luabridge::align</a> (void *ptr) noexcept</td></tr>
-<tr class="memdesc:a67c1a92590e202342ed109ce02002770"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return an aligned pointer of type T.  <br /></td></tr>
-<tr class="separator:a67c1a92590e202342ed109ce02002770"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac23a9894e052dbd2dbebeed71a20d666" id="r_ac23a9894e052dbd2dbebeed71a20d666"><td class="memTemplParams" colspan="2">template&lt;std::size_t Alignment, class T , std::enable_if_t&lt; std::is_pointer_v&lt; T &gt;, int &gt;  = 0&gt; </td></tr>
-<tr class="memitem:ac23a9894e052dbd2dbebeed71a20d666"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#ac23a9894e052dbd2dbebeed71a20d666">luabridge::is_aligned</a> (T address) noexcept</td></tr>
-<tr class="memdesc:ac23a9894e052dbd2dbebeed71a20d666"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return if a pointer of type T is aligned.  <br /></td></tr>
-<tr class="separator:ac23a9894e052dbd2dbebeed71a20d666"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a070cdf6d1aba0fdb4bfaacc3879042fb" id="r_a070cdf6d1aba0fdb4bfaacc3879042fb"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
-<tr class="memitem:a070cdf6d1aba0fdb4bfaacc3879042fb"><td class="memTemplItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#a070cdf6d1aba0fdb4bfaacc3879042fb">luabridge::maximum_space_needed_to_align</a> () noexcept</td></tr>
-<tr class="memdesc:a070cdf6d1aba0fdb4bfaacc3879042fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the space needed to align the type T on an unaligned address.  <br /></td></tr>
-<tr class="separator:a070cdf6d1aba0fdb4bfaacc3879042fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a76361cf60e34db17ee10a34643a6bf3a" id="r_a76361cf60e34db17ee10a34643a6bf3a"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
-<tr class="memitem:a76361cf60e34db17ee10a34643a6bf3a"><td class="memTemplItemLeft" align="right" valign="top">int&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#a76361cf60e34db17ee10a34643a6bf3a">luabridge::lua_deleteuserdata_aligned</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L)</td></tr>
-<tr class="memdesc:a76361cf60e34db17ee10a34643a6bf3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deallocate lua userdata taking into account alignment.  <br /></td></tr>
-<tr class="separator:a76361cf60e34db17ee10a34643a6bf3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4e20807ba56d3ae38c6da96d05464e68" id="r_a4e20807ba56d3ae38c6da96d05464e68"><td class="memTemplParams" colspan="2">template&lt;class T , class... Args&gt; </td></tr>
-<tr class="memitem:a4e20807ba56d3ae38c6da96d05464e68"><td class="memTemplItemLeft" align="right" valign="top">void *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#a4e20807ba56d3ae38c6da96d05464e68">luabridge::lua_newuserdata_aligned</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, Args &amp;&amp;... args)</td></tr>
-<tr class="memdesc:a4e20807ba56d3ae38c6da96d05464e68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate lua userdata taking into account alignment.  <br /></td></tr>
-<tr class="separator:a4e20807ba56d3ae38c6da96d05464e68"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0a0a0b09871fdf6d855faadb4597d83c" id="r_a0a0a0b09871fdf6d855faadb4597d83c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#a0a0a0b09871fdf6d855faadb4597d83c">luabridge::raise_lua_error</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, const char *fmt,...)</td></tr>
-<tr class="memdesc:a0a0a0b09871fdf6d855faadb4597d83c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Safe error able to walk backwards for error reporting correctly.  <br /></td></tr>
-<tr class="separator:a0a0a0b09871fdf6d855faadb4597d83c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa5a9ca6439f798479c0276e9dd29de9e" id="r_aa5a9ca6439f798479c0276e9dd29de9e"><td class="memTemplParams" colspan="2">template&lt;class U  = lua_Integer, class T &gt; </td></tr>
-<tr class="memitem:aa5a9ca6439f798479c0276e9dd29de9e"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#aa5a9ca6439f798479c0276e9dd29de9e">luabridge::is_integral_representable_by</a> (T value)</td></tr>
-<tr class="memdesc:aa5a9ca6439f798479c0276e9dd29de9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the value on the stack is a number type and can fit into the corresponding c++ integral type..  <br /></td></tr>
-<tr class="separator:aa5a9ca6439f798479c0276e9dd29de9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8c8c5ea871fe14205cfcf4a0c1b1605e" id="r_a8c8c5ea871fe14205cfcf4a0c1b1605e"><td class="memTemplParams" colspan="2">template&lt;class U  = lua_Integer&gt; </td></tr>
-<tr class="memitem:a8c8c5ea871fe14205cfcf4a0c1b1605e"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#a8c8c5ea871fe14205cfcf4a0c1b1605e">luabridge::is_integral_representable_by</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, int index)</td></tr>
-<tr class="separator:a8c8c5ea871fe14205cfcf4a0c1b1605e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a00b5decdad3e5a769bfd48e52052aca8" id="r_a00b5decdad3e5a769bfd48e52052aca8"><td class="memTemplParams" colspan="2">template&lt;class U  = lua_Number, class T &gt; </td></tr>
-<tr class="memitem:a00b5decdad3e5a769bfd48e52052aca8"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#a00b5decdad3e5a769bfd48e52052aca8">luabridge::is_floating_point_representable_by</a> (T value)</td></tr>
-<tr class="memdesc:a00b5decdad3e5a769bfd48e52052aca8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the value on the stack is a number type and can fit into the corresponding c++ numerical type..  <br /></td></tr>
-<tr class="separator:a00b5decdad3e5a769bfd48e52052aca8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeb4bac190d793330403e4bc38d0a0f53" id="r_aeb4bac190d793330403e4bc38d0a0f53"><td class="memTemplParams" colspan="2">template&lt;class U  = lua_Number&gt; </td></tr>
-<tr class="memitem:aeb4bac190d793330403e4bc38d0a0f53"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#aeb4bac190d793330403e4bc38d0a0f53">luabridge::is_floating_point_representable_by</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, int index)</td></tr>
-<tr class="separator:aeb4bac190d793330403e4bc38d0a0f53"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
-Variables</h2></td></tr>
-<tr class="memitem:ad885b80d545a30df3dbe65f04d2d0938" id="r_ad885b80d545a30df3dbe65f04d2d0938"><td class="memItemLeft" align="right" valign="top">constexpr char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceluabridge.html#ad885b80d545a30df3dbe65f04d2d0938">luabridge::main_thread_name</a> [] = &quot;__luabridge_main_thread&quot;</td></tr>
-<tr class="memdesc:ad885b80d545a30df3dbe65f04d2d0938"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register main thread, only supported on 5.1.  <br /></td></tr>
-<tr class="separator:ad885b80d545a30df3dbe65f04d2d0938"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="ac03b3a20eb47ae78f0ba9de673dbbc18" name="ac03b3a20eb47ae78f0ba9de673dbbc18"></a>

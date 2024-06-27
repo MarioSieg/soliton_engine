@@ -63,6 +63,7 @@ add_subdirectory(extern/SPIRV-Tools)
 add_subdirectory(extern/glslang)
 add_subdirectory(extern/shaderc)
 target_include_directories(lunam PRIVATE extern/shaderc/libshaderc/include)
+target_include_directories(lunam PRIVATE extern/shaderc/libshaderc_util/include)
 target_link_libraries(lunam vulkan)
 target_link_libraries(lunam shaderc)
 
@@ -97,10 +98,35 @@ target_include_directories(lunam PRIVATE src/graphics/noesis/App/Include)
 add_subdirectory(extern/glm)
 target_include_directories(lunam PRIVATE extern/glm)
 
-# Assimp must be last
+add_subdirectory(extern/simdutf)
+target_include_directories(lunam PRIVATE extern/simdutf/include)
+target_link_libraries(lunam simdutf)
+
+target_include_directories(lunam PRIVATE extern/mINI/src)
+
+add_subdirectory(extern/LuaBridge3)
+target_include_directories(lunam PRIVATE extern/LuaBridge3/Source)
+
+target_include_directories(lunam PRIVATE extern/lunam_jit/src)
+
+add_subdirectory(extern/stduuid)
+target_include_directories(lunam PRIVATE extern/stduuid/include)
+target_link_libraries(lunam stduuid)
+
+##################################################################################################
+# Libraries, which sadly requires C++ exceptions and have no way to disable them
+##################################################################################################
+
+add_subdirectory(extern/Simd/prj/cmake)
+target_include_directories(lunam PRIVATE extern/Simd/src)
+target_link_libraries(lunam Simd)
+if (NOT WIN32)
+    target_compile_options(Simd PRIVATE -fexceptions) # Simd uses exceptions
+endif()
+
 add_subdirectory(extern/assimp)
 target_include_directories(lunam PRIVATE extern/assimp/include)
 target_link_libraries(lunam assimp)
 if (NOT WIN32)
-    target_compile_options(assimp PRIVATE -fexceptions)
+    target_compile_options(assimp PRIVATE -fexceptions) # Assimp uses exceptions
 endif()

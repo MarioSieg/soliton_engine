@@ -1,0 +1,500 @@
+/*! @defgroup c_types C Types
+    \short Types of %Simd Library C API.
+*/
+
+/*! @defgroup cpp_types C++ Types
+    \short C++ API Types of %Simd Library.
+*/
+
+/*! @ingroup cpp_types
+    @defgroup cpp_allocator Allocator
+    \short Simd::Allocator structure. 
+*/
+
+/*! @ingroup cpp_types
+    @defgroup cpp_point Point
+    \short Simd::Point structure and related functions. 
+*/
+
+/*! @ingroup cpp_point
+    @defgroup cpp_point_functions Related Functions 
+    \short Related functions for Simd::Point structure. 
+*/
+
+/*! @ingroup cpp_types
+    @defgroup cpp_rectangle Rectangle
+    \short Simd::Rectangle structure and related functions. 
+*/
+
+/*! @ingroup cpp_rectangle
+    @defgroup cpp_rectangle_functions Related Functions 
+    \short Related functions for Simd::Rectangle structure. 
+*/
+
+/*! @ingroup cpp_types
+    @defgroup cpp_pixels Pixels
+    \short BGR, BGRA, HSL, HSV pixel structures.
+*/
+
+/*! @ingroup cpp_types
+    @defgroup cpp_view View
+    \short Simd::View structure and related functions. 
+*/
+
+/*! @ingroup cpp_view
+    @defgroup cpp_view_functions Related Functions 
+    \short Related functions for Simd::View structure. 
+*/
+
+/*! @ingroup cpp_types
+    @defgroup cpp_frame Frame
+    \short Simd::Frame structure and related functions.
+*/
+
+/*! @ingroup cpp_frame
+    @defgroup cpp_frame_functions Related Functions
+    \short Related functions for Simd::Frame structure.
+*/
+
+/*! @ingroup cpp_types
+    @defgroup cpp_pyramid Pyramid
+    \short Simd::Pyramid structure and related functions.
+*/
+
+/*! @ingroup cpp_pyramid
+    @defgroup cpp_pyramid_functions Related Functions
+    \short Related functions for Simd::Pyramid structure.
+*/
+
+/*! @ingroup cpp_types
+    @defgroup cpp_detection Detection
+    \short Simd::Detection structure (C++ Object Detection Wrapper).
+*/
+
+/*! @ingroup cpp_types
+    @defgroup cpp_neural Neural
+    \short Simd::Neural is C++ framework for running and learning of Convolutional Neural Network.
+*/
+
+/*! @ingroup cpp_types
+    @defgroup cpp_motion Motion
+    \short Simd::Motion is C++ framework for motion detection.
+*/
+
+/*! @ingroup cpp_types
+    @defgroup cpp_contour Contour Detector
+    \short Simd::ContourDetector structure and related functions.
+*/
+
+/*! @ingroup cpp_types
+    @defgroup cpp_shift Shift Detector
+    \short Simd::ShiftDetector structure and related functions.
+*/
+
+/*! @ingroup cpp_types
+    @defgroup cpp_image_matcher Image Matcher
+    \short Simd::ImageMatcher structure and related functions.
+*/
+
+/*! @ingroup cpp_types
+    @defgroup cpp_drawing Drawing Functions
+    \short Drawing functions to annotate debug information.
+*/
+
+/*! @defgroup functions Functions
+    \short Functions of %Simd Library API.
+*/
+
+/*! @ingroup functions
+    @defgroup info Info
+    \short Functions with information about library.
+*/
+
+/*! @ingroup functions
+    @defgroup memory Memory Utilities
+    \short Functions for memory management.
+*/
+
+/*! @ingroup functions
+    @defgroup thread Thread Utilities
+    \short Functions for thread management.
+*/
+
+/*! @ingroup functions
+    @defgroup cpu_flags CPU Flags
+    \short Functions for CPU flags management.
+*/
+
+/*! @ingroup functions
+    @defgroup hash Hash Functions
+    \short Functions for hash estimation.
+*/
+
+/*! @ingroup functions
+    @defgroup reordering Byte Reordering
+    \short Functions for bytes reordering.
+*/
+
+/*! @ingroup functions
+    @defgroup conversion Conversion
+    \short Functions for image format conversions.
+*/
+
+/*! @ingroup conversion
+    @defgroup universal_conversion Universal
+    \short Universal functions for image format conversions.
+*/
+
+/*! @ingroup conversion
+    @defgroup bayer_conversion Bayer 
+    \short Functions for Bayer image conversions.
+*/
+
+/*! @ingroup conversion
+    @defgroup bgr_conversion BGR-24 
+    \short Functions for BGR-24 image conversions.
+*/
+
+/*! @ingroup conversion
+    @defgroup bgra_conversion BGRA-32 
+    \short Functions for BGRA-32 image conversions.
+*/
+
+/*! @ingroup conversion
+    @defgroup gray_conversion Gray-8 
+    \short Functions for Gray-8 image conversions.
+*/
+
+/*! @ingroup conversion
+    @defgroup rgb_conversion RGB-24 
+    \short Functions for RGB-24 image conversions.
+*/
+
+/*! @ingroup conversion
+    @defgroup rgba_conversion RGBA-32 
+    \short Functions for RGBA-32 image conversions.
+*/
+
+/*! @ingroup conversion
+    @defgroup yuv_conversion YUV 
+    \short Functions for YUV image conversions.
+*/
+
+/*! @ingroup conversion
+    @defgroup interleave_conversion Interleave
+    \short Functions to intereleave planar images.
+*/
+
+/*! @ingroup conversion
+    @defgroup deinterleave_conversion Deinterleave
+    \short Functions to deinterleave images.
+*/
+
+/*! @ingroup conversion
+    @defgroup uyvy_conversion UYVY 
+    \short Functions for UYVY image conversions.
+*/
+
+/*! @ingroup conversion
+    @defgroup other_conversion Other 
+    \short Functions for other image format conversions.
+*/
+
+/*! @ingroup functions
+    @defgroup drawing Drawing
+    \short Functions for image drawing.
+*/
+
+/*! @ingroup functions
+    @defgroup correlation Correlation
+    \short Functions for estimation of correlation.
+*/
+
+/*! @ingroup functions
+    @defgroup histogram Histogram
+    \short Functions for estimation of image histogram.
+*/
+
+/*! @ingroup functions
+    @defgroup integral Integral
+    \short Functions for estimation of integral image.
+*/
+
+/*! @ingroup functions
+    @defgroup operation Operations
+    \short Various mathematical operations with images.
+*/
+
+/*! @ingroup functions
+    @defgroup filter Filters
+    \short Various image filters.
+*/
+
+/*! @ingroup filter
+    @defgroup gaussian_filter Gaussian Blur Filters
+    \short Gaussian blur image filters.
+*/
+
+/*! @ingroup filter
+    @defgroup laplace_filter Laplace Filters
+    \short Laplace image filters.
+*/
+
+/*! @ingroup filter
+    @defgroup median_filter Median Filters
+    \short Median image filters.
+*/
+
+/*! @ingroup filter
+    @defgroup recursive_bilateral_filter Recursive Bilateral Filters
+    \short Recursive bilateral image filters.
+*/
+
+/*! @ingroup filter
+    @defgroup sobel_filter Sobel Filters
+    \short Sobel image filters.
+*/
+
+/*! @ingroup filter
+    @defgroup other_filter Other Filters
+    \short Other image filters.
+*/
+
+/*! @ingroup functions
+    @defgroup resizing Resizing
+    \short Functions for image resizing.
+*/
+
+/*! @ingroup functions
+    @defgroup shifting Shifting
+    \short Functions for image shifting.
+*/
+
+/*! @ingroup functions
+    @defgroup copying Copying
+    \short Functions for image copying.
+*/
+
+/*! @ingroup functions
+    @defgroup filling Filling
+    \short Functions for image filling.
+*/
+
+/*! @ingroup functions
+    @defgroup binarization Binarization
+    \short Functions for image binarization.
+*/
+
+/*! @ingroup functions
+    @defgroup statistic Statistic
+    \short Functions for image statistic estimation.
+*/
+
+/*! @ingroup statistic
+    @defgroup conditional Conditional
+    \short Functions for conditional estimation of image statistic.
+*/
+
+/*! @ingroup statistic
+    @defgroup col_statistic Columns Statistic
+    \short Estimation of image statistic for separate columns.
+*/
+
+/*! @ingroup statistic
+    @defgroup row_statistic Rows Statistic
+    \short Estimation of image statistic for separate rows.
+*/
+
+/*! @ingroup statistic
+    @defgroup sobel_statistic Sobel Statistic
+    \short Getting of statistic related with Sobel filters.
+*/
+
+/*! @ingroup statistic
+    @defgroup other_statistic Other Statistic
+    \short Estimation of various image statistic.
+*/
+
+/*! @ingroup functions
+    @defgroup transform Image Transformation
+    \short Functions for image transformation (transposition, rotation).
+*/
+
+/*! @ingroup functions
+    @defgroup motion_detection Motion Detection
+    \short Functions for motion detection.
+*/
+
+/*! @ingroup motion_detection
+    @defgroup texture_estimation Texture Estimation
+    \short Functions for estimation of background texture.
+*/
+
+/*! @ingroup motion_detection
+    @defgroup difference_estimation Difference Estimation
+    \short Functions for estimation of difference between current frame and background.
+*/
+
+/*! @ingroup motion_detection
+    @defgroup segmentation Segmentation
+    \short Functions for image segmentation.
+*/
+
+/*! @ingroup motion_detection
+    @defgroup background Background Updating
+    \short Functions for background updating.
+*/
+
+/*! @ingroup functions
+    @defgroup hog HOG (Histogram of Oriented Gradients)
+    \short Functions for extraction and processing of HOG features.
+*/
+
+/*! @ingroup functions
+    @defgroup neural Neural Network
+    \short Artificial Neural Network's functions for accelerating of Simd::Neural.
+*/
+
+/*! @ingroup functions
+    @defgroup object_detection Object Detection
+    \short Object Detection's low-level API for Simd::Detection.
+*/
+
+/*! @ingroup functions
+    @defgroup contour Contour Extraction
+    \short Contour extraction functions for accelerating of Simd::ContourDetector.
+*/
+
+/*! @ingroup functions
+    @defgroup bfloat16 Brain Floating Point (16-bit) Numbers
+    \short Functions for conversion between BFloat16 (16-bit Brain Floating Point) and 32-bit Floating Point numbers and other.
+*/
+
+/*! @ingroup functions
+    @defgroup float16 Half-Precision (16-bit) Float Point Numbers
+    \short Functions for conversion between 16-bit and 32-bit float numbers and other.
+*/
+
+/*! @ingroup functions
+    @defgroup synet Synet Framework
+    \short Functions for accelerating of inference of neural network in <a href="http://github.com/ermig1979/Synet">Synet Framework</a>.
+*/
+
+/*! @ingroup synet
+    @defgroup synet_types Types
+    \short Types used in <a href="http://github.com/ermig1979/Synet">Synet Framework</a>.
+*/
+
+/*! @ingroup synet
+    @defgroup synet_activation Activation functions
+    \short Functions to acceleratе activation functions in <a href="http://github.com/ermig1979/Synet">Synet Framework</a>.
+*/
+
+/*! @ingroup synet
+    @defgroup synet_conversion Conversion functions
+    \short Functions to acceleratе conversion in <a href="http://github.com/ermig1979/Synet">Synet Framework</a>.
+*/
+
+/*! @ingroup synet
+    @defgroup synet_convolution_fp32 FP32 convolution framework
+    \short A framework to accelerate FP32 convolution in <a href="http://github.com/ermig1979/Synet">Synet Framework</a>.
+*/
+
+/*! @ingroup synet
+    @defgroup synet_convolution_bf16 BF16 convolution framework
+    \short A framework to accelerate BF16 convolution in <a href="http://github.com/ermig1979/Synet">Synet Framework</a>.
+*/
+
+/*! @ingroup synet
+    @defgroup synet_convolution_int8 INT8 convolution framework
+    \short A framework to accelerate INT8 convolution in <a href="http://github.com/ermig1979/Synet">Synet Framework</a>.
+*/
+
+/*! @ingroup synet
+    @defgroup synet_deconvolution_fp32 FP32 deconvolution framework
+    \short A framework to accelerate FP32 deconvolution in <a href="http://github.com/ermig1979/Synet">Synet Framework</a>.
+*/
+
+/*! @ingroup synet
+    @defgroup synet_grid_sample GridSampleLayer functions
+    \short Functions to acceleratе GridSampleLayer in <a href="http://github.com/ermig1979/Synet">Synet Framework</a>.
+*/
+
+/*! @ingroup synet
+    @defgroup synet_inner_product InnerProductLayer functions
+    \short Functions to acceleratе InnerProductLayer in <a href="http://github.com/ermig1979/Synet">Synet Framework</a>.
+*/
+
+/*! @ingroup synet
+    @defgroup synet_merged_convolution_bf16 BF16 merged convolution frameworks
+    \short A framework to accelerate BF16 merged convolution in <a href="http://github.com/ermig1979/Synet">Synet Framework</a>.
+*/
+
+/*! @ingroup synet
+    @defgroup synet_merged_convolution_fp32 FP32 merged convolution frameworks
+    \short A framework to accelerate FP32 merged convolution in <a href="http://github.com/ermig1979/Synet">Synet Framework</a>.
+*/
+
+/*! @ingroup synet
+    @defgroup synet_merged_convolution_int8 INT8 merged convolution frameworks
+    \short A framework to accelerate INT8 merged convolution in <a href="http://github.com/ermig1979/Synet">Synet Framework</a>.
+*/
+
+/*! @ingroup synet
+    @defgroup synet_normalize NormalizeLayer functions
+    \short Functions to acceleratе NormalizeLayer in <a href="http://github.com/ermig1979/Synet">Synet Framework</a>.
+*/
+
+/*! @ingroup synet
+    @defgroup synet_permute PermuteLayer functions
+    \short Functions to acceleratе PermuteLayer in <a href="http://github.com/ermig1979/Synet">Synet Framework</a>.
+*/
+
+/*! @ingroup synet
+    @defgroup synet_pooling PoolingLayer functions
+    \short Functions to acceleratе PoolingLayer in <a href="http://github.com/ermig1979/Synet">Synet Framework</a>.
+*/
+
+/*! @ingroup synet
+    @defgroup synet_scale ScaleLayer functions
+    \short Functions to acceleratе layer scale in <a href="http://github.com/ermig1979/Synet">Synet Framework</a>.
+*/
+
+/*! @ingroup synet
+    @defgroup synet_winograd Winograd functions
+    \short Functions to acceleratе Winograd convolution algorithm in <a href="http://github.com/ermig1979/Synet">Synet Framework</a>.
+*/
+
+/*! @ingroup synet
+    @defgroup synet_other Other functions
+    \short Other accelerated functions used in <a href="http://github.com/ermig1979/Synet">Synet Framework</a>.
+*/
+
+/*! @ingroup functions
+    @defgroup matrix Matrix Operations
+    \short Matrix operations.
+*/
+
+/*! @ingroup functions
+    @defgroup image_io Image IO
+    \short Image IO (Save/Load) operations.
+*/
+
+/*! @ingroup functions
+    @defgroup base64 Base64 Conversion
+    \short Functions for encoding/decoding of strings in Base64 format.
+*/
+
+/*! @ingroup functions
+    @defgroup warp_affine Affine Warp
+    \short Functions for Affine Warp of images.
+*/
+
+/*! @ingroup functions
+    @defgroup descrint Integer Descriptor
+    \short Functions for conversion and comparison of Integer Descriptor.
+*/
+
+/*! @defgroup python Python Wrapper
+    \short Python Wrapper of %Simd Library.
+*/

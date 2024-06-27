@@ -12,6 +12,9 @@
 #include <NsGui/Stream.h>
 #include <NsGui/Uri.h>
 
+#include "lunam_stream.hpp"
+
+#include <vector>
 
 NS_MSVC_WARNING_DISABLE(4505)
 
@@ -119,17 +122,13 @@ Ptr<Texture> FileTextureProvider::LoadTexture(const Uri& uri, RenderDevice* devi
     int x, y, n;
     stbi_uc* img;
 
-    const stbi_uc* base = (const stbi_uc*)file->GetMemoryBase();
+    std::vector<uint8_t> buffer {};
+    auto* lunam_stream = dynamic_cast<noesis_lunam_file_stream*>(file.GetPtr());
+    if (!lunam_stream || !lunam_stream->get_stream()) return nullptr;
+    lunam_stream->get_stream()->read_all_bytes(buffer);
+    const stbi_uc* base = buffer.data();
 
-    if (base != nullptr)
-    {
-        img = stbi_load_from_memory(base, file->GetLength(), &x, &y, &n, 4);
-    }
-    else
-    {
-        stbi_io_callbacks callbacks = { Read, Skip, Eof };
-        img = stbi_load_from_callbacks(&callbacks, file, &x, &y, &n, 4);
-    }
+    img = stbi_load_from_memory(base, buffer.size(), &x, &y, &n, 4);
 
     if (img == 0)
     {

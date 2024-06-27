@@ -121,32 +121,31 @@ $(function(){initNavTree('_sort_comparer_8h_source.html',''); initResizable(); }
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;NsGui/Events.h&gt;</span></div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespace_noesis.html">Noesis</a></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">namespace </span>Noesis</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>{</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">struct </span>NotifyCollectionChangedEventArgs;</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">struct </span>PropertyChangedEventArgs;</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>}</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespace_noesis_app.html">NoesisApp</a></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">namespace </span>NoesisApp</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>{</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="comment">// Event handler type for SortRequired event</span></div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="namespace_noesis_app.html#ac59f7e994d058950aaf3f4c10daf70f7">   29</a></span><span class="keyword">typedef</span> Noesis::Delegate&lt;void()&gt; <a class="code hl_typedef" href="namespace_noesis_app.html#ac59f7e994d058950aaf3f4c10daf70f7">SortRequiredEventHandler</a>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keyword">typedef</span> Noesis::Delegate&lt;void()&gt; SortRequiredEventHandler;</div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>NS_WARNING_PUSH</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>NS_MSVC_WARNING_DISABLE(4251)</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
-<div class="foldopen" id="foldopen00037" data-start="{" data-end="};">
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_sort_comparer.html">   37</a></span>class <a class="code hl_define" href="_interactivity_api_8h.html#a19ef9be0d7b903c63e87d626acc9db84">NS_APP_INTERACTIVITY_API</a> <a class="code hl_class" href="class_noesis_app_1_1_sort_comparer.html">SortComparer</a>: public <a class="code hl_namespace" href="namespace_noesis.html">Noesis</a>::BaseComponent</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>class <a class="code hl_define" href="_interactivity_api_8h.html#a19ef9be0d7b903c63e87d626acc9db84">NS_APP_INTERACTIVITY_API</a> SortComparer: public Noesis::BaseComponent</div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>{</div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <a class="code hl_class" href="class_noesis_app_1_1_sort_comparer.html">SortComparer</a>();</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keyword">virtual</span> <a class="code hl_class" href="class_noesis_app_1_1_sort_comparer.html">~SortComparer</a>() = 0;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    SortComparer();</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keyword">virtual</span> ~SortComparer() = 0;</div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_sort_comparer.html#a3bf2095d90f0ab23317cd079cf931883">   44</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code hl_function" href="class_noesis_app_1_1_sort_comparer.html#a3bf2095d90f0ab23317cd079cf931883">Compare</a>(Noesis::BaseComponent* i0, Noesis::BaseComponent* i1) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keyword">virtual</span> <span class="keywordtype">int</span> Compare(Noesis::BaseComponent* i0, Noesis::BaseComponent* i1) <span class="keyword">const</span> = 0;</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_sort_comparer.html#a72eb473e2a0bfb5f033b7eba2b76a48b">   47</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="class_noesis_app_1_1_sort_comparer.html#a72eb473e2a0bfb5f033b7eba2b76a48b">NeedsRefresh</a>(Noesis::BaseComponent* item, <span class="keyword">const</span> <span class="keywordtype">char</span>* propertyName) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> NeedsRefresh(Noesis::BaseComponent* item, <span class="keyword">const</span> <span class="keywordtype">char</span>* propertyName) <span class="keyword">const</span> = 0;</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordtype">void</span> Refresh();</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
@@ -171,12 +170,11 @@ $(function(){initNavTree('_sort_comparer_8h_source.html',''); initResizable(); }
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keyword">const</span> Noesis::PropertyChangedEventArgs&amp; e);</div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_sort_comparer.html#ae848ab305e2362f35354328a5a31da42">   75</a></span>    <a class="code hl_class" href="class_noesis_1_1_ptr.html">Noesis::Ptr&lt;Noesis::BaseComponent&gt;</a> <a class="code hl_variable" href="class_noesis_app_1_1_sort_comparer.html#ae848ab305e2362f35354328a5a31da42">mItemsSource</a>;</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_sort_comparer.html#acda26f59e30182fdc7b77588f6f0da13">   76</a></span>    <a class="code hl_typedef" href="namespace_noesis_app.html#ac59f7e994d058950aaf3f4c10daf70f7">SortRequiredEventHandler</a> <a class="code hl_variable" href="class_noesis_app_1_1_sort_comparer.html#acda26f59e30182fdc7b77588f6f0da13">mSortRequired</a>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    Noesis::Ptr&lt;Noesis::BaseComponent&gt; mItemsSource;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    SortRequiredEventHandler mSortRequired;</div>
 <div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    NS_DECLARE_REFLECTION(<a class="code hl_class" href="class_noesis_app_1_1_sort_comparer.html">SortComparer</a>, Noesis::BaseComponent)</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    NS_DECLARE_REFLECTION(SortComparer, Noesis::BaseComponent)</div>
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>};</div>
-</div>
 <div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
 <div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>NS_WARNING_POP</div>
 <div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
@@ -186,15 +184,6 @@ $(function(){initNavTree('_sort_comparer_8h_source.html',''); initResizable(); }
 <div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="a_interactivity_api_8h_html"><div class="ttname"><a href="_interactivity_api_8h.html">InteractivityApi.h</a></div></div>
 <div class="ttc" id="a_interactivity_api_8h_html_a19ef9be0d7b903c63e87d626acc9db84"><div class="ttname"><a href="_interactivity_api_8h.html#a19ef9be0d7b903c63e87d626acc9db84">NS_APP_INTERACTIVITY_API</a></div><div class="ttdeci">#define NS_APP_INTERACTIVITY_API</div><div class="ttdef"><b>Definition</b> InteractivityApi.h:15</div></div>
-<div class="ttc" id="aclass_noesis_1_1_ptr_html"><div class="ttname"><a href="class_noesis_1_1_ptr.html">Noesis::Ptr</a></div><div class="ttdef"><b>Definition</b> ComparisonLogic.h:19</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_sort_comparer_html"><div class="ttname"><a href="class_noesis_app_1_1_sort_comparer.html">NoesisApp::SortComparer</a></div><div class="ttdoc">Base class for Comparer object used by CollectionSortBehavior. It compares 2 items.</div><div class="ttdef"><b>Definition</b> SortComparer.h:38</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_sort_comparer_html_a3bf2095d90f0ab23317cd079cf931883"><div class="ttname"><a href="class_noesis_app_1_1_sort_comparer.html#a3bf2095d90f0ab23317cd079cf931883">NoesisApp::SortComparer::Compare</a></div><div class="ttdeci">virtual int Compare(Noesis::BaseComponent *i0, Noesis::BaseComponent *i1) const =0</div><div class="ttdoc">Compares two objects indicating whether one is less than, equal to, or greater than the other.</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_sort_comparer_html_a72eb473e2a0bfb5f033b7eba2b76a48b"><div class="ttname"><a href="class_noesis_app_1_1_sort_comparer.html#a72eb473e2a0bfb5f033b7eba2b76a48b">NoesisApp::SortComparer::NeedsRefresh</a></div><div class="ttdeci">virtual bool NeedsRefresh(Noesis::BaseComponent *item, const char *propertyName) const =0</div><div class="ttdoc">Indicates if sort should be re-evaluated after an item property change.</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_sort_comparer_html_acda26f59e30182fdc7b77588f6f0da13"><div class="ttname"><a href="class_noesis_app_1_1_sort_comparer.html#acda26f59e30182fdc7b77588f6f0da13">NoesisApp::SortComparer::mSortRequired</a></div><div class="ttdeci">SortRequiredEventHandler mSortRequired</div><div class="ttdef"><b>Definition</b> SortComparer.h:76</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_sort_comparer_html_ae848ab305e2362f35354328a5a31da42"><div class="ttname"><a href="class_noesis_app_1_1_sort_comparer.html#ae848ab305e2362f35354328a5a31da42">NoesisApp::SortComparer::mItemsSource</a></div><div class="ttdeci">Noesis::Ptr&lt; Noesis::BaseComponent &gt; mItemsSource</div><div class="ttdef"><b>Definition</b> SortComparer.h:75</div></div>
-<div class="ttc" id="anamespace_noesis_app_html"><div class="ttname"><a href="namespace_noesis_app.html">NoesisApp</a></div><div class="ttdef"><b>Definition</b> Application.cpp:21</div></div>
-<div class="ttc" id="anamespace_noesis_app_html_ac59f7e994d058950aaf3f4c10daf70f7"><div class="ttname"><a href="namespace_noesis_app.html#ac59f7e994d058950aaf3f4c10daf70f7">NoesisApp::SortRequiredEventHandler</a></div><div class="ttdeci">Noesis::Delegate&lt; void()&gt; SortRequiredEventHandler</div><div class="ttdef"><b>Definition</b> SortComparer.h:29</div></div>
-<div class="ttc" id="anamespace_noesis_html"><div class="ttname"><a href="namespace_noesis.html">Noesis</a></div><div class="ttdef"><b>Definition</b> AttachableObject.h:18</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

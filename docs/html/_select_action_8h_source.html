@@ -119,27 +119,25 @@ $(function(){initNavTree('_select_action_8h_source.html',''); initResizable(); }
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;NsGui/Control.h&gt;</span></div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespace_noesis_app.html">NoesisApp</a></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span>NoesisApp</div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>{</div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>NS_WARNING_PUSH</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>NS_CLANG_WARNING_DISABLE(<span class="stringliteral">&quot;-Wdocumentation&quot;</span>)</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
-<div class="foldopen" id="foldopen00049" data-start="{" data-end="};">
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_select_action.html">   49</a></span>class <a class="code hl_define" href="_interactivity_api_8h.html#a19ef9be0d7b903c63e87d626acc9db84">NS_APP_INTERACTIVITY_API</a> <a class="code hl_class" href="class_noesis_app_1_1_select_action.html">SelectAction</a>: public <a class="code hl_class" href="class_noesis_app_1_1_trigger_action_t.html">TriggerActionT</a>&lt;<a class="code hl_namespace" href="namespace_noesis.html">Noesis</a>::Control&gt;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>class <a class="code hl_define" href="_interactivity_api_8h.html#a19ef9be0d7b903c63e87d626acc9db84">NS_APP_INTERACTIVITY_API</a> SelectAction: public TriggerActionT&lt;Noesis::Control&gt;</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>{</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="keyword">protected</span>:</div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <a class="code hl_class" href="class_noesis_1_1_ptr.html">Noesis::Ptr&lt;Noesis::Freezable&gt;</a> CreateInstanceCore() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    Noesis::Ptr&lt;Noesis::Freezable&gt; CreateInstanceCore() <span class="keyword">const override</span>;</div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordtype">void</span> Invoke(Noesis::BaseComponent* parameter) <span class="keyword">override</span>;</div>
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="comment">//}</span></div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    NS_DECLARE_REFLECTION(<a class="code hl_class" href="class_noesis_app_1_1_select_action.html">SelectAction</a>, <a class="code hl_class" href="class_noesis_app_1_1_trigger_action_t.html">TriggerActionT&lt;Noesis::Control&gt;</a>)</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    NS_DECLARE_REFLECTION(SelectAction, TriggerActionT&lt;Noesis::Control&gt;)</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>};</div>
-</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>NS_WARNING_POP</div>
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
@@ -150,11 +148,6 @@ $(function(){initNavTree('_select_action_8h_source.html',''); initResizable(); }
 <div class="ttc" id="a_interactivity_api_8h_html"><div class="ttname"><a href="_interactivity_api_8h.html">InteractivityApi.h</a></div></div>
 <div class="ttc" id="a_interactivity_api_8h_html_a19ef9be0d7b903c63e87d626acc9db84"><div class="ttname"><a href="_interactivity_api_8h.html#a19ef9be0d7b903c63e87d626acc9db84">NS_APP_INTERACTIVITY_API</a></div><div class="ttdeci">#define NS_APP_INTERACTIVITY_API</div><div class="ttdef"><b>Definition</b> InteractivityApi.h:15</div></div>
 <div class="ttc" id="a_trigger_action_8h_html"><div class="ttname"><a href="_trigger_action_8h.html">TriggerAction.h</a></div></div>
-<div class="ttc" id="aclass_noesis_1_1_ptr_html"><div class="ttname"><a href="class_noesis_1_1_ptr.html">Noesis::Ptr</a></div><div class="ttdef"><b>Definition</b> ComparisonLogic.h:19</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_select_action_html"><div class="ttname"><a href="class_noesis_app_1_1_select_action.html">NoesisApp::SelectAction</a></div><div class="ttdef"><b>Definition</b> SelectAction.h:50</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_trigger_action_t_html"><div class="ttname"><a href="class_noesis_app_1_1_trigger_action_t.html">NoesisApp::TriggerActionT</a></div><div class="ttdoc">Templatized base class for TriggerAction.</div><div class="ttdef"><b>Definition</b> TriggerAction.h:61</div></div>
-<div class="ttc" id="anamespace_noesis_app_html"><div class="ttname"><a href="namespace_noesis_app.html">NoesisApp</a></div><div class="ttdef"><b>Definition</b> Application.cpp:21</div></div>
-<div class="ttc" id="anamespace_noesis_html"><div class="ttname"><a href="namespace_noesis.html">Noesis</a></div><div class="ttdef"><b>Definition</b> AttachableObject.h:18</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

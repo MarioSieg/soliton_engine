@@ -117,57 +117,49 @@ $(function(){initNavTree('_enum_8h_source.html',''); initResizable(); });
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;type_traits&gt;</span></div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceluabridge.html">luabridge</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span>luabridge {</div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment">//=================================================================================================</span></div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">template</span> &lt;<span class="keyword">class </span>T, T... Values&gt;</div>
-<div class="foldopen" id="foldopen00027" data-start="{" data-end="};">
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structluabridge_1_1_enum.html">   27</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structluabridge_1_1_enum.html">Enum</a></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">struct </span>Enum</div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>{</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keyword">static_assert</span>(std::is_enum_v&lt;T&gt;);</div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structluabridge_1_1_enum.html#a30733ae73a55241305ea5862a363ed9f">   31</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="structluabridge_1_1_enum.html#a30733ae73a55241305ea5862a363ed9f">Type</a> = std::underlying_type_t&lt;T&gt;;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keyword">using </span>Type = std::underlying_type_t&lt;T&gt;;</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
-<div class="foldopen" id="foldopen00033" data-start="{" data-end="}">
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structluabridge_1_1_enum.html#ac4cd94811ff63f615e9b47a44c0ed3a7">   33</a></span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_struct" href="structluabridge_1_1_result.html">Result</a> <a class="code hl_function" href="structluabridge_1_1_enum.html#ac4cd94811ff63f615e9b47a44c0ed3a7">push</a>(<a class="code hl_typedef" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a>* L, T value)</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    [[nodiscard]] <span class="keyword">static</span> Result push(<a class="code hl_typedef" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a>* L, T value)</div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    {</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="structluabridge_1_1_stack.html#ae944a13a4c3de18ff300a39a31c53561">Stack&lt;Type&gt;::push</a>(L, <span class="keyword">static_cast&lt;</span><a class="code hl_typedef" href="structluabridge_1_1_enum.html#a30733ae73a55241305ea5862a363ed9f">Type</a><span class="keyword">&gt;</span>(value));</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <span class="keywordflow">return</span> Stack&lt;Type&gt;::push(L, <span class="keyword">static_cast&lt;</span>Type<span class="keyword">&gt;</span>(value));</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    }</div>
-</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="foldopen" id="foldopen00038" data-start="{" data-end="}">
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structluabridge_1_1_enum.html#a2a122162beb33b015e9958faabc75108">   38</a></span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_struct" href="structluabridge_1_1_type_result.html">TypeResult&lt;T&gt;</a> <a class="code hl_function" href="structluabridge_1_1_enum.html#a2a122162beb33b015e9958faabc75108">get</a>(<a class="code hl_typedef" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a>* L, <span class="keywordtype">int</span> index)</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    [[nodiscard]] <span class="keyword">static</span> TypeResult&lt;T&gt; get(<a class="code hl_typedef" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a>* L, <span class="keywordtype">int</span> index)</div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    {</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keyword">const</span> <span class="keyword">auto</span> result = <a class="code hl_function" href="structluabridge_1_1_stack.html#af837da7a0647a543dc3b709b17f0f8a2">Stack&lt;Type&gt;::get</a>(L, index);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keyword">const</span> <span class="keyword">auto</span> result = Stack&lt;Type&gt;::get(L, index);</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="keywordflow">if</span> (! result)</div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>            <span class="keywordflow">return</span> result.error();</div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (<span class="keyword">sizeof</span>...(Values) &gt; 0)</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        {</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            <span class="keyword">constexpr</span> <a class="code hl_typedef" href="structluabridge_1_1_enum.html#a30733ae73a55241305ea5862a363ed9f">Type</a> values[] = { <span class="keyword">static_cast&lt;</span><a class="code hl_typedef" href="structluabridge_1_1_enum.html#a30733ae73a55241305ea5862a363ed9f">Type</a><span class="keyword">&gt;</span>(Values)... };</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            <span class="keyword">constexpr</span> Type values[] = { <span class="keyword">static_cast&lt;</span>Type<span class="keyword">&gt;</span>(Values)... };</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; <span class="keyword">sizeof</span>...(Values); ++i)</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            {</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                <span class="keywordflow">if</span> (values[i] == *result)</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>                    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>T<span class="keyword">&gt;</span>(*result);</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            }</div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceluabridge.html#ad0ed633aeb5ff2da5a3e8a5bfdbb698e">makeErrorCode</a>(<a class="code hl_enumvalue" href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926a623e6b1baa255aa4a31350088c322625">ErrorCode::InvalidTypeCast</a>);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            <span class="keywordflow">return</span> makeErrorCode(ErrorCode::InvalidTypeCast);</div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        }</div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        <span class="keywordflow">else</span></div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        {</div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>T<span class="keyword">&gt;</span>(*result);</div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        }</div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    }</div>
-</div>
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
-<div class="foldopen" id="foldopen00061" data-start="{" data-end="}">
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="structluabridge_1_1_enum.html#a5f61342bef73e6f86522d91b93ec5821">   61</a></span>    [[nodiscard]] <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="structluabridge_1_1_enum.html#a5f61342bef73e6f86522d91b93ec5821">isInstance</a>(<a class="code hl_typedef" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a>* L, <span class="keywordtype">int</span> index)</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    [[nodiscard]] <span class="keyword">static</span> <span class="keywordtype">bool</span> isInstance(<a class="code hl_typedef" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a>* L, <span class="keywordtype">int</span> index)</div>
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    {</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="lua_8h.html#a652b273947f0656686f998d8e90cd3ea">lua_type</a>(L, index) == <a class="code hl_define" href="lua_8h.html#a7f62ecb240cb38da9c8a53b41fe21ed9">LUA_TNUMBER</a>;</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    }</div>
-</div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>};</div>
-</div>
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>} <span class="comment">// namespace luabridge</span></div>
 <div class="ttc" id="a_config_8h_html"><div class="ttname"><a href="_config_8h.html">Config.h</a></div></div>
@@ -177,18 +169,6 @@ $(function(){initNavTree('_enum_8h_source.html',''); initResizable(); });
 <div class="ttc" id="alua_8h_html_a28186297f2e9f2de0652504633de8fb3"><div class="ttname"><a href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a></div><div class="ttdeci">struct lua_State lua_State</div><div class="ttdef"><b>Definition</b> lua.h:51</div></div>
 <div class="ttc" id="alua_8h_html_a652b273947f0656686f998d8e90cd3ea"><div class="ttname"><a href="lua_8h.html#a652b273947f0656686f998d8e90cd3ea">lua_type</a></div><div class="ttdeci">LUA_API int lua_type(lua_State *L, int idx)</div></div>
 <div class="ttc" id="alua_8h_html_a7f62ecb240cb38da9c8a53b41fe21ed9"><div class="ttname"><a href="lua_8h.html#a7f62ecb240cb38da9c8a53b41fe21ed9">LUA_TNUMBER</a></div><div class="ttdeci">#define LUA_TNUMBER</div><div class="ttdef"><b>Definition</b> lua.h:78</div></div>
-<div class="ttc" id="anamespaceluabridge_html"><div class="ttname"><a href="namespaceluabridge.html">luabridge</a></div><div class="ttdef"><b>Definition</b> Array.h:12</div></div>
-<div class="ttc" id="anamespaceluabridge_html_a9c453c5b0bb31b35710e481e0d580926a623e6b1baa255aa4a31350088c322625"><div class="ttname"><a href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926a623e6b1baa255aa4a31350088c322625">luabridge::ErrorCode::InvalidTypeCast</a></div><div class="ttdeci">@ InvalidTypeCast</div></div>
-<div class="ttc" id="anamespaceluabridge_html_ad0ed633aeb5ff2da5a3e8a5bfdbb698e"><div class="ttname"><a href="namespaceluabridge.html#ad0ed633aeb5ff2da5a3e8a5bfdbb698e">luabridge::makeErrorCode</a></div><div class="ttdeci">std::error_code makeErrorCode(ErrorCode e)</div><div class="ttdoc">Construct an error code from the error enum.</div><div class="ttdef"><b>Definition</b> Errors.h:92</div></div>
-<div class="ttc" id="astructluabridge_1_1_enum_html"><div class="ttname"><a href="structluabridge_1_1_enum.html">luabridge::Enum</a></div><div class="ttdoc">LuaBridge enum wrapper for enums as integers.</div><div class="ttdef"><b>Definition</b> Enum.h:28</div></div>
-<div class="ttc" id="astructluabridge_1_1_enum_html_a2a122162beb33b015e9958faabc75108"><div class="ttname"><a href="structluabridge_1_1_enum.html#a2a122162beb33b015e9958faabc75108">luabridge::Enum::get</a></div><div class="ttdeci">static TypeResult&lt; T &gt; get(lua_State *L, int index)</div><div class="ttdef"><b>Definition</b> Enum.h:38</div></div>
-<div class="ttc" id="astructluabridge_1_1_enum_html_a30733ae73a55241305ea5862a363ed9f"><div class="ttname"><a href="structluabridge_1_1_enum.html#a30733ae73a55241305ea5862a363ed9f">luabridge::Enum::Type</a></div><div class="ttdeci">std::underlying_type_t&lt; T &gt; Type</div><div class="ttdef"><b>Definition</b> Enum.h:31</div></div>
-<div class="ttc" id="astructluabridge_1_1_enum_html_a5f61342bef73e6f86522d91b93ec5821"><div class="ttname"><a href="structluabridge_1_1_enum.html#a5f61342bef73e6f86522d91b93ec5821">luabridge::Enum::isInstance</a></div><div class="ttdeci">static bool isInstance(lua_State *L, int index)</div><div class="ttdef"><b>Definition</b> Enum.h:61</div></div>
-<div class="ttc" id="astructluabridge_1_1_enum_html_ac4cd94811ff63f615e9b47a44c0ed3a7"><div class="ttname"><a href="structluabridge_1_1_enum.html#ac4cd94811ff63f615e9b47a44c0ed3a7">luabridge::Enum::push</a></div><div class="ttdeci">static Result push(lua_State *L, T value)</div><div class="ttdef"><b>Definition</b> Enum.h:33</div></div>
-<div class="ttc" id="astructluabridge_1_1_result_html"><div class="ttname"><a href="structluabridge_1_1_result.html">luabridge::Result</a></div><div class="ttdoc">Simple result class containing a result.</div><div class="ttdef"><b>Definition</b> Result.h:18</div></div>
-<div class="ttc" id="astructluabridge_1_1_stack_html_ae944a13a4c3de18ff300a39a31c53561"><div class="ttname"><a href="structluabridge_1_1_stack.html#ae944a13a4c3de18ff300a39a31c53561">luabridge::Stack::push</a></div><div class="ttdeci">static Result push(lua_State *L, const T &amp;value)</div><div class="ttdef"><b>Definition</b> Userdata.h:928</div></div>
-<div class="ttc" id="astructluabridge_1_1_stack_html_af837da7a0647a543dc3b709b17f0f8a2"><div class="ttname"><a href="structluabridge_1_1_stack.html#af837da7a0647a543dc3b709b17f0f8a2">luabridge::Stack::get</a></div><div class="ttdeci">static ReturnType get(lua_State *L, int index)</div><div class="ttdef"><b>Definition</b> Userdata.h:938</div></div>
-<div class="ttc" id="astructluabridge_1_1_type_result_html"><div class="ttname"><a href="structluabridge_1_1_type_result.html">luabridge::TypeResult</a></div><div class="ttdoc">Simple result class containing or a type T or an error code.</div><div class="ttdef"><b>Definition</b> Result.h:69</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

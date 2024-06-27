@@ -122,97 +122,79 @@ $(function(){initNavTree('_invoke_8h_source.html',''); initResizable(); });
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;variant&gt;</span></div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;tuple&gt;</span></div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceluabridge.html">luabridge</a> {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">namespace </span>luabridge {</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="comment">//=================================================================================================</span></div>
-<div class="foldopen" id="foldopen00025" data-start="{" data-end="};">
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classluabridge_1_1_lua_result.html">   25</a></span><span class="keyword">class </span><a class="code hl_class" href="classluabridge_1_1_lua_result.html">LuaResult</a></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">class </span>LuaResult</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>{</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">public</span>:</div>
-<div class="foldopen" id="foldopen00031" data-start="{" data-end="}">
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classluabridge_1_1_lua_result.html#a5778606cab4141654bc80c4ae44895db">   31</a></span>    <span class="keyword">explicit</span> <span class="keyword">operator</span> bool() const noexcept</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keyword">explicit</span> <span class="keyword">operator</span> bool() const noexcept</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    {</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keywordflow">return</span> !<a class="code hl_variable" href="classluabridge_1_1_lua_result.html#adee1d28ea18f37041f62378a279f5d55">m_ec</a>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keywordflow">return</span> !m_ec;</div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    }</div>
-</div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
-<div class="foldopen" id="foldopen00039" data-start="{" data-end="}">
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classluabridge_1_1_lua_result.html#af7d100f99273732c3a9fa8cbb0f5155c">   39</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classluabridge_1_1_lua_result.html#af7d100f99273732c3a9fa8cbb0f5155c">wasOk</a>() const noexcept</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordtype">bool</span> wasOk() const noexcept</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    {</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="keywordflow">return</span> !<a class="code hl_variable" href="classluabridge_1_1_lua_result.html#adee1d28ea18f37041f62378a279f5d55">m_ec</a>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="keywordflow">return</span> !m_ec;</div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    }</div>
-</div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
-<div class="foldopen" id="foldopen00047" data-start="{" data-end="}">
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classluabridge_1_1_lua_result.html#a0549a1165e7ee85423f82d41b5bb74e0">   47</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classluabridge_1_1_lua_result.html#a0549a1165e7ee85423f82d41b5bb74e0">hasFailed</a>() const noexcept</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordtype">bool</span> hasFailed() const noexcept</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    {</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="keywordflow">return</span> !!<a class="code hl_variable" href="classluabridge_1_1_lua_result.html#adee1d28ea18f37041f62378a279f5d55">m_ec</a>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="keywordflow">return</span> !!m_ec;</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    }</div>
-</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
-<div class="foldopen" id="foldopen00058" data-start="{" data-end="}">
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classluabridge_1_1_lua_result.html#a1ebbf300306d2338fb9e1ec099b7c947">   58</a></span>    std::error_code <a class="code hl_function" href="classluabridge_1_1_lua_result.html#a1ebbf300306d2338fb9e1ec099b7c947">errorCode</a>() const noexcept</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    std::error_code errorCode() const noexcept</div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    {</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="classluabridge_1_1_lua_result.html#adee1d28ea18f37041f62378a279f5d55">m_ec</a>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <span class="keywordflow">return</span> m_ec;</div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    }</div>
-</div>
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
-<div class="foldopen" id="foldopen00066" data-start="{" data-end="}">
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="classluabridge_1_1_lua_result.html#a8c467ae70c0ecdf82887ab1f23c8e695">   66</a></span>    std::string <a class="code hl_function" href="classluabridge_1_1_lua_result.html#a8c467ae70c0ecdf82887ab1f23c8e695">errorMessage</a>() const noexcept</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    std::string errorMessage() const noexcept</div>
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    {</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        <span class="keywordflow">if</span> (std::holds_alternative&lt;std::string&gt;(<a class="code hl_variable" href="classluabridge_1_1_lua_result.html#a36473674bc7b375894ab57dcecc9f831">m_data</a>))</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        <span class="keywordflow">if</span> (std::holds_alternative&lt;std::string&gt;(m_data))</div>
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        {</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            <span class="keyword">const</span> <span class="keyword">auto</span>&amp; message = std::get&lt;std::string&gt;(<a class="code hl_variable" href="classluabridge_1_1_lua_result.html#a36473674bc7b375894ab57dcecc9f831">m_data</a>);</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>            <span class="keywordflow">return</span> message.empty() ? <a class="code hl_variable" href="classluabridge_1_1_lua_result.html#adee1d28ea18f37041f62378a279f5d55">m_ec</a>.message() : message;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            <span class="keyword">const</span> <span class="keyword">auto</span>&amp; message = std::get&lt;std::string&gt;(m_data);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>            <span class="keywordflow">return</span> message.empty() ? m_ec.message() : message;</div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        }</div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <span class="keywordflow">return</span> {};</div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    }</div>
-</div>
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
-<div class="foldopen" id="foldopen00080" data-start="{" data-end="}">
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="classluabridge_1_1_lua_result.html#afc6dfeb10ac8827e8ae375d153351ba7">   80</a></span>    std::size_t <a class="code hl_function" href="classluabridge_1_1_lua_result.html#afc6dfeb10ac8827e8ae375d153351ba7">size</a>() const noexcept</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    std::size_t size() const noexcept</div>
 <div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    {</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        <span class="keywordflow">if</span> (std::holds_alternative&lt;std::vector&lt;LuaRef&gt;&gt;(<a class="code hl_variable" href="classluabridge_1_1_lua_result.html#a36473674bc7b375894ab57dcecc9f831">m_data</a>))</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            <span class="keywordflow">return</span> std::get&lt;std::vector&lt;LuaRef&gt;&gt;(<a class="code hl_variable" href="classluabridge_1_1_lua_result.html#a36473674bc7b375894ab57dcecc9f831">m_data</a>).<a class="code hl_function" href="classluabridge_1_1_lua_result.html#afc6dfeb10ac8827e8ae375d153351ba7">size</a>();</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        <span class="keywordflow">if</span> (std::holds_alternative&lt;std::vector&lt;LuaRef&gt;&gt;(m_data))</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            <span class="keywordflow">return</span> std::get&lt;std::vector&lt;LuaRef&gt;&gt;(m_data).size();</div>
 <div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
 <div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <span class="keywordflow">return</span> 0;</div>
 <div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    }</div>
-</div>
 <div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
-<div class="foldopen" id="foldopen00091" data-start="{" data-end="}">
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="classluabridge_1_1_lua_result.html#ad5b1feac57c2b9eddd42c183492b3a44">   91</a></span>    <a class="code hl_class" href="classluabridge_1_1_lua_ref.html">LuaRef</a> <a class="code hl_function" href="classluabridge_1_1_lua_result.html#ad5b1feac57c2b9eddd42c183492b3a44">operator[]</a>(std::size_t index)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    LuaRef operator[](std::size_t index)<span class="keyword"> const</span></div>
 <div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span><span class="keyword">    </span>{</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        <a class="code hl_define" href="_config_8h.html#aacc72d3edf47d2b2aa31a494ead164d6">LUABRIDGE_ASSERT</a>(<a class="code hl_variable" href="classluabridge_1_1_lua_result.html#adee1d28ea18f37041f62378a279f5d55">m_ec</a> == std::error_code());</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        <a class="code hl_define" href="_config_8h.html#aacc72d3edf47d2b2aa31a494ead164d6">LUABRIDGE_ASSERT</a>(m_ec == std::error_code());</div>
 <div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        <span class="keywordflow">if</span> (std::holds_alternative&lt;std::vector&lt;LuaRef&gt;&gt;(<a class="code hl_variable" href="classluabridge_1_1_lua_result.html#a36473674bc7b375894ab57dcecc9f831">m_data</a>))</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        <span class="keywordflow">if</span> (std::holds_alternative&lt;std::vector&lt;LuaRef&gt;&gt;(m_data))</div>
 <div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        {</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            <span class="keyword">const</span> <span class="keyword">auto</span>&amp; values = std::get&lt;std::vector&lt;LuaRef&gt;&gt;(<a class="code hl_variable" href="classluabridge_1_1_lua_result.html#a36473674bc7b375894ab57dcecc9f831">m_data</a>);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            <span class="keyword">const</span> <span class="keyword">auto</span>&amp; values = std::get&lt;std::vector&lt;LuaRef&gt;&gt;(m_data);</div>
 <div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
 <div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            <a class="code hl_define" href="_config_8h.html#aacc72d3edf47d2b2aa31a494ead164d6">LUABRIDGE_ASSERT</a>(index &lt; values.size());</div>
 <div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            <span class="keywordflow">return</span> values[index];</div>
 <div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        }</div>
 <div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        <span class="keywordflow">return</span> <a class="code hl_class" href="classluabridge_1_1_lua_ref.html">LuaRef</a>(<a class="code hl_variable" href="classluabridge_1_1_lua_result.html#a722e6ea000f8727d252c4d0fb9f60fe0">m_L</a>);</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        <span class="keywordflow">return</span> LuaRef(m_L);</div>
 <div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    }</div>
-</div>
 <div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
 <div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span><span class="keyword">private</span>:</div>
 <div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keyword">template</span> &lt;<span class="keyword">class</span>... Args&gt;</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno"><a class="line" href="classluabridge_1_1_lua_result.html#a7e671bc4d3d7b0980344c73c359ed547">  108</a></span>    <span class="keyword">friend</span> <a class="code hl_class" href="classluabridge_1_1_lua_result.html">LuaResult</a> <a class="code hl_friend" href="classluabridge_1_1_lua_result.html#a7e671bc4d3d7b0980344c73c359ed547">call</a>(<span class="keyword">const</span> <a class="code hl_class" href="classluabridge_1_1_lua_ref.html">LuaRef</a>&amp;, Args&amp;&amp;...);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keyword">friend</span> LuaResult call(<span class="keyword">const</span> LuaRef&amp;, Args&amp;&amp;...);</div>
 <div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
-<div class="foldopen" id="foldopen00110" data-start="{" data-end="}">
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno"><a class="line" href="classluabridge_1_1_lua_result.html#a3403ad7cd5ff7338d472e27509109463">  110</a></span>    <span class="keyword">static</span> <a class="code hl_class" href="classluabridge_1_1_lua_result.html">LuaResult</a> <a class="code hl_function" href="classluabridge_1_1_lua_result.html#a3403ad7cd5ff7338d472e27509109463">errorFromStack</a>(<a class="code hl_typedef" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a>* L, std::error_code ec)</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keyword">static</span> LuaResult errorFromStack(<a class="code hl_typedef" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a>* L, std::error_code ec)</div>
 <div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    {</div>
 <div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <span class="keyword">auto</span> errorString = <a class="code hl_define" href="lua_8h.html#ac813fc3bc1886ba17c363d5b4c6e7ef1">lua_tostring</a>(L, -1);</div>
 <div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        <a class="code hl_define" href="lua_8h.html#abb8eae2164badeafdb037bc1e03cc822">lua_pop</a>(L, 1);</div>
 <div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classluabridge_1_1_lua_result.html#a5c45501ca2750509096fb0c103186677">LuaResult</a>(L, ec, errorString ? errorString : ec.message());</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <span class="keywordflow">return</span> LuaResult(L, ec, errorString ? errorString : ec.message());</div>
 <div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    }</div>
-</div>
 <div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
-<div class="foldopen" id="foldopen00118" data-start="{" data-end="}">
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno"><a class="line" href="classluabridge_1_1_lua_result.html#af84def93c2ff0f4b91a8c428bc49907b">  118</a></span>    <span class="keyword">static</span> <a class="code hl_class" href="classluabridge_1_1_lua_result.html">LuaResult</a> <a class="code hl_function" href="classluabridge_1_1_lua_result.html#af84def93c2ff0f4b91a8c428bc49907b">valuesFromStack</a>(<a class="code hl_typedef" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a>* L, <span class="keywordtype">int</span> stackTop)</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keyword">static</span> LuaResult valuesFromStack(<a class="code hl_typedef" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a>* L, <span class="keywordtype">int</span> stackTop)</div>
 <div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    {</div>
 <div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        std::vector&lt;LuaRef&gt; values;</div>
 <div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
@@ -222,42 +204,35 @@ $(function(){initNavTree('_invoke_8h_source.html',''); initResizable(); });
 <div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>            values.reserve(numReturnedValues);</div>
 <div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
 <div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> index = numReturnedValues; index &gt; 0; --index)</div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>                values.emplace_back(<a class="code hl_function" href="classluabridge_1_1_lua_ref.html#a85b859f8a73099d58e55899656da5bef">LuaRef::fromStack</a>(L, -index));</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>                values.emplace_back(LuaRef::fromStack(L, -index));</div>
 <div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span> </div>
 <div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>            <a class="code hl_define" href="lua_8h.html#abb8eae2164badeafdb037bc1e03cc822">lua_pop</a>(L, numReturnedValues);</div>
 <div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>        }</div>
 <div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span> </div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classluabridge_1_1_lua_result.html#a5c45501ca2750509096fb0c103186677">LuaResult</a>(L, std::move(values));</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>        <span class="keywordflow">return</span> LuaResult(L, std::move(values));</div>
 <div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    }</div>
-</div>
 <div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span> </div>
-<div class="foldopen" id="foldopen00136" data-start="{" data-end="}">
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno"><a class="line" href="classluabridge_1_1_lua_result.html#a5c45501ca2750509096fb0c103186677">  136</a></span>    <a class="code hl_function" href="classluabridge_1_1_lua_result.html#a5c45501ca2750509096fb0c103186677">LuaResult</a>(<a class="code hl_typedef" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a>* L, std::error_code ec, std::string_view errorString)</div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        : <a class="code hl_variable" href="classluabridge_1_1_lua_result.html#a722e6ea000f8727d252c4d0fb9f60fe0">m_L</a>(L)</div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>        , <a class="code hl_variable" href="classluabridge_1_1_lua_result.html#adee1d28ea18f37041f62378a279f5d55">m_ec</a>(ec)</div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>        , <a class="code hl_variable" href="classluabridge_1_1_lua_result.html#a36473674bc7b375894ab57dcecc9f831">m_data</a>(std::string(errorString))</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    LuaResult(<a class="code hl_typedef" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a>* L, std::error_code ec, std::string_view errorString)</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        : m_L(L)</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>        , m_ec(ec)</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>        , m_data(std::string(errorString))</div>
 <div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    {</div>
 <div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    }</div>
-</div>
 <div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span> </div>
-<div class="foldopen" id="foldopen00143" data-start="{" data-end="}">
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno"><a class="line" href="classluabridge_1_1_lua_result.html#a91a88dfac3cd3780cebbe293146d69fb">  143</a></span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classluabridge_1_1_lua_result.html#a91a88dfac3cd3780cebbe293146d69fb">LuaResult</a>(<a class="code hl_typedef" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a>* L, std::vector&lt;LuaRef&gt; values) noexcept</div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>        : <a class="code hl_variable" href="classluabridge_1_1_lua_result.html#a722e6ea000f8727d252c4d0fb9f60fe0">m_L</a>(L)</div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>        , <a class="code hl_variable" href="classluabridge_1_1_lua_result.html#a36473674bc7b375894ab57dcecc9f831">m_data</a>(std::move(values))</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    <span class="keyword">explicit</span> LuaResult(<a class="code hl_typedef" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a>* L, std::vector&lt;LuaRef&gt; values) noexcept</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>        : m_L(L)</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>        , m_data(std::move(values))</div>
 <div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    {</div>
 <div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    }</div>
-</div>
 <div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span> </div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno"><a class="line" href="classluabridge_1_1_lua_result.html#a722e6ea000f8727d252c4d0fb9f60fe0">  149</a></span>    <a class="code hl_typedef" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a>* <a class="code hl_variable" href="classluabridge_1_1_lua_result.html#a722e6ea000f8727d252c4d0fb9f60fe0">m_L</a> = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno"><a class="line" href="classluabridge_1_1_lua_result.html#adee1d28ea18f37041f62378a279f5d55">  150</a></span>    std::error_code <a class="code hl_variable" href="classluabridge_1_1_lua_result.html#adee1d28ea18f37041f62378a279f5d55">m_ec</a>;</div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno"><a class="line" href="classluabridge_1_1_lua_result.html#a36473674bc7b375894ab57dcecc9f831">  151</a></span>    std::variant&lt;std::vector&lt;LuaRef&gt;, std::string&gt; <a class="code hl_variable" href="classluabridge_1_1_lua_result.html#a36473674bc7b375894ab57dcecc9f831">m_data</a>;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    <a class="code hl_typedef" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a>* m_L = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    std::error_code m_ec;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    std::variant&lt;std::vector&lt;LuaRef&gt;, std::string&gt; m_data;</div>
 <div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>};</div>
-</div>
 <div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span> </div>
 <div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span><span class="comment">//=================================================================================================</span></div>
 <div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span><span class="keyword">template</span> &lt;<span class="keyword">class</span>... Args&gt;</div>
-<div class="foldopen" id="foldopen00172" data-start="{" data-end="}">
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno"><a class="line" href="namespaceluabridge.html#ab93454fc006764de75d828ec4f17ad8a">  172</a></span><a class="code hl_class" href="classluabridge_1_1_lua_result.html">LuaResult</a> <a class="code hl_function" href="namespaceluabridge.html#ab93454fc006764de75d828ec4f17ad8a">call</a>(<span class="keyword">const</span> <a class="code hl_class" href="classluabridge_1_1_lua_ref.html">LuaRef</a>&amp; <span class="keywordtype">object</span>, Args&amp;&amp;... args)</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>LuaResult call(<span class="keyword">const</span> LuaRef&amp; <span class="keywordtype">object</span>, Args&amp;&amp;... args)</div>
 <div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>{</div>
 <div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    <a class="code hl_typedef" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a>* L = <span class="keywordtype">object</span>.state();</div>
 <div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> stackTop = <a class="code hl_function" href="lua_8h.html#afbb08ecb69421875494105d4de68e5bf">lua_gettop</a>(L);</div>
@@ -265,55 +240,50 @@ $(function(){initNavTree('_invoke_8h_source.html',''); initResizable(); });
 <div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    <span class="keywordtype">object</span>.push();</div>
 <div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span> </div>
 <div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    {</div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        <span class="keyword">const</span> <span class="keyword">auto</span> [result, index] = <a class="code hl_function" href="namespaceluabridge_1_1detail.html#ac5f84a9b89983c7f6c8d99c0e7f003b2">detail::push_arguments</a>(L, std::forward_as_tuple(args...));</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        <span class="keyword">const</span> <span class="keyword">auto</span> [result, index] = detail::push_arguments(L, std::forward_as_tuple(args...));</div>
 <div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        <span class="keywordflow">if</span> (! result)</div>
 <div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>        {</div>
 <div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>            <a class="code hl_define" href="lua_8h.html#abb8eae2164badeafdb037bc1e03cc822">lua_pop</a>(L, <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(index) + 1);</div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>            <span class="keywordflow">return</span> <a class="code hl_class" href="classluabridge_1_1_lua_result.html">LuaResult</a>(L, result, result.message());</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>            <span class="keywordflow">return</span> LuaResult(L, result, result.message());</div>
 <div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>        }</div>
 <div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    }</div>
 <div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span> </div>
 <div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> code = <a class="code hl_function" href="lua_8h.html#a2a6cbad7f1c567378d17ded68b47f8f3">lua_pcall</a>(L, <span class="keyword">sizeof</span>...(Args), <a class="code hl_define" href="lua_8h.html#ace3545adc11664c2f2b152fbe8b6283c">LUA_MULTRET</a>, 0);</div>
 <div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    <span class="keywordflow">if</span> (code != <a class="code hl_define" href="_lua_helpers_8h.html#aa52575834dccd5472a6a272a06e537be">LUABRIDGE_LUA_OK</a>)</div>
 <div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    {</div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>        <span class="keyword">auto</span> ec = <a class="code hl_function" href="namespaceluabridge.html#ad0ed633aeb5ff2da5a3e8a5bfdbb698e">makeErrorCode</a>(<a class="code hl_enumvalue" href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926a5795573056fbe054c01edb693efc1dc2">ErrorCode::LuaFunctionCallFailed</a>);</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>        <span class="keyword">auto</span> ec = makeErrorCode(ErrorCode::LuaFunctionCallFailed);</div>
 <div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span> </div>
 <div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span><span class="preprocessor">#if LUABRIDGE_HAS_EXCEPTIONS</span></div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        <span class="keywordflow">if</span> (<a class="code hl_function" href="classluabridge_1_1_lua_exception.html#a3f734cd8eaf29e7f7fabc07e8c165270">LuaException::areExceptionsEnabled</a>(L))</div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>            <a class="code hl_function" href="classluabridge_1_1_lua_exception.html#a9f4e71650c9975abeeebc6905246ec13">LuaException::raise</a>(L, ec);</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        <span class="keywordflow">if</span> (LuaException::areExceptionsEnabled(L))</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>            LuaException::raise(L, ec);</div>
 <div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span><span class="preprocessor">#endif</span></div>
 <div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span> </div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classluabridge_1_1_lua_result.html#a3403ad7cd5ff7338d472e27509109463">LuaResult::errorFromStack</a>(L, ec);</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>        <span class="keywordflow">return</span> LuaResult::errorFromStack(L, ec);</div>
 <div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    }</div>
 <div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span> </div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classluabridge_1_1_lua_result.html#af84def93c2ff0f4b91a8c428bc49907b">LuaResult::valuesFromStack</a>(L, stackTop);</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    <span class="keywordflow">return</span> LuaResult::valuesFromStack(L, stackTop);</div>
 <div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>}</div>
-</div>
 <div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span> </div>
 <div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span><span class="comment">//=============================================================================================</span></div>
-<div class="foldopen" id="foldopen00208" data-start="{" data-end="}">
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno"><a class="line" href="namespaceluabridge.html#a0010ef6a0ffa15f119c1a4eabd43ed51">  208</a></span><span class="keyword">inline</span> <span class="keywordtype">int</span> <a class="code hl_function" href="namespaceluabridge.html#a0010ef6a0ffa15f119c1a4eabd43ed51">pcall</a>(<a class="code hl_typedef" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a>* L, <span class="keywordtype">int</span> nargs = 0, <span class="keywordtype">int</span> nresults = 0, <span class="keywordtype">int</span> msgh = 0)</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span><span class="keyword">inline</span> <span class="keywordtype">int</span> pcall(<a class="code hl_typedef" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a>* L, <span class="keywordtype">int</span> nargs = 0, <span class="keywordtype">int</span> nresults = 0, <span class="keywordtype">int</span> msgh = 0)</div>
 <div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>{</div>
 <div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> code = <a class="code hl_function" href="lua_8h.html#a2a6cbad7f1c567378d17ded68b47f8f3">lua_pcall</a>(L, nargs, nresults, msgh);</div>
 <div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span> </div>
 <div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span><span class="preprocessor">#if LUABRIDGE_HAS_EXCEPTIONS</span></div>
-<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    <span class="keywordflow">if</span> (code != <a class="code hl_define" href="_lua_helpers_8h.html#aa52575834dccd5472a6a272a06e537be">LUABRIDGE_LUA_OK</a> &amp;&amp; <a class="code hl_function" href="classluabridge_1_1_lua_exception.html#a3f734cd8eaf29e7f7fabc07e8c165270">LuaException::areExceptionsEnabled</a>(L))</div>
-<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>        <a class="code hl_function" href="classluabridge_1_1_lua_exception.html#a9f4e71650c9975abeeebc6905246ec13">LuaException::raise</a>(L, <a class="code hl_function" href="namespaceluabridge.html#ad0ed633aeb5ff2da5a3e8a5bfdbb698e">makeErrorCode</a>(<a class="code hl_enumvalue" href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926a5795573056fbe054c01edb693efc1dc2">ErrorCode::LuaFunctionCallFailed</a>));</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    <span class="keywordflow">if</span> (code != <a class="code hl_define" href="_lua_helpers_8h.html#aa52575834dccd5472a6a272a06e537be">LUABRIDGE_LUA_OK</a> &amp;&amp; LuaException::areExceptionsEnabled(L))</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>        LuaException::raise(L, makeErrorCode(ErrorCode::LuaFunctionCallFailed));</div>
 <div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span><span class="preprocessor">#endif</span></div>
 <div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span> </div>
 <div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    <span class="keywordflow">return</span> code;</div>
 <div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>}</div>
-</div>
 <div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span> </div>
 <div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span><span class="comment">//=============================================================================================</span></div>
 <div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> Impl, <span class="keyword">class</span> LuaRef&gt;</div>
 <div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span><span class="keyword">template</span> &lt;<span class="keyword">class</span>... Args&gt;</div>
-<div class="foldopen" id="foldopen00223" data-start="{" data-end="}">
-<div class="line"><a id="l00223" name="l00223"></a><span class="lineno"><a class="line" href="classluabridge_1_1_lua_ref_base.html#a150454a029951ab3c4ef8eca4f937449">  223</a></span><a class="code hl_class" href="classluabridge_1_1_lua_result.html">LuaResult</a> <a class="code hl_function" href="classluabridge_1_1_lua_ref_base.html#a150454a029951ab3c4ef8eca4f937449">LuaRefBase&lt;Impl, LuaRef&gt;::operator()</a>(Args&amp;&amp;... args)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>LuaResult LuaRefBase&lt;Impl, LuaRef&gt;::operator()(Args&amp;&amp;... args)<span class="keyword"> const</span></div>
 <div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span><span class="keyword"></span>{</div>
-<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceluabridge.html#ab93454fc006764de75d828ec4f17ad8a">call</a>(*<span class="keyword">this</span>, std::forward&lt;Args&gt;(args)...);</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>    <span class="keywordflow">return</span> call(*<span class="keyword">this</span>, std::forward&lt;Args&gt;(args)...);</div>
 <div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>}</div>
-</div>
 <div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span> </div>
 <div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>} <span class="comment">// namespace luabridge</span></div>
 <div class="ttc" id="a_config_8h_html"><div class="ttname"><a href="_config_8h.html">Config.h</a></div></div>
@@ -323,38 +293,12 @@ $(function(){initNavTree('_invoke_8h_source.html',''); initResizable(); });
 <div class="ttc" id="a_lua_helpers_8h_html_aa52575834dccd5472a6a272a06e537be"><div class="ttname"><a href="_lua_helpers_8h.html#aa52575834dccd5472a6a272a06e537be">LUABRIDGE_LUA_OK</a></div><div class="ttdeci">#define LUABRIDGE_LUA_OK</div><div class="ttdef"><b>Definition</b> LuaHelpers.h:249</div></div>
 <div class="ttc" id="a_lua_ref_8h_html"><div class="ttname"><a href="_lua_ref_8h.html">LuaRef.h</a></div></div>
 <div class="ttc" id="a_stack_8h_html"><div class="ttname"><a href="_stack_8h.html">Stack.h</a></div></div>
-<div class="ttc" id="aclassluabridge_1_1_lua_exception_html_a3f734cd8eaf29e7f7fabc07e8c165270"><div class="ttname"><a href="classluabridge_1_1_lua_exception.html#a3f734cd8eaf29e7f7fabc07e8c165270">luabridge::LuaException::areExceptionsEnabled</a></div><div class="ttdeci">static bool areExceptionsEnabled(lua_State *L) noexcept</div><div class="ttdoc">Check if exceptions are enabled.</div><div class="ttdef"><b>Definition</b> LuaException.h:70</div></div>
-<div class="ttc" id="aclassluabridge_1_1_lua_exception_html_a9f4e71650c9975abeeebc6905246ec13"><div class="ttname"><a href="classluabridge_1_1_lua_exception.html#a9f4e71650c9975abeeebc6905246ec13">luabridge::LuaException::raise</a></div><div class="ttdeci">static void raise(lua_State *L, std::error_code code)</div><div class="ttdoc">Throw an exception or raises a luaerror when exceptions are disabled.</div><div class="ttdef"><b>Definition</b> LuaException.h:53</div></div>
-<div class="ttc" id="aclassluabridge_1_1_lua_ref_base_html_a150454a029951ab3c4ef8eca4f937449"><div class="ttname"><a href="classluabridge_1_1_lua_ref_base.html#a150454a029951ab3c4ef8eca4f937449">luabridge::LuaRefBase::operator()</a></div><div class="ttdeci">LuaResult operator()(Args &amp;&amp;... args) const</div><div class="ttdoc">Call Lua code.</div><div class="ttdef"><b>Definition</b> Invoke.h:223</div></div>
-<div class="ttc" id="aclassluabridge_1_1_lua_ref_html"><div class="ttname"><a href="classluabridge_1_1_lua_ref.html">luabridge::LuaRef</a></div><div class="ttdoc">Lightweight reference to a Lua object.</div><div class="ttdef"><b>Definition</b> LuaRef.h:615</div></div>
-<div class="ttc" id="aclassluabridge_1_1_lua_ref_html_a85b859f8a73099d58e55899656da5bef"><div class="ttname"><a href="classluabridge_1_1_lua_ref.html#a85b859f8a73099d58e55899656da5bef">luabridge::LuaRef::fromStack</a></div><div class="ttdeci">static LuaRef fromStack(lua_State *L)</div><div class="ttdoc">Return a reference to a top Lua stack item.</div><div class="ttdef"><b>Definition</b> LuaRef.h:952</div></div>
-<div class="ttc" id="aclassluabridge_1_1_lua_result_html"><div class="ttname"><a href="classluabridge_1_1_lua_result.html">luabridge::LuaResult</a></div><div class="ttdoc">Result of a lua invocation.</div><div class="ttdef"><b>Definition</b> Invoke.h:26</div></div>
-<div class="ttc" id="aclassluabridge_1_1_lua_result_html_a0549a1165e7ee85423f82d41b5bb74e0"><div class="ttname"><a href="classluabridge_1_1_lua_result.html#a0549a1165e7ee85423f82d41b5bb74e0">luabridge::LuaResult::hasFailed</a></div><div class="ttdeci">bool hasFailed() const noexcept</div><div class="ttdoc">Return if the invocation did raise a lua error.</div><div class="ttdef"><b>Definition</b> Invoke.h:47</div></div>
-<div class="ttc" id="aclassluabridge_1_1_lua_result_html_a1ebbf300306d2338fb9e1ec099b7c947"><div class="ttname"><a href="classluabridge_1_1_lua_result.html#a1ebbf300306d2338fb9e1ec099b7c947">luabridge::LuaResult::errorCode</a></div><div class="ttdeci">std::error_code errorCode() const noexcept</div><div class="ttdoc">Return the error code, if any.</div><div class="ttdef"><b>Definition</b> Invoke.h:58</div></div>
-<div class="ttc" id="aclassluabridge_1_1_lua_result_html_a3403ad7cd5ff7338d472e27509109463"><div class="ttname"><a href="classluabridge_1_1_lua_result.html#a3403ad7cd5ff7338d472e27509109463">luabridge::LuaResult::errorFromStack</a></div><div class="ttdeci">static LuaResult errorFromStack(lua_State *L, std::error_code ec)</div><div class="ttdef"><b>Definition</b> Invoke.h:110</div></div>
-<div class="ttc" id="aclassluabridge_1_1_lua_result_html_a36473674bc7b375894ab57dcecc9f831"><div class="ttname"><a href="classluabridge_1_1_lua_result.html#a36473674bc7b375894ab57dcecc9f831">luabridge::LuaResult::m_data</a></div><div class="ttdeci">std::variant&lt; std::vector&lt; LuaRef &gt;, std::string &gt; m_data</div><div class="ttdef"><b>Definition</b> Invoke.h:151</div></div>
-<div class="ttc" id="aclassluabridge_1_1_lua_result_html_a5c45501ca2750509096fb0c103186677"><div class="ttname"><a href="classluabridge_1_1_lua_result.html#a5c45501ca2750509096fb0c103186677">luabridge::LuaResult::LuaResult</a></div><div class="ttdeci">LuaResult(lua_State *L, std::error_code ec, std::string_view errorString)</div><div class="ttdef"><b>Definition</b> Invoke.h:136</div></div>
-<div class="ttc" id="aclassluabridge_1_1_lua_result_html_a722e6ea000f8727d252c4d0fb9f60fe0"><div class="ttname"><a href="classluabridge_1_1_lua_result.html#a722e6ea000f8727d252c4d0fb9f60fe0">luabridge::LuaResult::m_L</a></div><div class="ttdeci">lua_State * m_L</div><div class="ttdef"><b>Definition</b> Invoke.h:149</div></div>
-<div class="ttc" id="aclassluabridge_1_1_lua_result_html_a7e671bc4d3d7b0980344c73c359ed547"><div class="ttname"><a href="classluabridge_1_1_lua_result.html#a7e671bc4d3d7b0980344c73c359ed547">luabridge::LuaResult::call</a></div><div class="ttdeci">friend LuaResult call(const LuaRef &amp;, Args &amp;&amp;...)</div></div>
-<div class="ttc" id="aclassluabridge_1_1_lua_result_html_a8c467ae70c0ecdf82887ab1f23c8e695"><div class="ttname"><a href="classluabridge_1_1_lua_result.html#a8c467ae70c0ecdf82887ab1f23c8e695">luabridge::LuaResult::errorMessage</a></div><div class="ttdeci">std::string errorMessage() const noexcept</div><div class="ttdoc">Return the error message, if any.</div><div class="ttdef"><b>Definition</b> Invoke.h:66</div></div>
-<div class="ttc" id="aclassluabridge_1_1_lua_result_html_a91a88dfac3cd3780cebbe293146d69fb"><div class="ttname"><a href="classluabridge_1_1_lua_result.html#a91a88dfac3cd3780cebbe293146d69fb">luabridge::LuaResult::LuaResult</a></div><div class="ttdeci">LuaResult(lua_State *L, std::vector&lt; LuaRef &gt; values) noexcept</div><div class="ttdef"><b>Definition</b> Invoke.h:143</div></div>
-<div class="ttc" id="aclassluabridge_1_1_lua_result_html_ad5b1feac57c2b9eddd42c183492b3a44"><div class="ttname"><a href="classluabridge_1_1_lua_result.html#ad5b1feac57c2b9eddd42c183492b3a44">luabridge::LuaResult::operator[]</a></div><div class="ttdeci">LuaRef operator[](std::size_t index) const</div><div class="ttdoc">Get a return value at a specific index.</div><div class="ttdef"><b>Definition</b> Invoke.h:91</div></div>
-<div class="ttc" id="aclassluabridge_1_1_lua_result_html_adee1d28ea18f37041f62378a279f5d55"><div class="ttname"><a href="classluabridge_1_1_lua_result.html#adee1d28ea18f37041f62378a279f5d55">luabridge::LuaResult::m_ec</a></div><div class="ttdeci">std::error_code m_ec</div><div class="ttdef"><b>Definition</b> Invoke.h:150</div></div>
-<div class="ttc" id="aclassluabridge_1_1_lua_result_html_af7d100f99273732c3a9fa8cbb0f5155c"><div class="ttname"><a href="classluabridge_1_1_lua_result.html#af7d100f99273732c3a9fa8cbb0f5155c">luabridge::LuaResult::wasOk</a></div><div class="ttdeci">bool wasOk() const noexcept</div><div class="ttdoc">Return if the invocation was ok and didn't raise a lua error.</div><div class="ttdef"><b>Definition</b> Invoke.h:39</div></div>
-<div class="ttc" id="aclassluabridge_1_1_lua_result_html_af84def93c2ff0f4b91a8c428bc49907b"><div class="ttname"><a href="classluabridge_1_1_lua_result.html#af84def93c2ff0f4b91a8c428bc49907b">luabridge::LuaResult::valuesFromStack</a></div><div class="ttdeci">static LuaResult valuesFromStack(lua_State *L, int stackTop)</div><div class="ttdef"><b>Definition</b> Invoke.h:118</div></div>
-<div class="ttc" id="aclassluabridge_1_1_lua_result_html_afc6dfeb10ac8827e8ae375d153351ba7"><div class="ttname"><a href="classluabridge_1_1_lua_result.html#afc6dfeb10ac8827e8ae375d153351ba7">luabridge::LuaResult::size</a></div><div class="ttdeci">std::size_t size() const noexcept</div><div class="ttdoc">Return the number of return values.</div><div class="ttdef"><b>Definition</b> Invoke.h:80</div></div>
 <div class="ttc" id="alua_8h_html_a28186297f2e9f2de0652504633de8fb3"><div class="ttname"><a href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a></div><div class="ttdeci">struct lua_State lua_State</div><div class="ttdef"><b>Definition</b> lua.h:51</div></div>
 <div class="ttc" id="alua_8h_html_a2a6cbad7f1c567378d17ded68b47f8f3"><div class="ttname"><a href="lua_8h.html#a2a6cbad7f1c567378d17ded68b47f8f3">lua_pcall</a></div><div class="ttdeci">LUA_API int lua_pcall(lua_State *L, int nargs, int nresults, int errfunc)</div></div>
 <div class="ttc" id="alua_8h_html_abb8eae2164badeafdb037bc1e03cc822"><div class="ttname"><a href="lua_8h.html#abb8eae2164badeafdb037bc1e03cc822">lua_pop</a></div><div class="ttdeci">#define lua_pop(L, n)</div><div class="ttdef"><b>Definition</b> lua.h:264</div></div>
 <div class="ttc" id="alua_8h_html_ac813fc3bc1886ba17c363d5b4c6e7ef1"><div class="ttname"><a href="lua_8h.html#ac813fc3bc1886ba17c363d5b4c6e7ef1">lua_tostring</a></div><div class="ttdeci">#define lua_tostring(L, i)</div><div class="ttdef"><b>Definition</b> lua.h:289</div></div>
 <div class="ttc" id="alua_8h_html_ace3545adc11664c2f2b152fbe8b6283c"><div class="ttname"><a href="lua_8h.html#ace3545adc11664c2f2b152fbe8b6283c">LUA_MULTRET</a></div><div class="ttdeci">#define LUA_MULTRET</div><div class="ttdef"><b>Definition</b> lua.h:30</div></div>
 <div class="ttc" id="alua_8h_html_afbb08ecb69421875494105d4de68e5bf"><div class="ttname"><a href="lua_8h.html#afbb08ecb69421875494105d4de68e5bf">lua_gettop</a></div><div class="ttdeci">LUA_API int lua_gettop(lua_State *L)</div></div>
-<div class="ttc" id="anamespaceluabridge_1_1detail_html_ac5f84a9b89983c7f6c8d99c0e7f003b2"><div class="ttname"><a href="namespaceluabridge_1_1detail.html#ac5f84a9b89983c7f6c8d99c0e7f003b2">luabridge::detail::push_arguments</a></div><div class="ttdeci">auto push_arguments(lua_State *, std::tuple&lt; Types... &gt;) -&gt; std::enable_if_t&lt; Index==sizeof...(Types), std::tuple&lt; Result, std::size_t &gt; &gt;</div><div class="ttdoc">Helpers for iterating through tuple arguments, pushing each argument to the lua stack.</div><div class="ttdef"><b>Definition</b> CFunctions.h:61</div></div>
-<div class="ttc" id="anamespaceluabridge_html"><div class="ttname"><a href="namespaceluabridge.html">luabridge</a></div><div class="ttdef"><b>Definition</b> Array.h:12</div></div>
-<div class="ttc" id="anamespaceluabridge_html_a0010ef6a0ffa15f119c1a4eabd43ed51"><div class="ttname"><a href="namespaceluabridge.html#a0010ef6a0ffa15f119c1a4eabd43ed51">luabridge::pcall</a></div><div class="ttdeci">int pcall(lua_State *L, int nargs=0, int nresults=0, int msgh=0)</div><div class="ttdoc">Wrapper for lua_pcall that throws if exceptions are enabled.</div><div class="ttdef"><b>Definition</b> Invoke.h:208</div></div>
-<div class="ttc" id="anamespaceluabridge_html_a9c453c5b0bb31b35710e481e0d580926a5795573056fbe054c01edb693efc1dc2"><div class="ttname"><a href="namespaceluabridge.html#a9c453c5b0bb31b35710e481e0d580926a5795573056fbe054c01edb693efc1dc2">luabridge::ErrorCode::LuaFunctionCallFailed</a></div><div class="ttdeci">@ LuaFunctionCallFailed</div></div>
-<div class="ttc" id="anamespaceluabridge_html_ab93454fc006764de75d828ec4f17ad8a"><div class="ttname"><a href="namespaceluabridge.html#ab93454fc006764de75d828ec4f17ad8a">luabridge::call</a></div><div class="ttdeci">LuaResult call(const LuaRef &amp;object, Args &amp;&amp;... args)</div><div class="ttdoc">Safely call Lua code.</div><div class="ttdef"><b>Definition</b> Invoke.h:172</div></div>
-<div class="ttc" id="anamespaceluabridge_html_ad0ed633aeb5ff2da5a3e8a5bfdbb698e"><div class="ttname"><a href="namespaceluabridge.html#ad0ed633aeb5ff2da5a3e8a5bfdbb698e">luabridge::makeErrorCode</a></div><div class="ttdeci">std::error_code makeErrorCode(ErrorCode e)</div><div class="ttdoc">Construct an error code from the error enum.</div><div class="ttdef"><b>Definition</b> Errors.h:92</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

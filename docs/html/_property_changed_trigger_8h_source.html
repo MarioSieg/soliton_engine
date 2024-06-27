@@ -117,44 +117,42 @@ $(function(){initNavTree('_property_changed_trigger_8h_source.html',''); initRes
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;<a class="code" href="_trigger_base_8h.html">NsApp/TriggerBase.h</a>&gt;</span></div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespace_noesis_app.html">NoesisApp</a></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span>NoesisApp</div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>{</div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>NS_WARNING_PUSH</div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>NS_CLANG_WARNING_DISABLE(<span class="stringliteral">&quot;-Wdocumentation&quot;</span>)</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
-<div class="foldopen" id="foldopen00039" data-start="{" data-end="};">
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_property_changed_trigger.html">   39</a></span>class <a class="code hl_define" href="_interactivity_api_8h.html#a19ef9be0d7b903c63e87d626acc9db84">NS_APP_INTERACTIVITY_API</a> <a class="code hl_class" href="class_noesis_app_1_1_property_changed_trigger.html">PropertyChangedTrigger</a>: public <a class="code hl_class" href="class_noesis_app_1_1_trigger_base_t.html">TriggerBaseT</a>&lt;<a class="code hl_namespace" href="namespace_noesis.html">Noesis</a>::DependencyObject&gt;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>class <a class="code hl_define" href="_interactivity_api_8h.html#a19ef9be0d7b903c63e87d626acc9db84">NS_APP_INTERACTIVITY_API</a> PropertyChangedTrigger: public TriggerBaseT&lt;Noesis::DependencyObject&gt;</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>{</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <a class="code hl_class" href="class_noesis_app_1_1_property_changed_trigger.html">PropertyChangedTrigger</a>();</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keyword">virtual</span> <a class="code hl_class" href="class_noesis_app_1_1_property_changed_trigger.html">~PropertyChangedTrigger</a>();</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    PropertyChangedTrigger();</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keyword">virtual</span> ~PropertyChangedTrigger();</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    Noesis::BaseComponent* GetBinding() <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordtype">void</span> SetBinding(Noesis::BaseComponent* value);</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="comment">// Hides Freezable methods for convenience</span></div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <a class="code hl_class" href="class_noesis_1_1_ptr.html">Noesis::Ptr&lt;PropertyChangedTrigger&gt;</a> Clone() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <a class="code hl_class" href="class_noesis_1_1_ptr.html">Noesis::Ptr&lt;PropertyChangedTrigger&gt;</a> CloneCurrentValue() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    Noesis::Ptr&lt;PropertyChangedTrigger&gt; Clone() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    Noesis::Ptr&lt;PropertyChangedTrigger&gt; CloneCurrentValue() <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_property_changed_trigger.html#a036fa5661dc4b3a36a0a6583f36cb5d7">   58</a></span>    <span class="keyword">static</span> <span class="keyword">const</span> Noesis::DependencyProperty* <a class="code hl_variable" href="class_noesis_app_1_1_property_changed_trigger.html#a036fa5661dc4b3a36a0a6583f36cb5d7">BindingProperty</a>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keyword">static</span> <span class="keyword">const</span> Noesis::DependencyProperty* BindingProperty;</div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span><span class="keyword">protected</span>:</div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="comment">// Called when the binding property has changed</span></div>
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> EvaluateBindingChange();</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="comment">// From Freezable</span></div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <a class="code hl_class" href="class_noesis_1_1_ptr.html">Noesis::Ptr&lt;Noesis::Freezable&gt;</a> CreateInstanceCore() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    Noesis::Ptr&lt;Noesis::Freezable&gt; CreateInstanceCore() <span class="keyword">const override</span>;</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="comment">// From AttachableObject</span></div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordtype">void</span> OnAttached() <span class="keyword">override</span>;</div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    NS_DECLARE_REFLECTION(<a class="code hl_class" href="class_noesis_app_1_1_property_changed_trigger.html">PropertyChangedTrigger</a>, <a class="code hl_class" href="class_noesis_app_1_1_trigger_base.html">TriggerBase</a>)</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    NS_DECLARE_REFLECTION(PropertyChangedTrigger, TriggerBase)</div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>};</div>
-</div>
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
 <div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>NS_WARNING_POP</div>
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
@@ -164,13 +162,6 @@ $(function(){initNavTree('_property_changed_trigger_8h_source.html',''); initRes
 <div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="a_interactivity_api_8h_html_a19ef9be0d7b903c63e87d626acc9db84"><div class="ttname"><a href="_interactivity_api_8h.html#a19ef9be0d7b903c63e87d626acc9db84">NS_APP_INTERACTIVITY_API</a></div><div class="ttdeci">#define NS_APP_INTERACTIVITY_API</div><div class="ttdef"><b>Definition</b> InteractivityApi.h:15</div></div>
 <div class="ttc" id="a_trigger_base_8h_html"><div class="ttname"><a href="_trigger_base_8h.html">TriggerBase.h</a></div></div>
-<div class="ttc" id="aclass_noesis_1_1_ptr_html"><div class="ttname"><a href="class_noesis_1_1_ptr.html">Noesis::Ptr</a></div><div class="ttdef"><b>Definition</b> ComparisonLogic.h:19</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_property_changed_trigger_html"><div class="ttname"><a href="class_noesis_app_1_1_property_changed_trigger.html">NoesisApp::PropertyChangedTrigger</a></div><div class="ttdef"><b>Definition</b> PropertyChangedTrigger.h:40</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_property_changed_trigger_html_a036fa5661dc4b3a36a0a6583f36cb5d7"><div class="ttname"><a href="class_noesis_app_1_1_property_changed_trigger.html#a036fa5661dc4b3a36a0a6583f36cb5d7">NoesisApp::PropertyChangedTrigger::BindingProperty</a></div><div class="ttdeci">static const Noesis::DependencyProperty * BindingProperty</div><div class="ttdef"><b>Definition</b> PropertyChangedTrigger.h:58</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_trigger_base_html"><div class="ttname"><a href="class_noesis_app_1_1_trigger_base.html">NoesisApp::TriggerBase</a></div><div class="ttdoc">Represents an object that can invoke Actions conditionally.</div><div class="ttdef"><b>Definition</b> TriggerBase.h:41</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_trigger_base_t_html"><div class="ttname"><a href="class_noesis_app_1_1_trigger_base_t.html">NoesisApp::TriggerBaseT</a></div><div class="ttdoc">Templatized base class for TriggerBase.</div><div class="ttdef"><b>Definition</b> TriggerBase.h:93</div></div>
-<div class="ttc" id="anamespace_noesis_app_html"><div class="ttname"><a href="namespace_noesis_app.html">NoesisApp</a></div><div class="ttdef"><b>Definition</b> Application.cpp:21</div></div>
-<div class="ttc" id="anamespace_noesis_html"><div class="ttname"><a href="namespace_noesis.html">Noesis</a></div><div class="ttdef"><b>Definition</b> AttachableObject.h:18</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

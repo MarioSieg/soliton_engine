@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['y_0',['y',['../struct_my_im_plot_1_1_vector2f.html#a8aa963261aa1bf5a396582cfd1faf6df',1,'MyImPlot::Vector2f::y'],['../structlua__vec2.html#ab6631db8247a632a884e7b6d67e6c81a',1,'lua_vec2::y'],['../structlua__vec3.html#ab0883279848097e8d4b04cc2a0c5fc57',1,'lua_vec3::y'],['../structlua__vec4.html#af48fdab789fb543267a5fe415c368859',1,'lua_vec4::y']]],
-  ['yproperty_1',['YProperty',['../class_noesis_app_1_1_mouse_drag_element_behavior.html#a8248b923b637897853fbf5c415092f58',1,'NoesisApp::MouseDragElementBehavior']]]
+  ['z_0',['z',['../structlua__vec3.html#af957d0875f6fe96b5f078a0f57aefd94',1,'lua_vec3::z()'],['../structlua__vec4.html#a0a61204e3e0b47f96b3185f81337f315',1,'lua_vec4::z()']]],
+  ['z_5fclip_5ffar_1',['z_clip_far',['../structcom_1_1camera.html#a07f207a5706fc84862076b3a5c041fe2',1,'com::camera']]],
+  ['z_5fclip_5fnear_2',['z_clip_near',['../structcom_1_1camera.html#ae3f382926d3cf4588ec6a7fe5e24d222',1,'com::camera']]]
 ];

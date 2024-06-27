@@ -1,13 +1,17 @@
 // Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "context.hpp"
-#include "shader.hpp"
+#include "../shader.hpp"
 
-#include "../../scripting/scripting_subsystem.hpp"
-
-using scripting::scripting_subsystem;
+#include "../../scripting/convar.hpp"
 
 namespace vkb {
+    static convar<bool> cv_enable_vulkan_validation_layers {
+        "Renderer.enableVulkanValidationLayers",
+        false,
+        convar_flags::read_only
+    };
+
     context::context(GLFWwindow* window) : m_window{window} {
         passert(m_window != nullptr);
         boot_vulkan_core();
@@ -24,8 +28,6 @@ namespace vkb {
     context::~context() {
         vkcheck(m_device->get_logical_device().waitIdle());
 
-        shader::shutdown_online_compiler();
-
         // Dump VMA Infos
 #if 0
         char* vma_stats_string = nullptr;
@@ -34,9 +36,10 @@ namespace vkb {
         vmaFreeStatsString(m_device->get_allocator(), vma_stats_string);
 #endif
 
-        m_device->get_logical_device().destroyDescriptorPool(m_imgui_descriptor_pool, &s_allocator);
-        m_device->get_logical_device().destroyPipelineCache(m_pipeline_cache, &s_allocator);
-        m_device->get_logical_device().destroyRenderPass(m_render_pass, &s_allocator);
+        m_device->get_logical_device().destroyDescriptorPool(m_imgui_descriptor_pool, vkb::get_alloc());
+        m_device->get_logical_device().destroyPipelineCache(m_pipeline_cache, vkb::get_alloc());
+        m_device->get_logical_device().destroyRenderPass(m_ui_render_pass, vkb::get_alloc());
+        m_device->get_logical_device().destroyRenderPass(m_scene_render_pass, vkb::get_alloc());
 
         destroy_depth_stencil();
         destroy_msaa_target();
@@ -44,9 +47,9 @@ namespace vkb {
 
         destroy_command_buffers();
 
-        m_device->get_logical_device().destroyCommandPool(m_transfer_command_pool, &s_allocator);
-        m_device->get_logical_device().destroyCommandPool(m_compute_command_pool, &s_allocator);
-        m_device->get_logical_device().destroyCommandPool(m_graphics_command_pool, &s_allocator);
+        m_device->get_logical_device().destroyCommandPool(m_transfer_command_pool, vkb::get_alloc());
+        m_device->get_logical_device().destroyCommandPool(m_compute_command_pool, vkb::get_alloc());
+        m_device->get_logical_device().destroyCommandPool(m_graphics_command_pool, vkb::get_alloc());
 
         destroy_sync_prims();
 
@@ -54,7 +57,12 @@ namespace vkb {
         m_device.reset();
     }
 
+    // Set clear values for all framebuffer attachments with loadOp set to clear
+    // We use two attachments (color and depth) that are cleared at the start of the subpass and as such we need to set clear values for both
     auto context::begin_frame(const DirectX::XMFLOAT4A& clear_color, vk::CommandBufferInheritanceInfo* out_inheritance_info) -> vk::CommandBuffer {
+        m_clear_values[0].color = std::bit_cast<vk::ClearColorValue>(clear_color);
+        m_clear_values[1].color = std::bit_cast<vk::ClearColorValue>(clear_color);
+        m_clear_values[2].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
 
         // Use a fence to wait until the command buffer has finished execution before using it again
         vkcheck(m_device->get_logical_device().waitForFences(1, &m_wait_fences[m_current_frame], vk::True, std::numeric_limits<std::uint64_t>::max()));
@@ -72,24 +80,9 @@ namespace vkb {
             vkcheck(result);
         }
 
-        // Set clear values for all framebuffer attachments with loadOp set to clear
-        // We use two attachments (color and depth) that are cleared at the start of the subpass and as such we need to set clear values for both
-        std::array<vk::ClearValue, 3> clear_values {};
-        clear_values[0].color = std::bit_cast<vk::ClearColorValue>(clear_color);
-        clear_values[1].color = std::bit_cast<vk::ClearColorValue>(clear_color);
-        clear_values[2].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
-
-        vk::RenderPassBeginInfo render_pass_begin_info {};
-        render_pass_begin_info.renderPass = m_render_pass;
-        render_pass_begin_info.framebuffer = m_framebuffers[m_image_index];
-        render_pass_begin_info.renderArea.extent.width = m_width;
-        render_pass_begin_info.renderArea.extent.height = m_height;
-        render_pass_begin_info.clearValueCount = static_cast<std::uint32_t>(clear_values.size());
-        render_pass_begin_info.pClearValues = clear_values.data();
-
         if (out_inheritance_info) {
             *out_inheritance_info = vk::CommandBufferInheritanceInfo {};
-            out_inheritance_info->renderPass = m_render_pass;
+            out_inheritance_info->renderPass = m_scene_render_pass;
             out_inheritance_info->framebuffer = m_framebuffers[m_image_index];
         }
 
@@ -98,24 +91,15 @@ namespace vkb {
         constexpr vk::CommandBufferBeginInfo command_buffer_begin_info {};
         vkcheck(cmd_buf.begin(&command_buffer_begin_info));
 
-        // Start the first sub pass specified in our default render pass setup by the base class
-        // This will clear the color and depth attachment
-        cmd_buf.beginRenderPass(&render_pass_begin_info, vk::SubpassContents::eSecondaryCommandBuffers);
-
         return cmd_buf;
     }
 
-    auto context::end_frame(const vk::CommandBuffer cmd_buf) -> void {
-        passert(cmd_buf);
-
-        cmd_buf.endRenderPass();
-        vkcheck(cmd_buf.end());
-
+    auto context::end_frame(const vk::CommandBuffer cmd) -> void {
         vk::PipelineStageFlags wait_stage_mask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
         vk::SubmitInfo submit_info {};
         submit_info.pWaitDstStageMask = &wait_stage_mask;
         submit_info.commandBufferCount = 1;
-        submit_info.pCommandBuffers = &cmd_buf;
+        submit_info.pCommandBuffers = &cmd;
         // Semaphore to wait upon before the submitted command buffer starts executing
         submit_info.waitSemaphoreCount = 1;
         submit_info.pWaitSemaphores = &m_semaphores.present_complete[m_current_frame];
@@ -175,8 +159,7 @@ namespace vkb {
     }
 
     auto context::boot_vulkan_core() -> void {
-        const bool enable_validation = scripting_subsystem::get_config_table()["Renderer"]["enableVulkanValidationLayers"].cast<bool>().valueOr(false);
-        m_device.emplace(enable_validation);
+        m_device.emplace(cv_enable_vulkan_validation_layers());
         m_swapchain.emplace(m_device->get_instance(), m_device->get_physical_device(), m_device->get_logical_device());
         m_swapchain->init_surface(m_window);
         recreate_swapchain();
@@ -187,9 +170,9 @@ namespace vkb {
         vk::FenceCreateInfo fence_ci {};
         fence_ci.flags = vk::FenceCreateFlagBits::eSignaled;
         for (std::uint32_t i = 0; i < k_max_concurrent_frames; ++i) {
-            vkcheck(m_device->get_logical_device().createSemaphore(&semaphore_ci, &s_allocator, &m_semaphores.present_complete[i]));
-            vkcheck(m_device->get_logical_device().createSemaphore(&semaphore_ci, &s_allocator, &m_semaphores.render_complete[i]));
-            vkcheck(m_device->get_logical_device().createFence(&fence_ci, &s_allocator, &m_wait_fences[i]));
+            vkcheck(m_device->get_logical_device().createSemaphore(&semaphore_ci, get_alloc(), &m_semaphores.present_complete[i]));
+            vkcheck(m_device->get_logical_device().createSemaphore(&semaphore_ci, get_alloc(), &m_semaphores.render_complete[i]));
+            vkcheck(m_device->get_logical_device().createFence(&fence_ci, get_alloc(), &m_wait_fences[i]));
         }
     }
 
@@ -198,7 +181,7 @@ namespace vkb {
             vk::CommandPoolCreateInfo command_pool_ci {};
             command_pool_ci.queueFamilyIndex = family;
             command_pool_ci.flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer;
-            vkcheck(m_device->get_logical_device().createCommandPool(&command_pool_ci, &s_allocator, &dst));
+            vkcheck(m_device->get_logical_device().createCommandPool(&command_pool_ci, get_alloc(), &dst));
         };
         create_cp(m_device->get_graphics_queue_idx(), m_graphics_command_pool);
         create_cp(m_device->get_compute_queue_idx(), m_compute_command_pool);
@@ -256,7 +239,7 @@ namespace vkb {
         if (m_device->get_depth_format() >= vk::Format::eD16UnormS8Uint) {
             image_view_ci.subresourceRange.aspectMask |= vk::ImageAspectFlagBits::eStencil;
         }
-        vkcheck(m_device->get_logical_device().createImageView(&image_view_ci, &s_allocator, &m_depth_stencil.view));
+        vkcheck(m_device->get_logical_device().createImageView(&image_view_ci, get_alloc(), &m_depth_stencil.view));
     }
 
     // Render pass setup
@@ -345,7 +328,8 @@ namespace vkb {
         render_pass_ci.dependencyCount = static_cast<std::uint32_t>(dependencies.size());
         render_pass_ci.pDependencies = dependencies.data();
 
-        vkcheck(m_device->get_logical_device().createRenderPass(&render_pass_ci, &s_allocator, &m_render_pass));
+        vkcheck(m_device->get_logical_device().createRenderPass(&render_pass_ci, get_alloc(), &m_scene_render_pass));
+        vkcheck(m_device->get_logical_device().createRenderPass(&render_pass_ci, get_alloc(), &m_ui_render_pass));
     }
 
     auto context::setup_frame_buffer() -> void {
@@ -358,23 +342,23 @@ namespace vkb {
             attachments[2] = m_msaa_target.depth.view;
 
             vk::FramebufferCreateInfo framebuffer_ci {};
-            framebuffer_ci.renderPass = m_render_pass;
+            framebuffer_ci.renderPass = m_scene_render_pass;
             framebuffer_ci.attachmentCount = attachments.size();
             framebuffer_ci.pAttachments = attachments.data();
             framebuffer_ci.width = m_width;
             framebuffer_ci.height = m_height;
             framebuffer_ci.layers = 1;
-            vkcheck(m_device->get_logical_device().createFramebuffer(&framebuffer_ci, &s_allocator, &m_framebuffers[i]));
+            vkcheck(m_device->get_logical_device().createFramebuffer(&framebuffer_ci, get_alloc(), &m_framebuffers[i]));
         }
     }
 
     auto context::create_pipeline_cache() -> void {
         constexpr vk::PipelineCacheCreateInfo pipeline_cache_ci {};
-        vkcheck(m_device->get_logical_device().createPipelineCache(&pipeline_cache_ci, &s_allocator, &m_pipeline_cache));
+        vkcheck(m_device->get_logical_device().createPipelineCache(&pipeline_cache_ci, get_alloc(), &m_pipeline_cache));
     }
 
     auto context::recreate_swapchain() -> void {
-        m_swapchain->create(m_width, m_height, false, false);
+        m_swapchain->create(m_width, m_height, true, false);
     }
 
     auto context::create_msaa_target() -> void {
@@ -420,7 +404,7 @@ namespace vkb {
         image_view_ci.subresourceRange.layerCount = 1;
         image_view_ci.image = m_msaa_target.color.image;
 
-        vkcheck(m_device->get_logical_device().createImageView(&image_view_ci, &s_allocator, &m_msaa_target.color.view));
+        vkcheck(m_device->get_logical_device().createImageView(&image_view_ci, get_alloc(), &m_msaa_target.color.view));
 
         // depth target
         image_ci.format = m_device->get_depth_format();
@@ -441,24 +425,24 @@ namespace vkb {
             image_view_ci.subresourceRange.aspectMask |= vk::ImageAspectFlagBits::eStencil;
         }
 
-        vkcheck(m_device->get_logical_device().createImageView(&image_view_ci, &s_allocator, &m_msaa_target.depth.view));
+        vkcheck(m_device->get_logical_device().createImageView(&image_view_ci, get_alloc(), &m_msaa_target.depth.view));
     }
 
     auto context::destroy_depth_stencil() const -> void {
-        m_device->get_logical_device().destroyImageView(m_depth_stencil.view, &s_allocator);
+        m_device->get_logical_device().destroyImageView(m_depth_stencil.view, vkb::get_alloc());
         vmaDestroyImage(m_device->get_allocator(), m_depth_stencil.image, m_depth_stencil.memory);
     }
 
     auto context::destroy_msaa_target() const -> void {
         vmaDestroyImage(m_device->get_allocator(), m_msaa_target.color.image, m_msaa_target.color.memory);
         vmaDestroyImage(m_device->get_allocator(), m_msaa_target.depth.image, m_msaa_target.depth.memory);
-        m_device->get_logical_device().destroyImageView(m_msaa_target.color.view, &s_allocator);
-        m_device->get_logical_device().destroyImageView(m_msaa_target.depth.view, &s_allocator);
+        m_device->get_logical_device().destroyImageView(m_msaa_target.color.view, vkb::get_alloc());
+        m_device->get_logical_device().destroyImageView(m_msaa_target.depth.view, vkb::get_alloc());
     }
 
     auto context::destroy_frame_buffer() const -> void {
         for (auto&& framebuffer : m_framebuffers) {
-            m_device->get_logical_device().destroyFramebuffer(framebuffer, &s_allocator);
+            m_device->get_logical_device().destroyFramebuffer(framebuffer, vkb::get_alloc());
         }
     }
 
@@ -468,13 +452,47 @@ namespace vkb {
 
     auto context::destroy_sync_prims() const -> void {
         for (auto&& fence : m_wait_fences) {
-            m_device->get_logical_device().destroyFence(fence, &s_allocator);
+            m_device->get_logical_device().destroyFence(fence, vkb::get_alloc());
         }
         for (auto&& semaphore : m_semaphores.render_complete) {
-            m_device->get_logical_device().destroySemaphore(semaphore, &s_allocator);
+            m_device->get_logical_device().destroySemaphore(semaphore, vkb::get_alloc());
         }
         for (auto&& semaphore : m_semaphores.present_complete) {
-            m_device->get_logical_device().destroySemaphore(semaphore, &s_allocator);
+            m_device->get_logical_device().destroySemaphore(semaphore, vkb::get_alloc());
         }
+    }
+
+    auto context::begin_render_pass(vk::CommandBuffer cmd, vk::RenderPass pass, vk::SubpassContents contents) -> void {
+        vk::RenderPassBeginInfo render_pass_begin_info {};
+        render_pass_begin_info.renderPass = pass;
+        render_pass_begin_info.framebuffer = m_framebuffers[m_image_index];
+        render_pass_begin_info.renderArea.extent.width = m_width;
+        render_pass_begin_info.renderArea.extent.height = m_height;
+        render_pass_begin_info.clearValueCount = static_cast<std::uint32_t>(m_clear_values.size());
+        render_pass_begin_info.pClearValues = m_clear_values.data();
+        cmd.beginRenderPass(&render_pass_begin_info, contents);
+    }
+
+    auto context::end_render_pass(vk::CommandBuffer cmd) -> void {
+        cmd.endRenderPass();
+    }
+
+    static constinit std::atomic_bool s_init;
+
+    auto context::init(GLFWwindow* const window) -> void {
+        if (s_init.load(std::memory_order_relaxed)) {
+            return;
+        }
+        passert(window != nullptr);
+        s_instance = std::make_unique<context>(window);
+        s_init.store(true, std::memory_order_relaxed);
+    }
+
+    auto context::shutdown() -> void {
+        if (!s_init.load(std::memory_order_relaxed)) {
+            return;
+        }
+        s_instance.reset();
+        s_init.store(false, std::memory_order_relaxed);
     }
 }

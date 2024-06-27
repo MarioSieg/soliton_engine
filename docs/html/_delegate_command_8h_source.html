@@ -120,23 +120,22 @@ $(function(){initNavTree('_delegate_command_8h_source.html',''); initResizable()
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;<a class="code" href="_application_launcher_api_8h.html">NsApp/ApplicationLauncherApi.h</a>&gt;</span></div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespace_noesis_app.html">NoesisApp</a></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">namespace </span>NoesisApp</div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>{</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>NS_WARNING_PUSH</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>NS_MSVC_WARNING_DISABLE(4251)</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
-<div class="foldopen" id="foldopen00027" data-start="{" data-end="};">
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_delegate_command.html">   27</a></span>class <a class="code hl_define" href="_application_launcher_api_8h.html#a4567eadc4628ac0d776668813ce10086">NS_APP_APPLICATIONLAUNCHER_API</a> <a class="code hl_class" href="class_noesis_app_1_1_delegate_command.html">DelegateCommand</a> final: public <a class="code hl_namespace" href="namespace_noesis.html">Noesis</a>::BaseCommand</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>class <a class="code hl_define" href="_application_launcher_api_8h.html#a4567eadc4628ac0d776668813ce10086">NS_APP_APPLICATIONLAUNCHER_API</a> DelegateCommand final: public Noesis::BaseCommand</div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>{</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_delegate_command.html#a2e99b752e4aa95ec1d5224520e277632">   30</a></span>    <span class="keyword">typedef</span> Noesis::Delegate&lt;void (BaseComponent*)&gt; <a class="code hl_typedef" href="class_noesis_app_1_1_delegate_command.html#a2e99b752e4aa95ec1d5224520e277632">ExecuteFunc</a>;</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="class_noesis_app_1_1_delegate_command.html#a83c394ae8c00ec2b7bf373cc1f4763c5">   31</a></span>    <span class="keyword">typedef</span> Noesis::Delegate&lt;bool (BaseComponent*)&gt; <a class="code hl_typedef" href="class_noesis_app_1_1_delegate_command.html#a83c394ae8c00ec2b7bf373cc1f4763c5">CanExecuteFunc</a>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keyword">typedef</span> Noesis::Delegate&lt;void (BaseComponent*)&gt; ExecuteFunc;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keyword">typedef</span> Noesis::Delegate&lt;bool (BaseComponent*)&gt; CanExecuteFunc;</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <a class="code hl_class" href="class_noesis_app_1_1_delegate_command.html">DelegateCommand</a>();</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <a class="code hl_class" href="class_noesis_app_1_1_delegate_command.html">DelegateCommand</a>(<span class="keyword">const</span> ExecuteFunc&amp; execute);</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <a class="code hl_class" href="class_noesis_app_1_1_delegate_command.html">DelegateCommand</a>(<span class="keyword">const</span> CanExecuteFunc&amp; canExecute, <span class="keyword">const</span> ExecuteFunc&amp; execute);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    DelegateCommand();</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    DelegateCommand(<span class="keyword">const</span> ExecuteFunc&amp; execute);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    DelegateCommand(<span class="keyword">const</span> CanExecuteFunc&amp; canExecute, <span class="keyword">const</span> ExecuteFunc&amp; execute);</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordtype">void</span> SetCanExecuteFunc(<span class="keyword">const</span> CanExecuteFunc&amp; canExecute);</div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordtype">void</span> SetExecuteFunc(<span class="keyword">const</span> ExecuteFunc&amp; execute);</div>
@@ -149,9 +148,8 @@ $(function(){initNavTree('_delegate_command_8h_source.html',''); initResizable()
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    CanExecuteFunc _canExecute;</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    ExecuteFunc _execute;</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    NS_DECLARE_REFLECTION(<a class="code hl_class" href="class_noesis_app_1_1_delegate_command.html">DelegateCommand</a>, BaseCommand)</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    NS_DECLARE_REFLECTION(DelegateCommand, BaseCommand)</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>};</div>
-</div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>NS_WARNING_POP</div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
@@ -160,11 +158,6 @@ $(function(){initNavTree('_delegate_command_8h_source.html',''); initResizable()
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="a_application_launcher_api_8h_html"><div class="ttname"><a href="_application_launcher_api_8h.html">ApplicationLauncherApi.h</a></div></div>
 <div class="ttc" id="a_application_launcher_api_8h_html_a4567eadc4628ac0d776668813ce10086"><div class="ttname"><a href="_application_launcher_api_8h.html#a4567eadc4628ac0d776668813ce10086">NS_APP_APPLICATIONLAUNCHER_API</a></div><div class="ttdeci">#define NS_APP_APPLICATIONLAUNCHER_API</div><div class="ttdef"><b>Definition</b> ApplicationLauncherApi.h:15</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_delegate_command_html"><div class="ttname"><a href="class_noesis_app_1_1_delegate_command.html">NoesisApp::DelegateCommand</a></div><div class="ttdoc">Command implemented using delegates.</div><div class="ttdef"><b>Definition</b> DelegateCommand.h:28</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_delegate_command_html_a2e99b752e4aa95ec1d5224520e277632"><div class="ttname"><a href="class_noesis_app_1_1_delegate_command.html#a2e99b752e4aa95ec1d5224520e277632">NoesisApp::DelegateCommand::ExecuteFunc</a></div><div class="ttdeci">Noesis::Delegate&lt; void(BaseComponent *) ExecuteFunc)</div><div class="ttdef"><b>Definition</b> DelegateCommand.h:30</div></div>
-<div class="ttc" id="aclass_noesis_app_1_1_delegate_command_html_a83c394ae8c00ec2b7bf373cc1f4763c5"><div class="ttname"><a href="class_noesis_app_1_1_delegate_command.html#a83c394ae8c00ec2b7bf373cc1f4763c5">NoesisApp::DelegateCommand::CanExecuteFunc</a></div><div class="ttdeci">Noesis::Delegate&lt; bool(BaseComponent *) CanExecuteFunc)</div><div class="ttdef"><b>Definition</b> DelegateCommand.h:31</div></div>
-<div class="ttc" id="anamespace_noesis_app_html"><div class="ttname"><a href="namespace_noesis_app.html">NoesisApp</a></div><div class="ttdef"><b>Definition</b> Application.cpp:21</div></div>
-<div class="ttc" id="anamespace_noesis_html"><div class="ttname"><a href="namespace_noesis.html">Noesis</a></div><div class="ttdef"><b>Definition</b> AttachableObject.h:18</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

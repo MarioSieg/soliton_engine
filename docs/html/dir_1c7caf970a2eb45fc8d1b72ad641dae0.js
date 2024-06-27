@@ -5,7 +5,7 @@ var dir_1c7caf970a2eb45fc8d1b72ad641dae0 =
     [ "cimplot.cpp", "cimplot_8cpp.html", "cimplot_8cpp" ],
     [ "cimplot.h", "cimplot_8h.html", "cimplot_8h" ],
     [ "context.cpp", "imgui_2context_8cpp.html", null ],
-    [ "context.hpp", "imgui_2context_8hpp.html", "imgui_2context_8hpp" ],
+    [ "context.hpp", "imgui_2context_8hpp.html", null ],
     [ "font_awesome.ttf.inl", "font__awesome_8ttf_8inl.html", "font__awesome_8ttf_8inl" ],
     [ "font_awesome_pro_5.hpp", "font__awesome__pro__5_8hpp.html", "font__awesome__pro__5_8hpp" ],
     [ "imconfig.h", "imconfig_8h.html", "imconfig_8h" ],
@@ -22,9 +22,9 @@ var dir_1c7caf970a2eb45fc8d1b72ad641dae0 =
     [ "imgui_internal.h", "imgui__internal_8h.html", "imgui__internal_8h" ],
     [ "imgui_tables.cpp", "imgui__tables_8cpp.html", "imgui__tables_8cpp" ],
     [ "imgui_widgets.cpp", "imgui__widgets_8cpp.html", "imgui__widgets_8cpp" ],
-    [ "ImGuiProfilerRenderer.h", "_im_gui_profiler_renderer_8h.html", null ],
-    [ "ImGuizmo.cpp", "_im_guizmo_8cpp.html", "_im_guizmo_8cpp" ],
-    [ "ImGuizmo.h", "_im_guizmo_8h.html", "_im_guizmo_8h" ],
+    [ "ImGuiProfilerRenderer.h", "ImGuiProfilerRenderer_8h.html", null ],
+    [ "ImGuizmo.cpp", "ImGuizmo_8cpp.html", "ImGuizmo_8cpp" ],
+    [ "ImGuizmo.h", "ImGuizmo_8h.html", "ImGuizmo_8h" ],
     [ "implot.cpp", "implot_8cpp.html", "implot_8cpp" ],
     [ "implot.h", "implot_8h.html", "implot_8h" ],
     [ "implot_demo.cpp", "implot__demo_8cpp.html", "implot__demo_8cpp" ],
@@ -34,7 +34,7 @@ var dir_1c7caf970a2eb45fc8d1b72ad641dae0 =
     [ "imstb_textedit.h", "imstb__textedit_8h.html", null ],
     [ "imstb_truetype.h", "imstb__truetype_8h.html", null ],
     [ "jetbrains_mono.ttf.inl", "jetbrains__mono_8ttf_8inl.html", "jetbrains__mono_8ttf_8inl" ],
-    [ "ProfilerTask.h", "_profiler_task_8h.html", "_profiler_task_8h" ],
+    [ "ProfilerTask.h", "ProfilerTask_8h.html", "ProfilerTask_8h" ],
     [ "text_editor.cpp", "text__editor_8cpp.html", "text__editor_8cpp" ],
-    [ "text_editor.hpp", "text__editor_8hpp.html", "text__editor_8hpp" ]
+    [ "text_editor.hpp", "text__editor_8hpp.html", null ]
 ];

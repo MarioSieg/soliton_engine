@@ -11,12 +11,15 @@
 #include "implot.h"
 #include "../pipeline.hpp"
 #include "../../platform/platform_subsystem.hpp"
-#include "../../scripting/scripting_subsystem.hpp"
+#include "../../scripting/convar.hpp"
 
 #include <vk_mem_alloc.h>
 
 namespace imgui {
+    static convar<float> cv_font_size {"EditorUI.fontSize", 18.0f, scripting::convar_flags::read_only};
+
     context::context() {
+#if USE_MIMALLOC
         ImGui::SetAllocatorFunctions(
             +[](size_t size, [[maybe_unused]] void* usr) -> void* {
                 return mi_malloc(size);
@@ -25,6 +28,7 @@ namespace imgui {
                 mi_free(ptr);
             }
         );
+#endif
         ImGui::CreateContext();
         ImPlot::CreateContext();
         auto& io = ImGui::GetIO();
@@ -62,7 +66,7 @@ namespace imgui {
         pool_info.poolSizeCount = k_pool_sizes.size();
         pool_info.pPoolSizes = k_pool_sizes.data();
 
-        vkcheck(vdevice.createDescriptorPool(&pool_info, &vkb::s_allocator, &m_imgui_descriptor_pool));
+        vkcheck(vdevice.createDescriptorPool(&pool_info, vkb::get_alloc(), &m_imgui_descriptor_pool));
 
         ImGui_ImplVulkan_InitInfo init_info {};
         init_info.Instance = device.get_instance();
@@ -75,13 +79,13 @@ namespace imgui {
         init_info.ImageCount = vkb::context::k_max_concurrent_frames;
         init_info.MinImageCount = vkb::context::k_max_concurrent_frames;
         init_info.MSAASamples = static_cast<VkSampleCountFlagBits>(vkb::k_msaa_sample_count);
-        init_info.Allocator = reinterpret_cast<const VkAllocationCallbacks*>(&vkb::s_allocator);
+        init_info.Allocator = reinterpret_cast<const VkAllocationCallbacks*>(vkb::get_alloc());
         init_info.CheckVkResultFn = [](const VkResult result) {
             vkccheck(result);
         };
-        passert(ImGui_ImplVulkan_Init(&init_info, vkb::ctx().get_render_pass()));
+        passert(ImGui_ImplVulkan_Init(&init_info, vkb::ctx().get_scene_render_pass()));
 
-        const float font_size = scripting::scripting_subsystem::get_config_table()["Renderer"]["uiFontSize"].cast<float>().valueOr(18.0f);
+        const float font_size = cv_font_size();
 
         // add primary text font:
         ImFontConfig config { };
@@ -102,11 +106,20 @@ namespace imgui {
             std::span<const std::uint8_t> data {};
             std::array<char16_t, 3> ranges {};
         };
+
+        // Compute DPI scaling
+        float scale = 1.0f;
+        float xscale;
+        float yscale;
+        glfwGetWindowContentScale(window, &xscale, &yscale);
+        scale = (xscale+yscale)*0.5f;
+        log_info("DPI scaling: {}", scale);
+
         static constexpr font_range range = { k_font_awesome_ttf, { ICON_MIN_FA, ICON_MAX_FA, 0 } };
         ImGui::GetIO().Fonts->AddFontFromMemoryTTF(
             const_cast<void*>(static_cast<const void*>(range.data.data())),
             static_cast<int>(range.data.size()),
-            font_size-5.0f,
+            font_size-(scale>1.0f?8.0f:5.0f),
             &config,
             reinterpret_cast<const ImWchar*>(range.ranges.data())
         );
@@ -114,11 +127,6 @@ namespace imgui {
         passert(ImGui_ImplVulkan_CreateFontsTexture());
 
         // Apply DPI scaling
-        float scale = 1.0f;
-        float xscale;
-        float yscale;
-        glfwGetWindowContentScale(window, &xscale, &yscale);
-        scale = (xscale + yscale) * 0.5f;
         if constexpr (PLATFORM_OSX) {
             io.FontGlobalScale = 1.0f / scale;
         } else {
@@ -129,7 +137,7 @@ namespace imgui {
     context::~context() {
         ImGui_ImplVulkan_Shutdown();
         ImGui_ImplGlfw_Shutdown();
-        vkb::vkdvc().destroyDescriptorPool(m_imgui_descriptor_pool, &vkb::s_allocator);
+        vkb::vkdvc().destroyDescriptorPool(m_imgui_descriptor_pool, vkb::get_alloc());
         ImPlot::DestroyContext();
         ImGui::DestroyContext();
     }

@@ -4,176 +4,257 @@ local ffi = require 'ffi'
 local bit = require 'bit'
 local bxor = bit.bxor
 
-local UI = require 'editor.imgui'
-local ICONS = require 'editor.icons'
-local Time = require 'Time'
-local Scene = require 'Scene'
-local Components = require 'Components'
-local Vec3 = require 'Vec3'
-local Quat = require 'Quat'
-local EFLAGS = ENTITY_FLAGS
+local ui = require 'editor.imgui'
+local icons = require 'editor.icons'
+local components = require 'components'
+local gmath = require 'gmath'
+local vec3 = require 'vec3'
+local quat = require 'quat'
+local rad, deg = math.rad, math.deg
+local entity_flags = entity_flags
 
-local MAX_TEXT_INPUT_SIZE = 128
-local Inspector = {
-    name = ICONS.COGS..' Inspector',
-    isVisible = ffi.new('bool[1]', true),
-    selectedEntity = nil,
-    inputTextBuffer = ffi.new('char[?]', 1+MAX_TEXT_INPUT_SIZE),
-    manipBuf3 = ffi.new('float[3]'),
-    manipBufBool = ffi.new('bool[1]'),
-    propertiesChanged = false,
+local max_name_text_len = 256
+local header_buttons_offset = 60.0 -- TODO: calculate from button sizes
+local inspector_header_flags = ffi.C.ImGuiTreeNodeFlags_DefaultOpen + ffi.C.ImGuiTreeNodeFlags_AllowOverlap
+local inspector = {
+    name = icons.i_cogs .. ' Inspector',
+    is_visible = ffi.new('bool[1]', true),
+    selected_entity = nil,
+    properties_changed = false,
+    name_changed = false,
+
+    _text_buf = ffi.new('char[?]', 1 + max_name_text_len),
+    _float_buf = ffi.new('float[1]'),
+    _vec2_buf = ffi.new('float[2]'),
+    _vec3_buf = ffi.new('float[3]'),
+    _bool_buf = ffi.new('bool[1]'),
 }
 
-local COM_NAMES = {}
-for k, v in pairs(Components) do
-    table.insert(COM_NAMES, k)
+-- TODO: move to gconsts
+local component_names = {}
+for k, _ in pairs(components) do
+    table.insert(component_names, k)
 end
-table.sort(COM_NAMES)
-local COM_NAMES_C = ffi.new("const char*[?]", #COM_NAMES)
-for i=1, #COM_NAMES do
-    COM_NAMES_C[i-1] = ffi.cast("const char*", COM_NAMES[i])
+table.sort(component_names)
+local function get_component_by_name(name)
+    return components[name]
 end
-local selectedComponent = ffi.new('int[1]', 0)
-
-function Inspector:_setFloatManpitBufferFromVec3(vec3)
-    self.manipBuf3[0] = vec3.x
-    self.manipBuf3[1] = vec3.y
-    self.manipBuf3[2] = vec3.z
+local function get_component_by_index(i)
+    return get_component_by_name(component_names[gmath.clamp(i, 1, #component_names)])
 end
 
-function Inspector:_getFloatManipBufferAsVec3()
-    return Vec3(self.manipBuf3[0], self.manipBuf3[1], self.manipBuf3[2])
+local component_names_with_icons = {}
+for k, _ in pairs(components) do
+    table.insert(component_names_with_icons, k)
 end
 
-function Inspector:_inspectVec3(name, vec3, step)
+component_names_with_icons['transform'] = icons.i_arrows_alt .. ' Transform'
+component_names_with_icons['camera'] = icons.i_camera .. ' Camera'
+component_names_with_icons['light'] = icons.i_lightbulb .. ' Light'
+
+table.sort(component_names_with_icons)
+local component_names_c = ffi.new("const char*[?]", #component_names_with_icons)
+for i = 1, #component_names_with_icons do
+    component_names_c[i - 1] = ffi.cast("const char*", component_names_with_icons[i])
+end
+local selected_component_idx = ffi.new('int[1]', 0)
+
+function inspector:_inspect_float(name, value, step, min, max, fmt)
     step = step or 0.1
-    self:_setFloatManpitBufferFromVec3(vec3)
-    local changed = UI.DragFloat3(name, self.manipBuf3, step)
-    if changed then
-        return changed, self:_getFloatManipBufferAsVec3()
+    min = min or -math.huge
+    max = max or math.huge
+    fmt = fmt or '%.3f'
+    self._float_buf[0] = value
+    local updated = ui.DragFloat(name, self._float_buf, step, min, max, fmt)
+    if updated then
+        return updated, self._float_buf[0]
     end
-    return changed, vec3
+    return updated, value
 end
 
-function Inspector:_perComponentBaseTools(instance, id)
-    if UI.Button(ICONS.TRASH) then
-        instance:remove()
-        self.propertiesChanged = true
+function inspector:_inspect_vec2(name, vector2, step, min, max, fmt)
+    step = step or 0.1
+    min = min or -math.huge
+    max = max or math.huge
+    fmt = fmt or '%.3f'
+    self._vec2_buf[0] = vector2.x
+    self._vec2_buf[1] = vector2.y
+    local updated = ui.DragFloat2(name, self._vec2_buf, step, min, max, fmt)
+    if updated then
+        return updated, vec2(self._vec2_buf[0], self._vec2_buf[1])
+    end
+    return updated, vector2
+end
+
+function inspector:_inspect_vec3(name, vector3, step, min, max, fmt)
+    step = step or 0.1
+    min = min or -math.huge
+    max = max or math.huge
+    fmt = fmt or '%.3f'
+    self._vec3_buf[0] = vector3.x
+    self._vec3_buf[1] = vector3.y
+    self._vec3_buf[2] = vector3.z
+    local updated = ui.DragFloat3(name, self._vec3_buf, step, min, max, fmt)
+    if updated then
+        return updated, vec3(self._vec3_buf[0], self._vec3_buf[1], self._vec3_buf[2])
+    end
+    return updated, vector3
+end
+
+function inspector:_component_base_header()
+    ui.PushStyleColor(ffi.C.ImGuiCol_Border, 0)
+    ui.PushStyleColor(ffi.C.ImGuiCol_Button, 0)
+    ui.SameLine(ui.GetWindowWidth() - header_buttons_offset)
+    if ui.SmallButton(icons.i_trash_restore) then
+        self.properties_changed = true
         return false
     end
-    if UI.IsItemHovered() then
-        UI.SetTooltip('Remove component')
+    if ui.IsItemHovered() then
+        ui.SetTooltip('Reset component to default values')
     end
-    UI.SameLine()
-    if UI.Button(ICONS.TRASH_RESTORE..' Reset') then
-        instance:remove()
-        self.selectedEntity:getComponent(id)
-        self.propertiesChanged = true
+    ui.SameLine()
+    if ui.SmallButton(icons.i_trash) then
+        self.properties_changed = true
         return false
     end
-    if UI.IsItemHovered() then
-        UI.SetTooltip('Reset component')
+    if ui.IsItemHovered() then
+        ui.SetTooltip('Remove component')
     end
+    ui.PopStyleColor(2)
     return true
 end
 
-function Inspector:_inspectTransform()
-    local transform = self.selectedEntity:getComponent(Components.Transform)
-    if UI.CollapsingHeader(ICONS.ARROWS_ALT..' Transform', ffi.C.ImGuiTreeNodeFlags_DefaultOpen) then
-        if not self._perComponentBaseTools(transform, Components.Transform) then
+function inspector:_inspect_component_transform()
+    local c_transform = self.selected_entity:get_component(components.transform)
+    if ui.CollapsingHeader(icons.i_arrows_alt .. ' Transform', inspector_header_flags) then
+        if not self:_component_base_header() then
+            self.selected_entity:remove_component(components.transform)
             return
         end
-        local pos = transform:getPosition()
-        local rot = transform:getRotation()
-        local scale = transform:getScale()
-        UI.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff88ff88)
-        local changed, pos = self:_inspectVec3(ICONS.ARROWS_ALT..' Position', pos)
-        if changed then
-            transform:setPosition(pos)
-            self.propertiesChanged = true
+        local pos = c_transform:get_position()
+        local rx, ry, rz = quat.to_euler(c_transform:get_rotation())
+        local rot = vec3(deg(rx), deg(ry), deg(rz))
+        local scale = c_transform:get_scale()
+        ui.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff88ff88)
+        local updated, pos = self:_inspect_vec3(icons.i_arrows_alt .. ' Position', pos)
+        if updated then
+            c_transform:set_position(pos)
+            self.properties_changed = true
         end
-        UI.PopStyleColor()
-        UI.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff8888ff)
-        local changed, rot = self:_inspectVec3(ICONS.REDO_ALT..' Rotation', rot)
-        if changed then
-            transform:setRotation(rot)
-            self.propertiesChanged = true
+        ui.PopStyleColor()
+        ui.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff8888ff)
+        local updated, rot = self:_inspect_vec3(icons.i_redo_alt .. ' Rotation', rot)
+        if updated then
+            c_transform:set_rotation(quat.from_euler(rad(rot.x), rad(rot.y), rad(rot.z)))
+            self.properties_changed = true
         end
-        UI.PopStyleColor()
-        UI.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff88ffff)
-        local changed, scale = self:_inspectVec3(ICONS.EXPAND_ARROWS..' Scale', scale)
-        if changed then
-            transform:setScale(scale)
-            self.propertiesChanged = true
+        ui.PopStyleColor()
+        ui.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff88ffff)
+        local updated, scale = self:_inspect_vec3(icons.i_expand_arrows .. ' Scale', scale)
+        if updated then
+            c_transform:set_scale(scale)
+            self.properties_changed = true
         end
-        UI.PopStyleColor()
+        ui.PopStyleColor()
     end
 end
 
-function Inspector:render()
-    self.propertiesChanged = false
-    UI.SetNextWindowSize(WINDOW_SIZE, ffi.C.ImGuiCond_FirstUseEver)
-    if UI.Begin(self.name, self.isVisible) then
-        local entity = self.selectedEntity
-        if not entity or not entity:isValid() then
-            UI.TextUnformatted('No entity selected')
+function inspector:_inspect_component_camera()
+    local c_camera = self.selected_entity:get_component(components.camera)
+    if ui.CollapsingHeader(icons.i_camera .. ' Camera', inspector_header_flags) then
+        if not self:_component_base_header() then
+            self.selected_entity:remove_component(components.camera)
+            return
+        end
+        local fov = c_camera:get_fov()
+        local updated, fov = self:_inspect_float(icons.i_eye .. ' FOV', fov, 0.1, 1.0, 180.0, '%.0f')
+        if updated then
+            c_camera:set_fov(fov)
+            self.properties_changed = true
+        end
+        local near_z_clip = c_camera:get_near_clip()
+        local updated, near_z_clip = self:_inspect_float(icons.i_sign_in_alt .. ' Near Clip', near_z_clip, 1.0, 0.1, 10000.0, '%.0f')
+        if updated then
+            c_camera:set_near_clip(near_z_clip)
+            self.properties_changed = true
+        end
+        local far_z_clip = c_camera:get_far_clip()
+        local updated, far_z_clip = self:_inspect_float(icons.i_sign_out_alt .. ' Far Clip', far_z_clip, 1.0, 0.1, 10000.0, '%.0f')
+        if updated then
+            c_camera:set_far_clip(far_z_clip)
+            self.properties_changed = true
+        end
+    end
+end
+
+function inspector:render()
+    self.properties_changed = false
+    self.name_changed = false
+    ui.SetNextWindowSize(default_window_size, ffi.C.ImGuiCond_FirstUseEver)
+    if ui.Begin(self.name, self.is_visible) then
+        local entity = self.selected_entity
+        if not entity or not entity:is_valid() then
+            ui.TextUnformatted('No entity selected')
         else
-            UI.Combo('##ComponentType', selectedComponent, COM_NAMES_C, #COM_NAMES)
-            if UI.IsItemHovered() then
-                UI.SetTooltip('New component type to add')
+            ui.Combo('##ComponentType', selected_component_idx, component_names_c, #component_names_with_icons)
+            if ui.IsItemHovered() then
+                ui.SetTooltip('New component type to add')
             end
-            UI.SameLine()
-            if UI.Button(ICONS.PLUS..' Add') then
-                entity:getComponent(Components[COM_NAMES[selectedComponent[0]+1]])
-                self.propertiesChanged = true
+            ui.SameLine()
+            if ui.Button(icons.i_plus .. ' Add') then
+                entity:get_component(get_component_by_index(selected_component_idx[0] + 1))
+                self.properties_changed = true
             end
-            if UI.IsItemHovered() then
-                UI.SetTooltip('Add new component')
+            if ui.IsItemHovered() then
+                ui.SetTooltip('Add new component')
             end
-            if UI.CollapsingHeader(ICONS.INFO_CIRCLE..' General', ffi.C.ImGuiTreeNodeFlags_DefaultOpen) then
-                local name = entity:getName()
-                if #name >= MAX_TEXT_INPUT_SIZE then
-                    name = name:sub(1, MAX_TEXT_INPUT_SIZE-1)
+            if ui.CollapsingHeader(icons.i_cogs .. ' Entity', ffi.C.ImGuiTreeNodeFlags_DefaultOpen) then
+                local name = entity:get_name()
+                if #name >= max_name_text_len then
+                    name = name:sub(1, max_name_text_len-1)
                 end
-                ffi.copy(self.inputTextBuffer, name)
-                if UI.InputText('Name', self.inputTextBuffer, MAX_TEXT_INPUT_SIZE) then
-                    entity:setName(ffi.string(self.inputTextBuffer))
-                    self.propertiesChanged = true
+                ffi.copy(self._text_buf, name)
+                if ui.InputText('Name', self._text_buf, max_name_text_len) then
+                    entity:set_name(ffi.string(self._text_buf))
+                    self.name_changed = true
                 end
-                local hidden = entity:hasFlag(EFLAGS.HIDDEN)
-                self.manipBufBool[0] = hidden
-                UI.Checkbox(ICONS.EYE_SLASH..' Hidden', self.manipBufBool)
-                if hidden ~= self.manipBufBool[0] then
-                    entity:setFlags(bxor(entity:getFlags(), EFLAGS.HIDDEN))
-                    self.propertiesChanged = true
+                local hidden = entity:has_flag(entity_flags.hidden)
+                self._bool_buf[0] = hidden
+                ui.Checkbox(icons.i_eye_slash .. ' Hidden', self._bool_buf)
+                if hidden ~= self._bool_buf[0] then
+                    entity:set_flags(bxor(entity:get_flags(), entity_flags.hidden))
+                    self.properties_changed = true
                 end
-                local static = entity:hasFlag(EFLAGS.STATIC)
-                self.manipBufBool[0] = static
-                UI.Checkbox(ICONS.DO_NOT_ENTER..' Static', self.manipBufBool)
-                if static ~= self.manipBufBool[0] then
-                    entity:setFlags(bxor(entity:getFlags(), EFLAGS.STATIC))
-                    self.propertiesChanged = true
+                local static = entity:has_flag(entity_flags.static)
+                self._bool_buf[0] = static
+                ui.Checkbox(icons.i_do_not_enter .. ' Static', self._bool_buf)
+                if static ~= self._bool_buf[0] then
+                    entity:set_flags(bxor(entity:get_flags(), entity_flags.static))
+                    self.properties_changed = true
                 end
-                local transient = entity:hasFlag(EFLAGS.TRANSIENT)
-                self.manipBufBool[0] = transient
-                UI.Checkbox(ICONS.ALARM_CLOCK..' Transient', self.manipBufBool)
-                if transient ~= self.manipBufBool[0] then
-                    entity:setFlags(bxor(entity:getFlags(), EFLAGS.TRANSIENT))
-                    self.propertiesChanged = true
+                local transient = entity:has_flag(entity_flags.transient)
+                self._bool_buf[0] = transient
+                ui.Checkbox(icons.i_alarm_clock .. ' Transient', self._bool_buf)
+                if transient ~= self._bool_buf[0] then
+                    entity:set_flags(bxor(entity:get_flags(), entity_flags.transient))
+                    self.properties_changed = true
                 end
-                -- UI.Separator()
-                -- UI.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff888888)
-                -- UI.TextUnformatted(string.format('ID: 0x%x', tonumber(entity.id)))
-                -- UI.TextUnformatted(string.format('Valid: %s', entity:isValid() and 'yes' or 'no'))
-                -- UI.TextUnformatted(string.format('ID Address: %p', entity.id))
-                -- UI.PopStyleColor()
+                -- ui.Separator()
+                -- ui.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff888888)
+                -- ui.TextUnformatted(string.format('ID: 0x%x', tonumber(entity.id)))
+                -- ui.TextUnformatted(string.format('Valid: %s', entity:isValid() and 'yes' or 'no'))
+                -- ui.TextUnformatted(string.format('ID Address: %p', entity.id))
+                -- ui.PopStyleColor()
             end
-            if entity:hasComponent(Components.Transform) then
-                self:_inspectTransform()
+            if entity:has_component(components.transform) then -- TODO: replace by lookup table
+                self:_inspect_component_transform()
+            end
+            if entity:has_component(components.camera) then
+                self:_inspect_component_camera()
             end
         end
     end
-    UI.End()
+    ui.End()
 end
 
-return Inspector
+return inspector

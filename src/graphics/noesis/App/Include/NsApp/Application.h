@@ -21,7 +21,8 @@ namespace NoesisApp
             Noesis::RenderDevice* device,
             const Noesis::Uri& startupUri,
             std::uint16_t width,
-            std::uint16_t height
+            std::uint16_t height,
+            bool wireframe
         ) -> void;
         auto Tick() -> void;
         auto Resize() -> void;

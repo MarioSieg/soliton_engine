@@ -3,64 +3,19 @@
 #include "scene.hpp"
 #include "../core/kernel.hpp"
 #include "../graphics/mesh.hpp"
+#include "../graphics/mesh_utils.hpp"
 #include "../graphics/vulkancore/context.hpp"
 
 #include <filesystem>
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
-#include <assimp/StringComparison.h>
-#include <assimp/IOSystem.hpp>
-#include <assimp/DefaultIOStream.h>
-#include <assimp/DefaultIOSystem.h>
 #include <ankerl/unordered_dense.h>
 #include <DirectXMath.h>
-#include <assimp/DefaultLogger.hpp>
-#include <assimp/LogStream.hpp>
 #include <bimg/bimg.h>
 #include <bimg/decode.h>
 
-namespace assetmgr {
-    extern constinit std::atomic_size_t s_asset_requests;
-    extern constinit std::atomic_size_t s_total_bytes_loaded;
-};
-
-class lunam_io_stream : public Assimp::DefaultIOStream {
-public:
-    lunam_io_stream(std::FILE* pFile, const std::string& strFilename) : Assimp::DefaultIOStream{pFile, strFilename} {}
-    auto Read(void* pvBuffer, size_t pSize, size_t pCount) -> size_t override {
-        assetmgr::s_total_bytes_loaded.fetch_add(pSize * pCount, std::memory_order_relaxed);
-        return Assimp::DefaultIOStream::Read(pvBuffer, pSize, pCount);
-    }
-};
-
-class lunam_assimp_io_system : public Assimp::DefaultIOSystem {
-public:
-    auto Open(const char* file, const char* mode = "rb") -> Assimp::IOStream* override {
-        assetmgr::s_asset_requests.fetch_add(1, std::memory_order_relaxed);
-        std::FILE* f = std::fopen(file, mode);
-        if (!f) [[unlikely]] {
-            log_error("Failed to open file '{}'", file);
-            return nullptr;
-        }
-        return new lunam_io_stream {f, file};
-    }
-    auto Close(Assimp::IOStream* f) -> void override {
-        delete f;
-    }
-};
-
 auto scene::import_from_file(const std::string& path, const float scale, const std::uint32_t load_flags) -> void {
-    class assimp_logger final : public Assimp::LogStream {
-        auto write(const char* message) -> void override {
-            const auto len = std::strlen(message);
-            auto* copy = static_cast<char*>(alloca(len));
-            std::memcpy(copy, message, len);
-            copy[len-1] = '\0'; // replace \n with \0
-            log_info("[WorldImporter]: {}", copy);
-        }
-    };
-
     log_info("Importing scene from file '{}'", path);
 
     Assimp::DefaultLogger::create("", Assimp::Logger::NORMAL);
@@ -79,7 +34,7 @@ auto scene::import_from_file(const std::string& path, const float scale, const s
     const std::string asset_root = std::filesystem::path {path}.parent_path().string() + "/";
 
     auto* missing_material = get_asset_registry<graphics::material>().load_from_memory();
-    missing_material->albedo_map = get_asset_registry<graphics::texture>().load("assets/textures/system/error.png");
+    missing_material->albedo_map = graphics::material::get_error_texture();
     missing_material->flush_property_updates();
 
     ankerl::unordered_dense::map<std::string, std::uint32_t> resolved_names {};
@@ -126,7 +81,9 @@ auto scene::import_from_file(const std::string& path, const float scale, const s
                     aiString name {};
                     mat->Get(AI_MATKEY_TEXTURE(*textureType, 0), name);
                     std::string tex_path = asset_root + name.C_Str();
-                    return get_asset_registry<graphics::texture>().load(std::move(tex_path));
+                    if (assetmgr::validate_path(tex_path)) [[likely]] {
+                        return get_asset_registry<graphics::texture>().load(std::move(tex_path));
+                    }
                 }
                 return nullptr;
             };
@@ -134,6 +91,8 @@ auto scene::import_from_file(const std::string& path, const float scale, const s
             auto* material = get_asset_registry<graphics::material>().load_from_memory();
             material->albedo_map = load_tex({aiTextureType_DIFFUSE, aiTextureType_BASE_COLOR});
             material->normal_map = load_tex({aiTextureType_NORMALS, aiTextureType_NORMAL_CAMERA});
+            material->metallic_roughness_map = load_tex({aiTextureType_SPECULAR, aiTextureType_METALNESS, aiTextureType_DIFFUSE_ROUGHNESS, aiTextureType_SHININESS});
+            material->ambient_occlusion_map = load_tex({aiTextureType_AMBIENT_OCCLUSION});
             material->flush_property_updates();
 
             renderer->materials.emplace_back(material);

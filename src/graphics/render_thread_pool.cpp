@@ -17,13 +17,12 @@ namespace graphics {
         thread_shared_ctx& shared_ctx
     ) : m_token {token}, m_num_threads {num_threads}, m_thread_id {thread_id}, m_shared_ctx {shared_ctx} {
         const vk::Device device = vkb::vkdvc();
-
         // create command pool
         const vk::CommandPoolCreateInfo pool_info {
             .flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer,
             .queueFamilyIndex = vkb::dvc().get_graphics_queue_idx()
         };
-        vkcheck(device.createCommandPool(&pool_info, &vkb::s_allocator, &m_command_pool));
+        vkcheck(device.createCommandPool(&pool_info, vkb::get_alloc(), &m_command_pool));
 
         const vk::CommandBufferAllocateInfo alloc_info {
             .commandPool = m_command_pool,
@@ -33,7 +32,7 @@ namespace graphics {
         vkcheck(device.allocateCommandBuffers(&alloc_info, m_command_buffers.data()));
 
         // start thread
-        m_thread = std::thread { [=, this] { thread_routine(); }};
+        m_thread = std::thread { [=, this] () -> void { thread_routine(); }};
     }
 
     render_thread::~render_thread() {
@@ -43,7 +42,7 @@ namespace graphics {
         }
         const vk::Device device = vkb::vkdvc();
         device.freeCommandBuffers(m_command_pool, vkb::context::k_max_concurrent_frames, m_command_buffers.data());
-        device.destroyCommandPool(m_command_pool, &vkb::s_allocator);
+        device.destroyCommandPool(m_command_pool, vkb::get_alloc());
     }
 
     HOTPROC auto render_thread::thread_routine() -> void {
@@ -87,7 +86,7 @@ namespace graphics {
             .pInheritanceInfo = m_shared_ctx.inheritance_info
         };
 
-        m_active_command_buffer = m_command_buffers[vkb::context::s_instance->get_current_frame()];
+        m_active_command_buffer = m_command_buffers[vkb::ctx().get_current_frame()];
         vkcheck(m_active_command_buffer.begin(&begin_info));
 
         const auto w = static_cast<float>(vkb::ctx().get_width());

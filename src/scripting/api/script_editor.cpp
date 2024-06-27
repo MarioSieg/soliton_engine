@@ -3,7 +3,7 @@
 #include "_prelude.hpp"
 #include "../../graphics/imgui/text_editor.hpp"
 
-[[nodiscard]] static auto getEditor() -> TextEditor& { // lazy init
+[[nodiscard]] static auto get_editor() -> TextEditor& { // lazy init
     static const std::unique_ptr<TextEditor> g_editor = [] {
         auto editor = std::make_unique<TextEditor>();
         editor->SetLanguageDefinition(TextEditor::LanguageDefinition::Lua());
@@ -15,40 +15,40 @@ static std::string g_editor_text;
 
 LUA_INTEROP_API auto __lu_script_editor_render(const char* title) -> void {
     title = title ? title : "Script Editor";
-    getEditor().Render(title, {}, true);
+    get_editor().Render(title, {}, true);
 }
 
 LUA_INTEROP_API auto __lu_script_editor_set_text(const char* text) -> void {
     text = text ? text : "?!";
-    getEditor().SetText(text);
+    get_editor().SetText(text);
 }
 
 LUA_INTEROP_API auto __lu_script_editor_get_text() -> const char* {
-    g_editor_text = getEditor().GetText();
+    g_editor_text = get_editor().GetText();
     return g_editor_text.c_str();
 }
 
 LUA_INTEROP_API auto __lu_script_editor_get_text_len() -> std::size_t {
-    g_editor_text = getEditor().GetText();
+    g_editor_text = get_editor().GetText();
     return g_editor_text.size();
 }
 
 LUA_INTEROP_API auto __lu_script_editor_redo() -> void {
-    if (getEditor().CanRedo()) {
-        getEditor().Redo();
+    if (get_editor().CanRedo()) {
+        get_editor().Redo();
     }
 }
 
 LUA_INTEROP_API auto __lu_script_editor_undo() -> void {
-    if (getEditor().CanUndo()) {
-        getEditor().Undo();
+    if (get_editor().CanUndo()) {
+        get_editor().Undo();
     }
 }
 
 LUA_INTEROP_API auto __lu_script_editor_set_readonly(const bool readonly) -> void {
-    getEditor().SetReadOnly(readonly);
+    get_editor().SetReadOnly(readonly);
 }
 
 LUA_INTEROP_API auto __lu_script_editor_has_text_changed() -> bool {
-    return getEditor().IsTextChanged();
+    return get_editor().IsTextChanged();
 }

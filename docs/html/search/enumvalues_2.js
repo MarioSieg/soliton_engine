@@ -1,8 +1,7 @@
 var searchData=
 [
-  ['background_0',['Background',['../class_text_editor.html#acb9bdc8f59e2fd152f423db095672fd9aa9ded1e5ce5d75814730bb4caaf49419',1,'TextEditor']]],
-  ['big_1',['BIG',['../namespacesimdutf.html#a4bfa8a9b32b9b52abbdde7c458290fb9ab3e432f36f75731ead119b4b32a5082d',1,'simdutf']]],
-  ['bmi1_2',['BMI1',['../namespacesimdutf_1_1internal.html#ac4f155d3cd7620e86db7e06af11d1d73a067a71b50209bc3fa541e6886fbf6535',1,'simdutf::internal']]],
-  ['bmi2_3',['BMI2',['../namespacesimdutf_1_1internal.html#ac4f155d3cd7620e86db7e06af11d1d73a63eb16a40c965cf73aacf9483cafea26',1,'simdutf::internal']]],
-  ['breakpoint_4',['Breakpoint',['../class_text_editor.html#acb9bdc8f59e2fd152f423db095672fd9a7129472c5eb598faf47e4e877f2618fd',1,'TextEditor']]]
+  ['glfwclientapi_5fopengl_0',['GlfwClientApi_OpenGL',['../imgui__impl__glfw_8cpp.html#abfd5392e93ee3c4e7f86cc5515e2d413a4bdb1206a80d2fecbccc1ba13a194189',1,'imgui_impl_glfw.cpp']]],
+  ['glfwclientapi_5funknown_1',['GlfwClientApi_Unknown',['../imgui__impl__glfw_8cpp.html#abfd5392e93ee3c4e7f86cc5515e2d413a64b18e86183bf2f895418038ae86fd97',1,'imgui_impl_glfw.cpp']]],
+  ['glfwclientapi_5fvulkan_2',['GlfwClientApi_Vulkan',['../imgui__impl__glfw_8cpp.html#abfd5392e93ee3c4e7f86cc5515e2d413aea35a390f6542022f5704637f7cbefb5',1,'imgui_impl_glfw.cpp']]],
+  ['graphics_3',['graphics',['../namespacegraphics.html#aa75145e4cda86d7a66d6739ccd38aeaea73b0472d43069103642ffa07997ff20a',1,'graphics']]]
 ];

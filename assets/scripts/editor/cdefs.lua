@@ -1,7 +1,7 @@
 --time_t needed for implot_internal
-local ffi = require"ffi"
-local IS_64_BIT = ffi.abi('64bit')
-local cdecl = ""
+local ffi = require'ffi'
+local is_64_bit = ffi.abi('64bit')
+local cdecl = ''
 cdecl = cdecl .. [[
 typedef struct tm
 {
@@ -16,8 +16,8 @@ typedef struct tm
    int tm_isdst ;
 } tm;
 ]]
-if ffi.os == "Windows" then
-	if IS_64_BIT then
+if ffi.os == 'Windows' then
+	if is_64_bit then
 		cdecl = cdecl..[[typedef __int64 time_t;]]
 	else
 		cdecl = cdecl..[[typedef __int32 time_t;]]
@@ -2442,7 +2442,7 @@ struct ImGuiContext
     float FontSize;
     float FontBaseSize;
     ImDrawListSharedData DrawListSharedData;
-    double Time;
+    double time;
     int FrameCount;
     int FrameCountEnded;
     int FrameCountPlatformEnded;
@@ -4960,7 +4960,7 @@ typedef struct ImPlotDateTimeSpec ImPlotDateTimeSpec;
 struct ImPlotDateTimeSpec
 {
     ImPlotDateFmt Date;
-    ImPlotTimeFmt Time;
+    ImPlotTimeFmt time;
    _Bool         UseISO8601;
    _Bool         Use24HourClock;
 };
@@ -5098,7 +5098,7 @@ struct ImPlotAlignmentData
 struct ImPlotItem
 {
     ImGuiID ID;
-    ImU32 Color;
+    ImU32 color;
     ImRect LegendHoverRect;
     int NameOffset;
    _Bool         Show;
@@ -5256,7 +5256,7 @@ struct ImPlotContext
 typedef struct Formatter_Time_Data Formatter_Time_Data;
 struct Formatter_Time_Data
 {
-    ImPlotTime Time;
+    ImPlotTime time;
     ImPlotDateTimeSpec Spec;
     ImPlotFormatter UserFormatter;
     void* UserFormatterData;
@@ -6637,7 +6637,7 @@ void Log_delete(Log* log);
 
 
 
-if jit.os == "Windows" then
+if jit.os == 'Windows' then
 cdecl = cdecl..[[
  
 // Helpers: UTF-8 <> wchar

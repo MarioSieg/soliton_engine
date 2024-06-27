@@ -1,0 +1,5081 @@
+---- TRACE 1 start time.lua:51
+---- TRACE 1 mcode 222
+55de2d8cff1b  mov dword [r14-0xef0], 0x1
+55de2d8cff26  movsd xmm7, [rdx+0x18]
+55de2d8cff2b  cvttsd2si eax, xmm7
+55de2d8cff2f  xorps xmm6, xmm6
+55de2d8cff32  cvtsi2sd xmm6, eax
+55de2d8cff36  ucomisd xmm7, xmm6
+55de2d8cff3a  jnz 0x55de2d8c004c	->0
+55de2d8cff40  jpe 0x55de2d8c004c	->0
+55de2d8cff46  cmp eax, 0x7ffffffe
+55de2d8cff4c  jg 0x55de2d8c004c	->0
+55de2d8cff52  cvttsd2si ebp, [rdx+0x10]
+55de2d8cff57  rorx r8, [rdx], 0x2f
+55de2d8cff5d  cmp r8w, -0x0c
+55de2d8cff62  jnz 0x55de2d8c004c	->0
+55de2d8cff68  shr r8, 0x11
+55de2d8cff6c  cmp dword [r8+0x34], +0x0f
+55de2d8cff71  jnz 0x55de2d8c004c	->0
+55de2d8cff77  mov rsi, [r8+0x28]
+55de2d8cff7b  mov rdi, 0xfffdff41d8fdaa50
+55de2d8cff85  cmp rdi, [rsi+0x98]
+55de2d8cff8c  jnz 0x55de2d8c004c	->0
+55de2d8cff92  rorx rcx, [rsi+0x90], 0x2f
+55de2d8cff9c  cmp cx, -0x0b
+55de2d8cffa0  jnz 0x55de2d8c004c	->0
+55de2d8cffa6  shr rcx, 0x11
+55de2d8cffaa  movzx ebx, word [rcx+0xa]
+55de2d8cffae  cmp ebx, 0x118
+55de2d8cffb4  jnz 0x55de2d8c004c	->0
+55de2d8cffba  xorps xmm7, xmm7
+55de2d8cffbd  cvtss2sd xmm7, [rcx+rbp*4+0x10]
+55de2d8cffc3  cmp dword [rdx+0xc], 0xfff90000
+55de2d8cffca  jnb 0x55de2d8c004c	->0
+55de2d8cffd0  addsd xmm7, [rdx+0x8]
+55de2d8cffd5  add ebp, +0x01
+55de2d8cffd8  cmp ebp, eax
+55de2d8cffda  jg 0x55de2d8c0050	->1
+->LOOP:
+55de2d8cffe0  xorps xmm6, xmm6
+55de2d8cffe3  cvtss2sd xmm6, [rcx+rbp*4+0x10]
+55de2d8cffe9  addsd xmm7, xmm6
+55de2d8cffed  add ebp, +0x01
+55de2d8cfff0  cmp ebp, eax
+55de2d8cfff2  jle 0x55de2d8cffe0	->LOOP
+55de2d8cfff4  jmp 0x55de2d8c0058	->3
+---- TRACE 1 stop -> loop
+
+---- TRACE 2 start editor.lua:549
+---- TRACE 2 abort inspector.lua:115 -- NYI: unsupported C function type
+
+---- TRACE 2 start terminal.lua:39
+---- TRACE 2 mcode 926
+55de2d8cfb7d  add rsp, -0x20
+55de2d8cfb81  mov dword [r14-0xef0], 0x2
+55de2d8cfb8c  movsd xmm7, [rdx+0x28]
+55de2d8cfb91  cvttsd2si ebx, xmm7
+55de2d8cfb95  xorps xmm6, xmm6
+55de2d8cfb98  cvtsi2sd xmm6, ebx
+55de2d8cfb9c  ucomisd xmm7, xmm6
+55de2d8cfba0  jnz 0x55de2d8c004c	->0
+55de2d8cfba6  jpe 0x55de2d8c004c	->0
+55de2d8cfbac  cmp ebx, 0x7ffffffe
+55de2d8cfbb2  jg 0x55de2d8c004c	->0
+55de2d8cfbb8  movsd xmm7, [rdx+0x20]
+55de2d8cfbbd  cvttsd2si ebp, xmm7
+55de2d8cfbc1  xorps xmm6, xmm6
+55de2d8cfbc4  cvtsi2sd xmm6, ebp
+55de2d8cfbc8  ucomisd xmm7, xmm6
+55de2d8cfbcc  jnz 0x55de2d8c004c	->0
+55de2d8cfbd2  jpe 0x55de2d8c004c	->0
+55de2d8cfbd8  rorx rcx, [rdx-0x10], 0x2f
+55de2d8cfbdf  shr rcx, 0x11
+55de2d8cfbe3  lea rdx, [r14+0xf7b8]
+55de2d8cfbea  mov rax, [rcx+0x10]
+55de2d8cfbee  cmp dword [rax+0x34], +0x3f
+55de2d8cfbf2  jnz 0x55de2d8c004c	->0
+55de2d8cfbf8  mov rax, [rax+0x28]
+55de2d8cfbfc  mov rdi, 0xfffdff41dc4beba8
+55de2d8cfc06  cmp rdi, [rax+0x50]
+55de2d8cfc0a  jnz 0x55de2d8c004c	->0
+55de2d8cfc10  rorx rax, [rax+0x48], 0x2f
+55de2d8cfc17  cmp ax, -0x0c
+55de2d8cfc1b  jnz 0x55de2d8c004c	->0
+55de2d8cfc21  shr rax, 0x11
+55de2d8cfc25  mov esi, [rax+0x30]
+55de2d8cfc28  cmp ebx, esi
+55de2d8cfc2a  jnb 0x55de2d8c004c	->0
+55de2d8cfc30  cmp ebp, esi
+55de2d8cfc32  jnb 0x55de2d8c004c	->0
+55de2d8cfc38  mov rax, [rax+0x10]
+55de2d8cfc3c  mov [rsp+0x8], rax
+55de2d8cfc41  rorx rax, [rax+rbp*8], 0x2f
+55de2d8cfc48  cmp ax, -0x0c
+55de2d8cfc4c  jnz 0x55de2d8c004c	->0
+55de2d8cfc52  shr rax, 0x11
+55de2d8cfc56  cmp dword [rax+0x30], +0x02
+55de2d8cfc5a  jbe 0x55de2d8c004c	->0
+55de2d8cfc60  mov rsi, [rax+0x10]
+55de2d8cfc64  mov [rsp+0x18], rsi
+55de2d8cfc69  cmp dword [rsi+0x14], 0xffff7fff
+55de2d8cfc70  jnz 0x55de2d8c004c	->0
+55de2d8cfc76  mov rdi, [rcx+0x28]
+55de2d8cfc7a  cmp byte [rdi+0xa], 0x0
+55de2d8cfc7e  jz 0x55de2d8c004c	->0
+55de2d8cfc84  lea rax, [rdi+0x10]
+55de2d8cfc88  rorx rax, [rax], 0x2f
+55de2d8cfc8e  cmp ax, -0x0c
+55de2d8cfc92  jnz 0x55de2d8c004c	->0
+55de2d8cfc98  shr rax, 0x11
+55de2d8cfc9c  cmp dword [rax+0x34], 0x7ff
+55de2d8cfca3  jnz 0x55de2d8c004c	->0
+55de2d8cfca9  mov rax, [rax+0x28]
+55de2d8cfcad  mov [rsp+0x10], rax
+55de2d8cfcb2  mov rdi, 0xfffdff41bb8c0548
+55de2d8cfcbc  cmp rdi, [rax+0xfe0]
+55de2d8cfcc3  jnz 0x55de2d8c004c	->0
+55de2d8cfcc9  rorx rax, [rax+0xfd8], 0x2f
+55de2d8cfcd3  cmp ax, -0x0b
+55de2d8cfcd7  jnz 0x55de2d8c004c	->0
+55de2d8cfcdd  shr rax, 0x11
+55de2d8cfce1  mov rdi, [rcx+0x30]
+55de2d8cfce5  cmp byte [rdi+0xa], 0x0
+55de2d8cfce9  jz 0x55de2d8c004c	->0
+55de2d8cfcef  lea rcx, [rdi+0x10]
+55de2d8cfcf3  rorx rcx, [rcx], 0x2f
+55de2d8cfcf9  cmp cx, -0x0c
+55de2d8cfcfd  jnz 0x55de2d8c004c	->0
+55de2d8cfd03  shr rcx, 0x11
+55de2d8cfd07  cmp dword [rcx+0x34], +0x1f
+55de2d8cfd0b  jnz 0x55de2d8c004c	->0
+55de2d8cfd11  mov rcx, [rcx+0x28]
+55de2d8cfd15  mov rdi, 0xfffdff41dc4bac78
+55de2d8cfd1f  cmp rdi, [rcx+0x2c0]
+55de2d8cfd26  jnz 0x55de2d8c004c	->0
+55de2d8cfd2c  rorx rcx, [rcx+0x2b8], 0x2f
+55de2d8cfd36  cmp cx, -0x0d
+55de2d8cfd3a  jnz 0x55de2d8c004c	->0
+55de2d8cfd40  shr rcx, 0x11
+55de2d8cfd44  cmp rcx, rdx
+55de2d8cfd47  jnz 0x55de2d8c004c	->0
+55de2d8cfd4d  movzx ecx, word [rax+0xa]
+55de2d8cfd51  cmp ecx, 0xf32
+55de2d8cfd57  jnz 0x55de2d8c004c	->0
+55de2d8cfd5d  mov r13, [rax+0x10]
+55de2d8cfd61  mov esi, 0xffffffff
+55de2d8cfd66  xor edi, edi
+55de2d8cfd68  call r13
+55de2d8cfd6b  mov rax, [rsp+0x10]
+55de2d8cfd70  mov rdi, 0xfffdff41bb8c0518
+55de2d8cfd7a  cmp rdi, [rax+0xfc8]
+55de2d8cfd81  jnz 0x55de2d8c0050	->1
+55de2d8cfd87  rorx rax, [rax+0xfc0], 0x2f
+55de2d8cfd91  cmp ax, -0x0b
+55de2d8cfd95  jnz 0x55de2d8c0050	->1
+55de2d8cfd9b  shr rax, 0x11
+55de2d8cfd9f  movzx ecx, word [rax+0xa]
+55de2d8cfda3  cmp ecx, 0xf6c
+55de2d8cfda9  jnz 0x55de2d8c0050	->1
+55de2d8cfdaf  mov r12, [rax+0x10]
+55de2d8cfdb3  call r12
+55de2d8cfdb6  mov rsi, [rsp+0x18]
+55de2d8cfdbb  lea rdx, [r14-0x20fcdca8]
+55de2d8cfdc2  lea rcx, [r14+0xf7b8]
+55de2d8cfdc9  mov rax, [rsp+0x10]
+55de2d8cfdce  mov rdi, 0xfffdff41bb8c23e8
+55de2d8cfdd8  cmp rdi, [rax+0x1340]
+55de2d8cfddf  jnz 0x55de2d8c0054	->2
+55de2d8cfde5  rorx rax, [rax+0x1338], 0x2f
+55de2d8cfdef  cmp ax, -0x09
+55de2d8cfdf3  jnz 0x55de2d8c0054	->2
+55de2d8cfdf9  shr rax, 0x11
+55de2d8cfdfd  rorx rdi, [rsi+0x8], 0x2f
+55de2d8cfe04  cmp di, -0x05
+55de2d8cfe08  jnz 0x55de2d8c0054	->2
+55de2d8cfe0e  shr rdi, 0x11
+55de2d8cfe12  cmp rax, rdx
+55de2d8cfe15  jnz 0x55de2d8c0054	->2
+55de2d8cfe1b  rorx rax, [r14-0x20fa2b78], 0x2f
+55de2d8cfe25  cmp ax, -0x0d
+55de2d8cfe29  jnz 0x55de2d8c0054	->2
+55de2d8cfe2f  shr rax, 0x11
+55de2d8cfe33  cmp rax, rcx
+55de2d8cfe36  jnz 0x55de2d8c0054	->2
+55de2d8cfe3c  add rdi, +0x18
+55de2d8cfe40  xor esi, esi
+55de2d8cfe42  call 0x55de54590e90
+55de2d8cfe47  lea rcx, [r14-0x20fd0b40]
+55de2d8cfe4e  mov rax, [rsp+0x10]
+55de2d8cfe53  mov rdi, 0xfffdff41bb8c1ea0
+55de2d8cfe5d  cmp rdi, [rax+0x1088]
+55de2d8cfe64  jnz 0x55de2d8c0058	->3
+55de2d8cfe6a  rorx rax, [rax+0x1080], 0x2f
+55de2d8cfe74  cmp ax, -0x09
+55de2d8cfe78  jnz 0x55de2d8c0058	->3
+55de2d8cfe7e  shr rax, 0x11
+55de2d8cfe82  cmp rax, rcx
+55de2d8cfe85  jnz 0x55de2d8c0058	->3
+55de2d8cfe8b  mov edi, 0x1
+55de2d8cfe90  call 0x55de54590880
+55de2d8cfe95  add ebp, +0x01
+55de2d8cfe98  cmp ebp, ebx
+55de2d8cfe9a  jg 0x55de2d8c005c	->4
+->LOOP:
+55de2d8cfea0  mov rax, [rsp+0x8]
+55de2d8cfea5  rorx r15, [rax+rbp*8], 0x2f
+55de2d8cfeac  cmp r15w, -0x0c
+55de2d8cfeb1  jnz 0x55de2d8c0060	->5
+55de2d8cfeb7  shr r15, 0x11
+55de2d8cfebb  cmp dword [r15+0x30], +0x02
+55de2d8cfec0  jbe 0x55de2d8c0060	->5
+55de2d8cfec6  mov r15, [r15+0x10]
+55de2d8cfeca  cmp dword [r15+0x14], 0xffff7fff
+55de2d8cfed2  jnz 0x55de2d8c0060	->5
+55de2d8cfed8  mov esi, 0xffffffff
+55de2d8cfedd  xor edi, edi
+55de2d8cfedf  call r13
+55de2d8cfee2  call r12
+55de2d8cfee5  rorx rdi, [r15+0x8], 0x2f
+55de2d8cfeec  cmp di, -0x05
+55de2d8cfef0  jnz 0x55de2d8c0064	->6
+55de2d8cfef6  shr rdi, 0x11
+55de2d8cfefa  add rdi, +0x18
+55de2d8cfefe  xor esi, esi
+55de2d8cff00  call 0x55de54590e90
+55de2d8cff05  mov edi, 0x1
+55de2d8cff0a  call 0x55de54590880
+55de2d8cff0f  add ebp, +0x01
+55de2d8cff12  cmp ebp, ebx
+55de2d8cff14  jle 0x55de2d8cfea0	->LOOP
+55de2d8cff16  jmp 0x55de2d8c0068	->7
+---- TRACE 2 stop -> loop
+
+---- TRACE 3 start imgui.lua:6336
+---- TRACE 3 abort entity_list_view.lua:69 -- NYI: unsupported C function type
+
+---- TRACE 3 start app.lua:90
+---- TRACE 3 abort camera.lua:54 -- NYI: unsupported C function type
+
+---- TRACE 3 start 1/3 time.lua:56
+---- TRACE 3 abort debug.lua:33 -- NYI: unsupported C function type
+
+---- TRACE 3 start 1/3 time.lua:56
+---- TRACE 3 abort debug.lua:33 -- NYI: unsupported C function type
+
+---- TRACE 3 start 1/3 time.lua:56
+---- TRACE 3 abort debug.lua:33 -- NYI: unsupported C function type
+
+---- TRACE 3 start imgui.lua:6930
+---- TRACE 3 abort terminal.lua:27 -- NYI: unsupported C function type
+
+---- TRACE 3 start editor.lua:549
+---- TRACE 3 mcode 874
+55de2d8cf813  add rsp, -0x20
+55de2d8cf817  mov dword [r14-0xef0], 0x3
+55de2d8cf822  lea r8, [r14-0x21092018]
+55de2d8cf829  movsd xmm7, [rdx+0x10]
+55de2d8cf82e  cvttsd2si ebx, xmm7
+55de2d8cf832  xorps xmm6, xmm6
+55de2d8cf835  cvtsi2sd xmm6, ebx
+55de2d8cf839  ucomisd xmm7, xmm6
+55de2d8cf83d  jnz 0x55de2d8c004c	->0
+55de2d8cf843  jpe 0x55de2d8c004c	->0
+55de2d8cf849  cmp ebx, 0x7ffffffe
+55de2d8cf84f  jg 0x55de2d8c004c	->0
+55de2d8cf855  cvttsd2si ebp, [rdx+0x8]
+55de2d8cf85a  rorx rax, [rdx], 0x2f
+55de2d8cf860  cmp ax, -0x0c
+55de2d8cf864  jnz 0x55de2d8c004c	->0
+55de2d8cf86a  shr rax, 0x11
+55de2d8cf86e  lea rdx, [r14-0x20fbe318]
+55de2d8cf875  cmp dword [rax+0x34], +0x1f
+55de2d8cf879  jnz 0x55de2d8c004c	->0
+55de2d8cf87f  mov rax, [rax+0x28]
+55de2d8cf883  mov rdi, 0xfffdff41bb8ba678
+55de2d8cf88d  cmp rdi, [rax+0x140]
+55de2d8cf894  jnz 0x55de2d8c004c	->0
+55de2d8cf89a  rorx rax, [rax+0x138], 0x2f
+55de2d8cf8a4  cmp ax, -0x0c
+55de2d8cf8a8  jnz 0x55de2d8c004c	->0
+55de2d8cf8ae  shr rax, 0x11
+55de2d8cf8b2  cmp ebx, [rax+0x30]
+55de2d8cf8b5  jnb 0x55de2d8c004c	->0
+55de2d8cf8bb  mov rcx, [rax+0x10]
+55de2d8cf8bf  mov [rsp+0x8], rcx
+55de2d8cf8c4  rorx rcx, [rcx+rbp*8], 0x2f
+55de2d8cf8cb  cmp cx, -0x0c
+55de2d8cf8cf  jnz 0x55de2d8c004c	->0
+55de2d8cf8d5  shr rcx, 0x11
+55de2d8cf8d9  mov [rsp+0x18], rcx
+55de2d8cf8de  cmp dword [rcx+0x34], +0x03
+55de2d8cf8e2  jnz 0x55de2d8c004c	->0
+55de2d8cf8e8  mov rdi, [rcx+0x28]
+55de2d8cf8ec  lea rcx, [r14+0xf7b8]
+55de2d8cf8f3  mov rsi, 0xfffdff41d8fdb6e8
+55de2d8cf8fd  cmp rsi, [rdi+0x20]
+55de2d8cf901  jnz 0x55de2d8c004c	->0
+55de2d8cf907  rorx rsi, [rdi+0x18], 0x2f
+55de2d8cf90e  cmp si, -0x0b
+55de2d8cf912  jnz 0x55de2d8c004c	->0
+55de2d8cf918  shr rsi, 0x11
+55de2d8cf91c  movzx eax, word [rsi+0xa]
+55de2d8cf920  cmp eax, 0x35a7
+55de2d8cf926  jnz 0x55de2d8c004c	->0
+55de2d8cf92c  add rsi, +0x10
+55de2d8cf930  cmp byte [rsi], 0x0
+55de2d8cf933  jz 0x55de2d8c004c	->0
+55de2d8cf939  mov rax, 0xfffdff41bb8ab500
+55de2d8cf943  cmp rax, [rdi+0x8]
+55de2d8cf947  jnz 0x55de2d8c004c	->0
+55de2d8cf94d  rorx rax, [rdi], 0x2f
+55de2d8cf953  cmp ax, -0x09
+55de2d8cf957  jnz 0x55de2d8c004c	->0
+55de2d8cf95d  shr rax, 0x11
+55de2d8cf961  cmp rax, r8
+55de2d8cf964  jnz 0x55de2d8c004c	->0
+55de2d8cf96a  rorx rax, [r14-0x21091f70], 0x2f
+55de2d8cf974  cmp ax, -0x0c
+55de2d8cf978  jnz 0x55de2d8c004c	->0
+55de2d8cf97e  shr rax, 0x11
+55de2d8cf982  cmp dword [rax+0x34], 0x7ff
+55de2d8cf989  jnz 0x55de2d8c004c	->0
+55de2d8cf98f  mov rax, [rax+0x28]
+55de2d8cf993  mov [rsp+0x10], rax
+55de2d8cf998  mov r15, 0xfffdff41bb8c4430
+55de2d8cf9a2  cmp r15, [rax+0x1808]
+55de2d8cf9a9  jnz 0x55de2d8c004c	->0
+55de2d8cf9af  rorx rax, [rax+0x1800], 0x2f
+55de2d8cf9b9  cmp ax, -0x09
+55de2d8cf9bd  jnz 0x55de2d8c004c	->0
+55de2d8cf9c3  shr rax, 0x11
+55de2d8cf9c7  mov r15, 0xfffdff41dc4c5908
+55de2d8cf9d1  cmp r15, [rdi+0x38]
+55de2d8cf9d5  jnz 0x55de2d8c004c	->0
+55de2d8cf9db  rorx rdi, [rdi+0x30], 0x2f
+55de2d8cf9e2  cmp di, -0x05
+55de2d8cf9e6  jnz 0x55de2d8c004c	->0
+55de2d8cf9ec  shr rdi, 0x11
+55de2d8cf9f0  cmp rax, rdx
+55de2d8cf9f3  jnz 0x55de2d8c004c	->0
+55de2d8cf9f9  rorx rax, [r14-0x20fa2b78], 0x2f
+55de2d8cfa03  cmp ax, -0x0d
+55de2d8cfa07  jnz 0x55de2d8c004c	->0
+55de2d8cfa0d  shr rax, 0x11
+55de2d8cfa11  cmp rax, rcx
+55de2d8cfa14  jnz 0x55de2d8c004c	->0
+55de2d8cfa1a  add rdi, +0x18
+55de2d8cfa1e  xor edx, edx
+55de2d8cfa20  call 0x55de54590160
+55de2d8cfa25  mov edx, eax
+55de2d8cfa27  mov rax, [rsp+0x10]
+55de2d8cfa2c  test dl, dl
+55de2d8cfa2e  jnz 0x55de2d8c0050	->1
+55de2d8cfa34  mov rdi, 0xfffdff41bb8ba840
+55de2d8cfa3e  cmp rdi, [rax+0xa928]
+55de2d8cfa45  jnz 0x55de2d8c0054	->2
+55de2d8cfa4b  rorx rax, [rax+0xa920], 0x2f
+55de2d8cfa55  cmp ax, -0x0b
+55de2d8cfa59  jnz 0x55de2d8c0054	->2
+55de2d8cfa5f  shr rax, 0x11
+55de2d8cfa63  movzx edx, word [rax+0xa]
+55de2d8cfa67  cmp edx, 0xec5
+55de2d8cfa6d  jnz 0x55de2d8c0054	->2
+55de2d8cfa73  mov r12, [rax+0x10]
+55de2d8cfa77  call r12
+55de2d8cfa7a  add ebp, +0x01
+55de2d8cfa7d  cmp ebp, ebx
+55de2d8cfa7f  jg 0x55de2d8c0058	->3
+->LOOP:
+55de2d8cfa85  mov rcx, [rsp+0x8]
+55de2d8cfa8a  lea rax, [r14-0x21092018]
+55de2d8cfa91  rorx r15, [rcx+rbp*8], 0x2f
+55de2d8cfa98  cmp r15w, -0x0c
+55de2d8cfa9d  jnz 0x55de2d8c005c	->4
+55de2d8cfaa3  shr r15, 0x11
+55de2d8cfaa7  cmp dword [r15+0x34], +0x03
+55de2d8cfaac  jnz 0x55de2d8c005c	->4
+55de2d8cfab2  mov r13, [r15+0x28]
+55de2d8cfab6  mov rdi, 0xfffdff41d8fdb6e8
+55de2d8cfac0  cmp rdi, [r13+0x20]
+55de2d8cfac4  jnz 0x55de2d8c005c	->4
+55de2d8cfaca  rorx rsi, [r13+0x18], 0x2f
+55de2d8cfad1  cmp si, -0x0b
+55de2d8cfad5  jnz 0x55de2d8c005c	->4
+55de2d8cfadb  shr rsi, 0x11
+55de2d8cfadf  movzx edi, word [rsi+0xa]
+55de2d8cfae3  cmp edi, 0x35a7
+55de2d8cfae9  jnz 0x55de2d8c005c	->4
+55de2d8cfaef  add rsi, +0x10
+55de2d8cfaf3  cmp byte [rsi], 0x0
+55de2d8cfaf6  jz 0x55de2d8c005c	->4
+55de2d8cfafc  mov rdi, 0xfffdff41bb8ab500
+55de2d8cfb06  cmp rdi, [r13+0x8]
+55de2d8cfb0a  jnz 0x55de2d8c005c	->4
+55de2d8cfb10  rorx rdi, [r13+0x0], 0x2f
+55de2d8cfb17  cmp di, -0x09
+55de2d8cfb1b  jnz 0x55de2d8c005c	->4
+55de2d8cfb21  shr rdi, 0x11
+55de2d8cfb25  cmp rdi, rax
+55de2d8cfb28  jnz 0x55de2d8c005c	->4
+55de2d8cfb2e  mov rdi, 0xfffdff41dc4c5908
+55de2d8cfb38  cmp rdi, [r13+0x38]
+55de2d8cfb3c  jnz 0x55de2d8c005c	->4
+55de2d8cfb42  rorx rdi, [r13+0x30], 0x2f
+55de2d8cfb49  cmp di, -0x05
+55de2d8cfb4d  jnz 0x55de2d8c005c	->4
+55de2d8cfb53  shr rdi, 0x11
+55de2d8cfb57  add rdi, +0x18
+55de2d8cfb5b  xor edx, edx
+55de2d8cfb5d  call 0x55de54590160
+55de2d8cfb62  test al, al
+55de2d8cfb64  jnz 0x55de2d8c0060	->5
+55de2d8cfb6a  call r12
+55de2d8cfb6d  add ebp, +0x01
+55de2d8cfb70  cmp ebp, ebx
+55de2d8cfb72  jle 0x55de2d8cfa85	->LOOP
+55de2d8cfb78  jmp 0x55de2d8c0064	->6
+---- TRACE 3 stop -> loop
+
+---- TRACE 4 start 1/3 time.lua:56
+---- TRACE 4 abort debug.lua:33 -- NYI: unsupported C function type
+
+---- TRACE 4 start 1/3 time.lua:56
+---- TRACE 4 mcode 30
+55de2d8cf7ee  mov dword [r14-0xef0], 0x4
+55de2d8cf7f9  movsd [rdx+0x8], xmm7
+55de2d8cf7fe  xor eax, eax
+55de2d8cf800  lea rbx, [r14-0x34de554]
+55de2d8cf807  jmp 0x55de54beb4d5
+---- TRACE 4 stop -> interpreter
+
+---- TRACE 5 start 3/0 editor.lua:550
+---- TRACE 5 abort terminal.lua:27 -- NYI: unsupported C function type
+
+---- TRACE 5 start 3/0 editor.lua:550
+---- TRACE 5 abort entity_list_view.lua:45 -- NYI: unsupported C function type
+
+---- TRACE 5 start 3/0 editor.lua:550
+---- TRACE 5 abort inspector.lua:115 -- NYI: unsupported C function type
+
+---- TRACE 5 start imgui.lua:7348
+---- TRACE 5 abort inspector.lua:119 -- leaving loop in root trace
+
+---- TRACE 5 start 3/0 editor.lua:550
+---- TRACE 5 abort terminal.lua:27 -- NYI: unsupported C function type
+
+---- TRACE 5 start 2/7 terminal.lua:45
+---- TRACE 5 abort terminal.lua:65 -- NYI: unsupported C function type
+
+---- TRACE 5 start 3/0 editor.lua:550
+---- TRACE 5 mcode 102
+55de2d8cf785  mov dword [r14-0xef0], 0x5
+55de2d8cf790  mov rdx, [r14-0xe30]
+55de2d8cf797  movsd xmm7, [rdx+0x10]
+55de2d8cf79c  cvttsd2si ebp, xmm7
+55de2d8cf7a0  xorps xmm6, xmm6
+55de2d8cf7a3  cvtsi2sd xmm6, ebp
+55de2d8cf7a7  ucomisd xmm7, xmm6
+55de2d8cf7ab  jnz 0x55de2d8c004c	->0
+55de2d8cf7b1  jpe 0x55de2d8c004c	->0
+55de2d8cf7b7  cmp ebp, 0x7ffffffe
+55de2d8cf7bd  jg 0x55de2d8c004c	->0
+55de2d8cf7c3  cvttsd2si ebp, [rdx+0x8]
+55de2d8cf7c8  xorps xmm7, xmm7
+55de2d8cf7cb  cvtsi2sd xmm7, ebp
+55de2d8cf7cf  movsd [rdx+0x20], xmm7
+55de2d8cf7d4  movsd [rdx+0x8], xmm7
+55de2d8cf7d9  xor eax, eax
+55de2d8cf7db  lea rbx, [r14-0x20c06e8c]
+55de2d8cf7e2  add rsp, +0x20
+55de2d8cf7e6  jmp 0x55de54beb4d5
+---- TRACE 5 stop -> interpreter
+
+---- TRACE 6 start 2/7 terminal.lua:45
+---- TRACE 6 abort terminal.lua:65 -- NYI: unsupported C function type
+
+---- TRACE 6 start 2/7 terminal.lua:45
+---- TRACE 6 abort terminal.lua:65 -- NYI: unsupported C function type
+
+---- TRACE 6 start imgui.lua:6727
+---- TRACE 6 abort editor.lua:239 -- NYI: unsupported C function type
+
+---- TRACE 6 start setup.lua:123
+---- TRACE 6 abort hookmgr.lua:67 -- inner loop in root trace
+
+---- TRACE 6 start 2/7 terminal.lua:45
+---- TRACE 6 abort terminal.lua:65 -- NYI: unsupported C function type
+
+---- TRACE 6 start imgui.lua:6930
+---- TRACE 6 abort inspector.lua:115 -- NYI: unsupported C function type
+
+---- TRACE 6 start hookmgr.lua:66
+---- TRACE 6 abort debug.lua:33 -- NYI: unsupported C function type
+
+---- TRACE 6 start 2/7 terminal.lua:45
+---- TRACE 6 mcode 36
+55de2d8cf75e  mov dword [r14-0xef0], 0x6
+55de2d8cf769  mov rdx, [r14-0xe30]
+55de2d8cf770  xor eax, eax
+55de2d8cf772  lea rbx, [r14-0x2106ba20]
+55de2d8cf779  add rsp, +0x20
+55de2d8cf77d  jmp 0x55de54beb4d5
+---- TRACE 6 stop -> interpreter
+
+---- TRACE 7 start imgui.lua:6805
+---- TRACE 7 abort entity_list_view.lua:65 -- leaving loop in root trace
+
+---- TRACE 7 start 3/4 editor.lua:550
+---- TRACE 7 abort scripteditor.lua:118 -- NYI: unsupported C function type
+
+---- TRACE 7 start imgui.lua:5238
+---- TRACE 7 abort editor.lua:283 -- NYI: unsupported C function type
+
+---- TRACE 7 start 3/4 editor.lua:550
+---- TRACE 7 abort scripteditor.lua:118 -- NYI: unsupported C function type
+
+---- TRACE 7 start imgui.lua:6336
+---- TRACE 7 abort editor.lua:359 -- NYI: unsupported C function type
+
+---- TRACE 7 start imgui.lua:5277
+---- TRACE 7 abort terminal.lua:57 -- NYI: unsupported C function type
+
+---- TRACE 7 start 3/4 editor.lua:550
+---- TRACE 7 abort scripteditor.lua:118 -- NYI: unsupported C function type
+
+---- TRACE 7 start editor.lua:238
+---- TRACE 7 abort editor.lua:239 -- NYI: unsupported C function type
+
+---- TRACE 7 start 3/4 editor.lua:550
+---- TRACE 7 abort scripteditor.lua:118 -- NYI: unsupported C function type
+
+---- TRACE 7 start 3/4 editor.lua:550
+---- TRACE 7 mcode 53
+55de2d8cf726  mov dword [r14-0xef0], 0x7
+55de2d8cf731  mov rdx, [r14-0xe30]
+55de2d8cf738  xorps xmm7, xmm7
+55de2d8cf73b  cvtsi2sd xmm7, ebp
+55de2d8cf73f  movsd [rdx+0x20], xmm7
+55de2d8cf744  movsd [rdx+0x8], xmm7
+55de2d8cf749  xor eax, eax
+55de2d8cf74b  lea rbx, [r14-0x20c06e8c]
+55de2d8cf752  add rsp, +0x20
+55de2d8cf756  jmp 0x55de54beb4d5
+---- TRACE 7 stop -> interpreter
+
+---- TRACE 8 start imgui.lua:6805
+---- TRACE 8 abort entity_list_view.lua:72 -- leaving loop in root trace
+
+---- TRACE 8 start editor.lua:543
+---- TRACE 8 mcode 676
+55de2d8cf47f  add rsp, -0x10
+55de2d8cf483  mov dword [r14-0xef0], 0x8
+55de2d8cf48e  lea r15, [r14-0x20fbc820]
+55de2d8cf495  lea r13, [r14+0xf7b8]
+55de2d8cf49c  rorx rbx, [rdx-0x10], 0x2f
+55de2d8cf4a3  shr rbx, 0x11
+55de2d8cf4a7  mov rdi, [rbx+0x28]
+55de2d8cf4ab  cmp byte [rdi+0xa], 0x0
+55de2d8cf4af  jz 0x55de2d8c004c	->0
+55de2d8cf4b5  lea rbp, [rdi+0x10]
+55de2d8cf4b9  rorx rbp, [rbp+0x0], 0x2f
+55de2d8cf4c0  cmp bp, -0x0c
+55de2d8cf4c4  jnz 0x55de2d8c004c	->0
+55de2d8cf4ca  shr rbp, 0x11
+55de2d8cf4ce  cmp dword [rbp+0x34], 0x7ff
+55de2d8cf4d5  jnz 0x55de2d8c004c	->0
+55de2d8cf4db  mov r12, [rbp+0x28]
+55de2d8cf4df  mov rdi, 0xfffdff41bb8a7270
+55de2d8cf4e9  cmp rdi, [r12+0xa970]
+55de2d8cf4f1  jnz 0x55de2d8c004c	->0
+55de2d8cf4f7  rorx rbp, [r12+0xa968], 0x2f
+55de2d8cf502  cmp bp, -0x09
+55de2d8cf506  jnz 0x55de2d8c004c	->0
+55de2d8cf50c  shr rbp, 0x11
+55de2d8cf510  mov rdi, 0xfffdff41bb8bbe98
+55de2d8cf51a  cmp rdi, [r12+0x728]
+55de2d8cf522  jnz 0x55de2d8c004c	->0
+55de2d8cf528  rorx r12, [r12+0x720], 0x2f
+55de2d8cf533  cmp r12w, -0x0b
+55de2d8cf538  jnz 0x55de2d8c004c	->0
+55de2d8cf53e  shr r12, 0x11
+55de2d8cf542  movzx edi, word [r12+0xa]
+55de2d8cf548  cmp edi, 0x12b5
+55de2d8cf54e  jnz 0x55de2d8c004c	->0
+55de2d8cf554  mov r12, [r12+0x10]
+55de2d8cf559  call r12
+55de2d8cf55c  mov rdi, rax
+55de2d8cf55f  mov rsi, [rbx+0x30]
+55de2d8cf563  cmp byte [rsi+0xa], 0x0
+55de2d8cf567  jz 0x55de2d8c0050	->1
+55de2d8cf56d  lea r12, [rsi+0x10]
+55de2d8cf571  rorx r12, [r12], 0x2f
+55de2d8cf578  cmp r12w, -0x0c
+55de2d8cf57d  jnz 0x55de2d8c0050	->1
+55de2d8cf583  shr r12, 0x11
+55de2d8cf587  cmp dword [r12+0x34], +0x1f
+55de2d8cf58d  jnz 0x55de2d8c0050	->1
+55de2d8cf593  mov r12, [r12+0x28]
+55de2d8cf598  mov rsi, 0xfffdff41dc4bac78
+55de2d8cf5a2  cmp rsi, [r12+0x2c0]
+55de2d8cf5aa  jnz 0x55de2d8c0050	->1
+55de2d8cf5b0  rorx r12, [r12+0x2b8], 0x2f
+55de2d8cf5bb  cmp r12w, -0x0d
+55de2d8cf5c0  jnz 0x55de2d8c0050	->1
+55de2d8cf5c6  shr r12, 0x11
+55de2d8cf5ca  cmp r12, r13
+55de2d8cf5cd  jnz 0x55de2d8c0050	->1
+55de2d8cf5d3  cmp rbp, r15
+55de2d8cf5d6  jnz 0x55de2d8c0050	->1
+55de2d8cf5dc  rorx r15, [r14-0x20fa2b78], 0x2f
+55de2d8cf5e6  cmp r15w, -0x0d
+55de2d8cf5eb  jnz 0x55de2d8c0050	->1
+55de2d8cf5f1  shr r15, 0x11
+55de2d8cf5f5  cmp r15, r13
+55de2d8cf5f8  jnz 0x55de2d8c0050	->1
+55de2d8cf5fe  xor edx, edx
+55de2d8cf600  mov esi, 0x8
+55de2d8cf605  call 0x55de54593740
+55de2d8cf60a  mov rdx, [r14-0xe30]
+55de2d8cf611  xorps xmm6, xmm6
+55de2d8cf614  cvtsi2sd xmm6, rax
+55de2d8cf619  movsd [rsp+0x8], xmm6
+55de2d8cf61f  rorx r15, [rdx], 0x2f
+55de2d8cf625  cmp r15w, -0x0c
+55de2d8cf62a  jnz 0x55de2d8c0054	->2
+55de2d8cf630  shr r15, 0x11
+55de2d8cf634  cmp dword [r15+0x34], +0x1f
+55de2d8cf639  jnz 0x55de2d8c0054	->2
+55de2d8cf63f  mov rbp, [r15+0x28]
+55de2d8cf643  mov rdi, 0xfffdff41bb8baad8
+55de2d8cf64d  cmp rdi, [rbp+0x8]
+55de2d8cf651  jnz 0x55de2d8c0054	->2
+55de2d8cf657  cmp qword [r15+0x20], +0x00
+55de2d8cf65c  jnz 0x55de2d8c0054	->2
+55de2d8cf662  movsd [rbp+0x0], xmm6
+55de2d8cf667  test byte [r15+0x8], 0x4
+55de2d8cf66c  jz 0x55de2d8cf685
+55de2d8cf66e  and byte [r15+0x8], 0xfb
+55de2d8cf673  mov rdi, [r14-0xf68]
+55de2d8cf67a  mov [r14-0xf68], r15
+55de2d8cf681  mov [r15+0x18], rdi
+55de2d8cf685  mov rdi, [rbx+0x38]
+55de2d8cf689  cmp byte [rdi+0xa], 0x0
+55de2d8cf68d  jz 0x55de2d8c0058	->3
+55de2d8cf693  lea rbx, [rdi+0x10]
+55de2d8cf697  cmp dword [rbx+0x4], 0xffff7fff
+55de2d8cf69e  jnz 0x55de2d8c0058	->3
+55de2d8cf6a4  mov rdi, 0xfffdff41bb8ba678
+55de2d8cf6ae  cmp rdi, [rbp+0x140]
+55de2d8cf6b5  jnz 0x55de2d8c0058	->3
+55de2d8cf6bb  rorx rdi, [rbp+0x138], 0x2f
+55de2d8cf6c5  cmp di, -0x0c
+55de2d8cf6c9  jnz 0x55de2d8c0058	->3
+55de2d8cf6cf  shr rdi, 0x11
+55de2d8cf6d3  call 0x55de54bef090	->lj_tab_len
+55de2d8cf6d8  mov ebp, eax
+55de2d8cf6da  mov rdx, [r14-0xe30]
+55de2d8cf6e1  movsd xmm7, [r14-0x20bff108]
+55de2d8cf6ea  cmp ebp, 0x7ffffffe
+55de2d8cf6f0  jg 0x55de2d8c0058	->3
+55de2d8cf6f6  cmp ebp, +0x01
+55de2d8cf6f9  jl 0x55de2d8c005c	->4
+55de2d8cf6ff  xorps xmm6, xmm6
+55de2d8cf702  cvtsi2sd xmm6, ebp
+55de2d8cf706  movsd [rdx+0x20], xmm7
+55de2d8cf70b  movsd [rdx+0x18], xmm7
+55de2d8cf710  movsd [rdx+0x10], xmm6
+55de2d8cf715  movsd [rdx+0x8], xmm7
+55de2d8cf71a  add rsp, +0x10
+55de2d8cf71e  jmp 0x55de2d8cf813
+---- TRACE 8 stop -> 3
+
+---- TRACE 9 start app.lua:94
+---- TRACE 9 abort camera.lua:54 -- NYI: unsupported C function type
+
+---- TRACE 9 start scripteditor.lua:117
+---- TRACE 9 abort scripteditor.lua:118 -- NYI: unsupported C function type
+
+---- TRACE 9 start imgui.lua:5272
+---- TRACE 9 abort terminal.lua:30 -- NYI: unsupported C function type
+
+---- TRACE 9 start hookmgr.lua:66
+---- TRACE 9 abort hookmgr.lua:73 -- leaving loop in root trace
+
+---- TRACE 9 start imgui.lua:5305
+---- TRACE 9 abort entity_list_view.lua:62 -- NYI: unsupported C function type
+
+---- TRACE 9 start imgui.lua:5238
+---- TRACE 9 abort editor.lua:242 -- NYI: unsupported C function type
+
+---- TRACE 9 start debug.lua:48
+---- TRACE 9 mcode 121
+55de2d8cf3ff  mov dword [r14-0xef0], 0x9
+55de2d8cf40a  lea rbx, [r14+0xf7b8]
+55de2d8cf411  rorx rbp, [rdx-0x10], 0x2f
+55de2d8cf418  shr rbp, 0x11
+55de2d8cf41c  mov rdi, [rbp+0x28]
+55de2d8cf420  cmp byte [rdi+0xa], 0x0
+55de2d8cf424  jz 0x55de2d8c004c	->0
+55de2d8cf42a  lea rbp, [rdi+0x10]
+55de2d8cf42e  rorx rbp, [rbp+0x0], 0x2f
+55de2d8cf435  cmp bp, -0x0d
+55de2d8cf439  jnz 0x55de2d8c004c	->0
+55de2d8cf43f  shr rbp, 0x11
+55de2d8cf443  cmp rbp, rbx
+55de2d8cf446  jnz 0x55de2d8c004c	->0
+55de2d8cf44c  cmp dword [rdx+0x4], 0xfffeffff
+55de2d8cf453  jnz 0x55de2d8c004c	->0
+55de2d8cf459  mov edi, 0x1
+55de2d8cf45e  call 0x55de54bb2b50
+55de2d8cf463  mov rdx, [r14-0xe30]
+55de2d8cf46a  xor eax, eax
+55de2d8cf46c  lea rbx, [r14-0x20bd9dbc]
+55de2d8cf473  jmp 0x55de54beb4d5
+---- TRACE 9 stop -> return
+
+---- TRACE 10 start imgui.lua:6294
+---- TRACE 10 abort terminal.lua:65 -- NYI: unsupported C function type
+
+---- TRACE 10 start imgui.lua:5267
+---- TRACE 10 abort editor.lua:417 -- NYI: unsupported C function type
+
+---- TRACE 10 start imgui.lua:5184
+---- TRACE 10 abort terminal.lua:29 -- NYI: unsupported C function type
+
+---- TRACE 10 start imgui.lua:6336
+---- TRACE 10 abort editor.lua:359 -- NYI: unsupported C function type
+
+---- TRACE 10 start 0x7f41dc4c6798:77
+---- TRACE 10 mcode 1907
+55de2d8cec89  add rsp, -0x10
+55de2d8cec8d  mov dword [r14-0xef0], 0xa
+55de2d8cec98  lea r13, [r14+0x3100]
+55de2d8cec9f  lea r12, [r14+0xb6d0]
+55de2d8ceca6  lea rdi, [r14+0x19d30]
+55de2d8cecad  rorx rbp, [rdx-0x10], 0x2f
+55de2d8cecb4  shr rbp, 0x11
+55de2d8cecb8  mov rsi, [rbp+0x28]
+55de2d8cecbc  cmp byte [rsi+0xa], 0x0
+55de2d8cecc0  jz 0x55de2d8c004c	->0
+55de2d8cecc6  lea rbp, [rsi+0x10]
+55de2d8cecca  rorx rbp, [rbp+0x0], 0x2f
+55de2d8cecd1  cmp bp, -0x0c
+55de2d8cecd5  jnz 0x55de2d8c004c	->0
+55de2d8cecdb  shr rbp, 0x11
+55de2d8cecdf  cmp dword [rbp+0x34], +0x03
+55de2d8cece3  jnz 0x55de2d8c004c	->0
+55de2d8cece9  mov rbx, [rbp+0x28]
+55de2d8ceced  mov rsi, 0xfffdff41dc4c5028
+55de2d8cecf7  cmp rsi, [rbx+0x8]
+55de2d8cecfb  jnz 0x55de2d8c004c	->0
+55de2d8ced01  rorx r15, [rbx], 0x2f
+55de2d8ced07  cmp r15w, -0x09
+55de2d8ced0c  jnz 0x55de2d8c004c	->0
+55de2d8ced12  shr r15, 0x11
+55de2d8ced16  cmp r15, rdi
+55de2d8ced19  jnz 0x55de2d8c004c	->0
+55de2d8ced1f  mov rdi, 0xfffdff41dc4c55a8
+55de2d8ced29  cmp rdi, [rbx+0x38]
+55de2d8ced2d  jnz 0x55de2d8c004c	->0
+55de2d8ced33  rorx r15, [rbx+0x30], 0x2f
+55de2d8ced3a  cmp r15w, -0x09
+55de2d8ced3f  jnz 0x55de2d8c004c	->0
+55de2d8ced45  shr r15, 0x11
+55de2d8ced49  cmp r15, r12
+55de2d8ced4c  jnz 0x55de2d8c004c	->0
+55de2d8ced52  mov rdi, 0xfffdff41dc4ca320
+55de2d8ced5c  cmp rdi, [rbx+0x20]
+55de2d8ced60  jnz 0x55de2d8c004c	->0
+55de2d8ced66  rorx rbx, [rbx+0x18], 0x2f
+55de2d8ced6d  cmp bx, -0x0c
+55de2d8ced71  jnz 0x55de2d8c004c	->0
+55de2d8ced77  shr rbx, 0x11
+55de2d8ced7b  cmp dword [rbx+0x34], +0x03
+55de2d8ced7f  jnz 0x55de2d8c004c	->0
+55de2d8ced85  mov r15, [rbx+0x28]
+55de2d8ced89  mov rdi, 0xfffdff41dc4c5028
+55de2d8ced93  cmp rdi, [r15+0x8]
+55de2d8ced97  jnz 0x55de2d8c004c	->0
+55de2d8ced9d  rorx r15, [r15], 0x2f
+55de2d8ceda3  cmp r15w, -0x09
+55de2d8ceda8  jnz 0x55de2d8c004c	->0
+55de2d8cedae  shr r15, 0x11
+55de2d8cedb2  cmp r15, r13
+55de2d8cedb5  jnz 0x55de2d8c004c	->0
+55de2d8cedbb  rorx r15, [r14+0x10030], 0x2f
+55de2d8cedc5  cmp r15w, -0x0c
+55de2d8cedca  jnz 0x55de2d8c004c	->0
+55de2d8cedd0  shr r15, 0x11
+55de2d8cedd4  mov rdi, r15
+55de2d8cedd7  call 0x55de54bef090	->lj_tab_len
+55de2d8ceddc  mov r12d, eax
+55de2d8ceddf  lea rsi, [r14+0x10ff8]
+55de2d8cede6  lea rdx, [r14+0xf7b8]
+55de2d8ceded  cmp r12d, 0x7ffffffe
+55de2d8cedf4  jg 0x55de2d8c004c	->0
+55de2d8cedfa  cmp r12d, +0x01
+55de2d8cedfe  jl 0x55de2d8c0050	->1
+55de2d8cee04  cmp dword [r15+0x30], +0x02
+55de2d8cee09  jbe 0x55de2d8c0054	->2
+55de2d8cee0f  mov r15, [r15+0x10]
+55de2d8cee13  rorx r13, [r15+0x8], 0x2f
+55de2d8cee1a  cmp r13w, -0x0c
+55de2d8cee1f  jnz 0x55de2d8c0054	->2
+55de2d8cee25  shr r13, 0x11
+55de2d8cee29  cmp dword [r13+0x34], +0x0f
+55de2d8cee2e  jnz 0x55de2d8c0054	->2
+55de2d8cee34  mov rdi, [r13+0x28]
+55de2d8cee38  mov rcx, 0xfffdff41d8fc1c10
+55de2d8cee42  cmp rcx, [rdi+0x110]
+55de2d8cee49  jnz 0x55de2d8c0054	->2
+55de2d8cee4f  rorx rdi, [rdi+0x108], 0x2f
+55de2d8cee59  cmp di, -0x09
+55de2d8cee5d  jnz 0x55de2d8c0054	->2
+55de2d8cee63  shr rdi, 0x11
+55de2d8cee67  cmp rdi, rsi
+55de2d8cee6a  jnz 0x55de2d8c0058	->3
+55de2d8cee70  rorx rsi, [r14+0x19990], 0x2f
+55de2d8cee7a  cmp si, -0x0d
+55de2d8cee7e  jnz 0x55de2d8c0058	->3
+55de2d8cee84  shr rsi, 0x11
+55de2d8cee88  cmp rsi, rdx
+55de2d8cee8b  jnz 0x55de2d8c0058	->3
+55de2d8cee91  call 0x55de54bbd5b0
+55de2d8cee96  lea rsi, [r14+0xf7b8]
+55de2d8cee9d  cmp r12d, +0x02
+55de2d8ceea1  jl 0x55de2d8c005c	->4
+55de2d8ceea7  rorx r15, [r15+0x10], 0x2f
+55de2d8ceeae  cmp r15w, -0x0c
+55de2d8ceeb3  jnz 0x55de2d8c0060	->5
+55de2d8ceeb9  shr r15, 0x11
+55de2d8ceebd  cmp dword [r15+0x34], +0x0f
+55de2d8ceec2  jnz 0x55de2d8c0060	->5
+55de2d8ceec8  mov rdi, [r15+0x28]
+55de2d8ceecc  mov [rsp+0x8], rdi
+55de2d8ceed1  mov rdx, 0xfffdff41d8fc1c10
+55de2d8ceedb  cmp rdx, [rdi+0x110]
+55de2d8ceee2  jnz 0x55de2d8c0060	->5
+55de2d8ceee8  rorx r13, [rdi+0x108], 0x2f
+55de2d8ceef2  cmp r13w, -0x09
+55de2d8ceef7  jnz 0x55de2d8c0060	->5
+55de2d8ceefd  shr r13, 0x11
+55de2d8cef01  lea rdi, [r14-0x34de228]
+55de2d8cef08  cmp r13, rdi
+55de2d8cef0b  jnz 0x55de2d8c0064	->6
+55de2d8cef11  rorx rdi, [r14+0x6828], 0x2f
+55de2d8cef1b  cmp di, -0x0d
+55de2d8cef1f  jnz 0x55de2d8c0064	->6
+55de2d8cef25  shr rdi, 0x11
+55de2d8cef29  cmp rdi, rsi
+55de2d8cef2c  jnz 0x55de2d8c0064	->6
+55de2d8cef32  call 0x55de54bc0510
+55de2d8cef37  lea r11, [r14+0x75c8]
+55de2d8cef3e  mov rdi, [rsp+0x8]
+55de2d8cef43  lea rsi, [r14-0x34de228]
+55de2d8cef4a  mov rdx, [r14-0xe30]
+55de2d8cef51  lea rcx, [r14+0x7628]
+55de2d8cef58  movsd xmm15, [r14-0x20c32f30]
+55de2d8cef61  movsd xmm7, [r14-0x20c32bd0]
+55de2d8cef6a  movsd xmm6, [r14-0x20c32be0]
+55de2d8cef73  movsd xmm5, [r14-0x20c32bf0]
+55de2d8cef7c  movsd xmm4, [r14-0x20c32f50]
+55de2d8cef85  movsd xmm3, [r14-0x20c32d48]
+55de2d8cef8e  movsd xmm2, [r14-0x20c32d88]
+55de2d8cef97  movsd xmm1, [r14-0x20c32ca8]
+55de2d8cefa0  mov rax, 0xfffdff41dc4d1220
+55de2d8cefaa  cmp rax, [rdi+0x128]
+55de2d8cefb1  jnz 0x55de2d8c0068	->7
+55de2d8cefb7  cmp qword [r15+0x20], +0x00
+55de2d8cefbc  jnz 0x55de2d8c0068	->7
+55de2d8cefc2  movsd [rdi+0x120], xmm0
+55de2d8cefca  test byte [r15+0x8], 0x4
+55de2d8cefcf  jz 0x55de2d8cefe8
+55de2d8cefd1  and byte [r15+0x8], 0xfb
+55de2d8cefd6  mov rax, [r14-0xf68]
+55de2d8cefdd  mov [r14-0xf68], r15
+55de2d8cefe4  mov [r15+0x18], rax
+55de2d8cefe8  mov rax, 0xfffdff41dc4bf0e8
+55de2d8ceff2  cmp rax, [rdi+0x50]
+55de2d8ceff6  jnz 0x55de2d8c006c	->8
+55de2d8ceffc  cmp dword [rdi+0x4c], 0xfff90000
+55de2d8cf003  jnb 0x55de2d8c006c	->8
+55de2d8cf009  movsd xmm14, [rdi+0x48]
+55de2d8cf00f  addsd xmm14, xmm0
+55de2d8cf014  movsd [rdi+0x48], xmm14
+55de2d8cf01a  movaps xmm13, xmm0
+55de2d8cf01e  mulsd xmm13, xmm3
+55de2d8cf023  mov rax, 0xfffdff41dc4cceb8
+55de2d8cf02d  cmp rax, [rdi+0x140]
+55de2d8cf034  jnz 0x55de2d8c0070	->9
+55de2d8cf03a  movsd [rdi+0x138], xmm13
+55de2d8cf043  mov rax, 0xfffdff41dc4d0b28
+55de2d8cf04d  cmp rax, [rdi+0x170]
+55de2d8cf054  jnz 0x55de2d8c0074	->10
+55de2d8cf05a  cmp dword [rdi+0x16c], 0xfff90000
+55de2d8cf064  jnb 0x55de2d8c0074	->10
+55de2d8cf06a  movsd xmm14, [rdi+0x168]
+55de2d8cf073  addsd xmm14, xmm2
+55de2d8cf078  movsd [rdi+0x168], xmm14
+55de2d8cf081  divsd xmm3, xmm13
+55de2d8cf086  mov rax, 0xfffdff41d8fda678
+55de2d8cf090  cmp rax, [rdi+0x8]
+55de2d8cf094  jnz 0x55de2d8c0078	->11
+55de2d8cf09a  movsd [rdi], xmm3
+55de2d8cf09e  mov rsi, [rsi+0x10]
+55de2d8cf0a2  cmp dword [rsi+0x34], +0x3f
+55de2d8cf0a6  jnz 0x55de2d8c007c	->12
+55de2d8cf0ac  mov rsi, [rsi+0x28]
+55de2d8cf0b0  mov rax, 0xfffdff41dc4bde10
+55de2d8cf0ba  cmp rax, [rsi+0x3b0]
+55de2d8cf0c1  jnz 0x55de2d8c007c	->12
+55de2d8cf0c7  rorx rsi, [rsi+0x3a8], 0x2f
+55de2d8cf0d1  cmp si, -0x0c
+55de2d8cf0d5  jnz 0x55de2d8c007c	->12
+55de2d8cf0db  shr rsi, 0x11
+55de2d8cf0df  cmp dword [rsi+0x34], +0x1f
+55de2d8cf0e3  jnz 0x55de2d8c007c	->12
+55de2d8cf0e9  mov rsi, [rsi+0x28]
+55de2d8cf0ed  mov rax, 0xfffdff41dc4c0998
+55de2d8cf0f7  cmp rax, [rsi+0x8]
+55de2d8cf0fb  jnz 0x55de2d8c007c	->12
+55de2d8cf101  rorx rax, [rsi], 0x2f
+55de2d8cf107  cmp ax, -0x09
+55de2d8cf10b  jnz 0x55de2d8c007c	->12
+55de2d8cf111  shr rax, 0x11
+55de2d8cf115  mov r10, 0xfffdff41d8fda6a0
+55de2d8cf11f  cmp r10, [rdi+0x20]
+55de2d8cf123  jnz 0x55de2d8c007c	->12
+55de2d8cf129  cmp dword [rdi+0x1c], 0xfff90000
+55de2d8cf130  jnb 0x55de2d8c007c	->12
+55de2d8cf136  movsd xmm14, [rdi+0x18]
+55de2d8cf13c  cmp rax, r11
+55de2d8cf13f  jnz 0x55de2d8c007c	->12
+55de2d8cf145  xorps xmm0, xmm0
+55de2d8cf148  minsd xmm14, xmm3
+55de2d8cf14d  movsd [rdi+0x18], xmm14
+55de2d8cf153  mov rax, 0xfffdff41dc4c09f8
+55de2d8cf15d  cmp rax, [rsi+0x20]
+55de2d8cf161  jnz 0x55de2d8c0080	->13
+55de2d8cf167  rorx rsi, [rsi+0x18], 0x2f
+55de2d8cf16e  cmp si, -0x09
+55de2d8cf172  jnz 0x55de2d8c0080	->13
+55de2d8cf178  shr rsi, 0x11
+55de2d8cf17c  mov rax, 0xfffdff41d8fda6c8
+55de2d8cf186  cmp rax, [rdi+0x38]
+55de2d8cf18a  jnz 0x55de2d8c0080	->13
+55de2d8cf190  cmp dword [rdi+0x34], 0xfff90000
+55de2d8cf197  jnb 0x55de2d8c0080	->13
+55de2d8cf19d  movsd xmm13, [rdi+0x30]
+55de2d8cf1a3  cmp rsi, rcx
+55de2d8cf1a6  jnz 0x55de2d8c0080	->13
+55de2d8cf1ac  maxsd xmm13, xmm3
+55de2d8cf1b1  movsd [rdi+0x30], xmm13
+55de2d8cf1b7  mov rsi, 0xfffdff41d8fda160
+55de2d8cf1c1  cmp rsi, [rdi+0x68]
+55de2d8cf1c5  jnz 0x55de2d8c0084	->14
+55de2d8cf1cb  cmp dword [rdi+0x64], 0xfff90000
+55de2d8cf1d2  jnb 0x55de2d8c0084	->14
+55de2d8cf1d8  movsd xmm14, [rdi+0x60]
+55de2d8cf1de  rorx rsi, [r14-0x34de878], 0x2f
+55de2d8cf1e8  cmp si, -0x0c
+55de2d8cf1ec  jnz 0x55de2d8c0084	->14
+55de2d8cf1f2  shr rsi, 0x11
+55de2d8cf1f6  cmp dword [rsi+0x34], +0x0f
+55de2d8cf1fa  jnz 0x55de2d8c0084	->14
+55de2d8cf200  mov rsi, [rsi+0x28]
+55de2d8cf204  mov rcx, 0xfffdff41d8fda9f8
+55de2d8cf20e  cmp rcx, [rsi+0xf8]
+55de2d8cf215  jnz 0x55de2d8c0084	->14
+55de2d8cf21b  cmp dword [rsi+0xf4], 0xfff90000
+55de2d8cf225  jnb 0x55de2d8c0084	->14
+55de2d8cf22b  minsd xmm14, [rsi+0xf0]
+55de2d8cf234  movsd [rdi+0x60], xmm14
+55de2d8cf23a  mov rsi, 0xfffdff41d8fdaa20
+55de2d8cf244  cmp rsi, [rdi+0x80]
+55de2d8cf24b  jnz 0x55de2d8c0088	->15
+55de2d8cf251  cmp dword [rdi+0x7c], 0xfff90000
+55de2d8cf258  jnb 0x55de2d8c0088	->15
+55de2d8cf25e  movsd xmm13, [rdi+0x78]
+55de2d8cf264  mov rsi, 0xfffdff41d8fda9f8
+55de2d8cf26e  cmp rsi, [rdi+0xf8]
+55de2d8cf275  jnz 0x55de2d8c0088	->15
+55de2d8cf27b  cmp dword [rdi+0xf4], 0xfff90000
+55de2d8cf285  jnb 0x55de2d8c0088	->15
+55de2d8cf28b  maxsd xmm13, [rdi+0xf0]
+55de2d8cf294  movsd [rdi+0x78], xmm13
+55de2d8cf29a  mov rsi, 0xfffdff41d8fdaa50
+55de2d8cf2a4  cmp rsi, [rdi+0x98]
+55de2d8cf2ab  jnz 0x55de2d8c008c	->16
+55de2d8cf2b1  rorx rsi, [rdi+0x90], 0x2f
+55de2d8cf2bb  cmp si, -0x0b
+55de2d8cf2bf  jnz 0x55de2d8c008c	->16
+55de2d8cf2c5  shr rsi, 0x11
+55de2d8cf2c9  cmp dword [r14-0x34de83c], 0xfff90000
+55de2d8cf2d4  jnb 0x55de2d8c008c	->16
+55de2d8cf2da  movsd xmm14, [r14-0x34de840]
+55de2d8cf2e3  movzx edi, word [rsi+0xa]
+55de2d8cf2e7  cmp edi, 0x118
+55de2d8cf2ed  jnz 0x55de2d8c008c	->16
+55de2d8cf2f3  cvttsd2si rdi, xmm14
+55de2d8cf2f8  cvtsd2ss xmm3, xmm3
+55de2d8cf2fc  movss [rsi+rdi*4+0xc], xmm3
+55de2d8cf302  xorps xmm3, xmm3
+55de2d8cf305  cvtsi2sd xmm3, r12d
+55de2d8cf30a  mov rax, [r14-0xe38]
+55de2d8cf311  mov rax, [rax+0x30]
+55de2d8cf315  sub rax, rdx
+55de2d8cf318  cmp rax, 0xb8
+55de2d8cf31f  jb 0x55de2d8c0094	->18
+55de2d8cf325  movsd [rdx+0xa8], xmm2
+55de2d8cf32d  movsd [rdx+0xa0], xmm2
+55de2d8cf335  movsd [rdx+0x98], xmm15
+55de2d8cf33e  movsd [rdx+0x90], xmm2
+55de2d8cf346  movsd [rdx+0x88], xmm0
+55de2d8cf34e  mov [rdx+0x80], r15
+55de2d8cf355  or dword [rdx+0x84], 0xfffa0000
+55de2d8cf35f  movsd [rdx+0x78], xmm1
+55de2d8cf364  mov dword [rdx+0x70], 0xd8fdb170
+55de2d8cf36b  mov dword [rdx+0x74], 0xfffbff41
+55de2d8cf372  mov [rdx+0x68], r13
+55de2d8cf376  or dword [rdx+0x6c], 0xfffb8000
+55de2d8cf37d  mov [rdx+0x60], r15
+55de2d8cf381  or dword [rdx+0x64], 0xfffa0000
+55de2d8cf388  movsd [rdx+0x50], xmm2
+55de2d8cf38d  movsd [rdx+0x48], xmm3
+55de2d8cf392  movsd [rdx+0x40], xmm4
+55de2d8cf397  movsd [rdx+0x38], xmm5
+55de2d8cf39c  mov dword [rdx+0x30], 0xd8fc8450
+55de2d8cf3a3  mov dword [rdx+0x34], 0xfffbff41
+55de2d8cf3aa  mov [rdx+0x28], rbx
+55de2d8cf3ae  or dword [rdx+0x2c], 0xfffa0000
+55de2d8cf3b5  movsd [rdx+0x20], xmm6
+55de2d8cf3ba  mov dword [rdx+0x18], 0xdc4bc498
+55de2d8cf3c1  mov dword [rdx+0x1c], 0xfffbff41
+55de2d8cf3c8  mov [rdx+0x10], rbp
+55de2d8cf3cc  or dword [rdx+0x14], 0xfffa0000
+55de2d8cf3d3  movsd [rdx+0x8], xmm7
+55de2d8cf3d8  mov dword [rdx], 0xdc4d30c8
+55de2d8cf3de  mov dword [rdx+0x4], 0xfffbff41
+55de2d8cf3e5  add rdx, 0x80
+55de2d8cf3ec  mov [r14-0xe30], rdx
+55de2d8cf3f3  add rsp, +0x10
+55de2d8cf3f7  jmp 0x55de2d8cff1b
+---- TRACE 10 stop -> 1
+
+---- TRACE 11 start imgui.lua:6727
+---- TRACE 11 abort entity_list_view.lua:79 -- NYI: unsupported C function type
+
+---- TRACE 11 start imgui.lua:6680
+---- TRACE 11 abort editor.lua:388 -- leaving loop in root trace
+
+---- TRACE 11 start camera.lua:93
+---- TRACE 11 abort camera.lua:111 -- NYI: bytecode 51
+
+---- TRACE 11 start imgui.lua:1142
+---- TRACE 11 abort terminal.lua:37 -- leaving loop in root trace
+
+---- TRACE 11 start imgui.lua:6805
+---- TRACE 11 abort terminal.lua:84 -- leaving loop in root trace
+
+---- TRACE 11 start 9/0 debug.lua:49
+---- TRACE 11 abort camera.lua:111 -- NYI: bytecode 51
+
+---- TRACE 11 start imgui.lua:6684
+---- TRACE 11 abort entity_list_view.lua:107 -- leaving loop in root trace
+
+---- TRACE 11 start 9/0 debug.lua:49
+---- TRACE 11 abort camera.lua:111 -- NYI: bytecode 51
+
+---- TRACE 11 start transform.lua:37
+---- TRACE 11 mcode 240
+55de2d8ceb92  mov dword [r14-0xef0], 0xb
+55de2d8ceb9d  lea rbx, [r14+0xf7b8]
+55de2d8ceba4  rorx rbp, [rdx-0x10], 0x2f
+55de2d8cebab  shr rbp, 0x11
+55de2d8cebaf  mov rdi, [rbp+0x28]
+55de2d8cebb3  cmp byte [rdi+0xa], 0x0
+55de2d8cebb7  jz 0x55de2d8c004c	->0
+55de2d8cebbd  lea rbp, [rdi+0x10]
+55de2d8cebc1  rorx rbp, [rbp+0x0], 0x2f
+55de2d8cebc8  cmp bp, -0x0d
+55de2d8cebcc  jnz 0x55de2d8c004c	->0
+55de2d8cebd2  shr rbp, 0x11
+55de2d8cebd6  cmp rbp, rbx
+55de2d8cebd9  jnz 0x55de2d8c004c	->0
+55de2d8cebdf  rorx rbp, [rdx], 0x2f
+55de2d8cebe5  cmp bp, -0x0c
+55de2d8cebe9  jnz 0x55de2d8c004c	->0
+55de2d8cebef  shr rbp, 0x11
+55de2d8cebf3  cmp dword [rbp+0x34], +0x01
+55de2d8cebf7  jnz 0x55de2d8c004c	->0
+55de2d8cebfd  mov rbp, [rbp+0x28]
+55de2d8cec01  mov rdi, 0xfffdff41d8fd2dc8
+55de2d8cec0b  cmp rdi, [rbp+0x20]
+55de2d8cec0f  jnz 0x55de2d8c004c	->0
+55de2d8cec15  rorx rbp, [rbp+0x18], 0x2f
+55de2d8cec1c  cmp bp, -0x0b
+55de2d8cec20  jnz 0x55de2d8c004c	->0
+55de2d8cec26  shr rbp, 0x11
+55de2d8cec2a  rorx rbx, [rdx+0x8], 0x2f
+55de2d8cec31  cmp bx, -0x0b
+55de2d8cec35  jnz 0x55de2d8c004c	->0
+55de2d8cec3b  shr rbx, 0x11
+55de2d8cec3f  cmp word [rbx+0xa], +0x6a
+55de2d8cec44  jnz 0x55de2d8c004c	->0
+55de2d8cec4a  movsd xmm0, [rbx+0x10]
+55de2d8cec4f  movsd xmm1, [rbx+0x18]
+55de2d8cec54  movsd xmm2, [rbx+0x20]
+55de2d8cec59  cmp word [rbp+0xa], +0x0c
+55de2d8cec5e  jnz 0x55de2d8c004c	->0
+55de2d8cec64  mov rdi, [rbp+0x10]
+55de2d8cec68  call 0x55de54bb1240
+55de2d8cec6d  mov rdx, [r14-0xe30]
+55de2d8cec74  xor eax, eax
+55de2d8cec76  lea rbx, [r14-0x34dd5f0]
+55de2d8cec7d  jmp 0x55de54beb4d5
+---- TRACE 11 stop -> return
+
+---- TRACE 12 start 9/0 debug.lua:49
+---- TRACE 12 abort camera.lua:111 -- NYI: bytecode 51
+
+---- TRACE 12 start 9/0 debug.lua:49
+---- TRACE 12 abort camera.lua:111 -- NYI: bytecode 51
+
+---- TRACE 12 start 9/0 debug.lua:49
+---- TRACE 12 mcode 32
+55de2d8ceb6b  mov dword [r14-0xef0], 0xc
+55de2d8ceb76  mov rdx, [r14-0xe30]
+55de2d8ceb7d  xor eax, eax
+55de2d8ceb7f  lea rbx, [r14-0x20bd9dcc]
+55de2d8ceb86  jmp 0x55de54beb4d5
+---- TRACE 12 stop -> interpreter
+
+---- TRACE 13 start debug.lua:52
+---- TRACE 13 mcode 138
+55de2d8ceada  mov dword [r14-0xef0], 0xd
+55de2d8ceae5  lea rbx, [r14+0xf7b8]
+55de2d8ceaec  rorx rbp, [rdx-0x10], 0x2f
+55de2d8ceaf3  shr rbp, 0x11
+55de2d8ceaf7  mov rdi, [rbp+0x28]
+55de2d8ceafb  cmp byte [rdi+0xa], 0x0
+55de2d8ceaff  jz 0x55de2d8c004c	->0
+55de2d8ceb05  lea rbp, [rdi+0x10]
+55de2d8ceb09  rorx rbp, [rbp+0x0], 0x2f
+55de2d8ceb10  cmp bp, -0x0d
+55de2d8ceb14  jnz 0x55de2d8c004c	->0
+55de2d8ceb1a  shr rbp, 0x11
+55de2d8ceb1e  cmp rbp, rbx
+55de2d8ceb21  jnz 0x55de2d8c004c	->0
+55de2d8ceb27  cmp dword [rdx+0x4], 0xfff90000
+55de2d8ceb2e  jnb 0x55de2d8c004c	->0
+55de2d8ceb34  movsd xmm0, [rdx]
+55de2d8ceb38  cmp dword [rdx+0xc], 0xfff90000
+55de2d8ceb3f  jnb 0x55de2d8c004c	->0
+55de2d8ceb45  movsd xmm1, [rdx+0x8]
+55de2d8ceb4a  call 0x55de54bb2b90
+55de2d8ceb4f  mov rdx, [r14-0xe30]
+55de2d8ceb56  xor eax, eax
+55de2d8ceb58  lea rbx, [r14-0x20bdac08]
+55de2d8ceb5f  jmp 0x55de54beb4d5
+---- TRACE 13 stop -> return
+
+---- TRACE 14 start math.lua:30
+---- TRACE 14 abort camera.lua:95 -- leaving loop in root trace
+
+---- TRACE 14 start imgui.lua:5305
+---- TRACE 14 abort entity_list_view.lua:47 -- NYI: unsupported C function type
+
+---- TRACE 14 start terminal.lua:38
+---- TRACE 14 mcode 135
+55de2d8cea4c  mov dword [r14-0xef0], 0xe
+55de2d8cea57  movsd xmm5, [r14-0x20c48bf8]
+55de2d8cea60  rorx rbp, [rdx+0x18], 0x2f
+55de2d8cea67  cmp bp, -0x0b
+55de2d8cea6b  jnz 0x55de2d8c004c	->0
+55de2d8cea71  shr rbp, 0x11
+55de2d8cea75  movzx ebx, word [rbp+0xa]
+55de2d8cea79  cmp ebx, 0x9a3
+55de2d8cea7f  jnz 0x55de2d8c004c	->0
+55de2d8cea85  mov rbp, [rbp+0x10]
+55de2d8cea89  mov ebx, [rbp+0x8]
+55de2d8cea8c  add ebx, +0x01
+55de2d8cea8f  jo 0x55de2d8c004c	->0
+55de2d8cea95  mov ebp, [rbp+0xc]
+55de2d8cea98  cmp ebp, 0x7ffffffe
+55de2d8cea9e  jg 0x55de2d8c004c	->0
+55de2d8ceaa4  cmp ebx, ebp
+55de2d8ceaa6  jg 0x55de2d8c0050	->1
+55de2d8ceaac  xorps xmm7, xmm7
+55de2d8ceaaf  cvtsi2sd xmm7, ebx
+55de2d8ceab3  xorps xmm6, xmm6
+55de2d8ceab6  cvtsi2sd xmm6, ebp
+55de2d8ceaba  movsd [rdx+0x38], xmm7
+55de2d8ceabf  movsd [rdx+0x30], xmm5
+55de2d8ceac4  movsd [rdx+0x28], xmm6
+55de2d8ceac9  movsd [rdx+0x20], xmm7
+55de2d8ceace  jmp 0x55de2d8cfb7d
+---- TRACE 14 stop -> 2
+
+---- TRACE 15 start inspector.lua:113
+---- TRACE 15 abort inspector.lua:115 -- NYI: unsupported C function type
+
+---- TRACE 15 start imgui.lua:5429
+---- TRACE 15 abort editor.lua:373 -- leaving loop in root trace
+
+---- TRACE 15 start imgui.lua:1147
+---- TRACE 15 abort entity_list_view.lua:80 -- leaving loop in root trace
+
+---- TRACE 15 start imgui.lua:6966
+---- TRACE 15 abort terminal.lua:50 -- leaving loop in root trace
+
+---- TRACE 15 start entity_list_view.lua:44
+---- TRACE 15 abort entity_list_view.lua:45 -- NYI: unsupported C function type
+
+---- TRACE 15 start imgui.lua:6684
+---- TRACE 15 abort editor.lua:241 -- leaving loop in root trace
+
+---- TRACE 15 start hookmgr.lua:66
+---- TRACE 15 abort hookmgr.lua:73 -- leaving loop in root trace
+
+---- TRACE 15 start entity.lua:46
+---- TRACE 15 mcode 245
+55de2d8ce954  add rsp, -0x10
+55de2d8ce958  mov dword [r14-0xef0], 0xf
+55de2d8ce963  lea r15, [r14+0xf7b8]
+55de2d8ce96a  rorx rbp, [rdx], 0x2f
+55de2d8ce970  cmp bp, -0x0c
+55de2d8ce974  jnz 0x55de2d8c004c	->0
+55de2d8ce97a  shr rbp, 0x11
+55de2d8ce97e  cmp dword [rbp+0x34], +0x01
+55de2d8ce982  jnz 0x55de2d8c004c	->0
+55de2d8ce988  mov rbp, [rbp+0x28]
+55de2d8ce98c  mov rdi, 0xfffdff41d8fcf0d0
+55de2d8ce996  cmp rdi, [rbp+0x20]
+55de2d8ce99a  jnz 0x55de2d8c004c	->0
+55de2d8ce9a0  rorx rbp, [rbp+0x18], 0x2f
+55de2d8ce9a7  cmp bp, -0x0b
+55de2d8ce9ab  jnz 0x55de2d8c004c	->0
+55de2d8ce9b1  shr rbp, 0x11
+55de2d8ce9b5  rorx rbx, [rdx-0x10], 0x2f
+55de2d8ce9bc  shr rbx, 0x11
+55de2d8ce9c0  mov rdi, [rbx+0x28]
+55de2d8ce9c4  cmp byte [rdi+0xa], 0x0
+55de2d8ce9c8  jz 0x55de2d8c004c	->0
+55de2d8ce9ce  lea rbx, [rdi+0x10]
+55de2d8ce9d2  rorx rbx, [rbx], 0x2f
+55de2d8ce9d8  cmp bx, -0x0d
+55de2d8ce9dc  jnz 0x55de2d8c004c	->0
+55de2d8ce9e2  shr rbx, 0x11
+55de2d8ce9e6  cmp rbx, r15
+55de2d8ce9e9  jnz 0x55de2d8c004c	->0
+55de2d8ce9ef  cmp word [rbp+0xa], +0x0c
+55de2d8ce9f4  jnz 0x55de2d8c004c	->0
+55de2d8ce9fa  mov rdi, [rbp+0x10]
+55de2d8ce9fe  mov [rsp+0x8], rdi
+55de2d8cea03  call 0x55de54bbca00
+55de2d8cea08  mov rdi, [rsp+0x8]
+55de2d8cea0d  test al, al
+55de2d8cea0f  jz 0x55de2d8c0050	->1
+55de2d8cea15  call 0x55de54bbca70
+55de2d8cea1a  mov rdx, [r14-0xe30]
+55de2d8cea21  test al, al
+55de2d8cea23  jz 0x55de2d8c0054	->2
+55de2d8cea29  mov dword [rdx+0x8], 0xffffffff
+55de2d8cea30  mov dword [rdx+0xc], 0xfffeffff
+55de2d8cea37  xor eax, eax
+55de2d8cea39  lea rbx, [r14-0x34e4cb0]
+55de2d8cea40  add rsp, +0x10
+55de2d8cea44  jmp 0x55de54beb4d5
+---- TRACE 15 stop -> return
+
+---- TRACE 16 start imgui.lua:5238
+---- TRACE 16 abort editor.lua:242 -- NYI: unsupported C function type
+
+---- TRACE 16 start scene.lua:115
+---- TRACE 16 mcode 103
+55de2d8ce8e6  mov dword [r14-0xef0], 0x10
+55de2d8ce8f1  lea rbx, [r14+0xf7b8]
+55de2d8ce8f8  rorx rbp, [rdx-0x10], 0x2f
+55de2d8ce8ff  shr rbp, 0x11
+55de2d8ce903  mov rdi, [rbp+0x28]
+55de2d8ce907  cmp byte [rdi+0xa], 0x0
+55de2d8ce90b  jz 0x55de2d8c004c	->0
+55de2d8ce911  lea rbp, [rdi+0x10]
+55de2d8ce915  rorx rbp, [rbp+0x0], 0x2f
+55de2d8ce91c  cmp bp, -0x0d
+55de2d8ce920  jnz 0x55de2d8c004c	->0
+55de2d8ce926  shr rbp, 0x11
+55de2d8ce92a  cmp rbp, rbx
+55de2d8ce92d  jnz 0x55de2d8c004c	->0
+55de2d8ce933  call 0x55de54bbd5b0
+55de2d8ce938  mov rdx, [r14-0xe30]
+55de2d8ce93f  xor eax, eax
+55de2d8ce941  lea rbx, [r14-0x34e93b8]
+55de2d8ce948  jmp 0x55de54beb4d5
+---- TRACE 16 stop -> return
+
+---- TRACE 17 start imgui.lua:5305
+---- TRACE 17 abort entity_list_view.lua:54 -- NYI: unsupported C function type
+
+---- TRACE 17 start imgui.lua:6727
+---- TRACE 17 abort entity_list_view.lua:79 -- NYI: unsupported C function type
+
+---- TRACE 17 start imgui.lua:6805
+---- TRACE 17 abort entity_list_view.lua:74 -- leaving loop in root trace
+
+---- TRACE 17 start editor.lua:560
+---- TRACE 17 abort debug.lua:33 -- NYI: unsupported C function type
+
+---- TRACE 17 start imgui.lua:1147
+---- TRACE 17 abort terminal.lua:36 -- leaving loop in root trace
+
+---- TRACE 17 start imgui.lua:6336
+---- TRACE 17 abort entity_list_view.lua:69 -- NYI: unsupported C function type
+
+---- TRACE 17 start imgui.lua:6680
+---- TRACE 17 abort editor.lua:358 -- leaving loop in root trace
+
+---- TRACE 17 start imgui.lua:5201
+---- TRACE 17 abort terminal.lua:34 -- NYI: unsupported C function type
+
+---- TRACE 17 start imgui.lua:1142
+---- TRACE 17 abort entity_list_view.lua:81 -- leaving loop in root trace
+
+---- TRACE 17 start imgui.lua:7112
+---- TRACE 17 abort editor.lua:367 -- leaving loop in root trace
+
+---- TRACE 17 start input.lua:157
+---- TRACE 17 abort camera.lua:98 -- NYI: unsupported C function type
+
+---- TRACE 17 start vec3.lua:25
+---- TRACE 17 abort camera.lua:136 -- NYI: return to lower frame
+
+---- TRACE 17 start imgui.lua:5429
+---- TRACE 17 abort editor.lua:373 -- leaving loop in root trace
+
+---- TRACE 17 start imgui.lua:6294
+---- TRACE 17 abort terminal.lua:65 -- NYI: unsupported C function type
+
+---- TRACE 17 start imgui.lua:5277
+---- TRACE 17 abort terminal.lua:31 -- NYI: unsupported C function type
+
+---- TRACE 17 start scripteditor.lua:117
+---- TRACE 17 abort scripteditor.lua:118 -- NYI: unsupported C function type
+
+---- TRACE 17 start imgui.lua:6930
+---- TRACE 17 abort inspector.lua:115 -- NYI: unsupported C function type
+
+---- TRACE 17 start camera.lua:93
+---- TRACE 17 abort camera.lua:111 -- NYI: bytecode 51
+
+---- TRACE 17 start terminal.lua:26
+---- TRACE 17 abort terminal.lua:27 -- NYI: unsupported C function type
+
+---- TRACE 17 start editor.lua:415
+---- TRACE 17 mcode 624
+55de2d8ce66f  mov dword [r14-0xef0], 0x11
+55de2d8ce67a  lea r15, [r14+0xf7b8]
+55de2d8ce681  lea r13, [r14-0x20fbde10]
+55de2d8ce688  lea r12, [r14-0x210bc898]
+55de2d8ce68f  mov rdi, [r14-0xf98]
+55de2d8ce696  cmp rdi, [r14-0xf90]
+55de2d8ce69d  jb 0x55de2d8ce6b8
+55de2d8ce69f  mov esi, 0x1
+55de2d8ce6a4  lea rdi, [r14-0xfa8]
+55de2d8ce6ab  call 0x55de54bed0b0	->lj_gc_step_jit
+55de2d8ce6b0  test eax, eax
+55de2d8ce6b2  jnz 0x55de2d8c004c	->0
+55de2d8ce6b8  mov rdx, [r14-0xe30]
+55de2d8ce6bf  rorx rbx, [rdx-0x10], 0x2f
+55de2d8ce6c6  shr rbx, 0x11
+55de2d8ce6ca  mov rdi, [rbx+0x28]
+55de2d8ce6ce  cmp byte [rdi+0xa], 0x0
+55de2d8ce6d2  jz 0x55de2d8c004c	->0
+55de2d8ce6d8  lea rbp, [rdi+0x10]
+55de2d8ce6dc  rorx rbp, [rbp+0x0], 0x2f
+55de2d8ce6e3  cmp bp, -0x0c
+55de2d8ce6e7  jnz 0x55de2d8c004c	->0
+55de2d8ce6ed  shr rbp, 0x11
+55de2d8ce6f1  cmp dword [rbp+0x34], 0x7ff
+55de2d8ce6f8  jnz 0x55de2d8c004c	->0
+55de2d8ce6fe  mov rbp, [rbp+0x28]
+55de2d8ce702  mov rdi, 0xfffdff41bb8bc828
+55de2d8ce70c  cmp rdi, [rbp+0x6890]
+55de2d8ce713  jnz 0x55de2d8c004c	->0
+55de2d8ce719  rorx rbp, [rbp+0x6888], 0x2f
+55de2d8ce723  cmp bp, -0x0b
+55de2d8ce727  jnz 0x55de2d8c004c	->0
+55de2d8ce72d  shr rbp, 0x11
+55de2d8ce731  cmp rbx, r12
+55de2d8ce734  jnz 0x55de2d8c004c	->0
+55de2d8ce73a  movzx ebx, word [rbp+0xa]
+55de2d8ce73e  cmp ebx, 0x1aab
+55de2d8ce744  jnz 0x55de2d8c004c	->0
+55de2d8ce74a  mov rbp, [rbp+0x10]
+55de2d8ce74e  mov edi, 0xfffffffe
+55de2d8ce753  call rbp
+55de2d8ce755  rorx rbp, [r14-0x2107f650], 0x2f
+55de2d8ce75f  cmp bp, -0x0c
+55de2d8ce763  jnz 0x55de2d8c0050	->1
+55de2d8ce769  shr rbp, 0x11
+55de2d8ce76d  cmp dword [rbp+0x34], 0x7ff
+55de2d8ce774  jnz 0x55de2d8c0050	->1
+55de2d8ce77a  mov rbp, [rbp+0x28]
+55de2d8ce77e  mov rdi, 0xfffdff41bb8c3b88
+55de2d8ce788  cmp rdi, [rbp+0x1448]
+55de2d8ce78f  jnz 0x55de2d8c0050	->1
+55de2d8ce795  rorx rbx, [rbp+0x1440], 0x2f
+55de2d8ce79f  cmp bx, -0x09
+55de2d8ce7a3  jnz 0x55de2d8c0050	->1
+55de2d8ce7a9  shr rbx, 0x11
+55de2d8ce7ad  rorx r12, [r14-0x210be6d8], 0x2f
+55de2d8ce7b7  cmp r12w, -0x0c
+55de2d8ce7bc  jnz 0x55de2d8c0050	->1
+55de2d8ce7c2  shr r12, 0x11
+55de2d8ce7c6  cmp dword [r12+0x34], 0x7ff
+55de2d8ce7cf  jnz 0x55de2d8c0050	->1
+55de2d8ce7d5  mov r12, [r12+0x28]
+55de2d8ce7da  mov rdi, 0xfffdff41bb8bc7c0
+55de2d8ce7e4  cmp rdi, [r12+0x58e8]
+55de2d8ce7ec  jnz 0x55de2d8c0050	->1
+55de2d8ce7f2  rorx rsi, [r12+0x58e0], 0x2f
+55de2d8ce7fd  cmp si, -0x05
+55de2d8ce801  jnz 0x55de2d8c0050	->1
+55de2d8ce807  shr rsi, 0x11
+55de2d8ce80b  mov rdi, [r14-0x20feacc8]
+55de2d8ce812  mov rdx, [rdi+0x10]
+55de2d8ce816  mov [rdi], rdx
+55de2d8ce819  call 0x55de54bed890	->lj_buf_putstr
+55de2d8ce81e  mov rdi, rax
+55de2d8ce821  lea rsi, [r14-0x20bfcb10]
+55de2d8ce828  call 0x55de54bed890	->lj_buf_putstr
+55de2d8ce82d  mov rdi, rax
+55de2d8ce830  call 0x55de54bedd10	->lj_buf_tostr
+55de2d8ce835  cmp rbx, r13
+55de2d8ce838  jnz 0x55de2d8c0050	->1
+55de2d8ce83e  rorx rbx, [r14-0x20fa2b78], 0x2f
+55de2d8ce848  cmp bx, -0x0d
+55de2d8ce84c  jnz 0x55de2d8c0050	->1
+55de2d8ce852  shr rbx, 0x11
+55de2d8ce856  cmp rbx, r15
+55de2d8ce859  jnz 0x55de2d8c0050	->1
+55de2d8ce85f  mov rdi, rax
+55de2d8ce862  add rdi, +0x18
+55de2d8ce866  xor edx, edx
+55de2d8ce868  xor esi, esi
+55de2d8ce86a  call 0x55de54593180
+55de2d8ce86f  test al, al
+55de2d8ce871  jnz 0x55de2d8c0054	->2
+55de2d8ce877  mov rdi, 0xfffdff41bb8bc8b8
+55de2d8ce881  cmp rdi, [rbp+0xae8]
+55de2d8ce888  jnz 0x55de2d8c0058	->3
+55de2d8ce88e  rorx rbp, [rbp+0xae0], 0x2f
+55de2d8ce898  cmp bp, -0x0b
+55de2d8ce89c  jnz 0x55de2d8c0058	->3
+55de2d8ce8a2  shr rbp, 0x11
+55de2d8ce8a6  movzx ebx, word [rbp+0xa]
+55de2d8ce8aa  cmp ebx, 0xf88
+55de2d8ce8b0  jnz 0x55de2d8c0058	->3
+55de2d8ce8b6  mov rbp, [rbp+0x10]
+55de2d8ce8ba  call rbp
+55de2d8ce8bc  mov rdx, [r14-0xe30]
+55de2d8ce8c3  mov dword [rdx-0x10], 0xbb3fcb00
+55de2d8ce8ca  mov dword [rdx-0xc], 0xfffbff41
+55de2d8ce8d1  xor eax, eax
+55de2d8ce8d3  lea rbx, [r14-0x20c07224]
+55de2d8ce8da  jmp 0x55de54beb4d5
+---- TRACE 17 stop -> return
+
+---- TRACE 18 start imgui.lua:6966
+---- TRACE 18 abort terminal.lua:50 -- leaving loop in root trace
+
+---- TRACE 18 start imgui.lua:5417
+---- TRACE 18 abort editor.lua:373 -- leaving loop in root trace
+
+---- TRACE 18 start camera.lua:53
+---- TRACE 18 abort camera.lua:111 -- NYI: bytecode 51
+
+---- TRACE 18 start debug.lua:32
+---- TRACE 18 abort debug.lua:33 -- NYI: unsupported C function type
+
+---- TRACE 18 start imgui.lua:5189
+---- TRACE 18 abort entity_list_view.lua:78 -- NYI: unsupported C function type
+
+---- TRACE 18 start app.lua:94
+---- TRACE 18 abort camera.lua:54 -- NYI: unsupported C function type
+
+---- TRACE 18 start entity.lua:58
+---- TRACE 18 mcode 586
+55de2d8ce422  add rsp, -0x10
+55de2d8ce426  mov dword [r14-0xef0], 0x12
+55de2d8ce431  lea r15, [r14+0xf7b8]
+55de2d8ce438  lea r12, [r14+0x2938]
+55de2d8ce43f  lea rbx, [r14+0x13670]
+55de2d8ce446  mov rdi, [r14-0xf98]
+55de2d8ce44d  cmp rdi, [r14-0xf90]
+55de2d8ce454  jb 0x55de2d8ce46f
+55de2d8ce456  mov esi, 0x2
+55de2d8ce45b  lea rdi, [r14-0xfa8]
+55de2d8ce462  call 0x55de54bed0b0	->lj_gc_step_jit
+55de2d8ce467  test eax, eax
+55de2d8ce469  jnz 0x55de2d8c004c	->0
+55de2d8ce46f  mov rdi, [r14-0xe38]
+55de2d8ce476  mov rdx, [r14-0xe30]
+55de2d8ce47d  rorx rdx, [rdx+0x8], 0x2f
+55de2d8ce484  cmp dx, -0x0c
+55de2d8ce488  jnz 0x55de2d8c004c	->0
+55de2d8ce48e  shr rdx, 0x11
+55de2d8ce492  mov [rsp+0x10], rdx
+55de2d8ce497  cmp dword [rdx+0x34], +0x0f
+55de2d8ce49b  jnz 0x55de2d8c004c	->0
+55de2d8ce4a1  mov rbp, [rdx+0x28]
+55de2d8ce4a5  mov rdx, [r14-0xe30]
+55de2d8ce4ac  mov rsi, 0xfffdff41d8fd3f68
+55de2d8ce4b6  cmp rsi, [rbp+0x128]
+55de2d8ce4bd  jnz 0x55de2d8c004c	->0
+55de2d8ce4c3  rorx r13, [rbp+0x120], 0x2f
+55de2d8ce4cd  cmp r13w, -0x09
+55de2d8ce4d2  jnz 0x55de2d8c004c	->0
+55de2d8ce4d8  shr r13, 0x11
+55de2d8ce4dc  rorx rbp, [rdx], 0x2f
+55de2d8ce4e2  cmp bp, -0x0c
+55de2d8ce4e6  jnz 0x55de2d8c004c	->0
+55de2d8ce4ec  shr rbp, 0x11
+55de2d8ce4f0  cmp dword [rbp+0x34], +0x01
+55de2d8ce4f4  jnz 0x55de2d8c004c	->0
+55de2d8ce4fa  mov rbp, [rbp+0x28]
+55de2d8ce4fe  mov rsi, 0xfffdff41d8fcf0d0
+55de2d8ce508  cmp rsi, [rbp+0x20]
+55de2d8ce50c  jnz 0x55de2d8c004c	->0
+55de2d8ce512  rorx rbp, [rbp+0x18], 0x2f
+55de2d8ce519  cmp bp, -0x0b
+55de2d8ce51d  jnz 0x55de2d8c004c	->0
+55de2d8ce523  shr rbp, 0x11
+55de2d8ce527  cmp r13, rbx
+55de2d8ce52a  jnz 0x55de2d8c004c	->0
+55de2d8ce530  xor esi, esi
+55de2d8ce532  call 0x55de54bee110	->lj_tab_new1
+55de2d8ce537  mov [rsp+0x8], rax
+55de2d8ce53c  mov rdi, [r14-0xe38]
+55de2d8ce543  mov rbx, [rbx+0x10]
+55de2d8ce547  cmp dword [rbx+0x34], +0x3f
+55de2d8ce54b  jnz 0x55de2d8c004c	->0
+55de2d8ce551  mov rbx, [rbx+0x28]
+55de2d8ce555  mov rsi, 0xfffdff41dc4bbd08
+55de2d8ce55f  cmp rsi, [rbx+0xe0]
+55de2d8ce566  jnz 0x55de2d8c004c	->0
+55de2d8ce56c  rorx rbx, [rbx+0xd8], 0x2f
+55de2d8ce576  cmp bx, -0x09
+55de2d8ce57a  jnz 0x55de2d8c004c	->0
+55de2d8ce580  shr rbx, 0x11
+55de2d8ce584  lea rsi, [r14-0x34e6638]
+55de2d8ce58b  call 0x55de54bee180	->lj_tab_dup
+55de2d8ce590  mov r13, rax
+55de2d8ce593  mov rdi, [r14-0xe38]
+55de2d8ce59a  mov rsi, [rsp+0x8]
+55de2d8ce59f  mov rdx, [rsp+0x10]
+55de2d8ce5a4  mov rax, [r13+0x28]
+55de2d8ce5a8  mov [rax+0x18], rdx
+55de2d8ce5ac  or dword [rax+0x1c], 0xfffa0000
+55de2d8ce5b3  mov byte [r13+0xa], 0x0
+55de2d8ce5b8  cmp rbx, r12
+55de2d8ce5bb  jnz 0x55de2d8c0050	->1
+55de2d8ce5c1  mov [rsi+0x20], r13
+55de2d8ce5c5  lea rdx, [r14-0xec0]
+55de2d8ce5cc  mov dword [rdx], 0xd8fd2dc8
+55de2d8ce5d2  mov dword [rdx+0x4], 0xfffdff41
+55de2d8ce5d9  call 0x55de54bee760	->lj_tab_newkey
+55de2d8ce5de  mov [rax], rbp
+55de2d8ce5e1  or dword [rax+0x4], 0xfffa8000
+55de2d8ce5e8  rorx rbx, [r14-0x34e7218], 0x2f
+55de2d8ce5f2  cmp bx, -0x0d
+55de2d8ce5f6  jnz 0x55de2d8c0054	->2
+55de2d8ce5fc  shr rbx, 0x11
+55de2d8ce600  cmp rbx, r15
+55de2d8ce603  jnz 0x55de2d8c0054	->2
+55de2d8ce609  cmp word [rbp+0xa], +0x0c
+55de2d8ce60e  jnz 0x55de2d8c0054	->2
+55de2d8ce614  mov rdi, [rbp+0x10]
+55de2d8ce618  call 0x55de54bb11c0
+55de2d8ce61d  mov rdx, [r14-0xe30]
+55de2d8ce624  mov rax, [rsp+0x8]
+55de2d8ce629  mov rcx, [r14-0xe38]
+55de2d8ce630  mov rcx, [rcx+0x30]
+55de2d8ce634  sub rcx, rdx
+55de2d8ce637  cmp rcx, +0x38
+55de2d8ce63b  jb 0x55de2d8c0058	->3
+55de2d8ce641  mov [rdx+0x10], rax
+55de2d8ce645  or dword [rdx+0x14], 0xfffa0000
+55de2d8ce64c  mov dword [rdx-0x10], 0xdc4cca08
+55de2d8ce653  mov dword [rdx-0xc], 0xfffbff41
+55de2d8ce65a  xor eax, eax
+55de2d8ce65c  lea rbx, [r14-0x34ddea0]
+55de2d8ce663  add rsp, +0x10
+55de2d8ce667  jmp 0x55de54beb4d5
+---- TRACE 18 stop -> return
+
+---- TRACE 19 start math.lua:30
+---- TRACE 19 abort camera.lua:95 -- leaving loop in root trace
+
+---- TRACE 19 start imgui.lua:6805
+---- TRACE 19 abort entity_list_view.lua:72 -- leaving loop in root trace
+
+---- TRACE 19 start inspector.lua:113
+---- TRACE 19 abort inspector.lua:115 -- NYI: unsupported C function type
+
+---- TRACE 19 start imgui.lua:6727
+---- TRACE 19 abort entity_list_view.lua:79 -- NYI: unsupported C function type
+
+---- TRACE 19 start imgui.lua:5201
+---- TRACE 19 abort terminal.lua:34 -- NYI: unsupported C function type
+
+---- TRACE 19 start imgui.lua:5305
+---- TRACE 19 abort editor.lua:389 -- NYI: unsupported C function type
+
+---- TRACE 19 start imgui.lua:6684
+---- TRACE 19 abort entity_list_view.lua:107 -- leaving loop in root trace
+
+---- TRACE 19 start imgui.lua:1147
+---- TRACE 19 abort terminal.lua:36 -- leaving loop in root trace
+
+---- TRACE 19 start hookmgr.lua:66
+---- TRACE 19 abort hookmgr.lua:73 -- leaving loop in root trace
+
+---- TRACE 19 start editor.lua:560
+---- TRACE 19 abort debug.lua:33 -- NYI: unsupported C function type
+
+---- TRACE 19 start imgui.lua:6680
+---- TRACE 19 abort editor.lua:388 -- leaving loop in root trace
+
+---- TRACE 19 start imgui.lua:6336
+---- TRACE 19 abort editor.lua:368 -- NYI: unsupported C function type
+
+---- TRACE 19 start imgui.lua:5238
+---- TRACE 19 abort editor.lua:242 -- NYI: unsupported C function type
+
+---- TRACE 19 start imgui.lua:5189
+---- TRACE 19 abort entity_list_view.lua:78 -- NYI: unsupported C function type
+
+---- TRACE 19 start app.lua:94
+---- TRACE 19 abort camera.lua:54 -- NYI: unsupported C function type
+
+---- TRACE 19 start imgui.lua:5429
+---- TRACE 19 abort editor.lua:373 -- leaving loop in root trace
+
+---- TRACE 19 start editor.lua:238
+---- TRACE 19 abort editor.lua:239 -- NYI: unsupported C function type
+
+---- TRACE 19 start imgui.lua:5277
+---- TRACE 19 abort terminal.lua:57 -- NYI: unsupported C function type
+
+---- TRACE 19 start terminal.lua:26
+---- TRACE 19 abort terminal.lua:27 -- NYI: unsupported C function type
+
+---- TRACE 19 start imgui.lua:5417
+---- TRACE 19 abort editor.lua:373 -- leaving loop in root trace
+
+---- TRACE 19 start camera.lua:53
+---- TRACE 19 abort camera.lua:111 -- NYI: bytecode 51
+
+---- TRACE 19 start debug.lua:32
+---- TRACE 19 abort debug.lua:33 -- NYI: unsupported C function type
+
+---- TRACE 19 start imgui.lua:6966
+---- TRACE 19 abort terminal.lua:50 -- leaving loop in root trace
+
+---- TRACE 19 start input.lua:157
+---- TRACE 19 abort camera.lua:123 -- NYI: unsupported C function type
+
+---- TRACE 19 start vec3.lua:25
+---- TRACE 19 abort camera.lua:136 -- NYI: return to lower frame
+
+---- TRACE 19 start imgui.lua:5305
+---- TRACE 19 abort editor.lua:389 -- NYI: unsupported C function type
+
+---- TRACE 19 start input.lua:157
+---- TRACE 19 abort camera.lua:114 -- NYI: unsupported C function type
+
+---- TRACE 19 start camera.lua:66
+---- TRACE 19 abort camera.lua:69 -- NYI: unsupported C function type
+
+---- TRACE 19 start imgui.lua:5201
+---- TRACE 19 abort terminal.lua:34 -- NYI: unsupported C function type
+
+---- TRACE 19 start camera.lua:93
+---- TRACE 19 abort camera.lua:111 -- NYI: bytecode 51
+
+---- TRACE 19 start imgui.lua:6684
+---- TRACE 19 abort terminal.lua:48 -- leaving loop in root trace
+
+---- TRACE 19 start imgui.lua:5189
+---- TRACE 19 abort entity_list_view.lua:78 -- NYI: unsupported C function type
+
+---- TRACE 19 start entity_list_view.lua:44
+---- TRACE 19 abort entity_list_view.lua:45 -- NYI: unsupported C function type
+
+---- TRACE 19 start imgui.lua:6805
+---- TRACE 19 abort entity_list_view.lua:65 -- leaving loop in root trace
+
+---- TRACE 19 start imgui.lua:6727
+---- TRACE 19 abort terminal.lua:35 -- NYI: unsupported C function type
+
+---- TRACE 19 start input.lua:157
+---- TRACE 19 abort camera.lua:114 -- NYI: unsupported C function type
+
+---- TRACE 19 start builtin:rad
+---- TRACE 19 mcode 60
+55de2d8ce3df  mov dword [r14-0xef0], 0x13
+55de2d8ce3ea  movsd xmm6, [r14-0x20d89128]
+55de2d8ce3f3  cmp dword [rdx+0x4], 0xfff90000
+55de2d8ce3fa  jnb 0x55de2d8c004c	->0
+55de2d8ce400  movsd xmm7, [rdx]
+55de2d8ce404  mulsd xmm7, xmm6
+55de2d8ce408  movsd [rdx+0x8], xmm7
+55de2d8ce40d  xor eax, eax
+55de2d8ce40f  lea rbx, [r14+0x7400]
+55de2d8ce416  jmp 0x55de54beb4d5
+---- TRACE 19 stop -> return
+
+---- TRACE 20 start imgui.lua:1142
+---- TRACE 20 abort entity_list_view.lua:81 -- leaving loop in root trace
+
+---- TRACE 20 start inspector.lua:113
+---- TRACE 20 abort inspector.lua:115 -- NYI: unsupported C function type
+
+---- TRACE 20 start camera.lua:66
+---- TRACE 20 abort camera.lua:69 -- NYI: unsupported C function type
+
+---- TRACE 20 start imgui.lua:6294
+---- TRACE 20 abort terminal.lua:65 -- NYI: unsupported C function type
+
+---- TRACE 20 start imgui.lua:1147
+---- TRACE 20 abort entity_list_view.lua:80 -- leaving loop in root trace
+
+---- TRACE 20 start vec2.lua:105
+---- TRACE 20 abort camera.lua:72 -- NYI: return to lower frame
+
+---- TRACE 20 start imgui.lua:6680
+---- TRACE 20 abort editor.lua:388 -- leaving loop in root trace
+
+---- TRACE 20 start editor.lua:560
+---- TRACE 20 abort debug.lua:33 -- NYI: unsupported C function type
+
+---- TRACE 20 start imgui.lua:5238
+---- TRACE 20 abort editor.lua:274 -- NYI: unsupported C function type
+
+---- TRACE 20 start imgui.lua:6336
+---- TRACE 20 abort editor.lua:392 -- NYI: unsupported C function type
+
+---- TRACE 20 start hookmgr.lua:66
+---- TRACE 20 abort debug.lua:33 -- NYI: unsupported C function type
+
+---- TRACE 20 start editor.lua:146
+---- TRACE 20 abort debug.lua:33 -- NYI: unsupported C function type
+
+---- TRACE 20 start imgui.lua:5189
+---- TRACE 20 abort terminal.lua:34 -- NYI: unsupported C function type
+
+---- TRACE 20 start input.lua:157
+---- TRACE 20 abort camera.lua:123 -- NYI: unsupported C function type
+
+---- TRACE 20 start camera.lua:53
+---- TRACE 20 abort camera.lua:69 -- NYI: unsupported C function type
+
+---- TRACE 20 start imgui.lua:5277
+---- TRACE 20 abort terminal.lua:57 -- NYI: unsupported C function type
+
+---- TRACE 20 start debug.lua:32
+---- TRACE 20 abort debug.lua:33 -- NYI: unsupported C function type
+
+---- TRACE 20 start imgui.lua:5417
+---- TRACE 20 abort editor.lua:373 -- leaving loop in root trace
+
+---- TRACE 20 start imgui.lua:6930
+---- TRACE 20 abort terminal.lua:27 -- NYI: unsupported C function type
+
+---- TRACE 20 start imgui.lua:6966
+---- TRACE 20 abort terminal.lua:50 -- leaving loop in root trace
+
+---- TRACE 20 start imgui.lua:6684
+---- TRACE 20 abort entity_list_view.lua:107 -- leaving loop in root trace
+
+---- TRACE 20 start app.lua:94
+---- TRACE 20 abort camera.lua:54 -- NYI: unsupported C function type
+
+---- TRACE 20 start imgui.lua:5429
+---- TRACE 20 abort editor.lua:373 -- leaving loop in root trace
+
+---- TRACE 20 start imgui.lua:5201
+---- TRACE 20 abort terminal.lua:34 -- NYI: unsupported C function type
+
+---- TRACE 20 start terminal.lua:26
+---- TRACE 20 abort terminal.lua:27 -- NYI: unsupported C function type
+
+---- TRACE 20 start vec2.lua:105
+---- TRACE 20 abort camera.lua:72 -- NYI: return to lower frame
+
+---- TRACE 20 start imgui.lua:6930
+---- TRACE 20 abort terminal.lua:27 -- NYI: unsupported C function type
+
+---- TRACE 20 start inspector.lua:113
+---- TRACE 20 abort inspector.lua:115 -- NYI: unsupported C function type
+
+---- TRACE 20 start debug.lua:28
+---- TRACE 20 mcode 103
+55de2d8ce371  mov dword [r14-0xef0], 0x14
+55de2d8ce37c  lea rbx, [r14+0xf7b8]
+55de2d8ce383  rorx rbp, [rdx-0x10], 0x2f
+55de2d8ce38a  shr rbp, 0x11
+55de2d8ce38e  mov rdi, [rbp+0x28]
+55de2d8ce392  cmp byte [rdi+0xa], 0x0
+55de2d8ce396  jz 0x55de2d8c004c	->0
+55de2d8ce39c  lea rbp, [rdi+0x10]
+55de2d8ce3a0  rorx rbp, [rbp+0x0], 0x2f
+55de2d8ce3a7  cmp bp, -0x0d
+55de2d8ce3ab  jnz 0x55de2d8c004c	->0
+55de2d8ce3b1  shr rbp, 0x11
+55de2d8ce3b5  cmp rbp, rbx
+55de2d8ce3b8  jnz 0x55de2d8c004c	->0
+55de2d8ce3be  call 0x55de54bb2660
+55de2d8ce3c3  mov rdx, [r14-0xe30]
+55de2d8ce3ca  xor eax, eax
+55de2d8ce3cc  lea rbx, [r14-0x20bdb748]
+55de2d8ce3d3  jmp 0x55de54beb4d5
+---- TRACE 20 stop -> return
+
+---- TRACE 21 start input.lua:173
+---- TRACE 21 abort camera.lua:69 -- NYI: unsupported C function type
+
+---- TRACE 21 start imgui.lua:6727
+---- TRACE 21 abort terminal.lua:35 -- NYI: unsupported C function type
+
+---- TRACE 21 start imgui.lua:5184
+---- TRACE 21 abort inspector.lua:116 -- NYI: unsupported C function type
+
+---- TRACE 21 start imgui.lua:6805
+---- TRACE 21 abort entity_list_view.lua:61 -- leaving loop in root trace
+
+---- TRACE 21 start imgui.lua:1147
+---- TRACE 21 abort entity_list_view.lua:80 -- leaving loop in root trace
+
+---- TRACE 21 start entity_list_view.lua:44
+---- TRACE 21 abort entity_list_view.lua:45 -- NYI: unsupported C function type
+
+---- TRACE 21 start imgui.lua:5201
+---- TRACE 21 abort entity_list_view.lua:78 -- NYI: unsupported C function type
+
+---- TRACE 21 start imgui.lua:6930
+---- TRACE 21 abort scripteditor.lua:118 -- NYI: unsupported C function type
+
+---- TRACE 21 start app.lua:94
+---- TRACE 21 abort camera.lua:54 -- NYI: unsupported C function type
+
+---- TRACE 21 start imgui.lua:5189
+---- TRACE 21 abort entity_list_view.lua:78 -- NYI: unsupported C function type
+
+---- TRACE 21 start imgui.lua:6680
+---- TRACE 21 abort editor.lua:388 -- leaving loop in root trace
+
+---- TRACE 21 start input.lua:157
+---- TRACE 21 abort camera.lua:98 -- NYI: unsupported C function type
+
+---- TRACE 21 start imgui.lua:5238
+---- TRACE 21 abort editor.lua:299 -- NYI: unsupported C function type
+
+---- TRACE 21 start imgui.lua:6336
+---- TRACE 21 abort editor.lua:363 -- NYI: unsupported C function type
+
+---- TRACE 21 start editor.lua:560
+---- TRACE 21 abort debug.lua:33 -- NYI: unsupported C function type
+
+---- TRACE 21 start hookmgr.lua:66
+---- TRACE 21 abort debug.lua:33 -- NYI: unsupported C function type
+
+---- TRACE 21 start debug.lua:32
+---- TRACE 21 abort debug.lua:33 -- NYI: unsupported C function type
+
+---- TRACE 21 start imgui.lua:5417
+---- TRACE 21 abort editor.lua:373 -- leaving loop in root trace
+
+---- TRACE 21 start imgui.lua:6684
+---- TRACE 21 abort entity_list_view.lua:107 -- leaving loop in root trace
+
+---- TRACE 21 start camera.lua:53
+---- TRACE 21 abort camera.lua:111 -- NYI: bytecode 51
+
+---- TRACE 21 start imgui.lua:5277
+---- TRACE 21 abort terminal.lua:57 -- NYI: unsupported C function type
+
+---- TRACE 21 start imgui.lua:7112
+---- TRACE 21 abort editor.lua:367 -- leaving loop in root trace
+
+---- TRACE 21 start imgui.lua:5429
+---- TRACE 21 abort editor.lua:373 -- leaving loop in root trace
+
+---- TRACE 21 start terminal.lua:26
+---- TRACE 21 abort terminal.lua:27 -- NYI: unsupported C function type
+
+---- TRACE 21 start camera.lua:66
+---- TRACE 21 abort camera.lua:69 -- NYI: unsupported C function type
+
+---- TRACE 21 start vec3.lua:25
+---- TRACE 21 abort camera.lua:136 -- NYI: return to lower frame
+
+---- TRACE 21 start imgui.lua:6966
+---- TRACE 21 abort terminal.lua:50 -- leaving loop in root trace
+
+---- TRACE 21 start vec2.lua:105
+---- TRACE 21 abort camera.lua:72 -- NYI: return to lower frame
+
+---- TRACE 21 start imgui.lua:6930
+---- TRACE 21 abort entity_list_view.lua:45 -- NYI: unsupported C function type
+
+---- TRACE 21 start imgui.lua:5201
+---- TRACE 21 abort entity_list_view.lua:78 -- NYI: unsupported C function type
+
+---- TRACE 21 start imgui.lua:6680
+---- TRACE 21 abort editor.lua:388 -- leaving loop in root trace
+
+---- TRACE 21 start imgui.lua:1147
+---- TRACE 21 abort entity_list_view.lua:80 -- leaving loop in root trace
+
+---- TRACE 21 start imgui.lua:5429
+---- TRACE 21 abort editor.lua:373 -- leaving loop in root trace
+
+---- TRACE 21 start imgui.lua:1142
+---- TRACE 21 abort entity_list_view.lua:81 -- leaving loop in root trace
+
+---- TRACE 21 start inspector.lua:113
+---- TRACE 21 abort inspector.lua:115 -- NYI: unsupported C function type
+
+---- TRACE 21 start imgui.lua:6805
+---- TRACE 21 abort entity_list_view.lua:74 -- leaving loop in root trace
+
+---- TRACE 21 start vec3.lua:209
+---- TRACE 21 abort camera.lua:136 -- NYI: return to lower frame
+
+---- TRACE 21 start imgui.lua:6727
+---- TRACE 21 abort entity_list_view.lua:79 -- NYI: unsupported C function type
+
+---- TRACE 21 start imgui.lua:1142
+---- TRACE 21 abort terminal.lua:37 -- leaving loop in root trace
+
+---- TRACE 21 start imgui.lua:5189
+---- TRACE 21 abort entity_list_view.lua:78 -- NYI: unsupported C function type
+
+---- TRACE 21 start imgui.lua:6563
+---- TRACE 21 abort editor.lua:248 -- NYI: unsupported C function type
+
+---- TRACE 21 start imgui.lua:6563
+---- TRACE 21 abort editor.lua:269 -- NYI: unsupported C function type
+
+---- TRACE 21 start imgui.lua:5238
+---- TRACE 21 abort editor.lua:283 -- NYI: unsupported C function type
+
+---- TRACE 21 start imgui.lua:6336
+---- TRACE 21 abort entity_list_view.lua:69 -- NYI: unsupported C function type
+
+---- TRACE 21 start imgui.lua:5429
+---- TRACE 21 abort editor.lua:373 -- leaving loop in root trace
+
+---- TRACE 21 start imgui.lua:6563
+---- TRACE 21 abort editor.lua:262 -- NYI: unsupported C function type
+
+---- TRACE 21 start editor.lua:560
+---- TRACE 21 abort debug.lua:33 -- NYI: unsupported C function type
+
+---- TRACE 21 start debug.lua:32
+---- TRACE 21 abort debug.lua:33 -- NYI: unsupported C function type
+
+---- TRACE 21 start hookmgr.lua:66
+---- TRACE 21 abort hookmgr.lua:73 -- leaving loop in root trace
+
+---- TRACE 21 start imgui.lua:6563
+---- TRACE 21 abort editor.lua:243 -- NYI: unsupported C function type
+
+---- TRACE 21 start imgui.lua:5417
+---- TRACE 21 abort editor.lua:373 -- leaving loop in root trace
+
+---- TRACE 21 start terminal.lua:26
+---- TRACE 21 abort terminal.lua:27 -- NYI: unsupported C function type
+
+---- TRACE 21 start entity.lua:70
+---- TRACE 21 mcode 214
+55de2d8ce294  mov dword [r14-0xef0], 0x15
+55de2d8ce29f  lea rbx, [r14+0xf7b8]
+55de2d8ce2a6  rorx rbp, [rdx-0x10], 0x2f
+55de2d8ce2ad  shr rbp, 0x11
+55de2d8ce2b1  mov rdi, [rbp+0x28]
+55de2d8ce2b5  cmp byte [rdi+0xa], 0x0
+55de2d8ce2b9  jz 0x55de2d8c004c	->0
+55de2d8ce2bf  lea rbp, [rdi+0x10]
+55de2d8ce2c3  rorx rbp, [rbp+0x0], 0x2f
+55de2d8ce2ca  cmp bp, -0x0d
+55de2d8ce2ce  jnz 0x55de2d8c004c	->0
+55de2d8ce2d4  shr rbp, 0x11
+55de2d8ce2d8  cmp rbp, rbx
+55de2d8ce2db  jnz 0x55de2d8c004c	->0
+55de2d8ce2e1  rorx rbp, [rdx], 0x2f
+55de2d8ce2e7  cmp bp, -0x0c
+55de2d8ce2eb  jnz 0x55de2d8c004c	->0
+55de2d8ce2f1  shr rbp, 0x11
+55de2d8ce2f5  cmp dword [rbp+0x34], +0x01
+55de2d8ce2f9  jnz 0x55de2d8c004c	->0
+55de2d8ce2ff  mov rbp, [rbp+0x28]
+55de2d8ce303  mov rdi, 0xfffdff41d8fcf0d0
+55de2d8ce30d  cmp rdi, [rbp+0x20]
+55de2d8ce311  jnz 0x55de2d8c004c	->0
+55de2d8ce317  rorx rbp, [rbp+0x18], 0x2f
+55de2d8ce31e  cmp bp, -0x0b
+55de2d8ce322  jnz 0x55de2d8c004c	->0
+55de2d8ce328  shr rbp, 0x11
+55de2d8ce32c  cmp dword [rdx+0xc], 0xfff90000
+55de2d8ce333  jnb 0x55de2d8c004c	->0
+55de2d8ce339  cmp word [rbp+0xa], +0x0c
+55de2d8ce33e  jnz 0x55de2d8c004c	->0
+55de2d8ce344  mov rdi, [rbp+0x10]
+55de2d8ce348  cvttsd2si rsi, [rdx+0x8]
+55de2d8ce34e  mov esi, esi
+55de2d8ce350  call 0x55de54bbcc20
+55de2d8ce355  mov rdx, [r14-0xe30]
+55de2d8ce35c  xor eax, eax
+55de2d8ce35e  lea rbx, [r14-0x34e3c68]
+55de2d8ce365  jmp 0x55de54beb4d5
+---- TRACE 21 stop -> return
+
+---- TRACE 22 start entity_list_view.lua:25
+---- TRACE 22 mcode 2819
+55de2d8cd791  add rsp, -0xe0
+55de2d8cd798  mov dword [r14-0xef0], 0x16
+55de2d8cd7a3  mov rdi, [r14-0xf98]
+55de2d8cd7aa  cmp rdi, [r14-0xf90]
+55de2d8cd7b1  jb 0x55de2d8cd7cc
+55de2d8cd7b3  mov esi, 0x6
+55de2d8cd7b8  lea rdi, [r14-0xfa8]
+55de2d8cd7bf  call 0x55de54bed0b0	->lj_gc_step_jit
+55de2d8cd7c4  test eax, eax
+55de2d8cd7c6  jnz 0x55de2d8c004c	->0
+55de2d8cd7cc  mov rdx, [r14-0xe30]
+55de2d8cd7d3  movsd xmm7, [rdx+0x10]
+55de2d8cd7d8  cvttsd2si r12d, xmm7
+55de2d8cd7dd  xorps xmm6, xmm6
+55de2d8cd7e0  cvtsi2sd xmm6, r12d
+55de2d8cd7e5  ucomisd xmm7, xmm6
+55de2d8cd7e9  jnz 0x55de2d8c004c	->0
+55de2d8cd7ef  jpe 0x55de2d8c004c	->0
+55de2d8cd7f5  cmp r12d, 0x7ffffffe
+55de2d8cd7fc  jg 0x55de2d8c004c	->0
+55de2d8cd802  cvttsd2si ebx, [rdx+0x8]
+55de2d8cd807  rorx rcx, [rdx-0x10], 0x2f
+55de2d8cd80e  shr rcx, 0x11
+55de2d8cd812  lea rdx, [r14-0x34f5880]
+55de2d8cd819  mov [rsp+0x98], rcx
+55de2d8cd821  mov rdi, [rcx+0x28]
+55de2d8cd825  lea rcx, [r14+0xf7b8]
+55de2d8cd82c  cmp byte [rdi+0xa], 0x0
+55de2d8cd830  jz 0x55de2d8c004c	->0
+55de2d8cd836  lea rax, [rdi+0x10]
+55de2d8cd83a  rorx rax, [rax], 0x2f
+55de2d8cd840  cmp ax, -0x0c
+55de2d8cd844  jnz 0x55de2d8c004c	->0
+55de2d8cd84a  shr rax, 0x11
+55de2d8cd84e  cmp dword [rax+0x34], +0x0f
+55de2d8cd852  jnz 0x55de2d8c004c	->0
+55de2d8cd858  mov rax, [rax+0x28]
+55de2d8cd85c  mov rdi, 0xfffdff41d8fcfcd8
+55de2d8cd866  cmp rdi, [rax+0xf8]
+55de2d8cd86d  jnz 0x55de2d8c004c	->0
+55de2d8cd873  rorx rax, [rax+0xf0], 0x2f
+55de2d8cd87d  cmp ax, -0x09
+55de2d8cd881  jnz 0x55de2d8c004c	->0
+55de2d8cd887  shr rax, 0x11
+55de2d8cd88b  cmp rax, rdx
+55de2d8cd88e  jnz 0x55de2d8c004c	->0
+55de2d8cd894  rorx rdx, [r14+0x10520], 0x2f
+55de2d8cd89e  cmp dx, -0x0c
+55de2d8cd8a2  jnz 0x55de2d8c004c	->0
+55de2d8cd8a8  shr rdx, 0x11
+55de2d8cd8ac  mov [rsp+0x70], rdx
+55de2d8cd8b1  cmp dword [rdx+0x34], +0x0f
+55de2d8cd8b5  jnz 0x55de2d8c004c	->0
+55de2d8cd8bb  mov rax, [rdx+0x28]
+55de2d8cd8bf  mov [rsp+0xb0], rax
+55de2d8cd8c7  mov rdi, 0xfffdff41d8fcf140
+55de2d8cd8d1  cmp rdi, [rax+0x158]
+55de2d8cd8d8  jnz 0x55de2d8c004c	->0
+55de2d8cd8de  rorx rdi, [rax+0x150], 0x2f
+55de2d8cd8e8  cmp di, -0x09
+55de2d8cd8ec  jnz 0x55de2d8c004c	->0
+55de2d8cd8f2  shr rdi, 0x11
+55de2d8cd8f6  mov [rsp+0x68], rdi
+55de2d8cd8fb  rorx rax, [r14+0x19990], 0x2f
+55de2d8cd905  cmp ax, -0x0d
+55de2d8cd909  jnz 0x55de2d8c004c	->0
+55de2d8cd90f  shr rax, 0x11
+55de2d8cd913  cmp rax, rcx
+55de2d8cd916  jnz 0x55de2d8c004c	->0
+55de2d8cd91c  mov edi, ebx
+55de2d8cd91e  call 0x55de54bbd860
+55de2d8cd923  mov rbp, rax
+55de2d8cd926  mov [rsp+0xb8], rbp
+55de2d8cd92e  mov rdi, [r14-0xe38]
+55de2d8cd935  mov esi, 0x18
+55de2d8cd93a  call 0x55de54bed370	->lj_mem_newgco
+55de2d8cd93f  movzx ecx, byte [r14-0xf88]
+55de2d8cd947  and ecx, +0x03
+55de2d8cd94a  or ecx, 0x000c0a00
+55de2d8cd950  mov [rax+0x8], ecx
+55de2d8cd953  mov [rax+0x10], rbp
+55de2d8cd957  mov [rsp+0xc0], rax
+55de2d8cd95f  mov rdi, [r14-0xe38]
+55de2d8cd966  mov rcx, [rsp+0x68]
+55de2d8cd96b  lea rax, [r14+0x16fa8]
+55de2d8cd972  cmp rcx, rax
+55de2d8cd975  jnz 0x55de2d8c0050	->1
+55de2d8cd97b  lea rcx, [r14+0x24a0]
+55de2d8cd982  mov rax, [rax+0x10]
+55de2d8cd986  cmp dword [rax+0x34], +0x3f
+55de2d8cd98a  jnz 0x55de2d8c0050	->1
+55de2d8cd990  mov rax, [rax+0x28]
+55de2d8cd994  mov [rsp+0xd8], rax
+55de2d8cd99c  mov rsi, 0xfffdff41dc4bb870
+55de2d8cd9a6  cmp rsi, [rax+0x560]
+55de2d8cd9ad  jnz 0x55de2d8c0050	->1
+55de2d8cd9b3  rorx rax, [rax+0x558], 0x2f
+55de2d8cd9bd  cmp ax, -0x09
+55de2d8cd9c1  jnz 0x55de2d8c0050	->1
+55de2d8cd9c7  shr rax, 0x11
+55de2d8cd9cb  cmp rax, rcx
+55de2d8cd9ce  jnz 0x55de2d8c0050	->1
+55de2d8cd9d4  xor esi, esi
+55de2d8cd9d6  call 0x55de54bee110	->lj_tab_new1
+55de2d8cd9db  mov rbp, rax
+55de2d8cd9de  mov rdi, [r14-0xe38]
+55de2d8cd9e5  mov rax, [rsp+0xd8]
+55de2d8cd9ed  mov rsi, 0xfffdff41dc4bbd08
+55de2d8cd9f7  cmp rsi, [rax+0xe0]
+55de2d8cd9fe  jnz 0x55de2d8c0050	->1
+55de2d8cda04  rorx r9, [rax+0xd8], 0x2f
+55de2d8cda0e  cmp r9w, -0x09
+55de2d8cda13  jnz 0x55de2d8c0050	->1
+55de2d8cda19  shr r9, 0x11
+55de2d8cda1d  mov [rsp+0xc8], r9
+55de2d8cda25  lea rsi, [r14-0x34e6978]
+55de2d8cda2c  call 0x55de54bee180	->lj_tab_dup
+55de2d8cda31  mov r10, rax
+55de2d8cda34  mov [rsp+0xd0], r10
+55de2d8cda3c  mov r9, [rsp+0xc8]
+55de2d8cda44  mov rdi, [r14-0xe38]
+55de2d8cda4b  mov rdx, [rsp+0x70]
+55de2d8cda50  mov rax, [r10+0x28]
+55de2d8cda54  mov [rax+0x18], rdx
+55de2d8cda58  or dword [rax+0x1c], 0xfffa0000
+55de2d8cda5f  lea rax, [r14+0x2938]
+55de2d8cda66  mov byte [r10+0xa], 0x0
+55de2d8cda6b  cmp r9, rax
+55de2d8cda6e  jnz 0x55de2d8c0054	->2
+55de2d8cda74  mov [rbp+0x20], r10
+55de2d8cda78  lea rdx, [r14-0xec0]
+55de2d8cda7f  mov dword [rdx], 0xd8fcf0d0
+55de2d8cda85  mov dword [rdx+0x4], 0xfffdff41
+55de2d8cda8c  mov rsi, rbp
+55de2d8cda8f  call 0x55de54bee760	->lj_tab_newkey
+55de2d8cda94  mov r8, rax
+55de2d8cda97  mov rdi, [rsp+0xb8]
+55de2d8cda9f  mov rsi, [rsp+0xc0]
+55de2d8cdaa7  lea rdx, [r14+0x17018]
+55de2d8cdaae  lea rcx, [r14+0xf7b8]
+55de2d8cdab5  mov rax, [rsp+0xb0]
+55de2d8cdabd  mov [r8], rsi
+55de2d8cdac0  or dword [r8+0x4], 0xfffa8000
+55de2d8cdac8  mov rsi, 0xfffdff41d8fd2e30
+55de2d8cdad2  cmp rsi, [rax+0x50]
+55de2d8cdad6  jnz 0x55de2d8c0058	->3
+55de2d8cdadc  rorx rax, [rax+0x48], 0x2f
+55de2d8cdae3  cmp ax, -0x09
+55de2d8cdae7  jnz 0x55de2d8c0058	->3
+55de2d8cdaed  shr rax, 0x11
+55de2d8cdaf1  cmp rax, rdx
+55de2d8cdaf4  jnz 0x55de2d8c0058	->3
+55de2d8cdafa  rorx rax, [r14+0x17060], 0x2f
+55de2d8cdb04  cmp ax, -0x0d
+55de2d8cdb08  jnz 0x55de2d8c0058	->3
+55de2d8cdb0e  shr rax, 0x11
+55de2d8cdb12  cmp rax, rcx
+55de2d8cdb15  jnz 0x55de2d8c0058	->3
+55de2d8cdb1b  call 0x55de54bbca00
+55de2d8cdb20  mov rdi, [rsp+0xb8]
+55de2d8cdb28  test al, al
+55de2d8cdb2a  jz 0x55de2d8c005c	->4
+55de2d8cdb30  call 0x55de54bbca70
+55de2d8cdb35  mov r8d, eax
+55de2d8cdb38  mov rdi, [rsp+0xb8]
+55de2d8cdb40  lea rsi, [r14+0x17300]
+55de2d8cdb47  mov rdx, [r14-0xe30]
+55de2d8cdb4e  mov rcx, [rsp+0x98]
+55de2d8cdb56  mov rax, [rsp+0xb0]
+55de2d8cdb5e  test r8b, r8b
+55de2d8cdb61  jz 0x55de2d8c0060	->5
+55de2d8cdb67  rorx rdx, [rdx], 0x2f
+55de2d8cdb6d  cmp dx, -0x0c
+55de2d8cdb71  jnz 0x55de2d8c0064	->6
+55de2d8cdb77  shr rdx, 0x11
+55de2d8cdb7b  cmp dword [rdx+0x34], +0x0f
+55de2d8cdb7f  jnz 0x55de2d8c0064	->6
+55de2d8cdb85  mov rdx, [rdx+0x28]
+55de2d8cdb89  mov [rsp+0x90], rdx
+55de2d8cdb91  mov r15, 0xfffdff41bb42c938
+55de2d8cdb9b  cmp r15, [rdx+0x170]
+55de2d8cdba2  jnz 0x55de2d8c0064	->6
+55de2d8cdba8  rorx rdx, [rdx+0x168], 0x2f
+55de2d8cdbb2  cmp dx, -0x0b
+55de2d8cdbb6  jnz 0x55de2d8c0064	->6
+55de2d8cdbbc  shr rdx, 0x11
+55de2d8cdbc0  mov [rsp+0x58], rdx
+55de2d8cdbc5  movzx r8d, word [rdx+0xa]
+55de2d8cdbca  cmp r8d, 0x35a7
+55de2d8cdbd1  jnz 0x55de2d8c0064	->6
+55de2d8cdbd7  cmp byte [rdx+0x10], 0x0
+55de2d8cdbdb  jnz 0x55de2d8c0064	->6
+55de2d8cdbe1  mov rdx, 0xfffdff41d8fd5580
+55de2d8cdbeb  cmp rdx, [rax+0x128]
+55de2d8cdbf2  jnz 0x55de2d8c0064	->6
+55de2d8cdbf8  rorx rdx, [rax+0x120], 0x2f
+55de2d8cdc02  cmp dx, -0x09
+55de2d8cdc06  jnz 0x55de2d8c0064	->6
+55de2d8cdc0c  shr rdx, 0x11
+55de2d8cdc10  mov r15, [rcx+0x30]
+55de2d8cdc14  lea rcx, [r14+0x17290]
+55de2d8cdc1b  cmp byte [r15+0xa], 0x0
+55de2d8cdc20  jz 0x55de2d8c0064	->6
+55de2d8cdc26  lea r8, [r15+0x10]
+55de2d8cdc2a  rorx r8, [r8], 0x2f
+55de2d8cdc30  cmp r8w, -0x0c
+55de2d8cdc35  jnz 0x55de2d8c0064	->6
+55de2d8cdc3b  shr r8, 0x11
+55de2d8cdc3f  cmp dword [r8+0x34], +0x03
+55de2d8cdc44  jnz 0x55de2d8c0064	->6
+55de2d8cdc4a  mov r8, [r8+0x28]
+55de2d8cdc4e  mov r15, 0xfffdff41d8fd3600
+55de2d8cdc58  cmp r15, [r8+0x50]
+55de2d8cdc5c  jnz 0x55de2d8c0064	->6
+55de2d8cdc62  cmp dword [r8+0x4c], 0xfff90000
+55de2d8cdc6a  jnb 0x55de2d8c0064	->6
+55de2d8cdc70  movsd xmm1, [r8+0x48]
+55de2d8cdc76  movsd [rsp+0x30], xmm1
+55de2d8cdc7c  cmp rdx, rsi
+55de2d8cdc7f  jnz 0x55de2d8c0064	->6
+55de2d8cdc85  mov rsi, 0xfffdff41d8fd3f00
+55de2d8cdc8f  cmp rsi, [rax+0x170]
+55de2d8cdc96  jnz 0x55de2d8c0064	->6
+55de2d8cdc9c  rorx rax, [rax+0x168], 0x2f
+55de2d8cdca6  cmp ax, -0x09
+55de2d8cdcaa  jnz 0x55de2d8c0064	->6
+55de2d8cdcb0  shr rax, 0x11
+55de2d8cdcb4  cmp rax, rcx
+55de2d8cdcb7  jnz 0x55de2d8c0064	->6
+55de2d8cdcbd  call 0x55de54bbcbc0
+55de2d8cdcc2  mov edx, eax
+55de2d8cdcc4  mov rdi, [rsp+0xb8]
+55de2d8cdccc  lea rcx, [r14+0x17088]
+55de2d8cdcd3  mov rax, [rsp+0xb0]
+55de2d8cdcdb  movsd xmm1, [rsp+0x30]
+55de2d8cdce1  mov esi, edx
+55de2d8cdce3  movaps xmm7, xmm1
+55de2d8cdce6  addsd xmm7, [r14-0x20f8ce28]
+55de2d8cdcef  movd edx, xmm7
+55de2d8cdcf3  mov [rsp+0x48], edx
+55de2d8cdcf7  and edx, esi
+55de2d8cdcf9  xorps xmm0, xmm0
+55de2d8cdcfc  cvtsi2sd xmm0, edx
+55de2d8cdd00  ucomisd xmm0, xmm1
+55de2d8cdd04  jpe 0x55de2d8cdd0c
+55de2d8cdd06  jz 0x55de2d8c0068	->7
+55de2d8cdd0c  mov rsi, 0xfffdff41d8fd2f10
+55de2d8cdd16  cmp rsi, [rax+0x98]
+55de2d8cdd1d  jnz 0x55de2d8c006c	->8
+55de2d8cdd23  rorx rax, [rax+0x90], 0x2f
+55de2d8cdd2d  cmp ax, -0x09
+55de2d8cdd31  jnz 0x55de2d8c006c	->8
+55de2d8cdd37  shr rax, 0x11
+55de2d8cdd3b  cmp rax, rcx
+55de2d8cdd3e  jnz 0x55de2d8c006c	->8
+55de2d8cdd44  rorx rax, [r14+0x170d8], 0x2f
+55de2d8cdd4e  cmp ax, -0x0c
+55de2d8cdd52  jnz 0x55de2d8c006c	->8
+55de2d8cdd58  shr rax, 0x11
+55de2d8cdd5c  cmp dword [rax+0x34], +0x1f
+55de2d8cdd60  jnz 0x55de2d8c006c	->8
+55de2d8cdd66  mov rax, [rax+0x28]
+55de2d8cdd6a  mov rsi, 0xfffdff41dc4bb8f0
+55de2d8cdd74  cmp rsi, [rax+0x2a8]
+55de2d8cdd7b  jnz 0x55de2d8c006c	->8
+55de2d8cdd81  rorx rdx, [rax+0x2a0], 0x2f
+55de2d8cdd8b  cmp dx, -0x09
+55de2d8cdd8f  jnz 0x55de2d8c006c	->8
+55de2d8cdd95  shr rdx, 0x11
+55de2d8cdd99  mov [rsp+0xa8], rdx
+55de2d8cdda1  call 0x55de54bbcae0
+55de2d8cdda6  mov rdi, rax
+55de2d8cdda9  mov [rsp+0xa0], rdi
+55de2d8cddb1  mov rdx, [rsp+0xa8]
+55de2d8cddb9  lea rax, [r14+0xfd90]
+55de2d8cddc0  cmp rdx, rax
+55de2d8cddc3  jnz 0x55de2d8c0070	->9
+55de2d8cddc9  lea rax, [r14-0x1d44498]
+55de2d8cddd0  call rax
+55de2d8cddd2  mov rdx, rax
+55de2d8cddd5  mov rdi, [r14-0xe38]
+55de2d8cdddc  mov rsi, [rsp+0xa0]
+55de2d8cdde4  call 0x55de54bcb950	->lj_str_new
+55de2d8cdde9  mov rsi, rax
+55de2d8cddec  mov [rsp+0x88], rsi
+55de2d8cddf4  mov rcx, [rsp+0x98]
+55de2d8cddfc  lea rax, [r14-0xf30]
+55de2d8cde03  cmp rsi, rax
+55de2d8cde06  jz 0x55de2d8c0074	->10
+55de2d8cde0c  mov rdi, [rcx+0x38]
+55de2d8cde10  cmp byte [rdi+0xa], 0x0
+55de2d8cde14  jz 0x55de2d8c0078	->11
+55de2d8cde1a  lea rax, [rdi+0x10]
+55de2d8cde1e  rorx rax, [rax], 0x2f
+55de2d8cde24  cmp ax, -0x0c
+55de2d8cde28  jnz 0x55de2d8c0078	->11
+55de2d8cde2e  shr rax, 0x11
+55de2d8cde32  cmp dword [rax+0x34], 0x7ff
+55de2d8cde39  jnz 0x55de2d8c0078	->11
+55de2d8cde3f  mov rax, [rax+0x28]
+55de2d8cde43  mov rdi, 0xfffdff41bb810db0
+55de2d8cde4d  cmp rdi, [rax+0x8d68]
+55de2d8cde54  jnz 0x55de2d8c0078	->11
+55de2d8cde5a  rorx rsi, [rax+0x8d60], 0x2f
+55de2d8cde64  cmp si, -0x05
+55de2d8cde68  jnz 0x55de2d8c0078	->11
+55de2d8cde6e  shr rsi, 0x11
+55de2d8cde72  mov [rsp+0x38], rsi
+55de2d8cde77  mov rdi, [r14-0x20f8cf20]
+55de2d8cde7e  mov rdx, [rdi+0x10]
+55de2d8cde82  mov [rdi], rdx
+55de2d8cde85  call 0x55de54bed890	->lj_buf_putstr
+55de2d8cde8a  mov rdi, rax
+55de2d8cde8d  mov esi, 0x20
+55de2d8cde92  call 0x55de54bed860	->lj_buf_putchar
+55de2d8cde97  mov rdi, rax
+55de2d8cde9a  mov rsi, [rsp+0x88]
+55de2d8cdea2  call 0x55de54bed890	->lj_buf_putstr
+55de2d8cdea7  mov rdi, rax
+55de2d8cdeaa  call 0x55de54bedd10	->lj_buf_tostr
+55de2d8cdeaf  mov [rsp+0x80], rax
+55de2d8cdeb7  mov rdi, [r14-0xe38]
+55de2d8cdebe  mov rcx, [rsp+0x98]
+55de2d8cdec6  mov rax, [rsp+0x90]
+55de2d8cdece  mov rcx, [rcx+0x10]
+55de2d8cded2  cmp dword [rcx+0x34], +0x3f
+55de2d8cded6  jnz 0x55de2d8c0078	->11
+55de2d8cdedc  mov rcx, [rcx+0x28]
+55de2d8cdee0  mov rsi, 0xfffdff41dc4bb9e0
+55de2d8cdeea  cmp rsi, [rcx+0x38]
+55de2d8cdeee  jnz 0x55de2d8c0078	->11
+55de2d8cdef4  rorx rcx, [rcx+0x30], 0x2f
+55de2d8cdefb  cmp cx, -0x0c
+55de2d8cdeff  jnz 0x55de2d8c0078	->11
+55de2d8cdf05  shr rcx, 0x11
+55de2d8cdf09  cmp dword [rcx+0x34], +0x0f
+55de2d8cdf0d  jnz 0x55de2d8c0078	->11
+55de2d8cdf13  mov rcx, [rcx+0x28]
+55de2d8cdf17  mov rsi, 0xfffdff41dc4bd908
+55de2d8cdf21  cmp rsi, [rcx+0x170]
+55de2d8cdf28  jnz 0x55de2d8c0078	->11
+55de2d8cdf2e  rorx rcx, [rcx+0x168], 0x2f
+55de2d8cdf38  cmp cx, -0x09
+55de2d8cdf3c  jnz 0x55de2d8c0078	->11
+55de2d8cdf42  shr rcx, 0x11
+55de2d8cdf46  mov [rsp+0x10], rcx
+55de2d8cdf4b  mov rsi, 0xfffdff41bb42c430
+55de2d8cdf55  cmp rsi, [rax+0x110]
+55de2d8cdf5c  jnz 0x55de2d8c0078	->11
+55de2d8cdf62  rorx r13, [rax+0x108], 0x2f
+55de2d8cdf6c  cmp r13w, -0x0c
+55de2d8cdf71  jnz 0x55de2d8c0078	->11
+55de2d8cdf77  shr r13, 0x11
+55de2d8cdf7b  mov esi, 0x4
+55de2d8cdf80  call 0x55de54bee110	->lj_tab_new1
+55de2d8cdf85  mov [rsp+0x78], rax
+55de2d8cdf8a  mov rdx, [rsp+0x80]
+55de2d8cdf92  mov rcx, [rsp+0x10]
+55de2d8cdf97  mov [rax+0x48], rbp
+55de2d8cdf9b  or dword [rax+0x4c], 0xfffa0000
+55de2d8cdfa2  mov [rax+0x50], rdx
+55de2d8cdfa6  or dword [rax+0x54], 0xfffd8000
+55de2d8cdfad  mov dword [rax+0x5c], 0xffff7fff
+55de2d8cdfb4  mov dword [rax+0x58], 0xffffffff
+55de2d8cdfbb  lea rax, [r14+0x4538]
+55de2d8cdfc2  cmp rcx, rax
+55de2d8cdfc5  jnz 0x55de2d8c007c	->12
+55de2d8cdfcb  mov rdi, r13
+55de2d8cdfce  call 0x55de54bef090	->lj_tab_len
+55de2d8cdfd3  mov ebp, eax
+55de2d8cdfd5  mov rax, [rsp+0x78]
+55de2d8cdfda  add ebp, +0x01
+55de2d8cdfdd  mov [rsp+0x1c], ebp
+55de2d8cdfe1  mov edx, [r13+0x30]
+55de2d8cdfe5  mov [rsp+0x18], edx
+55de2d8cdfe9  cmp ebp, [r13+0x30]
+55de2d8cdfed  jnb 0x55de2d8c007c	->12
+55de2d8cdff3  mov r15, [r13+0x10]
+55de2d8cdff7  mov [r15+rbp*8], rax
+55de2d8cdffb  or dword [r15+rbp*8+0x4], 0xfffa0000
+55de2d8ce004  test byte [r13+0x8], 0x4
+55de2d8ce009  jz 0x55de2d8ce022
+55de2d8ce00b  and byte [r13+0x8], 0xfb
+55de2d8ce010  mov rdi, [r14-0xf68]
+55de2d8ce017  mov [r14-0xf68], r13
+55de2d8ce01e  mov [r13+0x18], rdi
+55de2d8ce022  add ebx, +0x01
+55de2d8ce025  cmp ebx, r12d
+55de2d8ce028  jg 0x55de2d8c0080	->13
+->LOOP:
+55de2d8ce02e  mov [rsp+0x1c], ebp
+55de2d8ce032  mov rdi, [r14-0xf98]
+55de2d8ce039  cmp rdi, [r14-0xf90]
+55de2d8ce040  jb 0x55de2d8ce05b
+55de2d8ce042  mov esi, 0x6
+55de2d8ce047  lea rdi, [r14-0xfa8]
+55de2d8ce04e  call 0x55de54bed0b0	->lj_gc_step_jit
+55de2d8ce053  test eax, eax
+55de2d8ce055  jnz 0x55de2d8c0084	->14
+55de2d8ce05b  mov edi, ebx
+55de2d8ce05d  call 0x55de54bbd860
+55de2d8ce062  mov rbp, rax
+55de2d8ce065  mov [rsp+0x50], rbp
+55de2d8ce06a  mov rdi, [r14-0xe38]
+55de2d8ce071  mov esi, 0x18
+55de2d8ce076  call 0x55de54bed370	->lj_mem_newgco
+55de2d8ce07b  movzx ecx, byte [r14-0xf88]
+55de2d8ce083  and ecx, +0x03
+55de2d8ce086  or ecx, 0x000c0a00
+55de2d8ce08c  mov [rax+0x8], ecx
+55de2d8ce08f  mov [rax+0x10], rbp
+55de2d8ce093  mov [rsp+0x60], rax
+55de2d8ce098  mov rdi, [r14-0xe38]
+55de2d8ce09f  xor esi, esi
+55de2d8ce0a1  call 0x55de54bee110	->lj_tab_new1
+55de2d8ce0a6  mov [rsp+0x28], rax
+55de2d8ce0ab  mov rdi, [r14-0xe38]
+55de2d8ce0b2  lea rsi, [r14-0x34e6978]
+55de2d8ce0b9  call 0x55de54bee180	->lj_tab_dup
+55de2d8ce0be  mov rdi, [r14-0xe38]
+55de2d8ce0c5  mov rsi, [rsp+0x28]
+55de2d8ce0ca  mov rdx, [rsp+0x70]
+55de2d8ce0cf  mov rbp, [rax+0x28]
+55de2d8ce0d3  mov [rbp+0x18], rdx
+55de2d8ce0d7  or dword [rbp+0x1c], 0xfffa0000
+55de2d8ce0de  mov byte [rax+0xa], 0x0
+55de2d8ce0e2  mov [rsi+0x20], rax
+55de2d8ce0e6  lea rdx, [r14-0xec0]
+55de2d8ce0ed  mov dword [rdx], 0xd8fcf0d0
+55de2d8ce0f3  mov dword [rdx+0x4], 0xfffdff41
+55de2d8ce0fa  call 0x55de54bee760	->lj_tab_newkey
+55de2d8ce0ff  mov rbp, rax
+55de2d8ce102  mov rdi, [rsp+0x50]
+55de2d8ce107  mov rax, [rsp+0x60]
+55de2d8ce10c  mov [rbp+0x0], rax
+55de2d8ce110  or dword [rbp+0x4], 0xfffa8000
+55de2d8ce117  call 0x55de54bbca00
+55de2d8ce11c  mov rdi, [rsp+0x50]
+55de2d8ce121  test al, al
+55de2d8ce123  jz 0x55de2d8c008c	->16
+55de2d8ce129  call 0x55de54bbca70
+55de2d8ce12e  mov ebp, eax
+55de2d8ce130  mov rdi, [rsp+0x50]
+55de2d8ce135  mov rax, [rsp+0x58]
+55de2d8ce13a  test bpl, bpl
+55de2d8ce13d  jz 0x55de2d8c0090	->17
+55de2d8ce143  cmp byte [rax+0x10], 0x0
+55de2d8ce147  jnz 0x55de2d8c0094	->18
+55de2d8ce14d  call 0x55de54bbcbc0
+55de2d8ce152  mov ebp, eax
+55de2d8ce154  mov rdi, [rsp+0x50]
+55de2d8ce159  mov eax, [rsp+0x48]
+55de2d8ce15d  movsd xmm0, [rsp+0x30]
+55de2d8ce163  and ebp, eax
+55de2d8ce165  xorps xmm7, xmm7
+55de2d8ce168  cvtsi2sd xmm7, ebp
+55de2d8ce16c  ucomisd xmm7, xmm0
+55de2d8ce170  jpe 0x55de2d8ce178
+55de2d8ce172  jz 0x55de2d8c0098	->19
+55de2d8ce178  call 0x55de54bbcae0
+55de2d8ce17d  mov rdi, rax
+55de2d8ce180  mov [rsp+0x40], rdi
+55de2d8ce185  lea rax, [r14-0x1d44498]
+55de2d8ce18c  call rax
+55de2d8ce18e  mov rdx, rax
+55de2d8ce191  mov rdi, [r14-0xe38]
+55de2d8ce198  mov rsi, [rsp+0x40]
+55de2d8ce19d  call 0x55de54bcb950	->lj_str_new
+55de2d8ce1a2  mov rbp, rax
+55de2d8ce1a5  mov [rsp+0x20], rbp
+55de2d8ce1aa  mov rsi, [rsp+0x38]
+55de2d8ce1af  lea rax, [r14-0xf30]
+55de2d8ce1b6  cmp rbp, rax
+55de2d8ce1b9  jz 0x55de2d8c00a0	->21
+55de2d8ce1bf  mov rdi, [r14-0x20f8cf20]
+55de2d8ce1c6  mov rbp, [rdi+0x10]
+55de2d8ce1ca  mov [rdi], rbp
+55de2d8ce1cd  call 0x55de54bed890	->lj_buf_putstr
+55de2d8ce1d2  mov rdi, rax
+55de2d8ce1d5  mov esi, 0x20
+55de2d8ce1da  call 0x55de54bed860	->lj_buf_putchar
+55de2d8ce1df  mov rdi, rax
+55de2d8ce1e2  mov rsi, [rsp+0x20]
+55de2d8ce1e7  call 0x55de54bed890	->lj_buf_putstr
+55de2d8ce1ec  mov rdi, rax
+55de2d8ce1ef  call 0x55de54bedd10	->lj_buf_tostr
+55de2d8ce1f4  mov rbp, rax
+55de2d8ce1f7  mov rdi, [r14-0xe38]
+55de2d8ce1fe  mov esi, 0x4
+55de2d8ce203  call 0x55de54bee110	->lj_tab_new1
+55de2d8ce208  mov [rsp+0x8], rax
+55de2d8ce20d  mov rdi, [rsp+0x28]
+55de2d8ce212  mov esi, [rsp+0x1c]
+55de2d8ce216  mov [rax+0x48], rdi
+55de2d8ce21a  or dword [rax+0x4c], 0xfffa0000
+55de2d8ce221  mov [rax+0x50], rbp
+55de2d8ce225  or dword [rax+0x54], 0xfffd8000
+55de2d8ce22c  mov dword [rax+0x5c], 0xffff7fff
+55de2d8ce233  mov dword [rax+0x58], 0xffffffff
+55de2d8ce23a  mov rdi, r13
+55de2d8ce23d  call 0x55de54bef0f0	->lj_tab_len_hint
+55de2d8ce242  mov ebp, eax
+55de2d8ce244  mov edx, [rsp+0x18]
+55de2d8ce248  mov rax, [rsp+0x8]
+55de2d8ce24d  add ebp, +0x01
+55de2d8ce250  cmp ebp, edx
+55de2d8ce252  jnb 0x55de2d8c00a8	->23
+55de2d8ce258  mov [r15+rbp*8], rax
+55de2d8ce25c  or dword [r15+rbp*8+0x4], 0xfffa0000
+55de2d8ce265  test byte [r13+0x8], 0x4
+55de2d8ce26a  jz 0x55de2d8ce283
+55de2d8ce26c  and byte [r13+0x8], 0xfb
+55de2d8ce271  mov rdi, [r14-0xf68]
+55de2d8ce278  mov [r14-0xf68], r13
+55de2d8ce27f  mov [r13+0x18], rdi
+55de2d8ce283  add ebx, +0x01
+55de2d8ce286  cmp ebx, r12d
+55de2d8ce289  jle 0x55de2d8ce02e	->LOOP
+55de2d8ce28f  jmp 0x55de2d8c00ac	->24
+---- TRACE 22 stop -> loop
+
+---- TRACE 23 start entity.lua:74
+---- TRACE 23 mcode 488
+55de2d8cd5a2  mov dword [r14-0xef0], 0x17
+55de2d8cd5ad  lea r15, [r14+0xf7b8]
+55de2d8cd5b4  lea r13, [r14+0x17290]
+55de2d8cd5bb  lea rbx, [r14+0x17300]
+55de2d8cd5c2  rorx rbp, [rdx-0x10], 0x2f
+55de2d8cd5c9  shr rbp, 0x11
+55de2d8cd5cd  cmp rbp, rbx
+55de2d8cd5d0  jnz 0x55de2d8c004c	->0
+55de2d8cd5d6  rorx rbp, [rdx], 0x2f
+55de2d8cd5dc  cmp bp, -0x0c
+55de2d8cd5e0  jnz 0x55de2d8c004c	->0
+55de2d8cd5e6  shr rbp, 0x11
+55de2d8cd5ea  mov edi, [rbp+0x34]
+55de2d8cd5ed  and edi, 0x0a75450f
+55de2d8cd5f3  lea edi, [rdi+rdi*2]
+55de2d8cd5f6  shl edi, 0x03
+55de2d8cd5f9  add rdi, [rbp+0x28]
+55de2d8cd5fd  cmp dword [rdi+0xc], 0xfffdff41
+55de2d8cd604  jnz 0x55de2d8cd613
+55de2d8cd606  cmp dword [rdi+0x8], 0xd8fd3f00
+55de2d8cd60d  jz 0x55de2d8c004c	->0
+55de2d8cd613  mov rdi, [rdi+0x10]
+55de2d8cd617  test rdi, rdi
+55de2d8cd61a  jnz 0x55de2d8cd5fd
+55de2d8cd61c  mov rbx, [rbp+0x20]
+55de2d8cd620  test rbx, rbx
+55de2d8cd623  jz 0x55de2d8c004c	->0
+55de2d8cd629  cmp dword [rbx+0x34], +0x01
+55de2d8cd62d  jnz 0x55de2d8c004c	->0
+55de2d8cd633  mov rbx, [rbx+0x28]
+55de2d8cd637  mov rdi, 0xfffdff41dc4bacb0
+55de2d8cd641  cmp rdi, [rbx+0x20]
+55de2d8cd645  jnz 0x55de2d8c004c	->0
+55de2d8cd64b  rorx rbx, [rbx+0x18], 0x2f
+55de2d8cd652  cmp bx, -0x0c
+55de2d8cd656  jnz 0x55de2d8c004c	->0
+55de2d8cd65c  shr rbx, 0x11
+55de2d8cd660  cmp dword [rbx+0x34], +0x0f
+55de2d8cd664  jnz 0x55de2d8c004c	->0
+55de2d8cd66a  mov rbx, [rbx+0x28]
+55de2d8cd66e  mov rdi, 0xfffdff41d8fd3f00
+55de2d8cd678  cmp rdi, [rbx+0x170]
+55de2d8cd67f  jnz 0x55de2d8c004c	->0
+55de2d8cd685  rorx rbx, [rbx+0x168], 0x2f
+55de2d8cd68f  cmp bx, -0x09
+55de2d8cd693  jnz 0x55de2d8c004c	->0
+55de2d8cd699  shr rbx, 0x11
+55de2d8cd69d  cmp rbx, r13
+55de2d8cd6a0  jnz 0x55de2d8c004c	->0
+55de2d8cd6a6  rorx rbx, [r14+0x17060], 0x2f
+55de2d8cd6b0  cmp bx, -0x0d
+55de2d8cd6b4  jnz 0x55de2d8c004c	->0
+55de2d8cd6ba  shr rbx, 0x11
+55de2d8cd6be  cmp rbx, r15
+55de2d8cd6c1  jnz 0x55de2d8c004c	->0
+55de2d8cd6c7  cmp dword [rbp+0x34], +0x01
+55de2d8cd6cb  jnz 0x55de2d8c004c	->0
+55de2d8cd6d1  mov rbp, [rbp+0x28]
+55de2d8cd6d5  mov rdi, 0xfffdff41d8fcf0d0
+55de2d8cd6df  cmp rdi, [rbp+0x20]
+55de2d8cd6e3  jnz 0x55de2d8c004c	->0
+55de2d8cd6e9  rorx rbp, [rbp+0x18], 0x2f
+55de2d8cd6f0  cmp bp, -0x0b
+55de2d8cd6f4  jnz 0x55de2d8c004c	->0
+55de2d8cd6fa  shr rbp, 0x11
+55de2d8cd6fe  cmp word [rbp+0xa], +0x0c
+55de2d8cd703  jnz 0x55de2d8c004c	->0
+55de2d8cd709  mov rdi, [rbp+0x10]
+55de2d8cd70d  call 0x55de54bbcbc0
+55de2d8cd712  mov rdx, [r14-0xe30]
+55de2d8cd719  movsd xmm5, [r14-0x2f28ff38]
+55de2d8cd722  xorps xmm7, xmm7
+55de2d8cd725  cvtsi2sd xmm7, rax
+55de2d8cd72a  cmp dword [rdx+0xc], 0xfff90000
+55de2d8cd731  jnb 0x55de2d8c0050	->1
+55de2d8cd737  movsd xmm6, [rdx+0x8]
+55de2d8cd73c  movaps xmm7, xmm6
+55de2d8cd73f  addsd xmm7, xmm5
+55de2d8cd743  movd ebp, xmm7
+55de2d8cd747  and ebp, eax
+55de2d8cd749  xorps xmm7, xmm7
+55de2d8cd74c  cvtsi2sd xmm7, ebp
+55de2d8cd750  ucomisd xmm7, xmm6
+55de2d8cd754  jpe 0x55de2d8c0054	->2
+55de2d8cd75a  jnz 0x55de2d8c0054	->2
+55de2d8cd760  mov dword [rdx+0x10], 0xffffffff
+55de2d8cd767  mov dword [rdx+0x14], 0xfffeffff
+55de2d8cd76e  mov dword [rdx-0x10], 0xdc4d0698
+55de2d8cd775  mov dword [rdx-0xc], 0xfffbff41
+55de2d8cd77c  xor eax, eax
+55de2d8cd77e  lea rbx, [r14-0x34e3a18]
+55de2d8cd785  jmp 0x55de54beb4d5
+---- TRACE 23 stop -> return
+
+---- TRACE 24 start 23/2 entity.lua:75
+---- TRACE 24 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 24 start 23/2 entity.lua:75
+---- TRACE 24 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 24 start 23/2 entity.lua:75
+---- TRACE 24 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 24 start 23/2 entity.lua:75
+---- TRACE 24 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 24 start 23/2 entity.lua:75
+---- TRACE 24 mcode 46
+55de2d8cd56d  mov dword [r14-0xef0], 0x18
+55de2d8cd578  mov rdx, [r14-0xe30]
+55de2d8cd57f  mov dword [rdx-0x10], 0xdc4d0698
+55de2d8cd586  mov dword [rdx-0xc], 0xfffbff41
+55de2d8cd58d  xor eax, eax
+55de2d8cd58f  lea rbx, [r14-0x34e3a24]
+55de2d8cd596  jmp 0x55de54beb4d5
+---- TRACE 24 stop -> interpreter
+
+---- TRACE 25 start imgui.lua:6844
+---- TRACE 25 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 25 start entity_list_view.lua:83
+---- TRACE 25 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 25 start camera.lua:53
+---- TRACE 25 abort camera.lua:111 -- NYI: bytecode 51
+
+---- TRACE 25 start imgui.lua:6844
+---- TRACE 25 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 25 start entity_list_view.lua:83
+---- TRACE 25 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 25 start entity_list_view.lua:83
+---- TRACE 25 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 25 start imgui.lua:6844
+---- TRACE 25 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 25 start entity_list_view.lua:83
+---- TRACE 25 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 25 start imgui.lua:6844
+---- TRACE 25 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 25 start imgui.lua:6680
+---- TRACE 25 abort entity_list_view.lua:99 -- leaving loop in root trace
+
+---- TRACE 25 start entity_list_view.lua:83
+---- TRACE 25 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 25 start imgui.lua:6684
+---- TRACE 25 abort terminal.lua:48 -- leaving loop in root trace
+
+---- TRACE 25 start imgui.lua:6844
+---- TRACE 25 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 25 start entity_list_view.lua:83
+---- TRACE 25 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 25 start imgui.lua:6844
+---- TRACE 25 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 25 start entity_list_view.lua:83
+---- TRACE 25 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 25 start imgui.lua:6336
+---- TRACE 25 abort entity_list_view.lua:100 -- NYI: unsupported C function type
+
+---- TRACE 25 start imgui.lua:5305
+---- TRACE 25 abort entity_list_view.lua:54 -- NYI: unsupported C function type
+
+---- TRACE 25 start imgui.lua:6966
+---- TRACE 25 abort terminal.lua:50 -- leaving loop in root trace
+
+---- TRACE 25 start entity_list_view.lua:44
+---- TRACE 25 abort entity_list_view.lua:45 -- NYI: unsupported C function type
+
+---- TRACE 25 start imgui.lua:6844
+---- TRACE 25 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 25 start entity_list_view.lua:83
+---- TRACE 25 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 25 start imgui.lua:6680
+---- TRACE 25 abort entity_list_view.lua:99 -- leaving loop in root trace
+
+---- TRACE 25 start imgui.lua:6294
+---- TRACE 25 abort terminal.lua:65 -- NYI: unsupported C function type
+
+---- TRACE 25 start inspector.lua:113
+---- TRACE 25 abort inspector.lua:115 -- NYI: unsupported C function type
+
+---- TRACE 25 start math.lua:30
+---- TRACE 25 abort camera.lua:95 -- leaving loop in root trace
+
+---- TRACE 25 start imgui.lua:1147
+---- TRACE 25 abort terminal.lua:36 -- leaving loop in root trace
+
+---- TRACE 25 start imgui.lua:6833
+---- TRACE 25 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 25 start imgui.lua:6336
+---- TRACE 25 abort entity_list_view.lua:95 -- NYI: unsupported C function type
+
+---- TRACE 25 start imgui.lua:6844
+---- TRACE 25 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 25 start entity_list_view.lua:83
+---- TRACE 25 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 25 start math.lua:30
+---- TRACE 25 abort camera.lua:68 -- leaving loop in root trace
+
+---- TRACE 25 start imgui.lua:1142
+---- TRACE 25 abort terminal.lua:37 -- leaving loop in root trace
+
+---- TRACE 25 start imgui.lua:6294
+---- TRACE 25 abort terminal.lua:65 -- NYI: unsupported C function type
+
+---- TRACE 25 start imgui.lua:6930
+---- TRACE 25 abort entity_list_view.lua:45 -- NYI: unsupported C function type
+
+---- TRACE 25 start math.lua:45
+---- TRACE 25 abort camera.lua:88 -- leaving loop in root trace
+
+---- TRACE 25 start input.lua:157
+---- TRACE 25 abort camera.lua:117 -- NYI: unsupported C function type
+
+---- TRACE 25 start imgui.lua:6680
+---- TRACE 25 abort entity_list_view.lua:99 -- leaving loop in root trace
+
+---- TRACE 25 start math.lua:45
+---- TRACE 25 abort camera.lua:88 -- leaving loop in root trace
+
+---- TRACE 25 start quat.lua:50
+---- TRACE 25 abort camera.lua:89 -- leaving loop in root trace
+
+---- TRACE 25 start imgui.lua:5184
+---- TRACE 25 abort scripteditor.lua:119 -- NYI: unsupported C function type
+
+---- TRACE 25 start camera.lua:66
+---- TRACE 25 abort camera.lua:69 -- NYI: unsupported C function type
+
+---- TRACE 25 start imgui.lua:6844
+---- TRACE 25 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 25 start imgui.lua:6805
+---- TRACE 25 abort entity_list_view.lua:72 -- leaving loop in root trace
+
+---- TRACE 25 start imgui.lua:6727
+---- TRACE 25 abort editor.lua:239 -- NYI: unsupported C function type
+
+---- TRACE 25 start entity_list_view.lua:83
+---- TRACE 25 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 25 start imgui.lua:5372
+---- TRACE 25 abort inspector.lua:133 -- NYI: unsupported C function type
+
+---- TRACE 25 start entity.lua:62
+---- TRACE 25 abort inspector.lua:171 -- NYI: unsupported C function type
+
+---- TRACE 25 start imgui.lua:6336
+---- TRACE 25 abort entity_list_view.lua:95 -- NYI: unsupported C function type
+
+---- TRACE 25 start imgui.lua:6833
+---- TRACE 25 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 25 start imgui.lua:6833
+---- TRACE 25 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 25 start imgui.lua:6833
+---- TRACE 25 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 25 start imgui.lua:5372
+---- TRACE 25 abort inspector.lua:82 -- NYI: unsupported C function type
+
+---- TRACE 25 start editor.lua:238
+---- TRACE 25 abort editor.lua:239 -- NYI: unsupported C function type
+
+---- TRACE 25 start imgui.lua:6833
+---- TRACE 25 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 25 start entity.lua:62
+---- TRACE 25 abort inspector.lua:171 -- NYI: unsupported C function type
+
+---- TRACE 25 start imgui.lua:6833
+---- TRACE 25 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 25 start imgui.lua:5372
+---- TRACE 25 abort inspector.lua:133 -- NYI: unsupported C function type
+
+---- TRACE 25 start imgui.lua:6294
+---- TRACE 25 abort terminal.lua:65 -- NYI: unsupported C function type
+
+---- TRACE 25 start inspector.lua:80
+---- TRACE 25 abort inspector.lua:59 -- NYI: unsupported C function type
+
+---- TRACE 25 start imgui.lua:6833
+---- TRACE 25 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 25 start editor.lua:560
+---- TRACE 25 abort debug.lua:41 -- NYI: unsupported C function type
+
+---- TRACE 25 start imgui.lua:6287
+---- TRACE 25 abort inspector.lua:139 -- NYI: unsupported C function type
+
+---- TRACE 25 start imgui.lua:5417
+---- TRACE 25 abort editor.lua:373 -- leaving loop in root trace
+
+---- TRACE 25 start entity.lua:62
+---- TRACE 25 abort inspector.lua:171 -- NYI: unsupported C function type
+
+---- TRACE 25 start vec2.lua:105
+---- TRACE 25 abort camera.lua:72 -- NYI: return to lower frame
+
+---- TRACE 25 start imgui.lua:5372
+---- TRACE 25 abort inspector.lua:133 -- NYI: unsupported C function type
+
+---- TRACE 25 start app.lua:94
+---- TRACE 25 abort camera.lua:54 -- NYI: unsupported C function type
+
+---- TRACE 25 start imgui.lua:6833
+---- TRACE 25 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 25 start imgui.lua:6680
+---- TRACE 25 abort entity_list_view.lua:99 -- leaving loop in root trace
+
+---- TRACE 25 start imgui.lua:5364
+---- TRACE 25 abort inspector.lua:82 -- NYI: unsupported C function type
+
+---- TRACE 25 start debug.lua:36
+---- TRACE 25 mcode 118
+55de2d8cd4f0  mov dword [r14-0xef0], 0x19
+55de2d8cd4fb  lea rbx, [r14+0xf7b8]
+55de2d8cd502  rorx rbp, [rdx-0x10], 0x2f
+55de2d8cd509  shr rbp, 0x11
+55de2d8cd50d  mov rdi, [rbp+0x28]
+55de2d8cd511  cmp byte [rdi+0xa], 0x0
+55de2d8cd515  jz 0x55de2d8c004c	->0
+55de2d8cd51b  lea rbp, [rdi+0x10]
+55de2d8cd51f  rorx rbp, [rbp+0x0], 0x2f
+55de2d8cd526  cmp bp, -0x0d
+55de2d8cd52a  jnz 0x55de2d8c004c	->0
+55de2d8cd530  shr rbp, 0x11
+55de2d8cd534  cmp rbp, rbx
+55de2d8cd537  jnz 0x55de2d8c004c	->0
+55de2d8cd53d  cmp dword [rdx+0x4], 0xffff7fff
+55de2d8cd544  jnz 0x55de2d8c004c	->0
+55de2d8cd54a  xor edi, edi
+55de2d8cd54c  call 0x55de54bb2770
+55de2d8cd551  mov rdx, [r14-0xe30]
+55de2d8cd558  xor eax, eax
+55de2d8cd55a  lea rbx, [r14-0x20bdb344]
+55de2d8cd561  jmp 0x55de54beb4d5
+---- TRACE 25 stop -> return
+
+---- TRACE 26 start transform.lua:40
+---- TRACE 26 abort inspector.lua:87 -- NYI: unsupported C function type
+
+---- TRACE 26 start imgui.lua:5364
+---- TRACE 26 abort inspector.lua:133 -- NYI: unsupported C function type
+
+---- TRACE 26 start transform.lua:42
+---- TRACE 26 abort inspector.lua:88 -- NYI: unsupported C function type
+
+---- TRACE 26 start 22/23 entity_list_view.lua:37
+---- TRACE 26 mcode 192
+55de2d8cd430  mov r15, [rsp+0x10]
+55de2d8cd435  mov rbp, [rsp+0x8]
+55de2d8cd43a  mov dword [r14-0xef0], 0x1a
+55de2d8cd445  lea rdi, [r14+0x4538]
+55de2d8cd44c  cmp r15, rdi
+55de2d8cd44f  jnz 0x55de2d8c004c	->0
+55de2d8cd455  mov rdi, r13
+55de2d8cd458  call 0x55de54bef090	->lj_tab_len
+55de2d8cd45d  mov esi, eax
+55de2d8cd45f  mov rdi, [r14-0xe38]
+55de2d8cd466  add esi, +0x01
+55de2d8cd469  cmp esi, [r13+0x30]
+55de2d8cd46d  jb 0x55de2d8c004c	->0
+55de2d8cd473  cmp dword [r13+0x34], +0x00
+55de2d8cd478  jnz 0x55de2d8c004c	->0
+55de2d8cd47e  xorps xmm7, xmm7
+55de2d8cd481  cvtsi2sd xmm7, esi
+55de2d8cd485  lea rdx, [r14-0xec0]
+55de2d8cd48c  movsd [rdx], xmm7
+55de2d8cd490  mov rsi, r13
+55de2d8cd493  call 0x55de54bee760	->lj_tab_newkey
+55de2d8cd498  mov rdx, [r14-0xe30]
+55de2d8cd49f  mov [rax], rbp
+55de2d8cd4a2  or dword [rax+0x4], 0xfffa0000
+55de2d8cd4a9  test byte [r13+0x8], 0x4
+55de2d8cd4ae  jz 0x55de2d8cd4c7
+55de2d8cd4b0  and byte [r13+0x8], 0xfb
+55de2d8cd4b5  mov rdi, [r14-0xf68]
+55de2d8cd4bc  mov [r14-0xf68], r13
+55de2d8cd4c3  mov [r13+0x18], rdi
+55de2d8cd4c7  add ebx, +0x01
+55de2d8cd4ca  cmp ebx, r12d
+55de2d8cd4cd  jg 0x55de2d8c0050	->1
+55de2d8cd4d3  xorps xmm7, xmm7
+55de2d8cd4d6  cvtsi2sd xmm7, ebx
+55de2d8cd4da  movsd [rdx+0x20], xmm7
+55de2d8cd4df  movsd [rdx+0x8], xmm7
+55de2d8cd4e4  add rsp, 0xe0
+55de2d8cd4eb  jmp 0x55de2d8cd791
+---- TRACE 26 stop -> 22
+
+---- TRACE 27 start math.lua:60
+---- TRACE 27 abort player.lua:74 -- leaving loop in root trace
+
+---- TRACE 27 start 18/0 entity.lua:59
+---- TRACE 27 abort player.lua:106 -- NYI: bytecode 51
+
+---- TRACE 27 start 18/0 entity.lua:59
+---- TRACE 27 abort player.lua:106 -- NYI: bytecode 51
+
+---- TRACE 27 start 18/0 entity.lua:59
+---- TRACE 27 abort player.lua:106 -- NYI: bytecode 51
+
+---- TRACE 27 start 18/0 entity.lua:59
+---- TRACE 27 abort player.lua:106 -- NYI: bytecode 51
+
+---- TRACE 27 start 18/0 entity.lua:59
+---- TRACE 27 mcode 36
+55de2d8cd409  mov dword [r14-0xef0], 0x1b
+55de2d8cd414  mov rdx, [r14-0xe30]
+55de2d8cd41b  xor eax, eax
+55de2d8cd41d  lea rbx, [r14-0x34e52d4]
+55de2d8cd424  add rsp, +0x10
+55de2d8cd428  jmp 0x55de54beb4d5
+---- TRACE 27 stop -> interpreter
+
+---- TRACE 28 start vec2.lua:196
+---- TRACE 28 abort player.lua:72 -- leaving loop in root trace
+
+---- TRACE 28 start math.lua:45
+---- TRACE 28 abort player.lua:74 -- leaving loop in root trace
+
+---- TRACE 28 start vec3.lua:270
+---- TRACE 28 abort editor.lua:510 -- NYI: return to lower frame
+
+---- TRACE 28 start math.lua:46
+---- TRACE 28 abort math.lua:61 -- leaving loop in root trace
+
+---- TRACE 28 start quat.lua:50
+---- TRACE 28 abort player.lua:75 -- leaving loop in root trace
+
+---- TRACE 28 start math.lua:60
+---- TRACE 28 abort player.lua:74 -- leaving loop in root trace
+
+---- TRACE 28 start vec3.lua:270
+---- TRACE 28 abort editor.lua:511 -- NYI: return to lower frame
+
+---- TRACE 28 start player.lua:99
+---- TRACE 28 mcode 237
+55de2d8cd315  mov dword [r14-0xef0], 0x1c
+55de2d8cd320  lea r15, [r14+0x1a108]
+55de2d8cd327  lea rbx, [r14+0xf7b8]
+55de2d8cd32e  rorx rbp, [rdx-0x10], 0x2f
+55de2d8cd335  shr rbp, 0x11
+55de2d8cd339  mov rdi, [rbp+0x28]
+55de2d8cd33d  cmp byte [rdi+0xa], 0x0
+55de2d8cd341  jz 0x55de2d8c004c	->0
+55de2d8cd347  lea rbp, [rdi+0x10]
+55de2d8cd34b  rorx rbp, [rbp+0x0], 0x2f
+55de2d8cd352  cmp bp, -0x0c
+55de2d8cd356  jnz 0x55de2d8c004c	->0
+55de2d8cd35c  shr rbp, 0x11
+55de2d8cd360  cmp dword [rbp+0x34], +0x07
+55de2d8cd364  jnz 0x55de2d8c004c	->0
+55de2d8cd36a  mov rbp, [rbp+0x28]
+55de2d8cd36e  mov rdi, 0xfffdff41dc4d7000
+55de2d8cd378  cmp rdi, [rbp+0x20]
+55de2d8cd37c  jnz 0x55de2d8c004c	->0
+55de2d8cd382  rorx rbp, [rbp+0x18], 0x2f
+55de2d8cd389  cmp bp, -0x09
+55de2d8cd38d  jnz 0x55de2d8c004c	->0
+55de2d8cd393  shr rbp, 0x11
+55de2d8cd397  cmp dword [rdx+0x4], 0xfff90000
+55de2d8cd39e  jnb 0x55de2d8c004c	->0
+55de2d8cd3a4  cmp rbp, r15
+55de2d8cd3a7  jnz 0x55de2d8c004c	->0
+55de2d8cd3ad  rorx rbp, [r14+0x1a150], 0x2f
+55de2d8cd3b7  cmp bp, -0x0d
+55de2d8cd3bb  jnz 0x55de2d8c004c	->0
+55de2d8cd3c1  shr rbp, 0x11
+55de2d8cd3c5  cmp rbp, rbx
+55de2d8cd3c8  jnz 0x55de2d8c004c	->0
+55de2d8cd3ce  cvttsd2si edi, [rdx]
+55de2d8cd3d2  call 0x55de54bbd0b0
+55de2d8cd3d7  mov rdx, [r14-0xe30]
+55de2d8cd3de  test al, al
+55de2d8cd3e0  jnz 0x55de2d8c0050	->1
+55de2d8cd3e6  mov dword [rdx+0x10], 0xffffffff
+55de2d8cd3ed  mov dword [rdx+0x14], 0xffff7fff
+55de2d8cd3f4  xor eax, eax
+55de2d8cd3f6  lea rbx, [r14-0x2105f98c]
+55de2d8cd3fd  jmp 0x55de54beb4d5
+---- TRACE 28 stop -> return
+
+---- TRACE 29 start math.lua:46
+---- TRACE 29 abort math.lua:61 -- leaving loop in root trace
+
+---- TRACE 29 start math.lua:48
+---- TRACE 29 mcode 251
+55de2d8cd213  mov dword [r14-0xef0], 0x1d
+55de2d8cd21e  lea rbx, [r14+0x7418]
+55de2d8cd225  movsd xmm6, [r14-0x33260f20]
+55de2d8cd22e  rorx rbp, [rdx-0x10], 0x2f
+55de2d8cd235  shr rbp, 0x11
+55de2d8cd239  mov rbp, [rbp+0x10]
+55de2d8cd23d  cmp dword [rbp+0x34], +0x3f
+55de2d8cd241  jnz 0x55de2d8c004c	->0
+55de2d8cd247  mov rbp, [rbp+0x28]
+55de2d8cd24b  mov rdi, 0xfffdff41dc4bde10
+55de2d8cd255  cmp rdi, [rbp+0x3b0]
+55de2d8cd25c  jnz 0x55de2d8c004c	->0
+55de2d8cd262  rorx rbp, [rbp+0x3a8], 0x2f
+55de2d8cd26c  cmp bp, -0x0c
+55de2d8cd270  jnz 0x55de2d8c004c	->0
+55de2d8cd276  shr rbp, 0x11
+55de2d8cd27a  cmp dword [rbp+0x34], +0x1f
+55de2d8cd27e  jnz 0x55de2d8c004c	->0
+55de2d8cd284  mov rbp, [rbp+0x28]
+55de2d8cd288  mov rdi, 0xfffdff41dc4c0700
+55de2d8cd292  cmp rdi, [rbp+0x290]
+55de2d8cd299  jnz 0x55de2d8c004c	->0
+55de2d8cd29f  rorx rbp, [rbp+0x288], 0x2f
+55de2d8cd2a9  cmp bp, -0x09
+55de2d8cd2ad  jnz 0x55de2d8c004c	->0
+55de2d8cd2b3  shr rbp, 0x11
+55de2d8cd2b7  cmp dword [rdx+0x4], 0xfff90000
+55de2d8cd2be  jnb 0x55de2d8c004c	->0
+55de2d8cd2c4  movsd xmm7, [rdx]
+55de2d8cd2c8  cmp rbp, rbx
+55de2d8cd2cb  jnz 0x55de2d8c004c	->0
+55de2d8cd2d1  mulsd xmm7, xmm6
+55de2d8cd2d5  mov rax, [r14-0xe38]
+55de2d8cd2dc  mov rax, [rax+0x30]
+55de2d8cd2e0  sub rax, rdx
+55de2d8cd2e3  cmp rax, +0x10
+55de2d8cd2e7  jb 0x55de2d8c0050	->1
+55de2d8cd2ed  movsd [rdx+0x8], xmm7
+55de2d8cd2f2  mov dword [rdx-0x10], 0xdc4c07b0
+55de2d8cd2f9  mov dword [rdx-0xc], 0xfffbff41
+55de2d8cd300  xor eax, eax
+55de2d8cd302  lea rbx, [r14+0x7400]
+55de2d8cd309  jmp 0x55de54beb4d5
+---- TRACE 29 stop -> return
+
+---- TRACE 30 start player.lua:93
+---- TRACE 30 abort player.lua:106 -- NYI: bytecode 51
+
+---- TRACE 30 start quat.lua:50
+---- TRACE 30 abort player.lua:75 -- leaving loop in root trace
+
+---- TRACE 30 start vec3.lua:25
+---- TRACE 30 abort player.lua:139 -- NYI: return to lower frame
+
+---- TRACE 30 start math.lua:60
+---- TRACE 30 abort player.lua:74 -- leaving loop in root trace
+
+---- TRACE 30 start vec3.lua:270
+---- TRACE 30 abort editor.lua:511 -- NYI: return to lower frame
+
+---- TRACE 30 start player.lua:93
+---- TRACE 30 abort player.lua:106 -- NYI: bytecode 51
+
+---- TRACE 30 start transform.lua:44
+---- TRACE 30 abort player.lua:110 -- NYI: unsupported C function type
+
+---- TRACE 30 start math.lua:45
+---- TRACE 30 abort player.lua:74 -- leaving loop in root trace
+
+---- TRACE 30 start transform.lua:43
+---- TRACE 30 abort player.lua:109 -- NYI: unsupported C function type
+
+---- TRACE 30 start math.lua:46
+---- TRACE 30 abort math.lua:61 -- leaving loop in root trace
+
+---- TRACE 30 start transform.lua:47
+---- TRACE 30 abort player.lua:112 -- NYI: unsupported C function type
+
+---- TRACE 30 start transform.lua:43
+---- TRACE 30 abort editor.lua:511 -- NYI: unsupported C function type
+
+---- TRACE 30 start vec3.lua:25
+---- TRACE 30 abort player.lua:139 -- NYI: return to lower frame
+
+---- TRACE 30 start editor.lua:146
+---- TRACE 30 mcode 550
+55de2d8ccfe6  mov dword [r14-0xef0], 0x1e
+55de2d8ccff1  lea r15, [r14+0xf7b8]
+55de2d8ccff8  lea r13, [r14-0x20bda628]
+55de2d8ccfff  rorx rbp, [rdx-0x10], 0x2f
+55de2d8cd006  shr rbp, 0x11
+55de2d8cd00a  mov rdi, [rbp+0x28]
+55de2d8cd00e  cmp byte [rdi+0xa], 0x0
+55de2d8cd012  jz 0x55de2d8c004c	->0
+55de2d8cd018  lea rbx, [rdi+0x10]
+55de2d8cd01c  rorx rbx, [rbx], 0x2f
+55de2d8cd022  cmp bx, -0x0c
+55de2d8cd026  jnz 0x55de2d8c004c	->0
+55de2d8cd02c  shr rbx, 0x11
+55de2d8cd030  cmp dword [rbx+0x34], +0x0f
+55de2d8cd034  jnz 0x55de2d8c004c	->0
+55de2d8cd03a  mov rbx, [rbx+0x28]
+55de2d8cd03e  mov rdi, 0xfffdff41dc4c2110
+55de2d8cd048  cmp rdi, [rbx+0x170]
+55de2d8cd04f  jnz 0x55de2d8c004c	->0
+55de2d8cd055  rorx rbx, [rbx+0x168], 0x2f
+55de2d8cd05f  cmp bx, -0x09
+55de2d8cd063  jnz 0x55de2d8c004c	->0
+55de2d8cd069  shr rbx, 0x11
+55de2d8cd06d  cmp rbx, r13
+55de2d8cd070  jnz 0x55de2d8c004c	->0
+55de2d8cd076  rorx rbx, [r14-0x20bda5e0], 0x2f
+55de2d8cd080  cmp bx, -0x0d
+55de2d8cd084  jnz 0x55de2d8c004c	->0
+55de2d8cd08a  shr rbx, 0x11
+55de2d8cd08e  cmp rbx, r15
+55de2d8cd091  jnz 0x55de2d8c004c	->0
+55de2d8cd097  call 0x55de54bb2660
+55de2d8cd09c  mov rdx, [r14-0xe30]
+55de2d8cd0a3  rorx rbx, [rdx], 0x2f
+55de2d8cd0a9  cmp bx, -0x0c
+55de2d8cd0ad  jnz 0x55de2d8c0050	->1
+55de2d8cd0b3  shr rbx, 0x11
+55de2d8cd0b7  cmp dword [rbx+0x34], +0x0f
+55de2d8cd0bb  jnz 0x55de2d8c0050	->1
+55de2d8cd0c1  mov rbx, [rbx+0x28]
+55de2d8cd0c5  mov rdi, 0xfffdff41bb8baa20
+55de2d8cd0cf  cmp rdi, [rbx+0x128]
+55de2d8cd0d6  jnz 0x55de2d8c0050	->1
+55de2d8cd0dc  rorx r15, [rbx+0x120], 0x2f
+55de2d8cd0e6  cmp r15w, -0x0b
+55de2d8cd0eb  jnz 0x55de2d8c0050	->1
+55de2d8cd0f1  shr r15, 0x11
+55de2d8cd0f5  movzx ebx, word [r15+0xa]
+55de2d8cd0fa  cmp ebx, 0x35b7
+55de2d8cd100  jnz 0x55de2d8c0050	->1
+55de2d8cd106  mov rdi, [rbp+0x30]
+55de2d8cd10a  cmp byte [rdi+0xa], 0x0
+55de2d8cd10e  jz 0x55de2d8c0050	->1
+55de2d8cd114  lea rbx, [rdi+0x10]
+55de2d8cd118  rorx rbx, [rbx], 0x2f
+55de2d8cd11e  cmp bx, -0x0c
+55de2d8cd122  jnz 0x55de2d8c0050	->1
+55de2d8cd128  shr rbx, 0x11
+55de2d8cd12c  cmp dword [rbx+0x34], +0x03
+55de2d8cd130  jnz 0x55de2d8c0050	->1
+55de2d8cd136  mov rbx, [rbx+0x28]
+55de2d8cd13a  mov rdi, 0xfffdff41bb8b7f98
+55de2d8cd144  cmp rdi, [rbx+0x50]
+55de2d8cd148  jnz 0x55de2d8c0050	->1
+55de2d8cd14e  cmp dword [rbx+0x4c], 0xfff90000
+55de2d8cd155  jnb 0x55de2d8c0050	->1
+55de2d8cd15b  xorps xmm6, xmm6
+55de2d8cd15e  cvtsi2sd xmm6, dword [r15+0x10]
+55de2d8cd164  ucomisd xmm6, [rbx+0x48]
+55de2d8cd169  jpe 0x55de2d8cd171
+55de2d8cd16b  jz 0x55de2d8c0054	->2
+55de2d8cd171  mov rdi, 0xfffdff41bb8b7fc0
+55de2d8cd17b  cmp rdi, [rbx+0x8]
+55de2d8cd17f  jnz 0x55de2d8c0058	->3
+55de2d8cd185  cmp dword [rbx+0x4], 0xfff90000
+55de2d8cd18c  jnb 0x55de2d8c0058	->3
+55de2d8cd192  movsd xmm7, [rbx]
+55de2d8cd196  ucomisd xmm7, xmm6
+55de2d8cd19a  jpe 0x55de2d8cd1a2
+55de2d8cd19c  jz 0x55de2d8c005c	->4
+55de2d8cd1a2  mov rdi, [rbp+0x40]
+55de2d8cd1a6  cmp byte [rdi+0xa], 0x0
+55de2d8cd1aa  jz 0x55de2d8c0060	->5
+55de2d8cd1b0  lea rbp, [rdi+0x10]
+55de2d8cd1b4  rorx rbp, [rbp+0x0], 0x2f
+55de2d8cd1bb  cmp bp, -0x0c
+55de2d8cd1bf  jnz 0x55de2d8c0060	->5
+55de2d8cd1c5  shr rbp, 0x11
+55de2d8cd1c9  cmp dword [rbp+0x34], +0x1f
+55de2d8cd1cd  jnz 0x55de2d8c0060	->5
+55de2d8cd1d3  mov rbp, [rbp+0x28]
+55de2d8cd1d7  mov rdi, 0xfffdff41bb8ba648
+55de2d8cd1e1  cmp rdi, [rbp+0x128]
+55de2d8cd1e8  jnz 0x55de2d8c0060	->5
+55de2d8cd1ee  cmp dword [rbp+0x124], 0xfffeffff
+55de2d8cd1f8  jnz 0x55de2d8c0060	->5
+55de2d8cd1fe  xor eax, eax
+55de2d8cd200  lea rbx, [r14-0x20c03270]
+55de2d8cd207  jmp 0x55de54beb4d5
+---- TRACE 30 stop -> return
+
+---- TRACE 31 start entity.lua:62
+---- TRACE 31 abort editor.lua:508 -- NYI: unsupported C function type
+
+---- TRACE 31 start math.lua:60
+---- TRACE 31 abort player.lua:74 -- leaving loop in root trace
+
+---- TRACE 31 start hookmgr.lua:66
+---- TRACE 31 abort hookmgr.lua:73 -- leaving loop in root trace
+
+---- TRACE 31 start input.lua:157
+---- TRACE 31 abort editor.lua:564 -- NYI: unsupported C function type
+
+---- TRACE 31 start app.lua:152
+---- TRACE 31 abort editor.lua:500 -- NYI: unsupported C function type
+
+---- TRACE 31 start transform.lua:47
+---- TRACE 31 abort player.lua:112 -- NYI: unsupported C function type
+
+---- TRACE 31 start vec3.lua:270
+---- TRACE 31 abort editor.lua:511 -- NYI: return to lower frame
+
+---- TRACE 31 start player.lua:93
+---- TRACE 31 abort player.lua:106 -- NYI: bytecode 51
+
+---- TRACE 31 start transform.lua:34
+---- TRACE 31 abort editor.lua:508 -- NYI: unsupported C function type
+
+---- TRACE 31 start player.lua:149
+---- TRACE 31 abort player.lua:53 -- NYI: unsupported C function type
+
+---- TRACE 31 start transform.lua:47
+---- TRACE 31 abort player.lua:112 -- NYI: unsupported C function type
+
+---- TRACE 31 start transform.lua:44
+---- TRACE 31 abort player.lua:110 -- NYI: unsupported C function type
+
+---- TRACE 31 start app.lua:152
+---- TRACE 31 abort editor.lua:500 -- NYI: unsupported C function type
+
+---- TRACE 31 start editor.lua:560
+---- TRACE 31 abort player.lua:53 -- NYI: unsupported C function type
+
+---- TRACE 31 start player.lua:149
+---- TRACE 31 abort player.lua:53 -- NYI: unsupported C function type
+
+---- TRACE 31 start transform.lua:44
+---- TRACE 31 abort player.lua:110 -- NYI: unsupported C function type
+
+---- TRACE 31 start transform.lua:43
+---- TRACE 31 abort editor.lua:511 -- NYI: unsupported C function type
+
+---- TRACE 31 start math.lua:45
+---- TRACE 31 abort player.lua:74 -- leaving loop in root trace
+
+---- TRACE 31 start player.lua:149
+---- TRACE 31 abort player.lua:53 -- NYI: unsupported C function type
+
+---- TRACE 31 start vec3.lua:25
+---- TRACE 31 abort player.lua:139 -- NYI: return to lower frame
+
+---- TRACE 31 start vec2.lua:105
+---- TRACE 31 abort player.lua:62 -- NYI: return to lower frame
+
+---- TRACE 31 start transform.lua:43
+---- TRACE 31 abort editor.lua:511 -- NYI: unsupported C function type
+
+---- TRACE 31 start quat.lua:50
+---- TRACE 31 abort player.lua:75 -- leaving loop in root trace
+
+---- TRACE 31 start transform.lua:34
+---- TRACE 31 abort editor.lua:508 -- NYI: unsupported C function type
+
+---- TRACE 31 start math.lua:46
+---- TRACE 31 abort math.lua:61 -- leaving loop in root trace
+
+---- TRACE 31 start player.lua:51
+---- TRACE 31 abort player.lua:53 -- NYI: unsupported C function type
+
+---- TRACE 31 start math.lua:60
+---- TRACE 31 abort player.lua:74 -- leaving loop in root trace
+
+---- TRACE 31 start vec3.lua:270
+---- TRACE 31 abort editor.lua:511 -- NYI: return to lower frame
+
+---- TRACE 31 start editor.lua:215
+---- TRACE 31 abort player.lua:53 -- NYI: unsupported C function type
+
+---- TRACE 31 start player.lua:93
+---- TRACE 31 abort player.lua:106 -- NYI: bytecode 51
+
+---- TRACE 31 start player.lua:149
+---- TRACE 31 abort player.lua:53 -- NYI: unsupported C function type
+
+---- TRACE 31 start imgui.lua:7348
+---- TRACE 31 abort editor.lua:514 -- leaving loop in root trace
+
+---- TRACE 31 start imgui.lua:7348
+---- TRACE 31 abort editor.lua:502 -- leaving loop in root trace
+
+---- TRACE 31 start imgui.lua:7348
+---- TRACE 31 abort editor.lua:514 -- leaving loop in root trace
+
+---- TRACE 31 start player.lua:51
+---- TRACE 31 abort player.lua:53 -- NYI: unsupported C function type
+
+---- TRACE 31 start imgui.lua:6924
+---- TRACE 31 abort editor.lua:489 -- NYI: unsupported C function type
+
+---- TRACE 31 start imgui.lua:7348
+---- TRACE 31 abort editor.lua:514 -- leaving loop in root trace
+
+---- TRACE 31 start character_controller.lua:35
+---- TRACE 31 abort player.lua:136 -- NYI: unsupported C function type
+
+---- TRACE 31 start player.lua:51
+---- TRACE 31 abort player.lua:53 -- NYI: unsupported C function type
+
+---- TRACE 31 start imgui.lua:7348
+---- TRACE 31 abort editor.lua:516 -- leaving loop in root trace
+
+---- TRACE 31 start imgui.lua:6924
+---- TRACE 31 abort editor.lua:489 -- NYI: unsupported C function type
+
+---- TRACE 31 start transform.lua:47
+---- TRACE 31 abort player.lua:112 -- NYI: unsupported C function type
+
+---- TRACE 31 start character_controller.lua:35
+---- TRACE 31 abort player.lua:136 -- NYI: unsupported C function type
+
+---- TRACE 31 start player.lua:149
+---- TRACE 31 abort player.lua:53 -- NYI: unsupported C function type
+
+---- TRACE 31 start scene.lua:152
+---- TRACE 31 mcode 652
+55de2d8ccd57  add rsp, -0x10
+55de2d8ccd5b  mov dword [r14-0xef0], 0x1f
+55de2d8ccd66  lea r15, [r14+0x16fa8]
+55de2d8ccd6d  lea r13, [r14+0xf7b8]
+55de2d8ccd74  lea rbx, [r14+0x2938]
+55de2d8ccd7b  mov rdi, [r14-0xf98]
+55de2d8ccd82  cmp rdi, [r14-0xf90]
+55de2d8ccd89  jb 0x55de2d8ccda4
+55de2d8ccd8b  mov esi, 0x3
+55de2d8ccd90  lea rdi, [r14-0xfa8]
+55de2d8ccd97  call 0x55de54bed0b0	->lj_gc_step_jit
+55de2d8ccd9c  test eax, eax
+55de2d8ccd9e  jnz 0x55de2d8c004c	->0
+55de2d8ccda4  mov rdx, [r14-0xe30]
+55de2d8ccdab  rorx rbp, [rdx-0x10], 0x2f
+55de2d8ccdb2  shr rbp, 0x11
+55de2d8ccdb6  mov rdi, [rbp+0x28]
+55de2d8ccdba  cmp byte [rdi+0xa], 0x0
+55de2d8ccdbe  jz 0x55de2d8c004c	->0
+55de2d8ccdc4  lea r12, [rdi+0x10]
+55de2d8ccdc8  rorx r12, [r12], 0x2f
+55de2d8ccdcf  cmp r12w, -0x0c
+55de2d8ccdd4  jnz 0x55de2d8c004c	->0
+55de2d8ccdda  shr r12, 0x11
+55de2d8ccdde  cmp dword [r12+0x34], +0x0f
+55de2d8ccde4  jnz 0x55de2d8c004c	->0
+55de2d8ccdea  mov rdi, [r12+0x28]
+55de2d8ccdef  mov rsi, 0xfffdff41d8fcf140
+55de2d8ccdf9  cmp rsi, [rdi+0x158]
+55de2d8cce00  jnz 0x55de2d8c004c	->0
+55de2d8cce06  rorx rdx, [rdi+0x150], 0x2f
+55de2d8cce10  cmp dx, -0x09
+55de2d8cce14  jnz 0x55de2d8c004c	->0
+55de2d8cce1a  shr rdx, 0x11
+55de2d8cce1e  mov [rsp+0x10], rdx
+55de2d8cce23  mov rdi, [rbp+0x30]
+55de2d8cce27  cmp byte [rdi+0xa], 0x0
+55de2d8cce2b  jz 0x55de2d8c004c	->0
+55de2d8cce31  lea rbp, [rdi+0x10]
+55de2d8cce35  rorx rbp, [rbp+0x0], 0x2f
+55de2d8cce3c  cmp bp, -0x0d
+55de2d8cce40  jnz 0x55de2d8c004c	->0
+55de2d8cce46  shr rbp, 0x11
+55de2d8cce4a  cmp rbp, r13
+55de2d8cce4d  jnz 0x55de2d8c004c	->0
+55de2d8cce53  call 0x55de54bbd720
+55de2d8cce58  mov rbp, rax
+55de2d8cce5b  mov rdi, [r14-0xe38]
+55de2d8cce62  mov esi, 0x18
+55de2d8cce67  call 0x55de54bed370	->lj_mem_newgco
+55de2d8cce6c  movzx ecx, byte [r14-0xf88]
+55de2d8cce74  and ecx, +0x03
+55de2d8cce77  or ecx, 0x000c0a00
+55de2d8cce7d  mov [rax+0x8], ecx
+55de2d8cce80  mov [rax+0x10], rbp
+55de2d8cce84  mov rbp, rax
+55de2d8cce87  mov rdi, [r14-0xe38]
+55de2d8cce8e  lea rsi, [r14+0x24a0]
+55de2d8cce95  mov rdx, [rsp+0x10]
+55de2d8cce9a  cmp rdx, r15
+55de2d8cce9d  jnz 0x55de2d8c0050	->1
+55de2d8ccea3  mov r15, [r15+0x10]
+55de2d8ccea7  cmp dword [r15+0x34], +0x3f
+55de2d8cceac  jnz 0x55de2d8c0050	->1
+55de2d8cceb2  mov r15, [r15+0x28]
+55de2d8cceb6  mov rdx, 0xfffdff41dc4bb870
+55de2d8ccec0  cmp rdx, [r15+0x560]
+55de2d8ccec7  jnz 0x55de2d8c0050	->1
+55de2d8ccecd  rorx r13, [r15+0x558], 0x2f
+55de2d8cced7  cmp r13w, -0x09
+55de2d8ccedc  jnz 0x55de2d8c0050	->1
+55de2d8ccee2  shr r13, 0x11
+55de2d8ccee6  cmp r13, rsi
+55de2d8ccee9  jnz 0x55de2d8c0050	->1
+55de2d8cceef  xor esi, esi
+55de2d8ccef1  call 0x55de54bee110	->lj_tab_new1
+55de2d8ccef6  mov [rsp+0x8], rax
+55de2d8ccefb  mov rdi, [r14-0xe38]
+55de2d8ccf02  mov rsi, 0xfffdff41dc4bbd08
+55de2d8ccf0c  cmp rsi, [r15+0xe0]
+55de2d8ccf13  jnz 0x55de2d8c0050	->1
+55de2d8ccf19  rorx r15, [r15+0xd8], 0x2f
+55de2d8ccf23  cmp r15w, -0x09
+55de2d8ccf28  jnz 0x55de2d8c0050	->1
+55de2d8ccf2e  shr r15, 0x11
+55de2d8ccf32  lea rsi, [r14-0x34e6978]
+55de2d8ccf39  call 0x55de54bee180	->lj_tab_dup
+55de2d8ccf3e  mov r13, rax
+55de2d8ccf41  mov rdi, [r14-0xe38]
+55de2d8ccf48  mov rsi, [rsp+0x8]
+55de2d8ccf4d  mov rax, [r13+0x28]
+55de2d8ccf51  mov [rax+0x18], r12
+55de2d8ccf55  or dword [rax+0x1c], 0xfffa0000
+55de2d8ccf5c  mov byte [r13+0xa], 0x0
+55de2d8ccf61  cmp r15, rbx
+55de2d8ccf64  jnz 0x55de2d8c0054	->2
+55de2d8ccf6a  mov [rsi+0x20], r13
+55de2d8ccf6e  lea rdx, [r14-0xec0]
+55de2d8ccf75  mov dword [rdx], 0xd8fcf0d0
+55de2d8ccf7b  mov dword [rdx+0x4], 0xfffdff41
+55de2d8ccf82  call 0x55de54bee760	->lj_tab_newkey
+55de2d8ccf87  mov rbx, rax
+55de2d8ccf8a  mov rdx, [r14-0xe30]
+55de2d8ccf91  mov rax, [rsp+0x8]
+55de2d8ccf96  mov [rbx], rbp
+55de2d8ccf99  or dword [rbx+0x4], 0xfffa8000
+55de2d8ccfa0  mov rcx, [r14-0xe38]
+55de2d8ccfa7  mov rcx, [rcx+0x30]
+55de2d8ccfab  sub rcx, rdx
+55de2d8ccfae  cmp rcx, +0x40
+55de2d8ccfb2  jb 0x55de2d8c0058	->3
+55de2d8ccfb8  mov [rdx+0x10], rax
+55de2d8ccfbc  or dword [rdx+0x14], 0xfffa0000
+55de2d8ccfc3  mov dword [rdx-0x10], 0xdc4d0340
+55de2d8ccfca  mov dword [rdx-0xc], 0xfffbff41
+55de2d8ccfd1  xor eax, eax
+55de2d8ccfd3  lea rbx, [r14-0x34e6a30]
+55de2d8ccfda  add rsp, +0x10
+55de2d8ccfde  jmp 0x55de54beb4d5
+---- TRACE 31 stop -> return
+
+---- TRACE 32 start imgui.lua:7348
+---- TRACE 32 abort editor.lua:502 -- leaving loop in root trace
+
+---- TRACE 32 start quat.lua:50
+---- TRACE 32 abort player.lua:75 -- leaving loop in root trace
+
+---- TRACE 32 start editor.lua:215
+---- TRACE 32 abort player.lua:53 -- NYI: unsupported C function type
+
+---- TRACE 32 start math.lua:46
+---- TRACE 32 abort math.lua:61 -- leaving loop in root trace
+
+---- TRACE 32 start imgui.lua:6924
+---- TRACE 32 abort editor.lua:489 -- NYI: unsupported C function type
+
+---- TRACE 32 start player.lua:51
+---- TRACE 32 abort player.lua:53 -- NYI: unsupported C function type
+
+---- TRACE 32 start transform.lua:43
+---- TRACE 32 abort player.lua:109 -- NYI: unsupported C function type
+
+---- TRACE 32 start vec3.lua:25
+---- TRACE 32 abort player.lua:139 -- NYI: return to lower frame
+
+---- TRACE 32 start imgui.lua:6924
+---- TRACE 32 abort editor.lua:489 -- NYI: unsupported C function type
+
+---- TRACE 32 start character_controller.lua:25
+---- TRACE 32 mcode 427
+55de2d8ccba9  add rsp, -0x10
+55de2d8ccbad  mov dword [r14-0xef0], 0x20
+55de2d8ccbb8  lea r15, [r14+0xf7b8]
+55de2d8ccbbf  lea r13, [r14+0x2938]
+55de2d8ccbc6  mov rdi, [r14-0xf98]
+55de2d8ccbcd  cmp rdi, [r14-0xf90]
+55de2d8ccbd4  jb 0x55de2d8ccbef
+55de2d8ccbd6  mov esi, 0x2
+55de2d8ccbdb  lea rdi, [r14-0xfa8]
+55de2d8ccbe2  call 0x55de54bed0b0	->lj_gc_step_jit
+55de2d8ccbe7  test eax, eax
+55de2d8ccbe9  jnz 0x55de2d8c004c	->0
+55de2d8ccbef  mov rdi, [r14-0xe38]
+55de2d8ccbf6  xor esi, esi
+55de2d8ccbf8  call 0x55de54bee110	->lj_tab_new1
+55de2d8ccbfd  mov [rsp+0x8], rax
+55de2d8ccc02  mov rdi, [r14-0xe38]
+55de2d8ccc09  mov rdx, [r14-0xe30]
+55de2d8ccc10  rorx rbx, [rdx-0x10], 0x2f
+55de2d8ccc17  shr rbx, 0x11
+55de2d8ccc1b  mov rbp, [rbx+0x10]
+55de2d8ccc1f  cmp dword [rbp+0x34], +0x3f
+55de2d8ccc23  jnz 0x55de2d8c004c	->0
+55de2d8ccc29  mov rbp, [rbp+0x28]
+55de2d8ccc2d  mov rsi, 0xfffdff41dc4bbd08
+55de2d8ccc37  cmp rsi, [rbp+0xe0]
+55de2d8ccc3e  jnz 0x55de2d8c004c	->0
+55de2d8ccc44  rorx rbp, [rbp+0xd8], 0x2f
+55de2d8ccc4e  cmp bp, -0x09
+55de2d8ccc52  jnz 0x55de2d8c004c	->0
+55de2d8ccc58  shr rbp, 0x11
+55de2d8ccc5c  lea rsi, [r14+0x16940]
+55de2d8ccc63  call 0x55de54bee180	->lj_tab_dup
+55de2d8ccc68  mov rdi, [r14-0xe38]
+55de2d8ccc6f  mov rsi, [rsp+0x8]
+55de2d8ccc74  mov rdx, [r14-0xe30]
+55de2d8ccc7b  rorx r12, [rdx], 0x2f
+55de2d8ccc81  cmp r12w, -0x0c
+55de2d8ccc86  jnz 0x55de2d8c004c	->0
+55de2d8ccc8c  shr r12, 0x11
+55de2d8ccc90  mov rcx, [rax+0x28]
+55de2d8ccc94  mov [rcx+0x18], r12
+55de2d8ccc98  or dword [rcx+0x1c], 0xfffa0000
+55de2d8ccc9f  mov byte [rax+0xa], 0x0
+55de2d8ccca3  cmp rbp, r13
+55de2d8ccca6  jnz 0x55de2d8c0050	->1
+55de2d8cccac  mov [rsi+0x20], rax
+55de2d8cccb0  rorx rbp, [rdx+0x8], 0x2f
+55de2d8cccb7  cmp bp, -0x0b
+55de2d8cccbb  jnz 0x55de2d8c0054	->2
+55de2d8cccc1  shr rbp, 0x11
+55de2d8cccc5  lea rdx, [r14-0xec0]
+55de2d8ccccc  mov dword [rdx], 0xd8fd2dc8
+55de2d8cccd2  mov dword [rdx+0x4], 0xfffdff41
+55de2d8cccd9  call 0x55de54bee760	->lj_tab_newkey
+55de2d8cccde  mov [rax], rbp
+55de2d8ccce1  or dword [rax+0x4], 0xfffa8000
+55de2d8ccce8  mov rdi, [rbx+0x28]
+55de2d8cccec  cmp byte [rdi+0xa], 0x0
+55de2d8cccf0  jz 0x55de2d8c0058	->3
+55de2d8cccf6  lea rbx, [rdi+0x10]
+55de2d8cccfa  rorx rbx, [rbx], 0x2f
+55de2d8ccd00  cmp bx, -0x0d
+55de2d8ccd04  jnz 0x55de2d8c0058	->3
+55de2d8ccd0a  shr rbx, 0x11
+55de2d8ccd0e  cmp rbx, r15
+55de2d8ccd11  jnz 0x55de2d8c0058	->3
+55de2d8ccd17  cmp word [rbp+0xa], +0x0c
+55de2d8ccd1c  jnz 0x55de2d8c0058	->3
+55de2d8ccd22  mov rdi, [rbp+0x10]
+55de2d8ccd26  call 0x55de54bb0940
+55de2d8ccd2b  mov rdx, [r14-0xe30]
+55de2d8ccd32  mov rax, [rsp+0x8]
+55de2d8ccd37  mov [rdx+0x10], rax
+55de2d8ccd3b  or dword [rdx+0x14], 0xfffa0000
+55de2d8ccd42  xor eax, eax
+55de2d8ccd44  lea rbx, [r14-0x34eec80]
+55de2d8ccd4b  add rsp, +0x10
+55de2d8ccd4f  jmp 0x55de54beb4d5
+---- TRACE 32 stop -> return
+
+---- TRACE 33 start imgui.lua:7348
+---- TRACE 33 abort editor.lua:511 -- leaving loop in root trace
+
+---- TRACE 33 start math.lua:45
+---- TRACE 33 abort player.lua:74 -- leaving loop in root trace
+
+---- TRACE 33 start player.lua:93
+---- TRACE 33 abort player.lua:106 -- NYI: bytecode 51
+
+---- TRACE 33 start vec2.lua:196
+---- TRACE 33 abort player.lua:72 -- leaving loop in root trace
+
+---- TRACE 33 start vec3.lua:270
+---- TRACE 33 abort editor.lua:510 -- NYI: return to lower frame
+
+---- TRACE 33 start editor.lua:215
+---- TRACE 33 abort player.lua:53 -- NYI: unsupported C function type
+
+---- TRACE 33 start transform.lua:34
+---- TRACE 33 abort editor.lua:508 -- NYI: unsupported C function type
+
+---- TRACE 33 start vec2.lua:196
+---- TRACE 33 abort player.lua:72 -- leaving loop in root trace
+
+---- TRACE 33 start imgui.lua:6924
+---- TRACE 33 abort editor.lua:489 -- NYI: unsupported C function type
+
+---- TRACE 33 start app.lua:152
+---- TRACE 33 abort editor.lua:500 -- NYI: unsupported C function type
+
+---- TRACE 33 start transform.lua:43
+---- TRACE 33 abort player.lua:109 -- NYI: unsupported C function type
+
+---- TRACE 33 start vec3.lua:181
+---- TRACE 33 abort player.lua:139 -- NYI: return to lower frame
+
+---- TRACE 33 start player.lua:51
+---- TRACE 33 abort player.lua:53 -- NYI: unsupported C function type
+
+---- TRACE 33 start math.lua:76
+---- TRACE 33 mcode 100
+55de2d8ccb3e  mov dword [r14-0xef0], 0x21
+55de2d8ccb49  movsd xmm6, [r14-0x31be51c8]
+55de2d8ccb52  cmp dword [rdx+0x14], 0xfff90000
+55de2d8ccb59  jnb 0x55de2d8c004c	->0
+55de2d8ccb5f  movsd xmm7, [rdx+0x10]
+55de2d8ccb64  subsd xmm6, xmm7
+55de2d8ccb68  cmp dword [rdx+0x4], 0xfff90000
+55de2d8ccb6f  jnb 0x55de2d8c004c	->0
+55de2d8ccb75  mulsd xmm6, [rdx]
+55de2d8ccb79  cmp dword [rdx+0xc], 0xfff90000
+55de2d8ccb80  jnb 0x55de2d8c004c	->0
+55de2d8ccb86  mulsd xmm7, [rdx+0x8]
+55de2d8ccb8b  addsd xmm7, xmm6
+55de2d8ccb8f  movsd [rdx+0x18], xmm7
+55de2d8ccb94  xor eax, eax
+55de2d8ccb96  lea rbx, [r14-0x34ee43c]
+55de2d8ccb9d  jmp 0x55de54beb4d5
+---- TRACE 33 stop -> return
+
+---- TRACE 34 start vec3.lua:209
+---- TRACE 34 abort player.lua:139 -- NYI: return to lower frame
+
+---- TRACE 34 start entity.lua:62
+---- TRACE 34 abort editor.lua:508 -- NYI: unsupported C function type
+
+---- TRACE 34 start imgui.lua:5305
+---- TRACE 34 abort editor.lua:389 -- NYI: unsupported C function type
+
+---- TRACE 34 start imgui.lua:6844
+---- TRACE 34 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 34 start debug.lua:32
+---- TRACE 34 abort debug.lua:33 -- NYI: unsupported C function type
+
+---- TRACE 34 start camera.lua:93
+---- TRACE 34 abort camera.lua:111 -- NYI: bytecode 51
+
+---- TRACE 34 start editor.lua:560
+---- TRACE 34 abort debug.lua:41 -- NYI: unsupported C function type
+
+---- TRACE 34 start 30/5 editor.lua:153
+---- TRACE 34 abort debug.lua:41 -- NYI: unsupported C function type
+
+---- TRACE 34 start 30/5 editor.lua:153
+---- TRACE 34 abort debug.lua:41 -- NYI: unsupported C function type
+
+---- TRACE 34 start 30/5 editor.lua:153
+---- TRACE 34 abort debug.lua:41 -- NYI: unsupported C function type
+
+---- TRACE 34 start 30/5 editor.lua:153
+---- TRACE 34 abort debug.lua:41 -- NYI: unsupported C function type
+
+---- TRACE 34 start transform.lua:42
+---- TRACE 34 abort inspector.lua:88 -- NYI: unsupported C function type
+
+---- TRACE 34 start 30/5 editor.lua:153
+---- TRACE 34 mcode 32
+55de2d8ccb17  mov dword [r14-0xef0], 0x22
+55de2d8ccb22  mov rdx, [r14-0xe30]
+55de2d8ccb29  xor eax, eax
+55de2d8ccb2b  lea rbx, [r14-0x20c03280]
+55de2d8ccb32  jmp 0x55de54beb4d5
+---- TRACE 34 stop -> interpreter
+
+---- TRACE 35 start imgui.lua:5272
+---- TRACE 35 abort terminal.lua:30 -- NYI: unsupported C function type
+
+---- TRACE 35 start imgui.lua:5238
+---- TRACE 35 abort editor.lua:242 -- NYI: unsupported C function type
+
+---- TRACE 35 start imgui.lua:6833
+---- TRACE 35 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 35 start imgui.lua:5238
+---- TRACE 35 abort editor.lua:274 -- NYI: unsupported C function type
+
+---- TRACE 35 start imgui.lua:6727
+---- TRACE 35 abort entity_list_view.lua:79 -- NYI: unsupported C function type
+
+---- TRACE 35 start imgui.lua:6966
+---- TRACE 35 abort terminal.lua:50 -- leaving loop in root trace
+
+---- TRACE 35 start imgui.lua:5189
+---- TRACE 35 abort terminal.lua:34 -- NYI: unsupported C function type
+
+---- TRACE 35 start imgui.lua:5372
+---- TRACE 35 abort inspector.lua:133 -- NYI: unsupported C function type
+
+---- TRACE 35 start imgui.lua:5272
+---- TRACE 35 abort terminal.lua:30 -- NYI: unsupported C function type
+
+---- TRACE 35 start imgui.lua:5238
+---- TRACE 35 abort editor.lua:274 -- NYI: unsupported C function type
+
+---- TRACE 35 start 3/1 profiler.lua:41
+---- TRACE 35 abort profiler.lua:45 -- NYI: unsupported C function type
+
+---- TRACE 35 start 3/1 profiler.lua:41
+---- TRACE 35 abort profiler.lua:45 -- NYI: unsupported C function type
+
+---- TRACE 35 start 3/1 profiler.lua:41
+---- TRACE 35 abort profiler.lua:45 -- NYI: unsupported C function type
+
+---- TRACE 35 start 3/1 profiler.lua:41
+---- TRACE 35 abort profiler.lua:45 -- NYI: unsupported C function type
+
+---- TRACE 35 start 3/1 profiler.lua:41
+---- TRACE 35 mcode 159
+55de2d8cca75  mov rax, [r14-0xe38]
+55de2d8cca7c  mov rax, [rax+0x30]
+55de2d8cca80  sub rax, [r14-0xe30]
+55de2d8cca87  cmp rax, 0xa0
+55de2d8cca8e  jb 0x55de2d8c0050	->1
+55de2d8cca94  mov ebx, ebp
+55de2d8cca96  mov rbp, [rsp+0x18]
+55de2d8cca9b  mov dword [r14-0xef0], 0x23
+55de2d8ccaa6  mov rdx, [r14-0xe30]
+55de2d8ccaad  movsd xmm6, [r14-0x334aac18]
+55de2d8ccab6  xorps xmm7, xmm7
+55de2d8ccab9  cvtsi2sd xmm7, ebx
+55de2d8ccabd  mov dword [rdx+0x48], 0xffffffff
+55de2d8ccac4  mov dword [rdx+0x4c], 0xfffeffff
+55de2d8ccacb  mov [rdx+0x40], rbp
+55de2d8ccacf  or dword [rdx+0x44], 0xfffa0000
+55de2d8ccad6  movsd [rdx+0x38], xmm6
+55de2d8ccadb  mov dword [rdx+0x30], 0xbb427380
+55de2d8ccae2  mov dword [rdx+0x34], 0xfffbff41
+55de2d8ccae9  mov [rdx+0x28], rbp
+55de2d8ccaed  or dword [rdx+0x2c], 0xfffa0000
+55de2d8ccaf4  movsd [rdx+0x20], xmm7
+55de2d8ccaf9  movsd [rdx+0x8], xmm7
+55de2d8ccafe  add rdx, +0x40
+55de2d8ccb02  xor eax, eax
+55de2d8ccb04  lea rbx, [r14-0x21066048]
+55de2d8ccb0b  add rsp, +0x20
+55de2d8ccb0f  jmp 0x55de54beb4d5
+---- TRACE 35 stop -> interpreter
+
+---- TRACE 36 start entity_list_view.lua:82
+---- TRACE 36 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 36 start imgui.lua:5364
+---- TRACE 36 abort inspector.lua:133 -- NYI: unsupported C function type
+
+---- TRACE 36 start vec3.lua:209
+---- TRACE 36 abort camera.lua:136 -- NYI: return to lower frame
+
+---- TRACE 36 start imgui.lua:5238
+---- TRACE 36 abort editor.lua:283 -- NYI: unsupported C function type
+
+---- TRACE 36 start entity_list_view.lua:83
+---- TRACE 36 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 36 start entity_list_view.lua:82
+---- TRACE 36 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 36 start imgui.lua:1147
+---- TRACE 36 abort entity_list_view.lua:80 -- leaving loop in root trace
+
+---- TRACE 36 start imgui.lua:5272
+---- TRACE 36 abort profiler.lua:42 -- NYI: unsupported C function type
+
+---- TRACE 36 start terminal.lua:26
+---- TRACE 36 abort terminal.lua:27 -- NYI: unsupported C function type
+
+---- TRACE 36 start imgui.lua:5238
+---- TRACE 36 abort editor.lua:274 -- NYI: unsupported C function type
+
+---- TRACE 36 start inspector.lua:48
+---- TRACE 36 mcode 546
+55de2d8cc84c  mov dword [r14-0xef0], 0x24
+55de2d8cc857  lea r13, [r14+0xf7b8]
+55de2d8cc85e  lea r12, [r14-0x20fbc758]
+55de2d8cc865  lea rsi, [r14-0x21082bc8]
+55de2d8cc86c  xor ebx, ebx
+55de2d8cc86e  cmp qword [rdx+0x18], -0x01
+55de2d8cc873  jnz 0x55de2d8c004c	->0
+55de2d8cc879  rorx rbp, [rdx], 0x2f
+55de2d8cc87f  cmp bp, -0x0c
+55de2d8cc883  jnz 0x55de2d8c004c	->0
+55de2d8cc889  shr rbp, 0x11
+55de2d8cc88d  cmp dword [rbp+0x34], +0x0f
+55de2d8cc891  jnz 0x55de2d8c004c	->0
+55de2d8cc897  mov r15, [rbp+0x28]
+55de2d8cc89b  mov rdi, 0xfffdff41bb4319a8
+55de2d8cc8a5  cmp rdi, [r15+0x98]
+55de2d8cc8ac  jnz 0x55de2d8c004c	->0
+55de2d8cc8b2  rorx rdi, [r15+0x90], 0x2f
+55de2d8cc8bc  cmp di, -0x09
+55de2d8cc8c0  jnz 0x55de2d8c004c	->0
+55de2d8cc8c6  shr rdi, 0x11
+55de2d8cc8ca  rorx rbp, [rdx+0x10], 0x2f
+55de2d8cc8d1  cmp bp, -0x0b
+55de2d8cc8d5  jnz 0x55de2d8c004c	->0
+55de2d8cc8db  shr rbp, 0x11
+55de2d8cc8df  cmp rdi, rsi
+55de2d8cc8e2  jnz 0x55de2d8c004c	->0
+55de2d8cc8e8  mov rdi, 0xfffdff41bb431798
+55de2d8cc8f2  cmp rdi, [r15+0x8]
+55de2d8cc8f6  jnz 0x55de2d8c004c	->0
+55de2d8cc8fc  rorx r15, [r15], 0x2f
+55de2d8cc902  cmp r15w, -0x0b
+55de2d8cc907  jnz 0x55de2d8c004c	->0
+55de2d8cc90d  shr r15, 0x11
+55de2d8cc911  cmp word [rbp+0xa], +0x6f
+55de2d8cc916  jnz 0x55de2d8c004c	->0
+55de2d8cc91c  movzx edi, word [r15+0xa]
+55de2d8cc921  cmp edi, 0x1018
+55de2d8cc927  jnz 0x55de2d8c004c	->0
+55de2d8cc92d  mov rsi, r15
+55de2d8cc930  add rsi, +0x10
+55de2d8cc934  xorps xmm7, xmm7
+55de2d8cc937  cvtsd2ss xmm7, [rbp+0x10]
+55de2d8cc93c  movss [rsi], xmm7
+55de2d8cc940  xorps xmm7, xmm7
+55de2d8cc943  cvtsd2ss xmm7, [rbp+0x18]
+55de2d8cc948  movss [r15+0x14], xmm7
+55de2d8cc94e  xorps xmm7, xmm7
+55de2d8cc951  cvtsd2ss xmm7, [rbp+0x20]
+55de2d8cc956  movss [r15+0x18], xmm7
+55de2d8cc95c  rorx r15, [rdx-0x10], 0x2f
+55de2d8cc963  shr r15, 0x11
+55de2d8cc967  mov rdi, [r15+0x28]
+55de2d8cc96b  cmp byte [rdi+0xa], 0x0
+55de2d8cc96f  jz 0x55de2d8c0050	->1
+55de2d8cc975  lea r15, [rdi+0x10]
+55de2d8cc979  rorx r15, [r15], 0x2f
+55de2d8cc97f  cmp r15w, -0x0c
+55de2d8cc984  jnz 0x55de2d8c0050	->1
+55de2d8cc98a  shr r15, 0x11
+55de2d8cc98e  cmp dword [r15+0x34], 0x7ff
+55de2d8cc996  jnz 0x55de2d8c0050	->1
+55de2d8cc99c  mov r15, [r15+0x28]
+55de2d8cc9a0  mov rdi, 0xfffdff41bb8a0110
+55de2d8cc9aa  cmp rdi, [r15+0xb6a8]
+55de2d8cc9b1  jnz 0x55de2d8c0050	->1
+55de2d8cc9b7  rorx r15, [r15+0xb6a0], 0x2f
+55de2d8cc9c1  cmp r15w, -0x09
+55de2d8cc9c6  jnz 0x55de2d8c0050	->1
+55de2d8cc9cc  shr r15, 0x11
+55de2d8cc9d0  rorx rdi, [rdx+0x8], 0x2f
+55de2d8cc9d7  cmp di, -0x05
+55de2d8cc9db  jnz 0x55de2d8c0050	->1
+55de2d8cc9e1  shr rdi, 0x11
+55de2d8cc9e5  cmp r15, r12
+55de2d8cc9e8  jnz 0x55de2d8c0050	->1
+55de2d8cc9ee  rorx r15, [r14-0x20fa2b78], 0x2f
+55de2d8cc9f8  cmp r15w, -0x0d
+55de2d8cc9fd  jnz 0x55de2d8c0050	->1
+55de2d8cca03  shr r15, 0x11
+55de2d8cca07  cmp r15, r13
+55de2d8cca0a  jnz 0x55de2d8c0050	->1
+55de2d8cca10  add rdi, +0x18
+55de2d8cca14  xorps xmm0, xmm0
+55de2d8cca17  cvtsd2ss xmm0, [r14-0x33433900]
+55de2d8cca20  xorps xmm1, xmm1
+55de2d8cca23  cvtsi2ss xmm1, ebx
+55de2d8cca27  xor ecx, ecx
+55de2d8cca29  lea rdx, [r14-0x20c198e0]
+55de2d8cca30  movaps xmm2, xmm1
+55de2d8cca33  call 0x55de54591860
+55de2d8cca38  mov rdx, [r14-0xe30]
+55de2d8cca3f  test al, al
+55de2d8cca41  jnz 0x55de2d8c0054	->2
+55de2d8cca47  mov [rdx+0x30], rbp
+55de2d8cca4b  or dword [rdx+0x34], 0xfffa8000
+55de2d8cca52  mov dword [rdx+0x28], 0xffffffff
+55de2d8cca59  mov dword [rdx+0x2c], 0xffff7fff
+55de2d8cca60  xor eax, eax
+55de2d8cca62  lea rbx, [r14-0x2108ff3c]
+55de2d8cca69  jmp 0x55de54beb4d5
+---- TRACE 36 stop -> return
+
+---- TRACE 37 start camera.lua:53
+---- TRACE 37 abort camera.lua:111 -- NYI: bytecode 51
+
+---- TRACE 37 start 36/0 inspector.lua:49
+---- TRACE 37 abort editor.lua:239 -- NYI: unsupported C function type
+
+---- TRACE 37 start 36/0 inspector.lua:49
+---- TRACE 37 abort editor.lua:239 -- NYI: unsupported C function type
+
+---- TRACE 37 start 36/0 inspector.lua:49
+---- TRACE 37 abort editor.lua:239 -- NYI: unsupported C function type
+
+---- TRACE 37 start imgui.lua:5305
+---- TRACE 37 abort entity_list_view.lua:54 -- NYI: unsupported C function type
+
+---- TRACE 37 start 36/0 inspector.lua:49
+---- TRACE 37 abort editor.lua:239 -- NYI: unsupported C function type
+
+---- TRACE 37 start 36/0 inspector.lua:49
+---- TRACE 37 mcode 32
+55de2d8cc825  mov dword [r14-0xef0], 0x25
+55de2d8cc830  mov rdx, [r14-0xe30]
+55de2d8cc837  xor eax, eax
+55de2d8cc839  lea rbx, [r14-0x2108ff94]
+55de2d8cc840  jmp 0x55de54beb4d5
+---- TRACE 37 stop -> interpreter
+
+---- TRACE 38 start editor.lua:238
+---- TRACE 38 abort editor.lua:239 -- NYI: unsupported C function type
+
+---- TRACE 38 start imgui.lua:5201
+---- TRACE 38 abort entity_list_view.lua:78 -- NYI: unsupported C function type
+
+---- TRACE 38 start scripteditor.lua:117
+---- TRACE 38 abort scripteditor.lua:118 -- NYI: unsupported C function type
+
+---- TRACE 38 start vec3.lua:209
+---- TRACE 38 abort camera.lua:136 -- NYI: return to lower frame
+
+---- TRACE 38 start imgui.lua:6684
+---- TRACE 38 abort entity_list_view.lua:107 -- leaving loop in root trace
+
+---- TRACE 38 start imgui.lua:6805
+---- TRACE 38 abort entity_list_view.lua:61 -- leaving loop in root trace
+
+---- TRACE 38 start entity_list_view.lua:44
+---- TRACE 38 abort entity_list_view.lua:45 -- NYI: unsupported C function type
+
+---- TRACE 38 start app.lua:90
+---- TRACE 38 abort camera.lua:54 -- NYI: unsupported C function type
+
+---- TRACE 38 start imgui.lua:6805
+---- TRACE 38 abort entity_list_view.lua:74 -- leaving loop in root trace
+
+---- TRACE 38 start imgui.lua:6805
+---- TRACE 38 abort entity_list_view.lua:61 -- leaving loop in root trace
+
+---- TRACE 38 start imgui.lua:5571
+---- TRACE 38 abort inspector.lua:51 -- NYI: unsupported C function type
+
+---- TRACE 38 start imgui.lua:6805
+---- TRACE 38 abort entity_list_view.lua:65 -- leaving loop in root trace
+
+---- TRACE 38 start imgui.lua:5272
+---- TRACE 38 abort profiler.lua:42 -- NYI: unsupported C function type
+
+---- TRACE 38 start imgui.lua:5571
+---- TRACE 38 abort inspector.lua:51 -- NYI: unsupported C function type
+
+---- TRACE 38 start imgui.lua:6727
+---- TRACE 38 abort entity_list_view.lua:79 -- NYI: unsupported C function type
+
+---- TRACE 38 start imgui.lua:5429
+---- TRACE 38 abort inspector.lua:121 -- leaving loop in root trace
+
+---- TRACE 38 start imgui.lua:6805
+---- TRACE 38 abort inspector.lua:125 -- leaving loop in root trace
+
+---- TRACE 38 start imgui.lua:6727
+---- TRACE 38 abort editor.lua:239 -- NYI: unsupported C function type
+
+---- TRACE 38 start imgui.lua:5238
+---- TRACE 38 abort editor.lua:299 -- NYI: unsupported C function type
+
+---- TRACE 38 start imgui.lua:6833
+---- TRACE 38 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 38 start imgui.lua:5272
+---- TRACE 38 abort profiler.lua:42 -- NYI: unsupported C function type
+
+---- TRACE 38 start math.lua:30
+---- TRACE 38 abort camera.lua:95 -- leaving loop in root trace
+
+---- TRACE 38 start imgui.lua:5184
+---- TRACE 38 abort inspector.lua:116 -- NYI: unsupported C function type
+
+---- TRACE 38 start imgui.lua:6805
+---- TRACE 38 abort entity_list_view.lua:53 -- leaving loop in root trace
+
+---- TRACE 38 start imgui.lua:6727
+---- TRACE 38 abort entity_list_view.lua:79 -- NYI: unsupported C function type
+
+---- TRACE 38 start imgui.lua:5417
+---- TRACE 38 abort editor.lua:373 -- leaving loop in root trace
+
+---- TRACE 38 start imgui.lua:5372
+---- TRACE 38 abort inspector.lua:82 -- NYI: unsupported C function type
+
+---- TRACE 38 start entity_list_view.lua:44
+---- TRACE 38 abort entity_list_view.lua:45 -- NYI: unsupported C function type
+
+---- TRACE 38 start vec3.lua:209
+---- TRACE 38 abort camera.lua:136 -- NYI: return to lower frame
+
+---- TRACE 38 start imgui.lua:6680
+---- TRACE 38 abort entity_list_view.lua:99 -- leaving loop in root trace
+
+---- TRACE 38 start imgui.lua:6680
+---- TRACE 38 abort entity_list_view.lua:99 -- leaving loop in root trace
+
+---- TRACE 38 start imgui.lua:6680
+---- TRACE 38 abort inspector.lua:102 -- leaving loop in root trace
+
+---- TRACE 38 start imgui.lua:6680
+---- TRACE 38 abort entity_list_view.lua:99 -- leaving loop in root trace
+
+---- TRACE 38 start imgui.lua:6805
+---- TRACE 38 abort entity_list_view.lua:53 -- leaving loop in root trace
+
+---- TRACE 38 start imgui.lua:6680
+---- TRACE 38 abort entity_list_view.lua:99 -- leaving loop in root trace
+
+---- TRACE 38 start imgui.lua:6680
+---- TRACE 38 abort entity_list_view.lua:99 -- leaving loop in root trace
+
+---- TRACE 38 start imgui.lua:6844
+---- TRACE 38 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 38 start imgui.lua:6680
+---- TRACE 38 abort entity_list_view.lua:99 -- leaving loop in root trace
+
+---- TRACE 38 start imgui.lua:5277
+---- TRACE 38 abort profiler.lua:48 -- NYI: unsupported C function type
+
+---- TRACE 38 start imgui.lua:5277
+---- TRACE 38 abort profiler.lua:59 -- NYI: unsupported C function type
+
+---- TRACE 38 start imgui.lua:5277
+---- TRACE 38 abort profiler.lua:43 -- NYI: unsupported C function type
+
+---- TRACE 38 start inspector.lua:58
+---- TRACE 38 abort inspector.lua:59 -- NYI: unsupported C function type
+
+---- TRACE 38 start inspector.lua:38
+---- TRACE 38 mcode 189
+55de2d8cc761  mov dword [r14-0xef0], 0x26
+55de2d8cc76c  rorx rbp, [rdx], 0x2f
+55de2d8cc772  cmp bp, -0x0c
+55de2d8cc776  jnz 0x55de2d8c004c	->0
+55de2d8cc77c  shr rbp, 0x11
+55de2d8cc780  cmp dword [rbp+0x34], +0x0f
+55de2d8cc784  jnz 0x55de2d8c004c	->0
+55de2d8cc78a  mov rbp, [rbp+0x28]
+55de2d8cc78e  mov rdi, 0xfffdff41bb431798
+55de2d8cc798  cmp rdi, [rbp+0x8]
+55de2d8cc79c  jnz 0x55de2d8c004c	->0
+55de2d8cc7a2  rorx rbp, [rbp+0x0], 0x2f
+55de2d8cc7a9  cmp bp, -0x0b
+55de2d8cc7ad  jnz 0x55de2d8c004c	->0
+55de2d8cc7b3  shr rbp, 0x11
+55de2d8cc7b7  rorx rbx, [rdx+0x8], 0x2f
+55de2d8cc7be  cmp bx, -0x0b
+55de2d8cc7c2  jnz 0x55de2d8c004c	->0
+55de2d8cc7c8  shr rbx, 0x11
+55de2d8cc7cc  cmp word [rbx+0xa], +0x6a
+55de2d8cc7d1  jnz 0x55de2d8c004c	->0
+55de2d8cc7d7  movzx r15d, word [rbp+0xa]
+55de2d8cc7dc  cmp r15d, 0x1018
+55de2d8cc7e3  jnz 0x55de2d8c004c	->0
+55de2d8cc7e9  xorps xmm7, xmm7
+55de2d8cc7ec  cvtsd2ss xmm7, [rbx+0x10]
+55de2d8cc7f1  movss [rbp+0x10], xmm7
+55de2d8cc7f6  xorps xmm7, xmm7
+55de2d8cc7f9  cvtsd2ss xmm7, [rbx+0x18]
+55de2d8cc7fe  movss [rbp+0x14], xmm7
+55de2d8cc803  xorps xmm7, xmm7
+55de2d8cc806  cvtsd2ss xmm7, [rbx+0x20]
+55de2d8cc80b  movss [rbp+0x18], xmm7
+55de2d8cc810  xor eax, eax
+55de2d8cc812  lea rbx, [r14-0x210877e8]
+55de2d8cc819  jmp 0x55de54beb4d5
+---- TRACE 38 stop -> return
+
+---- TRACE 39 start imgui.lua:5305
+---- TRACE 39 abort inspector.lua:68 -- NYI: unsupported C function type
+
+---- TRACE 39 start imgui.lua:6680
+---- TRACE 39 abort entity_list_view.lua:99 -- leaving loop in root trace
+
+---- TRACE 39 start imgui.lua:6930
+---- TRACE 39 abort inspector.lua:115 -- NYI: unsupported C function type
+
+---- TRACE 39 start imgui.lua:6930
+---- TRACE 39 abort scripteditor.lua:118 -- NYI: unsupported C function type
+
+---- TRACE 39 start imgui.lua:5277
+---- TRACE 39 abort profiler.lua:43 -- NYI: unsupported C function type
+
+---- TRACE 39 start transform.lua:34
+---- TRACE 39 abort inspector.lua:171 -- NYI: unsupported C function type
+
+---- TRACE 39 start vec3.lua:209
+---- TRACE 39 abort camera.lua:136 -- NYI: return to lower frame
+
+---- TRACE 39 start entity.lua:50
+---- TRACE 39 abort inspector.lua:134 -- leaving loop in root trace
+
+---- TRACE 39 start imgui.lua:5305
+---- TRACE 39 abort inspector.lua:68 -- NYI: unsupported C function type
+
+---- TRACE 39 start entity.lua:50
+---- TRACE 39 abort inspector.lua:134 -- leaving loop in root trace
+
+---- TRACE 39 start imgui.lua:5238
+---- TRACE 39 abort scripteditor.lua:121 -- NYI: unsupported C function type
+
+---- TRACE 39 start imgui.lua:5305
+---- TRACE 39 abort inspector.lua:126 -- NYI: unsupported C function type
+
+---- TRACE 39 start imgui.lua:6930
+---- TRACE 39 abort terminal.lua:27 -- NYI: unsupported C function type
+
+---- TRACE 39 start input.lua:157
+---- TRACE 39 abort camera.lua:98 -- NYI: unsupported C function type
+
+---- TRACE 39 start imgui.lua:6930
+---- TRACE 39 abort inspector.lua:115 -- NYI: unsupported C function type
+
+---- TRACE 39 start scripteditor.lua:21
+---- TRACE 39 mcode 188
+55de2d8cc69e  mov dword [r14-0xef0], 0x27
+55de2d8cc6a9  lea rbx, [r14+0xf7b8]
+55de2d8cc6b0  rorx rbp, [rdx-0x10], 0x2f
+55de2d8cc6b7  shr rbp, 0x11
+55de2d8cc6bb  mov rdi, [rbp+0x28]
+55de2d8cc6bf  cmp byte [rdi+0xa], 0x0
+55de2d8cc6c3  jz 0x55de2d8c004c	->0
+55de2d8cc6c9  lea rbp, [rdi+0x10]
+55de2d8cc6cd  rorx rbp, [rbp+0x0], 0x2f
+55de2d8cc6d4  cmp bp, -0x0c
+55de2d8cc6d8  jnz 0x55de2d8c004c	->0
+55de2d8cc6de  shr rbp, 0x11
+55de2d8cc6e2  cmp dword [rbp+0x34], +0x1f
+55de2d8cc6e6  jnz 0x55de2d8c004c	->0
+55de2d8cc6ec  mov rbp, [rbp+0x28]
+55de2d8cc6f0  mov rdi, 0xfffdff41dc4bac78
+55de2d8cc6fa  cmp rdi, [rbp+0x2c0]
+55de2d8cc701  jnz 0x55de2d8c004c	->0
+55de2d8cc707  rorx rbp, [rbp+0x2b8], 0x2f
+55de2d8cc711  cmp bp, -0x0d
+55de2d8cc715  jnz 0x55de2d8c004c	->0
+55de2d8cc71b  shr rbp, 0x11
+55de2d8cc71f  cmp rbp, rbx
+55de2d8cc722  jnz 0x55de2d8c004c	->0
+55de2d8cc728  rorx rdi, [rdx], 0x2f
+55de2d8cc72e  cmp di, -0x05
+55de2d8cc732  jnz 0x55de2d8c004c	->0
+55de2d8cc738  shr rdi, 0x11
+55de2d8cc73c  add rdi, +0x18
+55de2d8cc740  call 0x55de54bbfbf0
+55de2d8cc745  mov rdx, [r14-0xe30]
+55de2d8cc74c  xor eax, eax
+55de2d8cc74e  lea rbx, [r14-0x21091260]
+55de2d8cc755  jmp 0x55de54beb4d5
+---- TRACE 39 stop -> return
+
+---- TRACE 40 start entity.lua:62
+---- TRACE 40 abort inspector.lua:171 -- NYI: unsupported C function type
+
+---- TRACE 40 start imgui.lua:5184
+---- TRACE 40 abort entity_list_view.lua:46 -- NYI: unsupported C function type
+
+---- TRACE 40 start imgui.lua:6805
+---- TRACE 40 abort entity_list_view.lua:72 -- leaving loop in root trace
+
+---- TRACE 40 start entity.lua:50
+---- TRACE 40 abort inspector.lua:134 -- leaving loop in root trace
+
+---- TRACE 40 start imgui.lua:5305
+---- TRACE 40 abort entity_list_view.lua:62 -- NYI: unsupported C function type
+
+---- TRACE 40 start imgui.lua:6680
+---- TRACE 40 abort entity_list_view.lua:99 -- leaving loop in root trace
+
+---- TRACE 40 start imgui.lua:6930
+---- TRACE 40 abort scripteditor.lua:118 -- NYI: unsupported C function type
+
+---- TRACE 40 start inspector.lua:58
+---- TRACE 40 abort inspector.lua:59 -- NYI: unsupported C function type
+
+---- TRACE 40 start vec3.lua:25
+---- TRACE 40 abort camera.lua:136 -- NYI: return to lower frame
+
+---- TRACE 40 start imgui.lua:1142
+---- TRACE 40 abort entity_list_view.lua:81 -- leaving loop in root trace
+
+---- TRACE 40 start entity.lua:50
+---- TRACE 40 abort inspector.lua:134 -- leaving loop in root trace
+
+---- TRACE 40 start inspector.lua:58
+---- TRACE 40 abort inspector.lua:59 -- NYI: unsupported C function type
+
+---- TRACE 40 start imgui.lua:1142
+---- TRACE 40 abort terminal.lua:37 -- leaving loop in root trace
+
+---- TRACE 40 start hookmgr.lua:66
+---- TRACE 40 abort hookmgr.lua:73 -- leaving loop in root trace
+
+---- TRACE 40 start hookmgr.lua:66
+---- TRACE 40 abort debug.lua:41 -- NYI: unsupported C function type
+
+---- TRACE 40 start imgui.lua:5305
+---- TRACE 40 abort entity_list_view.lua:54 -- NYI: unsupported C function type
+
+---- TRACE 40 start imgui.lua:1142
+---- TRACE 40 abort entity_list_view.lua:81 -- leaving loop in root trace
+
+---- TRACE 40 start hookmgr.lua:66
+---- TRACE 40 abort debug.lua:41 -- NYI: unsupported C function type
+
+---- TRACE 40 start imgui.lua:5277
+---- TRACE 40 abort profiler.lua:48 -- NYI: unsupported C function type
+
+---- TRACE 40 start entity_list_view.lua:44
+---- TRACE 40 abort entity_list_view.lua:45 -- NYI: unsupported C function type
+
+---- TRACE 40 start imgui.lua:6930
+---- TRACE 40 abort inspector.lua:115 -- NYI: unsupported C function type
+
+---- TRACE 40 start hookmgr.lua:66
+---- TRACE 40 abort debug.lua:41 -- NYI: unsupported C function type
+
+---- TRACE 40 start vec3.lua:209
+---- TRACE 40 abort camera.lua:136 -- NYI: return to lower frame
+
+---- TRACE 40 start transform.lua:40
+---- TRACE 40 abort inspector.lua:87 -- NYI: unsupported C function type
+
+---- TRACE 40 start hookmgr.lua:66
+---- TRACE 40 abort hookmgr.lua:73 -- leaving loop in root trace
+
+---- TRACE 40 start imgui.lua:5305
+---- TRACE 40 abort inspector.lua:59 -- NYI: unsupported C function type
+
+---- TRACE 40 start imgui.lua:6833
+---- TRACE 40 abort entity_list_view.lua:92 -- NYI: unsupported C function type
+
+---- TRACE 40 start imgui.lua:7112
+---- TRACE 40 abort editor.lua:367 -- leaving loop in root trace
+
+---- TRACE 40 start imgui.lua:6680
+---- TRACE 40 abort entity_list_view.lua:99 -- leaving loop in root trace
+
+---- TRACE 40 start imgui.lua:1147
+---- TRACE 40 abort entity_list_view.lua:80 -- leaving loop in root trace
+
+---- TRACE 40 start imgui.lua:5364
+---- TRACE 40 abort inspector.lua:133 -- NYI: unsupported C function type
+
+---- TRACE 40 start imgui.lua:6966
+---- TRACE 40 abort terminal.lua:50 -- leaving loop in root trace
+
+---- TRACE 40 start transform.lua:40
+---- TRACE 40 abort inspector.lua:87 -- NYI: unsupported C function type
+
+---- TRACE 40 start imgui.lua:5277
+---- TRACE 40 abort terminal.lua:57 -- NYI: unsupported C function type
+
+---- TRACE 40 start imgui.lua:1147
+---- TRACE 40 abort entity_list_view.lua:80 -- leaving loop in root trace
+
+---- TRACE 40 start imgui.lua:1147
+---- TRACE 40 abort terminal.lua:36 -- leaving loop in root trace
+
+---- TRACE 40 start transform.lua:34
+---- TRACE 40 abort inspector.lua:171 -- NYI: unsupported C function type
+
+---- TRACE 40 start editor.lua:275
+---- TRACE 40 mcode 1003
+55de2d8cc2b3  add rsp, -0x10
+55de2d8cc2b7  mov dword [r14-0xef0], 0x28
+55de2d8cc2c2  lea r9, [r14+0xfbd0]
+55de2d8cc2c9  lea rsi, [r14+0x2698]
+55de2d8cc2d0  lea rcx, [r14+0xf7b8]
+55de2d8cc2d7  movsd xmm7, [rdx+0x10]
+55de2d8cc2dc  cvttsd2si ebx, xmm7
+55de2d8cc2e0  xorps xmm6, xmm6
+55de2d8cc2e3  cvtsi2sd xmm6, ebx
+55de2d8cc2e7  ucomisd xmm7, xmm6
+55de2d8cc2eb  jnz 0x55de2d8c004c	->0
+55de2d8cc2f1  jpe 0x55de2d8c004c	->0
+55de2d8cc2f7  cmp ebx, 0x7ffffffe
+55de2d8cc2fd  jg 0x55de2d8c004c	->0
+55de2d8cc303  cvttsd2si ebp, [rdx+0x8]
+55de2d8cc308  rorx rax, [rdx], 0x2f
+55de2d8cc30e  cmp ax, -0x0c
+55de2d8cc312  jnz 0x55de2d8c004c	->0
+55de2d8cc318  shr rax, 0x11
+55de2d8cc31c  cmp dword [rax+0x34], +0x1f
+55de2d8cc320  jnz 0x55de2d8c004c	->0
+55de2d8cc326  mov rax, [rax+0x28]
+55de2d8cc32a  mov rdi, 0xfffdff41bb8ba678
+55de2d8cc334  cmp rdi, [rax+0x140]
+55de2d8cc33b  jnz 0x55de2d8c004c	->0
+55de2d8cc341  rorx rax, [rax+0x138], 0x2f
+55de2d8cc34b  cmp ax, -0x0c
+55de2d8cc34f  jnz 0x55de2d8c004c	->0
+55de2d8cc355  shr rax, 0x11
+55de2d8cc359  cmp ebx, [rax+0x30]
+55de2d8cc35c  jnb 0x55de2d8c004c	->0
+55de2d8cc362  mov rax, [rax+0x10]
+55de2d8cc366  mov [rsp+0x8], rax
+55de2d8cc36b  rorx rax, [rax+rbp*8], 0x2f
+55de2d8cc372  cmp ax, -0x0c
+55de2d8cc376  jnz 0x55de2d8c004c	->0
+55de2d8cc37c  shr rax, 0x11
+55de2d8cc380  mov [rsp+0x10], rax
+55de2d8cc385  rorx rdi, [rdx-0x10], 0x2f
+55de2d8cc38c  shr rdi, 0x11
+55de2d8cc390  lea rdx, [r14-0x20fd1238]
+55de2d8cc397  mov rdi, [rdi+0x28]
+55de2d8cc39b  cmp byte [rdi+0xa], 0x0
+55de2d8cc39f  jz 0x55de2d8c004c	->0
+55de2d8cc3a5  lea rdi, [rdi+0x10]
+55de2d8cc3a9  rorx rdi, [rdi], 0x2f
+55de2d8cc3af  cmp di, -0x0c
+55de2d8cc3b3  jnz 0x55de2d8c004c	->0
+55de2d8cc3b9  shr rdi, 0x11
+55de2d8cc3bd  cmp dword [rdi+0x34], 0x7ff
+55de2d8cc3c4  jnz 0x55de2d8c004c	->0
+55de2d8cc3ca  mov rdi, [rdi+0x28]
+55de2d8cc3ce  mov r15, 0xfffdff41bb8bc790
+55de2d8cc3d8  cmp r15, [rdi+0x6b00]
+55de2d8cc3df  jnz 0x55de2d8c004c	->0
+55de2d8cc3e5  rorx r8, [rdi+0x6af8], 0x2f
+55de2d8cc3ef  cmp r8w, -0x09
+55de2d8cc3f4  jnz 0x55de2d8c004c	->0
+55de2d8cc3fa  shr r8, 0x11
+55de2d8cc3fe  cmp dword [rax+0x34], +0x03
+55de2d8cc402  jnz 0x55de2d8c004c	->0
+55de2d8cc408  mov r10, [rax+0x28]
+55de2d8cc40c  lea rax, [r14-0x20fd11c8]
+55de2d8cc413  mov rdi, 0xfffdff41dc4c5908
+55de2d8cc41d  cmp rdi, [r10+0x38]
+55de2d8cc421  jnz 0x55de2d8c004c	->0
+55de2d8cc427  rorx rdi, [r10+0x30], 0x2f
+55de2d8cc42e  cmp di, -0x05
+55de2d8cc432  jnz 0x55de2d8c004c	->0
+55de2d8cc438  shr rdi, 0x11
+55de2d8cc43c  mov r15, 0xfffdff41d8fdb6e8
+55de2d8cc446  cmp r15, [r10+0x20]
+55de2d8cc44a  jnz 0x55de2d8c004c	->0
+55de2d8cc450  rorx r10, [r10+0x18], 0x2f
+55de2d8cc457  cmp r10w, -0x0b
+55de2d8cc45c  jnz 0x55de2d8c004c	->0
+55de2d8cc462  shr r10, 0x11
+55de2d8cc466  movzx r11d, word [r10+0xa]
+55de2d8cc46b  cmp r11d, 0x35a7
+55de2d8cc472  jnz 0x55de2d8c004c	->0
+55de2d8cc478  cmp byte [r10+0x10], 0x0
+55de2d8cc47d  jz 0x55de2d8c004c	->0
+55de2d8cc483  cmp r8, rax
+55de2d8cc486  jnz 0x55de2d8c004c	->0
+55de2d8cc48c  rorx r8, [r14-0x20cadde8], 0x2f
+55de2d8cc496  cmp r8w, -0x0c
+55de2d8cc49b  jnz 0x55de2d8c004c	->0
+55de2d8cc4a1  shr r8, 0x11
+55de2d8cc4a5  cmp dword [r8+0x34], +0x1f
+55de2d8cc4aa  jnz 0x55de2d8c004c	->0
+55de2d8cc4b0  mov r8, [r8+0x28]
+55de2d8cc4b4  mov r15, 0xfffdff41dc4c8fa0
+55de2d8cc4be  cmp r15, [r8+0x50]
+55de2d8cc4c2  jnz 0x55de2d8c004c	->0
+55de2d8cc4c8  rorx r8, [r8+0x48], 0x2f
+55de2d8cc4cf  cmp r8w, -0x09
+55de2d8cc4d4  jnz 0x55de2d8c004c	->0
+55de2d8cc4da  shr r8, 0x11
+55de2d8cc4de  cmp r8, r9
+55de2d8cc4e1  jnz 0x55de2d8c004c	->0
+55de2d8cc4e7  mov rax, [rax+0x10]
+55de2d8cc4eb  cmp dword [rax+0x34], +0x3f
+55de2d8cc4ef  jnz 0x55de2d8c004c	->0
+55de2d8cc4f5  mov rax, [rax+0x28]
+55de2d8cc4f9  mov r15, 0xfffdff41dc4bbad8
+55de2d8cc503  cmp r15, [rax+0x68]
+55de2d8cc507  jnz 0x55de2d8c004c	->0
+55de2d8cc50d  rorx rax, [rax+0x60], 0x2f
+55de2d8cc514  cmp ax, -0x09
+55de2d8cc518  jnz 0x55de2d8c004c	->0
+55de2d8cc51e  shr rax, 0x11
+55de2d8cc522  cmp rax, rsi
+55de2d8cc525  jnz 0x55de2d8c004c	->0
+55de2d8cc52b  rorx rax, [r14-0x20fa1508], 0x2f
+55de2d8cc535  cmp ax, -0x0c
+55de2d8cc539  jnz 0x55de2d8c004c	->0
+55de2d8cc53f  shr rax, 0x11
+55de2d8cc543  cmp dword [rax+0x34], 0x7ff
+55de2d8cc54a  jnz 0x55de2d8c004c	->0
+55de2d8cc550  mov rax, [rax+0x28]
+55de2d8cc554  mov rsi, 0xfffdff41bb778a58
+55de2d8cc55e  cmp rsi, [rax+0x6b30]
+55de2d8cc565  jnz 0x55de2d8c004c	->0
+55de2d8cc56b  rorx rax, [rax+0x6b28], 0x2f
+55de2d8cc575  cmp ax, -0x09
+55de2d8cc579  jnz 0x55de2d8c004c	->0
+55de2d8cc57f  shr rax, 0x11
+55de2d8cc583  cmp rax, rdx
+55de2d8cc586  jnz 0x55de2d8c004c	->0
+55de2d8cc58c  rorx rax, [r14-0x20fa2b78], 0x2f
+55de2d8cc596  cmp ax, -0x0d
+55de2d8cc59a  jnz 0x55de2d8c004c	->0
+55de2d8cc5a0  shr rax, 0x11
+55de2d8cc5a4  cmp rax, rcx
+55de2d8cc5a7  jnz 0x55de2d8c004c	->0
+55de2d8cc5ad  add rdi, +0x18
+55de2d8cc5b1  mov ecx, 0x1
+55de2d8cc5b6  mov edx, 0x1
+55de2d8cc5bb  xor esi, esi
+55de2d8cc5bd  call 0x55de54592ef0
+55de2d8cc5c2  mov ecx, eax
+55de2d8cc5c4  test cl, cl
+55de2d8cc5c6  jnz 0x55de2d8c0050	->1
+55de2d8cc5cc  add ebp, +0x01
+55de2d8cc5cf  cmp ebp, ebx
+55de2d8cc5d1  jg 0x55de2d8c0054	->2
+->LOOP:
+55de2d8cc5d7  mov rax, [rsp+0x8]
+55de2d8cc5dc  rorx r15, [rax+rbp*8], 0x2f
+55de2d8cc5e3  cmp r15w, -0x0c
+55de2d8cc5e8  jnz 0x55de2d8c0058	->3
+55de2d8cc5ee  shr r15, 0x11
+55de2d8cc5f2  cmp dword [r15+0x34], +0x03
+55de2d8cc5f7  jnz 0x55de2d8c0058	->3
+55de2d8cc5fd  mov r13, [r15+0x28]
+55de2d8cc601  mov rdi, 0xfffdff41dc4c5908
+55de2d8cc60b  cmp rdi, [r13+0x38]
+55de2d8cc60f  jnz 0x55de2d8c0058	->3
+55de2d8cc615  rorx rdi, [r13+0x30], 0x2f
+55de2d8cc61c  cmp di, -0x05
+55de2d8cc620  jnz 0x55de2d8c0058	->3
+55de2d8cc626  shr rdi, 0x11
+55de2d8cc62a  mov rsi, 0xfffdff41d8fdb6e8
+55de2d8cc634  cmp rsi, [r13+0x20]
+55de2d8cc638  jnz 0x55de2d8c0058	->3
+55de2d8cc63e  rorx r13, [r13+0x18], 0x2f
+55de2d8cc645  cmp r13w, -0x0b
+55de2d8cc64a  jnz 0x55de2d8c0058	->3
+55de2d8cc650  shr r13, 0x11
+55de2d8cc654  movzx r12d, word [r13+0xa]
+55de2d8cc659  cmp r12d, 0x35a7
+55de2d8cc660  jnz 0x55de2d8c0058	->3
+55de2d8cc666  cmp byte [r13+0x10], 0x0
+55de2d8cc66b  jz 0x55de2d8c0058	->3
+55de2d8cc671  add rdi, +0x18
+55de2d8cc675  mov ecx, 0x1
+55de2d8cc67a  mov edx, 0x1
+55de2d8cc67f  xor esi, esi
+55de2d8cc681  call 0x55de54592ef0
+55de2d8cc686  test al, al
+55de2d8cc688  jnz 0x55de2d8c005c	->4
+55de2d8cc68e  add ebp, +0x01
+55de2d8cc691  cmp ebp, ebx
+55de2d8cc693  jle 0x55de2d8cc5d7	->LOOP
+55de2d8cc699  jmp 0x55de2d8c0060	->5
+---- TRACE 40 stop -> loop
+
+---- TRACE 41 start 40/0 editor.lua:276
+---- TRACE 41 mcode 1024
+55de2d8cbeb3  mov dword [r14-0xef0], 0x29
+55de2d8cbebe  mov rdx, [r14-0xe30]
+55de2d8cbec5  lea r9, [r14+0xfbd0]
+55de2d8cbecc  lea rsi, [r14+0x2698]
+55de2d8cbed3  lea rcx, [r14+0xf7b8]
+55de2d8cbeda  movsd xmm7, [rdx+0x10]
+55de2d8cbedf  cvttsd2si ebx, xmm7
+55de2d8cbee3  xorps xmm6, xmm6
+55de2d8cbee6  cvtsi2sd xmm6, ebx
+55de2d8cbeea  ucomisd xmm7, xmm6
+55de2d8cbeee  jnz 0x55de2d8c004c	->0
+55de2d8cbef4  jpe 0x55de2d8c004c	->0
+55de2d8cbefa  cmp ebx, 0x7ffffffe
+55de2d8cbf00  jg 0x55de2d8c004c	->0
+55de2d8cbf06  cvttsd2si ebp, [rdx+0x8]
+55de2d8cbf0b  rorx rax, [rdx], 0x2f
+55de2d8cbf11  cmp ax, -0x0c
+55de2d8cbf15  jnz 0x55de2d8c004c	->0
+55de2d8cbf1b  shr rax, 0x11
+55de2d8cbf1f  cmp dword [rax+0x34], +0x1f
+55de2d8cbf23  jnz 0x55de2d8c004c	->0
+55de2d8cbf29  mov rax, [rax+0x28]
+55de2d8cbf2d  mov rdi, 0xfffdff41bb8ba678
+55de2d8cbf37  cmp rdi, [rax+0x140]
+55de2d8cbf3e  jnz 0x55de2d8c004c	->0
+55de2d8cbf44  rorx rax, [rax+0x138], 0x2f
+55de2d8cbf4e  cmp ax, -0x0c
+55de2d8cbf52  jnz 0x55de2d8c004c	->0
+55de2d8cbf58  shr rax, 0x11
+55de2d8cbf5c  cmp ebx, [rax+0x30]
+55de2d8cbf5f  jnb 0x55de2d8c004c	->0
+55de2d8cbf65  mov rax, [rax+0x10]
+55de2d8cbf69  mov [rsp+0x8], rax
+55de2d8cbf6e  rorx rax, [rax+rbp*8], 0x2f
+55de2d8cbf75  cmp ax, -0x0c
+55de2d8cbf79  jnz 0x55de2d8c004c	->0
+55de2d8cbf7f  shr rax, 0x11
+55de2d8cbf83  mov [rsp+0x10], rax
+55de2d8cbf88  rorx rdi, [rdx-0x10], 0x2f
+55de2d8cbf8f  shr rdi, 0x11
+55de2d8cbf93  lea rdx, [r14-0x20fd1238]
+55de2d8cbf9a  mov rdi, [rdi+0x28]
+55de2d8cbf9e  cmp byte [rdi+0xa], 0x0
+55de2d8cbfa2  jz 0x55de2d8c004c	->0
+55de2d8cbfa8  lea rdi, [rdi+0x10]
+55de2d8cbfac  rorx rdi, [rdi], 0x2f
+55de2d8cbfb2  cmp di, -0x0c
+55de2d8cbfb6  jnz 0x55de2d8c004c	->0
+55de2d8cbfbc  shr rdi, 0x11
+55de2d8cbfc0  cmp dword [rdi+0x34], 0x7ff
+55de2d8cbfc7  jnz 0x55de2d8c004c	->0
+55de2d8cbfcd  mov rdi, [rdi+0x28]
+55de2d8cbfd1  mov r15, 0xfffdff41bb8bc790
+55de2d8cbfdb  cmp r15, [rdi+0x6b00]
+55de2d8cbfe2  jnz 0x55de2d8c004c	->0
+55de2d8cbfe8  rorx r8, [rdi+0x6af8], 0x2f
+55de2d8cbff2  cmp r8w, -0x09
+55de2d8cbff7  jnz 0x55de2d8c004c	->0
+55de2d8cbffd  shr r8, 0x11
+55de2d8cc001  cmp dword [rax+0x34], +0x07
+55de2d8cc005  jnz 0x55de2d8c004c	->0
+55de2d8cc00b  mov r10, [rax+0x28]
+55de2d8cc00f  lea rax, [r14-0x20fd11c8]
+55de2d8cc016  mov rdi, 0xfffdff41dc4c5908
+55de2d8cc020  cmp rdi, [r10+0x98]
+55de2d8cc027  jnz 0x55de2d8c004c	->0
+55de2d8cc02d  rorx rdi, [r10+0x90], 0x2f
+55de2d8cc037  cmp di, -0x05
+55de2d8cc03b  jnz 0x55de2d8c004c	->0
+55de2d8cc041  shr rdi, 0x11
+55de2d8cc045  mov r15, 0xfffdff41d8fdb6e8
+55de2d8cc04f  cmp r15, [r10+0x80]
+55de2d8cc056  jnz 0x55de2d8c004c	->0
+55de2d8cc05c  rorx r10, [r10+0x78], 0x2f
+55de2d8cc063  cmp r10w, -0x0b
+55de2d8cc068  jnz 0x55de2d8c004c	->0
+55de2d8cc06e  shr r10, 0x11
+55de2d8cc072  movzx r11d, word [r10+0xa]
+55de2d8cc077  cmp r11d, 0x35a7
+55de2d8cc07e  jnz 0x55de2d8c004c	->0
+55de2d8cc084  cmp byte [r10+0x10], 0x0
+55de2d8cc089  jz 0x55de2d8c004c	->0
+55de2d8cc08f  cmp r8, rax
+55de2d8cc092  jnz 0x55de2d8c004c	->0
+55de2d8cc098  rorx r8, [r14-0x20cadde8], 0x2f
+55de2d8cc0a2  cmp r8w, -0x0c
+55de2d8cc0a7  jnz 0x55de2d8c004c	->0
+55de2d8cc0ad  shr r8, 0x11
+55de2d8cc0b1  cmp dword [r8+0x34], +0x1f
+55de2d8cc0b6  jnz 0x55de2d8c004c	->0
+55de2d8cc0bc  mov r8, [r8+0x28]
+55de2d8cc0c0  mov r15, 0xfffdff41dc4c8fa0
+55de2d8cc0ca  cmp r15, [r8+0x50]
+55de2d8cc0ce  jnz 0x55de2d8c004c	->0
+55de2d8cc0d4  rorx r8, [r8+0x48], 0x2f
+55de2d8cc0db  cmp r8w, -0x09
+55de2d8cc0e0  jnz 0x55de2d8c004c	->0
+55de2d8cc0e6  shr r8, 0x11
+55de2d8cc0ea  cmp r8, r9
+55de2d8cc0ed  jnz 0x55de2d8c004c	->0
+55de2d8cc0f3  mov rax, [rax+0x10]
+55de2d8cc0f7  cmp dword [rax+0x34], +0x3f
+55de2d8cc0fb  jnz 0x55de2d8c004c	->0
+55de2d8cc101  mov rax, [rax+0x28]
+55de2d8cc105  mov r15, 0xfffdff41dc4bbad8
+55de2d8cc10f  cmp r15, [rax+0x68]
+55de2d8cc113  jnz 0x55de2d8c004c	->0
+55de2d8cc119  rorx rax, [rax+0x60], 0x2f
+55de2d8cc120  cmp ax, -0x09
+55de2d8cc124  jnz 0x55de2d8c004c	->0
+55de2d8cc12a  shr rax, 0x11
+55de2d8cc12e  cmp rax, rsi
+55de2d8cc131  jnz 0x55de2d8c004c	->0
+55de2d8cc137  rorx rax, [r14-0x20fa1508], 0x2f
+55de2d8cc141  cmp ax, -0x0c
+55de2d8cc145  jnz 0x55de2d8c004c	->0
+55de2d8cc14b  shr rax, 0x11
+55de2d8cc14f  cmp dword [rax+0x34], 0x7ff
+55de2d8cc156  jnz 0x55de2d8c004c	->0
+55de2d8cc15c  mov rax, [rax+0x28]
+55de2d8cc160  mov rsi, 0xfffdff41bb778a58
+55de2d8cc16a  cmp rsi, [rax+0x6b30]
+55de2d8cc171  jnz 0x55de2d8c004c	->0
+55de2d8cc177  rorx rax, [rax+0x6b28], 0x2f
+55de2d8cc181  cmp ax, -0x09
+55de2d8cc185  jnz 0x55de2d8c004c	->0
+55de2d8cc18b  shr rax, 0x11
+55de2d8cc18f  cmp rax, rdx
+55de2d8cc192  jnz 0x55de2d8c004c	->0
+55de2d8cc198  rorx rax, [r14-0x20fa2b78], 0x2f
+55de2d8cc1a2  cmp ax, -0x0d
+55de2d8cc1a6  jnz 0x55de2d8c004c	->0
+55de2d8cc1ac  shr rax, 0x11
+55de2d8cc1b0  cmp rax, rcx
+55de2d8cc1b3  jnz 0x55de2d8c004c	->0
+55de2d8cc1b9  add rdi, +0x18
+55de2d8cc1bd  mov ecx, 0x1
+55de2d8cc1c2  mov edx, 0x1
+55de2d8cc1c7  xor esi, esi
+55de2d8cc1c9  call 0x55de54592ef0
+55de2d8cc1ce  mov ecx, eax
+55de2d8cc1d0  test cl, cl
+55de2d8cc1d2  jnz 0x55de2d8c0050	->1
+55de2d8cc1d8  add ebp, +0x01
+55de2d8cc1db  cmp ebp, ebx
+55de2d8cc1dd  jg 0x55de2d8c0054	->2
+->LOOP:
+55de2d8cc1e3  mov rax, [rsp+0x8]
+55de2d8cc1e8  rorx r15, [rax+rbp*8], 0x2f
+55de2d8cc1ef  cmp r15w, -0x0c
+55de2d8cc1f4  jnz 0x55de2d8c0058	->3
+55de2d8cc1fa  shr r15, 0x11
+55de2d8cc1fe  cmp dword [r15+0x34], +0x07
+55de2d8cc203  jnz 0x55de2d8c0058	->3
+55de2d8cc209  mov r13, [r15+0x28]
+55de2d8cc20d  mov rdi, 0xfffdff41dc4c5908
+55de2d8cc217  cmp rdi, [r13+0x98]
+55de2d8cc21e  jnz 0x55de2d8c0058	->3
+55de2d8cc224  rorx rdi, [r13+0x90], 0x2f
+55de2d8cc22e  cmp di, -0x05
+55de2d8cc232  jnz 0x55de2d8c0058	->3
+55de2d8cc238  shr rdi, 0x11
+55de2d8cc23c  mov rsi, 0xfffdff41d8fdb6e8
+55de2d8cc246  cmp rsi, [r13+0x80]
+55de2d8cc24d  jnz 0x55de2d8c0058	->3
+55de2d8cc253  rorx r13, [r13+0x78], 0x2f
+55de2d8cc25a  cmp r13w, -0x0b
+55de2d8cc25f  jnz 0x55de2d8c0058	->3
+55de2d8cc265  shr r13, 0x11
+55de2d8cc269  movzx r12d, word [r13+0xa]
+55de2d8cc26e  cmp r12d, 0x35a7
+55de2d8cc275  jnz 0x55de2d8c0058	->3
+55de2d8cc27b  cmp byte [r13+0x10], 0x0
+55de2d8cc280  jz 0x55de2d8c0058	->3
+55de2d8cc286  add rdi, +0x18
+55de2d8cc28a  mov ecx, 0x1
+55de2d8cc28f  mov edx, 0x1
+55de2d8cc294  xor esi, esi
+55de2d8cc296  call 0x55de54592ef0
+55de2d8cc29b  test al, al
+55de2d8cc29d  jnz 0x55de2d8c005c	->4
+55de2d8cc2a3  add ebp, +0x01
+55de2d8cc2a6  cmp ebp, ebx
+55de2d8cc2a8  jle 0x55de2d8cc1e3	->LOOP
+55de2d8cc2ae  jmp 0x55de2d8c0060	->5
+---- TRACE 41 stop -> loop
+
+---- TRACE 42 start transform.lua:42
+---- TRACE 42 abort inspector.lua:88 -- NYI: unsupported C function type
+
+---- TRACE 42 start 41/3 editor.lua:276
+---- TRACE 42 mcode 799
+55de2d8cbb91  mov dword [r14-0xef0], 0x2a
+55de2d8cbb9c  mov rdx, [r14-0xe30]
+55de2d8cbba3  lea r13, [r14-0x20fd11c8]
+55de2d8cbbaa  lea r12, [r14+0xf7b8]
+55de2d8cbbb1  lea rsi, [r14-0x20fd1238]
+55de2d8cbbb8  lea rax, [r14+0xfbd0]
+55de2d8cbbbf  rorx r15, [rdx], 0x2f
+55de2d8cbbc5  cmp r15w, -0x0c
+55de2d8cbbca  jnz 0x55de2d8c004c	->0
+55de2d8cbbd0  shr r15, 0x11
+55de2d8cbbd4  cmp dword [r15+0x34], +0x1f
+55de2d8cbbd9  jnz 0x55de2d8c004c	->0
+55de2d8cbbdf  mov r15, [r15+0x28]
+55de2d8cbbe3  mov rdi, 0xfffdff41bb8ba678
+55de2d8cbbed  cmp rdi, [r15+0x140]
+55de2d8cbbf4  jnz 0x55de2d8c004c	->0
+55de2d8cbbfa  rorx r15, [r15+0x138], 0x2f
+55de2d8cbc04  cmp r15w, -0x0c
+55de2d8cbc09  jnz 0x55de2d8c004c	->0
+55de2d8cbc0f  shr r15, 0x11
+55de2d8cbc13  cmp ebp, [r15+0x30]
+55de2d8cbc17  jnb 0x55de2d8c004c	->0
+55de2d8cbc1d  mov r15, [r15+0x10]
+55de2d8cbc21  rorx r15, [r15+rbp*8], 0x2f
+55de2d8cbc28  cmp r15w, -0x0c
+55de2d8cbc2d  jnz 0x55de2d8c004c	->0
+55de2d8cbc33  shr r15, 0x11
+55de2d8cbc37  rorx rdi, [rdx-0x10], 0x2f
+55de2d8cbc3e  shr rdi, 0x11
+55de2d8cbc42  lea rdx, [r14+0x2698]
+55de2d8cbc49  mov rdi, [rdi+0x28]
+55de2d8cbc4d  cmp byte [rdi+0xa], 0x0
+55de2d8cbc51  jz 0x55de2d8c004c	->0
+55de2d8cbc57  lea rdi, [rdi+0x10]
+55de2d8cbc5b  rorx rdi, [rdi], 0x2f
+55de2d8cbc61  cmp di, -0x0c
+55de2d8cbc65  jnz 0x55de2d8c004c	->0
+55de2d8cbc6b  shr rdi, 0x11
+55de2d8cbc6f  cmp dword [rdi+0x34], 0x7ff
+55de2d8cbc76  jnz 0x55de2d8c004c	->0
+55de2d8cbc7c  mov rdi, [rdi+0x28]
+55de2d8cbc80  mov rcx, 0xfffdff41bb8bc790
+55de2d8cbc8a  cmp rcx, [rdi+0x6b00]
+55de2d8cbc91  jnz 0x55de2d8c004c	->0
+55de2d8cbc97  rorx rcx, [rdi+0x6af8], 0x2f
+55de2d8cbca1  cmp cx, -0x09
+55de2d8cbca5  jnz 0x55de2d8c004c	->0
+55de2d8cbcab  shr rcx, 0x11
+55de2d8cbcaf  cmp dword [r15+0x34], +0x0f
+55de2d8cbcb4  jnz 0x55de2d8c004c	->0
+55de2d8cbcba  mov r11, [r15+0x28]
+55de2d8cbcbe  mov rdi, 0xfffdff41dc4c5908
+55de2d8cbcc8  cmp rdi, [r11+0x98]
+55de2d8cbccf  jnz 0x55de2d8c004c	->0
+55de2d8cbcd5  rorx rdi, [r11+0x90], 0x2f
+55de2d8cbcdf  cmp di, -0x05
+55de2d8cbce3  jnz 0x55de2d8c004c	->0
+55de2d8cbce9  shr rdi, 0x11
+55de2d8cbced  mov r10, 0xfffdff41d8fdb6e8
+55de2d8cbcf7  cmp r10, [r11+0x140]
+55de2d8cbcfe  jnz 0x55de2d8c004c	->0
+55de2d8cbd04  rorx r11, [r11+0x138], 0x2f
+55de2d8cbd0e  cmp r11w, -0x0b
+55de2d8cbd13  jnz 0x55de2d8c004c	->0
+55de2d8cbd19  shr r11, 0x11
+55de2d8cbd1d  movzx r10d, word [r11+0xa]
+55de2d8cbd22  cmp r10d, 0x35a7
+55de2d8cbd29  jnz 0x55de2d8c004c	->0
+55de2d8cbd2f  cmp byte [r11+0x10], 0x0
+55de2d8cbd34  jz 0x55de2d8c004c	->0
+55de2d8cbd3a  cmp rcx, r13
+55de2d8cbd3d  jnz 0x55de2d8c004c	->0
+55de2d8cbd43  rorx rcx, [r14-0x20cadde8], 0x2f
+55de2d8cbd4d  cmp cx, -0x0c
+55de2d8cbd51  jnz 0x55de2d8c004c	->0
+55de2d8cbd57  shr rcx, 0x11
+55de2d8cbd5b  cmp dword [rcx+0x34], +0x1f
+55de2d8cbd5f  jnz 0x55de2d8c004c	->0
+55de2d8cbd65  mov rcx, [rcx+0x28]
+55de2d8cbd69  mov r11, 0xfffdff41dc4c8fa0
+55de2d8cbd73  cmp r11, [rcx+0x50]
+55de2d8cbd77  jnz 0x55de2d8c004c	->0
+55de2d8cbd7d  rorx rcx, [rcx+0x48], 0x2f
+55de2d8cbd84  cmp cx, -0x09
+55de2d8cbd88  jnz 0x55de2d8c004c	->0
+55de2d8cbd8e  shr rcx, 0x11
+55de2d8cbd92  cmp rcx, rax
+55de2d8cbd95  jnz 0x55de2d8c004c	->0
+55de2d8cbd9b  mov r13, [r13+0x10]
+55de2d8cbd9f  cmp dword [r13+0x34], +0x3f
+55de2d8cbda4  jnz 0x55de2d8c004c	->0
+55de2d8cbdaa  mov r13, [r13+0x28]
+55de2d8cbdae  mov rcx, 0xfffdff41dc4bbad8
+55de2d8cbdb8  cmp rcx, [r13+0x68]
+55de2d8cbdbc  jnz 0x55de2d8c004c	->0
+55de2d8cbdc2  rorx r13, [r13+0x60], 0x2f
+55de2d8cbdc9  cmp r13w, -0x09
+55de2d8cbdce  jnz 0x55de2d8c004c	->0
+55de2d8cbdd4  shr r13, 0x11
+55de2d8cbdd8  cmp r13, rdx
+55de2d8cbddb  jnz 0x55de2d8c004c	->0
+55de2d8cbde1  rorx r13, [r14-0x20fa1508], 0x2f
+55de2d8cbdeb  cmp r13w, -0x0c
+55de2d8cbdf0  jnz 0x55de2d8c004c	->0
+55de2d8cbdf6  shr r13, 0x11
+55de2d8cbdfa  cmp dword [r13+0x34], 0x7ff
+55de2d8cbe02  jnz 0x55de2d8c004c	->0
+55de2d8cbe08  mov r13, [r13+0x28]
+55de2d8cbe0c  mov rdx, 0xfffdff41bb778a58
+55de2d8cbe16  cmp rdx, [r13+0x6b30]
+55de2d8cbe1d  jnz 0x55de2d8c004c	->0
+55de2d8cbe23  rorx r13, [r13+0x6b28], 0x2f
+55de2d8cbe2d  cmp r13w, -0x09
+55de2d8cbe32  jnz 0x55de2d8c004c	->0
+55de2d8cbe38  shr r13, 0x11
+55de2d8cbe3c  cmp r13, rsi
+55de2d8cbe3f  jnz 0x55de2d8c004c	->0
+55de2d8cbe45  rorx r13, [r14-0x20fa2b78], 0x2f
+55de2d8cbe4f  cmp r13w, -0x0d
+55de2d8cbe54  jnz 0x55de2d8c004c	->0
+55de2d8cbe5a  shr r13, 0x11
+55de2d8cbe5e  cmp r13, r12
+55de2d8cbe61  jnz 0x55de2d8c004c	->0
+55de2d8cbe67  add rdi, +0x18
+55de2d8cbe6b  mov ecx, 0x1
+55de2d8cbe70  mov edx, 0x1
+55de2d8cbe75  xor esi, esi
+55de2d8cbe77  call 0x55de54592ef0
+55de2d8cbe7c  mov rdx, [r14-0xe30]
+55de2d8cbe83  test al, al
+55de2d8cbe85  jnz 0x55de2d8c0050	->1
+55de2d8cbe8b  add ebp, +0x01
+55de2d8cbe8e  cmp ebp, ebx
+55de2d8cbe90  jg 0x55de2d8c0054	->2
+55de2d8cbe96  xorps xmm7, xmm7
+55de2d8cbe99  cvtsi2sd xmm7, ebp
+55de2d8cbe9d  movsd [rdx+0x20], xmm7
+55de2d8cbea2  movsd [rdx+0x8], xmm7
+55de2d8cbea7  add rsp, +0x10
+55de2d8cbeab  jmp 0x55de2d8cc2b3
+---- TRACE 42 stop -> 40
+
+---- TRACE 43 start 41/0 editor.lua:276
+---- TRACE 43 abort imgui.lua:6336 -- blacklisted
+
+---- TRACE 43 start 41/0 editor.lua:276
+---- TRACE 43 abort imgui.lua:6336 -- blacklisted
+
+---- TRACE 43 start 41/0 editor.lua:276
+---- TRACE 43 abort imgui.lua:6336 -- blacklisted
+
+---- TRACE 43 start 41/0 editor.lua:276
+---- TRACE 43 abort imgui.lua:6336 -- blacklisted
+
+---- TRACE 43 start 41/0 editor.lua:276
+---- TRACE 43 mcode 102
+55de2d8cbb28  mov dword [r14-0xef0], 0x2b
+55de2d8cbb33  mov rdx, [r14-0xe30]
+55de2d8cbb3a  movsd xmm7, [rdx+0x10]
+55de2d8cbb3f  cvttsd2si ebp, xmm7
+55de2d8cbb43  xorps xmm6, xmm6
+55de2d8cbb46  cvtsi2sd xmm6, ebp
+55de2d8cbb4a  ucomisd xmm7, xmm6
+55de2d8cbb4e  jnz 0x55de2d8c004c	->0
+55de2d8cbb54  jpe 0x55de2d8c004c	->0
+55de2d8cbb5a  cmp ebp, 0x7ffffffe
+55de2d8cbb60  jg 0x55de2d8c004c	->0
+55de2d8cbb66  cvttsd2si ebp, [rdx+0x8]
+55de2d8cbb6b  xorps xmm7, xmm7
+55de2d8cbb6e  cvtsi2sd xmm7, ebp
+55de2d8cbb72  movsd [rdx+0x20], xmm7
+55de2d8cbb77  movsd [rdx+0x8], xmm7
+55de2d8cbb7c  xor eax, eax
+55de2d8cbb7e  lea rbx, [r14-0x20bf6b8c]
+55de2d8cbb85  add rsp, +0x10
+55de2d8cbb89  jmp 0x55de54beb4d5
+---- TRACE 43 stop -> interpreter
+
+---- TRACE 44 start 42/0 editor.lua:276
+---- TRACE 44 mcode 787
+55de2d8cb812  mov dword [r14-0xef0], 0x2c
+55de2d8cb81d  mov rdx, [r14-0xe30]
+55de2d8cb824  lea r13, [r14-0x20fd11c8]
+55de2d8cb82b  lea r12, [r14+0xf7b8]
+55de2d8cb832  lea rsi, [r14-0x20fd1238]
+55de2d8cb839  lea rax, [r14+0xfbd0]
+55de2d8cb840  rorx r15, [rdx], 0x2f
+55de2d8cb846  cmp r15w, -0x0c
+55de2d8cb84b  jnz 0x55de2d8c004c	->0
+55de2d8cb851  shr r15, 0x11
+55de2d8cb855  cmp dword [r15+0x34], +0x1f
+55de2d8cb85a  jnz 0x55de2d8c004c	->0
+55de2d8cb860  mov r15, [r15+0x28]
+55de2d8cb864  mov rdi, 0xfffdff41bb8ba678
+55de2d8cb86e  cmp rdi, [r15+0x140]
+55de2d8cb875  jnz 0x55de2d8c004c	->0
+55de2d8cb87b  rorx r15, [r15+0x138], 0x2f
+55de2d8cb885  cmp r15w, -0x0c
+55de2d8cb88a  jnz 0x55de2d8c004c	->0
+55de2d8cb890  shr r15, 0x11
+55de2d8cb894  cmp ebp, [r15+0x30]
+55de2d8cb898  jnb 0x55de2d8c004c	->0
+55de2d8cb89e  mov r15, [r15+0x10]
+55de2d8cb8a2  rorx r15, [r15+rbp*8], 0x2f
+55de2d8cb8a9  cmp r15w, -0x0c
+55de2d8cb8ae  jnz 0x55de2d8c004c	->0
+55de2d8cb8b4  shr r15, 0x11
+55de2d8cb8b8  rorx rdi, [rdx-0x10], 0x2f
+55de2d8cb8bf  shr rdi, 0x11
+55de2d8cb8c3  lea rdx, [r14+0x2698]
+55de2d8cb8ca  mov rdi, [rdi+0x28]
+55de2d8cb8ce  cmp byte [rdi+0xa], 0x0
+55de2d8cb8d2  jz 0x55de2d8c004c	->0
+55de2d8cb8d8  lea rdi, [rdi+0x10]
+55de2d8cb8dc  rorx rdi, [rdi], 0x2f
+55de2d8cb8e2  cmp di, -0x0c
+55de2d8cb8e6  jnz 0x55de2d8c004c	->0
+55de2d8cb8ec  shr rdi, 0x11
+55de2d8cb8f0  cmp dword [rdi+0x34], 0x7ff
+55de2d8cb8f7  jnz 0x55de2d8c004c	->0
+55de2d8cb8fd  mov rdi, [rdi+0x28]
+55de2d8cb901  mov rcx, 0xfffdff41bb8bc790
+55de2d8cb90b  cmp rcx, [rdi+0x6b00]
+55de2d8cb912  jnz 0x55de2d8c004c	->0
+55de2d8cb918  rorx rcx, [rdi+0x6af8], 0x2f
+55de2d8cb922  cmp cx, -0x09
+55de2d8cb926  jnz 0x55de2d8c004c	->0
+55de2d8cb92c  shr rcx, 0x11
+55de2d8cb930  cmp dword [r15+0x34], +0x03
+55de2d8cb935  jnz 0x55de2d8c004c	->0
+55de2d8cb93b  mov r11, [r15+0x28]
+55de2d8cb93f  mov rdi, 0xfffdff41dc4c5908
+55de2d8cb949  cmp rdi, [r11+0x38]
+55de2d8cb94d  jnz 0x55de2d8c004c	->0
+55de2d8cb953  rorx rdi, [r11+0x30], 0x2f
+55de2d8cb95a  cmp di, -0x05
+55de2d8cb95e  jnz 0x55de2d8c004c	->0
+55de2d8cb964  shr rdi, 0x11
+55de2d8cb968  mov r10, 0xfffdff41d8fdb6e8
+55de2d8cb972  cmp r10, [r11+0x20]
+55de2d8cb976  jnz 0x55de2d8c004c	->0
+55de2d8cb97c  rorx r11, [r11+0x18], 0x2f
+55de2d8cb983  cmp r11w, -0x0b
+55de2d8cb988  jnz 0x55de2d8c004c	->0
+55de2d8cb98e  shr r11, 0x11
+55de2d8cb992  movzx r10d, word [r11+0xa]
+55de2d8cb997  cmp r10d, 0x35a7
+55de2d8cb99e  jnz 0x55de2d8c004c	->0
+55de2d8cb9a4  cmp byte [r11+0x10], 0x0
+55de2d8cb9a9  jz 0x55de2d8c004c	->0
+55de2d8cb9af  cmp rcx, r13
+55de2d8cb9b2  jnz 0x55de2d8c004c	->0
+55de2d8cb9b8  rorx rcx, [r14-0x20cadde8], 0x2f
+55de2d8cb9c2  cmp cx, -0x0c
+55de2d8cb9c6  jnz 0x55de2d8c004c	->0
+55de2d8cb9cc  shr rcx, 0x11
+55de2d8cb9d0  cmp dword [rcx+0x34], +0x1f
+55de2d8cb9d4  jnz 0x55de2d8c004c	->0
+55de2d8cb9da  mov rcx, [rcx+0x28]
+55de2d8cb9de  mov r11, 0xfffdff41dc4c8fa0
+55de2d8cb9e8  cmp r11, [rcx+0x50]
+55de2d8cb9ec  jnz 0x55de2d8c004c	->0
+55de2d8cb9f2  rorx rcx, [rcx+0x48], 0x2f
+55de2d8cb9f9  cmp cx, -0x09
+55de2d8cb9fd  jnz 0x55de2d8c004c	->0
+55de2d8cba03  shr rcx, 0x11
+55de2d8cba07  cmp rcx, rax
+55de2d8cba0a  jnz 0x55de2d8c004c	->0
+55de2d8cba10  mov r13, [r13+0x10]
+55de2d8cba14  cmp dword [r13+0x34], +0x3f
+55de2d8cba19  jnz 0x55de2d8c004c	->0
+55de2d8cba1f  mov r13, [r13+0x28]
+55de2d8cba23  mov rcx, 0xfffdff41dc4bbad8
+55de2d8cba2d  cmp rcx, [r13+0x68]
+55de2d8cba31  jnz 0x55de2d8c004c	->0
+55de2d8cba37  rorx r13, [r13+0x60], 0x2f
+55de2d8cba3e  cmp r13w, -0x09
+55de2d8cba43  jnz 0x55de2d8c004c	->0
+55de2d8cba49  shr r13, 0x11
+55de2d8cba4d  cmp r13, rdx
+55de2d8cba50  jnz 0x55de2d8c004c	->0
+55de2d8cba56  rorx r13, [r14-0x20fa1508], 0x2f
+55de2d8cba60  cmp r13w, -0x0c
+55de2d8cba65  jnz 0x55de2d8c004c	->0
+55de2d8cba6b  shr r13, 0x11
+55de2d8cba6f  cmp dword [r13+0x34], 0x7ff
+55de2d8cba77  jnz 0x55de2d8c004c	->0
+55de2d8cba7d  mov r13, [r13+0x28]
+55de2d8cba81  mov rdx, 0xfffdff41bb778a58
+55de2d8cba8b  cmp rdx, [r13+0x6b30]
+55de2d8cba92  jnz 0x55de2d8c004c	->0
+55de2d8cba98  rorx r13, [r13+0x6b28], 0x2f
+55de2d8cbaa2  cmp r13w, -0x09
+55de2d8cbaa7  jnz 0x55de2d8c004c	->0
+55de2d8cbaad  shr r13, 0x11
+55de2d8cbab1  cmp r13, rsi
+55de2d8cbab4  jnz 0x55de2d8c004c	->0
+55de2d8cbaba  rorx r13, [r14-0x20fa2b78], 0x2f
+55de2d8cbac4  cmp r13w, -0x0d
+55de2d8cbac9  jnz 0x55de2d8c004c	->0
+55de2d8cbacf  shr r13, 0x11
+55de2d8cbad3  cmp r13, r12
+55de2d8cbad6  jnz 0x55de2d8c004c	->0
+55de2d8cbadc  add rdi, +0x18
+55de2d8cbae0  mov ecx, 0x1
+55de2d8cbae5  mov edx, 0x1
+55de2d8cbaea  xor esi, esi
+55de2d8cbaec  call 0x55de54592ef0
+55de2d8cbaf1  mov rdx, [r14-0xe30]
+55de2d8cbaf8  test al, al
+55de2d8cbafa  jnz 0x55de2d8c0050	->1
+55de2d8cbb00  add ebp, +0x01
+55de2d8cbb03  cmp ebp, ebx
+55de2d8cbb05  jg 0x55de2d8c0054	->2
+55de2d8cbb0b  xorps xmm7, xmm7
+55de2d8cbb0e  cvtsi2sd xmm7, ebp
+55de2d8cbb12  movsd [rdx+0x20], xmm7
+55de2d8cbb17  movsd [rdx+0x8], xmm7
+55de2d8cbb1c  add rsp, +0x10
+55de2d8cbb20  jmp 0x55de2d8cc2b3
+---- TRACE 44 stop -> 40
+
+---- TRACE 45 start imgui.lua:5372
+---- TRACE 45 abort inspector.lua:133 -- NYI: unsupported C function type
+
+---- TRACE 45 start imgui.lua:6805
+---- TRACE 45 abort entity_list_view.lua:65 -- leaving loop in root trace
+
+---- TRACE 45 start entity_list_view.lua:82
+---- TRACE 45 abort imgui.lua:6844 -- blacklisted
+
+---- TRACE 45 start vec2.lua:105
+---- TRACE 45 abort camera.lua:72 -- NYI: return to lower frame
+
+---- TRACE 45 start imgui.lua:1147
+---- TRACE 45 abort terminal.lua:36 -- leaving loop in root trace
+
+---- TRACE 45 start imgui.lua:5305
+---- TRACE 45 abort editor.lua:389 -- NYI: unsupported C function type
+
+---- TRACE 45 start transform.lua:42
+---- TRACE 45 abort inspector.lua:88 -- NYI: unsupported C function type
+
+---- TRACE 45 start hookmgr.lua:66
+---- TRACE 45 abort hookmgr.lua:73 -- leaving loop in root trace
+
+---- TRACE 45 start imgui.lua:5364
+---- TRACE 45 abort inspector.lua:133 -- NYI: unsupported C function type
+
+---- TRACE 45 start imgui.lua:6294
+---- TRACE 45 abort terminal.lua:65 -- NYI: unsupported C function type
+
+---- TRACE 45 start imgui.lua:5201
+---- TRACE 45 abort entity_list_view.lua:78 -- NYI: unsupported C function type
+
+---- TRACE 45 start editor.lua:238
+---- TRACE 45 abort editor.lua:239 -- NYI: unsupported C function type
+
+---- TRACE 45 start imgui.lua:7112
+---- TRACE 45 abort editor.lua:367 -- leaving loop in root trace
+
+---- TRACE 45 start imgui.lua:6966
+---- TRACE 45 abort terminal.lua:50 -- leaving loop in root trace
+
+---- TRACE 45 start imgui.lua:5238
+---- TRACE 45 abort editor.lua:242 -- NYI: unsupported C function type
+
+---- TRACE 45 start imgui.lua:5201
+---- TRACE 45 abort entity_list_view.lua:78 -- NYI: unsupported C function type
+
+---- TRACE 45 start transform.lua:40
+---- TRACE 45 abort inspector.lua:87 -- NYI: unsupported C function type
+
+---- TRACE 45 start imgui.lua:5201
+---- TRACE 45 abort terminal.lua:34 -- NYI: unsupported C function type
+
+---- TRACE 45 start entity_list_view.lua:82
+---- TRACE 45 abort imgui.lua:6844 -- blacklisted
+
+---- TRACE 45 start camera.lua:66
+---- TRACE 45 abort camera.lua:69 -- NYI: unsupported C function type
+
+---- TRACE 45 start imgui.lua:5201
+---- TRACE 45 abort entity_list_view.lua:78 -- NYI: unsupported C function type
+
+---- TRACE 45 start imgui.lua:1147
+---- TRACE 45 abort entity_list_view.lua:80 -- leaving loop in root trace
+

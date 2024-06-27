@@ -4,14 +4,20 @@
 
 #include "vulkancore/context.hpp"
 #include "graphics_subsystem.hpp"
+#include "../scripting/convar.hpp"
+
+using scripting::scripting_subsystem;
 
 namespace graphics {
+    static convar<std::string> cv_error_texture {"Renderer.fallbackTexture", std::nullopt, scripting::convar_flags::read_only};
+    static convar<std::string> cv_flat_normal {"Renderer.flatNormalTexture", std::nullopt, scripting::convar_flags::read_only};
+
     material::material(
         texture* albedo_map,
         texture* metallic_roughness_map,
         texture* normal_map,
         texture* ambient_occlusion_map
-    ) : asset{asset_category::material, asset_source::memory} {
+    ) : asset{assetmgr::asset_source::memory} {
         this->albedo_map = albedo_map;
         this->metallic_roughness_map = metallic_roughness_map;
         this->normal_map = normal_map;
@@ -23,7 +29,7 @@ namespace graphics {
         descriptor_set_alloc_info.descriptorPool = s_descriptor_pool;
         descriptor_set_alloc_info.descriptorSetCount = 1;
         descriptor_set_alloc_info.pSetLayouts = &s_descriptor_set_layout;
-        vkcheck(vkb::context::s_instance->get_device().get_logical_device().allocateDescriptorSets(&descriptor_set_alloc_info, &m_descriptor_set));
+        vkcheck(vkb::ctx().get_device().get_logical_device().allocateDescriptorSets(&descriptor_set_alloc_info, &m_descriptor_set));
 
         flush_property_updates();
     }
@@ -64,8 +70,8 @@ namespace graphics {
     }
 
     auto material::init_static_resources() -> void {
-        s_error_texture.emplace("assets/textures/system/error.png");
-        s_flat_normal.emplace("assets/textures/system/flatnormal.png");
+        s_error_texture.emplace(cv_error_texture());
+        s_flat_normal.emplace(cv_flat_normal());
 
         constexpr unsigned lim = 16384u;
         std::array<vk::DescriptorPoolSize, 1> pool_sizes = {
@@ -79,7 +85,7 @@ namespace graphics {
         descriptor_pool_create_info.maxSets = lim;
         descriptor_pool_create_info.poolSizeCount = static_cast<std::uint32_t>(pool_sizes.size());
         descriptor_pool_create_info.pPoolSizes = pool_sizes.data();
-        vkcheck(vkb::vkdvc().createDescriptorPool(&descriptor_pool_create_info, &vkb::s_allocator, &s_descriptor_pool));
+        vkcheck(vkb::vkdvc().createDescriptorPool(&descriptor_pool_create_info, vkb::get_alloc(), &s_descriptor_pool));
 
         auto get_texture_binding = [i = 0] () mutable -> vk::DescriptorSetLayoutBinding {
             vk::DescriptorSetLayoutBinding binding {};
@@ -100,12 +106,12 @@ namespace graphics {
         vk::DescriptorSetLayoutCreateInfo descriptor_set_layout_create_info {};
         descriptor_set_layout_create_info.bindingCount = static_cast<std::uint32_t>(bindings.size());
         descriptor_set_layout_create_info.pBindings = bindings.data();
-        vkcheck(vkb::vkdvc().createDescriptorSetLayout(&descriptor_set_layout_create_info, &vkb::s_allocator, &s_descriptor_set_layout));
+        vkcheck(vkb::vkdvc().createDescriptorSetLayout(&descriptor_set_layout_create_info, vkb::get_alloc(), &s_descriptor_set_layout));
     }
 
     auto material::free_static_resources() -> void {
-        vkb::vkdvc().destroyDescriptorSetLayout(s_descriptor_set_layout, &vkb::s_allocator);
-        vkb::vkdvc().destroyDescriptorPool(s_descriptor_pool, &vkb::s_allocator);
+        vkb::vkdvc().destroyDescriptorSetLayout(s_descriptor_set_layout, vkb::get_alloc());
+        vkb::vkdvc().destroyDescriptorPool(s_descriptor_pool, vkb::get_alloc());
         s_error_texture.reset();
         s_flat_normal.reset();
     }

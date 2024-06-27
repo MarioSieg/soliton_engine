@@ -44,6 +44,22 @@ public:
     ~no_move() = default;
 };
 
+template <typename F>
+class exit_guard final {
+public:
+    constexpr explicit exit_guard(F&& f) noexcept : m_f{std::forward<F>(f)} {}
+    exit_guard(const exit_guard&) = delete;
+    exit_guard(exit_guard&&) = delete;
+    auto operator = (const exit_guard&) -> exit_guard& = delete;
+    auto operator = (exit_guard&&) -> exit_guard& = delete;
+    ~exit_guard() {
+        std::invoke(m_f);
+    }
+
+private:
+    const F m_f;
+};
+
 [[noreturn]] extern auto panic_impl(std::string&& message) -> void;
 
 template <typename... Args>
@@ -57,3 +73,5 @@ template <typename... Args>
 			panic("Assertion failed: {} in {}:{}", #expr, __FILE__, __LINE__); \
 		} \
 	} while (false)
+
+#define USE_MIMALLOC 1

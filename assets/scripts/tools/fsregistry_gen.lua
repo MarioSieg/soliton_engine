@@ -1,9 +1,9 @@
 -- Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
-local SOURCE = 'assets'
-local TARGET = 'assets/scripts/system/fsregistry.lua'
+local source = 'assets'
+local target = 'assets/scripts/system/fsregistry.lua'
 
-print('Generating fsregistry file: '..TARGET)
+print('Generating fsregistry file: '..target)
 
 -- Create list of ALL file and directories within ../assets/*
 
@@ -30,7 +30,7 @@ local files = {
     'assets'
 }
 
-for filename, _ in dirtree(SOURCE) do
+for filename, _ in dirtree(source) do
     table.insert(files, filename)
 end
 
@@ -42,7 +42,7 @@ end
 
 code = code..'}\n\nreturn REQUIRED_FILES\n'
 
-local file = io.open(TARGET, 'w')
+local file = io.open(target, 'w')
 file:write(code)
 
-print('Generated fsregistry file: '..TARGET..' with '..#files..' entries.')
+print('Generated fsregistry file: '..target..' with '..#files..' entries.')

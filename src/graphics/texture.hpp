@@ -14,7 +14,7 @@ namespace graphics {
     };
     extern constinit texture_allocator s_texture_allocator;
 
-    class texture final : public asset {
+    class texture final : public assetmgr::asset {
     public:
         explicit texture(std::string&& asset_path);
         explicit texture(std::span<const std::uint8_t> raw_mem);

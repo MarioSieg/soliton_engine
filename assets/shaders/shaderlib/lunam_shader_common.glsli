@@ -1,0 +1,74 @@
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+
+#ifndef LUNAM_SHADERLIB_COMMON_H
+#define LUNAM_SHADERLIB_COMMON_H
+
+const float PI = 3.1415926535897932384626433832795;
+const float GAMMA = 2.2; // sRGB gamma todo: make variable
+const vec3 VGAMMA = vec3(1.0 / GAMMA);
+
+// Sun and scene lighting properties. Updated once per frame.
+struct cb_per_frame {
+    vec3 sun_dir;
+    vec3 sun_color;
+    vec3 const_ambient;
+};
+
+// PBR per-material properties. Updated once per material.
+struct cb_per_material {
+    vec3 albedo;
+    float normal_scale;
+    float metallic;
+    float roughness;
+};
+
+const cb_per_frame CB_PER_FRAME = cb_per_frame(
+    vec3(0.0, -1.0, 0.0),
+    vec3(1.0, 1.0, 1.0),
+    vec3(0.1, 0.1, 0.2)
+);
+
+const cb_per_material CB_PER_MAT = cb_per_material(
+    vec3(0.5, 0.5, 0.9),
+    1.0,
+    0.0,
+    0.5
+);
+
+vec3 diffuse_lambert_lit(const vec3 color, const vec3 n) {
+    const float diff = max(dot(n, CB_PER_FRAME.sun_dir), 0.0);
+    return color * (CB_PER_FRAME.const_ambient + diff * CB_PER_FRAME.sun_color);
+}
+
+vec3 gamma_correct(const vec3 color) {
+    return pow(color, VGAMMA);
+}
+
+vec3 normal_map(const mat3 tbn, const vec3 n) {
+    const vec3 n_map = normalize((n * 2.0 - 1.0) * CB_PER_MAT.normal_scale);
+    return normalize(tbn * n_map);
+}
+
+// From http://filmicworlds.com/blog/filmic-tonemapping-operators/
+vec3 uncharted2_tonemap(const vec3 color) {
+	const float A = 0.15;
+	const float B = 0.50;
+	const float C = 0.10;
+	const float D = 0.20;
+	const float E = 0.02;
+	const float F = 0.30;
+	const float W = 11.2;
+	return ((color*(A*color+C*B)+D*E)/(color*(A*color+B)+D*F))-E/F;
+}
+
+vec3 color_saturation(const vec3 rgb, const float adjustment) {
+    const vec3 W = vec3(0.2125, 0.7154, 0.0721);
+    vec3 intensity = vec3(dot(rgb, W));
+    return mix(intensity, rgb, adjustment);
+}
+
+float film_noise(const vec2 co) {
+    return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
+}
+
+#endif
