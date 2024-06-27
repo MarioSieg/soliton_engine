@@ -80,7 +80,6 @@ namespace scripting {
         passert(m_L == nullptr);
 #if USE_MIMALLOC
         if constexpr (use_mimalloc) {
-            panic("mimalloc is not supported for LuaJIT"); // todo make this work
             /*
              * LuaJIT requires that allocated memory is in the first 47 bits of address space.
              * System malloc/mimalloc has no such guarantee of this, and hence can't (in general) be used.
