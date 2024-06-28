@@ -48,7 +48,7 @@ function asset_explorer:draw_asset_tree_structure(ratio)
         for i = 1, #self.dir_tree do
             local node = self.dir_tree[i]
             if ui.TreeNode(node.name) then
-                for j=1, #node.children do
+                for j = 1, #node.children do
                     local child = node.children[j]
                     if child.is_file then
                         ui.PushStyleColor(ffi.C.ImGuiCol_Text, FILE_COLOR)
