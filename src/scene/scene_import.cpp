@@ -60,7 +60,6 @@ auto scene::import_from_file(const std::string& path, const float scale, const s
             }
             const flecs::entity e = spawn(name.c_str());
             auto* metadata = e.get_mut<com::metadata>();
-            metadata->flags |= com::entity_flags::static_object; // make everything static by default
 
             auto* transform = e.get_mut<com::transform>();
             aiVector3D scaling, position;

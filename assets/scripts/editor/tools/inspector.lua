@@ -7,11 +7,11 @@ local bxor = bit.bxor
 local ui = require 'editor.imgui'
 local icons = require 'editor.icons'
 local components = require 'components'
-local gmath = require 'gmath'
 local vec3 = require 'vec3'
 local quat = require 'quat'
 local rad, deg = math.rad, math.deg
 local entity_flags = entity_flags
+local render_flags = render_flags
 
 local max_name_text_len = 256
 local header_buttons_offset = 60.0 -- TODO: calculate from button sizes
@@ -103,6 +103,7 @@ function inspector:_inspect_component_transform()
             self.selected_entity:remove_component(components.transform)
             return
         end
+
         local pos = c_transform:get_position()
         local rx, ry, rz = quat.to_euler(c_transform:get_rotation())
         local rot = vec3(deg(rx), deg(ry), deg(rz))
@@ -114,6 +115,7 @@ function inspector:_inspect_component_transform()
             self.properties_changed = true
         end
         ui.PopStyleColor()
+
         ui.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff8888ff)
         local updated, rot = self:_inspect_vec3(icons.i_redo_alt .. ' Rotation', rot)
         if updated then
@@ -121,6 +123,7 @@ function inspector:_inspect_component_transform()
             self.properties_changed = true
         end
         ui.PopStyleColor()
+
         ui.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff88ffff)
         local updated, scale = self:_inspect_vec3(icons.i_expand_arrows .. ' Scale', scale)
         if updated then
@@ -138,18 +141,21 @@ function inspector:_inspect_component_camera()
             self.selected_entity:remove_component(components.camera)
             return
         end
+
         local fov = c_camera:get_fov()
         local updated, fov = self:_inspect_float(icons.i_eye .. ' FOV', fov, 0.1, 1.0, 180.0, '%.0f')
         if updated then
             c_camera:set_fov(fov)
             self.properties_changed = true
         end
+
         local near_z_clip = c_camera:get_near_clip()
         local updated, near_z_clip = self:_inspect_float(icons.i_sign_in_alt .. ' Near Clip', near_z_clip, 1.0, 0.1, 10000.0, '%.0f')
         if updated then
             c_camera:set_near_clip(near_z_clip)
             self.properties_changed = true
         end
+
         local far_z_clip = c_camera:get_far_clip()
         local updated, far_z_clip = self:_inspect_float(icons.i_sign_out_alt .. ' Far Clip', far_z_clip, 1.0, 0.1, 10000.0, '%.0f')
         if updated then
@@ -166,11 +172,30 @@ function inspector:_inspect_component_mesh_renderer()
             self.selected_entity:remove_component(components.mesh_renderer)
             return
         end
+
+        local is_visible = not c_mesh_renderer:has_flag(render_flags.skip_rendering)
+        self._bool_buf[0] = is_visible
+        ui.Checkbox(icons.i_eye .. ' Visible', self._bool_buf)
+        if is_visible ~= self._bool_buf[0] then
+            c_mesh_renderer:set_flags(bxor(c_mesh_renderer:get_flags(), render_flags.skip_rendering))
+            self.properties_changed = true
+        end
+
+        ui.SameLine()
+
+        local do_frustum_culling = not c_mesh_renderer:has_flag(render_flags.skip_frustum_culling)
+        self._bool_buf[0] = do_frustum_culling
+        ui.Checkbox(icons.i_camera .. ' Frustum Culling', self._bool_buf)
+        if do_frustum_culling ~= self._bool_buf[0] then
+            c_mesh_renderer:set_flags(bxor(c_mesh_renderer:get_flags(), render_flags.skip_frustum_culling))
+            self.properties_changed = true
+        end
     end
 end
 
 function inspector:_entity_base_header(entity)
     if ui.CollapsingHeader(icons.i_cogs .. ' Entity', ffi.C.ImGuiTreeNodeFlags_DefaultOpen) then
+
         local name = entity:get_name()
         if #name >= max_name_text_len then
             name = name:sub(1, max_name_text_len-1)
@@ -180,6 +205,7 @@ function inspector:_entity_base_header(entity)
             entity:set_name(ffi.string(self._text_buf))
             self.name_changed = true
         end
+
         local hidden = entity:has_flag(entity_flags.hidden)
         self._bool_buf[0] = hidden
         ui.Checkbox(icons.i_eye_slash .. ' Hidden', self._bool_buf)
@@ -187,6 +213,7 @@ function inspector:_entity_base_header(entity)
             entity:set_flags(bxor(entity:get_flags(), entity_flags.hidden))
             self.properties_changed = true
         end
+
         local static = entity:has_flag(entity_flags.static)
         self._bool_buf[0] = static
         ui.Checkbox(icons.i_do_not_enter .. ' Static', self._bool_buf)
@@ -194,6 +221,7 @@ function inspector:_entity_base_header(entity)
             entity:set_flags(bxor(entity:get_flags(), entity_flags.static))
             self.properties_changed = true
         end
+
         local transient = entity:has_flag(entity_flags.transient)
         self._bool_buf[0] = transient
         ui.Checkbox(icons.i_alarm_clock .. ' Transient', self._bool_buf)
@@ -201,6 +229,7 @@ function inspector:_entity_base_header(entity)
             entity:set_flags(bxor(entity:get_flags(), entity_flags.transient))
             self.properties_changed = true
         end
+
         -- ui.Separator()
         -- ui.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff888888)
         -- ui.TextUnformatted(string.format('ID: 0x%x', tonumber(entity.id)))
