@@ -2,7 +2,7 @@
 -- This file implements the editor GUI.
 -- The ImGui LuaJIT bindings are useable but somewhat dirty, which makes this file a bit messy - but hey it works!
 
-require 'editor.gconsts'
+require 'editor.const'
 
 local ffi = require 'ffi'
 local bit = require 'bit'
@@ -374,7 +374,7 @@ function editor:draw_main_menu_bar()
         ui.PushStyleColor_U32(ffi.C.ImGuiCol_Button, 0)
         ui.PushStyleColor_U32(ffi.C.ImGuiCol_BorderShadow, 0)
         ui.PushStyleColor_U32(ffi.C.ImGuiCol_Border, 0)
-        if ui.SmallButton(self.is_ingame and icons.i_stop_circle or icons.i_play_circle) then
+        if ui.SmallButton(self.is_ingame and (icons.i_stop_circle .. ' Stop') or (icons.i_play_circle .. ' Play')) then
             self:toggle_game_mode()
         end
         if ui.IsItemHovered() then
