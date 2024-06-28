@@ -9,6 +9,7 @@
 local components = {
     transform = require 'components.transform', -- transform component
     camera = require 'components.camera', -- camera component
+    mesh_renderer = require 'components.mesh_renderer', -- mesh renderer component
     character_controller = require 'components.character_controller', -- Character controller component
 }
 

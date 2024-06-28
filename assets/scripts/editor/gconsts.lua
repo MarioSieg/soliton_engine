@@ -12,9 +12,15 @@ editor_components = {
             component = components.transform,
         },
         [components.camera._id] = {
-            full_name = icons.i_video .. ' Camera',
+            full_name = icons.i_camera .. ' Camera',
             component = components.camera
         }
+    },
+    [icons.i_paint_brush .. ' Rendering'] = {
+        [components.mesh_renderer._id] = {
+            full_name = icons.i_cube .. ' Mesh Renderer',
+            component = components.mesh_renderer
+        },
     },
     [icons.i_basketball_ball .. ' Physics'] = {
         [components.character_controller._id] = {

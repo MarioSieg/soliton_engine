@@ -23,7 +23,7 @@ ffi.cdef [[
 ]]
 
 local transform = {
-    _id = 0x6434,
+    _id = 0xeed8df38,
     _entity_id = 0,
     _new = function(self, entity_id)
         local o = {}

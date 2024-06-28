@@ -17,7 +17,7 @@ ffi.cdef [[
 ]]
 
 local camera = {
-    _id = 0x17df,
+    _id = 0x765be778,
     _entity_id = 0,
     _new = function(self, entity_id)
         local o = {}

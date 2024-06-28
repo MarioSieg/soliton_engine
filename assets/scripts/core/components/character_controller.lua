@@ -21,7 +21,7 @@ ground_state = { -- Keep in sync with cpp++: CharacterBase.h
 }
 
 local character_controller = {
-    _id = 0x5527,
+    _id = 0x598647ca,
     _entity_id = 0,
     _new = function(self, entity_id)
         local o = {}

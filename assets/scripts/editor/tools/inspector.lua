@@ -159,6 +159,16 @@ function inspector:_inspect_component_camera()
     end
 end
 
+function inspector:_inspect_component_mesh_renderer()
+    local c_mesh_renderer = self.selected_entity:get_component(components.mesh_renderer)
+    if ui.CollapsingHeader(icons.i_cube .. ' Mesh Renderer', inspector_header_flags) then
+        if not self:_component_base_header() then
+            self.selected_entity:remove_component(components.mesh_renderer)
+            return
+        end
+    end
+end
+
 function inspector:_entity_base_header(entity)
     if ui.CollapsingHeader(icons.i_cogs .. ' Entity', ffi.C.ImGuiTreeNodeFlags_DefaultOpen) then
         local name = entity:get_name()
@@ -210,11 +220,14 @@ function inspector:render()
             ui.TextUnformatted('No entity selected')
         else
             self:_entity_base_header(entity)
-            if entity:has_component(components.transform) then -- TODO: replace by lookup table
+            if entity:has_component(components.transform) then
                 self:_inspect_component_transform()
             end
             if entity:has_component(components.camera) then
                 self:_inspect_component_camera()
+            end
+            if entity:has_component(components.mesh_renderer) then
+                self:_inspect_component_mesh_renderer()
             end
             ui.Spacing()
             ui.Separator()
