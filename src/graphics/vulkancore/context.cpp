@@ -11,6 +11,11 @@ namespace vkb {
         false,
         convar_flags::read_only
     };
+    static convar<bool> cv_enable_vsync {
+        "Renderer.enableVSync",
+        false,
+        convar_flags::read_only
+    };
 
     context::context(GLFWwindow* window) : m_window{window} {
         passert(m_window != nullptr);
@@ -358,7 +363,7 @@ namespace vkb {
     }
 
     auto context::recreate_swapchain() -> void {
-        m_swapchain->create(m_width, m_height, true, false);
+        m_swapchain->create(m_width, m_height, cv_enable_vsync(), false);
     }
 
     auto context::create_msaa_target() -> void {

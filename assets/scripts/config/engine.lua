@@ -74,6 +74,7 @@ engine_cfg = {
         fallbackTexture = 'assets/textures/system/error.png', -- Fallback texture when a texture is not found.
         flatNormalTexture = 'assets/textures/system/flatnormal.png', -- Flat normal texture.
         brdfLutSize = 512, -- Width and height of the BRDF integration LUT texture: LUT x LUT.
+        enableVSync = false, -- Enable vertical synchronization.
     },
     EditorUI = { -- Editor UI settings.
         fontSize = 18, -- Font size
