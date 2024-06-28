@@ -181,6 +181,8 @@ namespace graphics {
     }
 
     HOTPROC auto graphics_subsystem::on_pre_tick() -> bool {
+        //s_num_draw_calls.store(0, std::memory_order_relaxed);
+        //s_num_draw_verts.store(0, std::memory_order_relaxed);
         if (m_reload_pipelines_next_frame) [[unlikely]] {
             vkcheck(vkb::vkdvc().waitIdle());
             reload_pipelines();

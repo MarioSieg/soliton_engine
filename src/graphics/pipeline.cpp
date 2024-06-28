@@ -3,6 +3,7 @@
 #include "pipeline.hpp"
 
 #include "vulkancore/context.hpp"
+#include "graphics_subsystem.hpp"
 #include "mesh.hpp"
 #include "material.hpp"
 
@@ -289,27 +290,31 @@ namespace graphics {
         if (mesh.get_primitives().size() <= mats.size()) { // we have at least one material for each primitive
             for (std::size_t idx = 0; const mesh::primitive& prim : mesh.get_primitives()) {
                 cmd.bindDescriptorSets(
-                        vk::PipelineBindPoint::eGraphics,
-                        layout,
-                        0,
-                        1,
-                        &mats[idx++]->get_descriptor_set(),
-                        0,
-                        nullptr
-                );
-                cmd.drawIndexed(prim.index_count, 1, prim.index_start, 0, 1);
-            }
-        } else {
-            cmd.bindDescriptorSets(
                     vk::PipelineBindPoint::eGraphics,
                     layout,
                     0,
                     1,
-                    &mats[0]->get_descriptor_set(),
+                    &mats[idx++]->get_descriptor_set(),
                     0,
                     nullptr
+                );
+                cmd.drawIndexed(prim.index_count, 1, prim.index_start, 0, 1);
+                const_cast<std::atomic_uint32_t&>(graphics_subsystem::get_num_draw_calls()).fetch_add(1, std::memory_order_relaxed);
+                const_cast<std::atomic_uint32_t&>(graphics_subsystem::get_num_draw_verts()).fetch_add(prim.vertex_count, std::memory_order_relaxed);
+            }
+        } else {
+            cmd.bindDescriptorSets(
+                vk::PipelineBindPoint::eGraphics,
+                layout,
+                0,
+                1,
+                &mats[0]->get_descriptor_set(),
+                0,
+                nullptr
             );
             cmd.drawIndexed(mesh.get_index_count(), 1, 0, 0, 0);
+            const_cast<std::atomic_uint32_t&>(graphics_subsystem::get_num_draw_calls()).fetch_add(1, std::memory_order_relaxed);
+            const_cast<std::atomic_uint32_t&>(graphics_subsystem::get_num_draw_verts()).fetch_add(mesh.get_vertex_count(), std::memory_order_relaxed);
         }
     }
 }

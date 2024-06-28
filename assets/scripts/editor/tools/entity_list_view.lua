@@ -8,6 +8,8 @@ local scene = require 'scene'
 local gmath = require 'gmath'
 local entity_flags = entity_flags
 
+require 'table.clear'
+
 local entity_list_view = {
     name = icons.i_cubes .. ' Entities',
     is_visible = ffi.new('bool[1]', true),
@@ -31,7 +33,7 @@ function entity_list_view:update_name_of_active_entity()
 end
 
 function entity_list_view:build_entity_list()
-    self._entity_list = {}
+    table.clear(self._entity_list)
     self.selected_entity = nil
     scene._entity_query_start()
     for i = 0, scene._entity_query_next() - 1 do
@@ -46,7 +48,12 @@ function entity_list_view:build_entity_list()
                 name = 'Unnamed'
             end
             name = icons.i_cube .. ' ' .. name
-            table.insert(self._entity_list, { entity = entity, name = name, is_anonymous = is_anonymous })
+            local entity_info = {
+                entity = entity,
+                name = name,
+                is_anonymous = is_anonymous
+            }
+            table.insert(self._entity_list, entity_info)
             ::continue::
         end
     end

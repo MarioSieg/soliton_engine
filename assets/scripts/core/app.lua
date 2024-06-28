@@ -18,6 +18,8 @@ ffi.cdef [[
     bool __lu_app_is_ui_hovered(void);
     void __lu_app_hot_reload_ui(bool enable_wireframe);
     void __lu_app_hot_reload_shaders(void);
+    uint32_t __lu_app_get_draw_calls(void);
+    uint32_t __lu_app_get_draw_verts(void);
     void __lu_window_maximize(void);
     void __lu_window_minimize(void);
     void __lu_window_enter_fullscreen(void);
@@ -122,6 +124,18 @@ end
 --- Hot reload shaders and update changes
 function app.hot_reload_shaders()
     cpp.__lu_app_hot_reload_shaders()
+end
+
+--- Get the number of draw calls
+--- @treturn number Number of draw calls
+function app.get_draw_call_count()
+    return cpp.__lu_app_get_draw_calls()
+end
+
+--- Get the number of draw vertices
+--- @treturn number Number of draw vertices
+function app.get_draw_vert_count()
+    return cpp.__lu_app_get_draw_verts()
 end
 
 --- Maximize the window

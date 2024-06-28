@@ -147,6 +147,7 @@ namespace graphics {
 			0,
 			vertices.data()
 		);
+        m_vertex_count = static_cast<std::uint32_t>(vertices.size());
 
     	if (indices.size() <= std::numeric_limits<std::uint16_t>::max()) { // 16 bit indices
     		std::vector<std::uint16_t> indices16 {};
