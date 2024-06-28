@@ -22,7 +22,7 @@
 [[nodiscard]] consteval auto major_version(const std::uint32_t v) -> std::uint8_t { return (v>>8)&0xff; }
 [[nodiscard]] consteval auto minor_version(const std::uint32_t v) -> std::uint8_t { return v&0xff; }
 
-constexpr std::uint32_t k_lunam_engine_v = make_version(0, 2); // current engine version (must be known at compile time and we don't use patches yet)
+constexpr std::uint32_t k_lunam_engine_v = make_version(0, 3); // current engine version (must be known at compile time and we don't use patches yet)
 
 class no_copy {
 public:
