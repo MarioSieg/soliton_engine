@@ -214,6 +214,8 @@ function inspector:_entity_base_header(entity)
             self.properties_changed = true
         end
 
+        ui.SameLine()
+
         local static = entity:has_flag(entity_flags.static)
         self._bool_buf[0] = static
         ui.Checkbox(icons.i_do_not_enter .. ' Static', self._bool_buf)
@@ -221,6 +223,8 @@ function inspector:_entity_base_header(entity)
             entity:set_flags(bxor(entity:get_flags(), entity_flags.static))
             self.properties_changed = true
         end
+
+        ui.SameLine()
 
         local transient = entity:has_flag(entity_flags.transient)
         self._bool_buf[0] = transient
