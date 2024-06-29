@@ -503,6 +503,16 @@ function editor:draw_pending_popups()
     ui.PopID()
 end
 
+local function humanize_number(amount)
+    if amount < 1000 then
+        return tostring(amount)
+    elseif amount < 1000000 then
+        return string.format("%.1fK", amount / 1000)
+    else
+        return string.format("%.1fM", amount / 1000000)
+    end
+end
+
 function editor:draw_ingame_overlay()
     local overlayFlags = overlay_flags
     if overlay_location >= 0 then
@@ -529,7 +539,7 @@ function editor:draw_ingame_overlay()
         ui.SameLine()
         local size = app.window.get_frame_buffer_size()
         ui.TextUnformatted(string.format(' | %d X %d', size.x, size.y))
-        ui.TextUnformatted(string.format('Draw calls: %d, Draw verts %d', app.get_draw_call_count(), app.get_draw_vert_count()))
+        ui.TextUnformatted(string.format('%s Draws: %s, %s Verts %s', icons.i_sigma, humanize_number(app.get_draw_call_count()), icons.i_sigma, humanize_number(app.get_draw_vert_count())))
         ui.TextUnformatted(string.format('GC Mem: %.03f MiB', collectgarbage('count') / 1024))
         ui.SameLine()
         local time = os.date('*t')
