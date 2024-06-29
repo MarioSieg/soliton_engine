@@ -240,20 +240,17 @@ function app.exit()
 end
 
 --- Open native file dialog
--- @tparam string fileTypes File types to open
--- @tparam string filters Filters for the file dialog
--- @tparam string defaultPath Default path to open the file dialog
-function app.utils.open_file_dialog(file_types, filters, default_ath)
-    filters = filters or ''
-    default_ath = default_ath or ''
-    return ffi.string(cpp.__lu_app_open_file_dialog(file_types, filters, default_ath))
+-- @tparam string file_types File types to open
+-- @tparam string filters filters for the file dialog
+-- @tparam string default_path Default path to open the file dialog
+function app.utils.open_file_dialog(file_types, filters, default_path)
+    return ffi.string(cpp.__lu_app_open_file_dialog(file_types, filters or '', default_path or ''))
 end
 
 --- Open native folder dialog
--- @tparam string defaultPath Default path to open the folder dialog
+-- @tparam string default_path Default path to open the folder dialog
 function app.utils.open_folder_dialog(default_path)
-    default_path = default_path or ''
-    return ffi.string(cpp.__lu_app_open_folder_dialog(default_path))
+    return ffi.string(cpp.__lu_app_open_folder_dialog(default_path or ''))
 end
 
 app.window.set_platform_title()
