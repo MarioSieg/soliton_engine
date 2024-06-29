@@ -125,15 +125,11 @@ LUA_INTEROP_API auto __lu_app_exit() -> void {
 }
 
 LUA_INTEROP_API auto __lu_app_get_draw_calls() -> std::uint32_t {
-    const auto r = graphics_subsystem::get_num_draw_calls().load(std::memory_order_relaxed);
-    const_cast<std::atomic_uint32_t&>(graphics_subsystem::get_num_draw_calls()).store(0, std::memory_order_relaxed);
-    return r;
+    return graphics_subsystem::get_num_draw_calls();
 }
 
 LUA_INTEROP_API auto __lu_app_get_draw_verts() -> std::uint32_t {
-    const auto r = graphics_subsystem::get_num_draw_verts().load(std::memory_order_relaxed);
-    const_cast<std::atomic_uint32_t&>(graphics_subsystem::get_num_draw_verts()).store(0, std::memory_order_relaxed);
-    return r;
+    return graphics_subsystem::get_num_draw_verts();
 }
 
 LUA_INTEROP_API auto __lu_app_host_get_cpu_name() -> const char* {

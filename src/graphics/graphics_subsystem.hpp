@@ -49,8 +49,8 @@ namespace graphics {
             passert(s_instance != nullptr);
             return *s_instance;
         }
-        [[nodiscard]] static auto get_num_draw_calls() noexcept -> const std::atomic_uint32_t& { return s_num_draw_calls; }
-        [[nodiscard]] static auto get_num_draw_verts() noexcept -> const std::atomic_uint32_t& { return s_num_draw_verts; }
+        [[nodiscard]] static auto get_num_draw_calls() noexcept -> std::uint32_t { return s_num_draw_calls_prev; }
+        [[nodiscard]] static auto get_num_draw_verts() noexcept -> std::uint32_t { return s_num_draw_verts_prev; }
         [[nodiscard]] static auto get_view_mtx() noexcept -> const DirectX::XMFLOAT4X4A& { return s_view_mtx; }
         [[nodiscard]] static auto get_proj_mtx() noexcept -> const DirectX::XMFLOAT4X4A& { return s_proj_mtx; }
         [[nodiscard]] static auto get_view_proj_mtx() noexcept -> const DirectX::XMFLOAT4X4A& { return s_view_proj_mtx; }
@@ -63,6 +63,7 @@ namespace graphics {
         }
 
     private:
+        friend class pipeline_base;
         static auto reload_pipelines() -> void;
         auto create_descriptor_pool() -> void;
         auto render_uis() -> void;
@@ -74,8 +75,10 @@ namespace graphics {
             void* usr
         ) -> void;
 
-        static inline constinit std::atomic_uint32_t s_num_draw_calls;
-        static inline constinit std::atomic_uint32_t s_num_draw_verts;
+        static inline constinit std::uint32_t s_num_draw_calls_prev; // accumulated result from previous frame
+        static inline constinit std::uint32_t s_num_draw_verts_prev; // accumulated result from previous frame
+        static inline constinit std::atomic_uint32_t s_num_draw_calls; // accumulator
+        static inline constinit std::atomic_uint32_t s_num_draw_verts; // accumulator
         static inline constinit DirectX::XMFLOAT4X4A s_view_mtx;
         static inline constinit DirectX::XMFLOAT4X4A s_proj_mtx;
         static inline constinit DirectX::XMFLOAT4X4A s_view_proj_mtx;

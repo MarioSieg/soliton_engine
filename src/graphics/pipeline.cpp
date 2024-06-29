@@ -299,8 +299,8 @@ namespace graphics {
                     nullptr
                 );
                 cmd.drawIndexed(prim.index_count, 1, prim.index_start, 0, 1);
-                const_cast<std::atomic_uint32_t&>(graphics_subsystem::get_num_draw_calls()).fetch_add(1, std::memory_order_relaxed);
-                const_cast<std::atomic_uint32_t&>(graphics_subsystem::get_num_draw_verts()).fetch_add(prim.vertex_count, std::memory_order_relaxed);
+                graphics_subsystem::s_num_draw_calls.fetch_add(1, std::memory_order_relaxed);
+                graphics_subsystem::s_num_draw_verts.fetch_add(prim.vertex_count, std::memory_order_relaxed);
             }
         } else {
             cmd.bindDescriptorSets(
@@ -313,8 +313,8 @@ namespace graphics {
                 nullptr
             );
             cmd.drawIndexed(mesh.get_index_count(), 1, 0, 0, 0);
-            const_cast<std::atomic_uint32_t&>(graphics_subsystem::get_num_draw_calls()).fetch_add(1, std::memory_order_relaxed);
-            const_cast<std::atomic_uint32_t&>(graphics_subsystem::get_num_draw_verts()).fetch_add(mesh.get_vertex_count(), std::memory_order_relaxed);
+            graphics_subsystem::s_num_draw_calls.fetch_add(1, std::memory_order_relaxed);
+            graphics_subsystem::s_num_draw_verts.fetch_add(mesh.get_vertex_count(), std::memory_order_relaxed);
         }
     }
 }
