@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['kernel_0',['kernel',['../classkernel.html',1,'']]]
+  ['istream_0',['istream',['../classassetmgr_1_1istream.html',1,'assetmgr']]]
 ];

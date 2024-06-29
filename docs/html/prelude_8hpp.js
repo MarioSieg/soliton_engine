@@ -7,6 +7,7 @@ var prelude_8hpp =
     [ "VULKAN_HPP_NO_STRUCT_CONSTRUCTORS", "prelude_8hpp.html#ac7b5ddfbd5f00530d938523572900720", null ],
     [ "VULKAN_HPP_NO_STRUCT_SETTERS", "prelude_8hpp.html#a46857abbbd41f54b6d7913b382698b1f", null ],
     [ "dump_physical_device_props", "prelude_8hpp.html#aa0166fc2da0a8f0bbbe5d249c4ccdaa7", null ],
+    [ "get_alloc", "prelude_8hpp.html#a241b2cfb8fe996667ee2aa1d0df1b92b", null ],
     [ "k_msaa_sample_count", "prelude_8hpp.html#a1839dd017d668dc0edcf7c53279854c8", null ],
-    [ "s_allocator", "prelude_8hpp.html#a25b0067bda10e7ce1a5f880a57836a4d", null ]
+    [ "s_vk_alloc", "prelude_8hpp.html#aa207c53a5c4bd403dce15657dbad1b37", null ]
 ];

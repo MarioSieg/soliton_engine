@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['sdl_5fevent_0',['SDL_Event',['../cimgui_8hpp.html#a33fcc6aa445cb781bfca881e39e5333e',1,'cimgui.hpp']]]
+  ['render_5fbucket_5fcallback_0',['render_bucket_callback',['../namespacegraphics.html#ab5fef6b3b8381f338a305431c196c79e',1,'graphics']]]
 ];

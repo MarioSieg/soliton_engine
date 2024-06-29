@@ -15,6 +15,7 @@ var classgraphics_1_1mesh =
     [ "get_index_count", "classgraphics_1_1mesh.html#a352a3d24780f05993d531d3a7262d617", null ],
     [ "get_primitives", "classgraphics_1_1mesh.html#adcab1f96ad144083f3759ae5e82143ab", null ],
     [ "get_vertex_buffer", "classgraphics_1_1mesh.html#a58ee37ce72b81520cf8d116975841131", null ],
+    [ "get_vertex_count", "classgraphics_1_1mesh.html#a1fac1388f396f9853af126c4462ebb73", null ],
     [ "is_index_32bit", "classgraphics_1_1mesh.html#a0ecf26ebfc717644b4291e37e31a54c8", null ],
     [ "k_import_flags", "classgraphics_1_1mesh.html#afd98a1b8d9a763f3124f1d0fa92577ef", null ],
     [ "m_aabb", "classgraphics_1_1mesh.html#a06ac32ea8ef53155f49c359b5892e3ba", null ],
@@ -24,6 +25,7 @@ var classgraphics_1_1mesh =
     [ "m_index_count", "classgraphics_1_1mesh.html#a739ed915e3508eb9d3b35a829086d0d0", null ],
     [ "m_primitives", "classgraphics_1_1mesh.html#a4c2f7d1e9e09200ec4cacfd5cf99b572", null ],
     [ "m_vertex_buffer", "classgraphics_1_1mesh.html#a4706fbccc765ad7eda161f8a429f8e32", null ],
+    [ "m_vertex_count", "classgraphics_1_1mesh.html#af06f13cc3b4b08048143352cbcc6d6e9", null ],
     [ "triangles", "classgraphics_1_1mesh.html#a714d89f897f1b782f79be2c919b6b299", null ],
     [ "verts", "classgraphics_1_1mesh.html#a02b2875ebddeffe836662f5a0112a780", null ]
 ];

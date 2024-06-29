@@ -16,5 +16,10 @@ var platform__subsystem_8cpp =
     [ "glfw_scroll_callback", "platform__subsystem_8cpp.html#ade752ff439d2cfe912bbac4ac0551fbc", null ],
     [ "kernel_variant_name", "platform__subsystem_8cpp.html#a0295a4cf0625f798b558d34e11c1ecd8", null ],
     [ "proxy_resize_hook", "platform__subsystem_8cpp.html#a3e8e0811e14e4d8672145391f4c89f0b", null ],
+    [ "cv_default_height", "platform__subsystem_8cpp.html#ab290f22092a55f4ca56d26042a294d47", null ],
+    [ "cv_default_width", "platform__subsystem_8cpp.html#a25bdff7ff3592ae7e01da1414d66410a", null ],
+    [ "cv_min_height", "platform__subsystem_8cpp.html#a50f2cbbc66fd614287837d3215a932b9", null ],
+    [ "cv_min_width", "platform__subsystem_8cpp.html#a2bcee06eff420aabd8b6c5d269dac3f1", null ],
+    [ "cv_window_icon", "platform__subsystem_8cpp.html#aeb6541dc4e9f0f2f563b3c255a2f93b3", null ],
     [ "s_window", "platform__subsystem_8cpp.html#af771f3fd245b40c6686c73102656dd8c", null ]
 ];

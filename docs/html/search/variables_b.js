@@ -1,14 +1,21 @@
 var searchData=
 [
-  ['name_0',['name',['../classgraphics_1_1pipeline__base.html#a7fdc77c3954703c033d078ae09075f99',1,'graphics::pipeline_base::name()'],['../classscene.html#a41b59a4c409b9b7780c70cadc00d948c',1,'scene::name()'],['../structluaL__Reg.html#a58b99f63b304e5c489b90d812f92cba2',1,'luaL_Reg::name()'],['../structlua__Debug.html#a2978ab7f2ade479a003beb16d3b7a993',1,'lua_Debug::name()'],['../classsubsystem.html#aebca86e3969f67875f6f5cf5ae6ce1ef',1,'subsystem::name()']]],
-  ['namewhat_1',['namewhat',['../structlua__Debug.html#a7e8c201950ea4dd3f2c7df9e1201019a',1,'lua_Debug']]],
-  ['nav_5fwindowing_5fhighlight_5fdelay_2',['NAV_WINDOWING_HIGHLIGHT_DELAY',['../imgui_8cpp.html#a1ab13424fcaf0fcd8952d6f47beb8b9d',1,'imgui.cpp']]],
-  ['nav_5fwindowing_5flist_5fappear_5fdelay_3',['NAV_WINDOWING_LIST_APPEAR_DELAY',['../imgui_8cpp.html#ac766f5145198e91333f86ef48e8fa8b6',1,'imgui.cpp']]],
-  ['non_5fmoving_4',['NON_MOVING',['../namespacephysics_1_1BroadPhaseLayers.html#aac217cdab729d5637855a902236dd4f0',1,'physics::BroadPhaseLayers::NON_MOVING()'],['../namespacephysics_1_1Layers.html#a54926798288f94d6123fc4ba9f5e5c30',1,'physics::Layers::NON_MOVING()']]],
-  ['normal_5',['normal',['../structgraphics_1_1mesh_1_1vertex.html#a9950fced1589f7e92002d9c93060d02e',1,'graphics::mesh::vertex']]],
-  ['normal_5fmap_6',['normal_map',['../classgraphics_1_1material.html#afa0ae188bbbf6868d15d9779b8bcef22',1,'graphics::material']]],
-  ['normal_5fmatrix_7',['normal_matrix',['../structgraphics_1_1pipelines_1_1pbr__pipeline_1_1gpu__vertex__push__constants.html#ae17caf6a05b8dfdbcb6adf43f0b55e4d',1,'graphics::pipelines::pbr_pipeline::gpu_vertex_push_constants']]],
-  ['num_5flayers_8',['NUM_LAYERS',['../namespacephysics_1_1Layers.html#a826fc40830cc9099d53d51fe5c25ee3a',1,'physics::Layers::NUM_LAYERS()'],['../namespacephysics_1_1BroadPhaseLayers.html#ae9b7920ad32adf9e4d2613b03d17bd78',1,'physics::BroadPhaseLayers::NUM_LAYERS()']]],
-  ['num_5fvertices_9',['num_vertices',['../structgraphics_1_1debugdraw_1_1draw__command.html#af6f9c79b267ddd6ad8100771acc79a3d',1,'graphics::debugdraw::draw_command']]],
-  ['nups_10',['nups',['../structlua__Debug.html#a983807ecf0dfa3e5e77fe7f0e2fd9d49',1,'lua_Debug']]]
+  ['opacity_5flinear_5fps_5fsize_0',['Opacity_Linear_PS_Size',['../_shaders_8h.html#aba81dccd2e47d9457e157a52b065e1e6',1,'Shaders.h']]],
+  ['opacity_5flinear_5fps_5fstart_1',['Opacity_Linear_PS_Start',['../_shaders_8h.html#a4040ba86c638f91aee5f5f2cd07bc8be',1,'Shaders.h']]],
+  ['opacity_5fpattern_5fclamp_5fps_5fsize_2',['Opacity_Pattern_Clamp_PS_Size',['../_shaders_8h.html#a248d6936dfc7fdf6e76f1f4747fd1b5e',1,'Shaders.h']]],
+  ['opacity_5fpattern_5fclamp_5fps_5fstart_3',['Opacity_Pattern_Clamp_PS_Start',['../_shaders_8h.html#ad459ee05e5eea476ffe07be4a83d8c87',1,'Shaders.h']]],
+  ['opacity_5fpattern_5fmirror_5fps_5fsize_4',['Opacity_Pattern_Mirror_PS_Size',['../_shaders_8h.html#a1696cc37416743765a7c6027fdec49cc',1,'Shaders.h']]],
+  ['opacity_5fpattern_5fmirror_5fps_5fstart_5',['Opacity_Pattern_Mirror_PS_Start',['../_shaders_8h.html#a28eab322c58e53eb73ff708eaf600b57',1,'Shaders.h']]],
+  ['opacity_5fpattern_5fmirroru_5fps_5fsize_6',['Opacity_Pattern_MirrorU_PS_Size',['../_shaders_8h.html#a7f8d292ef0e32b8462332610700375ac',1,'Shaders.h']]],
+  ['opacity_5fpattern_5fmirroru_5fps_5fstart_7',['Opacity_Pattern_MirrorU_PS_Start',['../_shaders_8h.html#a5fcf5126e870624c09ff7684bf36c00a',1,'Shaders.h']]],
+  ['opacity_5fpattern_5fmirrorv_5fps_5fsize_8',['Opacity_Pattern_MirrorV_PS_Size',['../_shaders_8h.html#a9c7a567b30651142d947dc4031f9f2c7',1,'Shaders.h']]],
+  ['opacity_5fpattern_5fmirrorv_5fps_5fstart_9',['Opacity_Pattern_MirrorV_PS_Start',['../_shaders_8h.html#a20467c8fe90e771773557db2b904a118',1,'Shaders.h']]],
+  ['opacity_5fpattern_5fps_5fsize_10',['Opacity_Pattern_PS_Size',['../_shaders_8h.html#ad3ca83aeccf07c9dbf4471630b58c85a',1,'Shaders.h']]],
+  ['opacity_5fpattern_5fps_5fstart_11',['Opacity_Pattern_PS_Start',['../_shaders_8h.html#aaab52047a7d37a19b933ad76c8667498',1,'Shaders.h']]],
+  ['opacity_5fpattern_5frepeat_5fps_5fsize_12',['Opacity_Pattern_Repeat_PS_Size',['../_shaders_8h.html#acba4ac47b87db78ef90b00a217b96290',1,'Shaders.h']]],
+  ['opacity_5fpattern_5frepeat_5fps_5fstart_13',['Opacity_Pattern_Repeat_PS_Start',['../_shaders_8h.html#a2547f5b642a29f4671c08fb6b83db41d',1,'Shaders.h']]],
+  ['opacity_5fradial_5fps_5fsize_14',['Opacity_Radial_PS_Size',['../_shaders_8h.html#ac66024a6582fa9870444b55dcf7dec2d',1,'Shaders.h']]],
+  ['opacity_5fradial_5fps_5fstart_15',['Opacity_Radial_PS_Start',['../_shaders_8h.html#ac0b7fb9c588dcee1e0ac443faa8c7897',1,'Shaders.h']]],
+  ['opacity_5fsolid_5fps_5fsize_16',['Opacity_Solid_PS_Size',['../_shaders_8h.html#ad37c00c3292458b2466b1b2e9392f7d5',1,'Shaders.h']]],
+  ['opacity_5fsolid_5fps_5fstart_17',['Opacity_Solid_PS_Start',['../_shaders_8h.html#a3575778e5a2b0b4bc50f96878c707d59',1,'Shaders.h']]]
 ];

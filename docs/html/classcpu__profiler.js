@@ -1,7 +1,7 @@
 var classcpu__profiler =
 [
-    [ "FrameHandleInfo", "structcpu__profiler_1_1FrameHandleInfo.html", "structcpu__profiler_1_1FrameHandleInfo" ],
-    [ "TaskHandleInfo", "structcpu__profiler_1_1TaskHandleInfo.html", "structcpu__profiler_1_1TaskHandleInfo" ],
+    [ "FrameHandleInfo", "structcpu__profiler_1_1_frame_handle_info.html", "structcpu__profiler_1_1_frame_handle_info" ],
+    [ "TaskHandleInfo", "structcpu__profiler_1_1_task_handle_info.html", "structcpu__profiler_1_1_task_handle_info" ],
     [ "hrc", "classcpu__profiler.html#ab735a75693f33d8ebdb4678b7e902ca7", null ],
     [ "cpu_profiler", "classcpu__profiler.html#a551b746153849d6e1fe8a83cdd75676e", null ],
     [ "EndFrame", "classcpu__profiler.html#a732e846d08b9b000ecfbafe8529755e8", null ],
