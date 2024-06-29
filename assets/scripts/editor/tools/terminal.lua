@@ -2,8 +2,8 @@
 
 local ffi = require 'ffi'
 
-local icons = require 'editor.icons'
-local ui = require 'editor.imgui'
+local icons = require 'imgui.icons'
+local ui = require 'imgui.imgui'
 
 local commands = {}
 

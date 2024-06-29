@@ -2,8 +2,8 @@
 
 local ffi = require 'ffi'
 
-local ui = require 'editor.imgui'
-local icons = require 'editor.icons'
+local ui = require 'imgui.imgui'
+local icons = require 'imgui.icons'
 
 local asset_explorer = {
     name = icons.i_folder_tree .. ' Asset View',

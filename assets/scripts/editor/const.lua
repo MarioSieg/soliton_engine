@@ -1,8 +1,8 @@
 -- Copyright (c) 2022-2023 Mario 'Neo' Sieg. All Rights Reserved.
 
 local components = require 'components'
-local icons = require 'editor.icons'
-local ui = require 'editor.imgui'
+local icons = require 'imgui.icons'
+local ui = require 'imgui.imgui'
 
 -- Components that can be added to entities sorted by category
 editor_components = {

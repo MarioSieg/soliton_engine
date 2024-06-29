@@ -4,8 +4,8 @@ local ffi = require 'ffi'
 local bit = require 'bit'
 local bxor = bit.bxor
 
-local ui = require 'editor.imgui'
-local icons = require 'editor.icons'
+local ui = require 'imgui.imgui'
+local icons = require 'imgui.icons'
 local components = require 'components'
 local vec3 = require 'vec3'
 local quat = require 'quat'

@@ -1,8 +1,8 @@
 -- Copyright (c) 2022-2023 Mario 'Neo' Sieg. All Rights Reserved.
 -- JSON serializaer/deserializer
 
-local decode = require 'ext.lunajson.decoder'()
-local encode = require 'ext.lunajson.encoder'()
+local decode = require 'lunajson.decoder'()
+local encode = require 'lunajson.encoder'()
 
 local function serialize_to_file(path, data)
     local file = io.open(path, 'w')

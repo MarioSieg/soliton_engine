@@ -2,8 +2,8 @@
 
 local ffi = require 'ffi'
 
-local ui = require 'editor.imgui'
-local icons = require 'editor.icons'
+local ui = require 'imgui.imgui'
+local icons = require 'imgui.icons'
 local scene = require 'scene'
 local gmath = require 'gmath'
 local entity_flags = entity_flags

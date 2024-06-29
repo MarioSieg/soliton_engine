@@ -8,6 +8,12 @@ local jit = require 'jit'
 local ffi = require 'ffi'
 local cpp = ffi.C
 
+lua_include_dirs = {
+    'assets/scripts',
+    'assets/scripts/core',
+    'assets/scripts/lib'
+}
+
 -- Dont't waste traces, machine-code and other memory jitting any boot code, it's only run once but stays in memory forever.
 -- We turn the JIT back on before entering the main tick loop below.
 jit.off()
@@ -27,11 +33,6 @@ local cookie = cpp.__lu_ffi_cookie()
 if cookie ~= 0xfefec0c0 then
     panic('Invalid FFI cookie!')
 end
-
-lua_include_dirs = {
-    'assets/scripts',
-    'assets/scripts/core'
-}
 
 -- add all other directories to package paths
 for _, path in ipairs(lua_include_dirs) do

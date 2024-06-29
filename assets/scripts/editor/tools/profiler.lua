@@ -3,8 +3,8 @@
 local ffi = require 'ffi'
 local profile = require 'jit.p'
 
-local ui = require 'editor.imgui'
-local icons = require 'editor.icons'
+local ui = require 'imgui.imgui'
+local icons = require 'imgui.icons'
 local time = require('time')
 
 local profiler = {

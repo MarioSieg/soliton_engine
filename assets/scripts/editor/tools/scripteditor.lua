@@ -2,8 +2,8 @@
 
 local ffi = require 'ffi'
 
-local icons = require 'editor.icons'
-local UI = require 'editor.imgui'
+local icons = require 'imgui.icons'
+local UI = require 'imgui.imgui'
 
 ffi.cdef [[
     void __lu_script_editor_render(const char* title);

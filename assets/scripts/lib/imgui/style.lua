@@ -1,5 +1,5 @@
 local ffi = require 'ffi'
-local UI = require 'editor.imgui'
+local UI = require 'imgui.imgui'
 
 local Style = {}
 
