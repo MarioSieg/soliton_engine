@@ -3,7 +3,11 @@
 #include "scripting_subsystem.hpp"
 
 #include "../scene/scene.hpp"
-#include "lfs/lfs.h"
+
+#include "libs/lfs/lfs.h"
+// #include "libs/luv/luv.h" also defined a panic() function which is ambiguous with the one in core.hpp, so:
+extern "C" int luaopen_luv (lua_State *L);
+
 #include "convar.hpp"
 
 #if USE_MIMALLOC
@@ -100,6 +104,7 @@ namespace scripting {
         passert(m_L != nullptr);
         luaL_openlibs(m_L);
         passert(luaopen_lfs(m_L) == 1);
+        passert(luaopen_luv(m_L) == 1);
 
         luabridge::register_main_thread(m_L);
 

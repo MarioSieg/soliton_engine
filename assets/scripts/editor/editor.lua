@@ -25,6 +25,8 @@ local script_editor = require 'editor.tools.scripteditor'
 local entity_list_view = require 'editor.tools.entity_list_view'
 local inspector = require 'editor.tools.inspector'
 local asset_explorer = require 'editor.tools.asset_explorer'
+local sqlite = require 'sqlite.db'
+
 local host_info = app.host.graphics_api .. ' | ' .. (app.host.host_string)
 local cpu_name = 'CPU: ' .. app.host.cpu_name
 local gpu_name = 'GPU: ' .. app.host.gpu_name
