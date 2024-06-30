@@ -47,8 +47,6 @@ local engine_ctx = {
     hooks = nil
 }
 
-print(string.format('Lua mem limit: %.3f MiB', collectgarbage('count')/1024.0))
-
 function engine_ctx:validate()
     if not self.hooks then
         panic('Failed to load hookmgr, internal error!')
