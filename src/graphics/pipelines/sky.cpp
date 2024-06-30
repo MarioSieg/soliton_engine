@@ -8,7 +8,7 @@
 namespace graphics::pipelines {
     sky_pipeline::sky_pipeline() : pipeline_base{"sky", pipeline_type::graphics} {
         m_skybox_texture.emplace("assets/textures/hdr/gcanyon_cube.ktx");
-        m_skydome.emplace("assets/meshes/bunny.obj");
+        m_skydome.emplace("assets/meshes/skydome.fbx");
 
         const vk::Device device = vkb::vkdvc();
 
