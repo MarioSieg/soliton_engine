@@ -27,6 +27,17 @@ local inspector = require 'editor.tools.inspector'
 local asset_explorer = require 'editor.tools.asset_explorer'
 local sqlite = require 'sqlite.db'
 
+local db = sqlite {
+    uri = 'assets/lunam.db',
+    projects = {
+        id = 'INTEGER PRIMARY KEY',
+        name = 'TEXT',
+        path = 'TEXT',
+        created_at = 'TEXT',
+        updated_at = 'TEXT',
+    },
+}
+
 local host_info = app.host.graphics_api .. ' | ' .. (app.host.host_string)
 local cpu_name = 'CPU: ' .. app.host.cpu_name
 local gpu_name = 'GPU: ' .. app.host.gpu_name
