@@ -102,9 +102,21 @@ namespace scripting {
             m_L = luaL_newstate();
         }
         passert(m_L != nullptr);
+
+        // open base libraries
         luaL_openlibs(m_L);
+
+        // open LFS
         passert(luaopen_lfs(m_L) == 1);
+
+        // open LUV
         passert(luaopen_luv(m_L) == 1);
+        lua_getglobal(m_L, "package");
+        lua_getfield(m_L, -1, "loaded");
+        lua_remove(m_L, -2);
+        luaopen_luv(m_L);
+        lua_setfield(m_L, -2, "luv");
+        lua_pop(m_L, 1);
 
         luabridge::register_main_thread(m_L);
 

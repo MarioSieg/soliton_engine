@@ -16,10 +16,12 @@ local function preload_all_hooks()
     for key, module in pairs(package.loaded) do
         -- check if the script has a hook
         if module ~= nil and type(module) == 'table' then
-            if (module[start_hook_id] or module[tick_hook_id]) then -- check if the module has a start or tick function
-                print('Found hook in module ' .. key)
-                table.insert(hooks, module)
-            end
+            pcall(function()
+                if (module[start_hook_id] or module[tick_hook_id]) then -- check if the module has a start or tick function
+                    print('Found hook in module ' .. key)
+                    table.insert(hooks, module)
+                end
+            end)
         end
     end
     print('Loaded ' .. #hooks .. ' hooks')

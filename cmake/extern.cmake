@@ -117,6 +117,8 @@ add_subdirectory(extern/luv)
 target_include_directories(lunam PRIVATE extern/luv/src)
 target_link_libraries(lunam libluv_a)
 
+target_compile_definitions(lunam PRIVATE SQLITE_API="__attribute__((visibility(\"default\")))")
+
 ##################################################################################################
 # Libraries, which sadly requires C++ exceptions and have no way to disable them
 ##################################################################################################
