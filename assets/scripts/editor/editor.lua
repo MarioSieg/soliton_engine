@@ -46,6 +46,7 @@ local dock_right = 0.45
 local dock_bottom = 0.5
 local menu_padding = ui.GetStyle().FramePadding
 local is_ingame_ui_wireframe_on = false
+local initial_camera_height = 2.5
 local new_project_max_math = 512
 local new_project_tmp = nil
 local is_creating_project = false
@@ -136,6 +137,8 @@ local editor = {
     active_project = nil,
     show_demo_window = false,
 }
+
+editor.camera._position.y = initial_camera_height -- Lift camera up a bit
 
 for _, tool in ipairs(editor.tools) do tool.is_visible[0] = true end
 

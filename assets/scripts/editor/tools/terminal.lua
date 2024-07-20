@@ -16,7 +16,7 @@ commands['panic'] = {
 }
 
 local terminal = {
-    name = icons.i_line_columns .. ' terminal',
+    name = icons.i_line_columns .. ' Terminal',
     is_visible = ffi.new('bool[1]', true),
     cmd_buf_len = 512 - 1,
     cmd_buf = ffi.new('char[?]', 512),

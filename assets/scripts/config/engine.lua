@@ -155,11 +155,11 @@ engine_cfg = {
             navHighlight             = { a = 1.00, g = 0.00, b = 0.00, r = 1.00 },
             navWindowingHighlight    = { a = 1.00, g = 0.00, b = 0.00, r = 0.70 },
             navWindowingDimBg        = { a = 1.00, g = 0.00, b = 0.00, r = 0.20 },
-            modalWindowDimBg         = { a = 1.00, g = 0.00, b = 0.00, r = 0.35 },
+            modalWindowDimBg         = { a = 0.35, g = 0.35, b = 0.35, r = 0.80 },
         },
     },
     GameUI = { -- In-Game UI settings.
-        renderFlags = UI_RENDER_FLAGS.LCD+UI_RENDER_FLAGS.FLIP_Y+UI_RENDER_FLAGS.PPAA, -- In-Game UI default render flags.
+        renderFlags = UI_RENDER_FLAGS.LCD + UI_RENDER_FLAGS.FLIP_Y + UI_RENDER_FLAGS.PPAA, -- In-Game UI default render flags.
         tesselationPixelError = UI_TESSELATION_PIXEL_ERROR.HIGH_QUALITY, -- In-Game UI tesselation pixel error quality.
         license = {
             userId = 'neo',
@@ -176,18 +176,18 @@ engine_cfg = {
         }
     },
     Physics = {
-        tempAllocatorBufferSize = (1024^2) * 64, -- 64 MB
-        maxRigidBodies = (2^16)-1, -- Max amount of rigid bodies that you can add to the physics system. If you try to add more you'll get an error.
+        tempAllocatorBufferSize = (1024 ^ 2) * 64, -- 64 MB
+        maxRigidBodies = (2 ^ 16) - 1, -- Max amount of rigid bodies that you can add to the physics system. If you try to add more you'll get an error.
         numMutexes = 0, -- how many mutexes to allocate to protect rigid bodies from concurrent access. Set it to 0 for the default settings.
 
         -- This is the max amount of body pairs that can be queued at any time (the broad phase will detect overlapping
         -- body pairs based on their bounding boxes and will insert them into a queue for the narrowphase). If you make this buffer
         -- too small the queue will fill up and the broad phase jobs will start to do narrow phase work. This is slightly less efficient.
-        maxBodyPairs = (2^16)-1,
+        maxBodyPairs = (2 ^ 16) - 1,
 
         -- This is the maximum size of the contact constraint buffer. If more contacts (collisions between bodies) are detected than this
         -- number then these contacts will be ignored and bodies will start interpenetrating / fall through the world.
-        maxContacts = (2^16)-1, 
+        maxContacts = (2 ^ 16) - 1,
     }
 }
 
