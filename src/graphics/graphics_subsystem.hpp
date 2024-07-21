@@ -20,7 +20,7 @@
 #include "imgui/context.hpp"
 #include "noesis/context.hpp"
 
-namespace graphics {
+namespace lu::graphics {
     class graphics_subsystem final : public subsystem {
     public:
         graphics_subsystem();

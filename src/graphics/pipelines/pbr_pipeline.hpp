@@ -7,7 +7,7 @@
 #include "../pipeline.hpp"
 #include "../../scene/components.hpp"
 
-namespace graphics::pipelines {
+namespace lu::graphics::pipelines {
     class pbr_pipeline final : public pipeline_base {
     public:
         explicit pbr_pipeline();
@@ -35,7 +35,7 @@ namespace graphics::pipelines {
         ) const -> void;
 
     protected:
-        virtual auto configure_shaders(std::vector<std::pair<std::shared_ptr<vkb::shader>, vk::ShaderStageFlagBits>>& cfg) -> void override;
+        virtual auto configure_shaders(std::vector<std::pair<std::shared_ptr<shader>, vk::ShaderStageFlagBits>>& cfg) -> void override;
         virtual auto configure_pipeline_layout(std::vector<vk::DescriptorSetLayout>& layouts, std::vector<vk::PushConstantRange>& ranges) -> void override;
 
     private:

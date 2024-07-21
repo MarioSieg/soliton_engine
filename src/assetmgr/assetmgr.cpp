@@ -7,7 +7,7 @@
 
 #include <simdutf.h>
 
-namespace assetmgr {
+namespace lu::assetmgr {
     using namespace std::filesystem;
 
     static thread_local std::mt19937 s_rng{std::random_device{}()};

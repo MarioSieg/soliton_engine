@@ -7,7 +7,7 @@
 
 #include "../assetmgr/assetmgr.hpp"
 
-namespace vkb {
+namespace lu::graphics {
     // Returns GLSL shader source text after preprocessing.
     [[nodiscard]] static auto preprocess_shader(
         shaderc::Compiler& com,
@@ -99,13 +99,13 @@ namespace vkb {
 
         options.SetIncluder(std::make_unique<graphics::FileIncluder>(&s_file_finder)); // todo make shared
         std::uint32_t vk_version = 0;
-        switch (device::k_vulkan_api_version) {
+        switch (vkb::device::k_vulkan_api_version) {
             case VK_API_VERSION_1_0: vk_version = shaderc_env_version_vulkan_1_0; break;
             case VK_API_VERSION_1_1: vk_version = shaderc_env_version_vulkan_1_1; break;
             case VK_API_VERSION_1_2: vk_version = shaderc_env_version_vulkan_1_2; break;
             case VK_API_VERSION_1_3: vk_version = shaderc_env_version_vulkan_1_3; break;
             default:
-                log_info("Unsupported Vulkan API version: {}", device::k_vulkan_api_version);
+                log_info("Unsupported Vulkan API version: {}", vkb::device::k_vulkan_api_version);
                 return nullptr;
         }
         options.SetTargetEnvironment(shaderc_target_env_vulkan, vk_version);
@@ -148,7 +148,7 @@ namespace vkb {
         vk::ShaderModuleCreateInfo create_info {};
         create_info.codeSize = bytecode.size() * sizeof(std::uint32_t);
         create_info.pCode = bytecode.data();
-        if (vk::Result::eSuccess != vkb::ctx().get_device().get_logical_device().createShaderModule(&create_info, get_alloc(), &shader->m_module)) [[unlikely]] {
+        if (vk::Result::eSuccess != vkb::ctx().get_device().get_logical_device().createShaderModule(&create_info, vkb::get_alloc(), &shader->m_module)) [[unlikely]] {
             log_error("Failed to create shader module: {}", file_name);
             return nullptr;
         }

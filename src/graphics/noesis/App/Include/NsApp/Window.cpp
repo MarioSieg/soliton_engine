@@ -8,6 +8,8 @@
 
 namespace NoesisApp
 {
+    using namespace lu;
+
     static convar<std::int32_t> ui_render_flags {
         "GameUI.renderFlags",
         Noesis::RenderFlags_LCD | Noesis::RenderFlags_FlipY | Noesis::RenderFlags_PPAA,

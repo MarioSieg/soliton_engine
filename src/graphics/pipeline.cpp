@@ -7,7 +7,7 @@
 #include "mesh.hpp"
 #include "material.hpp"
 
-namespace graphics {
+namespace lu::graphics {
     pipeline_base::~pipeline_base() {
         const vk::Device device = vkb::ctx().get_device();
         if (m_pipeline && m_layout) { // Destroy old pipeline and layout
@@ -38,7 +38,7 @@ namespace graphics {
         vk::GraphicsPipelineCreateInfo pipeline_info {};
 
         std::vector<vk::PipelineShaderStageCreateInfo> shader_stages {};
-        std::vector<std::pair<std::shared_ptr<vkb::shader>, vk::ShaderStageFlagBits>> shaders {};
+        std::vector<std::pair<std::shared_ptr<shader>, vk::ShaderStageFlagBits>> shaders {};
         configure_shaders(shaders);
         passert(!shaders.empty());
         shader_stages.reserve(shaders.size());

@@ -13,7 +13,7 @@
 #include <Jolt/Jolt.h>
 #include <Jolt/Physics/Collision/Shape/MeshShape.h>
 
-namespace graphics {
+namespace lu::graphics {
     class material;
 
 class mesh final : public assetmgr::asset {

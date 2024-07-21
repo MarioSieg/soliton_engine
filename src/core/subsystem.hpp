@@ -6,33 +6,28 @@
 
 #include "core.hpp"
 
-class scene;
-class subsystem : public no_copy, public no_move {
-private:
-    friend class kernel;
-    static inline std::mt19937_64 m_prng;
-    [[nodiscard]] static auto gen_id() noexcept -> std::uint64_t {
-        std::uniform_int_distribution<std::uint64_t> dist{0, std::numeric_limits<std::uint64_t>::max()};
-        return dist(m_prng);
-    }
+namespace lu {
+    class scene;
+    class subsystem : public no_copy, public no_move {
+    private:
+        friend class kernel;
+        static inline constinit std::atomic_uint64_t s_id_gen = 1;
 
-    double frame_time_start = 0.0;
-    double frame_time_acc = 0.0;
+    protected:
+        explicit subsystem(std::string&& name) noexcept
+                : name{std::move(name)}, id{s_id_gen.fetch_add(1, std::memory_order_seq_cst)} {}
+        virtual ~subsystem() = default;
 
-protected:
-    explicit subsystem(std::string&& name) noexcept
-        : name{std::move(name)}, id{gen_id()} {}
-    virtual ~subsystem() = default;
+        virtual auto on_prepare() -> void {} // called before the simulation loop is entered
+        virtual auto on_resize() -> void {} // called on resize
+        virtual auto on_start(scene& scene) -> void {} // called on scene start
+        virtual auto on_pre_tick() -> bool { return true; } // called each frame
+        virtual auto on_tick() -> void {} // called each frame
+        virtual auto on_post_tick() -> void {} // called each frame in reverse
 
-    virtual auto on_prepare() -> void {} // called before the simulation loop is entered
-    virtual auto on_resize() -> void {} // called on resize
-    virtual auto on_start(scene& scene) -> void {} // called on scene start
-    virtual auto on_pre_tick() -> bool { return true; } // called each frame
-    virtual auto on_tick() -> void {} // called each frame
-    virtual auto on_post_tick() -> void {} // called each frame in reverse
-
-public:
-    const std::string name;
-    std::function<auto()->void> resize_hook {};
-    const std::uint64_t id;
-};
+    public:
+        const std::string name;
+        std::function<auto() -> void> resize_hook {};
+        const std::uint64_t id;
+    };
+}

@@ -28,9 +28,9 @@
 #include <nfd.hpp>
 #include "../scripting/convar.hpp"
 
-using scripting::scripting_subsystem;
+namespace lu::platform {
+    using scripting::scripting_subsystem;
 
-namespace platform {
     [[maybe_unused]]
     static constexpr auto kernel_variant_name(iware::system::kernel_t variant) noexcept -> std::string_view {
         switch (variant) {
@@ -366,17 +366,19 @@ namespace platform {
             log_error("Platform error: {} ({:#X})", desc, code);
         });
 #if USE_MIMALLOC
-        static GLFWallocator allocator {};
-        allocator.allocate = [](const std::size_t size, [[maybe_unused]] void* usr) -> void* {
-            return mi_malloc(size);
-        };
-        allocator.deallocate = [](void* ptr, [[maybe_unused]] void* usr) -> void {
-            mi_free(ptr);
-        };
-        allocator.reallocate = [](void* ptr, const std::size_t size, [[maybe_unused]] void* usr) -> void* {
-            return mi_realloc(ptr, size);
-        };
-        glfwInitAllocator(&allocator);
+        if constexpr (k_use_mimalloc) {
+            static GLFWallocator allocator {};
+            allocator.allocate = [](const std::size_t size, [[maybe_unused]] void* usr) -> void* {
+                return mi_malloc(size);
+            };
+            allocator.deallocate = [](void* ptr, [[maybe_unused]] void* usr) -> void {
+                mi_free(ptr);
+            };
+            allocator.reallocate = [](void* ptr, const std::size_t size, [[maybe_unused]] void* usr) -> void* {
+                return mi_realloc(ptr, size);
+            };
+            glfwInitAllocator(&allocator);
+        }
 #endif
         const bool is_glfw_online = glfwInit() == GLFW_TRUE;
         if (!is_glfw_online) [[unlikely]] {

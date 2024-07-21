@@ -3,7 +3,7 @@
 #include "buffer.hpp"
 #include "context.hpp"
 
-namespace vkb {
+namespace lu::vkb {
     auto buffer::create(
         const std::size_t size,
         const std::size_t alignment,

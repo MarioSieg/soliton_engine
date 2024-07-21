@@ -9,7 +9,7 @@
 #include "material.hpp"
 #include "mesh_utils.hpp"
 
-namespace graphics {
+namespace lu::graphics {
 	using namespace DirectX;
 
 	static auto compute_aabb(BoundingBox& aabb, const std::span<const mesh::vertex> vertices) noexcept -> void {

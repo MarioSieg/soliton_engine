@@ -5,7 +5,7 @@
 #include <future>
 #include <filesystem>
 
-namespace graphics {
+namespace lu::graphics {
 
     shader_registry::shader_registry(std::string&& shader_dir) : m_shader_dir{std::move(shader_dir)} {
         if (!std::filesystem::exists(m_shader_dir)) {
@@ -13,7 +13,7 @@ namespace graphics {
         }
     }
 
-    [[nodiscard]] auto shader_registry::get_shader(const std::string& name) const -> std::shared_ptr<vkb::shader> {
+    [[nodiscard]] auto shader_registry::get_shader(const std::string& name) const -> std::shared_ptr<shader> {
         if (!m_shaders.contains(name)) [[unlikely]] {
             panic("Shader not within registry: {}", name);
         }
@@ -27,12 +27,12 @@ namespace graphics {
             log_warn("Parallel shader compilation disabled - compiling shaders sequentially");
         }
         m_shaders.clear();
-        std::vector<std::future<std::tuple<std::string, std::string, std::shared_ptr<vkb::shader>>>> futures {};
+        std::vector<std::future<std::tuple<std::string, std::string, std::shared_ptr<shader>>>> futures {};
         for (auto&& entry : recursive_directory_iterator{m_shader_dir}) {
             if (entry.is_directory()) continue;
             const auto& path = entry.path();
             if (const auto ex = path.extension(); ex == ".glsli" || [&ex] {
-                for (auto&& [sex, _] : vkb::shader::k_extensions) {
+                for (auto&& [sex, _] : shader::k_extensions) {
                     if (sex == ex) {
                         return false;
                     }
@@ -44,7 +44,7 @@ namespace graphics {
             auto name = path.filename().string();
             futures.emplace_back(std::async(parallel ? std::launch::async : std::launch::deferred, [](std::string&& name, std::string&& path) {
                 log_info("Compiling shader: {} from {}", name, path);
-                return std::make_tuple(name, std::string{path}, vkb::shader::compile(std::move(path)));
+                return std::make_tuple(name, std::string{path}, shader::compile(std::move(path)));
             }, std::move(name), path.string()));
         }
         bool all_successful = true;

@@ -5,7 +5,7 @@
 #include "../vulkancore/context.hpp"
 #include "../../scripting/convar.hpp"
 
-namespace graphics::pipelines {
+namespace lu::graphics::pipelines {
     static constexpr vk::Format brfd_lut_fmt = vk::Format::eR16G16Sfloat;
     static convar<std::uint32_t> brdf_lut_size { "Renderer.brdfLutSize", 512u, convar_flags::read_only, 128u, 8192u };
 

@@ -16,9 +16,9 @@
 #include "pipelines/pbr_pipeline.hpp"
 #include "pipelines/sky.hpp"
 
-using platform::platform_subsystem;
 
-namespace graphics {
+namespace lu::graphics {
+    using platform::platform_subsystem;
     using vkb::context;
 
     static convar<std::string> cv_shader_dir {"Renderer.shaderDir", std::nullopt, scripting::convar_flags::read_only};

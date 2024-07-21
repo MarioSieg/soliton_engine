@@ -7,7 +7,7 @@
 
 #include <bx/allocator.h>
 
-namespace graphics {
+namespace lu::graphics {
     class texture_allocator final : public bx::AllocatorI {
     public:
         auto realloc(void* p, size_t size, size_t align, const char* filePath, std::uint32_t line) -> void* override;

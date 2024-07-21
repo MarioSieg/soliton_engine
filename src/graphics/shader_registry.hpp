@@ -7,12 +7,12 @@
 #include "shader.hpp"
 #include <ankerl/unordered_dense.h>
 
-namespace graphics {
+namespace lu::graphics {
     class shader_registry final : public no_copy, public no_move {
     public:
         explicit shader_registry(std::string&& shader_dir);
 
-        [[nodiscard]] auto get_shader(const std::string& name) const -> std::shared_ptr<vkb::shader>;
+        [[nodiscard]] auto get_shader(const std::string& name) const -> std::shared_ptr<shader>;
 
         // search for shaders in the shader directory and compile them all
         auto compile_all(bool parallel) -> bool;
@@ -24,6 +24,6 @@ namespace graphics {
     private:
         static inline std::unique_ptr<shader_registry> s_instance {};
         const std::string m_shader_dir;
-        ankerl::unordered_dense::map<std::string, std::shared_ptr<vkb::shader>> m_shaders {};
+        ankerl::unordered_dense::map<std::string, std::shared_ptr<shader>> m_shaders {};
     };
 }

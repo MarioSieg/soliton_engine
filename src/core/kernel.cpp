@@ -1,7 +1,6 @@
 // Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "kernel.hpp"
-#include "profiler.hpp"
 #include "buffered_sink.hpp"
 
 #include "../scene/scene.hpp"
@@ -21,75 +20,76 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
-using namespace std::filesystem;
+namespace lu {
+    using namespace std::filesystem;
 
-static constexpr std::size_t k_log_threads = 1;
-static constexpr std::size_t k_log_queue_size = 8192;
+    static constexpr std::size_t k_log_threads = 1;
+    static constexpr std::size_t k_log_queue_size = 8192;
 
-[[nodiscard]] static auto create_logger(const std::string& name, const std::string& pattern, bool print_stdout = true,
-                                       bool enroll = true) -> std::shared_ptr<spdlog::logger> {
-    const auto time = fmt::localtime(std::time(nullptr));
-    std::vector<std::shared_ptr<spdlog::sinks::sink>> sinks = {
-        std::make_shared<buffered_sink>(k_log_queue_size),
-        std::make_shared<spdlog::sinks::basic_file_sink_mt>(
-            fmt::format("{}/session {:%d-%m-%Y  %H-%M-%S}/{}.log", kernel::log_dir, time, name)),
-    };
-    if (print_stdout) {
-        sinks.emplace_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
+    [[nodiscard]] static auto create_logger(const std::string& name, const std::string& pattern, bool print_stdout = true,
+                                            bool enroll = true) -> std::shared_ptr<spdlog::logger> {
+        const auto time = fmt::localtime(std::time(nullptr));
+        std::vector<std::shared_ptr<spdlog::sinks::sink>> sinks = {
+                std::make_shared<buffered_sink>(k_log_queue_size),
+                std::make_shared<spdlog::sinks::basic_file_sink_mt>(
+                        fmt::format("{}/session {:%d-%m-%Y  %H-%M-%S}/{}.log", kernel::log_dir, time, name)),
+        };
+        if (print_stdout) {
+            sinks.emplace_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
+        }
+        std::shared_ptr<spdlog::logger> result = std::make_shared<spdlog::async_logger>(
+                name,
+                sinks.begin(),
+                sinks.end(),
+                spdlog::thread_pool(),
+                spdlog::async_overflow_policy::overrun_oldest
+        );
+        result->set_pattern(pattern);
+        if (enroll) {
+            register_logger(result);
+        }
+        return result;
     }
-    std::shared_ptr<spdlog::logger> result = std::make_shared<spdlog::async_logger>(
-        name,
-        sinks.begin(),
-        sinks.end(),
-        spdlog::thread_pool(),
-        spdlog::async_overflow_policy::overrun_oldest
-    );
-    result->set_pattern(pattern);
-    if (enroll) {
-        register_logger(result);
+
+    static auto inject_default_config(mINI::INIStructure& config) -> void {
+        std::string engine_v = fmt::format("{}.{}", major_version(k_lunam_engine_v), minor_version(k_lunam_engine_v));
+        config["kernel"]["engine_version"] = engine_v;
+        config["asset_mgr"]["asset_root"] = "assets";
+        config["asset_mgr"]["allow_standalone_asset_loading"] = "true";
+        config["asset_mgr"]["allow_source_asset_loading"] = "true";
+        config["asset_mgr"]["validate_paths"] = "true";
+        config["asset_mgr"]["validate_file_system_on_boot"] = "true";
     }
-    return result;
-}
 
-static auto inject_default_config(mINI::INIStructure& config) -> void {
-    std::string engine_v = fmt::format("{}.{}", major_version(k_lunam_engine_v), minor_version(k_lunam_engine_v));
-    config["kernel"]["engine_version"] = engine_v;
-    config["asset_mgr"]["asset_root"] = "assets";
-    config["asset_mgr"]["allow_standalone_asset_loading"] = "true";
-    config["asset_mgr"]["allow_source_asset_loading"] = "true";
-    config["asset_mgr"]["validate_paths"] = "true";
-    config["asset_mgr"]["validate_file_system_on_boot"] = "true";
-}
-
-static auto extract_assetmgr_config_from_kernel_config(const mINI::INIStructure& config, assetmgr::mgr_config& out) -> void {
-    out.asset_root = config.get("asset_mgr").get("asset_root");
-    out.allow_standalone_asset_loading = config.get("asset_mgr").get("allow_standalone_asset_loading") == "true";
-    out.allow_source_asset_loading = config.get("asset_mgr").get("allow_source_asset_loading") == "true";
-    out.validate_paths = config.get("asset_mgr").get("validate_paths") == "true";
-    out.validate_fs = config.get("asset_mgr").get("validate_file_system_on_boot") == "true";
-}
-
-auto kernel::update_core_config(const bool update_file) -> void {
-    if (!exists(kernel::config_dir)) [[unlikely]] {
-        log_warn("Config directory does not exist, creating: {}", kernel::config_dir);
-        create_directory(kernel::config_dir);
+    static auto extract_assetmgr_config_from_kernel_config(const mINI::INIStructure& config, assetmgr::mgr_config& out) -> void {
+        out.asset_root = config.get("asset_mgr").get("asset_root");
+        out.allow_standalone_asset_loading = config.get("asset_mgr").get("allow_standalone_asset_loading") == "true";
+        out.allow_source_asset_loading = config.get("asset_mgr").get("allow_source_asset_loading") == "true";
+        out.validate_paths = config.get("asset_mgr").get("validate_paths") == "true";
+        out.validate_fs = config.get("asset_mgr").get("validate_file_system_on_boot") == "true";
     }
-    if (!update_file && exists(kernel::config_file)) {
-        log_info("Loading core config file: {}", kernel::config_file);
-        mINI::INIFile file {kernel::config_file};
-        file.read(m_config);
-    } else {
-        log_warn("Core config file does not exist, creating: {}", kernel::config_file);
 
-        inject_default_config(m_config);
+    auto kernel::update_core_config(const bool update_file) -> void {
+        if (!exists(kernel::config_dir)) [[unlikely]] {
+            log_warn("Config directory does not exist, creating: {}", kernel::config_dir);
+            create_directory(kernel::config_dir);
+        }
+        if (!update_file && exists(kernel::config_file)) {
+            log_info("Loading core config file: {}", kernel::config_file);
+            mINI::INIFile file {kernel::config_file};
+            file.read(m_config);
+        } else {
+            log_warn("Core config file does not exist, creating: {}", kernel::config_file);
 
-        mINI::INIFile file {kernel::config_file};
-        file.write(m_config);
+            inject_default_config(m_config);
+
+            mINI::INIFile file {kernel::config_file};
+            file.write(m_config);
+        }
     }
-}
 
 #if PLATFORM_WINDOWS
-#define WIN32_LEAN_AND_MEAN
+    #define WIN32_LEAN_AND_MEAN
 #include <fcntl.h>
 #include <corecrt_io.h>
 #include <Windows.h>
@@ -122,17 +122,17 @@ static auto redirect_io() -> void {
 #include <pthread.h>
 #endif
 
-static constinit kernel* g_kernel = nullptr;
+    static constinit kernel* g_kernel = nullptr;
 
-kernel::kernel(const int argc, const char** argv, const char** $environ) {
-    passert(g_kernel == nullptr);
-    g_kernel = this;
+    kernel::kernel(const int argc, const char** argv, const char** $environ) {
+        passert(g_kernel == nullptr);
+        g_kernel = this;
 #if PLATFORM_WINDOWS
-    redirect_io();
+        redirect_io();
     SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
     SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
 #elif PLATFORM_LINUX
-    pthread_t cthr_id = pthread_self();
+        pthread_t cthr_id = pthread_self();
     pthread_setname_np(cthr_id, "Lunam Engine Main Thread");
     pthread_attr_t thr_attr {};
     int policy = 0;
@@ -143,134 +143,134 @@ kernel::kernel(const int argc, const char** argv, const char** $environ) {
     pthread_setschedprio(cthr_id, max_prio_for_policy);
     pthread_attr_destroy(&thr_attr);
 #endif
-    std::ostream::sync_with_stdio(false);
-    spdlog::init_thread_pool(k_log_queue_size, k_log_threads);
-    std::shared_ptr<spdlog::logger> engineLogger = create_logger("engine", "%H:%M:%S:%e %s:%# %^[%l]%$ T:%t %v");
-    std::shared_ptr<spdlog::logger> scriptLogger = create_logger("app", "%H:%M:%S:%e %v");
-    spdlog::set_default_logger(engineLogger);
-    log_info("LunamEngine v.{}.{}", major_version(k_lunam_engine_v), minor_version(k_lunam_engine_v));
-    log_info("Copyright (c) 2022-2024 Mario \"Neo\" Sieg. All Rights Reserved.");
-    log_info("Booting Engine Kernel...");
-    log_info("Build date: {}", __DATE__);
-    log_info("Build time: {}", __TIME__);
+        std::ostream::sync_with_stdio(false);
+        spdlog::init_thread_pool(k_log_queue_size, k_log_threads);
+        std::shared_ptr<spdlog::logger> engineLogger = create_logger("engine", "%H:%M:%S:%e %s:%# %^[%l]%$ T:%t %v");
+        std::shared_ptr<spdlog::logger> scriptLogger = create_logger("app", "%H:%M:%S:%e %v");
+        spdlog::set_default_logger(engineLogger);
+        log_info("LunamEngine v.{}.{}", major_version(k_lunam_engine_v), minor_version(k_lunam_engine_v));
+        log_info("Copyright (c) 2022-2024 Mario \"Neo\" Sieg. All Rights Reserved.");
+        log_info("Booting Engine Kernel...");
+        log_info("Build date: {}", __DATE__);
+        log_info("Build time: {}", __TIME__);
 #if USE_MIMALLOC
-    log_info("Allocator version: {:#X}", mi_version());
+        log_info("Allocator version: {:#X}", mi_version());
 #endif
-    log_info("Working dir: {}", std::filesystem::current_path().string());
-    log_info("ARG VEC");
-    for (int i = 0; i < argc; ++i) {
-        log_info("  {}: {}", i, argv[i]);
-    }
-    log_info("ENVIRON VEC");
-    for (int i = 0; $environ[i] != nullptr; ++i) {
-        log_info("  {}: {}", i, $environ[i]);
-    }
-    log_info("Engine config dir: {}", config_dir);
-    log_info("Engine core config file: {}", config_file);
-    log_info("Engine log dir: {}", log_dir);
+        log_info("Working dir: {}", std::filesystem::current_path().string());
+        log_info("ARG VEC");
+        for (int i = 0; i < argc; ++i) {
+            log_info("  {}: {}", i, argv[i]);
+        }
+        log_info("ENVIRON VEC");
+        for (int i = 0; $environ[i] != nullptr; ++i) {
+            log_info("  {}: {}", i, $environ[i]);
+        }
+        log_info("Engine config dir: {}", config_dir);
+        log_info("Engine core config file: {}", config_file);
+        log_info("Engine log dir: {}", log_dir);
 
-    log_info("Loading engine core config");
-    update_core_config(false);
-    assetmgr::mgr_config amgr_config {};
-    log_info("Applying engine core config");
-    extract_assetmgr_config_from_kernel_config(m_config, amgr_config);
-    assetmgr::init(std::move(amgr_config));
-}
+        log_info("Loading engine core config");
+        update_core_config(false);
+        assetmgr::mgr_config amgr_config {};
+        log_info("Applying engine core config");
+        extract_assetmgr_config_from_kernel_config(m_config, amgr_config);
+        assetmgr::init(std::move(amgr_config));
+    }
 
-kernel::~kernel() {
-    log_info("Shutting down...");
-    log_info("Killing active scene...");
-    // Kill active scene before other subsystems are shut down
-    scene::s_active.reset();
-    log_info("Killing subsystems...");
-    m_subsystems.clear();
-    log_info("Patching core engine config...");
-    update_core_config(true);
-    assetmgr::shutdown();
+    kernel::~kernel() {
+        log_info("Shutting down...");
+        log_info("Killing active scene...");
+        // Kill active scene before other subsystems are shut down
+        scene::s_active.reset();
+        log_info("Killing subsystems...");
+        m_subsystems.clear();
+        log_info("Patching core engine config...");
+        update_core_config(true);
+        assetmgr::shutdown();
 #if USE_MIMALLOC
-    mi_stats_merge();
-    static std::stringstream ss;
-    mi_stats_print_out(+[](const char* msg, [[maybe_unused]] void* ud) {
-        ss << msg;
-    }, nullptr);
-    log_info("Allocator Stats:\n{}", ss.str());
+        mi_stats_merge();
+        static std::stringstream ss;
+        mi_stats_print_out(+[](const char* msg, [[maybe_unused]] void* ud) {
+            ss << msg;
+        }, nullptr);
+        log_info("Allocator Stats:\n{}", ss.str());
 #endif
-    log_info("System offline");
-    spdlog::shutdown();
-    std::cout << "Lunam Engine says goodbye :(\n";
-    std::cout.flush();
-    std::fflush(stdout);
-    g_kernel = nullptr;
-}
+        log_info("System offline");
+        spdlog::shutdown();
+        std::cout << "Lunam Engine says goodbye :(\n";
+        std::cout.flush();
+        std::fflush(stdout);
+        g_kernel = nullptr;
+    }
 
-static constinit double g_delta_time, g_time;
+    static constinit double g_delta_time, g_time;
 
-static auto compute_delta_time() noexcept {
-    static auto prev = std::chrono::high_resolution_clock::now();
-    auto now = std::chrono::high_resolution_clock::now();
-    auto delta = std::chrono::duration_cast<std::chrono::high_resolution_clock::duration>(now - prev);
-    g_delta_time = std::chrono::duration_cast<std::chrono::duration<double>>(delta).count();
-    prev = now;
-    g_time += g_delta_time;
-}
+    static auto compute_delta_time() noexcept {
+        static auto prev = std::chrono::high_resolution_clock::now();
+        auto now = std::chrono::high_resolution_clock::now();
+        auto delta = std::chrono::duration_cast<std::chrono::high_resolution_clock::duration>(now - prev);
+        g_delta_time = std::chrono::duration_cast<std::chrono::duration<double>>(delta).count();
+        prev = now;
+        g_time += g_delta_time;
+    }
 
-auto kernel::get() noexcept -> kernel& {
-    passert(g_kernel != nullptr);
-    return *g_kernel;
-}
+    auto kernel::get() noexcept -> kernel& {
+        passert(g_kernel != nullptr);
+        return *g_kernel;
+    }
 
-auto kernel::get_delta_time() noexcept -> double {
-    return g_delta_time;
-}
+    auto kernel::get_delta_time() noexcept -> double {
+        return g_delta_time;
+    }
 
-auto kernel::get_time() noexcept -> double {
-    return g_time;
-}
+    auto kernel::get_time() noexcept -> double {
+        return g_time;
+    }
 
-static constinit bool g_kernel_online = true;
-auto kernel::request_exit() noexcept -> void {
-    g_kernel_online = false;
-}
+    static constinit bool g_kernel_online = true;
+    auto kernel::request_exit() noexcept -> void {
+        g_kernel_online = false;
+    }
 
-auto kernel::on_new_scene_start(scene& scene) -> void {
-    std::ranges::for_each(m_subsystems, [&scene](const std::shared_ptr<subsystem>& sys) {
-       sys->on_start(scene);
-   });
-}
+    auto kernel::on_new_scene_start(scene& scene) -> void {
+        std::ranges::for_each(m_subsystems, [&scene](const std::shared_ptr<subsystem>& sys) {
+            sys->on_start(scene);
+        });
+    }
 
-HOTPROC auto kernel::run() -> void {
-    std::ranges::for_each(m_subsystems, [](const std::shared_ptr<subsystem>& sys) {
-        sys->on_prepare();
-    });
+    HOTPROC auto kernel::run() -> void {
+        std::ranges::for_each(m_subsystems, [](const std::shared_ptr<subsystem>& sys) {
+            sys->on_prepare();
+        });
 
-    const auto now = std::chrono::high_resolution_clock::now();
-    log_info("Boot time: {}ms", std::chrono::duration_cast<std::chrono::milliseconds>(now - boot_stamp).count());
+        const auto now = std::chrono::high_resolution_clock::now();
+        log_info("Boot time: {}ms", std::chrono::duration_cast<std::chrono::milliseconds>(now - boot_stamp).count());
 
-    // simulation loop
-    while (tick());
-}
+        // simulation loop
+        while (tick());
+    }
 
-HOTPROC auto kernel::tick() -> bool {
-    bool flag = g_kernel_online;
-    compute_delta_time();
-    profiler_new_frame();
-    std::for_each(m_subsystems.cbegin(), m_subsystems.cend(), [&flag](const std::shared_ptr<subsystem>& sys) {
-        //scoped_profiler_sample ps {std::string{sys->name}};
-        if (!sys->on_pre_tick()) [[unlikely]]
-            flag = false;
-    });
-    std::for_each(m_subsystems.cbegin(), m_subsystems.cend(), [](const std::shared_ptr<subsystem>& sys) {
-        sys->on_tick();
-    });
-    std::for_each(m_subsystems.crbegin(), m_subsystems.crend(), [](const std::shared_ptr<subsystem>& sys) {
-        sys->on_post_tick();
-    });
-    ++m_frame;
-    return flag;
-}
+    HOTPROC auto kernel::tick() -> bool {
+        bool flag = g_kernel_online;
+        compute_delta_time();
+        std::for_each(m_subsystems.cbegin(), m_subsystems.cend(), [&flag](const std::shared_ptr<subsystem>& sys) {
+            //scoped_profiler_sample ps {std::string{sys->name}};
+            if (!sys->on_pre_tick()) [[unlikely]]
+                flag = false;
+        });
+        std::for_each(m_subsystems.cbegin(), m_subsystems.cend(), [](const std::shared_ptr<subsystem>& sys) {
+            sys->on_tick();
+        });
+        std::for_each(m_subsystems.crbegin(), m_subsystems.crend(), [](const std::shared_ptr<subsystem>& sys) {
+            sys->on_post_tick();
+        });
+        ++m_frame;
+        return flag;
+    }
 
-auto kernel::resize() -> void {
-    std::ranges::for_each(m_subsystems, [](const std::shared_ptr<subsystem>& sys) {
-       sys->on_resize();
-   });
+    auto kernel::resize() -> void {
+        std::ranges::for_each(m_subsystems, [](const std::shared_ptr<subsystem>& sys) {
+            sys->on_resize();
+        });
+    }
 }

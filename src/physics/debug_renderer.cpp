@@ -3,7 +3,7 @@
 #include "debug_renderer.hpp"
 #include "../graphics/graphics_subsystem.hpp"
 
-namespace physics {
+namespace lu::physics {
     using graphics::graphics_subsystem;
 
     [[nodiscard]] static inline auto dd() noexcept -> graphics::debugdraw& { return graphics_subsystem::get().get_debug_draw(); }

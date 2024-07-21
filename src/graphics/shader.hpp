@@ -8,7 +8,7 @@
 
 #include <optional>
 
-namespace vkb {
+namespace lu::graphics {
     class shader : public no_copy, public no_move {
     public:
         static constexpr std::array<const std::pair<std::string_view, std::optional<shaderc_shader_kind>>, 8> k_extensions {

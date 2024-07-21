@@ -8,13 +8,13 @@
 #include <Jolt/Physics/Body/Body.h>
 #include <Jolt/Physics/Character/Character.h>
 
-namespace graphics {
+namespace lu::graphics {
     class mesh;
     class texture;
     class material;
 }
 
-namespace com {
+namespace lu::com {
     struct entity_flags final {
         enum $ : std::uint32_t {
             none = 0,

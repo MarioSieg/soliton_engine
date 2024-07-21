@@ -5,7 +5,7 @@
 
 #include "../../scripting/convar.hpp"
 
-namespace vkb {
+namespace lu::vkb {
     static convar<bool> cv_enable_vulkan_validation_layers {
         "Renderer.enableVulkanValidationLayers",
         false,

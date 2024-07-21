@@ -9,7 +9,7 @@
 
 #include "../core/core.hpp"
 
-namespace graphics {
+namespace lu::graphics {
     class thread_sig final : public no_copy, public no_move {
     public:
         static_assert(std::atomic_int32_t::is_always_lock_free);

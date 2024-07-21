@@ -7,7 +7,7 @@
 namespace NoesisApp {
     class noesis_lunam_file_stream final : public Noesis::Stream {
     public:
-        explicit noesis_lunam_file_stream(std::shared_ptr<assetmgr::istream>&& stream) : m_stream{std::move(stream)} {
+        explicit noesis_lunam_file_stream(std::shared_ptr<lu::assetmgr::istream>&& stream) : m_stream{std::move(stream)} {
             passert(m_stream != nullptr);
         }
 
@@ -31,7 +31,7 @@ namespace NoesisApp {
         }
 
         [[nodiscard]] static auto open(const char* uri) -> Noesis::Ptr<Noesis::Stream> {
-            auto stream = assetmgr::file_stream::open(uri);
+            auto stream = lu::assetmgr::file_stream::open(uri);
             if (stream) [[likely]] {
                 return *new noesis_lunam_file_stream {std::move(stream)}; // TODO: CLion's clangd says this is a memory leak, but it's ok is it
             } else {
@@ -39,11 +39,11 @@ namespace NoesisApp {
             }
         }
 
-        [[nodiscard]] auto get_stream() const -> const std::shared_ptr<assetmgr::istream>& {
+        [[nodiscard]] auto get_stream() const -> const std::shared_ptr<lu::assetmgr::istream>& {
             return m_stream;
         }
 
     private:
-        std::shared_ptr<assetmgr::istream> m_stream {};
+        std::shared_ptr<lu::assetmgr::istream> m_stream {};
     };
 }

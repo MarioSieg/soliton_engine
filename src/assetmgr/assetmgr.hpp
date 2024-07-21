@@ -13,7 +13,7 @@
 
 #include "../core/core.hpp"
 
-namespace assetmgr {
+namespace lu::assetmgr {
     enum class asset_source : std::uint8_t {
         filesystem, // asset loaded from regular file from disk
         memory, // asset loaded from memory buffer

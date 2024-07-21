@@ -11,7 +11,7 @@
 #undef False
 #endif
 
-namespace vkb {
+namespace lu::vkb {
     swapchain::swapchain(vk::Instance instance, vk::PhysicalDevice physical_device, vk::Device logical_device) {
         passert(instance);
         passert(physical_device);

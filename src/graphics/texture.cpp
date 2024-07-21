@@ -10,7 +10,7 @@
 #include <bimg/decode.h>
 #include <Simd/SimdLib.hpp>
 
-namespace graphics {
+namespace lu::graphics {
     // Textures are converted to this format when native format is not supported on the GPU
     static constexpr bimg::TextureFormat::Enum k_fallback_format = bimg::TextureFormat::RGBA8;
 

@@ -7,7 +7,7 @@
 #include "../../core/kernel.hpp"
 #include "../shader_registry.hpp"
 
-namespace graphics::pipelines {
+namespace lu::graphics::pipelines {
     // WARNING! RENDER THREAD LOCAL
     HOTPROC auto pbr_pipeline::render_mesh(
         const vk::CommandBuffer cmd_buf,
@@ -77,7 +77,7 @@ namespace graphics::pipelines {
         device.freeMemory(m_brdf_lut.memory, vkb::get_alloc());
     }
 
-    auto pbr_pipeline::configure_shaders(std::vector<std::pair<std::shared_ptr<vkb::shader>, vk::ShaderStageFlagBits>>& cfg) -> void {
+    auto pbr_pipeline::configure_shaders(std::vector<std::pair<std::shared_ptr<shader>, vk::ShaderStageFlagBits>>& cfg) -> void {
         auto vs = shader_registry::get().get_shader("pbr_uber_surface.vert");
         auto fs = shader_registry::get().get_shader("pbr_uber_surface.frag");
         cfg.emplace_back(vs, vk::ShaderStageFlagBits::eVertex);

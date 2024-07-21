@@ -410,9 +410,7 @@ function editor:draw_main_menu_bar()
         if ui.IsItemHovered() then
             ui.SetTooltip('Reload specific subsystems')
         end
-        ui.Separator()
-        ui.Text('FPS: %g', math.floor(time.fps_avg))
-        if profiler.isProfilerRunning then
+        if profiler.is_profiler_running then
             ui.Separator()
             ui.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xff0000ff)
             ui.TextUnformatted(icons.i_stopwatch)

@@ -8,7 +8,7 @@
 
 #include "shader.hpp"
 
-namespace graphics {
+namespace lu::graphics {
     class mesh;
     class material;
 
@@ -43,7 +43,7 @@ namespace graphics {
         ) -> void;
 
         virtual auto pre_configure() -> void;
-        virtual auto configure_shaders(std::vector<std::pair<std::shared_ptr<vkb::shader>, vk::ShaderStageFlagBits>>& cfg) -> void = 0;
+        virtual auto configure_shaders(std::vector<std::pair<std::shared_ptr<shader>, vk::ShaderStageFlagBits>>& cfg) -> void = 0;
         virtual auto configure_pipeline_layout(std::vector<vk::DescriptorSetLayout>& layouts, std::vector<vk::PushConstantRange>& ranges) -> void = 0;
         virtual auto configure_vertex_info(std::vector<vk::VertexInputBindingDescription>& cfg, std::vector<vk::VertexInputAttributeDescription>& bindings) -> void;
         virtual auto configure_viewport_state(vk::PipelineViewportStateCreateInfo& cfg) -> void;

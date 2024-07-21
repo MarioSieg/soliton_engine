@@ -6,7 +6,6 @@
 #include "../../graphics/imgui/ImGuiProfilerRenderer.h"
 #include "../../graphics/imgui/ImGuizmo.h"
 #include "../../physics/physics_subsystem.hpp"
-#include "../../core/profiler.hpp"
 
 
 using graphics::graphics_subsystem;

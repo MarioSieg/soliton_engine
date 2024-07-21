@@ -32,9 +32,9 @@
 #include "../scripting/convar.hpp"
 #include "Jolt/Physics/Collision/Shape/ScaledShape.h"
 
-using scripting::scripting_subsystem;
+namespace lu::physics {
+    using scripting::scripting_subsystem;
 
-namespace physics {
 	namespace Layers {
 		static constexpr JPH::ObjectLayer NON_MOVING = 0;
 		static constexpr JPH::ObjectLayer MOVING = 1;

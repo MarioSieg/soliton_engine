@@ -6,9 +6,9 @@
 #include "graphics_subsystem.hpp"
 #include "../scripting/convar.hpp"
 
-using scripting::scripting_subsystem;
+namespace lu::graphics {
+    using scripting::scripting_subsystem;
 
-namespace graphics {
     static convar<std::string> cv_error_texture {"Renderer.fallbackTexture", std::nullopt, scripting::convar_flags::read_only};
     static convar<std::string> cv_flat_normal {"Renderer.flatNormalTexture", std::nullopt, scripting::convar_flags::read_only};
 
