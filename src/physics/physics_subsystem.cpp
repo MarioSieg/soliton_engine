@@ -39,12 +39,12 @@ namespace lu::physics {
 		static constexpr JPH::ObjectLayer NON_MOVING = 0;
 		static constexpr JPH::ObjectLayer MOVING = 1;
 		static constexpr JPH::ObjectLayer NUM_LAYERS = 2;
-	};
+	}
 	namespace BroadPhaseLayers {
 		static constexpr JPH::BroadPhaseLayer NON_MOVING {0};
 		static constexpr JPH::BroadPhaseLayer MOVING {1};
 		static constexpr JPH::uint NUM_LAYERS = 2;
-	};
+	}
 
 	// BroadPhaseLayerInterface implementation
 	// This defines a mapping between object and broadphase layers.
@@ -95,24 +95,10 @@ namespace lu::physics {
 		}
 	};
 
-	[[maybe_unused]]
-	static thread_local rnd_gamerand_t prng;
-
-	[[maybe_unused]]
-	static inline auto next_f32_in_range(const float min, const float max) noexcept -> float {
-		return min + (max - min) * rnd_gamerand_nextf(&prng);
-	}
-
 	class ContactListenerImpl : public JPH::ContactListener {
 		virtual auto OnContactAdded(const JPH::Body& inBody1, const JPH::Body& inBody2,
 		                            const JPH::ContactManifold& inManifold,
 		                            JPH::ContactSettings& ioSettings) -> void override {
-			//const JPH::Vec3 offset {
-			//	next_f32_in_range(0.01f, 0.1f),
-			//	next_f32_in_range(0.01f, 0.1f),
-			//	next_f32_in_range(0.01f, 0.1f)
-			//};
-			//ioSettings.mRelativeAngularSurfaceVelocity = offset;
 			ioSettings.mCombinedFriction = std::sqrt(inBody1.GetFriction() * inBody2.GetFriction());
 			ioSettings.mCombinedRestitution = std::max(inBody1.GetRestitution(), inBody2.GetRestitution());
 		}
