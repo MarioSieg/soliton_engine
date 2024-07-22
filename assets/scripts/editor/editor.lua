@@ -346,9 +346,12 @@ function editor:draw_main_menu_bar()
             if ui.MenuItem('Perform Full GC Cycle') then
                 collectgarbage_full_cycle()
             end
-            if ui.MenuItem('Show ui Demo Window', nil, self.show_demo_window) then
+            if ui.MenuItem('Show UI Demo Window', nil, self.show_demo_window) then
                 self.show_demo_window = not self.show_demo_window
             end
+            ui.Separator()
+            ui.TextUnformatted(string.format('GC Mem: %.03f MiB', collectgarbage('count') / 1024))
+            ui.TextUnformatted(string.format('Sim Hz: %d, T: %.01f, %sT: %f', time.fps_avg, time.time, icons.i_triangle, time.delta_time))
             ui.EndMenu()
         end
         ui.Separator()
