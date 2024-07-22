@@ -17,7 +17,7 @@ namespace lu::graphics {
     class texture final : public assetmgr::asset {
     public:
         explicit texture(std::string&& asset_path);
-        explicit texture(std::span<const std::uint8_t> raw_mem);
+        explicit texture(std::span<const std::byte> raw_mem);
         texture(
             vk::ImageType type,
             std::uint32_t width,
@@ -87,7 +87,7 @@ namespace lu::graphics {
             vk::ImageTiling tiling = vk::ImageTiling::eOptimal
         ) -> void;
 
-        auto parse_from_raw_memory(std::span<const std::uint8_t> texels) -> void;
+        auto parse_from_raw_memory(std::span<const std::byte> texels) -> void;
 
         auto upload(
             void* img,

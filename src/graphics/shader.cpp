@@ -6,6 +6,7 @@
 #include "file_includer.hpp"
 
 #include "../assetmgr/assetmgr.hpp"
+#include <filesystem>
 
 namespace lu::graphics {
     // Returns GLSL shader source text after preprocessing.
@@ -91,7 +92,14 @@ namespace lu::graphics {
 
         // Load string BLOB from file
         std::string buffer {};
-        assetmgr::load_asset_text_or_panic(file_name, buffer);
+        bool success {};
+        assetmgr::use_primary_accessor([&](assetmgr::asset_accessor& acc) {
+            success = acc.load_txt_file(file_name.c_str(), buffer);
+        });
+        if (!success) [[unlikely]] {
+            log_error("Failed to load shader file: {}", file_name);
+            return nullptr;
+        }
 
         shaderc::CompileOptions options {};
         options.SetOptimizationLevel(shaderc_optimization_level_performance);

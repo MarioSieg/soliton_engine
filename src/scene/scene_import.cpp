@@ -25,7 +25,6 @@ namespace lu {
         const auto start = std::chrono::high_resolution_clock::now();
 
         Assimp::Importer importer {};
-        importer.SetIOHandler(new graphics::lunam_assimp_io_system{}); // use my IO system
         passert(importer.ValidateFlags(load_flags));
         const aiScene* scene = importer.ReadFile(path.c_str(), load_flags);
         if (!scene || !scene->mNumMeshes) [[unlikely]] {
@@ -81,9 +80,7 @@ namespace lu {
                         aiString name {};
                         mat->Get(AI_MATKEY_TEXTURE(*textureType, 0), name);
                         std::string tex_path = asset_root + name.C_Str();
-                        if (assetmgr::validate_path(tex_path)) [[likely]] {
-                            return get_asset_registry<graphics::texture>().load(std::move(tex_path));
-                        }
+                        return get_asset_registry<graphics::texture>().load(std::move(tex_path));
                     }
                     return nullptr;
                 };

@@ -61,7 +61,7 @@ namespace lu {
         config["asset_mgr"]["validate_file_system_on_boot"] = "true";
     }
 
-    static auto extract_assetmgr_config_from_kernel_config(const mINI::INIStructure& config, assetmgr::mgr_config& out) -> void {
+    static auto extract_assetmgr_config_from_kernel_config(const mINI::INIStructure& config, assetmgr::assetmgr_config& out) -> void {
         out.asset_root = config.get("asset_mgr").get("asset_root");
         out.allow_standalone_asset_loading = config.get("asset_mgr").get("allow_standalone_asset_loading") == "true";
         out.allow_source_asset_loading = config.get("asset_mgr").get("allow_source_asset_loading") == "true";
@@ -171,7 +171,7 @@ static auto redirect_io() -> void {
 
         log_info("Loading engine core config");
         update_core_config(false);
-        assetmgr::mgr_config amgr_config {};
+        assetmgr::assetmgr_config amgr_config {};
         log_info("Applying engine core config");
         extract_assetmgr_config_from_kernel_config(m_config, amgr_config);
         assetmgr::init(std::move(amgr_config));

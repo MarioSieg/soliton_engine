@@ -449,19 +449,31 @@ namespace lu::platform {
 
         // set window icon
         if constexpr (!PLATFORM_OSX) { // Cocoa - regular windows do not have icons on macOS
-            std::vector<std::uint8_t> pixel_buf {};
+            std::vector<std::byte> pixel_buf {};
             const std::string k_window_icon_file = cv_window_icon();
-            assetmgr::load_asset_blob_or_panic(k_window_icon_file, pixel_buf);
-            int w, h;
-            stbi_uc *pixels = stbi_load_from_memory(pixel_buf.data(), static_cast<int>(pixel_buf.size()), &w, &h, nullptr, STBI_rgb_alpha);
-            passert(pixels != nullptr);
-            const GLFWimage icon {
-                .width = w,
-                .height = h,
-                .pixels = pixels
-            };
-            glfwSetWindowIcon(s_window, 1, &icon);
-            stbi_image_free(pixels);
+            bool success = false;
+            assetmgr::use_primary_accessor([&](assetmgr::asset_accessor& acc) {
+                success = acc.load_bin_file(k_window_icon_file.c_str(), pixel_buf);
+            });
+            if (success) {
+                int w, h;
+                stbi_uc* pixels = stbi_load_from_memory(
+                    reinterpret_cast<const std::uint8_t*>(pixel_buf.data()),
+                    static_cast<int>(pixel_buf.size()),
+                    &w,
+                    &h,
+                    nullptr,
+                    STBI_rgb_alpha
+                );
+                passert(pixels != nullptr);
+                const GLFWimage icon {
+                    .width = w,
+                    .height = h,
+                    .pixels = pixels
+                };
+                glfwSetWindowIcon(s_window, 1, &icon);
+                stbi_image_free(pixels);
+            }
         }
         NFD_Init();
     }

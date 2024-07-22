@@ -73,7 +73,6 @@ namespace lu::graphics {
         Assimp::DefaultLogger::get()->attachStream(new assimp_logger {}, Assimp::Logger::Info | Assimp::Logger::Err | Assimp::Logger::Warn);
 
         Assimp::Importer importer {};
-        importer.SetIOHandler(new lunam_assimp_io_system{}); // use my IO system
         const auto load_flags = k_import_flags;
         passert(importer.ValidateFlags(load_flags));
         const aiScene* scene = importer.ReadFile(get_asset_path().c_str(), load_flags);

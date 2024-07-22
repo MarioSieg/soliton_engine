@@ -53,18 +53,14 @@ namespace lu::scripting {
     auto scripting_subsystem::exec_file(const std::string& file) -> bool {
         // this file must be loaded without asset mgr, as asset mgr is not yet initialized and
         // assetmgr needs access to the engine config which is stored in a lua script
-        std::string full_path {"assets/scripts/" + file};
-        std::ifstream ifs { full_path }; // todo: make this configurable
-        if (!ifs.is_open()) [[unlikely]] {
-            panic("Failed to open initial boot Lua file: {}", full_path);
-        }
-        std::string lua_script {};
-        ifs.seekg(0, std::ios::end);
-        lua_script.resize(ifs.tellg());
-        ifs.seekg(0, std::ios::beg);
-        ifs.read(lua_script.data(), static_cast<std::streamsize>(lua_script.size()));
-        ifs.close();
-        if (luaL_dostring(m_L, lua_script.c_str()) != LUA_OK) [[unlikely]] {
+        std::string full_path {"/assets/scripts/" + file};
+        std::string lua_source_code {};
+        assetmgr::use_primary_accessor([&](assetmgr::asset_accessor& acc) {
+            if (!acc.load_txt_file(full_path.c_str(), lua_source_code)) {
+                lua_log_error("Failed to load script file '{}'", full_path);
+            }
+        });
+        if (luaL_dostring(m_L, lua_source_code.c_str()) != LUA_OK) [[unlikely]] {
             lua_log_error("script error in {}: {}", full_path, lua_tostring(m_L, -1));
             lua_pop(m_L, 1);
             return false;
