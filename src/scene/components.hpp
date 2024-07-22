@@ -80,10 +80,10 @@ namespace lu::com {
 
         camera() noexcept {
             DirectX::XMStoreFloat2(&viewport, DirectX::XMVectorZero());
-            DirectX::XMStoreFloat3(&clear_color, DirectX::XMVectorZero());
+            DirectX::XMStoreFloat3(&clear_color, DirectX::XMVectorSplatOne());
         }
 
-        static inline flecs::entity active_camera = flecs::entity::null(); // main camera, resetted every frame
+        static inline flecs::entity active_camera = flecs::entity::null(); // main camera, retested every frame
 
        [[nodiscard]] static auto XM_CALLCONV compute_view(const transform& transform) noexcept -> DirectX::XMMATRIX {
            const DirectX::XMVECTOR eyePos { DirectX::XMLoadFloat4(&transform.position) };
