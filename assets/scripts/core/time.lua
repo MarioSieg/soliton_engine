@@ -13,7 +13,7 @@ ffi.cdef [[
 
 local min, max = math.min, math.max
 
-local samples = 128
+local samples = 256
 
 local time = {
     delta_time = 0.0, -- in seconds
