@@ -9,7 +9,6 @@
 
 #define RND_IMPLEMENTATION
 #include <execution>
-#include <rnd.h>
 #include <Jolt/Jolt.h>
 #include <Jolt/RegisterTypes.h>
 #include <Jolt/Core/Factory.h>
@@ -166,7 +165,6 @@ namespace lu::physics {
     	);
     	m_physics_system.SetGravity(JPH::Vec3{0.0f, -9.81f, 0.0f}); // set gravity to earth's gravity
     	m_physics_system.SetContactListener(&*m_contact_listener);
-    	rnd_gamerand_seed(&prng, 0xdeadbeef);
     	m_debug_renderer = std::make_unique<debug_renderer>();
     }
 

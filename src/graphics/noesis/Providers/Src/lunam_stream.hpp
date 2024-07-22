@@ -11,7 +11,7 @@ namespace NoesisApp {
             passert(m_stream != nullptr);
         }
 
-        virtual auto SetPosition(const std::uint32_t pos) -> void override{
+        virtual auto SetPosition(const std::uint32_t pos) -> void override {
             m_stream->set_pos(pos, std::ios::beg);
         }
         virtual auto GetPosition() const -> std::uint32_t override {

@@ -2,11 +2,9 @@
 
 #pragma once
 
-#include <array>
-#include <string>
-#include <filesystem>
-#include <fstream>
-#include <vector>
+#include "asset.hpp"
+#include "asset_registry.hpp"
+#include "stream.hpp"
 
 #include <uuid.h>
 
