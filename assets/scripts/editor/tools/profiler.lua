@@ -40,7 +40,16 @@ function profiler:render()
         if ui.BeginTabBar('##profiler_tabs') then
             if ui.BeginTabItem(icons.i_bezier_curve .. ' Histogram') then
                 local plot_size = ui.ImVec2(default_window_size.x, 200.0)
-                ui.PlotHistogram_FloatPtr('##frame_times', time.fps_histogram, time.samples, 0, nil, 0.0, time.fps_avg * 1.5, plot_size)
+                ui.PlotHistogram_FloatPtr(
+                    '##frame_times',
+                    time.fps_histogram,
+                    time.samples,
+                    0,
+                    nil,
+                    0.0,
+                    time.fps_avg * 1.5,
+                    plot_size
+                )
                 ui.EndTabItem()
             end
             if ui.BeginTabItem(icons.i_alarm_clock .. ' General') then

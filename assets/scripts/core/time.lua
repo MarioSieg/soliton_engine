@@ -22,11 +22,11 @@ local time = {
     time_scale = 1.0, -- 1.0 = realtime, 0.0 = paused
     frame = 0, -- frame counter
     fps = 0.0, -- frames per second
-    fps_min = 10.0^5, -- minimum frames per second
-    fps_max = -10.0^5, -- maximum frames per second
+    fps_min = math.huge, -- minimum frames per second
+    fps_max = -math.huge, -- maximum frames per second
     fps_avg = 0.0, -- average frames per second over N samples
-    fps_avg_min = 10.0^5, -- minimum avg frames per second
-    fps_avg_max = -10.0^5, -- maximum avg frames per second
+    fps_avg_min = math.huge, -- minimum avg frames per second
+    fps_avg_max = -math.huge, -- maximum avg frames per second
     fps_histogram = ffi.new('float[?]', samples), -- frames per second histogram
     samples = samples
 }
