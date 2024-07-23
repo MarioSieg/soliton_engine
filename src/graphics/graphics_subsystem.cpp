@@ -113,7 +113,6 @@ namespace lu::graphics {
                 log_warn("No camera found in scene");
                 return;
             }
-        com::camera::active_camera = main_cam;
         s_camera_transform = *main_cam.get<com::transform>();
         com::camera& cam = *main_cam.get_mut<com::camera>();
         if (cam.auto_viewport) {
@@ -227,7 +226,6 @@ namespace lu::graphics {
 
             vkb::ctx().end_frame(m_cmd);
         }
-        com::camera::active_camera = flecs::entity::null();
     }
 
     auto graphics_subsystem::on_resize() -> void {

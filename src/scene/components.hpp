@@ -80,15 +80,13 @@ namespace lu::com {
 
         camera() noexcept {
             DirectX::XMStoreFloat2(&viewport, DirectX::XMVectorZero());
-            DirectX::XMStoreFloat3(&clear_color, DirectX::XMVectorSplatOne());
+            DirectX::XMStoreFloat3(&clear_color, DirectX::XMVectorReplicate(0.05f));
         }
 
-        static inline flecs::entity active_camera = flecs::entity::null(); // main camera, retested every frame
-
        [[nodiscard]] static auto XM_CALLCONV compute_view(const transform& transform) noexcept -> DirectX::XMMATRIX {
-           const DirectX::XMVECTOR eyePos { DirectX::XMLoadFloat4(&transform.position) };
-           const DirectX::XMVECTOR focusPos { DirectX::XMVectorAdd(eyePos, transform.forward_vec()) };
-           return DirectX::XMMatrixLookAtLH(eyePos, focusPos, DirectX::XMVectorSet(.0F, 1.F, .0F, .0F));
+           const DirectX::XMVECTOR eye {DirectX::XMLoadFloat4(&transform.position) };
+           const DirectX::XMVECTOR focal {DirectX::XMVectorAdd(eye, transform.forward_vec()) };
+           return DirectX::XMMatrixLookAtLH(eye, focal, DirectX::XMVectorSet(.0F, 1.F, .0F, .0F));
        }
 
        [[nodiscard]] auto XM_CALLCONV compute_projection() const noexcept -> DirectX::XMMATRIX {
@@ -112,10 +110,10 @@ namespace lu::com {
     };
 
     struct rigidbody final {
-        JPH::BodyID body_id {};
+        JPH::BodyID phys_body {};
     };
 
     struct character_controller final {
-        JPH::Ref<JPH::Character> characer {};
+        JPH::Ref<JPH::Character> phys_character {};
     };
 }

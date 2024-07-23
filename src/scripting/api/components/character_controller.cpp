@@ -8,7 +8,7 @@ LUA_INTEROP_API auto __lu_com_character_controller_get_linear_velocity(const lua
     std::optional<flecs::entity> ent {resolve_entity(id)};
     if (!ent) [[unlikely]] { return {}; }
     if (const auto* cc = ent->get<com::character_controller>(); cc) [[likely]] {
-        return cc->characer->GetLinearVelocity();
+        return cc->phys_character->GetLinearVelocity();
     }
     return {};
 }
@@ -17,7 +17,7 @@ LUA_INTEROP_API auto __lu_com_character_controller_set_linear_velocity(const lua
     std::optional<flecs::entity> ent {resolve_entity(id)};
     if (!ent) [[unlikely]] { return; }
     if (auto* cc = ent->get_mut<com::character_controller>(); cc) [[likely]] {
-        cc->characer->SetLinearVelocity(velocity);
+        cc->phys_character->SetLinearVelocity(velocity);
     }
 }
 
@@ -26,7 +26,7 @@ LUA_INTEROP_API auto __lu_com_character_controller_get_ground_state(const lua_en
     std::optional<flecs::entity> ent {resolve_entity(id)};
     if (!ent) [[unlikely]] { return false; }
     if (const auto* cc = ent->get<com::character_controller>(); cc) [[likely]] {
-        return static_cast<int>(cc->characer->GetGroundState());
+        return static_cast<int>(cc->phys_character->GetGroundState());
     }
     return static_cast<int>(JPH::CharacterBase::EGroundState::NotSupported);
 }
@@ -35,7 +35,7 @@ LUA_INTEROP_API auto __lu_com_character_controller_get_ground_normal(const lua_e
     std::optional<flecs::entity> ent {resolve_entity(id)};
     if (!ent) [[unlikely]] { return {}; }
     if (const auto* cc = ent->get<com::character_controller>(); cc) [[likely]] {
-        return cc->characer->GetGroundNormal();
+        return cc->phys_character->GetGroundNormal();
     }
     return {};
 }

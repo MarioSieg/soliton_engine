@@ -12,9 +12,9 @@ LUA_INTEROP_API auto __lu_com_transform_set_pos(const lua_entity_id id, const do
     // as the transform position will be overwritten by the physics system
     if (const auto* rigidbody = ent->get<const com::rigidbody>(); rigidbody) {
         auto& bi = physics::physics_subsystem::get_physics_system().GetBodyInterface();
-        bi.SetPosition(rigidbody->body_id, JPH::Vec3{static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)}, JPH::EActivation::Activate);
+        bi.SetPosition(rigidbody->phys_body, JPH::Vec3{static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)}, JPH::EActivation::Activate);
     } else if (const auto* cc = ent->get<const com::character_controller>(); cc) {
-        cc->characer->SetPosition(JPH::Vec3{static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)}, JPH::EActivation::Activate);
+        cc->phys_character->SetPosition(JPH::Vec3{static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)}, JPH::EActivation::Activate);
     } else if (auto* transform = ent->get_mut<com::transform>(); transform) [[likely]] {
         transform->position = {
             static_cast<float>(x),
@@ -41,9 +41,9 @@ LUA_INTEROP_API auto __lu_com_transform_set_rot(const lua_entity_id id, const do
     // as the transform position will be overwritten by the physics system
     if (const auto* rigidbody = ent->get<const com::rigidbody>(); rigidbody) {
         auto& bi = physics::physics_subsystem::get_physics_system().GetBodyInterface();
-        bi.SetRotation(rigidbody->body_id, JPH::Quat{static_cast<float>(x), static_cast<float>(y), static_cast<float>(z), static_cast<float>(w)}, JPH::EActivation::Activate);
+        bi.SetRotation(rigidbody->phys_body, JPH::Quat{static_cast<float>(x), static_cast<float>(y), static_cast<float>(z), static_cast<float>(w)}, JPH::EActivation::Activate);
     } else if (const auto* cc = ent->get<const com::character_controller>(); cc) {
-        cc->characer->SetRotation(JPH::Quat{static_cast<float>(x), static_cast<float>(y), static_cast<float>(z), static_cast<float>(w)}, JPH::EActivation::Activate);
+        cc->phys_character->SetRotation(JPH::Quat{static_cast<float>(x), static_cast<float>(y), static_cast<float>(z), static_cast<float>(w)}, JPH::EActivation::Activate);
     } else if (auto* transform = ent->get_mut<com::transform>(); transform) [[likely]] {
         transform->rotation = {
             static_cast<float>(x),

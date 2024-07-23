@@ -201,11 +201,11 @@ namespace lu::physics {
 			settings->mSupportingVolume = JPH::Plane(JPH::Vec3::sAxisY(), -cCharacterRadiusStanding); // Accept contacts that touch the lower sphere of the capsule
 			JPH::Ref<JPH::Character> character = new JPH::Character(settings, {}, JPH::Quat::sIdentity(), 0, &m_physics_system);
 			character->AddToPhysicsSystem(JPH::EActivation::Activate);
-			cc.characer = character;
+			cc.phys_character = character;
 		});
 
     	scene.observer<com::character_controller>().event(flecs::OnRemove).each([&](com::character_controller& cc) {
-    		cc.characer->RemoveFromPhysicsSystem();
+    		cc.phys_character->RemoveFromPhysicsSystem();
 		});
 
 		log_info("Creating static colliders...");
@@ -262,16 +262,16 @@ namespace lu::physics {
 
     	// sync loop 1 rigidbody => transform
     	active.filter<const com::rigidbody, com::transform>().each([&](const com::rigidbody& rb, com::transform& transform) {
-			const JPH::BodyID body_id = rb.body_id;
+			const JPH::BodyID body_id = rb.phys_body;
 			transform.position = std::bit_cast<DirectX::XMFLOAT4>(bi.GetPosition(body_id));
 			transform.rotation = std::bit_cast<DirectX::XMFLOAT4>(bi.GetRotation(body_id));
 		});
 
     	// sync loop 2 character controller => transform
     	active.filter<const com::character_controller, com::transform>().each([&](const com::character_controller& cc, com::transform& transform) {
-			cc.characer->PostSimulation(0.05f);
-    		transform.position = std::bit_cast<DirectX::XMFLOAT4>(cc.characer->GetPosition());
-			transform.rotation = std::bit_cast<DirectX::XMFLOAT4>(cc.characer->GetPosition());
+			cc.phys_character->PostSimulation(0.05f);
+    		transform.position = std::bit_cast<DirectX::XMFLOAT4>(cc.phys_character->GetPosition());
+			transform.rotation = std::bit_cast<DirectX::XMFLOAT4>(cc.phys_character->GetPosition());
 		});
     }
 
