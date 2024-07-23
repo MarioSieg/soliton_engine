@@ -3,6 +3,7 @@
 #include "assetmgr.hpp"
 
 #include <atomic>
+#include <filesystem>
 #include <fstream>
 
 #include <simdutf.h>

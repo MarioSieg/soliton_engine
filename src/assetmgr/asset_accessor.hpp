@@ -2,7 +2,9 @@
 
 #pragma once
 
+#include <atomic>
 #include <cstddef>
+#include <string>
 #include <vector>
 
 extern "C" struct assetsys_t;
