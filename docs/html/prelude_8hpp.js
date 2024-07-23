@@ -6,8 +6,8 @@ var prelude_8hpp =
     [ "VULKAN_HPP_NO_EXCEPTIONS", "prelude_8hpp.html#a08d8e7f96ab7fd990645f24936d5e0d3", null ],
     [ "VULKAN_HPP_NO_STRUCT_CONSTRUCTORS", "prelude_8hpp.html#ac7b5ddfbd5f00530d938523572900720", null ],
     [ "VULKAN_HPP_NO_STRUCT_SETTERS", "prelude_8hpp.html#a46857abbbd41f54b6d7913b382698b1f", null ],
-    [ "dump_physical_device_props", "prelude_8hpp.html#aa0166fc2da0a8f0bbbe5d249c4ccdaa7", null ],
-    [ "get_alloc", "prelude_8hpp.html#a241b2cfb8fe996667ee2aa1d0df1b92b", null ],
-    [ "k_msaa_sample_count", "prelude_8hpp.html#a1839dd017d668dc0edcf7c53279854c8", null ],
-    [ "s_vk_alloc", "prelude_8hpp.html#aa207c53a5c4bd403dce15657dbad1b37", null ]
+    [ "dump_physical_device_props", "prelude_8hpp.html#af1078a60c69ff599b0cf00ae392df473", null ],
+    [ "get_alloc", "prelude_8hpp.html#a4cacff2997c49bcc7b2d90e8004ccbb6", null ],
+    [ "k_msaa_sample_count", "prelude_8hpp.html#a460e70cec68451a91e04de716e061537", null ],
+    [ "s_vk_alloc", "prelude_8hpp.html#a15fe75cda4ed9bf22438e81202889b48", null ]
 ];

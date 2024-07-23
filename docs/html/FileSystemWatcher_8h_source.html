@@ -26,7 +26,6 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr id="projectrow">
-  <td id="projectlogo"><img alt="Logo" src="logo_small.png"/></td>
   <td id="projectalign">
    <div id="projectname">Lunam Engine
    </div>
@@ -113,13 +112,13 @@ $(document).ready(function(){initNavTree('FileSystemWatcher_8h_source.html','');
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* Path(<span class="keywordtype">void</span>* watcher);</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keyword">static</span> Delegate&lt;void (<span class="keywordtype">void</span>* sender, <span class="keyword">const</span> <span class="keywordtype">char</span>* name)&gt;&amp; Changed(<span class="keywordtype">void</span>* watcher);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keyword">static</span> Delegate&lt;<a class="code hl_variable" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> (<span class="keywordtype">void</span>* sender, <span class="keyword">const</span> <span class="keywordtype">char</span>* name)&gt;&amp; Changed(<span class="keywordtype">void</span>* watcher);</div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keyword">static</span> Delegate&lt;void (<span class="keywordtype">void</span>* sender, <span class="keyword">const</span> <span class="keywordtype">char</span>* name)&gt;&amp; Created(<span class="keywordtype">void</span>* watcher);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keyword">static</span> Delegate&lt;<a class="code hl_variable" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> (<span class="keywordtype">void</span>* sender, <span class="keyword">const</span> <span class="keywordtype">char</span>* name)&gt;&amp; Created(<span class="keywordtype">void</span>* watcher);</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">static</span> Delegate&lt;void (<span class="keywordtype">void</span>* sender, <span class="keyword">const</span> <span class="keywordtype">char</span>* name)&gt;&amp; Deleted(<span class="keywordtype">void</span>* watcher);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">static</span> Delegate&lt;<a class="code hl_variable" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> (<span class="keywordtype">void</span>* sender, <span class="keyword">const</span> <span class="keywordtype">char</span>* name)&gt;&amp; Deleted(<span class="keywordtype">void</span>* watcher);</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keyword">static</span> Delegate&lt;void (<span class="keywordtype">void</span>* sender, <span class="keyword">const</span> <span class="keywordtype">char</span>* oldName, <span class="keyword">const</span> <span class="keywordtype">char</span>* newName)&gt;&amp; Renamed(<span class="keywordtype">void</span>* watcher);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keyword">static</span> Delegate&lt;<a class="code hl_variable" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> (<span class="keywordtype">void</span>* sender, <span class="keyword">const</span> <span class="keywordtype">char</span>* oldName, <span class="keyword">const</span> <span class="keywordtype">char</span>* newName)&gt;&amp; Renamed(<span class="keywordtype">void</span>* watcher);</div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> Destroy(<span class="keywordtype">void</span>* watcher);</div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>};</div>
@@ -129,6 +128,7 @@ $(document).ready(function(){initNavTree('FileSystemWatcher_8h_source.html','');
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aProvidersApi_8h_html"><div class="ttname"><a href="ProvidersApi_8h.html">ProvidersApi.h</a></div></div>
 <div class="ttc" id="aProvidersApi_8h_html_a2e77886ac35d91a1d3f9686bf046f803"><div class="ttname"><a href="ProvidersApi_8h.html#a2e77886ac35d91a1d3f9686bf046f803">NS_APP_PROVIDERS_API</a></div><div class="ttdeci">#define NS_APP_PROVIDERS_API</div><div class="ttdef"><b>Definition:</b> ProvidersApi.h:15</div></div>
+<div class="ttc" id="atransform_8lua_8cpp_html_a7fb99d5538bec25633e1c2b62f5033d5"><div class="ttname"><a href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a></div><div class="ttdeci">const double const double const double z void</div><div class="ttdef"><b>Definition:</b> transform.lua.cpp:8</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

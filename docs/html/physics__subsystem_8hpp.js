@@ -1,4 +1,4 @@
 var physics__subsystem_8hpp =
 [
-    [ "physics::physics_subsystem", "classphysics_1_1physics__subsystem.html", "classphysics_1_1physics__subsystem" ]
+    [ "lu::physics::physics_subsystem", "classlu_1_1physics_1_1physics__subsystem.html", "classlu_1_1physics_1_1physics__subsystem" ]
 ];

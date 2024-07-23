@@ -1,11 +1,11 @@
 var convar_8hpp =
 [
-    [ "scripting::convar_flags", "structscripting_1_1convar__flags.html", "structscripting_1_1convar__flags" ],
-    [ "scripting::convar< T >", "classscripting_1_1convar.html", "classscripting_1_1convar" ],
-    [ "scripting::is_con_var_type", "conceptscripting_1_1is__con__var__type.html", null ],
-    [ "convar_ref", "convar_8hpp.html#a8560c061c5ac3d82ca69699a6348fa54", null ],
-    [ "disconnect_all_convars", "convar_8hpp.html#a60e5088f805db3be38fcf2a4e90bc1f9", null ],
-    [ "s_convar_i", "convar_8hpp.html#ab1e36722e3c365ef5bb234b75f2a3d4b", null ],
-    [ "s_convars", "convar_8hpp.html#a7b45f4ffa26c303e93dba5edabb23252", null ],
-    [ "tid", "convar_8hpp.html#a1f2496cd0cc3da45f154a636f1822630", null ]
+    [ "lu::scripting::convar_flags", "structlu_1_1scripting_1_1convar__flags.html", "structlu_1_1scripting_1_1convar__flags" ],
+    [ "lu::scripting::convar< T >", "classlu_1_1scripting_1_1convar.html", "classlu_1_1scripting_1_1convar" ],
+    [ "lu::scripting::is_con_var_type", "conceptlu_1_1scripting_1_1is__con__var__type.html", null ],
+    [ "convar_ref", "convar_8hpp.html#ab4d3d126b344df1f590a1580af1ec7b6", null ],
+    [ "disconnect_all_convars", "convar_8hpp.html#a6b53b6e099f267f92382bcb9d2a4add5", null ],
+    [ "s_convar_i", "convar_8hpp.html#ad94145687edb7ab543eb299f3b140b26", null ],
+    [ "s_convars", "convar_8hpp.html#a1dc8c98638411accb2e8e06f2bc57812", null ],
+    [ "tid", "convar_8hpp.html#abd6289b74a6cb1533ed97f5882394656", null ]
 ];

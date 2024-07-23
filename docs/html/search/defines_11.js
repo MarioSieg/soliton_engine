@@ -1,4 +1,25 @@
 var searchData=
 [
-  ['winver_0',['WINVER',['../luaconf_8h.html#a966cd377b9f3fdeb1432460c33352af1',1,'luaconf.h']]]
+  ['r_0',['R',['../texture_8cpp.html#a5c71a5e59a53413cd6c270266d63b031',1,'texture.cpp']]],
+  ['read_5flock_1',['READ_LOCK',['../sqlite3_8c.html#a5b9b681ff830ce05cc03c3ad38019817',1,'sqlite3.c']]],
+  ['read_5futf8_2',['READ_UTF8',['../sqlite3_8c.html#a46b3764ff02fec1c01ae7640e3ad159e',1,'sqlite3.c']]],
+  ['readmark_5fnot_5fused_3',['READMARK_NOT_USED',['../sqlite3_8c.html#a4429235090bcad8320b8805ef5c72b58',1,'sqlite3.c']]],
+  ['register_5ftrace_4',['REGISTER_TRACE',['../sqlite3_8c.html#a5b53a62063ec152ad85f08c5b6e36949',1,'sqlite3.c']]],
+  ['release_5',['RELEASE',['../platform_8hpp.html#a5bd9a30fc22d9a737ee060d41a4ec479',1,'platform.hpp']]],
+  ['renametokencheckall_6',['renameTokenCheckAll',['../sqlite3_8c.html#ae167efeedede0c87a59b83a6f19c19d2',1,'sqlite3.c']]],
+  ['reopen_5fas_5fmemdb_7',['REOPEN_AS_MEMDB',['../sqlite3_8c.html#a41bd406eaf34b330c2f0ef7b2657c603',1,'sqlite3.c']]],
+  ['reserved_5fbyte_8',['RESERVED_BYTE',['../sqlite3_8c.html#a8ac9fa3da7151dc5ffd9fbf0563a9417',1,'sqlite3.c']]],
+  ['reserved_5flock_9',['RESERVED_LOCK',['../sqlite3_8c.html#a4fec7ca081b31fb9e121208e2b57fe3f',1,'sqlite3.c']]],
+  ['resolve_5fon_5fwriteback_10',['RESOLVE_ON_WRITEBACK',['../VKRenderDevice_8cpp.html#a7f0386c2b40af7e97d331eb77e36a1dc',1,'VKRenderDevice.cpp']]],
+  ['restorecursorposition_11',['restoreCursorPosition',['../sqlite3_8c.html#a291b3e39e6c5a36b58cdc5a60b8c72bd',1,'sqlite3.c']]],
+  ['rgba_5fle_12',['RGBA_LE',['../ProfilerTask_8h.html#a0b51b392f564c8c3c5d003667879280e',1,'ProfilerTask.h']]],
+  ['rnd_5fimplementation_13',['RND_IMPLEMENTATION',['../physics__subsystem_8cpp.html#a622654b712ed6853eec8f1c3eb17c742',1,'physics_subsystem.cpp']]],
+  ['rotl_14',['ROTL',['../sqlite3_8c.html#a5c46cf30bab3ae91c3c4d8b914578fd6',1,'sqlite3.c']]],
+  ['round8_15',['ROUND8',['../sqlite3_8c.html#a633a8f83a91b56a9b1e40ed6696a2c8a',1,'sqlite3.c']]],
+  ['round8p_16',['ROUND8P',['../sqlite3_8c.html#a3a19eb1f782ecdfb54057c04e3bf6d04',1,'sqlite3.c']]],
+  ['rounddown8_17',['ROUNDDOWN8',['../sqlite3_8c.html#abd2d106601a2b1a2c5a960f32deb7be6',1,'sqlite3.c']]],
+  ['rowset_5fallocation_5fsize_18',['ROWSET_ALLOCATION_SIZE',['../sqlite3_8c.html#a384d7734bbb2f6278e853713f1f01920',1,'sqlite3.c']]],
+  ['rowset_5fentry_5fper_5fchunk_19',['ROWSET_ENTRY_PER_CHUNK',['../sqlite3_8c.html#a351eaade204118dea320a04b9a584b10',1,'sqlite3.c']]],
+  ['rowset_5fnext_20',['ROWSET_NEXT',['../sqlite3_8c.html#a7d910eb4dd04c2f2cceb61a2581c83e1',1,'sqlite3.c']]],
+  ['rowset_5fsorted_21',['ROWSET_SORTED',['../sqlite3_8c.html#a192f61c92b89c43dd1744e0e7eed406c',1,'sqlite3.c']]]
 ];

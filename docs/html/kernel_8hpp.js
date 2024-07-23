@@ -1,5 +1,5 @@
 var kernel_8hpp =
 [
-    [ "kernel", "classkernel.html", "classkernel" ],
-    [ "is_subsystem", "conceptis__subsystem.html", null ]
+    [ "lu::kernel", "classlu_1_1kernel.html", "classlu_1_1kernel" ],
+    [ "lu::is_subsystem", "conceptlu_1_1is__subsystem.html", null ]
 ];

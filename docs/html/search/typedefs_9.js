@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['palette_0',['Palette',['../class_text_editor.html#af17c3c98577d3b2b921b78c6dfd0b742',1,'TextEditor']]]
+  ['keyclass_0',['KeyClass',['../sqlite3_8c.html#a1b4599c4c72a77a9b5ac9b6c8e7e004a',1,'sqlite3.c']]],
+  ['keyinfo_1',['KeyInfo',['../sqlite3_8c.html#a83b8ab0274850ccd2219cde65e4cd69c',1,'sqlite3.c']]]
 ];

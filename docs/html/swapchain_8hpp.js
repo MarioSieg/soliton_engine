@@ -1,5 +1,5 @@
 var swapchain_8hpp =
 [
-    [ "vkb::swapchain", "classvkb_1_1swapchain.html", "classvkb_1_1swapchain" ],
-    [ "vkb::swapchain::buffer", "structvkb_1_1swapchain_1_1buffer.html", "structvkb_1_1swapchain_1_1buffer" ]
+    [ "lu::vkb::swapchain", "classlu_1_1vkb_1_1swapchain.html", "classlu_1_1vkb_1_1swapchain" ],
+    [ "lu::vkb::swapchain::buffer", "structlu_1_1vkb_1_1swapchain_1_1buffer.html", "structlu_1_1vkb_1_1swapchain_1_1buffer" ]
 ];

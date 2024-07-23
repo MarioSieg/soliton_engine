@@ -1,4 +1,4 @@
 var debug__renderer_8hpp =
 [
-    [ "physics::debug_renderer", "classphysics_1_1debug__renderer.html", "classphysics_1_1debug__renderer" ]
+    [ "lu::physics::debug_renderer", "classlu_1_1physics_1_1debug__renderer.html", "classlu_1_1physics_1_1debug__renderer" ]
 ];

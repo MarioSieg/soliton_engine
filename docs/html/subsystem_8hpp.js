@@ -1,4 +1,4 @@
 var subsystem_8hpp =
 [
-    [ "subsystem", "classsubsystem.html", "classsubsystem" ]
+    [ "lu::subsystem", "classlu_1_1subsystem.html", "classlu_1_1subsystem" ]
 ];

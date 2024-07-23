@@ -1,4 +1,4 @@
 var buffer_8hpp =
 [
-    [ "vkb::buffer", "classvkb_1_1buffer.html", "classvkb_1_1buffer" ]
+    [ "lu::vkb::buffer", "classlu_1_1vkb_1_1buffer.html", "classlu_1_1vkb_1_1buffer" ]
 ];

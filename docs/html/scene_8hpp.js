@@ -1,4 +1,4 @@
 var scene_8hpp =
 [
-    [ "scene", "classscene.html", "classscene" ]
+    [ "lu::scene", "classlu_1_1scene.html", "classlu_1_1scene" ]
 ];

@@ -1,4 +1,4 @@
 var shader__registry_8hpp =
 [
-    [ "graphics::shader_registry", "classgraphics_1_1shader__registry.html", "classgraphics_1_1shader__registry" ]
+    [ "lu::graphics::shader_registry", "classlu_1_1graphics_1_1shader__registry.html", "classlu_1_1graphics_1_1shader__registry" ]
 ];

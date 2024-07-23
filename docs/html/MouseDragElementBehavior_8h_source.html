@@ -26,7 +26,6 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr id="projectrow">
-  <td id="projectlogo"><img alt="Logo" src="logo_small.png"/></td>
   <td id="projectalign">
    <div id="projectname">Lunam Engine
    </div>
@@ -109,7 +108,7 @@ $(document).ready(function(){initNavTree('MouseDragElementBehavior_8h_source.htm
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">namespace </span>Noesis</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>{</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">class </span>TranslateTransform;</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">typedef</span> Delegate&lt;void(BaseComponent*, <span class="keyword">const</span> MouseEventArgs&amp;)&gt; MouseEventHandler;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">typedef</span> Delegate&lt;<a class="code hl_variable" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a>(BaseComponent*, <span class="keyword">const</span> MouseEventArgs&amp;)&gt; MouseEventHandler;</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>}</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">namespace </span>NoesisApp</div>
@@ -128,11 +127,11 @@ $(document).ready(function(){initNavTree('MouseDragElementBehavior_8h_source.htm
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordtype">float</span> GetX() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordtype">void</span> SetX(<span class="keywordtype">float</span> x);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordtype">void</span> SetX(<span class="keywordtype">float</span> <a class="code hl_variable" href="transform_8lua_8cpp.html#af05596f7370b04043875e02bde7204dc">x</a>);</div>
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordtype">float</span> GetY() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordtype">void</span> SetY(<span class="keywordtype">float</span> y);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordtype">void</span> SetY(<span class="keywordtype">float</span> <a class="code hl_variable" href="transform_8lua_8cpp.html#a536b5df3d99aa841599665038c874866">y</a>);</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordtype">bool</span> GetConstrainToParentBounds() <span class="keyword">const</span>;</div>
@@ -168,8 +167,8 @@ $(document).ready(function(){initNavTree('MouseDragElementBehavior_8h_source.htm
 <div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keywordtype">void</span> Drag(Noesis::Point relativePosition);</div>
 <div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordtype">void</span> EndDrag();</div>
 <div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="keywordtype">void</span> UpdateTransform(<span class="keywordtype">float</span> x, <span class="keywordtype">float</span> y);</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordtype">void</span> UpdatePosition(<span class="keywordtype">float</span> x, <span class="keywordtype">float</span> y);</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="keywordtype">void</span> UpdateTransform(<span class="keywordtype">float</span> <a class="code hl_variable" href="transform_8lua_8cpp.html#af05596f7370b04043875e02bde7204dc">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="transform_8lua_8cpp.html#a536b5df3d99aa841599665038c874866">y</a>);</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordtype">void</span> UpdatePosition(<span class="keywordtype">float</span> <a class="code hl_variable" href="transform_8lua_8cpp.html#af05596f7370b04043875e02bde7204dc">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="transform_8lua_8cpp.html#a536b5df3d99aa841599665038c874866">y</a>);</div>
 <div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordtype">void</span> UpdatePosition();</div>
 <div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
 <div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span><span class="keyword">private</span>:</div>
@@ -193,6 +192,9 @@ $(document).ready(function(){initNavTree('MouseDragElementBehavior_8h_source.htm
 <div class="ttc" id="aBehavior_8h_html"><div class="ttname"><a href="Behavior_8h.html">Behavior.h</a></div></div>
 <div class="ttc" id="aInteractivityApi_8h_html"><div class="ttname"><a href="InteractivityApi_8h.html">InteractivityApi.h</a></div></div>
 <div class="ttc" id="aInteractivityApi_8h_html_a19ef9be0d7b903c63e87d626acc9db84"><div class="ttname"><a href="InteractivityApi_8h.html#a19ef9be0d7b903c63e87d626acc9db84">NS_APP_INTERACTIVITY_API</a></div><div class="ttdeci">#define NS_APP_INTERACTIVITY_API</div><div class="ttdef"><b>Definition:</b> InteractivityApi.h:15</div></div>
+<div class="ttc" id="atransform_8lua_8cpp_html_a536b5df3d99aa841599665038c874866"><div class="ttname"><a href="transform_8lua_8cpp.html#a536b5df3d99aa841599665038c874866">y</a></div><div class="ttdeci">const double const double y</div><div class="ttdef"><b>Definition:</b> transform.lua.cpp:8</div></div>
+<div class="ttc" id="atransform_8lua_8cpp_html_a7fb99d5538bec25633e1c2b62f5033d5"><div class="ttname"><a href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a></div><div class="ttdeci">const double const double const double z void</div><div class="ttdef"><b>Definition:</b> transform.lua.cpp:8</div></div>
+<div class="ttc" id="atransform_8lua_8cpp_html_af05596f7370b04043875e02bde7204dc"><div class="ttname"><a href="transform_8lua_8cpp.html#af05596f7370b04043875e02bde7204dc">x</a></div><div class="ttdeci">const double x</div><div class="ttdef"><b>Definition:</b> transform.lua.cpp:8</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

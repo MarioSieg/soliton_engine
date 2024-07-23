@@ -1,8 +1,8 @@
 var pipeline_8hpp =
 [
-    [ "graphics::pipeline_base", "classgraphics_1_1pipeline__base.html", "classgraphics_1_1pipeline__base" ],
-    [ "graphics::pipeline_registry", "classgraphics_1_1pipeline__registry.html", "classgraphics_1_1pipeline__registry" ],
-    [ "pipeline_type", "pipeline_8hpp.html#aa75145e4cda86d7a66d6739ccd38aeae", [
-      [ "graphics", "pipeline_8hpp.html#aa75145e4cda86d7a66d6739ccd38aeaea73b0472d43069103642ffa07997ff20a", null ]
+    [ "lu::graphics::pipeline_base", "classlu_1_1graphics_1_1pipeline__base.html", "classlu_1_1graphics_1_1pipeline__base" ],
+    [ "lu::graphics::pipeline_registry", "classlu_1_1graphics_1_1pipeline__registry.html", "classlu_1_1graphics_1_1pipeline__registry" ],
+    [ "pipeline_type", "pipeline_8hpp.html#a112beeb832137fb1469c1dc2522a958f", [
+      [ "graphics", "pipeline_8hpp.html#a112beeb832137fb1469c1dc2522a958fa73b0472d43069103642ffa07997ff20a", null ]
     ] ]
 ];

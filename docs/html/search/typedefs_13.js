@@ -1,6 +1,14 @@
 var searchData=
 [
-  ['undobuffer_0',['UndoBuffer',['../class_text_editor.html#af92672a0daa068f1174b6b75d383d74c',1,'TextEditor']]],
-  ['unexpected_5ftype_1',['unexpected_type',['../classluabridge_1_1_expected.html#a4b7f5afea16df03af0b072cf86931d58',1,'luabridge::Expected::unexpected_type'],['../classluabridge_1_1_expected_3_01void_00_01_e_01_4.html#a0e9a3190b60ba3df1ac3a86b035467d5',1,'luabridge::Expected&lt; void, E &gt;::unexpected_type']]],
-  ['unregistereventdelegate_2',['UnregisterEventDelegate',['../class_noesis_app_1_1_event_trigger_base.html#ae68aa08799abf38b64a6fa736702a273',1,'NoesisApp::EventTriggerBase']]]
+  ['valuelist_0',['ValueList',['../sqlite3_8c.html#a87921804c23f7fc7a21cbe22146b67f8',1,'sqlite3.c']]],
+  ['vdbe_1',['Vdbe',['../sqlite3_8c.html#aa2e7a63aae55a650a0107d9105e24242',1,'sqlite3.c']]],
+  ['vdbecursor_2',['VdbeCursor',['../sqlite3_8c.html#a30d0a41886b30be2113968c96cb5cb9f',1,'sqlite3.c']]],
+  ['vdbeframe_3',['VdbeFrame',['../sqlite3_8c.html#a56a5cb40e50ff0787457baa6a8d24869',1,'sqlite3.c']]],
+  ['vdbeop_4',['VdbeOp',['../sqlite3_8c.html#adb0730cfaa5e6bf9d8935f89d8bcc07a',1,'sqlite3.c']]],
+  ['vdbeoplist_5',['VdbeOpList',['../sqlite3_8c.html#a90327c22f5b7e562e9116bfe3534920e',1,'sqlite3.c']]],
+  ['vdbesorter_6',['VdbeSorter',['../sqlite3_8c.html#a1b5b2946de434f78d4ab98073070103e',1,'sqlite3.c']]],
+  ['vdbetxtblbcache_7',['VdbeTxtBlbCache',['../sqlite3_8c.html#a9bae3c70fa0d9dc759d61932818d6dfd',1,'sqlite3.c']]],
+  ['vlist_8',['VList',['../sqlite3_8c.html#a91118cced9c1c35f5b446709cca64157',1,'sqlite3.c']]],
+  ['vtabctx_9',['VtabCtx',['../sqlite3_8c.html#a5590ffe3888f010bd338b4d7ae39477e',1,'sqlite3.c']]],
+  ['vtable_10',['VTable',['../sqlite3_8c.html#a21183d7824cab3e4b4dee686e4a077bd',1,'sqlite3.c']]]
 ];

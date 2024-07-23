@@ -26,7 +26,6 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr id="projectrow">
-  <td id="projectlogo"><img alt="Logo" src="logo_small.png"/></td>
   <td id="projectalign">
    <div id="projectname">Lunam Engine
    </div>
@@ -227,7 +226,7 @@ $(document).ready(function(){initNavTree('ImGuiProfilerRenderer_8h_source.html',
 <div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>          <span class="keywordtype">float</span> taskStartHeight = (float(task.startTime) / maxFrameTime) * graphSize.y;</div>
 <div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>          <span class="keywordtype">float</span> taskEndHeight = (<span class="keywordtype">float</span>(task.endTime) / maxFrameTime) * graphSize.y;</div>
 <div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>          <span class="comment">//taskMaxCosts[task.name] = std::max(taskMaxCosts[task.name], task.endTime - task.startTime);</span></div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>          if (abs(taskEndHeight - taskStartHeight) &gt; heightThreshold)</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>          <a class="code hl_function" href="transform_8lua_8cpp.html#aec1ea14b4891094a15da1980ecd67247">if</a> (abs(taskEndHeight - taskStartHeight) &gt; heightThreshold)</div>
 <div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>            Rect(drawList, taskPos + glm::vec2(0.0f, -taskStartHeight), taskPos + glm::vec2(frameWidth, -taskEndHeight), task.color, <span class="keyword">true</span>);</div>
 <div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>        }</div>
 <div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>      }</div>
@@ -306,9 +305,9 @@ $(document).ready(function(){initNavTree('ImGuiProfilerRenderer_8h_source.html',
 <div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> Triangle(ImDrawList *drawList, std::array&lt;glm::vec2, 3&gt; points, uint32_t col, <span class="keywordtype">bool</span> filled = <span class="keyword">true</span>)</div>
 <div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    {</div>
 <div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>      <span class="keywordflow">if</span> (filled)</div>
-<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>        drawList-&gt;AddTriangleFilled(ImVec2(points[0].x, points[0].y), ImVec2(points[1].x, points[1].y), ImVec2(points[2].x, points[2].y), col);</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>        drawList-&gt;AddTriangleFilled(ImVec2(points[0].<a class="code hl_variable" href="transform_8lua_8cpp.html#af05596f7370b04043875e02bde7204dc">x</a>, points[0].<a class="code hl_variable" href="transform_8lua_8cpp.html#a536b5df3d99aa841599665038c874866">y</a>), ImVec2(points[1].<a class="code hl_variable" href="transform_8lua_8cpp.html#af05596f7370b04043875e02bde7204dc">x</a>, points[1].<a class="code hl_variable" href="transform_8lua_8cpp.html#a536b5df3d99aa841599665038c874866">y</a>), ImVec2(points[2].<a class="code hl_variable" href="transform_8lua_8cpp.html#af05596f7370b04043875e02bde7204dc">x</a>, points[2].<a class="code hl_variable" href="transform_8lua_8cpp.html#a536b5df3d99aa841599665038c874866">y</a>), col);</div>
 <div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>      <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>        drawList-&gt;AddTriangle(ImVec2(points[0].x, points[0].y), ImVec2(points[1].x, points[1].y), ImVec2(points[2].x, points[2].y), col);</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>        drawList-&gt;AddTriangle(ImVec2(points[0].<a class="code hl_variable" href="transform_8lua_8cpp.html#af05596f7370b04043875e02bde7204dc">x</a>, points[0].<a class="code hl_variable" href="transform_8lua_8cpp.html#a536b5df3d99aa841599665038c874866">y</a>), ImVec2(points[1].<a class="code hl_variable" href="transform_8lua_8cpp.html#af05596f7370b04043875e02bde7204dc">x</a>, points[1].<a class="code hl_variable" href="transform_8lua_8cpp.html#a536b5df3d99aa841599665038c874866">y</a>), ImVec2(points[2].<a class="code hl_variable" href="transform_8lua_8cpp.html#af05596f7370b04043875e02bde7204dc">x</a>, points[2].<a class="code hl_variable" href="transform_8lua_8cpp.html#a536b5df3d99aa841599665038c874866">y</a>), col);</div>
 <div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>    }</div>
 <div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> RenderTaskMarker(ImDrawList *drawList, glm::vec2 leftMinPoint, glm::vec2 leftMaxPoint, glm::vec2 rightMinPoint, glm::vec2 rightMaxPoint, uint32_t col)</div>
 <div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>    {</div>
@@ -399,6 +398,9 @@ $(document).ready(function(){initNavTree('ImGuiProfilerRenderer_8h_source.html',
 <div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span> </div>
 <div class="ttc" id="aProfilerTask_8h_html"><div class="ttname"><a href="ProfilerTask_8h.html">ProfilerTask.h</a></div></div>
 <div class="ttc" id="aimgui_8h_html"><div class="ttname"><a href="imgui_8h.html">imgui.h</a></div></div>
+<div class="ttc" id="atransform_8lua_8cpp_html_a536b5df3d99aa841599665038c874866"><div class="ttname"><a href="transform_8lua_8cpp.html#a536b5df3d99aa841599665038c874866">y</a></div><div class="ttdeci">const double const double y</div><div class="ttdef"><b>Definition:</b> transform.lua.cpp:8</div></div>
+<div class="ttc" id="atransform_8lua_8cpp_html_aec1ea14b4891094a15da1980ecd67247"><div class="ttname"><a href="transform_8lua_8cpp.html#aec1ea14b4891094a15da1980ecd67247">if</a></div><div class="ttdeci">if(!ent)</div><div class="ttdef"><b>Definition:</b> transform.lua.cpp:10</div></div>
+<div class="ttc" id="atransform_8lua_8cpp_html_af05596f7370b04043875e02bde7204dc"><div class="ttname"><a href="transform_8lua_8cpp.html#af05596f7370b04043875e02bde7204dc">x</a></div><div class="ttdeci">const double x</div><div class="ttdef"><b>Definition:</b> transform.lua.cpp:8</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

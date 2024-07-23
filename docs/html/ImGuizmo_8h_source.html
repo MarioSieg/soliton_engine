@@ -26,7 +26,6 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr id="projectrow">
-  <td id="projectlogo"><img alt="Logo" src="logo_small.png"/></td>
   <td id="projectalign">
    <div id="projectname">Lunam Engine
    </div>
@@ -219,7 +218,7 @@ $(document).ready(function(){initNavTree('ImGuizmo_8h_source.html',''); initResi
 <div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>   <span class="comment">// globals are not shared between them.</span></div>
 <div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>   <span class="comment">// More details at https://stackoverflow.com/questions/19373061/what-happens-to-global-and-static-variables-in-a-shared-library-when-it-is-dynam</span></div>
 <div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>   <span class="comment">// expose method to set imgui context</span></div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>   <a class="code hl_define" href="ImGuizmo_8h.html#a43829975e84e45d1149597467a14bbf5">IMGUI_API</a> <span class="keywordtype">void</span> SetImGuiContext(ImGuiContext* <a class="code hl_function" href="namespacevkb.html#ac67c42fe1faf40f99bc2d2ea21dee8fa">ctx</a>);</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>   <a class="code hl_define" href="ImGuizmo_8h.html#a43829975e84e45d1149597467a14bbf5">IMGUI_API</a> <span class="keywordtype">void</span> SetImGuiContext(ImGuiContext* <a class="code hl_function" href="namespacelu_1_1vkb.html#a0ab9f4a727d5dee80526e81c2dd43e19">ctx</a>);</div>
 <div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span> </div>
 <div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>   <span class="comment">// return true if mouse cursor is over any gizmo control (axis, plan or screen component)</span></div>
 <div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>   <a class="code hl_define" href="ImGuizmo_8h.html#a43829975e84e45d1149597467a14bbf5">IMGUI_API</a> <span class="keywordtype">bool</span> IsOver();</div>
@@ -249,7 +248,7 @@ $(document).ready(function(){initNavTree('ImGuizmo_8h_source.html',''); initResi
 <div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>   <a class="code hl_define" href="ImGuizmo_8h.html#a43829975e84e45d1149597467a14bbf5">IMGUI_API</a> <span class="keywordtype">void</span> DecomposeMatrixToComponents(<span class="keyword">const</span> <span class="keywordtype">float</span>* matrix, <span class="keywordtype">float</span>* translation, <span class="keywordtype">float</span>* rotation, <span class="keywordtype">float</span>* scale);</div>
 <div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>   <a class="code hl_define" href="ImGuizmo_8h.html#a43829975e84e45d1149597467a14bbf5">IMGUI_API</a> <span class="keywordtype">void</span> RecomposeMatrixFromComponents(<span class="keyword">const</span> <span class="keywordtype">float</span>* translation, <span class="keyword">const</span> <span class="keywordtype">float</span>* rotation, <span class="keyword">const</span> <span class="keywordtype">float</span>* scale, <span class="keywordtype">float</span>* matrix);</div>
 <div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span> </div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>   <a class="code hl_define" href="ImGuizmo_8h.html#a43829975e84e45d1149597467a14bbf5">IMGUI_API</a> <span class="keywordtype">void</span> SetRect(<span class="keywordtype">float</span> x, <span class="keywordtype">float</span> y, <span class="keywordtype">float</span> width, <span class="keywordtype">float</span> height);</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>   <a class="code hl_define" href="ImGuizmo_8h.html#a43829975e84e45d1149597467a14bbf5">IMGUI_API</a> <span class="keywordtype">void</span> SetRect(<span class="keywordtype">float</span> <a class="code hl_variable" href="transform_8lua_8cpp.html#af05596f7370b04043875e02bde7204dc">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="transform_8lua_8cpp.html#a536b5df3d99aa841599665038c874866">y</a>, <span class="keywordtype">float</span> width, <span class="keywordtype">float</span> height);</div>
 <div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>   <span class="comment">// default is false</span></div>
 <div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>   <a class="code hl_define" href="ImGuizmo_8h.html#a43829975e84e45d1149597467a14bbf5">IMGUI_API</a> <span class="keywordtype">void</span> SetOrthographic(<span class="keywordtype">bool</span> isOrthographic);</div>
 <div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span> </div>
@@ -363,7 +362,9 @@ $(document).ready(function(){initNavTree('ImGuizmo_8h_source.html',''); initResi
 <div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>}</div>
 <div class="ttc" id="aImGuizmo_8h_html_a43829975e84e45d1149597467a14bbf5"><div class="ttname"><a href="ImGuizmo_8h.html#a43829975e84e45d1149597467a14bbf5">IMGUI_API</a></div><div class="ttdeci">#define IMGUI_API</div><div class="ttdef"><b>Definition:</b> ImGuizmo.h:111</div></div>
 <div class="ttc" id="aimconfig_8h_html"><div class="ttname"><a href="imconfig_8h.html">imconfig.h</a></div></div>
-<div class="ttc" id="anamespacevkb_html_ac67c42fe1faf40f99bc2d2ea21dee8fa"><div class="ttname"><a href="namespacevkb.html#ac67c42fe1faf40f99bc2d2ea21dee8fa">vkb::ctx</a></div><div class="ttdeci">auto ctx() noexcept -&gt; context &amp;</div><div class="ttdef"><b>Definition:</b> context.hpp:180</div></div>
+<div class="ttc" id="anamespacelu_1_1vkb_html_a0ab9f4a727d5dee80526e81c2dd43e19"><div class="ttname"><a href="namespacelu_1_1vkb.html#a0ab9f4a727d5dee80526e81c2dd43e19">lu::vkb::ctx</a></div><div class="ttdeci">auto ctx() noexcept -&gt; context &amp;</div><div class="ttdef"><b>Definition:</b> context.hpp:197</div></div>
+<div class="ttc" id="atransform_8lua_8cpp_html_a536b5df3d99aa841599665038c874866"><div class="ttname"><a href="transform_8lua_8cpp.html#a536b5df3d99aa841599665038c874866">y</a></div><div class="ttdeci">const double const double y</div><div class="ttdef"><b>Definition:</b> transform.lua.cpp:8</div></div>
+<div class="ttc" id="atransform_8lua_8cpp_html_af05596f7370b04043875e02bde7204dc"><div class="ttname"><a href="transform_8lua_8cpp.html#af05596f7370b04043875e02bde7204dc">x</a></div><div class="ttdeci">const double x</div><div class="ttdef"><b>Definition:</b> transform.lua.cpp:8</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

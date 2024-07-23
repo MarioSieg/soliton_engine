@@ -1,5 +1,5 @@
 var texture_8hpp =
 [
-    [ "graphics::texture_allocator", "classgraphics_1_1texture__allocator.html", "classgraphics_1_1texture__allocator" ],
-    [ "graphics::texture", "classgraphics_1_1texture.html", "classgraphics_1_1texture" ]
+    [ "lu::graphics::texture_allocator", "classlu_1_1graphics_1_1texture__allocator.html", "classlu_1_1graphics_1_1texture__allocator" ],
+    [ "lu::graphics::texture", "classlu_1_1graphics_1_1texture.html", "classlu_1_1graphics_1_1texture" ]
 ];
