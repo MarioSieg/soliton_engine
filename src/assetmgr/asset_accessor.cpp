@@ -6,6 +6,8 @@
 #include <simdutf.h>
 #include <mimalloc.h>
 #define STRPOOL_IMPLEMENTATION
+#define STRPOOL_MALLOC(ctx, size) (mi_malloc(size))
+#define STRPOOL_FREE(ctx, ptr) (mi_free(ptr))
 #include <strpool.h>
 #define ASSETSYS_IMPLEMENTATION
 #define ASSETSYS_MALLOC(ctx, size) (mi_malloc(size))
