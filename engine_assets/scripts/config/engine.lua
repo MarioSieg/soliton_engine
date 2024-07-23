@@ -64,15 +64,15 @@ engine_cfg = {
         defaultHeight = 1080, -- Default window height.
         minWidth = 640, -- Minimum window width.
         minHeight = 480, -- Minimum window height.
-        icon = '/assets/icons/logo.png' -- Window icon image file.
+        icon = '/engine_assets/icons/logo.png' -- Window icon image file.
     },
     Renderer = {
-        shaderDir = 'assets/shaders', -- Shader directory.
+        shaderDir = 'engine_assets/shaders', -- Shader directory.
         enableParallelShaderCompilation = true, -- Enable shader compilation using multiple threads.
         enableVulkanValidationLayers = true, -- Enable Vulkan validation layers.
         maxDebugDrawVertices = 1000000, -- Maximum amount of debugdraw draw vertices.
-        fallbackTexture = '/assets/textures/system/error.png', -- Fallback texture when a texture is not found.
-        flatNormalTexture = '/assets/textures/system/flatnormal.png', -- Flat normal texture.
+        fallbackTexture = '/engine_assets/textures/system/error.png', -- Fallback texture when a texture is not found.
+        flatNormalTexture = '/engine_assets/textures/system/flatnormal.png', -- Flat normal texture.
         brdfLutSize = 512, -- Width and height of the BRDF integration LUT texture: LUT x LUT.
         enableVSync = true, -- Enable vertical synchronization.
     },

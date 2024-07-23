@@ -28,7 +28,7 @@ local asset_explorer = require 'editor.tools.asset_explorer'
 local sqlite = require 'sqlite.db'
 
 local db = sqlite {
-    uri = 'assets/lunam.db',
+    uri = 'engine_assets/lunam.db',
     projects = {
         id = 'INTEGER PRIMARY KEY',
         name = 'TEXT',

@@ -73,7 +73,7 @@ namespace lu::graphics {
     static const shaderc_util::FileFinder s_file_finder {
         [] {
             shaderc_util::FileFinder f {};
-            f.search_path().emplace_back("assets/shaders/shaderlib/"); // todo make configurable
+            f.search_path().emplace_back("engine_assets/shaders/shaderlib/"); // todo make configurable
             return f;
         }()
     };

@@ -3,6 +3,7 @@
 #include "asset_accessor.hpp"
 #include "assetmgr.hpp"
 
+#include <simdutf.h>
 #include <mimalloc.h>
 #define STRPOOL_IMPLEMENTATION
 #include <strpool.h>
@@ -47,8 +48,11 @@ namespace lu::assetmgr {
         log_info("Creating asset accessor {}", m_id);
         m_sys = assetsys_create(nullptr);
         passert(m_sys != nullptr);
-        if (const assetsys_error_t err = assetsys_mount(m_sys, "./assets", "/assets"); err != ASSETSYS_SUCCESS) [[unlikely]] {
-            panic("Failed to mount asset root '{}': {}", cfg().asset_root, asset_sys_err_info(err));
+        for (const auto [fs, vfs] : k_vfs_mounts) {
+            log_info("Mounting asset root '{}' -> '{}", fs, vfs);
+            if (const assetsys_error_t err = assetsys_mount(m_sys, fs.data(), vfs.data()); err != ASSETSYS_SUCCESS) [[unlikely]] {
+                panic("Failed to mount asset root '{}' to '{}: {}", fs, vfs, asset_sys_err_info(err));
+            }
         }
         s_accessors_online.fetch_add(1, std::memory_order_relaxed);
     }
@@ -102,6 +106,13 @@ namespace lu::assetmgr {
     ) -> bool {
         ++num_requests;
         s_asset_requests.fetch_add(1, std::memory_order_relaxed);
+        const simdutf::encoding_type encoding = simdutf::autodetect_encoding(vpath, std::strlen(vpath));
+        if (encoding != simdutf::encoding_type::UTF8 && encoding != simdutf::encoding_type::unspecified) [[unlikely]] {
+            log_error("File '{}' is not UTF-8 encoded", vpath);
+            s_asset_requests_failed.fetch_add(1, std::memory_order_relaxed);
+            ++num_failed_requests;
+            return false;
+        }
         assetsys_file_t info {};
         if (const assetsys_error_t err = assetsys_file(m_sys, vpath, &info); err != ASSETSYS_SUCCESS) [[unlikely]] {
             log_error("Failed to load file '{}': {}", vpath, asset_sys_err_info(err));

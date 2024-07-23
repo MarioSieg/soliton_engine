@@ -21,8 +21,8 @@ if engine_cfg.General.enableFilesystemValidation then
             panic('Broken installation! Required file or directory not found: '..path)
         end
     end
-    check_fs_entry('assets')
-    if lfs.attributes('assets/scripts/system/fsregistry.lua') then -- check if the fsregistry file exists
+    check_fs_entry('engine_assets')
+    if lfs.attributes('engine_assets/scripts/system/fsregistry.lua') then -- check if the fsregistry file exists
         local REQUIRED_FILES = require 'system.fsregistry' -- load the list of required files
         if type(REQUIRED_FILES) == 'table' then
             for _, path in ipairs(REQUIRED_FILES) do
@@ -30,7 +30,7 @@ if engine_cfg.General.enableFilesystemValidation then
             end
         end
         print('Filesystem OK, '..numchecks..' entries checked.')
-        dofile('assets/scripts/tools/fsregistry_gen.lua') -- regenerate the fsregistry file
+        dofile('engine_assets/scripts/tools/fsregistry_gen.lua') -- regenerate the fsregistry file
     end
 end
 

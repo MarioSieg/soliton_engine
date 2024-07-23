@@ -51,43 +51,6 @@ namespace lu {
         return result;
     }
 
-    static auto inject_default_config(mINI::INIStructure& config) -> void {
-        std::string engine_v = fmt::format("{}.{}", major_version(k_lunam_engine_v), minor_version(k_lunam_engine_v));
-        config["kernel"]["engine_version"] = engine_v;
-        config["asset_mgr"]["asset_root"] = "assets";
-        config["asset_mgr"]["allow_standalone_asset_loading"] = "true";
-        config["asset_mgr"]["allow_source_asset_loading"] = "true";
-        config["asset_mgr"]["validate_paths"] = "true";
-        config["asset_mgr"]["validate_file_system_on_boot"] = "true";
-    }
-
-    static auto extract_assetmgr_config_from_kernel_config(const mINI::INIStructure& config, assetmgr::assetmgr_config& out) -> void {
-        out.asset_root = config.get("asset_mgr").get("asset_root");
-        out.allow_standalone_asset_loading = config.get("asset_mgr").get("allow_standalone_asset_loading") == "true";
-        out.allow_source_asset_loading = config.get("asset_mgr").get("allow_source_asset_loading") == "true";
-        out.validate_paths = config.get("asset_mgr").get("validate_paths") == "true";
-        out.validate_fs = config.get("asset_mgr").get("validate_file_system_on_boot") == "true";
-    }
-
-    auto kernel::update_core_config(const bool update_file) -> void {
-        if (!exists(kernel::config_dir)) [[unlikely]] {
-            log_warn("Config directory does not exist, creating: {}", kernel::config_dir);
-            create_directory(kernel::config_dir);
-        }
-        if (!update_file && exists(kernel::config_file)) {
-            log_info("Loading core config file: {}", kernel::config_file);
-            mINI::INIFile file {kernel::config_file};
-            file.read(m_config);
-        } else {
-            log_warn("Core config file does not exist, creating: {}", kernel::config_file);
-
-            inject_default_config(m_config);
-
-            mINI::INIFile file {kernel::config_file};
-            file.write(m_config);
-        }
-    }
-
 #if PLATFORM_WINDOWS
     #define WIN32_LEAN_AND_MEAN
 #include <fcntl.h>
@@ -166,15 +129,9 @@ static auto redirect_io() -> void {
             log_info("  {}: {}", i, $environ[i]);
         }
         log_info("Engine config dir: {}", config_dir);
-        log_info("Engine core config file: {}", config_file);
         log_info("Engine log dir: {}", log_dir);
 
-        log_info("Loading engine core config");
-        update_core_config(false);
-        assetmgr::assetmgr_config amgr_config {};
-        log_info("Applying engine core config");
-        extract_assetmgr_config_from_kernel_config(m_config, amgr_config);
-        assetmgr::init(std::move(amgr_config));
+        assetmgr::init();
     }
 
     kernel::~kernel() {
@@ -185,7 +142,6 @@ static auto redirect_io() -> void {
         log_info("Killing subsystems...");
         m_subsystems.clear();
         log_info("Patching core engine config...");
-        update_core_config(true);
         assetmgr::shutdown();
 #if USE_MIMALLOC
         mi_stats_merge();

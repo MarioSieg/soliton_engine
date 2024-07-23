@@ -22,7 +22,7 @@ namespace lu::assetmgr {
         ~asset_accessor();
 
         [[nodiscard]] auto sys() const noexcept -> assetsys_t* { return m_sys; }
-        auto dump_dir_tree(const char* vpath, const int indent = 0) -> void;
+        auto dump_dir_tree(const char* vpath, int indent = 0) -> void;
         [[nodiscard]] auto file_count(const char* vpath) const noexcept -> std::size_t;
         [[nodiscard]] auto file_name(const char* vpath, std::size_t idx) const noexcept -> const char*;
         [[nodiscard]] auto file_path(const char* vpath, std::size_t idx) const noexcept -> const char*;

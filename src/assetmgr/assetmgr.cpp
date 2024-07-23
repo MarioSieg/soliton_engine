@@ -4,14 +4,8 @@
 
 #include <atomic>
 #include <filesystem>
-#include <fstream>
-
-#include <simdutf.h>
 
 namespace lu::assetmgr {
-    using namespace std::filesystem;
-
-    static assetmgr_config s_cfg;
     static std::optional<asset_accessor> s_primary_accessor {};
     static std::mutex s_mtx {};
     constinit std::atomic_size_t s_asset_requests = 0;
@@ -19,19 +13,17 @@ namespace lu::assetmgr {
     constinit std::atomic_size_t s_total_bytes_loaded = 0;
     static constinit std::atomic_bool s_is_initialized = false;
 
-    auto init(assetmgr_config&& cfg) -> void {
+    auto init() -> void {
         if (s_is_initialized.load(std::memory_order_relaxed)) [[unlikely]] {
             log_error("Asset manager already initialized");
             return;
         }
-        log_info("Initializing asset manager");
-        s_cfg = std::move(cfg);
-        log_info("Asset root directory: '{}'", s_cfg.asset_root);
-        if (!std::filesystem::exists(s_cfg.asset_root)) [[unlikely]] {
-            panic("Asset root directory not found: '{}'", s_cfg.asset_root);
-        }
-        if (s_cfg.validate_fs) [[likely]] {
-            // TODO
+        log_info("Initializing VFS asset manager");
+        for (const auto [fs, vfs] : k_vfs_mounts) {
+            log_info("VFS Mounting point '{}' -> '{}", fs, vfs);
+            if (!std::filesystem::exists(fs)) {
+                panic("Physical asset root VFS '{}' does not exist", fs);
+            }
         }
         s_is_initialized.store(true, std::memory_order_relaxed);
     }
@@ -48,10 +40,6 @@ namespace lu::assetmgr {
              static_cast<double>(assetmgr::get_total_bytes_loaded()) / std::pow(1024.0, 3.0)
         );
         s_is_initialized.store(false, std::memory_order_relaxed);
-    }
-
-    auto cfg() noexcept -> const assetmgr_config& {
-        return s_cfg;
     }
 
     auto get_asset_request_count() noexcept -> std::size_t {

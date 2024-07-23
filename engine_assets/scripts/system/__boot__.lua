@@ -9,9 +9,9 @@ local ffi = require 'ffi'
 local cpp = ffi.C
 
 lua_include_dirs = {
-    'assets/scripts',
-    'assets/scripts/core',
-    'assets/scripts/lib'
+    'engine_assets/scripts',
+    'engine_assets/scripts/core',
+    'engine_assets/scripts/lib'
 }
 
 -- Dont't waste traces, machine-code and other memory jitting any boot code, it's only run once but stays in memory forever.

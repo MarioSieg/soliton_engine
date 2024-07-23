@@ -2,5 +2,5 @@
 
 if engine_cfg.General.enableEditor then
     print('-- Editor is enabled --')
-    require('assets/scripts/editor/editor')
+    require('engine_assets/scripts/editor/editor')
 end
