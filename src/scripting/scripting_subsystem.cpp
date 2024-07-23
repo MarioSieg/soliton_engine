@@ -55,7 +55,7 @@ namespace lu::scripting {
         // assetmgr needs access to the engine config which is stored in a lua script
         std::string full_path {"/engine_assets/scripts/" + file};
         std::string lua_source_code {};
-        assetmgr::use_primary_accessor([&](assetmgr::asset_accessor& acc) {
+        assetmgr::with_primary_accessor_lock([&](assetmgr::asset_accessor &acc) {
             if (!acc.load_txt_file(full_path.c_str(), lua_source_code)) {
                 lua_log_error("Failed to load script file '{}'", full_path);
             }

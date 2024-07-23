@@ -50,7 +50,7 @@ namespace lu::assetmgr {
         return s_total_bytes_loaded.load(std::memory_order_relaxed);
     }
 
-    auto use_primary_accessor(const std::function<auto(asset_accessor& acc) -> void>& callback) -> void {
+    auto with_primary_accessor_lock(const std::function<auto(asset_accessor& acc) -> void>& callback) -> void {
         std::unique_lock lock {s_mtx};
         if (!s_primary_accessor.has_value()) // Lazy init
             s_primary_accessor.emplace();

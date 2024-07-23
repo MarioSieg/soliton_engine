@@ -75,7 +75,7 @@ namespace lu::graphics {
 
     texture::texture(std::string&& asset_path) : asset {assetmgr::asset_source::filesystem, std::move(asset_path)} {
         std::vector<std::byte> texels {};
-        assetmgr::use_primary_accessor([&](assetmgr::asset_accessor& acc) {
+        assetmgr::with_primary_accessor_lock([&](assetmgr::asset_accessor &acc) {
             if (!acc.load_bin_file(get_asset_path().c_str(), texels)) {
                 panic("Failed to load texture '{}'", get_asset_path());
             }

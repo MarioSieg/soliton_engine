@@ -16,3 +16,5 @@ lunam.exe
 /log
 /.vscode
 **/.DS_Store
+extern/Simd/prj/txt/FullVersion.txt
+extern/Simd/src/Simd/SimdVersion.h

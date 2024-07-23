@@ -5,6 +5,8 @@
 
 #include "../scene/scene.hpp"
 
+#include <bit>
+#include <ranges>
 #include <filesystem>
 #include <iostream>
 
@@ -20,29 +22,45 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
+extern "C" { // Ensure that the application uses the dedicated GPU instead of the integrated GPU. Drivers searches for these variables.
+#if COMPILER_MSVC
+    __declspec(dllexport) unsigned __int32 NvOptimusEnablement = 0x00000001;
+    __declspec(dllexport) unsigned __int32 AmdPowerXpressRequestHighPerformance = 0x00000001;
+#else
+    __attribute__((visibility("default"))) std::uint32_t NvOptimusEnablement = 0x00000001;
+    __attribute__((visibility("default"))) std::uint32_t AmdPowerXpressRequestHighPerformance = 0x00000001;
+#endif
+}
+
 namespace lu {
     using namespace std::filesystem;
+    using namespace std::chrono;
 
     static constexpr std::size_t k_log_threads = 1;
     static constexpr std::size_t k_log_queue_size = 8192;
+    static constinit double g_delta_time, g_time;
+    static constinit bool g_kernel_online = true;
 
-    [[nodiscard]] static auto create_logger(const std::string& name, const std::string& pattern, bool print_stdout = true,
-                                            bool enroll = true) -> std::shared_ptr<spdlog::logger> {
+    [[nodiscard]] static auto create_logger(
+        const std::string& name,
+        const std::string& pattern,
+        bool print_stdout = true, bool enroll = true
+    ) -> std::shared_ptr<spdlog::logger> {
         const auto time = fmt::localtime(std::time(nullptr));
-        std::vector<std::shared_ptr<spdlog::sinks::sink>> sinks = {
-                std::make_shared<buffered_sink>(k_log_queue_size),
-                std::make_shared<spdlog::sinks::basic_file_sink_mt>(
-                        fmt::format("{}/session {:%d-%m-%Y  %H-%M-%S}/{}.log", kernel::log_dir, time, name)),
+        std::vector<std::shared_ptr<spdlog::sinks::sink>> sinks {
+            std::make_shared<buffered_sink>(k_log_queue_size),
+            std::make_shared<spdlog::sinks::basic_file_sink_mt>(
+            fmt::format("{}/session {:%d-%m-%Y  %H-%M-%S}/{}.log", kernel::log_dir, time, name)),
         };
         if (print_stdout) {
             sinks.emplace_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
         }
         std::shared_ptr<spdlog::logger> result = std::make_shared<spdlog::async_logger>(
-                name,
-                sinks.begin(),
-                sinks.end(),
-                spdlog::thread_pool(),
-                spdlog::async_overflow_policy::overrun_oldest
+            name,
+            sinks.begin(),
+            sinks.end(),
+            spdlog::thread_pool(),
+            spdlog::async_overflow_policy::overrun_oldest
         );
         result->set_pattern(pattern);
         if (enroll) {
@@ -52,7 +70,7 @@ namespace lu {
     }
 
 #if PLATFORM_WINDOWS
-    #define WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
 #include <fcntl.h>
 #include <corecrt_io.h>
 #include <Windows.h>
@@ -92,25 +110,27 @@ static auto redirect_io() -> void {
         g_kernel = this;
 #if PLATFORM_WINDOWS
         redirect_io();
-    SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
-    SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
+        SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
+        SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
 #elif PLATFORM_LINUX
         pthread_t cthr_id = pthread_self();
-    pthread_setname_np(cthr_id, "Lunam Engine Main Thread");
-    pthread_attr_t thr_attr {};
-    int policy = 0;
-    int max_prio_for_policy = 0;
-    pthread_attr_init(&thr_attr);
-    pthread_attr_getschedpolicy(&thr_attr, &policy);
-    max_prio_for_policy = sched_get_priority_max(policy);
-    pthread_setschedprio(cthr_id, max_prio_for_policy);
-    pthread_attr_destroy(&thr_attr);
+        pthread_setname_np(cthr_id, "Lunam Engine Main Thread");
+        pthread_attr_t thr_attr {};
+        int policy = 0;
+        int max_prio_for_policy = 0;
+        pthread_attr_init(&thr_attr);
+        pthread_attr_getschedpolicy(&thr_attr, &policy);
+        max_prio_for_policy = sched_get_priority_max(policy);
+        pthread_setschedprio(cthr_id, max_prio_for_policy);
+        pthread_attr_destroy(&thr_attr);
 #endif
         std::ostream::sync_with_stdio(false);
         spdlog::init_thread_pool(k_log_queue_size, k_log_threads);
         std::shared_ptr<spdlog::logger> engineLogger = create_logger("engine", "%H:%M:%S:%e %s:%# %^[%l]%$ T:%t %v");
         std::shared_ptr<spdlog::logger> scriptLogger = create_logger("app", "%H:%M:%S:%e %v");
         spdlog::set_default_logger(engineLogger);
+
+        log_info("-- ENGINE KERNEL BOOT --");
         log_info("LunamEngine v.{}.{}", major_version(k_lunam_engine_v), minor_version(k_lunam_engine_v));
         log_info("Copyright (c) 2022-2024 Mario \"Neo\" Sieg. All Rights Reserved.");
         log_info("Booting Engine Kernel...");
@@ -132,6 +152,8 @@ static auto redirect_io() -> void {
         log_info("Engine log dir: {}", log_dir);
 
         assetmgr::init();
+
+        log_info("-- ENGINE KERNEL BOOT DONE {:.03f}s --", duration_cast<duration<double>>(duration_cast<high_resolution_clock::duration>(high_resolution_clock::now() - m_boot_stamp)).count());
     }
 
     kernel::~kernel() {
@@ -145,29 +167,17 @@ static auto redirect_io() -> void {
         assetmgr::shutdown();
 #if USE_MIMALLOC
         mi_stats_merge();
-        static std::stringstream ss;
-        mi_stats_print_out(+[](const char* msg, [[maybe_unused]] void* ud) {
-            ss << msg;
-        }, nullptr);
+        std::stringstream ss {};
+        mi_stats_print_out(+[](const char* msg, void* ud) {
+            *static_cast<std::stringstream*>(ud) << msg;
+        }, &ss);
         log_info("Allocator Stats:\n{}", ss.str());
 #endif
         log_info("System offline");
         spdlog::shutdown();
-        std::cout << "Lunam Engine says goodbye :(\n";
         std::cout.flush();
         std::fflush(stdout);
         g_kernel = nullptr;
-    }
-
-    static constinit double g_delta_time, g_time;
-
-    static auto compute_delta_time() noexcept {
-        static auto prev = std::chrono::high_resolution_clock::now();
-        auto now = std::chrono::high_resolution_clock::now();
-        auto delta = std::chrono::duration_cast<std::chrono::high_resolution_clock::duration>(now - prev);
-        g_delta_time = std::chrono::duration_cast<std::chrono::duration<double>>(delta).count();
-        prev = now;
-        g_time += g_delta_time;
     }
 
     auto kernel::get() noexcept -> kernel& {
@@ -183,50 +193,42 @@ static auto redirect_io() -> void {
         return g_time;
     }
 
-    static constinit bool g_kernel_online = true;
     auto kernel::request_exit() noexcept -> void {
         g_kernel_online = false;
     }
 
     auto kernel::on_new_scene_start(scene& scene) -> void {
-        std::ranges::for_each(m_subsystems, [&scene](const std::shared_ptr<subsystem>& sys) {
+        for (auto&& sys : m_subsystems)
             sys->on_start(scene);
-        });
     }
 
     HOTPROC auto kernel::run() -> void {
-        std::ranges::for_each(m_subsystems, [](const std::shared_ptr<subsystem>& sys) {
+        for (auto&& sys : m_subsystems)
             sys->on_prepare();
-        });
-
-        const auto now = std::chrono::high_resolution_clock::now();
-        log_info("Boot time: {}ms", std::chrono::duration_cast<std::chrono::milliseconds>(now - boot_stamp).count());
-
-        // simulation loop
-        while (tick());
+        log_info("Total boot time: {}ms", duration_cast<milliseconds>(high_resolution_clock::now() - m_boot_stamp).count());
+        while (tick()) [[likely]]; // simulation loop
     }
 
     HOTPROC auto kernel::tick() -> bool {
-        bool flag = g_kernel_online;
-        compute_delta_time();
-        std::for_each(m_subsystems.cbegin(), m_subsystems.cend(), [&flag](const std::shared_ptr<subsystem>& sys) {
-            //scoped_profiler_sample ps {std::string{sys->name}};
+        static time_point prev = high_resolution_clock::now();
+        const time_point now = high_resolution_clock::now();
+        g_delta_time = duration_cast<duration<double>>(duration_cast<high_resolution_clock::duration>(now - prev)).count();
+        prev = now;
+        g_time += g_delta_time;
+        for (auto&& sys : m_subsystems)
             if (!sys->on_pre_tick()) [[unlikely]]
-                flag = false;
-        });
-        std::for_each(m_subsystems.cbegin(), m_subsystems.cend(), [](const std::shared_ptr<subsystem>& sys) {
+                return false;
+        for (auto&& sys : m_subsystems)
             sys->on_tick();
-        });
-        std::for_each(m_subsystems.crbegin(), m_subsystems.crend(), [](const std::shared_ptr<subsystem>& sys) {
-            sys->on_post_tick();
-        });
+        for (auto&& i = m_subsystems.rbegin(); i != m_subsystems.rend(); ++i)
+            (**i).on_post_tick();
         ++m_frame;
-        return flag;
+        return g_kernel_online;
     }
 
     auto kernel::resize() -> void {
-        std::ranges::for_each(m_subsystems, [](const std::shared_ptr<subsystem>& sys) {
+        for (auto&& sys : m_subsystems) {
             sys->on_resize();
-        });
+        }
     }
 }

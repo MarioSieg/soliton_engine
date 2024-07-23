@@ -93,7 +93,7 @@ namespace lu::graphics {
         // Load string BLOB from file
         std::string buffer {};
         bool success {};
-        assetmgr::use_primary_accessor([&](assetmgr::asset_accessor& acc) {
+        assetmgr::with_primary_accessor_lock([&](assetmgr::asset_accessor &acc) {
             success = acc.load_txt_file(file_name.c_str(), buffer);
         });
         if (!success) [[unlikely]] {

@@ -19,7 +19,7 @@ namespace lu::assetmgr {
     extern auto init() -> void;
     extern auto shutdown() -> void;
 
-    extern auto use_primary_accessor(const std::function<auto (asset_accessor& acc) -> void>& callback) -> void;
+    extern auto with_primary_accessor_lock(const std::function<auto (asset_accessor& acc) -> void>& callback) -> void;
     [[nodiscard]] extern auto get_asset_request_count() noexcept -> std::size_t;
     [[nodiscard]] extern auto get_total_bytes_loaded() noexcept -> std::size_t;
 }

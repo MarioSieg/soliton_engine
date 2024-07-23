@@ -4,8 +4,6 @@
 
 #include "subsystem.hpp"
 
-#include <mini/ini.hpp>
-
 namespace lu {
     template <typename T, typename... Ar>
     concept is_subsystem = std::conjunction_v<std::is_base_of<subsystem, T>, std::is_constructible<T, Ar...>>;
@@ -34,16 +32,15 @@ namespace lu {
         auto resize() -> void;
 
         [[nodiscard]] auto get_subsystems() const noexcept -> std::span<const std::shared_ptr<subsystem>> { return m_subsystems; }
-        [[nodiscard]] auto get_boot_stamp() const noexcept -> std::chrono::high_resolution_clock::time_point { return boot_stamp; }
+        [[nodiscard]] auto get_boot_stamp() const noexcept -> std::chrono::high_resolution_clock::time_point { return m_boot_stamp; }
 
         static inline const std::string config_dir = "config/";
         static inline const std::string log_dir = "log";
 
     private:
         [[nodiscard]] HOTPROC auto tick() -> bool;
-        const std::chrono::high_resolution_clock::time_point boot_stamp = std::chrono::high_resolution_clock::now();
+        const std::chrono::high_resolution_clock::time_point m_boot_stamp = std::chrono::high_resolution_clock::now();
         std::vector<std::shared_ptr<subsystem>> m_subsystems {};
         std::uint64_t m_frame = 0;
-        mINI::INIStructure m_config {};
     };
 }
