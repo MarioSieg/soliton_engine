@@ -3,9 +3,12 @@
 #include "asset_accessor.hpp"
 #include "assetmgr.hpp"
 
+#include <mimalloc.h>
 #define STRPOOL_IMPLEMENTATION
 #include <strpool.h>
 #define ASSETSYS_IMPLEMENTATION
+#define ASSETSYS_MALLOC(ctx, size) (mi_malloc(size))
+#define ASSETSYS_FREE(ctx, ptr) (mi_free(ptr))
 #include <assetsys.h>
 
 namespace lu::assetmgr {
@@ -48,10 +51,18 @@ namespace lu::assetmgr {
             panic("Failed to mount asset root '{}': {}", cfg().asset_root, asset_sys_err_info(err));
         }
         s_accessors_online.fetch_add(1, std::memory_order_relaxed);
-        dump_dir_tree("/assets");
     }
 
     asset_accessor::~asset_accessor() {
+        log_info("Destroying asset accessor {}", m_id);
+        log_info(
+            "Collated: {}, Mounts: {}, Requests: {}, Failed Requests: {}, Total Loaded: {:.03f} MiB",
+            m_sys->collated_count,
+            m_sys->mounts_count,
+            m_num_request,
+            m_num_failed_requests,
+            static_cast<double>(m_total_bytes_loaded) / static_cast<double>(1<<20)
+        );
         assetsys_destroy(m_sys);
         s_accessors_online.fetch_sub(1, std::memory_order_relaxed);
     }
@@ -82,18 +93,27 @@ namespace lu::assetmgr {
     }
 
     template <typename T>
-    [[nodiscard]] static auto load_file_impl(assetsys_t *const m_sys, const char* const vpath, T& dat) -> bool {
+    [[nodiscard]] static auto load_file_impl(
+        assetsys_t *const m_sys,
+        const char* const vpath,
+        T& dat,
+        std::uint32_t& num_requests,
+        std::uint32_t& num_failed_requests
+    ) -> bool {
+        ++num_requests;
         s_asset_requests.fetch_add(1, std::memory_order_relaxed);
         assetsys_file_t info {};
         if (const assetsys_error_t err = assetsys_file(m_sys, vpath, &info); err != ASSETSYS_SUCCESS) [[unlikely]] {
             log_error("Failed to load file '{}': {}", vpath, asset_sys_err_info(err));
             s_asset_requests_failed.fetch_add(1, std::memory_order_relaxed);
+            ++num_failed_requests;
             return false;
         }
         const int size = assetsys_file_size(m_sys, info);
         if (!size) [[unlikely]] {
             log_error("File '{}' is empty", vpath);
             s_asset_requests_failed.fetch_add(1, std::memory_order_relaxed);
+            ++num_failed_requests;
             return false;
         }
         dat.clear();
@@ -104,16 +124,21 @@ namespace lu::assetmgr {
                 err != ASSETSYS_SUCCESS || loaded_size != size) [[unlikely]] {
             log_error("Failed to read file '{}': {}", vpath, asset_sys_err_info(err));
             s_asset_requests_failed.fetch_add(1, std::memory_order_relaxed);
+            ++num_failed_requests;
             return false;
         }
-        return false;
+        return true;
     }
 
-    auto asset_accessor::load_bin_file(const char* const vpath, std::vector<std::byte>& dat) const -> bool {
-        return load_file_impl(m_sys, vpath, dat);
+    auto asset_accessor::load_bin_file(const char* const vpath, std::vector<std::byte>& dat) -> bool {
+        const auto result = load_file_impl(m_sys, vpath, dat, m_num_request, m_num_failed_requests);
+        m_total_bytes_loaded += dat.size();
+        return result;
     }
-    auto asset_accessor::load_txt_file(const char* const vpath, std::string& dat) const -> bool {
-        return load_file_impl(m_sys, vpath, dat);
+    auto asset_accessor::load_txt_file(const char* const vpath, std::string& dat) -> bool {
+        const auto result = load_file_impl(m_sys, vpath, dat, m_num_request, m_num_failed_requests);
+        m_total_bytes_loaded += dat.size();
+        return result;
     }
 
     auto asset_accessor::dump_dir_tree(const char* const vpath, const int indent) -> void {

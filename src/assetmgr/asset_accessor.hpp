@@ -27,16 +27,19 @@ namespace lu::assetmgr {
         [[nodiscard]] auto dir_count(const char* vpath) const noexcept -> std::size_t;
         [[nodiscard]] auto dir_name(const char* vpath, std::size_t idx) const noexcept -> const char*;
         [[nodiscard]] auto dir_path(const char* vpath, std::size_t idx) const noexcept -> const char*;
-        [[nodiscard]] auto load_bin_file(const char* vpath, std::vector<std::byte>& dat) const -> bool;
-        [[nodiscard]] auto load_txt_file(const char* vpath, std::string& dat) const -> bool;
+        [[nodiscard]] auto load_bin_file(const char* vpath, std::vector<std::byte>& dat) -> bool;
+        [[nodiscard]] auto load_txt_file(const char* vpath, std::string& dat) -> bool;
         [[nodiscard]] auto mount(const char* rpath, const char* vpath) const -> bool;
         auto unmount(const char* rpath, const char* vpath) const -> void;
 
         [[nodiscard]] static auto accessors_online() noexcept -> std::uint32_t { return s_accessors_online.load(std::memory_order_relaxed); }
 
     private:
-        const std::uint32_t m_id;
         static inline constinit std::atomic_uint32_t s_accessors_online, s_accessor_id_gen;
+        const std::uint32_t m_id;
+        std::uint32_t m_num_request {};
+        std::uint32_t m_num_failed_requests {};
+        std::size_t m_total_bytes_loaded {};
         assetsys_t* m_sys = nullptr;
     };
 }

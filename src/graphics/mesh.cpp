@@ -5,6 +5,7 @@
 
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
+#include <filesystem>
 
 #include "material.hpp"
 #include "mesh_utils.hpp"
@@ -72,10 +73,22 @@ namespace lu::graphics {
         Assimp::DefaultLogger::create("", Assimp::Logger::NORMAL);
         Assimp::DefaultLogger::get()->attachStream(new assimp_logger {}, Assimp::Logger::Info | Assimp::Logger::Err | Assimp::Logger::Warn);
 
+        std::vector<std::byte> blob {};
+        assetmgr::use_primary_accessor([&](assetmgr::asset_accessor& accessor) {
+            if (!accessor.load_bin_file(get_asset_path().c_str(), blob)) {
+                panic("Failed to load mesh from file '{}'", get_asset_path());
+            }
+        });
+
         Assimp::Importer importer {};
         const auto load_flags = k_import_flags;
         passert(importer.ValidateFlags(load_flags));
-        const aiScene* scene = importer.ReadFile(get_asset_path().c_str(), load_flags);
+        std::string hint {};
+        auto a_path {std::filesystem::path{get_asset_path()}};
+        if (a_path.has_extension()) {
+            hint = a_path.extension().string();
+        }
+        const aiScene* scene = importer.ReadFileFromMemory(blob.data(), blob.size(), load_flags, hint.empty() ? nullptr : hint.c_str());
         if (!scene || !scene->mNumMeshes) [[unlikely]] {
             panic("Failed to load scene from file '{}': {}", get_asset_path(), importer.GetErrorString());
         }

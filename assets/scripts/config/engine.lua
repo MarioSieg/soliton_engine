@@ -67,7 +67,7 @@ engine_cfg = {
         icon = '/assets/icons/logo.png' -- Window icon image file.
     },
     Renderer = {
-        shaderDir = '/assets/shaders', -- Shader directory.
+        shaderDir = 'assets/shaders', -- Shader directory.
         enableParallelShaderCompilation = true, -- Enable shader compilation using multiple threads.
         enableVulkanValidationLayers = true, -- Enable Vulkan validation layers.
         maxDebugDrawVertices = 1000000, -- Maximum amount of debugdraw draw vertices.

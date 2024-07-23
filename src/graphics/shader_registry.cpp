@@ -45,7 +45,7 @@ namespace lu::graphics {
             futures.emplace_back(std::async(parallel ? std::launch::async : std::launch::deferred, [](std::string&& name, std::string&& path) {
                 log_info("Compiling shader: {} from {}", name, path);
                 return std::make_tuple(name, std::string{path}, shader::compile(std::move(path)));
-            }, std::move(name), path.string()));
+            }, std::move(name), "/" + path.string()));
         }
         bool all_successful = true;
         for (auto&& future : futures) {
