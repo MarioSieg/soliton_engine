@@ -1,6 +1,4 @@
-![Lunam Engine](assets/icons/logo_small.png)
-
-# Lunam Engine
+![Lunam Engine](media/logo_small.png)
 Lunam is a simple but powerful realtime 3D game/simulation engine written in modern C++ 20 and Lua.<br>
 It is designed to be easy to use and understand, but also to be powerful enough to create complex simulations and games.<br>
 Lunam is also very lightweight and fast, and is designed to be cross-platform, with support for Windows, Linux, and OSX, while still supporting advanced graphics and a very powerful physics engine.
