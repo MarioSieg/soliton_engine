@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.4"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lunam Engine: src/scripting/lfs/lfs.c File Reference</title>
+<title>Lunam Engine: src/scripting/libs/lfs/lfs.c File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -26,7 +26,6 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr id="projectrow">
-  <td id="projectlogo"><img alt="Logo" src="logo_small.png"/></td>
   <td id="projectalign">
    <div id="projectname">Lunam Engine
    </div>
@@ -108,9 +107,9 @@ $(document).ready(function(){initNavTree('lfs_8c.html',''); initResizable(); });
 <code>#include &lt;utime.h&gt;</code><br />
 <code>#include &lt;sys/param.h&gt;</code><br />
 <code>#include &lt;limits.h&gt;</code><br />
-<code>#include &quot;<a class="el" href="lua_8h_source.html">../jit/lua.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="lauxlib_8h_source.html">../jit/lauxlib.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="lualib_8h_source.html">../jit/lualib.h</a>&quot;</code><br />
+<code>#include &lt;lua.h&gt;</code><br />
+<code>#include &lt;lauxlib.h&gt;</code><br />
+<code>#include &lt;lualib.h&gt;</code><br />
 <code>#include &quot;<a class="el" href="lfs_8h_source.html">lfs.h</a>&quot;</code><br />
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
@@ -128,13 +127,13 @@ Macros</h2></td></tr>
 <tr class="separator:a6c6c94177b22577f750d2764caf369ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad99dd74d14fa91f1defb540aff17baef"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#ad99dd74d14fa91f1defb540aff17baef">LFS_LIBNAME</a>&#160;&#160;&#160;&quot;lfs&quot;</td></tr>
 <tr class="separator:ad99dd74d14fa91f1defb540aff17baef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaae7f8f5ebb89d757d304bfa713a7dc8"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#aaae7f8f5ebb89d757d304bfa713a7dc8">new_lib</a>(L,  l)&#160;&#160;&#160;(<a class="el" href="lua_8h.html#aa59db6b784aa1ec954599a44168c7761">lua_newtable</a>(L), <a class="el" href="lauxlib_8h.html#a258c0fd40d57aec9cf62ebd74be7666e">luaL_register</a>(L, NULL, l))</td></tr>
+<tr class="memitem:aaae7f8f5ebb89d757d304bfa713a7dc8"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#aaae7f8f5ebb89d757d304bfa713a7dc8">new_lib</a>(L,  l)&#160;&#160;&#160;(lua_newtable(L), luaL_register(L, NULL, l))</td></tr>
 <tr class="separator:aaae7f8f5ebb89d757d304bfa713a7dc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1b944ebab6a0d371447d276b5369d59d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a1b944ebab6a0d371447d276b5369d59d">DIR_METATABLE</a>&#160;&#160;&#160;&quot;directory metatable&quot;</td></tr>
 <tr class="separator:a1b944ebab6a0d371447d276b5369d59d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab448bd7823bbb2ed8d196a06e912b79f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#ab448bd7823bbb2ed8d196a06e912b79f">LOCK_METATABLE</a>&#160;&#160;&#160;&quot;lock metatable&quot;</td></tr>
 <tr class="separator:ab448bd7823bbb2ed8d196a06e912b79f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab4059be11087d765b66c4199e15e8c8a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#ab4059be11087d765b66c4199e15e8c8a">lfs_setmode</a>(file,  m)&#160;&#160;&#160;((void)file, (void)m, 0)</td></tr>
+<tr class="memitem:ab4059be11087d765b66c4199e15e8c8a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#ab4059be11087d765b66c4199e15e8c8a">lfs_setmode</a>(file,  m)&#160;&#160;&#160;((<a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a>)file, (<a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a>)m, 0)</td></tr>
 <tr class="separator:ab4059be11087d765b66c4199e15e8c8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2c14e30b8edd80c33d5aca8e59eae234"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a2c14e30b8edd80c33d5aca8e59eae234">STAT_STRUCT</a>&#160;&#160;&#160;struct stat</td></tr>
 <tr class="separator:a2c14e30b8edd80c33d5aca8e59eae234"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -154,94 +153,94 @@ Typedefs</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a27823090abe3cdcfb6e7756c5aedc1b1"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a27823090abe3cdcfb6e7756c5aedc1b1">pusherror</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, const char *info)</td></tr>
+<tr class="memitem:a27823090abe3cdcfb6e7756c5aedc1b1"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a27823090abe3cdcfb6e7756c5aedc1b1">pusherror</a> (lua_State *L, const char *info)</td></tr>
 <tr class="separator:a27823090abe3cdcfb6e7756c5aedc1b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a45b1c3a9b0d402289aa9bfb776528ccc"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a45b1c3a9b0d402289aa9bfb776528ccc">pushresult</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, int res, const char *info)</td></tr>
+<tr class="memitem:a45b1c3a9b0d402289aa9bfb776528ccc"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a45b1c3a9b0d402289aa9bfb776528ccc">pushresult</a> (lua_State *L, int res, const char *info)</td></tr>
 <tr class="separator:a45b1c3a9b0d402289aa9bfb776528ccc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4a8ab9a6902853007e6db0291e5bd70d"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a4a8ab9a6902853007e6db0291e5bd70d">change_dir</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L)</td></tr>
+<tr class="memitem:a4a8ab9a6902853007e6db0291e5bd70d"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a4a8ab9a6902853007e6db0291e5bd70d">change_dir</a> (lua_State *L)</td></tr>
 <tr class="separator:a4a8ab9a6902853007e6db0291e5bd70d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab1e52b97d6a5ba00dde6792a6d25cb29"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#ab1e52b97d6a5ba00dde6792a6d25cb29">get_dir</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L)</td></tr>
+<tr class="memitem:ab1e52b97d6a5ba00dde6792a6d25cb29"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#ab1e52b97d6a5ba00dde6792a6d25cb29">get_dir</a> (lua_State *L)</td></tr>
 <tr class="separator:ab1e52b97d6a5ba00dde6792a6d25cb29"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6004aff7c6f30ad720a6d5d68e287fd4"><td class="memItemLeft" align="right" valign="top">static FILE *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a6004aff7c6f30ad720a6d5d68e287fd4">check_file</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, int idx, const char *funcname)</td></tr>
+<tr class="memitem:a6004aff7c6f30ad720a6d5d68e287fd4"><td class="memItemLeft" align="right" valign="top">static FILE *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a6004aff7c6f30ad720a6d5d68e287fd4">check_file</a> (lua_State *L, int idx, const char *funcname)</td></tr>
 <tr class="separator:a6004aff7c6f30ad720a6d5d68e287fd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaf96bbe76786fab30f2ce43a26e0f364"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#aaf96bbe76786fab30f2ce43a26e0f364">lfs_lock_dir</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L)</td></tr>
+<tr class="memitem:aaf96bbe76786fab30f2ce43a26e0f364"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#aaf96bbe76786fab30f2ce43a26e0f364">lfs_lock_dir</a> (lua_State *L)</td></tr>
 <tr class="separator:aaf96bbe76786fab30f2ce43a26e0f364"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad7e1a7649a7344bf4b5c9035bd760c52"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#ad7e1a7649a7344bf4b5c9035bd760c52">lfs_unlock_dir</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L)</td></tr>
+<tr class="memitem:ad7e1a7649a7344bf4b5c9035bd760c52"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#ad7e1a7649a7344bf4b5c9035bd760c52">lfs_unlock_dir</a> (lua_State *L)</td></tr>
 <tr class="separator:ad7e1a7649a7344bf4b5c9035bd760c52"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aec2babee5119018b7696c8213b596bd1"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#aec2babee5119018b7696c8213b596bd1">lfs_g_setmode</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, FILE *f, int arg)</td></tr>
+<tr class="memitem:aec2babee5119018b7696c8213b596bd1"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#aec2babee5119018b7696c8213b596bd1">lfs_g_setmode</a> (lua_State *L, FILE *f, int arg)</td></tr>
 <tr class="separator:aec2babee5119018b7696c8213b596bd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3003309b60f1a3274c304147e15b7ddc"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a3003309b60f1a3274c304147e15b7ddc">lfs_f_setmode</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L)</td></tr>
+<tr class="memitem:a3003309b60f1a3274c304147e15b7ddc"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a3003309b60f1a3274c304147e15b7ddc">lfs_f_setmode</a> (lua_State *L)</td></tr>
 <tr class="separator:a3003309b60f1a3274c304147e15b7ddc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3b290a7d1af16202250caf7b6555a68c"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a3b290a7d1af16202250caf7b6555a68c">file_lock</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L)</td></tr>
+<tr class="memitem:a3b290a7d1af16202250caf7b6555a68c"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a3b290a7d1af16202250caf7b6555a68c">file_lock</a> (lua_State *L)</td></tr>
 <tr class="separator:a3b290a7d1af16202250caf7b6555a68c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aec8caf3e6f187bc3913b363b015f5db9"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#aec8caf3e6f187bc3913b363b015f5db9">file_unlock</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L)</td></tr>
+<tr class="memitem:aec8caf3e6f187bc3913b363b015f5db9"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#aec8caf3e6f187bc3913b363b015f5db9">file_unlock</a> (lua_State *L)</td></tr>
 <tr class="separator:aec8caf3e6f187bc3913b363b015f5db9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a42a6b9bf5fcce76233cd850664515cee"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a42a6b9bf5fcce76233cd850664515cee">make_link</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L)</td></tr>
+<tr class="memitem:a42a6b9bf5fcce76233cd850664515cee"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a42a6b9bf5fcce76233cd850664515cee">make_link</a> (lua_State *L)</td></tr>
 <tr class="separator:a42a6b9bf5fcce76233cd850664515cee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afe76d45b747eca64b8a7e8dfe777e551"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#afe76d45b747eca64b8a7e8dfe777e551">make_dir</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L)</td></tr>
+<tr class="memitem:afe76d45b747eca64b8a7e8dfe777e551"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#afe76d45b747eca64b8a7e8dfe777e551">make_dir</a> (lua_State *L)</td></tr>
 <tr class="separator:afe76d45b747eca64b8a7e8dfe777e551"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a04bfadf9a8903ce12212a542db4289f2"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a04bfadf9a8903ce12212a542db4289f2">remove_dir</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L)</td></tr>
+<tr class="memitem:a04bfadf9a8903ce12212a542db4289f2"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a04bfadf9a8903ce12212a542db4289f2">remove_dir</a> (lua_State *L)</td></tr>
 <tr class="separator:a04bfadf9a8903ce12212a542db4289f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae0186ed0700f8609fb60e2a1a5e07d30"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#ae0186ed0700f8609fb60e2a1a5e07d30">dir_iter</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L)</td></tr>
+<tr class="memitem:ae0186ed0700f8609fb60e2a1a5e07d30"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#ae0186ed0700f8609fb60e2a1a5e07d30">dir_iter</a> (lua_State *L)</td></tr>
 <tr class="separator:ae0186ed0700f8609fb60e2a1a5e07d30"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aca8c5b00df934c5d2e261ca02cae2e22"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#aca8c5b00df934c5d2e261ca02cae2e22">dir_close</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L)</td></tr>
+<tr class="memitem:aca8c5b00df934c5d2e261ca02cae2e22"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#aca8c5b00df934c5d2e261ca02cae2e22">dir_close</a> (lua_State *L)</td></tr>
 <tr class="separator:aca8c5b00df934c5d2e261ca02cae2e22"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab63c1bb6d517c032f143e22e9a085eb1"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#ab63c1bb6d517c032f143e22e9a085eb1">dir_iter_factory</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L)</td></tr>
+<tr class="memitem:ab63c1bb6d517c032f143e22e9a085eb1"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#ab63c1bb6d517c032f143e22e9a085eb1">dir_iter_factory</a> (lua_State *L)</td></tr>
 <tr class="separator:ab63c1bb6d517c032f143e22e9a085eb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4e155464d7b16e04af27c973bb62d3be"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a4e155464d7b16e04af27c973bb62d3be">dir_create_meta</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L)</td></tr>
+<tr class="memitem:a4e155464d7b16e04af27c973bb62d3be"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a4e155464d7b16e04af27c973bb62d3be">dir_create_meta</a> (lua_State *L)</td></tr>
 <tr class="separator:a4e155464d7b16e04af27c973bb62d3be"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8bd9504a585ed0e0e57bfb9cd6c8b80b"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a8bd9504a585ed0e0e57bfb9cd6c8b80b">lock_create_meta</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L)</td></tr>
+<tr class="memitem:a8bd9504a585ed0e0e57bfb9cd6c8b80b"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a8bd9504a585ed0e0e57bfb9cd6c8b80b">lock_create_meta</a> (lua_State *L)</td></tr>
 <tr class="separator:a8bd9504a585ed0e0e57bfb9cd6c8b80b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abac3fd75f28ff7f751b114a740cd2757"><td class="memItemLeft" align="right" valign="top">static const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#abac3fd75f28ff7f751b114a740cd2757">mode2string</a> (mode_t mode)</td></tr>
 <tr class="separator:abac3fd75f28ff7f751b114a740cd2757"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d4ffb9959258592d8cb1c50083a5ab3"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a4d4ffb9959258592d8cb1c50083a5ab3">file_utime</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L)</td></tr>
+<tr class="memitem:a4d4ffb9959258592d8cb1c50083a5ab3"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a4d4ffb9959258592d8cb1c50083a5ab3">file_utime</a> (lua_State *L)</td></tr>
 <tr class="separator:a4d4ffb9959258592d8cb1c50083a5ab3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0e9ae863df13108752963bb1b09b0fe1"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a0e9ae863df13108752963bb1b09b0fe1">push_st_mode</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, <a class="el" href="lfs_8c.html#a2c14e30b8edd80c33d5aca8e59eae234">STAT_STRUCT</a> *info)</td></tr>
+<tr class="memitem:a0e9ae863df13108752963bb1b09b0fe1"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a0e9ae863df13108752963bb1b09b0fe1">push_st_mode</a> (lua_State *L, <a class="el" href="lfs_8c.html#a2c14e30b8edd80c33d5aca8e59eae234">STAT_STRUCT</a> *info)</td></tr>
 <tr class="separator:a0e9ae863df13108752963bb1b09b0fe1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9c81cf4a43d34c3b490903b42882dd49"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a9c81cf4a43d34c3b490903b42882dd49">push_st_dev</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, <a class="el" href="lfs_8c.html#a2c14e30b8edd80c33d5aca8e59eae234">STAT_STRUCT</a> *info)</td></tr>
+<tr class="memitem:a9c81cf4a43d34c3b490903b42882dd49"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a9c81cf4a43d34c3b490903b42882dd49">push_st_dev</a> (lua_State *L, <a class="el" href="lfs_8c.html#a2c14e30b8edd80c33d5aca8e59eae234">STAT_STRUCT</a> *info)</td></tr>
 <tr class="separator:a9c81cf4a43d34c3b490903b42882dd49"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adc30d883839d95035053854a7210487e"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#adc30d883839d95035053854a7210487e">push_st_ino</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, <a class="el" href="lfs_8c.html#a2c14e30b8edd80c33d5aca8e59eae234">STAT_STRUCT</a> *info)</td></tr>
+<tr class="memitem:adc30d883839d95035053854a7210487e"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#adc30d883839d95035053854a7210487e">push_st_ino</a> (lua_State *L, <a class="el" href="lfs_8c.html#a2c14e30b8edd80c33d5aca8e59eae234">STAT_STRUCT</a> *info)</td></tr>
 <tr class="separator:adc30d883839d95035053854a7210487e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad6ba5f1f15073cd1d7ecc467a60d8844"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#ad6ba5f1f15073cd1d7ecc467a60d8844">push_st_nlink</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, <a class="el" href="lfs_8c.html#a2c14e30b8edd80c33d5aca8e59eae234">STAT_STRUCT</a> *info)</td></tr>
+<tr class="memitem:ad6ba5f1f15073cd1d7ecc467a60d8844"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#ad6ba5f1f15073cd1d7ecc467a60d8844">push_st_nlink</a> (lua_State *L, <a class="el" href="lfs_8c.html#a2c14e30b8edd80c33d5aca8e59eae234">STAT_STRUCT</a> *info)</td></tr>
 <tr class="separator:ad6ba5f1f15073cd1d7ecc467a60d8844"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acbe8ad4a6366714e03d6c9843f444428"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#acbe8ad4a6366714e03d6c9843f444428">push_st_uid</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, <a class="el" href="lfs_8c.html#a2c14e30b8edd80c33d5aca8e59eae234">STAT_STRUCT</a> *info)</td></tr>
+<tr class="memitem:acbe8ad4a6366714e03d6c9843f444428"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#acbe8ad4a6366714e03d6c9843f444428">push_st_uid</a> (lua_State *L, <a class="el" href="lfs_8c.html#a2c14e30b8edd80c33d5aca8e59eae234">STAT_STRUCT</a> *info)</td></tr>
 <tr class="separator:acbe8ad4a6366714e03d6c9843f444428"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af19ec6e7d50059b659ada45a83dab373"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#af19ec6e7d50059b659ada45a83dab373">push_st_gid</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, <a class="el" href="lfs_8c.html#a2c14e30b8edd80c33d5aca8e59eae234">STAT_STRUCT</a> *info)</td></tr>
+<tr class="memitem:af19ec6e7d50059b659ada45a83dab373"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#af19ec6e7d50059b659ada45a83dab373">push_st_gid</a> (lua_State *L, <a class="el" href="lfs_8c.html#a2c14e30b8edd80c33d5aca8e59eae234">STAT_STRUCT</a> *info)</td></tr>
 <tr class="separator:af19ec6e7d50059b659ada45a83dab373"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5e5ec699ffc02ea2c3412e148b20fa43"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a5e5ec699ffc02ea2c3412e148b20fa43">push_st_rdev</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, <a class="el" href="lfs_8c.html#a2c14e30b8edd80c33d5aca8e59eae234">STAT_STRUCT</a> *info)</td></tr>
+<tr class="memitem:a5e5ec699ffc02ea2c3412e148b20fa43"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a5e5ec699ffc02ea2c3412e148b20fa43">push_st_rdev</a> (lua_State *L, <a class="el" href="lfs_8c.html#a2c14e30b8edd80c33d5aca8e59eae234">STAT_STRUCT</a> *info)</td></tr>
 <tr class="separator:a5e5ec699ffc02ea2c3412e148b20fa43"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac000bc13ac042799ccb1de7872b4d2d0"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#ac000bc13ac042799ccb1de7872b4d2d0">push_st_atime</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, <a class="el" href="lfs_8c.html#a2c14e30b8edd80c33d5aca8e59eae234">STAT_STRUCT</a> *info)</td></tr>
+<tr class="memitem:ac000bc13ac042799ccb1de7872b4d2d0"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#ac000bc13ac042799ccb1de7872b4d2d0">push_st_atime</a> (lua_State *L, <a class="el" href="lfs_8c.html#a2c14e30b8edd80c33d5aca8e59eae234">STAT_STRUCT</a> *info)</td></tr>
 <tr class="separator:ac000bc13ac042799ccb1de7872b4d2d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ace4056fdf5a61e26bdc272d794f087cd"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#ace4056fdf5a61e26bdc272d794f087cd">push_st_mtime</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, <a class="el" href="lfs_8c.html#a2c14e30b8edd80c33d5aca8e59eae234">STAT_STRUCT</a> *info)</td></tr>
+<tr class="memitem:ace4056fdf5a61e26bdc272d794f087cd"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#ace4056fdf5a61e26bdc272d794f087cd">push_st_mtime</a> (lua_State *L, <a class="el" href="lfs_8c.html#a2c14e30b8edd80c33d5aca8e59eae234">STAT_STRUCT</a> *info)</td></tr>
 <tr class="separator:ace4056fdf5a61e26bdc272d794f087cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab2ec4e6da2bee15e2e2a3abdffdcb539"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#ab2ec4e6da2bee15e2e2a3abdffdcb539">push_st_ctime</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, <a class="el" href="lfs_8c.html#a2c14e30b8edd80c33d5aca8e59eae234">STAT_STRUCT</a> *info)</td></tr>
+<tr class="memitem:ab2ec4e6da2bee15e2e2a3abdffdcb539"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#ab2ec4e6da2bee15e2e2a3abdffdcb539">push_st_ctime</a> (lua_State *L, <a class="el" href="lfs_8c.html#a2c14e30b8edd80c33d5aca8e59eae234">STAT_STRUCT</a> *info)</td></tr>
 <tr class="separator:ab2ec4e6da2bee15e2e2a3abdffdcb539"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0be6c81bc77e578ab24d0c2da2859c50"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a0be6c81bc77e578ab24d0c2da2859c50">push_st_size</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, <a class="el" href="lfs_8c.html#a2c14e30b8edd80c33d5aca8e59eae234">STAT_STRUCT</a> *info)</td></tr>
+<tr class="memitem:a0be6c81bc77e578ab24d0c2da2859c50"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a0be6c81bc77e578ab24d0c2da2859c50">push_st_size</a> (lua_State *L, <a class="el" href="lfs_8c.html#a2c14e30b8edd80c33d5aca8e59eae234">STAT_STRUCT</a> *info)</td></tr>
 <tr class="separator:a0be6c81bc77e578ab24d0c2da2859c50"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8fd0f074912a99b985512c4721b7a6ad"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a8fd0f074912a99b985512c4721b7a6ad">push_st_blocks</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, <a class="el" href="lfs_8c.html#a2c14e30b8edd80c33d5aca8e59eae234">STAT_STRUCT</a> *info)</td></tr>
+<tr class="memitem:a8fd0f074912a99b985512c4721b7a6ad"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a8fd0f074912a99b985512c4721b7a6ad">push_st_blocks</a> (lua_State *L, <a class="el" href="lfs_8c.html#a2c14e30b8edd80c33d5aca8e59eae234">STAT_STRUCT</a> *info)</td></tr>
 <tr class="separator:a8fd0f074912a99b985512c4721b7a6ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a25fd360abefe2ddec725fc7ee2026ab8"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a25fd360abefe2ddec725fc7ee2026ab8">push_st_blksize</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, <a class="el" href="lfs_8c.html#a2c14e30b8edd80c33d5aca8e59eae234">STAT_STRUCT</a> *info)</td></tr>
+<tr class="memitem:a25fd360abefe2ddec725fc7ee2026ab8"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a25fd360abefe2ddec725fc7ee2026ab8">push_st_blksize</a> (lua_State *L, <a class="el" href="lfs_8c.html#a2c14e30b8edd80c33d5aca8e59eae234">STAT_STRUCT</a> *info)</td></tr>
 <tr class="separator:a25fd360abefe2ddec725fc7ee2026ab8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab9f88fd213874606b3f608a30d67edf5"><td class="memItemLeft" align="right" valign="top">static const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#ab9f88fd213874606b3f608a30d67edf5">perm2string</a> (mode_t mode)</td></tr>
 <tr class="separator:ab9f88fd213874606b3f608a30d67edf5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a986de7a3b77f8cc23604ebedc5692b1d"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a986de7a3b77f8cc23604ebedc5692b1d">push_st_perm</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L, <a class="el" href="lfs_8c.html#a2c14e30b8edd80c33d5aca8e59eae234">STAT_STRUCT</a> *info)</td></tr>
+<tr class="memitem:a986de7a3b77f8cc23604ebedc5692b1d"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a986de7a3b77f8cc23604ebedc5692b1d">push_st_perm</a> (lua_State *L, <a class="el" href="lfs_8c.html#a2c14e30b8edd80c33d5aca8e59eae234">STAT_STRUCT</a> *info)</td></tr>
 <tr class="separator:a986de7a3b77f8cc23604ebedc5692b1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5f96fcc0288415bb07f1b2c84fa8b578"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a5f96fcc0288415bb07f1b2c84fa8b578">file_info</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L)</td></tr>
+<tr class="memitem:a5f96fcc0288415bb07f1b2c84fa8b578"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a5f96fcc0288415bb07f1b2c84fa8b578">file_info</a> (lua_State *L)</td></tr>
 <tr class="separator:a5f96fcc0288415bb07f1b2c84fa8b578"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9de9dd4aff54a14824eda8914492f574"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a9de9dd4aff54a14824eda8914492f574">push_link_target</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L)</td></tr>
+<tr class="memitem:a9de9dd4aff54a14824eda8914492f574"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a9de9dd4aff54a14824eda8914492f574">push_link_target</a> (lua_State *L)</td></tr>
 <tr class="separator:a9de9dd4aff54a14824eda8914492f574"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa8ea0267bf1ee8f300d52e6f1ee11020"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#aa8ea0267bf1ee8f300d52e6f1ee11020">link_info</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L)</td></tr>
+<tr class="memitem:aa8ea0267bf1ee8f300d52e6f1ee11020"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#aa8ea0267bf1ee8f300d52e6f1ee11020">link_info</a> (lua_State *L)</td></tr>
 <tr class="separator:aa8ea0267bf1ee8f300d52e6f1ee11020"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aac38a5afc62653d2314f5eca2e86cccb"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#aac38a5afc62653d2314f5eca2e86cccb">set_info</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L)</td></tr>
+<tr class="memitem:aac38a5afc62653d2314f5eca2e86cccb"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#aac38a5afc62653d2314f5eca2e86cccb">set_info</a> (lua_State *L)</td></tr>
 <tr class="separator:aac38a5afc62653d2314f5eca2e86cccb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6763c14fcadcfbec66e8861512668574"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lfs_8h.html#a5ff670bec256b155c8c640215912ec7c">LFS_EXPORT</a> int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a6763c14fcadcfbec66e8861512668574">luaopen_lfs</a> (<a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *L)</td></tr>
+<tr class="memitem:a6763c14fcadcfbec66e8861512668574"><td class="memItemLeft" align="right" valign="top"><a class="el" href="lfs_8h.html#a5ff670bec256b155c8c640215912ec7c">LFS_EXPORT</a> int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a6763c14fcadcfbec66e8861512668574">luaopen_lfs</a> (lua_State *L)</td></tr>
 <tr class="separator:a6763c14fcadcfbec66e8861512668574"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
 <tr class="memitem:ada67b57b9f41aaa9b227ff9441967b83"><td class="memItemLeft" align="right" valign="top">struct _stat_members&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#ada67b57b9f41aaa9b227ff9441967b83">members</a> []</td></tr>
 <tr class="separator:ada67b57b9f41aaa9b227ff9441967b83"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a53a2fdc4f257aee310d388d4587a2907"><td class="memItemLeft" align="right" valign="top">static const struct <a class="el" href="structluaL__Reg.html">luaL_Reg</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a53a2fdc4f257aee310d388d4587a2907">fslib</a> []</td></tr>
+<tr class="memitem:a53a2fdc4f257aee310d388d4587a2907"><td class="memItemLeft" align="right" valign="top">static const struct luaL_Reg&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="lfs_8c.html#a53a2fdc4f257aee310d388d4587a2907">fslib</a> []</td></tr>
 <tr class="separator:a53a2fdc4f257aee310d388d4587a2907"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
@@ -328,7 +327,7 @@ Variables</h2></td></tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td>&#160;&#160;&#160;((void)file, (void)m, 0)</td>
+          <td></td><td>&#160;&#160;&#160;((<a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a>)file, (<a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a>)m, 0)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -398,7 +397,7 @@ Variables</h2></td></tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td>&#160;&#160;&#160;(<a class="el" href="lua_8h.html#aa59db6b784aa1ec954599a44168c7761">lua_newtable</a>(L), <a class="el" href="lauxlib_8h.html#a258c0fd40d57aec9cf62ebd74be7666e">luaL_register</a>(L, NULL, l))</td>
+          <td></td><td>&#160;&#160;&#160;(lua_newtable(L), luaL_register(L, NULL, l))</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -475,7 +474,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname">static int change_dir </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em></td><td>)</td>
           <td></td>
         </tr>
@@ -501,7 +500,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname">static FILE * check_file </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em>, </td>
         </tr>
         <tr>
@@ -543,7 +542,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname">static int dir_close </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em></td><td>)</td>
           <td></td>
         </tr>
@@ -569,7 +568,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname">static int dir_create_meta </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em></td><td>)</td>
           <td></td>
         </tr>
@@ -595,7 +594,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname">static int dir_iter </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em></td><td>)</td>
           <td></td>
         </tr>
@@ -621,7 +620,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname">static int dir_iter_factory </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em></td><td>)</td>
           <td></td>
         </tr>
@@ -647,7 +646,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname">static int file_info </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em></td><td>)</td>
           <td></td>
         </tr>
@@ -673,7 +672,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname">static int file_lock </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em></td><td>)</td>
           <td></td>
         </tr>
@@ -699,7 +698,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname">static int file_unlock </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em></td><td>)</td>
           <td></td>
         </tr>
@@ -725,7 +724,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname">static int file_utime </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em></td><td>)</td>
           <td></td>
         </tr>
@@ -751,7 +750,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname">static int get_dir </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em></td><td>)</td>
           <td></td>
         </tr>
@@ -777,7 +776,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname">static int lfs_f_setmode </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em></td><td>)</td>
           <td></td>
         </tr>
@@ -803,7 +802,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname">static int lfs_g_setmode </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em>, </td>
         </tr>
         <tr>
@@ -845,7 +844,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname">static int lfs_lock_dir </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em></td><td>)</td>
           <td></td>
         </tr>
@@ -871,7 +870,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname">static int lfs_unlock_dir </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em></td><td>)</td>
           <td></td>
         </tr>
@@ -897,7 +896,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname">static int link_info </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em></td><td>)</td>
           <td></td>
         </tr>
@@ -923,7 +922,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname">static int lock_create_meta </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em></td><td>)</td>
           <td></td>
         </tr>
@@ -946,7 +945,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="lfs_8h.html#a5ff670bec256b155c8c640215912ec7c">LFS_EXPORT</a> int luaopen_lfs </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em></td><td>)</td>
           <td></td>
         </tr>
@@ -967,7 +966,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname">static int make_dir </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em></td><td>)</td>
           <td></td>
         </tr>
@@ -993,7 +992,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname">static int make_link </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em></td><td>)</td>
           <td></td>
         </tr>
@@ -1071,7 +1070,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname">static int push_link_target </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em></td><td>)</td>
           <td></td>
         </tr>
@@ -1095,9 +1094,9 @@ Variables</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void push_st_atime </td>
+          <td class="memname">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> push_st_atime </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em>, </td>
         </tr>
         <tr>
@@ -1131,9 +1130,9 @@ Variables</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void push_st_blksize </td>
+          <td class="memname">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> push_st_blksize </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em>, </td>
         </tr>
         <tr>
@@ -1167,9 +1166,9 @@ Variables</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void push_st_blocks </td>
+          <td class="memname">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> push_st_blocks </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em>, </td>
         </tr>
         <tr>
@@ -1203,9 +1202,9 @@ Variables</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void push_st_ctime </td>
+          <td class="memname">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> push_st_ctime </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em>, </td>
         </tr>
         <tr>
@@ -1239,9 +1238,9 @@ Variables</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void push_st_dev </td>
+          <td class="memname">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> push_st_dev </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em>, </td>
         </tr>
         <tr>
@@ -1275,9 +1274,9 @@ Variables</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void push_st_gid </td>
+          <td class="memname">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> push_st_gid </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em>, </td>
         </tr>
         <tr>
@@ -1311,9 +1310,9 @@ Variables</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void push_st_ino </td>
+          <td class="memname">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> push_st_ino </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em>, </td>
         </tr>
         <tr>
@@ -1347,9 +1346,9 @@ Variables</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void push_st_mode </td>
+          <td class="memname">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> push_st_mode </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em>, </td>
         </tr>
         <tr>
@@ -1383,9 +1382,9 @@ Variables</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void push_st_mtime </td>
+          <td class="memname">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> push_st_mtime </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em>, </td>
         </tr>
         <tr>
@@ -1419,9 +1418,9 @@ Variables</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void push_st_nlink </td>
+          <td class="memname">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> push_st_nlink </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em>, </td>
         </tr>
         <tr>
@@ -1455,9 +1454,9 @@ Variables</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void push_st_perm </td>
+          <td class="memname">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> push_st_perm </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em>, </td>
         </tr>
         <tr>
@@ -1491,9 +1490,9 @@ Variables</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void push_st_rdev </td>
+          <td class="memname">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> push_st_rdev </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em>, </td>
         </tr>
         <tr>
@@ -1527,9 +1526,9 @@ Variables</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void push_st_size </td>
+          <td class="memname">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> push_st_size </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em>, </td>
         </tr>
         <tr>
@@ -1563,9 +1562,9 @@ Variables</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void push_st_uid </td>
+          <td class="memname">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> push_st_uid </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em>, </td>
         </tr>
         <tr>
@@ -1601,7 +1600,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname">static int pusherror </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em>, </td>
         </tr>
         <tr>
@@ -1637,7 +1636,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname">static int pushresult </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em>, </td>
         </tr>
         <tr>
@@ -1679,7 +1678,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname">static int remove_dir </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em></td><td>)</td>
           <td></td>
         </tr>
@@ -1703,9 +1702,9 @@ Variables</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void set_info </td>
+          <td class="memname">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> set_info </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="lua_8h.html#a28186297f2e9f2de0652504633de8fb3">lua_State</a> *&#160;</td>
+          <td class="paramtype">lua_State *&#160;</td>
           <td class="paramname"><em>L</em></td><td>)</td>
           <td></td>
         </tr>
@@ -1730,7 +1729,7 @@ Variables</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const struct <a class="el" href="structluaL__Reg.html">luaL_Reg</a> fslib[]</td>
+          <td class="memname">const struct luaL_Reg fslib[]</td>
         </tr>
       </table>
   </td>
@@ -1823,7 +1822,7 @@ Variables</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_b49f11675e92293ffa7ceeef744893f4.html">scripting</a></li><li class="navelem"><a class="el" href="dir_131ad8b72b36f4df2c0b838e45805009.html">lfs</a></li><li class="navelem"><a class="el" href="lfs_8c.html">lfs.c</a></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_b49f11675e92293ffa7ceeef744893f4.html">scripting</a></li><li class="navelem"><a class="el" href="dir_29eb4593a3cf68b08a106f2a9742e86d.html">libs</a></li><li class="navelem"><a class="el" href="dir_43a7e9572b203ed1297f7c18cac36f66.html">lfs</a></li><li class="navelem"><a class="el" href="lfs_8c.html">lfs.c</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4 </li>
   </ul>
 </div>

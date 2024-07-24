@@ -1,23 +1,6 @@
 var searchData=
 [
-  ['rasterizerinfo_0',['RasterizerInfo',['../VKRenderDevice_8cpp.html#a1f8bdb3099d8c6a0f51e1af48cecac8b',1,'VKRenderDevice.cpp']]],
-  ['read_1',['Read',['../classlunam__io__stream.html#ae94743f298f430ce99f3fd3acdacb09c',1,'lunam_io_stream::Read()'],['../FileTextureProvider_8cpp.html#aef270df442fc70ce34fcd39f650b6907',1,'Read():&#160;FileTextureProvider.cpp']]],
-  ['realloc_2',['realloc',['../classgraphics_1_1texture__allocator.html#ac0f5c04a4415235d94358494c18aa04f',1,'graphics::texture_allocator']]],
-  ['reconnect_5flua_5fhost_5fimpl_3',['reconnect_lua_host_impl',['../classscripting_1_1scripting__subsystem.html#acc6a04f10a379c19e4e87d24222270af',1,'scripting::scripting_subsystem']]],
-  ['recreate_5fswapchain_4',['recreate_swapchain',['../classvkb_1_1context.html#a5dc6bbdb027c64da9341b98707c47af1',1,'vkb::context']]],
-  ['register_5fpipeline_5',['register_pipeline',['../classgraphics_1_1pipeline__registry.html#afd03ce13b7da4be687c7cf135205a573',1,'graphics::pipeline_registry']]],
-  ['remove_5fdir_6',['remove_dir',['../lfs_8c.html#a04bfadf9a8903ce12212a542db4289f2',1,'lfs.c']]],
-  ['render_7',['render',['../classgraphics_1_1debugdraw.html#a876a22c344130cd75fb36c6e450f06af',1,'graphics::debugdraw']]],
-  ['render_5fmesh_8',['render_mesh',['../namespacegraphics.html#a124808cbe7742d75548b9ff68748edd5',1,'graphics']]],
-  ['render_5fscene_5fbucket_9',['render_scene_bucket',['../namespacegraphics.html#ac145dc3d801bac7862f67dcdda4cd4c6',1,'graphics']]],
-  ['render_5fthread_10',['render_thread',['../classgraphics_1_1render__thread.html#a383f1de5a7815b4afab3526106a89c8d',1,'graphics::render_thread']]],
-  ['render_5fthread_5fpool_11',['render_thread_pool',['../classgraphics_1_1render__thread__pool.html#a8ba5e9f2ce9a944284b12f68892d6ada',1,'graphics::render_thread_pool']]],
-  ['renderarrowsforverticalbar_12',['RenderArrowsForVerticalBar',['../imgui__widgets_8cpp.html#af3def68a1bdeda69e6af84fa7d6272cb',1,'imgui_widgets.cpp']]],
-  ['renderviewportsthumbnails_13',['RenderViewportsThumbnails',['../imgui_8cpp.html#ad3e7a69262a495be50960b6906f604d6',1,'imgui.cpp']]],
-  ['request_5fexit_14',['request_exit',['../classkernel.html#aaca9357f78144b85f4a05a6ce7cad967',1,'kernel']]],
-  ['reset_15',['reset',['../classgraphics_1_1thread__sig.html#ace69741dda1dede9e3976e5669bf202e',1,'graphics::thread_sig']]],
-  ['reset_16',['Reset',['../structcpu__profiler_1_1FrameHandleInfo.html#ae21b0bed1249bfe69b8f06152a60e88f',1,'cpu_profiler::FrameHandleInfo::Reset()'],['../structcpu__profiler_1_1TaskHandleInfo.html#a06a155606e48a8ed11d89ea192a76c9f',1,'cpu_profiler::TaskHandleInfo::Reset()']]],
-  ['resize_17',['resize',['../classkernel.html#ab4604cdb1402a8cfdbea8ac93a5bdd3d',1,'kernel']]],
-  ['right_5fvec_18',['right_vec',['../structcom_1_1transform.html#a2c5e8f51dd9f9c526a02bdbe638c9ca3',1,'com::transform']]],
-  ['run_19',['run',['../classkernel.html#a739c327a301102c35a8a89c72aac34a2',1,'kernel']]]
+  ['querysharedcachetablelock_0',['querySharedCacheTableLock',['../sqlite3_8c.html#a248343a0d79235a90b955d801713d243',1,'sqlite3.c']]],
+  ['queue_5fpresent_1',['queue_present',['../classlu_1_1vkb_1_1swapchain.html#a3ca7c650761a6a6baa349a566797f431',1,'lu::vkb::swapchain']]],
+  ['quotefunc_2',['quoteFunc',['../sqlite3_8c.html#a8e64c0ef376144dfad6a4a3d499056b8',1,'sqlite3.c']]]
 ];

@@ -5,10 +5,10 @@
 #include "../vulkancore/context.hpp"
 #include "../graphics_subsystem.hpp"
 
-namespace graphics::pipelines {
+namespace lu::graphics::pipelines {
     sky_pipeline::sky_pipeline() : pipeline_base{"sky", pipeline_type::graphics} {
-        m_skybox_texture.emplace("assets/textures/hdr/gcanyon_cube.ktx");
-        m_skydome.emplace("assets/meshes/bunny.obj");
+        m_skybox_texture.emplace("/engine_assets/textures/hdr/gcanyon_cube.ktx");
+        m_skydome.emplace("/engine_assets/meshes/skydome.fbx");
 
         const vk::Device device = vkb::vkdvc();
 
@@ -65,7 +65,7 @@ namespace graphics::pipelines {
         device.destroyDescriptorSetLayout(m_descriptor_set_layout, vkb::get_alloc());
     }
 
-    auto sky_pipeline::configure_shaders(std::vector<std::pair<std::shared_ptr<vkb::shader>, vk::ShaderStageFlagBits>>& cfg) -> void {
+    auto sky_pipeline::configure_shaders(std::vector<std::pair<std::shared_ptr<shader>, vk::ShaderStageFlagBits>>& cfg) -> void {
         auto vs = shader_registry::get().get_shader("skybox.vert");
         auto fs = shader_registry::get().get_shader("skybox.frag");
         cfg.emplace_back(vs, vk::ShaderStageFlagBits::eVertex);

@@ -1,4 +1,4 @@
 var buffered__sink_8hpp =
 [
-    [ "buffered_sink", "classbuffered__sink.html", "classbuffered__sink" ]
+    [ "lu::buffered_sink", "classlu_1_1buffered__sink.html", "classlu_1_1buffered__sink" ]
 ];

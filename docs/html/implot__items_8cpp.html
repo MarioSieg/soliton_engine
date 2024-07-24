@@ -26,7 +26,6 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr id="projectrow">
-  <td id="projectlogo"><img alt="Logo" src="logo_small.png"/></td>
   <td id="projectalign">
    <div id="projectname">Lunam Engine
    </div>
@@ -104,7 +103,7 @@ Macros</h2></td></tr>
 <tr class="separator:af1f0118a16081d881b3efef06d1a4b06"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2cf942413d828270aaaf91022fc41a5d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="implot__items_8cpp.html#a2cf942413d828270aaaf91022fc41a5d">IMPLOT_INLINE</a>&#160;&#160;&#160;inline</td></tr>
 <tr class="separator:a2cf942413d828270aaaf91022fc41a5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6e9d420c9d4f6e6feaca4cd4e1a88afe"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="implot__items_8cpp.html#a6e9d420c9d4f6e6feaca4cd4e1a88afe">IMPLOT_NORMALIZE2F_OVER_ZERO</a>(VX,  VY)&#160;&#160;&#160;do { float d2 = VX*VX + VY*VY; if (d2 &gt; 0.0f) { float inv_len = ImInvSqrt(d2); VX *= inv_len; VY *= inv_len; } } while (0)</td></tr>
+<tr class="memitem:a6e9d420c9d4f6e6feaca4cd4e1a88afe"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="implot__items_8cpp.html#a6e9d420c9d4f6e6feaca4cd4e1a88afe">IMPLOT_NORMALIZE2F_OVER_ZERO</a>(VX,  VY)&#160;&#160;&#160;do { float d2 = VX*VX + VY*VY; <a class="el" href="transform_8lua_8cpp.html#a846db1f0b7bbaa7cec4e25fe30a16d8f">if</a> (d2 &gt; 0.0f) { float inv_len = ImInvSqrt(d2); VX *= inv_len; VY *= inv_len; } } while (0)</td></tr>
 <tr class="separator:a6e9d420c9d4f6e6feaca4cd4e1a88afe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0bb7498b7b22ff9b059f15c7964926be"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="implot__items_8cpp.html#a0bb7498b7b22ff9b059f15c7964926be">IMPLOT_NUMERIC_TYPES</a>&#160;&#160;&#160;(ImS8)(ImU8)(ImS16)(ImU16)(ImS32)(ImU32)(ImS64)(ImU64)(float)(double)</td></tr>
 <tr class="separator:a0bb7498b7b22ff9b059f15c7964926be"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -120,25 +119,25 @@ Macros</h2></td></tr>
 <tr class="separator:a6b6545ffe80d308ceeb493467166ef2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6b6545ffe80d308ceeb493467166ef2d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="implot__items_8cpp.html#a6b6545ffe80d308ceeb493467166ef2d">INSTANTIATE_MACRO</a>(T)</td></tr>
 <tr class="separator:a6b6545ffe80d308ceeb493467166ef2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6b6545ffe80d308ceeb493467166ef2d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="implot__items_8cpp.html#a6b6545ffe80d308ceeb493467166ef2d">INSTANTIATE_MACRO</a>(T)&#160;&#160;&#160;template <a class="el" href="implot_8h.html#ac65218062eb874442f520a0875c4cec4">IMPLOT_API</a> void PlotBarGroups&lt;T&gt;(const char* const label_ids[], const T* values, int items, int groups, double width, double shift, ImPlotBarGroupsFlags flags);</td></tr>
+<tr class="memitem:a6b6545ffe80d308ceeb493467166ef2d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="implot__items_8cpp.html#a6b6545ffe80d308ceeb493467166ef2d">INSTANTIATE_MACRO</a>(T)&#160;&#160;&#160;template <a class="el" href="implot_8h.html#ac65218062eb874442f520a0875c4cec4">IMPLOT_API</a> <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> PlotBarGroups&lt;T&gt;(const char* const label_ids[], const T* values, int items, int groups, double width, double shift, ImPlotBarGroupsFlags flags);</td></tr>
 <tr class="separator:a6b6545ffe80d308ceeb493467166ef2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6b6545ffe80d308ceeb493467166ef2d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="implot__items_8cpp.html#a6b6545ffe80d308ceeb493467166ef2d">INSTANTIATE_MACRO</a>(T)</td></tr>
 <tr class="separator:a6b6545ffe80d308ceeb493467166ef2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6b6545ffe80d308ceeb493467166ef2d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="implot__items_8cpp.html#a6b6545ffe80d308ceeb493467166ef2d">INSTANTIATE_MACRO</a>(T)</td></tr>
 <tr class="separator:a6b6545ffe80d308ceeb493467166ef2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6b6545ffe80d308ceeb493467166ef2d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="implot__items_8cpp.html#a6b6545ffe80d308ceeb493467166ef2d">INSTANTIATE_MACRO</a>(T)&#160;&#160;&#160;template <a class="el" href="implot_8h.html#ac65218062eb874442f520a0875c4cec4">IMPLOT_API</a> void PlotInfLines&lt;T&gt;(const char* label_id, const T* xs, int count, ImPlotInfLinesFlags flags, int offset, int stride);</td></tr>
+<tr class="memitem:a6b6545ffe80d308ceeb493467166ef2d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="implot__items_8cpp.html#a6b6545ffe80d308ceeb493467166ef2d">INSTANTIATE_MACRO</a>(T)&#160;&#160;&#160;template <a class="el" href="implot_8h.html#ac65218062eb874442f520a0875c4cec4">IMPLOT_API</a> <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> PlotInfLines&lt;T&gt;(const char* label_id, const T* xs, int count, ImPlotInfLinesFlags flags, int offset, int stride);</td></tr>
 <tr class="separator:a6b6545ffe80d308ceeb493467166ef2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6b6545ffe80d308ceeb493467166ef2d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="implot__items_8cpp.html#a6b6545ffe80d308ceeb493467166ef2d">INSTANTIATE_MACRO</a>(T)&#160;&#160;&#160;template <a class="el" href="implot_8h.html#ac65218062eb874442f520a0875c4cec4">IMPLOT_API</a> void PlotPieChart&lt;T&gt;(const char* const label_ids[], const T* values, int count, double x, double y, double radius, const char* fmt, double angle0, ImPlotPieChartFlags flags);</td></tr>
+<tr class="memitem:a6b6545ffe80d308ceeb493467166ef2d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="implot__items_8cpp.html#a6b6545ffe80d308ceeb493467166ef2d">INSTANTIATE_MACRO</a>(T)&#160;&#160;&#160;template <a class="el" href="implot_8h.html#ac65218062eb874442f520a0875c4cec4">IMPLOT_API</a> <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> PlotPieChart&lt;T&gt;(const char* const label_ids[], const T* values, int count, double <a class="el" href="transform_8lua_8cpp.html#af05596f7370b04043875e02bde7204dc">x</a>, double <a class="el" href="transform_8lua_8cpp.html#a536b5df3d99aa841599665038c874866">y</a>, double radius, const char* fmt, double angle0, ImPlotPieChartFlags flags);</td></tr>
 <tr class="separator:a6b6545ffe80d308ceeb493467166ef2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6b6545ffe80d308ceeb493467166ef2d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="implot__items_8cpp.html#a6b6545ffe80d308ceeb493467166ef2d">INSTANTIATE_MACRO</a>(T)&#160;&#160;&#160;template <a class="el" href="implot_8h.html#ac65218062eb874442f520a0875c4cec4">IMPLOT_API</a> void PlotPieChart(const char* const label_ids[], const T* values, int count, double x, double y, double radius, ImPlotFormatter fmt, void* fmt_data, double angle0, ImPlotPieChartFlags flags);</td></tr>
+<tr class="memitem:a6b6545ffe80d308ceeb493467166ef2d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="implot__items_8cpp.html#a6b6545ffe80d308ceeb493467166ef2d">INSTANTIATE_MACRO</a>(T)&#160;&#160;&#160;template <a class="el" href="implot_8h.html#ac65218062eb874442f520a0875c4cec4">IMPLOT_API</a> <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> PlotPieChart(const char* const label_ids[], const T* values, int count, double <a class="el" href="transform_8lua_8cpp.html#af05596f7370b04043875e02bde7204dc">x</a>, double <a class="el" href="transform_8lua_8cpp.html#a536b5df3d99aa841599665038c874866">y</a>, double radius, ImPlotFormatter fmt, <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a>* fmt_data, double angle0, ImPlotPieChartFlags flags);</td></tr>
 <tr class="separator:a6b6545ffe80d308ceeb493467166ef2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6b6545ffe80d308ceeb493467166ef2d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="implot__items_8cpp.html#a6b6545ffe80d308ceeb493467166ef2d">INSTANTIATE_MACRO</a>(T)&#160;&#160;&#160;template <a class="el" href="implot_8h.html#ac65218062eb874442f520a0875c4cec4">IMPLOT_API</a> void PlotHeatmap&lt;T&gt;(const char* label_id, const T* values, int rows, int cols, double scale_min, double scale_max, const char* fmt, const ImPlotPoint&amp; bounds_min, const ImPlotPoint&amp; bounds_max, ImPlotHeatmapFlags flags);</td></tr>
+<tr class="memitem:a6b6545ffe80d308ceeb493467166ef2d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="implot__items_8cpp.html#a6b6545ffe80d308ceeb493467166ef2d">INSTANTIATE_MACRO</a>(T)&#160;&#160;&#160;template <a class="el" href="implot_8h.html#ac65218062eb874442f520a0875c4cec4">IMPLOT_API</a> <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> PlotHeatmap&lt;T&gt;(const char* label_id, const T* values, int rows, int cols, double scale_min, double scale_max, const char* fmt, const ImPlotPoint&amp; bounds_min, const ImPlotPoint&amp; bounds_max, ImPlotHeatmapFlags flags);</td></tr>
 <tr class="separator:a6b6545ffe80d308ceeb493467166ef2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6b6545ffe80d308ceeb493467166ef2d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="implot__items_8cpp.html#a6b6545ffe80d308ceeb493467166ef2d">INSTANTIATE_MACRO</a>(T)&#160;&#160;&#160;template <a class="el" href="implot_8h.html#ac65218062eb874442f520a0875c4cec4">IMPLOT_API</a> double PlotHistogram&lt;T&gt;(const char* label_id, const T* values, int count, int bins, double bar_scale, ImPlotRange range, ImPlotHistogramFlags flags);</td></tr>
 <tr class="separator:a6b6545ffe80d308ceeb493467166ef2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6b6545ffe80d308ceeb493467166ef2d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="implot__items_8cpp.html#a6b6545ffe80d308ceeb493467166ef2d">INSTANTIATE_MACRO</a>(T)&#160;&#160;&#160;template <a class="el" href="implot_8h.html#ac65218062eb874442f520a0875c4cec4">IMPLOT_API</a> double PlotHistogram2D&lt;T&gt;(const char* label_id,   const T*   xs, const T*   ys, int count, int x_bins, int y_bins, ImPlotRect range, ImPlotHistogramFlags flags);</td></tr>
 <tr class="separator:a6b6545ffe80d308ceeb493467166ef2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6b6545ffe80d308ceeb493467166ef2d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="implot__items_8cpp.html#a6b6545ffe80d308ceeb493467166ef2d">INSTANTIATE_MACRO</a>(T)&#160;&#160;&#160;template <a class="el" href="implot_8h.html#ac65218062eb874442f520a0875c4cec4">IMPLOT_API</a> void PlotDigital&lt;T&gt;(const char* label_id, const T* xs, const T* ys, int count, ImPlotDigitalFlags flags, int offset, int stride);</td></tr>
+<tr class="memitem:a6b6545ffe80d308ceeb493467166ef2d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="implot__items_8cpp.html#a6b6545ffe80d308ceeb493467166ef2d">INSTANTIATE_MACRO</a>(T)&#160;&#160;&#160;template <a class="el" href="implot_8h.html#ac65218062eb874442f520a0875c4cec4">IMPLOT_API</a> <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> PlotDigital&lt;T&gt;(const char* label_id, const T* xs, const T* ys, int count, ImPlotDigitalFlags flags, int offset, int stride);</td></tr>
 <tr class="separator:a6b6545ffe80d308ceeb493467166ef2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
@@ -208,7 +207,7 @@ Macros</h2></td></tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td>&#160;&#160;&#160;do { float d2 = VX*VX + VY*VY; if (d2 &gt; 0.0f) { float inv_len = ImInvSqrt(d2); VX *= inv_len; VY *= inv_len; } } while (0)</td>
+          <td></td><td>&#160;&#160;&#160;do { float d2 = VX*VX + VY*VY; <a class="el" href="transform_8lua_8cpp.html#a846db1f0b7bbaa7cec4e25fe30a16d8f">if</a> (d2 &gt; 0.0f) { float inv_len = ImInvSqrt(d2); VX *= inv_len; VY *= inv_len; } } while (0)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -342,7 +341,7 @@ Macros</h2></td></tr>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname">T</td><td>)</td>
-          <td>&#160;&#160;&#160;template <a class="el" href="implot_8h.html#ac65218062eb874442f520a0875c4cec4">IMPLOT_API</a> void PlotBarGroups&lt;T&gt;(const char* const label_ids[], const T* values, int items, int groups, double width, double shift, ImPlotBarGroupsFlags flags);</td>
+          <td>&#160;&#160;&#160;template <a class="el" href="implot_8h.html#ac65218062eb874442f520a0875c4cec4">IMPLOT_API</a> <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> PlotBarGroups&lt;T&gt;(const char* const label_ids[], const T* values, int items, int groups, double width, double shift, ImPlotBarGroupsFlags flags);</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -400,7 +399,7 @@ Macros</h2></td></tr>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname">T</td><td>)</td>
-          <td>&#160;&#160;&#160;template <a class="el" href="implot_8h.html#ac65218062eb874442f520a0875c4cec4">IMPLOT_API</a> void PlotInfLines&lt;T&gt;(const char* label_id, const T* xs, int count, ImPlotInfLinesFlags flags, int offset, int stride);</td>
+          <td>&#160;&#160;&#160;template <a class="el" href="implot_8h.html#ac65218062eb874442f520a0875c4cec4">IMPLOT_API</a> <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> PlotInfLines&lt;T&gt;(const char* label_id, const T* xs, int count, ImPlotInfLinesFlags flags, int offset, int stride);</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -418,7 +417,7 @@ Macros</h2></td></tr>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname">T</td><td>)</td>
-          <td>&#160;&#160;&#160;template <a class="el" href="implot_8h.html#ac65218062eb874442f520a0875c4cec4">IMPLOT_API</a> void PlotPieChart&lt;T&gt;(const char* const label_ids[], const T* values, int count, double x, double y, double radius, const char* fmt, double angle0, ImPlotPieChartFlags flags);</td>
+          <td>&#160;&#160;&#160;template <a class="el" href="implot_8h.html#ac65218062eb874442f520a0875c4cec4">IMPLOT_API</a> <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> PlotPieChart&lt;T&gt;(const char* const label_ids[], const T* values, int count, double <a class="el" href="transform_8lua_8cpp.html#af05596f7370b04043875e02bde7204dc">x</a>, double <a class="el" href="transform_8lua_8cpp.html#a536b5df3d99aa841599665038c874866">y</a>, double radius, const char* fmt, double angle0, ImPlotPieChartFlags flags);</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -436,7 +435,7 @@ Macros</h2></td></tr>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname">T</td><td>)</td>
-          <td>&#160;&#160;&#160;template <a class="el" href="implot_8h.html#ac65218062eb874442f520a0875c4cec4">IMPLOT_API</a> void PlotPieChart(const char* const label_ids[], const T* values, int count, double x, double y, double radius, ImPlotFormatter fmt, void* fmt_data, double angle0, ImPlotPieChartFlags flags);</td>
+          <td>&#160;&#160;&#160;template <a class="el" href="implot_8h.html#ac65218062eb874442f520a0875c4cec4">IMPLOT_API</a> <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> PlotPieChart(const char* const label_ids[], const T* values, int count, double <a class="el" href="transform_8lua_8cpp.html#af05596f7370b04043875e02bde7204dc">x</a>, double <a class="el" href="transform_8lua_8cpp.html#a536b5df3d99aa841599665038c874866">y</a>, double radius, ImPlotFormatter fmt, <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a>* fmt_data, double angle0, ImPlotPieChartFlags flags);</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -454,7 +453,7 @@ Macros</h2></td></tr>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname">T</td><td>)</td>
-          <td>&#160;&#160;&#160;template <a class="el" href="implot_8h.html#ac65218062eb874442f520a0875c4cec4">IMPLOT_API</a> void PlotHeatmap&lt;T&gt;(const char* label_id, const T* values, int rows, int cols, double scale_min, double scale_max, const char* fmt, const ImPlotPoint&amp; bounds_min, const ImPlotPoint&amp; bounds_max, ImPlotHeatmapFlags flags);</td>
+          <td>&#160;&#160;&#160;template <a class="el" href="implot_8h.html#ac65218062eb874442f520a0875c4cec4">IMPLOT_API</a> <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> PlotHeatmap&lt;T&gt;(const char* label_id, const T* values, int rows, int cols, double scale_min, double scale_max, const char* fmt, const ImPlotPoint&amp; bounds_min, const ImPlotPoint&amp; bounds_max, ImPlotHeatmapFlags flags);</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -508,7 +507,7 @@ Macros</h2></td></tr>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname">T</td><td>)</td>
-          <td>&#160;&#160;&#160;template <a class="el" href="implot_8h.html#ac65218062eb874442f520a0875c4cec4">IMPLOT_API</a> void PlotDigital&lt;T&gt;(const char* label_id, const T* xs, const T* ys, int count, ImPlotDigitalFlags flags, int offset, int stride);</td>
+          <td>&#160;&#160;&#160;template <a class="el" href="implot_8h.html#ac65218062eb874442f520a0875c4cec4">IMPLOT_API</a> <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> PlotDigital&lt;T&gt;(const char* label_id, const T* xs, const T* ys, int count, ImPlotDigitalFlags flags, int offset, int stride);</td>
         </tr>
       </table>
 </div><div class="memdoc">

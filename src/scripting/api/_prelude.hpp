@@ -13,6 +13,8 @@
 #define LUA_INTEROP_API extern "C" __attribute__((visibility("default"), unused))
 #endif
 
+using namespace lu;
+
 using lua_entity_id = std::uint64_t;
 static_assert(sizeof(flecs::id_t) == sizeof(lua_entity_id));
 static_assert(alignof(flecs::id_t) == alignof(lua_entity_id));

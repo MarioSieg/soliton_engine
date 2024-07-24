@@ -9,11 +9,11 @@
 
 #include <DirectXMath.h>
 
-namespace graphics {
+namespace lu::graphics {
     class graphics_subsystem;
 }
 
-namespace vkb {
+namespace lu::vkb {
     template <const vk::QueueFlagBits QueueType>
     concept is_queue_type = requires {
         requires

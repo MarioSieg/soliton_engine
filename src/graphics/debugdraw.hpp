@@ -8,7 +8,7 @@
 #include "vulkancore/prelude.hpp"
 #include "vulkancore/buffer.hpp"
 
-namespace graphics {
+namespace lu::graphics {
     class debugdraw final : public no_copy, public no_move {
     public:
         struct uniform final {

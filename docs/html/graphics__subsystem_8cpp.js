@@ -1,9 +1,8 @@
 var graphics__subsystem_8cpp =
 [
-    [ "compute_render_bucket_range", "graphics__subsystem_8cpp.html#a3638a66210aa7c81630026d1afc9bb36", null ],
-    [ "draw_mesh", "graphics__subsystem_8cpp.html#a1874acac88487d951d8acbe0f7e08cdd", null ],
-    [ "find_main_camera", "graphics__subsystem_8cpp.html#a86638bfe00b4e8b60bf3b6e0d653d913", null ],
-    [ "render_mesh", "graphics__subsystem_8cpp.html#a124808cbe7742d75548b9ff68748edd5", null ],
-    [ "render_scene_bucket", "graphics__subsystem_8cpp.html#ac145dc3d801bac7862f67dcdda4cd4c6", null ],
-    [ "update_main_camera", "graphics__subsystem_8cpp.html#aa8f32d05cd2f86faf22b5f885b3d1ccd", null ]
+    [ "compute_render_bucket_range", "graphics__subsystem_8cpp.html#a6eba857c8c71643b89e445fb4305a77f", null ],
+    [ "find_main_camera", "graphics__subsystem_8cpp.html#a5a6aaeca581b3855abbf2f479200dae8", null ],
+    [ "cv_enable_parallel_shader_compilation", "graphics__subsystem_8cpp.html#af7ddabc05171f6a2e4d6c42b735127b4", null ],
+    [ "cv_max_render_threads", "graphics__subsystem_8cpp.html#a2e8f8f3fc0ddf6ac5ce39b09491b2344", null ],
+    [ "cv_shader_dir", "graphics__subsystem_8cpp.html#ab727202476f21a02df4f64e386d729d7", null ]
 ];

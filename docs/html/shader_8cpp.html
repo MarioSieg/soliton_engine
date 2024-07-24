@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.4"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lunam Engine: src/graphics/vulkancore/shader.cpp File Reference</title>
+<title>Lunam Engine: src/graphics/shader.cpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -26,7 +26,6 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr id="projectrow">
-  <td id="projectlogo"><img alt="Logo" src="logo_small.png"/></td>
   <td id="projectalign">
    <div id="projectname">Lunam Engine
    </div>
@@ -94,38 +93,38 @@ $(document).ready(function(){initNavTree('shader_8cpp.html',''); initResizable()
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="shader_8hpp_source.html">shader.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="vulkancore_2context_8hpp_source.html">context.hpp</a>&quot;</code><br />
-<code>#include &lt;fstream&gt;</code><br />
+<code>#include &quot;<a class="el" href="vulkancore_2context_8hpp_source.html">vulkancore/context.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="file__includer_8hpp_source.html">file_includer.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="assetmgr_8hpp_source.html">../assetmgr/assetmgr.hpp</a>&quot;</code><br />
 <code>#include &lt;filesystem&gt;</code><br />
-<code>#include &quot;<a class="el" href="assetmgr_8hpp_source.html">../../assetmgr/assetmgr.hpp</a>&quot;</code><br />
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
-<tr class="memitem:namespacevkb"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevkb.html">vkb</a></td></tr>
+<tr class="memitem:namespacelu"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu.html">lu</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacelu_1_1graphics"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu_1_1graphics.html">lu::graphics</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a26bb605a81d23e96d398a6d6093265da"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevkb.html#a26bb605a81d23e96d398a6d6093265da">vkb::preprocess_shader</a> (const std::string &amp;source_name, const shaderc_shader_kind kind, const std::string &amp;source, const shaderc::CompileOptions &amp;options, std::string &amp;out) -&gt; void</td></tr>
-<tr class="separator:a26bb605a81d23e96d398a6d6093265da"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae3a103ce6a6b4b7b13616c468678cd18"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevkb.html#ae3a103ce6a6b4b7b13616c468678cd18">vkb::compile_file_to_assembly</a> (const std::string &amp;source_name, const shaderc_shader_kind kind, const std::string &amp;source, const shaderc::CompileOptions &amp;options, std::string &amp;out) -&gt; void</td></tr>
-<tr class="separator:ae3a103ce6a6b4b7b13616c468678cd18"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1a51aceb15cdee366713cfda6918328f"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevkb.html#a1a51aceb15cdee366713cfda6918328f">vkb::compile_file_to_bin</a> (const std::string &amp;source_name, shaderc_shader_kind kind, const std::string &amp;source, const shaderc::CompileOptions &amp;options, std::vector&lt; uint32_t &gt; &amp;out) -&gt; void</td></tr>
-<tr class="separator:a1a51aceb15cdee366713cfda6918328f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5066d5f45f7c136aaf4d7688ca6ba3f2"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu_1_1graphics.html#a5066d5f45f7c136aaf4d7688ca6ba3f2">lu::graphics::preprocess_shader</a> (shaderc::Compiler &amp;com, const std::string &amp;source_name, const shaderc_shader_kind kind, const std::string &amp;source, const shaderc::CompileOptions &amp;options, std::string &amp;out) -&gt; bool</td></tr>
+<tr class="separator:a5066d5f45f7c136aaf4d7688ca6ba3f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3309fa07cbf329b1d0c4350d6cedd56b"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu_1_1graphics.html#a3309fa07cbf329b1d0c4350d6cedd56b">lu::graphics::compile_file_to_assembly</a> (shaderc::Compiler &amp;com, const std::string &amp;source_name, const shaderc_shader_kind kind, const std::string &amp;source, const shaderc::CompileOptions &amp;options, std::string &amp;out) -&gt; bool</td></tr>
+<tr class="separator:a3309fa07cbf329b1d0c4350d6cedd56b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3261c365d3346d185f6e11b8dcb068f7"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu_1_1graphics.html#a3261c365d3346d185f6e11b8dcb068f7">lu::graphics::compile_file_to_bin</a> (shaderc::Compiler &amp;com, const std::string &amp;source_name, shaderc_shader_kind kind, const std::string &amp;source, const shaderc::CompileOptions &amp;options, std::vector&lt; uint32_t &gt; &amp;out) -&gt; bool</td></tr>
+<tr class="separator:a3261c365d3346d185f6e11b8dcb068f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:a5416454e26bcd96dea0c589f686e836e"><td class="memItemLeft" align="right" valign="top">static constinit std::optional&lt; shaderc::Compiler &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevkb.html#a5416454e26bcd96dea0c589f686e836e">vkb::s_compiler</a></td></tr>
-<tr class="separator:a5416454e26bcd96dea0c589f686e836e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa0e04f2995374e1e0490823c29b226ed"><td class="memItemLeft" align="right" valign="top">static constinit std::atomic_bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevkb.html#aa0e04f2995374e1e0490823c29b226ed">vkb::s_initialized</a></td></tr>
-<tr class="separator:aa0e04f2995374e1e0490823c29b226ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf9c10f95cdbd74d5231cb587586cf7b"><td class="memItemLeft" align="right" valign="top">static const shaderc_util::FileFinder&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu_1_1graphics.html#acf9c10f95cdbd74d5231cb587586cf7b">lu::graphics::s_file_finder</a></td></tr>
+<tr class="separator:acf9c10f95cdbd74d5231cb587586cf7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_560415a5d2bc4999842279f4fc1debef.html">graphics</a></li><li class="navelem"><a class="el" href="dir_7a296c62ab724e08e3a3f5d23db67629.html">vulkancore</a></li><li class="navelem"><a class="el" href="shader_8cpp.html">shader.cpp</a></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_560415a5d2bc4999842279f4fc1debef.html">graphics</a></li><li class="navelem"><a class="el" href="shader_8cpp.html">shader.cpp</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4 </li>
   </ul>
 </div>

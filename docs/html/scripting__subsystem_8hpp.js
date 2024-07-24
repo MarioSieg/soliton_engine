@@ -1,4 +1,4 @@
 var scripting__subsystem_8hpp =
 [
-    [ "scripting::scripting_subsystem", "classscripting_1_1scripting__subsystem.html", "classscripting_1_1scripting__subsystem" ]
+    [ "lu::scripting::scripting_subsystem", "classlu_1_1scripting_1_1scripting__subsystem.html", "classlu_1_1scripting_1_1scripting__subsystem" ]
 ];

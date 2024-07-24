@@ -1,0 +1,26 @@
+var namespacelu_1_1platform =
+[
+    [ "platform_subsystem", "classlu_1_1platform_1_1platform__subsystem.html", "classlu_1_1platform_1_1platform__subsystem" ],
+    [ "architecture_name", "namespacelu_1_1platform.html#a4af615a4e624e45ad113cd06a864ff65", null ],
+    [ "cache_type_name", "namespacelu_1_1platform.html#a2f3eb252da24c24d99dce11d3f43d1f8", null ],
+    [ "dump_cpu_info", "namespacelu_1_1platform.html#af342c4bd56859c7fe2d4658ae83e639e", null ],
+    [ "dump_loaded_dylibs", "namespacelu_1_1platform.html#acba1fafe40671735cc854a2ae82ac29c", null ],
+    [ "dump_memory_info", "namespacelu_1_1platform.html#ad56fc7abe5b053f6bd395bcf07b85192", null ],
+    [ "dump_os_info", "namespacelu_1_1platform.html#a6b8ecd34d67626e0eed585d24ed6a809", null ],
+    [ "endianness_name", "namespacelu_1_1platform.html#a4c170215736bed110ba02635e6be51b2", null ],
+    [ "glfw_char_callback", "namespacelu_1_1platform.html#a4fe00f45840079665c97d4616d7e9921", null ],
+    [ "glfw_cursor_enter_callback", "namespacelu_1_1platform.html#a2602a7e95d25508fd78f4e3204436d83", null ],
+    [ "glfw_cursor_pos_callback", "namespacelu_1_1platform.html#a0cf125bcea38a5e61e390185f146afd9", null ],
+    [ "glfw_framebuffer_size_callback", "namespacelu_1_1platform.html#ab2ece9730e0dd7cc938ad700d12e9672", null ],
+    [ "glfw_key_callback", "namespacelu_1_1platform.html#ab6eaa176dc9885019685db4ea2ce3cbf", null ],
+    [ "glfw_mouse_button_callback", "namespacelu_1_1platform.html#a67b65744b2f38d4735f88c3f5e2a76dc", null ],
+    [ "glfw_scroll_callback", "namespacelu_1_1platform.html#ad2ba38238135fe6e9c796ad7d0cbf533", null ],
+    [ "kernel_variant_name", "namespacelu_1_1platform.html#ab3d6720314691db51b5209bf4be3e47c", null ],
+    [ "proxy_resize_hook", "namespacelu_1_1platform.html#a95f5a0d2f037f63bef992d5e478207c5", null ],
+    [ "cv_default_height", "namespacelu_1_1platform.html#a97dfc2ec6d945e453939f58bd844065e", null ],
+    [ "cv_default_width", "namespacelu_1_1platform.html#af6849a035c107b295222eb735865b901", null ],
+    [ "cv_min_height", "namespacelu_1_1platform.html#a40760bd5b3000f6458ba4f170c36729c", null ],
+    [ "cv_min_width", "namespacelu_1_1platform.html#a6edd4755d61f9f03cc56c5ca458a2a8c", null ],
+    [ "cv_window_icon", "namespacelu_1_1platform.html#a4639122ae1e7cbf1d9abc1c2afc8116b", null ],
+    [ "s_window", "namespacelu_1_1platform.html#af49f3b7d57ca26ff5abfcc9876fe6a20", null ]
+];

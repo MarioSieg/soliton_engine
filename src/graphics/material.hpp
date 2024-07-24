@@ -7,7 +7,7 @@
 
 #include "texture.hpp"
 
-namespace graphics {
+namespace lu::graphics {
     class material : public assetmgr::asset {
     public:
         texture* albedo_map = nullptr;

@@ -5,9 +5,14 @@
 
 #include "../../scripting/convar.hpp"
 
-namespace vkb {
+namespace lu::vkb {
     static convar<bool> cv_enable_vulkan_validation_layers {
         "Renderer.enableVulkanValidationLayers",
+        false,
+        convar_flags::read_only
+    };
+    static convar<bool> cv_enable_vsync {
+        "Renderer.enableVSync",
         false,
         convar_flags::read_only
     };
@@ -358,7 +363,7 @@ namespace vkb {
     }
 
     auto context::recreate_swapchain() -> void {
-        m_swapchain->create(m_width, m_height, true, false);
+        m_swapchain->create(m_width, m_height, cv_enable_vsync(), false);
     }
 
     auto context::create_msaa_target() -> void {

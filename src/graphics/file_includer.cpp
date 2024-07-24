@@ -19,7 +19,7 @@
 
 #include "libshaderc_util/io_shaderc.h"
 
-namespace graphics {
+namespace lu::graphics {
 
 shaderc_include_result* MakeErrorIncludeResult(const char* message) {
   return new shaderc_include_result{"", 0, message, strlen(message)};

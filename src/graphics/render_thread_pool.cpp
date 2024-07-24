@@ -9,7 +9,7 @@
 #include <pthread.h>
 #endif
 
-namespace graphics {
+namespace lu::graphics {
     render_thread::render_thread(
         std::atomic_bool& token,
         const std::int32_t num_threads,

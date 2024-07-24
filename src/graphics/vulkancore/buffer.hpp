@@ -6,7 +6,7 @@
 
 // TODO: RAII
 
-namespace vkb {
+namespace lu::vkb {
     class buffer final : public no_copy, public no_move {
     public:
         auto create(

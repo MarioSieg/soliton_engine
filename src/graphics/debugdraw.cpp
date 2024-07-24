@@ -5,7 +5,7 @@
 #include "../scripting/convar.hpp"
 #include "vulkancore/context.hpp"
 
-namespace graphics {
+namespace lu::graphics {
     static convar<std::uint32_t> k_debug_draw_max_verts {
         "Renderer.maxDebugDrawVertices",
         100'000u,

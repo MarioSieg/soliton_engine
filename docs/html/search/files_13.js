@@ -25,6 +25,5 @@ var searchData=
   ['triggerbase_2eh_22',['TriggerBase.h',['../TriggerBase_8h.html',1,'']]],
   ['triggerbase_2einteractivity_2ecpp_23',['TriggerBase.Interactivity.cpp',['../TriggerBase_8Interactivity_8cpp.html',1,'']]],
   ['triggercollection_2ecpp_24',['TriggerCollection.cpp',['../TriggerCollection_8cpp.html',1,'']]],
-  ['triggercollection_2eh_25',['TriggerCollection.h',['../TriggerCollection_8h.html',1,'']]],
-  ['typetraits_2eh_26',['TypeTraits.h',['../TypeTraits_8h.html',1,'']]]
+  ['triggercollection_2eh_25',['TriggerCollection.h',['../TriggerCollection_8h.html',1,'']]]
 ];

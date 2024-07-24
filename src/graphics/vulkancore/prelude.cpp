@@ -2,7 +2,7 @@
 
 #include "prelude.hpp"
 
-namespace vkb {
+namespace lu::vkb {
     auto dump_physical_device_props(const vk::PhysicalDeviceProperties &props) -> void {
         #define dump(x) log_info(#x ": {}", props.limits.x)
 #define dump_flags(x) log_info(#x ": {:#x}", static_cast<std::uint32_t>(props.limits.x))

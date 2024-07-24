@@ -26,7 +26,6 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr id="projectrow">
-  <td id="projectlogo"><img alt="Logo" src="logo_small.png"/></td>
   <td id="projectalign">
    <div id="projectname">Lunam Engine
    </div>
@@ -86,12 +85,154 @@ $(document).ready(function(){initNavTree('transform_8lua_8cpp.html',''); initRes
 </div>
 
 <div class="header">
+  <div class="summary">
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">transform.lua.cpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="__prelude_8hpp_source.html">../_prelude.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="physics__subsystem_8hpp_source.html">../../../physics/physics_subsystem.hpp</a>&quot;</code><br />
-</div></div><!-- contents -->
+</div><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a81e1b61d5c88bdd5559d3e3cccddbaa4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="transform_8lua_8cpp.html#a81e1b61d5c88bdd5559d3e3cccddbaa4">impl_component_core</a> (transform) <a class="el" href="__prelude_8hpp.html#a0975ecaa570a8b0b99799f6f0f7c80e2">LUA_INTEROP_API</a> auto __lu_com_transform_set_pos(const <a class="el" href="__prelude_8hpp.html#a540ebdabe9ca20b0d80679875d775679">lua_entity_id</a> id</td></tr>
+<tr class="separator:a81e1b61d5c88bdd5559d3e3cccddbaa4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec1ea14b4891094a15da1980ecd67247"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="transform_8lua_8cpp.html#aec1ea14b4891094a15da1980ecd67247">if</a> (!ent)</td></tr>
+<tr class="separator:aec1ea14b4891094a15da1980ecd67247"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d37b61dbc6fe613aad9c0483b039265"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="transform_8lua_8cpp.html#a7d37b61dbc6fe613aad9c0483b039265">if</a> (const auto *rigidbody=ent-&gt;get&lt; const <a class="el" href="structlu_1_1com_1_1rigidbody.html">com::rigidbody</a> &gt;();rigidbody)</td></tr>
+<tr class="separator:a7d37b61dbc6fe613aad9c0483b039265"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a846db1f0b7bbaa7cec4e25fe30a16d8f"><td class="memItemLeft" align="right" valign="top">else&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="transform_8lua_8cpp.html#a846db1f0b7bbaa7cec4e25fe30a16d8f">if</a> (auto *transform=ent-&gt;get_mut&lt; <a class="el" href="structlu_1_1com_1_1transform.html">com::transform</a> &gt;();transform)</td></tr>
+<tr class="separator:a846db1f0b7bbaa7cec4e25fe30a16d8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:af05596f7370b04043875e02bde7204dc"><td class="memItemLeft" align="right" valign="top">const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="transform_8lua_8cpp.html#af05596f7370b04043875e02bde7204dc">x</a></td></tr>
+<tr class="separator:af05596f7370b04043875e02bde7204dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a536b5df3d99aa841599665038c874866"><td class="memItemLeft" align="right" valign="top">const double const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="transform_8lua_8cpp.html#a536b5df3d99aa841599665038c874866">y</a></td></tr>
+<tr class="separator:a536b5df3d99aa841599665038c874866"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fb99d5538bec25633e1c2b62f5033d5"><td class="memItemLeft" align="right" valign="top">const double const double const double z&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a></td></tr>
+<tr class="separator:a7fb99d5538bec25633e1c2b62f5033d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="aec1ea14b4891094a15da1980ecd67247" name="aec1ea14b4891094a15da1980ecd67247"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec1ea14b4891094a15da1980ecd67247">&#9670;&nbsp;</a></span>if() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">if </td>
+          <td>(</td>
+          <td class="paramtype">!&#160;</td>
+          <td class="paramname"><em>ent</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a846db1f0b7bbaa7cec4e25fe30a16d8f" name="a846db1f0b7bbaa7cec4e25fe30a16d8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a846db1f0b7bbaa7cec4e25fe30a16d8f">&#9670;&nbsp;</a></span>if() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">else if </td>
+          <td>(</td>
+          <td class="paramtype">auto *&#160;</td>
+          <td class="paramname"><em>transform</em> = <code>ent-&gt;get_mut&lt;<a class="el" href="structlu_1_1com_1_1transform.html">com::transform</a>&gt;();&#160;transform</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7d37b61dbc6fe613aad9c0483b039265" name="a7d37b61dbc6fe613aad9c0483b039265"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d37b61dbc6fe613aad9c0483b039265">&#9670;&nbsp;</a></span>if() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">else if </td>
+          <td>(</td>
+          <td class="paramtype">const auto *&#160;</td>
+          <td class="paramname"><em>rigidbody</em> = <code>ent-&gt;get&lt;const&#160;<a class="el" href="structlu_1_1com_1_1rigidbody.html">com::rigidbody</a>&gt;();&#160;rigidbody</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a81e1b61d5c88bdd5559d3e3cccddbaa4" name="a81e1b61d5c88bdd5559d3e3cccddbaa4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81e1b61d5c88bdd5559d3e3cccddbaa4">&#9670;&nbsp;</a></span>impl_component_core()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">impl_component_core </td>
+          <td>(</td>
+          <td class="paramtype">transform&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="a7fb99d5538bec25633e1c2b62f5033d5" name="a7fb99d5538bec25633e1c2b62f5033d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fb99d5538bec25633e1c2b62f5033d5">&#9670;&nbsp;</a></span>void</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const double const double const double z void</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">{</div>
+<div class="line">    std::optional&lt;flecs::entity&gt; ent {resolve_entity(<span class="keywordtype">id</span>)}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="af05596f7370b04043875e02bde7204dc" name="af05596f7370b04043875e02bde7204dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af05596f7370b04043875e02bde7204dc">&#9670;&nbsp;</a></span>x</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const double x</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a536b5df3d99aa841599665038c874866" name="a536b5df3d99aa841599665038c874866"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a536b5df3d99aa841599665038c874866">&#9670;&nbsp;</a></span>y</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const double const double y</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+</div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->

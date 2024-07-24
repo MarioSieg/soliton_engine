@@ -3,14 +3,18 @@
 #include "scripting_subsystem.hpp"
 
 #include "../scene/scene.hpp"
-#include "lfs/lfs.h"
+
+#include "libs/lfs/lfs.h"
+// #include "libs/luv/luv.h" also defined a panic() function which is ambiguous with the one in core.hpp, so:
+extern "C" int luaopen_luv (lua_State *L);
+
 #include "convar.hpp"
 
 #if USE_MIMALLOC
 #include <mimalloc.h>
 #endif
 
-namespace scripting {
+namespace lu::scripting {
     template <typename... Ts>
     static auto lua_log_info(const fmt::format_string<Ts...> fmt, Ts&&... args) -> void {
         SPDLOG_LOGGER_INFO(spdlog::get("app"), "[Lua]: {}", fmt::format(fmt, std::forward<Ts>(args)...));
@@ -49,18 +53,14 @@ namespace scripting {
     auto scripting_subsystem::exec_file(const std::string& file) -> bool {
         // this file must be loaded without asset mgr, as asset mgr is not yet initialized and
         // assetmgr needs access to the engine config which is stored in a lua script
-        std::string full_path {"assets/scripts/" + file};
-        std::ifstream ifs { full_path }; // todo: make this configurable
-        if (!ifs.is_open()) [[unlikely]] {
-            panic("Failed to open initial boot Lua file: {}", full_path);
-        }
-        std::string lua_script {};
-        ifs.seekg(0, std::ios::end);
-        lua_script.resize(ifs.tellg());
-        ifs.seekg(0, std::ios::beg);
-        ifs.read(lua_script.data(), static_cast<std::streamsize>(lua_script.size()));
-        ifs.close();
-        if (luaL_dostring(m_L, lua_script.c_str()) != LUA_OK) [[unlikely]] {
+        std::string full_path {"/engine_assets/scripts/" + file};
+        std::string lua_source_code {};
+        assetmgr::with_primary_accessor_lock([&](assetmgr::asset_accessor &acc) {
+            if (!acc.load_txt_file(full_path.c_str(), lua_source_code)) {
+                lua_log_error("Failed to load script file '{}'", full_path);
+            }
+        });
+        if (luaL_dostring(m_L, lua_source_code.c_str()) != LUA_OK) [[unlikely]] {
             lua_log_error("script error in {}: {}", full_path, lua_tostring(m_L, -1));
             lua_pop(m_L, 1);
             return false;
@@ -98,8 +98,21 @@ namespace scripting {
             m_L = luaL_newstate();
         }
         passert(m_L != nullptr);
+
+        // open base libraries
         luaL_openlibs(m_L);
+
+        // open LFS
         passert(luaopen_lfs(m_L) == 1);
+
+        // open LUV
+        passert(luaopen_luv(m_L) == 1);
+        lua_getglobal(m_L, "package");
+        lua_getfield(m_L, -1, "loaded");
+        lua_remove(m_L, -2);
+        luaopen_luv(m_L);
+        lua_setfield(m_L, -2, "luv");
+        lua_pop(m_L, 1);
 
         luabridge::register_main_thread(m_L);
 

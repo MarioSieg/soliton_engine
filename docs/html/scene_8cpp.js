@@ -1,5 +1,5 @@
 var scene_8cpp =
 [
-    [ "proxy", "structproxy.html", "structproxy" ],
-    [ "id_gen", "scene_8cpp.html#a9d5ec342d056fc2c25ebe04ed1e13317", null ]
+    [ "lu::proxy", "structlu_1_1proxy.html", "structlu_1_1proxy" ],
+    [ "id_gen", "scene_8cpp.html#a2d589d6b11689bf7080595120c03b31c", null ]
 ];

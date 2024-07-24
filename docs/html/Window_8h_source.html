@@ -26,7 +26,6 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr id="projectrow">
-  <td id="projectlogo"><img alt="Logo" src="logo_small.png"/></td>
   <td id="projectalign">
    <div id="projectname">Lunam Engine
    </div>
@@ -99,27 +98,30 @@ $(document).ready(function(){initNavTree('Window_8h_source.html',''); initResiza
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span>NoesisApp</div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>{</div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <span class="keyword">struct </span>Window : Noesis::ContentControl</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <span class="keyword">struct </span><a class="code hl_struct" href="structWindow.html">Window</a> : Noesis::ContentControl</div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    {</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>        Window() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>        Window(<span class="keyword">const</span> Window&amp;) = <span class="keyword">delete</span>;</div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        Window(Window&amp;&amp;) = <span class="keyword">delete</span>;</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        <span class="keyword">auto</span> operator =(<span class="keyword">const</span> Window&amp;) -&gt; Window&amp; = <span class="keyword">delete</span>;</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        <span class="keyword">auto</span> operator =(Window&amp;&amp;) -&gt; Window&amp; = <span class="keyword">delete</span>;</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        <span class="keyword">virtual</span> ~Window() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>        <a class="code hl_typedef" href="sqlite3_8c.html#adb2a551453af16dd3214a23b16e67544">Window</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>        <a class="code hl_typedef" href="sqlite3_8c.html#adb2a551453af16dd3214a23b16e67544">Window</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structWindow.html">Window</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        <a class="code hl_typedef" href="sqlite3_8c.html#adb2a551453af16dd3214a23b16e67544">Window</a>(<a class="code hl_struct" href="structWindow.html">Window</a>&amp;&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        <span class="keyword">auto</span> operator =(<span class="keyword">const</span> <a class="code hl_struct" href="structWindow.html">Window</a>&amp;) -&gt; <a class="code hl_struct" href="structWindow.html">Window</a>&amp; = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        <span class="keyword">auto</span> operator =(<a class="code hl_struct" href="structWindow.html">Window</a>&amp;&amp;) -&gt; <a class="code hl_struct" href="structWindow.html">Window</a>&amp; = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        <span class="keyword">virtual</span> <a class="code hl_struct" href="structWindow.html">~Window</a>() <span class="keyword">override</span>;</div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        <span class="keyword">auto</span> Init(Noesis::RenderDevice* device, std::uint16_t width, std::uint16_t height) -&gt; void;</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        <span class="keyword">auto</span> Tick() -&gt; void;</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        <span class="keyword">auto</span> Resize(std::uint16_t width, std::uint16_t height) -&gt; void;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        <span class="keyword">auto</span> Init(Noesis::RenderDevice* device, std::uint16_t width, std::uint16_t height, <span class="keywordtype">bool</span> wireframe) -&gt; <a class="code hl_variable" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        <span class="keyword">auto</span> Tick() -&gt; <a class="code hl_variable" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        <span class="keyword">auto</span> Resize(std::uint16_t width, std::uint16_t height) -&gt; <a class="code hl_variable" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a>;</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        [[nodiscard]] <span class="keyword">auto</span> GetView() const noexcept -&gt; Noesis::IView* {</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>            <span class="keywordflow">return</span> this-&gt;m_view.GetPtr();</div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        }</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keyword">private</span>:</div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        Noesis::Ptr&lt;Noesis::IView&gt; m_view { };</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        NS_DECLARE_REFLECTION(Window, ContentControl)</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        NS_DECLARE_REFLECTION(<a class="code hl_struct" href="structWindow.html">Window</a>, ContentControl)</div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    };</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>}</div>
+<div class="ttc" id="asqlite3_8c_html_adb2a551453af16dd3214a23b16e67544"><div class="ttname"><a href="sqlite3_8c.html#adb2a551453af16dd3214a23b16e67544">Window</a></div><div class="ttdeci">struct Window Window</div><div class="ttdef"><b>Definition:</b> sqlite3.c:15396</div></div>
+<div class="ttc" id="astructWindow_html"><div class="ttname"><a href="structWindow.html">Window</a></div><div class="ttdef"><b>Definition:</b> sqlite3.c:20445</div></div>
+<div class="ttc" id="atransform_8lua_8cpp_html_a7fb99d5538bec25633e1c2b62f5033d5"><div class="ttname"><a href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a></div><div class="ttdeci">const double const double const double z void</div><div class="ttdef"><b>Definition:</b> transform.lua.cpp:8</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

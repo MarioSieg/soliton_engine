@@ -25,10 +25,10 @@ include(cmake/simdutf-flags.cmake)
 
 set(SIMDUTF_LIB_VERSION "8.0.0" CACHE STRING "simdutf library version")
 set(SIMDUTF_LIB_SOVERSION "8" CACHE STRING "simdutf library soversion")
-option(SIMDUTF_TESTS "Whether the tests are included as part of the CMake Build." ON)
+option(SIMDUTF_TESTS "Whether the tests are included as part of the CMake Build." OFF)
 option(SIMDUTF_BENCHMARKS "Whether the benchmarks are included as part of the CMake Build." OFF)
-option(SIMDUTF_TOOLS "Whether the tools are included as part of the CMake build. Requires C++17 or better." ON)
-option(SIMDUTF_ICONV "Whether to use iconv as part of the CMake build if available." ON)
+option(SIMDUTF_TOOLS "Whether the tools are included as part of the CMake build. Requires C++17 or better." OFF)
+option(SIMDUTF_ICONV "Whether to use iconv as part of the CMake build if available." OFF)
 
 set(SIMDUTF_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 

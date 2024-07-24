@@ -9,7 +9,6 @@
 
 #define RND_IMPLEMENTATION
 #include <execution>
-#include <rnd.h>
 #include <Jolt/Jolt.h>
 #include <Jolt/RegisterTypes.h>
 #include <Jolt/Core/Factory.h>
@@ -32,19 +31,19 @@
 #include "../scripting/convar.hpp"
 #include "Jolt/Physics/Collision/Shape/ScaledShape.h"
 
-using scripting::scripting_subsystem;
+namespace lu::physics {
+    using scripting::scripting_subsystem;
 
-namespace physics {
 	namespace Layers {
 		static constexpr JPH::ObjectLayer NON_MOVING = 0;
 		static constexpr JPH::ObjectLayer MOVING = 1;
 		static constexpr JPH::ObjectLayer NUM_LAYERS = 2;
-	};
+	}
 	namespace BroadPhaseLayers {
 		static constexpr JPH::BroadPhaseLayer NON_MOVING {0};
 		static constexpr JPH::BroadPhaseLayer MOVING {1};
 		static constexpr JPH::uint NUM_LAYERS = 2;
-	};
+	}
 
 	// BroadPhaseLayerInterface implementation
 	// This defines a mapping between object and broadphase layers.
@@ -95,24 +94,10 @@ namespace physics {
 		}
 	};
 
-	[[maybe_unused]]
-	static thread_local rnd_gamerand_t prng;
-
-	[[maybe_unused]]
-	static inline auto next_f32_in_range(const float min, const float max) noexcept -> float {
-		return min + (max - min) * rnd_gamerand_nextf(&prng);
-	}
-
 	class ContactListenerImpl : public JPH::ContactListener {
 		virtual auto OnContactAdded(const JPH::Body& inBody1, const JPH::Body& inBody2,
 		                            const JPH::ContactManifold& inManifold,
 		                            JPH::ContactSettings& ioSettings) -> void override {
-			//const JPH::Vec3 offset {
-			//	next_f32_in_range(0.01f, 0.1f),
-			//	next_f32_in_range(0.01f, 0.1f),
-			//	next_f32_in_range(0.01f, 0.1f)
-			//};
-			//ioSettings.mRelativeAngularSurfaceVelocity = offset;
 			ioSettings.mCombinedFriction = std::sqrt(inBody1.GetFriction() * inBody2.GetFriction());
 			ioSettings.mCombinedRestitution = std::max(inBody1.GetRestitution(), inBody2.GetRestitution());
 		}
@@ -180,7 +165,6 @@ namespace physics {
     	);
     	m_physics_system.SetGravity(JPH::Vec3{0.0f, -9.81f, 0.0f}); // set gravity to earth's gravity
     	m_physics_system.SetContactListener(&*m_contact_listener);
-    	rnd_gamerand_seed(&prng, 0xdeadbeef);
     	m_debug_renderer = std::make_unique<debug_renderer>();
     }
 
@@ -217,11 +201,11 @@ namespace physics {
 			settings->mSupportingVolume = JPH::Plane(JPH::Vec3::sAxisY(), -cCharacterRadiusStanding); // Accept contacts that touch the lower sphere of the capsule
 			JPH::Ref<JPH::Character> character = new JPH::Character(settings, {}, JPH::Quat::sIdentity(), 0, &m_physics_system);
 			character->AddToPhysicsSystem(JPH::EActivation::Activate);
-			cc.characer = character;
+			cc.phys_character = character;
 		});
 
     	scene.observer<com::character_controller>().event(flecs::OnRemove).each([&](com::character_controller& cc) {
-    		cc.characer->RemoveFromPhysicsSystem();
+    		cc.phys_character->RemoveFromPhysicsSystem();
 		});
 
 		log_info("Creating static colliders...");
@@ -278,16 +262,16 @@ namespace physics {
 
     	// sync loop 1 rigidbody => transform
     	active.filter<const com::rigidbody, com::transform>().each([&](const com::rigidbody& rb, com::transform& transform) {
-			const JPH::BodyID body_id = rb.body_id;
+			const JPH::BodyID body_id = rb.phys_body;
 			transform.position = std::bit_cast<DirectX::XMFLOAT4>(bi.GetPosition(body_id));
 			transform.rotation = std::bit_cast<DirectX::XMFLOAT4>(bi.GetRotation(body_id));
 		});
 
     	// sync loop 2 character controller => transform
     	active.filter<const com::character_controller, com::transform>().each([&](const com::character_controller& cc, com::transform& transform) {
-			cc.characer->PostSimulation(0.05f);
-    		transform.position = std::bit_cast<DirectX::XMFLOAT4>(cc.characer->GetPosition());
-			transform.rotation = std::bit_cast<DirectX::XMFLOAT4>(cc.characer->GetPosition());
+			cc.phys_character->PostSimulation(0.05f);
+    		transform.position = std::bit_cast<DirectX::XMFLOAT4>(cc.phys_character->GetPosition());
+			transform.rotation = std::bit_cast<DirectX::XMFLOAT4>(cc.phys_character->GetPosition());
 		});
     }
 

@@ -26,7 +26,6 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr id="projectrow">
-  <td id="projectlogo"><img alt="Logo" src="logo_small.png"/></td>
   <td id="projectalign">
    <div id="projectname">Lunam Engine
    </div>
@@ -94,58 +93,37 @@ $(document).ready(function(){initNavTree('assetmgr_8cpp.html',''); initResizable
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="assetmgr_8hpp_source.html">assetmgr.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="core_8hpp_source.html">../core/core.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="simdutf_8h_source.html">simdutf.h</a>&quot;</code><br />
 <code>#include &lt;atomic&gt;</code><br />
-<code>#include &lt;fstream&gt;</code><br />
+<code>#include &lt;filesystem&gt;</code><br />
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
-<tr class="memitem:namespaceassetmgr"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceassetmgr.html">assetmgr</a></td></tr>
+<tr class="memitem:namespacelu"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu.html">lu</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacelu_1_1assetmgr"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu_1_1assetmgr.html">lu::assetmgr</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a637a1093bbcfb9ce7f92c092ff5460d0"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceassetmgr.html#a637a1093bbcfb9ce7f92c092ff5460d0">assetmgr::get_asset_root</a> () -&gt; const std::string &amp;</td></tr>
-<tr class="separator:a637a1093bbcfb9ce7f92c092ff5460d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1d91b884111abedbf0cfb06dab243f75"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceassetmgr.html#a1d91b884111abedbf0cfb06dab243f75">assetmgr::is_fs_valid</a> () -&gt; bool</td></tr>
-<tr class="separator:a1d91b884111abedbf0cfb06dab243f75"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae1fe6050d6e5c4510704dd1ec399d2b7"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceassetmgr.html#ae1fe6050d6e5c4510704dd1ec399d2b7">assetmgr::get_asset_dir</a> (const <a class="el" href="assetmgr_8hpp.html#a15fa112559db1187a8f9ee040d9c11a3">asset_category</a> category) -&gt; const std::string &amp;</td></tr>
-<tr class="separator:ae1fe6050d6e5c4510704dd1ec399d2b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab4164eda7e119144cd2afe0ea40aad54"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceassetmgr.html#ab4164eda7e119144cd2afe0ea40aad54">assetmgr::get_asset_path</a> (const <a class="el" href="assetmgr_8hpp.html#a15fa112559db1187a8f9ee040d9c11a3">asset_category</a> category, const std::string &amp;name) -&gt; std::string</td></tr>
-<tr class="separator:ab4164eda7e119144cd2afe0ea40aad54"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0fdcc0f6eb6cba419ace1d47e41ef388"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceassetmgr.html#a0fdcc0f6eb6cba419ace1d47e41ef388">assetmgr::validate_path</a> (const std::string &amp;full_path) -&gt; bool</td></tr>
-<tr class="separator:a0fdcc0f6eb6cba419ace1d47e41ef388"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a286b685826fcbeb5c57999a0270af7e3"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a286b685826fcbeb5c57999a0270af7e3"><td class="memTemplItemLeft" align="right" valign="top">static auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceassetmgr.html#a286b685826fcbeb5c57999a0270af7e3">assetmgr::load_asset</a> (const std::string &amp;path, T &amp;out) -&gt; bool</td></tr>
-<tr class="separator:a286b685826fcbeb5c57999a0270af7e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1c24c8106e0368aa880532dc7e30893e"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceassetmgr.html#a1c24c8106e0368aa880532dc7e30893e">assetmgr::load_asset_blob_raw</a> (const std::string &amp;path, std::vector&lt; std::uint8_t &gt; &amp;out) -&gt; bool</td></tr>
-<tr class="separator:a1c24c8106e0368aa880532dc7e30893e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa5c41d047001c9ac243d084dd66550b4"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceassetmgr.html#aa5c41d047001c9ac243d084dd66550b4">assetmgr::load_asset_text_raw</a> (const std::string &amp;path, std::string &amp;out) -&gt; bool</td></tr>
-<tr class="separator:aa5c41d047001c9ac243d084dd66550b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9a5a143e0c451bd0495ed622754800c5"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceassetmgr.html#a9a5a143e0c451bd0495ed622754800c5">assetmgr::load_asset_blob</a> (const <a class="el" href="assetmgr_8hpp.html#a15fa112559db1187a8f9ee040d9c11a3">asset_category</a> category, const std::string &amp;name, std::vector&lt; std::uint8_t &gt; &amp;out) -&gt; bool</td></tr>
-<tr class="separator:a9a5a143e0c451bd0495ed622754800c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1bc83fe251f66e8b6b4f3329534b3769"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceassetmgr.html#a1bc83fe251f66e8b6b4f3329534b3769">assetmgr::load_asset_text</a> (<a class="el" href="assetmgr_8hpp.html#a15fa112559db1187a8f9ee040d9c11a3">asset_category</a> category, const std::string &amp;name, std::string &amp;out) -&gt; bool</td></tr>
-<tr class="separator:a1bc83fe251f66e8b6b4f3329534b3769"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6f20edbfc50fca30a4aede88da10680d"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceassetmgr.html#a6f20edbfc50fca30a4aede88da10680d">assetmgr::get_asset_request_count</a> () noexcept -&gt; std::size_t</td></tr>
-<tr class="separator:a6f20edbfc50fca30a4aede88da10680d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9a2d3a4a5f108c7e3803987bcceea826"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceassetmgr.html#a9a2d3a4a5f108c7e3803987bcceea826">assetmgr::get_total_bytes_loaded</a> () noexcept -&gt; std::size_t</td></tr>
-<tr class="separator:a9a2d3a4a5f108c7e3803987bcceea826"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa3ca26f8dc576f692c34db389a5ad8e"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu_1_1assetmgr.html#afa3ca26f8dc576f692c34db389a5ad8e">lu::assetmgr::init</a> () -&gt; <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a></td></tr>
+<tr class="separator:afa3ca26f8dc576f692c34db389a5ad8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9cb27d9adc9f94ba17045f30e61b449b"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu_1_1assetmgr.html#a9cb27d9adc9f94ba17045f30e61b449b">lu::assetmgr::shutdown</a> () -&gt; <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a></td></tr>
+<tr class="separator:a9cb27d9adc9f94ba17045f30e61b449b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88a88370891a0d0328567535fdd55fe9"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu_1_1assetmgr.html#a88a88370891a0d0328567535fdd55fe9">lu::assetmgr::get_asset_request_count</a> () noexcept -&gt; std::size_t</td></tr>
+<tr class="separator:a88a88370891a0d0328567535fdd55fe9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae10d24d849ab7756edde9065ad70ea92"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu_1_1assetmgr.html#ae10d24d849ab7756edde9065ad70ea92">lu::assetmgr::get_total_bytes_loaded</a> () noexcept -&gt; std::size_t</td></tr>
+<tr class="separator:ae10d24d849ab7756edde9065ad70ea92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ced951e76f33128c0bdd624053212f9"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu_1_1assetmgr.html#a7ced951e76f33128c0bdd624053212f9">lu::assetmgr::with_primary_accessor_lock</a> (const std::function&lt; auto(asset_accessor &amp;acc) -&gt; <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> &gt; &amp;callback) -&gt; <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a></td></tr>
+<tr class="separator:a7ced951e76f33128c0bdd624053212f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:aab462a9892a714a21d5bcb697204515d"><td class="memItemLeft" align="right" valign="top">static constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceassetmgr.html#aab462a9892a714a21d5bcb697204515d">assetmgr::k_asset_type_names</a> []</td></tr>
-<tr class="separator:aab462a9892a714a21d5bcb697204515d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4b825fc91d4c141325e12c4e71c39cea"><td class="memItemLeft" align="right" valign="top">static constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceassetmgr.html#a4b825fc91d4c141325e12c4e71c39cea">assetmgr::k_asset_dir_names</a> []</td></tr>
-<tr class="separator:a4b825fc91d4c141325e12c4e71c39cea"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae2ab1be09927caa71bfa167e7b16dc9e"><td class="memItemLeft" align="right" valign="top">static constexpr char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceassetmgr.html#ae2ab1be09927caa71bfa167e7b16dc9e">assetmgr::k_dir_sep</a> = '/'</td></tr>
-<tr class="separator:ae2ab1be09927caa71bfa167e7b16dc9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8b5e5a4e5001c1d12555b3d5d6267796"><td class="memItemLeft" align="right" valign="top">static const std::array&lt; std::string, static_cast&lt; std::size_t &gt;(<a class="el" href="assetmgr_8hpp.html#a15fa112559db1187a8f9ee040d9c11a3aa1d44c0654a40984a103c270ffb9bf33">asset_category::$count</a>)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceassetmgr.html#a8b5e5a4e5001c1d12555b3d5d6267796">assetmgr::k_asset_dirs</a></td></tr>
-<tr class="separator:a8b5e5a4e5001c1d12555b3d5d6267796"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ace6e874fbad364caa52f1c81d38dc32d"><td class="memItemLeft" align="right" valign="top">constinit std::atomic_size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceassetmgr.html#ace6e874fbad364caa52f1c81d38dc32d">assetmgr::s_asset_requests</a> = 0</td></tr>
-<tr class="separator:ace6e874fbad364caa52f1c81d38dc32d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a50c1226b6b23035954a80f87a65c6fd4"><td class="memItemLeft" align="right" valign="top">constinit std::atomic_size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceassetmgr.html#a50c1226b6b23035954a80f87a65c6fd4">assetmgr::s_total_bytes_loaded</a> = 0</td></tr>
-<tr class="separator:a50c1226b6b23035954a80f87a65c6fd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61ec1146e444fd0e58e7380980ba93bf"><td class="memItemLeft" align="right" valign="top">static std::optional&lt; asset_accessor &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu_1_1assetmgr.html#a61ec1146e444fd0e58e7380980ba93bf">lu::assetmgr::s_primary_accessor</a> {}</td></tr>
+<tr class="separator:a61ec1146e444fd0e58e7380980ba93bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb4e6ce72538a3efdc6fe2bd056904a4"><td class="memItemLeft" align="right" valign="top">static std::mutex&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu_1_1assetmgr.html#aeb4e6ce72538a3efdc6fe2bd056904a4">lu::assetmgr::s_mtx</a> {}</td></tr>
+<tr class="separator:aeb4e6ce72538a3efdc6fe2bd056904a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61f5edcf77609bdf4d1752ed634cc924"><td class="memItemLeft" align="right" valign="top">static constinit std::atomic_bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu_1_1assetmgr.html#a61f5edcf77609bdf4d1752ed634cc924">lu::assetmgr::s_is_initialized</a> = false</td></tr>
+<tr class="separator:a61f5edcf77609bdf4d1752ed634cc924"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

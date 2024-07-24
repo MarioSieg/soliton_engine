@@ -7,7 +7,7 @@
 #include <stack>
 #include <sstream>
 
-namespace scripting {
+namespace lu::scripting {
     // TODO: This file is a mess, needs to be cleaned up and refactored (use template specializations for each type)
     // I wrote this in hurry when I had no sleep for 24 hours, so it's a bit of a mess
 
@@ -194,5 +194,5 @@ namespace scripting {
     };
 }
 
-using scripting::convar;
-using scripting::convar_flags;
+using lu::scripting::convar;
+using lu::scripting::convar_flags;

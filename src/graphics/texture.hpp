@@ -7,7 +7,7 @@
 
 #include <bx/allocator.h>
 
-namespace graphics {
+namespace lu::graphics {
     class texture_allocator final : public bx::AllocatorI {
     public:
         auto realloc(void* p, size_t size, size_t align, const char* filePath, std::uint32_t line) -> void* override;
@@ -17,7 +17,7 @@ namespace graphics {
     class texture final : public assetmgr::asset {
     public:
         explicit texture(std::string&& asset_path);
-        explicit texture(std::span<const std::uint8_t> raw_mem);
+        explicit texture(std::span<const std::byte> raw_mem);
         texture(
             vk::ImageType type,
             std::uint32_t width,
@@ -87,7 +87,7 @@ namespace graphics {
             vk::ImageTiling tiling = vk::ImageTiling::eOptimal
         ) -> void;
 
-        auto parse_from_raw_memory(std::span<const std::uint8_t> texels) -> void;
+        auto parse_from_raw_memory(std::span<const std::byte> texels) -> void;
 
         auto upload(
             void* img,

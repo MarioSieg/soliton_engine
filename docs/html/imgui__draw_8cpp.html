@@ -26,7 +26,6 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr id="projectrow">
-  <td id="projectlogo"><img alt="Logo" src="logo_small.png"/></td>
   <td id="projectalign">
    <div id="projectname">Lunam Engine
    </div>
@@ -103,18 +102,18 @@ $(document).ready(function(){initNavTree('imgui__draw_8cpp.html',''); initResiza
 Macros</h2></td></tr>
 <tr class="memitem:adf4d73301961430d50d7edd96f92ce38"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="imgui__draw_8cpp.html#adf4d73301961430d50d7edd96f92ce38">IMGUI_DEFINE_MATH_OPERATORS</a></td></tr>
 <tr class="separator:adf4d73301961430d50d7edd96f92ce38"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa595f4d7f5dca6ca04e5b1648e84f0d6"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="imgui__draw_8cpp.html#aa595f4d7f5dca6ca04e5b1648e84f0d6">IM_NORMALIZE2F_OVER_ZERO</a>(VX,  VY)&#160;&#160;&#160;{ float d2 = VX*VX + VY*VY; if (d2 &gt; 0.0f) { float inv_len = ImRsqrt(d2); VX *= inv_len; VY *= inv_len; } } (void)0</td></tr>
+<tr class="memitem:aa595f4d7f5dca6ca04e5b1648e84f0d6"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="imgui__draw_8cpp.html#aa595f4d7f5dca6ca04e5b1648e84f0d6">IM_NORMALIZE2F_OVER_ZERO</a>(VX,  VY)&#160;&#160;&#160;{ float d2 = VX*VX + VY*VY; <a class="el" href="transform_8lua_8cpp.html#a846db1f0b7bbaa7cec4e25fe30a16d8f">if</a> (d2 &gt; 0.0f) { float inv_len = ImRsqrt(d2); VX *= inv_len; VY *= inv_len; } } (<a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a>)0</td></tr>
 <tr class="separator:aa595f4d7f5dca6ca04e5b1648e84f0d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae801e54afba24c14221f81e1564615ef"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="imgui__draw_8cpp.html#ae801e54afba24c14221f81e1564615ef">IM_FIXNORMAL2F_MAX_INVLEN2</a>&#160;&#160;&#160;100.0f</td></tr>
 <tr class="separator:ae801e54afba24c14221f81e1564615ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4df703825e073b91ea24956d6021ee59"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="imgui__draw_8cpp.html#a4df703825e073b91ea24956d6021ee59">IM_FIXNORMAL2F</a>(VX,  VY)&#160;&#160;&#160;{ float d2 = VX*VX + VY*VY; if (d2 &gt; 0.000001f) { float inv_len2 = 1.0f / d2; if (inv_len2 &gt; <a class="el" href="imgui__draw_8cpp.html#ae801e54afba24c14221f81e1564615ef">IM_FIXNORMAL2F_MAX_INVLEN2</a>) inv_len2 = <a class="el" href="imgui__draw_8cpp.html#ae801e54afba24c14221f81e1564615ef">IM_FIXNORMAL2F_MAX_INVLEN2</a>; VX *= inv_len2; VY *= inv_len2; } } (void)0</td></tr>
+<tr class="memitem:a4df703825e073b91ea24956d6021ee59"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="imgui__draw_8cpp.html#a4df703825e073b91ea24956d6021ee59">IM_FIXNORMAL2F</a>(VX,  VY)&#160;&#160;&#160;{ float d2 = VX*VX + VY*VY; <a class="el" href="transform_8lua_8cpp.html#a846db1f0b7bbaa7cec4e25fe30a16d8f">if</a> (d2 &gt; 0.000001f) { float inv_len2 = 1.0f / d2; <a class="el" href="transform_8lua_8cpp.html#a846db1f0b7bbaa7cec4e25fe30a16d8f">if</a> (inv_len2 &gt; <a class="el" href="imgui__draw_8cpp.html#ae801e54afba24c14221f81e1564615ef">IM_FIXNORMAL2F_MAX_INVLEN2</a>) inv_len2 = <a class="el" href="imgui__draw_8cpp.html#ae801e54afba24c14221f81e1564615ef">IM_FIXNORMAL2F_MAX_INVLEN2</a>; VX *= inv_len2; VY *= inv_len2; } } (<a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a>)0</td></tr>
 <tr class="separator:a4df703825e073b91ea24956d6021ee59"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:aa24ae0f6a91ae4f8e72ae1baa9296bd1"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="imgui__draw_8cpp.html#aa24ae0f6a91ae4f8e72ae1baa9296bd1">PathBezierCubicCurveToCasteljau</a> (ImVector&lt; ImVec2 &gt; *path, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, float tess_tol, int level)</td></tr>
+<tr class="memitem:aa24ae0f6a91ae4f8e72ae1baa9296bd1"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="imgui__draw_8cpp.html#aa24ae0f6a91ae4f8e72ae1baa9296bd1">PathBezierCubicCurveToCasteljau</a> (ImVector&lt; ImVec2 &gt; *path, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, float tess_tol, int level)</td></tr>
 <tr class="separator:aa24ae0f6a91ae4f8e72ae1baa9296bd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aee43e89d334baa328c6a456379edaccd"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="imgui__draw_8cpp.html#aee43e89d334baa328c6a456379edaccd">PathBezierQuadraticCurveToCasteljau</a> (ImVector&lt; ImVec2 &gt; *path, float x1, float y1, float x2, float y2, float x3, float y3, float tess_tol, int level)</td></tr>
+<tr class="memitem:aee43e89d334baa328c6a456379edaccd"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="imgui__draw_8cpp.html#aee43e89d334baa328c6a456379edaccd">PathBezierQuadraticCurveToCasteljau</a> (ImVector&lt; ImVec2 &gt; *path, float x1, float y1, float x2, float y2, float x3, float y3, float tess_tol, int level)</td></tr>
 <tr class="separator:aee43e89d334baa328c6a456379edaccd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abc26563004ba48126f2e8b70ea0067af"><td class="memItemLeft" align="right" valign="top">static ImDrawFlags&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="imgui__draw_8cpp.html#abc26563004ba48126f2e8b70ea0067af">FixRectCornerFlags</a> (ImDrawFlags flags)</td></tr>
 <tr class="separator:abc26563004ba48126f2e8b70ea0067af"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -122,9 +121,9 @@ Functions</h2></td></tr>
 <tr class="separator:a98e6aacbe39a5d2a5fa9d08e362e49ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7e56fa5a582707008d3a598b8d6e81fd"><td class="memItemLeft" align="right" valign="top">static unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="imgui__draw_8cpp.html#a7e56fa5a582707008d3a598b8d6e81fd">Decode85Byte</a> (char c)</td></tr>
 <tr class="separator:a7e56fa5a582707008d3a598b8d6e81fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a992fe244c130e7ec5a8aa7bc0889f9aa"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="imgui__draw_8cpp.html#a992fe244c130e7ec5a8aa7bc0889f9aa">Decode85</a> (const unsigned char *src, unsigned char *dst)</td></tr>
+<tr class="memitem:a992fe244c130e7ec5a8aa7bc0889f9aa"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="imgui__draw_8cpp.html#a992fe244c130e7ec5a8aa7bc0889f9aa">Decode85</a> (const unsigned char *src, unsigned char *dst)</td></tr>
 <tr class="separator:a992fe244c130e7ec5a8aa7bc0889f9aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab5814a547146d0bc2c09e3b421abec63"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="imgui__draw_8cpp.html#ab5814a547146d0bc2c09e3b421abec63">UnpackAccumulativeOffsetsIntoRanges</a> (int base_codepoint, const short *accumulative_offsets, int accumulative_offsets_count, ImWchar *out_ranges)</td></tr>
+<tr class="memitem:ab5814a547146d0bc2c09e3b421abec63"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="imgui__draw_8cpp.html#ab5814a547146d0bc2c09e3b421abec63">UnpackAccumulativeOffsetsIntoRanges</a> (int base_codepoint, const short *accumulative_offsets, int accumulative_offsets_count, ImWchar *out_ranges)</td></tr>
 <tr class="separator:ab5814a547146d0bc2c09e3b421abec63"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abbf9333048e69bc2c78377c540592f98"><td class="memItemLeft" align="right" valign="top">static ImWchar&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="imgui__draw_8cpp.html#abbf9333048e69bc2c78377c540592f98">FindFirstExistingGlyph</a> (ImFont *font, const ImWchar *candidate_chars, int candidate_chars_count)</td></tr>
 <tr class="separator:abbf9333048e69bc2c78377c540592f98"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -166,7 +165,7 @@ Variables</h2></td></tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td>&#160;&#160;&#160;{ float d2 = VX*VX + VY*VY; if (d2 &gt; 0.000001f) { float inv_len2 = 1.0f / d2; if (inv_len2 &gt; <a class="el" href="imgui__draw_8cpp.html#ae801e54afba24c14221f81e1564615ef">IM_FIXNORMAL2F_MAX_INVLEN2</a>) inv_len2 = <a class="el" href="imgui__draw_8cpp.html#ae801e54afba24c14221f81e1564615ef">IM_FIXNORMAL2F_MAX_INVLEN2</a>; VX *= inv_len2; VY *= inv_len2; } } (void)0</td>
+          <td></td><td>&#160;&#160;&#160;{ float d2 = VX*VX + VY*VY; <a class="el" href="transform_8lua_8cpp.html#a846db1f0b7bbaa7cec4e25fe30a16d8f">if</a> (d2 &gt; 0.000001f) { float inv_len2 = 1.0f / d2; <a class="el" href="transform_8lua_8cpp.html#a846db1f0b7bbaa7cec4e25fe30a16d8f">if</a> (inv_len2 &gt; <a class="el" href="imgui__draw_8cpp.html#ae801e54afba24c14221f81e1564615ef">IM_FIXNORMAL2F_MAX_INVLEN2</a>) inv_len2 = <a class="el" href="imgui__draw_8cpp.html#ae801e54afba24c14221f81e1564615ef">IM_FIXNORMAL2F_MAX_INVLEN2</a>; VX *= inv_len2; VY *= inv_len2; } } (<a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a>)0</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -208,7 +207,7 @@ Variables</h2></td></tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td>&#160;&#160;&#160;{ float d2 = VX*VX + VY*VY; if (d2 &gt; 0.0f) { float inv_len = ImRsqrt(d2); VX *= inv_len; VY *= inv_len; } } (void)0</td>
+          <td></td><td>&#160;&#160;&#160;{ float d2 = VX*VX + VY*VY; <a class="el" href="transform_8lua_8cpp.html#a846db1f0b7bbaa7cec4e25fe30a16d8f">if</a> (d2 &gt; 0.0f) { float inv_len = ImRsqrt(d2); VX *= inv_len; VY *= inv_len; } } (<a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a>)0</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -276,7 +275,7 @@ Variables</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void Decode85 </td>
+          <td class="memname">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> Decode85 </td>
           <td>(</td>
           <td class="paramtype">const unsigned char *&#160;</td>
           <td class="paramname"><em>src</em>, </td>
@@ -431,7 +430,7 @@ Variables</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void PathBezierCubicCurveToCasteljau </td>
+          <td class="memname">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> PathBezierCubicCurveToCasteljau </td>
           <td>(</td>
           <td class="paramtype">ImVector&lt; ImVec2 &gt; *&#160;</td>
           <td class="paramname"><em>path</em>, </td>
@@ -521,7 +520,7 @@ Variables</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void PathBezierQuadraticCurveToCasteljau </td>
+          <td class="memname">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> PathBezierQuadraticCurveToCasteljau </td>
           <td>(</td>
           <td class="paramtype">ImVector&lt; ImVec2 &gt; *&#160;</td>
           <td class="paramname"><em>path</em>, </td>
@@ -599,7 +598,7 @@ Variables</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void UnpackAccumulativeOffsetsIntoRanges </td>
+          <td class="memname">static <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> UnpackAccumulativeOffsetsIntoRanges </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>base_codepoint</em>, </td>

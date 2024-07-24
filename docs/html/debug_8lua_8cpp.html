@@ -26,7 +26,6 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr id="projectrow">
-  <td id="projectlogo"><img alt="Logo" src="logo_small.png"/></td>
   <td id="projectalign">
    <div id="projectname">Lunam Engine
    </div>
@@ -88,7 +87,6 @@ $(document).ready(function(){initNavTree('debug_8lua_8cpp.html',''); initResizab
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#define-members">Macros</a> &#124;
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">debug.lua.cpp File Reference</div></div>
@@ -100,7 +98,6 @@ $(document).ready(function(){initNavTree('debug_8lua_8cpp.html',''); initResizab
 <code>#include &quot;<a class="el" href="ImGuiProfilerRenderer_8h_source.html">../../graphics/imgui/ImGuiProfilerRenderer.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="ImGuizmo_8h_source.html">../../graphics/imgui/ImGuizmo.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="physics__subsystem_8hpp_source.html">../../physics/physics_subsystem.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="profiler_8hpp_source.html">../../core/profiler.hpp</a>&quot;</code><br />
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
@@ -111,22 +108,19 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structcpu__profiler_1_1FrameHandleInfo.html">cpu_profiler::FrameHandleInfo</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
-Macros</h2></td></tr>
-<tr class="memitem:ad00e18ad511504c9caeaf5638622f9aa"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="debug_8lua_8cpp.html#ad00e18ad511504c9caeaf5638622f9aa">dd</a>&#160;&#160;&#160;(graphics_subsystem::s_instance-&gt;get_debug_draw())</td></tr>
-<tr class="separator:ad00e18ad511504c9caeaf5638622f9aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a4c17db380303d11ac13e9e38df747af7"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="debug_8lua_8cpp.html#a4c17db380303d11ac13e9e38df747af7">dd</a> () noexcept -&gt; <a class="el" href="classlu_1_1graphics_1_1debugdraw.html">graphics::debugdraw</a> &amp;</td></tr>
+<tr class="separator:a4c17db380303d11ac13e9e38df747af7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a465a30df6130658871110a05efd02f1c"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="debug_8lua_8cpp.html#a465a30df6130658871110a05efd02f1c">profiler_start_task</a> (std::string &amp;&amp;name, std::uint32_t color) -&gt; std::size_t</td></tr>
 <tr class="separator:a465a30df6130658871110a05efd02f1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aec893bcf41de7dcf449f257aec6e0c3e"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="debug_8lua_8cpp.html#aec893bcf41de7dcf449f257aec6e0c3e">profiler_end_task</a> (const std::size_t id) -&gt; void</td></tr>
+<tr class="memitem:aec893bcf41de7dcf449f257aec6e0c3e"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="debug_8lua_8cpp.html#aec893bcf41de7dcf449f257aec6e0c3e">profiler_end_task</a> (const std::size_t id) -&gt; <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a></td></tr>
 <tr class="separator:aec893bcf41de7dcf449f257aec6e0c3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae9be507783d8d3a00bf396cfa1ec3465"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="debug_8lua_8cpp.html#ae9be507783d8d3a00bf396cfa1ec3465">profiler_new_frame</a> () -&gt; void</td></tr>
+<tr class="memitem:ae9be507783d8d3a00bf396cfa1ec3465"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="debug_8lua_8cpp.html#ae9be507783d8d3a00bf396cfa1ec3465">profiler_new_frame</a> () -&gt; <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a></td></tr>
 <tr class="separator:ae9be507783d8d3a00bf396cfa1ec3465"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac2a19194e811b4764b40dbd45cfecd7e"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="debug_8lua_8cpp.html#ac2a19194e811b4764b40dbd45cfecd7e">profiler_get_frame_time</a> () noexcept -&gt; double</td></tr>
 <tr class="separator:ac2a19194e811b4764b40dbd45cfecd7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5c6f008e85767867b72e7ad5252c194c"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="debug_8lua_8cpp.html#a5c6f008e85767867b72e7ad5252c194c">profiler_submit_ex</a> (std::string &amp;&amp;name, double start, double end, std::uint32_t color) -&gt; void</td></tr>
+<tr class="memitem:a5c6f008e85767867b72e7ad5252c194c"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="debug_8lua_8cpp.html#a5c6f008e85767867b72e7ad5252c194c">profiler_submit_ex</a> (std::string &amp;&amp;name, double start, double end, std::uint32_t color) -&gt; <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a></td></tr>
 <tr class="separator:a5c6f008e85767867b72e7ad5252c194c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
@@ -134,22 +128,32 @@ Variables</h2></td></tr>
 <tr class="memitem:ae904f900e86f0b23a5454120e505989e"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classcpu__profiler.html">cpu_profiler</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="debug_8lua_8cpp.html#ae904f900e86f0b23a5454120e505989e">s_cpuProfiler</a></td></tr>
 <tr class="separator:ae904f900e86f0b23a5454120e505989e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Macro Definition Documentation</h2>
-<a id="ad00e18ad511504c9caeaf5638622f9aa" name="ad00e18ad511504c9caeaf5638622f9aa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad00e18ad511504c9caeaf5638622f9aa">&#9670;&nbsp;</a></span>dd</h2>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="a4c17db380303d11ac13e9e38df747af7" name="a4c17db380303d11ac13e9e38df747af7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c17db380303d11ac13e9e38df747af7">&#9670;&nbsp;</a></span>dd()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">#define dd&#160;&#160;&#160;(graphics_subsystem::s_instance-&gt;get_debug_draw())</td>
+          <td class="memname">static auto dd </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> -&gt; <a class="el" href="classlu_1_1graphics_1_1debugdraw.html">graphics::debugdraw</a>&amp; </td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<h2 class="groupheader">Function Documentation</h2>
 <a id="aec893bcf41de7dcf449f257aec6e0c3e" name="aec893bcf41de7dcf449f257aec6e0c3e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aec893bcf41de7dcf449f257aec6e0c3e">&#9670;&nbsp;</a></span>profiler_end_task()</h2>
 
@@ -161,7 +165,7 @@ Variables</h2></td></tr>
           <td>(</td>
           <td class="paramtype">const std::size_t&#160;</td>
           <td class="paramname"><em>id</em></td><td>)</td>
-          <td> -&gt; void </td>
+          <td> -&gt; <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> </td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -203,7 +207,7 @@ Variables</h2></td></tr>
           <td class="memname">auto profiler_new_frame </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td> -&gt; void </td>
+          <td> -&gt; <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> </td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -271,7 +275,7 @@ Variables</h2></td></tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td> -&gt; void </td>
+          <td></td><td> -&gt; <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> </td>
         </tr>
       </table>
 </div><div class="memdoc">

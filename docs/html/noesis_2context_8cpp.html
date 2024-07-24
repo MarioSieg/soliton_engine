@@ -26,7 +26,6 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr id="projectrow">
-  <td id="projectlogo"><img alt="Logo" src="logo_small.png"/></td>
   <td id="projectalign">
    <div id="projectname">Lunam Engine
    </div>
@@ -93,6 +92,7 @@ $(document).ready(function(){initNavTree('noesis_2context_8cpp.html',''); initRe
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="noesis_2context_8hpp_source.html">context.hpp</a>&quot;</code><br />
+<code>#include &lt;filesystem&gt;</code><br />
 <code>#include &lt;NsGui/IntegrationAPI.h&gt;</code><br />
 <code>#include &lt;NsGui/Uri.h&gt;</code><br />
 <code>#include &lt;NsGui/IView.h&gt;</code><br />
@@ -115,6 +115,8 @@ $(document).ready(function(){initNavTree('noesis_2context_8cpp.html',''); initRe
 <code>#include &quot;<a class="el" href="StartMenu_8xaml_8h_source.html">../noesis/UI/StartMenu.xaml.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="ViewModel_8h_source.html">../noesis/UI/ViewModel.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="vulkancore_2context_8hpp_source.html">../vulkancore/context.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="imgui_8h_source.html">../imgui/imgui.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="convar_8hpp_source.html">../../scripting/convar.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="platform__subsystem_8hpp_source.html">../../platform/platform_subsystem.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="App_8xaml_8h_source.html">UI/App.xaml.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="MainWindow_8xaml_8h_source.html">UI/MainWindow.xaml.h</a>&quot;</code><br />
@@ -130,11 +132,11 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a763112b03ac694ba4922fc5b0491a009"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="noesis_2context_8cpp.html#a763112b03ac694ba4922fc5b0491a009">NsRegisterReflection_NoesisApp</a> ()</td></tr>
+<tr class="memitem:a763112b03ac694ba4922fc5b0491a009"><td class="memItemLeft" align="right" valign="top"><a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="noesis_2context_8cpp.html#a763112b03ac694ba4922fc5b0491a009">NsRegisterReflection_NoesisApp</a> ()</td></tr>
 <tr class="separator:a763112b03ac694ba4922fc5b0491a009"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a62fd18a05b9d9343229869fef6c98ff3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="noesis_2context_8cpp.html#a62fd18a05b9d9343229869fef6c98ff3">NsInitPackages_NoesisApp</a> ()</td></tr>
+<tr class="memitem:a62fd18a05b9d9343229869fef6c98ff3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="noesis_2context_8cpp.html#a62fd18a05b9d9343229869fef6c98ff3">NsInitPackages_NoesisApp</a> ()</td></tr>
 <tr class="separator:a62fd18a05b9d9343229869fef6c98ff3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa23c9b54d058a9c8783789cd35cb705b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="noesis_2context_8cpp.html#aa23c9b54d058a9c8783789cd35cb705b">NsShutdownPackages_NoesisApp</a> ()</td></tr>
+<tr class="memitem:aa23c9b54d058a9c8783789cd35cb705b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="noesis_2context_8cpp.html#aa23c9b54d058a9c8783789cd35cb705b">NsShutdownPackages_NoesisApp</a> ()</td></tr>
 <tr class="separator:aa23c9b54d058a9c8783789cd35cb705b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
@@ -236,7 +238,7 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void NsInitPackages_NoesisApp </td>
+          <td class="memname"><a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> NsInitPackages_NoesisApp </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -253,7 +255,7 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void NsRegisterReflection_NoesisApp </td>
+          <td class="memname"><a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> NsRegisterReflection_NoesisApp </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -270,7 +272,7 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void NsShutdownPackages_NoesisApp </td>
+          <td class="memname"><a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a> NsShutdownPackages_NoesisApp </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>

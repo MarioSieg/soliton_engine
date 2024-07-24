@@ -26,7 +26,7 @@
 #include <libshaderc_util/file_finder.h>
 #include <shaderc/shaderc.hpp>
 
-namespace graphics {
+namespace lu::graphics {
 
 // An includer for files implementing shaderc's includer interface. It responds
 // to the file including query from the compiler with the full path and content

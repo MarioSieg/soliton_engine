@@ -1,6 +1,6 @@
 var mesh_8hpp =
 [
-    [ "graphics::mesh", "classgraphics_1_1mesh.html", "classgraphics_1_1mesh" ],
-    [ "graphics::mesh::vertex", "structgraphics_1_1mesh_1_1vertex.html", "structgraphics_1_1mesh_1_1vertex" ],
-    [ "graphics::mesh::primitive", "structgraphics_1_1mesh_1_1primitive.html", "structgraphics_1_1mesh_1_1primitive" ]
+    [ "lu::graphics::mesh", "classlu_1_1graphics_1_1mesh.html", "classlu_1_1graphics_1_1mesh" ],
+    [ "lu::graphics::mesh::vertex", "structlu_1_1graphics_1_1mesh_1_1vertex.html", "structlu_1_1graphics_1_1mesh_1_1vertex" ],
+    [ "lu::graphics::mesh::primitive", "structlu_1_1graphics_1_1mesh_1_1primitive.html", "structlu_1_1graphics_1_1mesh_1_1primitive" ]
 ];

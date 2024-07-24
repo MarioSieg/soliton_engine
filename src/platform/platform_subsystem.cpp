@@ -28,9 +28,9 @@
 #include <nfd.hpp>
 #include "../scripting/convar.hpp"
 
-using scripting::scripting_subsystem;
+namespace lu::platform {
+    using scripting::scripting_subsystem;
 
-namespace platform {
     [[maybe_unused]]
     static constexpr auto kernel_variant_name(iware::system::kernel_t variant) noexcept -> std::string_view {
         switch (variant) {
@@ -203,16 +203,16 @@ namespace platform {
     #endif
 
     auto dump_cpu_info() -> void {
-        static const std::string name = iware::cpu::model_name();
-        static const std::string vendor = iware::cpu::vendor();
-        static const std::string vendor_id = iware::cpu::vendor_id();
-        static const auto [logical, physical, packages] = iware::cpu::quantities();
-        static const std::string_view arch = architecture_name(iware::cpu::architecture());
-        static const double base_freq_ghz = static_cast<double>(iware::cpu::frequency()) / std::pow(1024.0, 3);
-        static const std::string_view endianness = endianness_name(iware::cpu::endianness());
-        static const iware::cpu::cache_t cache_l1 = iware::cpu::cache(1);
-        static const iware::cpu::cache_t cache_l2 = iware::cpu::cache(2);
-        static const iware::cpu::cache_t cache_l3 = iware::cpu::cache(3);
+        const std::string name = iware::cpu::model_name();
+        const std::string vendor = iware::cpu::vendor();
+        const std::string vendor_id = iware::cpu::vendor_id();
+        const auto [logical, physical, packages] = iware::cpu::quantities();
+        const std::string_view arch = architecture_name(iware::cpu::architecture());
+        const double base_freq_ghz = static_cast<double>(iware::cpu::frequency()) / std::pow(1024.0, 3);
+        const std::string_view endianness = endianness_name(iware::cpu::endianness());
+        const iware::cpu::cache_t cache_l1 = iware::cpu::cache(1);
+        const iware::cpu::cache_t cache_l2 = iware::cpu::cache(2);
+        const iware::cpu::cache_t cache_l3 = iware::cpu::cache(3);
 
         log_info("CPU(s): {} X {}", packages, name);
         log_info("CPU Architecture: {}", arch);
@@ -288,7 +288,7 @@ namespace platform {
 
     static constinit GLFWwindow* s_window;
 
-    static auto proxy_resize_hook(GLFWwindow* window, int w, int h) -> void {
+    static auto proxy_resize_hook(GLFWwindow* const window, const int w, const int h) -> void {
         passert(window != nullptr);
         void* user = glfwGetWindowUserPointer(window);
         if (!user) [[unlikely]] {
@@ -366,17 +366,19 @@ namespace platform {
             log_error("Platform error: {} ({:#X})", desc, code);
         });
 #if USE_MIMALLOC
-        static GLFWallocator allocator {};
-        allocator.allocate = [](const std::size_t size, [[maybe_unused]] void* usr) -> void* {
-            return mi_malloc(size);
-        };
-        allocator.deallocate = [](void* ptr, [[maybe_unused]] void* usr) -> void {
-            mi_free(ptr);
-        };
-        allocator.reallocate = [](void* ptr, const std::size_t size, [[maybe_unused]] void* usr) -> void* {
-            return mi_realloc(ptr, size);
-        };
-        glfwInitAllocator(&allocator);
+        if constexpr (k_use_mimalloc) {
+            static GLFWallocator allocator {};
+            allocator.allocate = [](const std::size_t size, [[maybe_unused]] void* usr) -> void* {
+                return mi_malloc(size);
+            };
+            allocator.deallocate = [](void* ptr, [[maybe_unused]] void* usr) -> void {
+                mi_free(ptr);
+            };
+            allocator.reallocate = [](void* ptr, const std::size_t size, [[maybe_unused]] void* usr) -> void* {
+                return mi_realloc(ptr, size);
+            };
+            glfwInitAllocator(&allocator);
+        }
 #endif
         const bool is_glfw_online = glfwInit() == GLFW_TRUE;
         if (!is_glfw_online) [[unlikely]] {
@@ -410,7 +412,7 @@ namespace platform {
         s_framebuffer_size_callbacks.emplace_back(&proxy_resize_hook);
 
         // query monitor and print some info
-        auto printMonitorInfo = [](GLFWmonitor* mon) {
+        constexpr auto print_mon_info = [](GLFWmonitor* mon) {
             if (const char* name = glfwGetMonitorName(mon); name) {
                 log_info("Monitor name: {}", name);
             }
@@ -428,10 +430,13 @@ namespace platform {
         };
         GLFWmonitor* mon = glfwGetPrimaryMonitor();
         if (mon != nullptr) [[likely]] {
-            printMonitorInfo(mon);
+            print_mon_info(mon);
             if (const GLFWvidmode* mode = glfwGetVideoMode(mon); mode) {
-                glfwSetWindowPos(s_window, std::max((mode->width>>1)-cv_default_width(), cv_min_width()),
-                    std::max((mode->height>>1)-cv_default_height(), cv_min_height()));
+                glfwSetWindowPos(
+                    s_window,
+                    std::max((mode->width>>1) - cv_default_width(), cv_min_width()),
+                    std::max((mode->height>>1) - cv_default_height(), cv_min_height())
+                );
             }
         } else {
             log_warn("No primary monitor found");
@@ -440,26 +445,38 @@ namespace platform {
         if (GLFWmonitor** mons = glfwGetMonitors(&n); mons) {
             for (int i = 0; i < n; ++i) {
                 if (mons[i] != mon) {
-                    printMonitorInfo(mons[i]);
+                    print_mon_info(mons[i]);
                 }
             }
         }
 
         // set window icon
         if constexpr (!PLATFORM_OSX) { // Cocoa - regular windows do not have icons on macOS
-            std::vector<std::uint8_t> pixel_buf {};
+            std::vector<std::byte> pixel_buf {};
             const std::string k_window_icon_file = cv_window_icon();
-            assetmgr::load_asset_blob_or_panic(k_window_icon_file, pixel_buf);
-            int w, h;
-            stbi_uc *pixels = stbi_load_from_memory(pixel_buf.data(), static_cast<int>(pixel_buf.size()), &w, &h, nullptr, STBI_rgb_alpha);
-            passert(pixels != nullptr);
-            const GLFWimage icon {
-                .width = w,
-                .height = h,
-                .pixels = pixels
-            };
-            glfwSetWindowIcon(s_window, 1, &icon);
-            stbi_image_free(pixels);
+            bool success = false;
+            assetmgr::with_primary_accessor_lock([&](assetmgr::asset_accessor& acc) {
+                success = acc.load_bin_file(k_window_icon_file.c_str(), pixel_buf);
+            });
+            if (success) {
+                int w, h;
+                stbi_uc* pixels = stbi_load_from_memory(
+                    reinterpret_cast<const std::uint8_t*>(pixel_buf.data()),
+                    static_cast<int>(pixel_buf.size()),
+                    &w,
+                    &h,
+                    nullptr,
+                    STBI_rgb_alpha
+                );
+                passert(pixels != nullptr);
+                const GLFWimage icon {
+                    .width = w,
+                    .height = h,
+                    .pixels = pixels
+                };
+                glfwSetWindowIcon(s_window, 1, &icon);
+                stbi_image_free(pixels);
+            }
         }
         NFD_Init();
     }

@@ -26,7 +26,6 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr id="projectrow">
-  <td id="projectlogo"><img alt="Logo" src="logo_small.png"/></td>
   <td id="projectalign">
    <div id="projectname">Lunam Engine
    </div>
@@ -87,15 +86,18 @@ $(document).ready(function(){initNavTree('kernel_8cpp.html',''); initResizable()
 
 <div class="header">
   <div class="summary">
+<a href="#namespaces">Namespaces</a> &#124;
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">kernel.cpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="kernel_8hpp_source.html">kernel.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="profiler_8hpp_source.html">profiler.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="buffered__sink_8hpp_source.html">buffered_sink.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="scene_8hpp_source.html">../scene/scene.hpp</a>&quot;</code><br />
+<code>#include &lt;bit&gt;</code><br />
+<code>#include &lt;ranges&gt;</code><br />
+<code>#include &lt;filesystem&gt;</code><br />
 <code>#include &lt;iostream&gt;</code><br />
 <code>#include &lt;mimalloc.h&gt;</code><br />
 <code>#include &lt;spdlog/spdlog.h&gt;</code><br />
@@ -107,211 +109,31 @@ $(document).ready(function(){initNavTree('kernel_8cpp.html',''); initResizable()
 <code>#include &lt;spdlog/sinks/stdout_color_sinks.h&gt;</code><br />
 <code>#include &lt;pthread.h&gt;</code><br />
 </div><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespacelu"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu.html">lu</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ae568a4affae4de15a17bde613e4dd84a"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="kernel_8cpp.html#ae568a4affae4de15a17bde613e4dd84a">create_logger</a> (const std::string &amp;name, const std::string &amp;pattern, bool print_stdout=true, bool enroll=true) -&gt; std::shared_ptr&lt; spdlog::logger &gt;</td></tr>
-<tr class="separator:ae568a4affae4de15a17bde613e4dd84a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2a1703e02f04b881517dd1099b6efbb1"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="kernel_8cpp.html#a2a1703e02f04b881517dd1099b6efbb1">compute_delta_time</a> () noexcept</td></tr>
-<tr class="separator:a2a1703e02f04b881517dd1099b6efbb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a894a92fec1721030637ed8b299752386"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu.html#a894a92fec1721030637ed8b299752386">lu::create_logger</a> (const std::string &amp;name, const std::string &amp;pattern, bool print_stdout=true, bool enroll=true) -&gt; std::shared_ptr&lt; spdlog::logger &gt;</td></tr>
+<tr class="separator:a894a92fec1721030637ed8b299752386"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:a305d0319d68f3cc4bd63d3e7496ec0a5"><td class="memItemLeft" align="right" valign="top">static constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="kernel_8cpp.html#a305d0319d68f3cc4bd63d3e7496ec0a5">k_log_threads</a> = 1</td></tr>
-<tr class="separator:a305d0319d68f3cc4bd63d3e7496ec0a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ade7f02c1e21e9024b3bdf00e9c78001e"><td class="memItemLeft" align="right" valign="top">static constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="kernel_8cpp.html#ade7f02c1e21e9024b3bdf00e9c78001e">k_log_queue_size</a> = 8192</td></tr>
-<tr class="separator:ade7f02c1e21e9024b3bdf00e9c78001e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a25f9fd668126431046c92e23d30b72d2"><td class="memItemLeft" align="right" valign="top">static constinit <a class="el" href="classkernel.html">kernel</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="kernel_8cpp.html#a25f9fd668126431046c92e23d30b72d2">g_kernel</a> = nullptr</td></tr>
-<tr class="separator:a25f9fd668126431046c92e23d30b72d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a266ae327bff674bb7a9839838c444162"><td class="memItemLeft" align="right" valign="top">static constinit double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="kernel_8cpp.html#a266ae327bff674bb7a9839838c444162">delta_time</a></td></tr>
-<tr class="separator:a266ae327bff674bb7a9839838c444162"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a78d35da7f9dd9d25b19906b30e0004f3"><td class="memItemLeft" align="right" valign="top">static constinit bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="kernel_8cpp.html#a78d35da7f9dd9d25b19906b30e0004f3">g_kernel_online</a> = true</td></tr>
-<tr class="separator:a78d35da7f9dd9d25b19906b30e0004f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1376f5892c0f7b295d32f7a118cfefac"><td class="memItemLeft" align="right" valign="top">static constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu.html#a1376f5892c0f7b295d32f7a118cfefac">lu::k_log_threads</a> = 1</td></tr>
+<tr class="separator:a1376f5892c0f7b295d32f7a118cfefac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5fb667a8ae08316ba5f4ba332c66b830"><td class="memItemLeft" align="right" valign="top">static constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu.html#a5fb667a8ae08316ba5f4ba332c66b830">lu::k_log_queue_size</a> = 8192</td></tr>
+<tr class="separator:a5fb667a8ae08316ba5f4ba332c66b830"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afeab3df3ea4b84266168a6cfb14b07d6"><td class="memItemLeft" align="right" valign="top">static constinit double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu.html#afeab3df3ea4b84266168a6cfb14b07d6">lu::g_delta_time</a></td></tr>
+<tr class="separator:afeab3df3ea4b84266168a6cfb14b07d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2c951ae0387cccf8c2a7e3ae8b9b2d1"><td class="memItemLeft" align="right" valign="top">static constinit double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu.html#ac2c951ae0387cccf8c2a7e3ae8b9b2d1">lu::g_time</a></td></tr>
+<tr class="separator:ac2c951ae0387cccf8c2a7e3ae8b9b2d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc67f77eaf357f8476c021b46ad26e14"><td class="memItemLeft" align="right" valign="top">static constinit bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu.html#adc67f77eaf357f8476c021b46ad26e14">lu::g_kernel_online</a> = true</td></tr>
+<tr class="separator:adc67f77eaf357f8476c021b46ad26e14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7066e7855afdcb20b36fa44bd74c9459"><td class="memItemLeft" align="right" valign="top">static constinit kernel *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu.html#a7066e7855afdcb20b36fa44bd74c9459">lu::g_kernel</a> = nullptr</td></tr>
+<tr class="separator:a7066e7855afdcb20b36fa44bd74c9459"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Function Documentation</h2>
-<a id="a2a1703e02f04b881517dd1099b6efbb1" name="a2a1703e02f04b881517dd1099b6efbb1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2a1703e02f04b881517dd1099b6efbb1">&#9670;&nbsp;</a></span>compute_delta_time()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static auto compute_delta_time </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ae568a4affae4de15a17bde613e4dd84a" name="ae568a4affae4de15a17bde613e4dd84a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae568a4affae4de15a17bde613e4dd84a">&#9670;&nbsp;</a></span>create_logger()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static auto create_logger </td>
-          <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>name</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>pattern</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>print_stdout</em> = <code>true</code>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>enroll</em> = <code>true</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td> -&gt; std::shared_ptr&lt;spdlog::logger&gt; </td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<h2 class="groupheader">Variable Documentation</h2>
-<a id="a266ae327bff674bb7a9839838c444162" name="a266ae327bff674bb7a9839838c444162"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a266ae327bff674bb7a9839838c444162">&#9670;&nbsp;</a></span>delta_time</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constinit double delta_time</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a25f9fd668126431046c92e23d30b72d2" name="a25f9fd668126431046c92e23d30b72d2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a25f9fd668126431046c92e23d30b72d2">&#9670;&nbsp;</a></span>g_kernel</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constinit <a class="el" href="classkernel.html">kernel</a>* g_kernel = nullptr</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a78d35da7f9dd9d25b19906b30e0004f3" name="a78d35da7f9dd9d25b19906b30e0004f3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a78d35da7f9dd9d25b19906b30e0004f3">&#9670;&nbsp;</a></span>g_kernel_online</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constinit bool g_kernel_online = true</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ade7f02c1e21e9024b3bdf00e9c78001e" name="ade7f02c1e21e9024b3bdf00e9c78001e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ade7f02c1e21e9024b3bdf00e9c78001e">&#9670;&nbsp;</a></span>k_log_queue_size</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr std::size_t k_log_queue_size = 8192</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a305d0319d68f3cc4bd63d3e7496ec0a5" name="a305d0319d68f3cc4bd63d3e7496ec0a5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a305d0319d68f3cc4bd63d3e7496ec0a5">&#9670;&nbsp;</a></span>k_log_threads</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr std::size_t k_log_threads = 1</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

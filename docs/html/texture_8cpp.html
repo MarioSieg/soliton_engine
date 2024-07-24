@@ -26,7 +26,6 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr id="projectrow">
-  <td id="projectlogo"><img alt="Logo" src="logo_small.png"/></td>
   <td id="projectalign">
    <div id="projectname">Lunam Engine
    </div>
@@ -90,6 +89,7 @@ $(document).ready(function(){initNavTree('texture_8cpp.html',''); initResizable(
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#define-members">Macros</a> &#124;
+<a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">texture.cpp File Reference</div></div>
 </div><!--header-->
@@ -100,15 +100,18 @@ $(document).ready(function(){initNavTree('texture_8cpp.html',''); initResizable(
 <code>#include &quot;<a class="el" href="buffer_8hpp_source.html">vulkancore/buffer.hpp</a>&quot;</code><br />
 <code>#include &lt;bimg/bimg.h&gt;</code><br />
 <code>#include &lt;bimg/decode.h&gt;</code><br />
+<code>#include &lt;Simd/SimdLib.hpp&gt;</code><br />
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structgraphics_1_1texture__format__info.html">graphics::texture_format_info</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlu_1_1graphics_1_1texture__format__info.html">lu::graphics::texture_format_info</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
-<tr class="memitem:namespacegraphics"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacegraphics.html">graphics</a></td></tr>
+<tr class="memitem:namespacelu"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu.html">lu</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacelu_1_1graphics"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu_1_1graphics.html">lu::graphics</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
@@ -126,16 +129,23 @@ Macros</h2></td></tr>
 <tr class="memitem:a955f504eccf76b4eb2489c0adab03121"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="texture_8cpp.html#a955f504eccf76b4eb2489c0adab03121">A</a>&#160;&#160;&#160;VK_COMPONENT_SWIZZLE_A</td></tr>
 <tr class="separator:a955f504eccf76b4eb2489c0adab03121"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a1cc7982af432c76444274f12d18fc03c"><td class="memItemLeft" align="right" valign="top">consteval auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu_1_1graphics.html#a1cc7982af432c76444274f12d18fc03c">lu::graphics::get_tex_alloc</a> () noexcept -&gt; bx::AllocatorI *</td></tr>
+<tr class="separator:a1cc7982af432c76444274f12d18fc03c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:afb79183a088d98c4b81b1081c05006e5"><td class="memItemLeft" align="right" valign="top">static constexpr bimg::TextureFormat::Enum&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacegraphics.html#afb79183a088d98c4b81b1081c05006e5">graphics::k_fallback_format</a> = bimg::TextureFormat::RGBA8</td></tr>
-<tr class="separator:afb79183a088d98c4b81b1081c05006e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5c7367b008362df8dfccde0328ac09b4"><td class="memItemLeft" align="right" valign="top">static constexpr texture_format_info&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacegraphics.html#a5c7367b008362df8dfccde0328ac09b4">graphics::k_texture_format_map</a> []</td></tr>
-<tr class="separator:a5c7367b008362df8dfccde0328ac09b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a205ef3f7306e1790106e69a54faa9066"><td class="memItemLeft" align="right" valign="top">static constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacegraphics.html#a205ef3f7306e1790106e69a54faa9066">graphics::k_natural_align</a> = 8</td></tr>
-<tr class="separator:a205ef3f7306e1790106e69a54faa9066"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4442ccc992b00bf9c80e06de99f50fdc"><td class="memItemLeft" align="right" valign="top">constinit texture_allocator&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacegraphics.html#a4442ccc992b00bf9c80e06de99f50fdc">graphics::s_texture_allocator</a> {}</td></tr>
-<tr class="separator:a4442ccc992b00bf9c80e06de99f50fdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e57af2a5fe8eb55ab5ab7ba2b16f612"><td class="memItemLeft" align="right" valign="top">static constexpr bimg::TextureFormat::Enum&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu_1_1graphics.html#a9e57af2a5fe8eb55ab5ab7ba2b16f612">lu::graphics::k_fallback_format</a> = bimg::TextureFormat::RGBA8</td></tr>
+<tr class="separator:a9e57af2a5fe8eb55ab5ab7ba2b16f612"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac43407c30cc9dabf85ae007221161236"><td class="memItemLeft" align="right" valign="top">static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu_1_1graphics.html#ac43407c30cc9dabf85ae007221161236">lu::graphics::k_enable_simd_cvt</a> = true</td></tr>
+<tr class="separator:ac43407c30cc9dabf85ae007221161236"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a926dafca66dff05f5755975a8168a6a2"><td class="memItemLeft" align="right" valign="top">const std::array&lt; texture_format_info, 96 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu_1_1graphics.html#a926dafca66dff05f5755975a8168a6a2">lu::graphics::k_texture_format_map</a></td></tr>
+<tr class="separator:a926dafca66dff05f5755975a8168a6a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9952cfa4298c4f895261c04d6eaf832f"><td class="memItemLeft" align="right" valign="top">static constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu_1_1graphics.html#a9952cfa4298c4f895261c04d6eaf832f">lu::graphics::k_natural_align</a> = 8</td></tr>
+<tr class="separator:a9952cfa4298c4f895261c04d6eaf832f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d91dcb484144f7df8c78b6735fe3c86"><td class="memItemLeft" align="right" valign="top">constinit texture_allocator&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu_1_1graphics.html#a9d91dcb484144f7df8c78b6735fe3c86">lu::graphics::s_texture_allocator</a> {}</td></tr>
+<tr class="separator:a9d91dcb484144f7df8c78b6735fe3c86"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="a955f504eccf76b4eb2489c0adab03121" name="a955f504eccf76b4eb2489c0adab03121"></a>

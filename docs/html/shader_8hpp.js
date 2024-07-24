@@ -1,4 +1,4 @@
 var shader_8hpp =
 [
-    [ "vkb::shader", "classvkb_1_1shader.html", "classvkb_1_1shader" ]
+    [ "lu::graphics::shader", "classlu_1_1graphics_1_1shader.html", "classlu_1_1graphics_1_1shader" ]
 ];

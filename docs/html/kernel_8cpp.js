@@ -1,10 +1,10 @@
 var kernel_8cpp =
 [
-    [ "compute_delta_time", "kernel_8cpp.html#a2a1703e02f04b881517dd1099b6efbb1", null ],
-    [ "create_logger", "kernel_8cpp.html#ae568a4affae4de15a17bde613e4dd84a", null ],
-    [ "delta_time", "kernel_8cpp.html#a266ae327bff674bb7a9839838c444162", null ],
-    [ "g_kernel", "kernel_8cpp.html#a25f9fd668126431046c92e23d30b72d2", null ],
-    [ "g_kernel_online", "kernel_8cpp.html#a78d35da7f9dd9d25b19906b30e0004f3", null ],
-    [ "k_log_queue_size", "kernel_8cpp.html#ade7f02c1e21e9024b3bdf00e9c78001e", null ],
-    [ "k_log_threads", "kernel_8cpp.html#a305d0319d68f3cc4bd63d3e7496ec0a5", null ]
+    [ "create_logger", "kernel_8cpp.html#a894a92fec1721030637ed8b299752386", null ],
+    [ "g_delta_time", "kernel_8cpp.html#afeab3df3ea4b84266168a6cfb14b07d6", null ],
+    [ "g_kernel", "kernel_8cpp.html#a7066e7855afdcb20b36fa44bd74c9459", null ],
+    [ "g_kernel_online", "kernel_8cpp.html#adc67f77eaf357f8476c021b46ad26e14", null ],
+    [ "g_time", "kernel_8cpp.html#ac2c951ae0387cccf8c2a7e3ae8b9b2d1", null ],
+    [ "k_log_queue_size", "kernel_8cpp.html#a5fb667a8ae08316ba5f4ba332c66b830", null ],
+    [ "k_log_threads", "kernel_8cpp.html#a1376f5892c0f7b295d32f7a118cfefac", null ]
 ];

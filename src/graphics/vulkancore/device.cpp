@@ -5,7 +5,7 @@
 #include <unordered_set>
 #include <GLFW/glfw3.h>
 
-namespace vkb {
+namespace lu::vkb {
     device::device(
         const bool enable_validation,
         const bool require_stencil

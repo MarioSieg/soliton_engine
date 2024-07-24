@@ -26,7 +26,6 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr id="projectrow">
-  <td id="projectlogo"><img alt="Logo" src="logo_small.png"/></td>
   <td id="projectalign">
    <div id="projectname">Lunam Engine
    </div>
@@ -88,38 +87,43 @@ $(document).ready(function(){initNavTree('graphics__subsystem_8cpp.html',''); in
 <div class="header">
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">graphics_subsystem.cpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="graphics__subsystem_8hpp_source.html">graphics_subsystem.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="platform__subsystem_8hpp_source.html">../platform/platform_subsystem.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="scripting__subsystem_8hpp_source.html">../scripting/scripting_subsystem.hpp</a>&quot;</code><br />
-<code>#include &lt;execution&gt;</code><br />
+<code>#include &quot;<a class="el" href="convar_8hpp_source.html">../scripting/convar.hpp</a>&quot;</code><br />
 <code>#include &lt;mimalloc.h&gt;</code><br />
 <code>#include &quot;<a class="el" href="material_8hpp_source.html">material.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="shader__registry_8hpp_source.html">shader_registry.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="pipeline_8hpp_source.html">pipeline.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="pbr__pipeline_8hpp_source.html">pipelines/pbr_pipeline.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sky_8hpp_source.html">pipelines/sky.hpp</a>&quot;</code><br />
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
-<tr class="memitem:namespacegraphics"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacegraphics.html">graphics</a></td></tr>
+<tr class="memitem:namespacelu"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu.html">lu</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacelu_1_1graphics"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu_1_1graphics.html">lu::graphics</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ac145dc3d801bac7862f67dcdda4cd4c6"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacegraphics.html#ac145dc3d801bac7862f67dcdda4cd4c6">graphics::render_scene_bucket</a> (vk::CommandBuffer cmd, std::int32_t bucket_id, std::int32_t num_threads, void *usr) -&gt; void</td></tr>
-<tr class="separator:ac145dc3d801bac7862f67dcdda4cd4c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3638a66210aa7c81630026d1afc9bb36"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacegraphics.html#a3638a66210aa7c81630026d1afc9bb36">graphics::compute_render_bucket_range</a> (const std::size_t id, const std::size_t num_entities, const std::size_t num_threads) noexcept -&gt; std::array&lt; std::size_t, 2 &gt;</td></tr>
-<tr class="separator:a3638a66210aa7c81630026d1afc9bb36"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a86638bfe00b4e8b60bf3b6e0d653d913"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacegraphics.html#a86638bfe00b4e8b60bf3b6e0d653d913">graphics::find_main_camera</a> () -&gt; flecs::entity</td></tr>
-<tr class="separator:a86638bfe00b4e8b60bf3b6e0d653d913"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa8f32d05cd2f86faf22b5f885b3d1ccd"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacegraphics.html#aa8f32d05cd2f86faf22b5f885b3d1ccd">graphics::update_main_camera</a> (const float width, const float height) -&gt; void</td></tr>
-<tr class="separator:aa8f32d05cd2f86faf22b5f885b3d1ccd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1874acac88487d951d8acbe0f7e08cdd"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="platform_8hpp.html#a3288db8770d7064c1f95c0ee7d0d686f">HOTPROC</a> auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacegraphics.html#a1874acac88487d951d8acbe0f7e08cdd">graphics::draw_mesh</a> (const mesh &amp;mesh, const vk::CommandBuffer cmd, const std::vector&lt; material * &gt; &amp;mats, const vk::PipelineLayout layout) -&gt; void</td></tr>
-<tr class="separator:a1874acac88487d951d8acbe0f7e08cdd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a124808cbe7742d75548b9ff68748edd5"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="platform_8hpp.html#a3288db8770d7064c1f95c0ee7d0d686f">HOTPROC</a> auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacegraphics.html#a124808cbe7742d75548b9ff68748edd5">graphics::render_mesh</a> (const vk::CommandBuffer cmd_buf, const vk::PipelineLayout layout, const <a class="el" href="structcom_1_1transform.html">com::transform</a> &amp;transform, const <a class="el" href="structcom_1_1mesh__renderer.html">com::mesh_renderer</a> &amp;renderer, DirectX::FXMMATRIX vp) -&gt; void</td></tr>
-<tr class="separator:a124808cbe7742d75548b9ff68748edd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6eba857c8c71643b89e445fb4305a77f"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu_1_1graphics.html#a6eba857c8c71643b89e445fb4305a77f">lu::graphics::compute_render_bucket_range</a> (const std::size_t id, const std::size_t num_entities, const std::size_t num_threads) noexcept -&gt; std::array&lt; std::size_t, 2 &gt;</td></tr>
+<tr class="separator:a6eba857c8c71643b89e445fb4305a77f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a6aaeca581b3855abbf2f479200dae8"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu_1_1graphics.html#a5a6aaeca581b3855abbf2f479200dae8">lu::graphics::find_main_camera</a> () -&gt; flecs::entity</td></tr>
+<tr class="separator:a5a6aaeca581b3855abbf2f479200dae8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:ab727202476f21a02df4f64e386d729d7"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classlu_1_1scripting_1_1convar.html">convar</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu_1_1graphics.html#ab727202476f21a02df4f64e386d729d7">lu::graphics::cv_shader_dir</a> {&quot;Renderer.shaderDir&quot;, std::nullopt, scripting::convar_flags::read_only}</td></tr>
+<tr class="separator:ab727202476f21a02df4f64e386d729d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7ddabc05171f6a2e4d6c42b735127b4"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classlu_1_1scripting_1_1convar.html">convar</a>&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu_1_1graphics.html#af7ddabc05171f6a2e4d6c42b735127b4">lu::graphics::cv_enable_parallel_shader_compilation</a> {&quot;Renderer.enableParallelShaderCompilation&quot;, true, scripting::convar_flags::read_only}</td></tr>
+<tr class="separator:af7ddabc05171f6a2e4d6c42b735127b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e8f8f3fc0ddf6ac5ce39b09491b2344"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classlu_1_1scripting_1_1convar.html">convar</a>&lt; std::uint32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu_1_1graphics.html#a2e8f8f3fc0ddf6ac5ce39b09491b2344">lu::graphics::cv_max_render_threads</a></td></tr>
+<tr class="separator:a2e8f8f3fc0ddf6ac5ce39b09491b2344"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

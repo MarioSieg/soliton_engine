@@ -26,7 +26,6 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr id="projectrow">
-  <td id="projectlogo"><img alt="Logo" src="logo_small.png"/></td>
   <td id="projectalign">
    <div id="projectname">Lunam Engine
    </div>
@@ -88,7 +87,8 @@ $(document).ready(function(){initNavTree('__prelude_8hpp.html',''); initResizabl
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#define-members">Macros</a>  </div>
+<a href="#define-members">Macros</a> &#124;
+<a href="#typedef-members">Typedefs</a>  </div>
   <div class="headertitle"><div class="title">_prelude.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -108,10 +108,15 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:a0975ecaa570a8b0b99799f6f0f7c80e2"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="__prelude_8hpp.html#a0975ecaa570a8b0b99799f6f0f7c80e2">LUA_INTEROP_API</a>&#160;&#160;&#160;extern &quot;C&quot; __attribute__((visibility(&quot;default&quot;)))</td></tr>
+<tr class="memitem:a0975ecaa570a8b0b99799f6f0f7c80e2"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="__prelude_8hpp.html#a0975ecaa570a8b0b99799f6f0f7c80e2">LUA_INTEROP_API</a>&#160;&#160;&#160;extern &quot;C&quot; __attribute__((visibility(&quot;default&quot;), unused))</td></tr>
 <tr class="separator:a0975ecaa570a8b0b99799f6f0f7c80e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a04be987a7c8bd8085706ac8177b6e48e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="__prelude_8hpp.html#a04be987a7c8bd8085706ac8177b6e48e">impl_component_core</a>(name)</td></tr>
 <tr class="separator:a04be987a7c8bd8085706ac8177b6e48e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:a540ebdabe9ca20b0d80679875d775679"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="__prelude_8hpp.html#a540ebdabe9ca20b0d80679875d775679">lua_entity_id</a> = std::uint64_t</td></tr>
+<tr class="separator:a540ebdabe9ca20b0d80679875d775679"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="a04be987a7c8bd8085706ac8177b6e48e" name="a04be987a7c8bd8085706ac8177b6e48e"></a>
@@ -129,20 +134,24 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">    <a class="code hl_define" href="__prelude_8hpp.html#a0975ecaa570a8b0b99799f6f0f7c80e2">LUA_INTEROP_API</a> <span class="keyword">auto</span> __lu_com_##name##_exists(<span class="keyword">const</span> flecs::id_t <span class="keywordtype">id</span>) -&gt; <span class="keywordtype">bool</span> { \</div>
-<div class="line">        const flecs::entity ent {<a class="code hl_function" href="classscene.html#a730edc1751bbe732d6112b70cc97c30e">scene::get_active</a>(), <span class="keywordtype">id</span>}; \</div>
-<div class="line">        return ent.has&lt;com::name&gt;(); \</div>
-<div class="line">    } \</div>
-<div class="line">    LUA_INTEROP_API <span class="keyword">auto</span> __lu_com_##name##_add(<span class="keyword">const</span> flecs::id_t <span class="keywordtype">id</span>) -&gt; <span class="keywordtype">void</span> { \</div>
-<div class="line">        flecs::entity ent {<a class="code hl_function" href="classscene.html#a730edc1751bbe732d6112b70cc97c30e">scene::get_active</a>(), <span class="keywordtype">id</span>}; \</div>
-<div class="line">        ent.add&lt;com::name&gt;(); \</div>
-<div class="line">    } \</div>
-<div class="line">    LUA_INTEROP_API <span class="keyword">auto</span> __lu_com_##name##_remove(<span class="keyword">const</span> flecs::id_t <span class="keywordtype">id</span>) -&gt; <span class="keywordtype">void</span> { \</div>
-<div class="line">        flecs::entity ent {<a class="code hl_function" href="classscene.html#a730edc1751bbe732d6112b70cc97c30e">scene::get_active</a>(), <span class="keywordtype">id</span>}; \</div>
-<div class="line">        ent.remove&lt;com::name&gt;(); \</div>
+<b>Value:</b><div class="fragment"><div class="line">    <a class="code hl_define" href="__prelude_8hpp.html#a0975ecaa570a8b0b99799f6f0f7c80e2">LUA_INTEROP_API</a> <span class="keyword">auto</span> __lu_com_##name##_exists(<span class="keyword">const</span> <a class="code hl_typedef" href="__prelude_8hpp.html#a540ebdabe9ca20b0d80679875d775679">lua_entity_id</a> <span class="keywordtype">id</span>) -&gt; <span class="keywordtype">bool</span> {\</div>
+<div class="line">        const std::optional&lt;flecs::entity&gt; ent {resolve_entity(<span class="keywordtype">id</span>)};\</div>
+<div class="line">        if (!ent) [[<a class="code hl_define" href="sqlite3_8c.html#abc731794bf58cdf8374f2be21cdfd62d">unlikely</a>]] { <span class="keywordflow">return</span> <span class="keyword">false</span>; }\</div>
+<div class="line">        return ent-&gt;has&lt;com::name&gt;();\</div>
+<div class="line">    }\</div>
+<div class="line">    LUA_INTEROP_API <span class="keyword">auto</span> __lu_com_##name##_add(<span class="keyword">const</span> <a class="code hl_typedef" href="__prelude_8hpp.html#a540ebdabe9ca20b0d80679875d775679">lua_entity_id</a> <span class="keywordtype">id</span>) -&gt; <span class="keywordtype">void</span> { \</div>
+<div class="line">        std::optional&lt;flecs::entity&gt; ent {resolve_entity(<span class="keywordtype">id</span>)};\</div>
+<div class="line">        if (!ent) [[<a class="code hl_define" href="sqlite3_8c.html#abc731794bf58cdf8374f2be21cdfd62d">unlikely</a>]] { <span class="keywordflow">return</span>; }\</div>
+<div class="line">        ent-&gt;add&lt;com::name&gt;();\</div>
+<div class="line">    }\</div>
+<div class="line">    LUA_INTEROP_API <span class="keyword">auto</span> __lu_com_##name##_remove(<span class="keyword">const</span> <a class="code hl_typedef" href="__prelude_8hpp.html#a540ebdabe9ca20b0d80679875d775679">lua_entity_id</a> <span class="keywordtype">id</span>) -&gt; <span class="keywordtype">void</span> {\</div>
+<div class="line">        std::optional&lt;flecs::entity&gt; ent {resolve_entity(<span class="keywordtype">id</span>)};\</div>
+<div class="line">        if (!ent) [[<a class="code hl_define" href="sqlite3_8c.html#abc731794bf58cdf8374f2be21cdfd62d">unlikely</a>]] { <span class="keywordflow">return</span>; }\</div>
+<div class="line">        ent-&gt;remove&lt;com::name&gt;();\</div>
 <div class="line">    }</div>
-<div class="ttc" id="a__prelude_8hpp_html_a0975ecaa570a8b0b99799f6f0f7c80e2"><div class="ttname"><a href="__prelude_8hpp.html#a0975ecaa570a8b0b99799f6f0f7c80e2">LUA_INTEROP_API</a></div><div class="ttdeci">#define LUA_INTEROP_API</div><div class="ttdef"><b>Definition:</b> _prelude.hpp:11</div></div>
-<div class="ttc" id="aclassscene_html_a730edc1751bbe732d6112b70cc97c30e"><div class="ttname"><a href="classscene.html#a730edc1751bbe732d6112b70cc97c30e">scene::get_active</a></div><div class="ttdeci">static auto get_active() noexcept -&gt; scene &amp;</div><div class="ttdef"><b>Definition:</b> scene.hpp:21</div></div>
+<div class="ttc" id="a__prelude_8hpp_html_a0975ecaa570a8b0b99799f6f0f7c80e2"><div class="ttname"><a href="__prelude_8hpp.html#a0975ecaa570a8b0b99799f6f0f7c80e2">LUA_INTEROP_API</a></div><div class="ttdeci">#define LUA_INTEROP_API</div><div class="ttdef"><b>Definition:</b> _prelude.hpp:13</div></div>
+<div class="ttc" id="a__prelude_8hpp_html_a540ebdabe9ca20b0d80679875d775679"><div class="ttname"><a href="__prelude_8hpp.html#a540ebdabe9ca20b0d80679875d775679">lua_entity_id</a></div><div class="ttdeci">std::uint64_t lua_entity_id</div><div class="ttdef"><b>Definition:</b> _prelude.hpp:18</div></div>
+<div class="ttc" id="asqlite3_8c_html_abc731794bf58cdf8374f2be21cdfd62d"><div class="ttname"><a href="sqlite3_8c.html#abc731794bf58cdf8374f2be21cdfd62d">unlikely</a></div><div class="ttdeci">#define unlikely(X)</div><div class="ttdef"><b>Definition:</b> sqlite3.c:14385</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -153,7 +162,22 @@ Macros</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define LUA_INTEROP_API&#160;&#160;&#160;extern &quot;C&quot; __attribute__((visibility(&quot;default&quot;)))</td>
+          <td class="memname">#define LUA_INTEROP_API&#160;&#160;&#160;extern &quot;C&quot; __attribute__((visibility(&quot;default&quot;), unused))</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Typedef Documentation</h2>
+<a id="a540ebdabe9ca20b0d80679875d775679" name="a540ebdabe9ca20b0d80679875d775679"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a540ebdabe9ca20b0d80679875d775679">&#9670;&nbsp;</a></span>lua_entity_id</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="__prelude_8hpp.html#a540ebdabe9ca20b0d80679875d775679">lua_entity_id</a> =  std::uint64_t</td>
         </tr>
       </table>
 </div><div class="memdoc">

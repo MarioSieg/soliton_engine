@@ -28,12 +28,12 @@ Jolt is designed to be accessed from multiple threads so the body interface come
 In general, body ID's ([BodyID](@ref BodyID)) are used to refer to bodies. You can access a body through the following construct:
 
 	JPH::BodyLockInterface lock_interface = physics_system.GetBodyLockInterface(); // Or GetBodyLockInterfaceNoLock
-	JPH::BodyID body_id = ...; // Obtain ID to body
+	JPH::BodyID phys_body = ...; // Obtain ID to body
 
 	// Scoped lock
 	{
-		JPH::BodyLockRead lock(lock_interface, body_id);
-		if (lock.Succeeded()) // body_id may no longer be valid
+		JPH::BodyLockRead lock(lock_interface, phys_body);
+		if (lock.Succeeded()) // phys_body may no longer be valid
 		{
 			const JPH::Body &body = lock.GetBody();
 

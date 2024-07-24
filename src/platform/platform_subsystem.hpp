@@ -5,9 +5,11 @@
 #include "../core/subsystem.hpp"
 #include <GLFW/glfw3.h>
 
-namespace platform {
+namespace lu::platform {
     class platform_subsystem final : public subsystem {
     public:
+        static constexpr bool k_use_mimalloc = true;
+
         platform_subsystem();
         ~platform_subsystem() override;
 

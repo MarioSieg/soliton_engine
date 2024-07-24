@@ -9,7 +9,7 @@
 
 #include "sig.hpp"
 
-namespace graphics {
+namespace lu::graphics {
     using render_bucket_callback = auto(const vk::CommandBuffer cmd_buf, const std::int32_t bucket_id, const std::int32_t num_threads, void* usr) -> void;
 
     struct thread_shared_ctx final {

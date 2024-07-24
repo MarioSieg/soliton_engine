@@ -10,7 +10,7 @@
 #include <bimg/decode.h>
 #include <Simd/SimdLib.hpp>
 
-namespace graphics {
+namespace lu::graphics {
     // Textures are converted to this format when native format is not supported on the GPU
     static constexpr bimg::TextureFormat::Enum k_fallback_format = bimg::TextureFormat::RGBA8;
 
@@ -74,12 +74,16 @@ namespace graphics {
     }
 
     texture::texture(std::string&& asset_path) : asset {assetmgr::asset_source::filesystem, std::move(asset_path)} {
-        std::vector<std::uint8_t> texels {};
-        assetmgr::load_asset_blob_raw_or_panic(get_asset_path(), texels);
+        std::vector<std::byte> texels {};
+        assetmgr::with_primary_accessor_lock([&](assetmgr::asset_accessor &acc) {
+            if (!acc.load_bin_file(get_asset_path().c_str(), texels)) {
+                panic("Failed to load texture '{}'", get_asset_path());
+            }
+        });
         parse_from_raw_memory(texels);
     }
 
-    texture::texture(const std::span<const std::uint8_t> raw_mem) : asset {assetmgr::asset_source::memory} {
+    texture::texture(const std::span<const std::byte> raw_mem) : asset {assetmgr::asset_source::memory} {
         parse_from_raw_memory(raw_mem);
     }
 
@@ -239,7 +243,7 @@ namespace graphics {
         create_sampler();
     }
 
-    auto texture::parse_from_raw_memory(const std::span<const std::uint8_t> texels) -> void {
+    auto texture::parse_from_raw_memory(const std::span<const std::byte> texels) -> void {
         passert(texels.size() <= std::numeric_limits<std::uint32_t>::max());
         bimg::ImageContainer* image = bimg::imageParse(get_tex_alloc(), texels.data(), static_cast<std::uint32_t>(texels.size()));
         passert(image != nullptr);

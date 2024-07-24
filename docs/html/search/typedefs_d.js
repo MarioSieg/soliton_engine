@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['undobuffer_0',['UndoBuffer',['../class_text_editor.html#af92672a0daa068f1174b6b75d383d74c',1,'TextEditor']]]
+  ['onorusing_0',['OnOrUsing',['../sqlite3_8c.html#ab25e6edc5eee376a219402f871821d20',1,'sqlite3.c']]],
+  ['op_1',['Op',['../sqlite3_8c.html#af3e8e0a774ea3e53b5d64297468c3298',1,'sqlite3.c']]]
 ];

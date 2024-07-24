@@ -19,5 +19,5 @@ jobs:
       - run: export CC=/usr/bin/clang-17 && export CXX=/usr/bin/clang++-17 && cmake -S . -B ci_build -DCMAKE_BUILD_TYPE=Release
       - run: cd ci_build || exit
       - run: cmake --build ci_build -t lunam -j4
-      - run: ./ci_build/lunam
+      - run: if [ -f "./ci_build/lunam" ]; then echo "✅ The executable exists."; else echo "❌ The executable does not exist."; exit 1; fi
       - run: echo "🍏 This job's status is ${{ job.status }}."

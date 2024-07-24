@@ -1,4 +1,4 @@
 var platform__subsystem_8hpp =
 [
-    [ "platform::platform_subsystem", "classplatform_1_1platform__subsystem.html", "classplatform_1_1platform__subsystem" ]
+    [ "lu::platform::platform_subsystem", "classlu_1_1platform_1_1platform__subsystem.html", "classlu_1_1platform_1_1platform__subsystem" ]
 ];

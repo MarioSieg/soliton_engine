@@ -9,10 +9,11 @@
 #include <NsGui/Stream.h>
 #include <NsGui/Uri.h>
 
-#include "lunam_stream.hpp"
+
 
 using namespace Noesis;
 using namespace NoesisApp;
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 LocalFontProvider::LocalFontProvider(const char* rootPath)
@@ -59,7 +60,7 @@ Ptr<Stream> LocalFontProvider::OpenFont(const Uri& folder, const char* filename)
     StrAppend(uri, sizeof(uri), "/");
     StrAppend(uri, sizeof(uri), filename);
 
-    return noesis_lunam_file_stream::open(uri);
+    return OpenFileStream(uri);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

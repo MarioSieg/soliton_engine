@@ -16,9 +16,9 @@
 #include "pipelines/pbr_pipeline.hpp"
 #include "pipelines/sky.hpp"
 
-using platform::platform_subsystem;
 
-namespace graphics {
+namespace lu::graphics {
+    using platform::platform_subsystem;
     using vkb::context;
 
     static convar<std::string> cv_shader_dir {"Renderer.shaderDir", std::nullopt, scripting::convar_flags::read_only};
@@ -113,7 +113,6 @@ namespace graphics {
                 log_warn("No camera found in scene");
                 return;
             }
-        com::camera::active_camera = main_cam;
         s_camera_transform = *main_cam.get<com::transform>();
         com::camera& cam = *main_cam.get_mut<com::camera>();
         if (cam.auto_viewport) {
@@ -181,6 +180,10 @@ namespace graphics {
     }
 
     HOTPROC auto graphics_subsystem::on_pre_tick() -> bool {
+        s_num_draw_verts_prev = s_num_draw_verts.load(std::memory_order_relaxed);
+        s_num_draw_calls_prev = s_num_draw_calls.load(std::memory_order_relaxed);
+        s_num_draw_calls.store(0, std::memory_order_relaxed);
+        s_num_draw_verts.store(0, std::memory_order_relaxed);
         if (m_reload_pipelines_next_frame) [[unlikely]] {
             vkcheck(vkb::vkdvc().waitIdle());
             reload_pipelines();
@@ -223,7 +226,6 @@ namespace graphics {
 
             vkb::ctx().end_frame(m_cmd);
         }
-        com::camera::active_camera = flecs::entity::null();
     }
 
     auto graphics_subsystem::on_resize() -> void {
