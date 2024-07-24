@@ -52,8 +52,11 @@ namespace lu::assetmgr {
         passert(m_sys != nullptr);
         for (const auto [fs, vfs] : k_vfs_mounts) {
             log_info("Mounting asset root '{}' -> '{}", fs, vfs);
-            if (const assetsys_error_t err = assetsys_mount(m_sys, fs.data(), vfs.data()); err != ASSETSYS_SUCCESS) [[unlikely]] {
-                panic("Failed to mount asset root '{}' to '{}: {}", fs, vfs, asset_sys_err_info(err));
+            if (assetsys_error_t err = assetsys_mount(m_sys, fs.data(), vfs.data()); err != ASSETSYS_SUCCESS) { // Attempt to mount dir first
+                const std::string lupack_file = fmt::format("{}.lupack", fs);
+                if (err = assetsys_mount(m_sys, lupack_file.c_str(), vfs.data()); err != ASSETSYS_SUCCESS) [[unlikely]] { // Attempt to mount LUPACK file now
+                    panic("Failed to mount asset root (PFS or VFS) '{}' / '{} to '{}: {}", fs, lupack_file, vfs, asset_sys_err_info(err)); // Panic if both failed
+                }
             }
         }
         s_accessors_online.fetch_add(1, std::memory_order_relaxed);
