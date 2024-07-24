@@ -19,6 +19,11 @@ lunam.exe
 **/.DS_Store
 extern/Simd/prj/txt/FullVersion.txt
 extern/Simd/src/Simd/SimdVersion.h
-shipping_tool/.idea
-shipping_tool/.vscode
-shipping_tool/.venv
+/shipping_tool/.idea
+/shipping_tool/.vscode
+/shipping_tool/.venv
+/shipping_tool/__pycache__
+/license_server/.idea
+/license_server/.vscode
+/license_server/.venv
+/license_server/__pycache__
