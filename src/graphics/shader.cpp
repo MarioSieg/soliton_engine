@@ -9,6 +9,31 @@
 #include <filesystem>
 
 namespace lu::graphics {
+    [[nodiscard]] static constexpr auto get_shaderc_err(const shaderc_compilation_status status) noexcept -> const char* {
+        switch (status) {
+            case shaderc_compilation_status_success:
+                return "Success";
+            case shaderc_compilation_status_invalid_stage:
+                return "Shader Compilation Error: Invalid stage deduction";
+            case shaderc_compilation_status_compilation_error:
+                return "Shader Compilation Error: Compilation error";
+            case shaderc_compilation_status_internal_error:
+                return "Shader Compilation Error: Internal error (unexpected failure)";
+            case shaderc_compilation_status_null_result_object:
+                return "Shader Compilation Error: Null result object";
+            case shaderc_compilation_status_invalid_assembly:
+                return "Shader Compilation Error: Invalid assembly";
+            case shaderc_compilation_status_validation_error:
+                return "Shader Compilation Error: Validation error";
+            case shaderc_compilation_status_transformation_error:
+                return "Shader Compilation Error: Transformation error";
+            case shaderc_compilation_status_configuration_error:
+                return "Shader Compilation Error: Configuration error";
+            default:
+                return "Shader Compilation Error: Unknown status";
+        }
+    }
+
     // Returns GLSL shader source text after preprocessing.
     [[nodiscard]] static auto preprocess_shader(
         shaderc::Compiler& com,
@@ -21,8 +46,9 @@ namespace lu::graphics {
         const shaderc::PreprocessedSourceCompilationResult result =
             com.PreprocessGlsl(source, kind, source_name.c_str(), options);
         if (result.GetCompilationStatus() != shaderc_compilation_status_success) [[unlikely]] {
-            log_error("Failed to preprocess shader: {}", source_name);
-            log_error(result.GetErrorMessage());
+            if (const auto msg = result.GetErrorMessage(); !msg.empty())
+                log_error(result.GetErrorMessage());
+            log_error("{}: {}",  get_shaderc_err(result.GetCompilationStatus()), source_name);
             return false;
         }
         out = {result.cbegin(), result.cend()};
@@ -41,8 +67,9 @@ namespace lu::graphics {
         const shaderc::AssemblyCompilationResult result = com.CompileGlslToSpvAssembly(
             source, kind, source_name.c_str(), options);
         if (result.GetCompilationStatus() != shaderc_compilation_status_success) [[unlikely]] {
-            log_error(result.GetErrorMessage());
-            log_error("Failed to preprocess shader: {}", source_name);
+            if (const auto msg = result.GetErrorMessage(); !msg.empty())
+                log_error(result.GetErrorMessage());
+            log_error("{}: {}",  get_shaderc_err(result.GetCompilationStatus()), source_name);
             return false;
         }
         out = {result.cbegin(), result.cend()};
@@ -58,22 +85,24 @@ namespace lu::graphics {
         const shaderc::CompileOptions& options,
         std::vector<uint32_t>& out
     ) -> bool {
-        const shaderc::SpvCompilationResult module =
+        const shaderc::SpvCompilationResult result =
             com.CompileGlslToSpv(source, kind, source_name.c_str(), options);
-        if (module.GetCompilationStatus() != shaderc_compilation_status_success) [[unlikely]] {
-            if (const auto err = module.GetErrorMessage(); !err.empty())
-                log_error("Error: {}", err);
-            log_error("Failed to compile shader: {}", source_name);
+        if (result.GetCompilationStatus() != shaderc_compilation_status_success) [[unlikely]] {
+            if (const auto msg = result.GetErrorMessage(); !msg.empty())
+                log_error(result.GetErrorMessage());
+            log_error("{}: {}",  get_shaderc_err(result.GetCompilationStatus()), source_name);
             return false;
         }
-        out = {module.cbegin(), module.cend()};
+        out = {result.cbegin(), result.cend()};
         return true;
     }
 
     static const shaderc_util::FileFinder s_file_finder {
         [] {
             shaderc_util::FileFinder f {};
-            f.search_path().emplace_back("engine_assets/shaders/shaderlib/"); // todo make configurable
+            for (auto&& dir : shader::k_shader_include_dirs) {
+                f.search_path().emplace_back(dir);
+            }
             return f;
         }()
     };

@@ -31,7 +31,7 @@ namespace lu::graphics {
         for (auto&& entry : recursive_directory_iterator{m_shader_dir}) {
             if (entry.is_directory()) continue;
             const auto& path = entry.path();
-            if (const auto ex = path.extension(); ex == ".glsli" || [&ex] {
+            if (const auto ex = path.extension(); ex == ".h" || [&ex] {
                 for (auto&& [sex, _] : shader::k_extensions) {
                     if (sex == ex) {
                         return false;

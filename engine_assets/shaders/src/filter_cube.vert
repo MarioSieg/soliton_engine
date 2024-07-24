@@ -1,6 +1,8 @@
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
+
 #version 450
 
-#include <lunam_shader_common.glsli>
+#include "shader_common.h"
 
 layout (location = 0) in vec3 inPos;
 

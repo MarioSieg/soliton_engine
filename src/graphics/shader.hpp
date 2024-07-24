@@ -19,7 +19,10 @@ namespace lu::graphics {
             std::make_pair(".frag", std::make_optional(shaderc_shader_kind::shaderc_fragment_shader)),
             std::make_pair(".comp", std::make_optional(shaderc_shader_kind::shaderc_compute_shader)),
             std::make_pair(".glsl", std::make_optional(shaderc_shader_kind::shaderc_glsl_infer_from_source)),
-            std::make_pair(".glsli", std::nullopt)
+            std::make_pair(".h", std::nullopt)
+        };
+        static constexpr std::array<const std::string_view, 1> k_shader_include_dirs {
+            "engine_assets/shaders/include"
         };
 
         [[nodiscard]] static auto compile(

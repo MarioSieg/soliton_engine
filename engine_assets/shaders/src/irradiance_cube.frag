@@ -1,8 +1,8 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #version 450
 
-#include <lunam_shader_common.glsli>
+#include "shader_common.h"
 
 layout (location = 0) in vec3 inPos;
 layout (location = 0) out vec4 outColor;
@@ -19,8 +19,8 @@ void main() {
 	vec3 right = normalize(cross(up, N));
 	up = cross(N, right);
 
-	const float TWO_PI = PI * 2.0;
-	const float HALF_PI = PI * 0.5;
+	const float TWO_PI = kPI * 2.0;
+	const float HALF_PI = kPI * 0.5;
 
 	vec3 color = vec3(0.0);
 	uint sampleCount = 0u;
@@ -32,5 +32,5 @@ void main() {
 			sampleCount++;
 		}
 	}
-	outColor = vec4(PI * color / float(sampleCount), 1.0);
+	outColor = vec4(kPI * color / float(sampleCount), 1.0);
 }
