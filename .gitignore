@@ -11,6 +11,7 @@ CTestTestfile.cmake
 _deps
 /.idea
 /bin
+/shipping_build
 lunam.exe
 /media/shaders/
 /log
@@ -18,3 +19,6 @@ lunam.exe
 **/.DS_Store
 extern/Simd/prj/txt/FullVersion.txt
 extern/Simd/src/Simd/SimdVersion.h
+shipping_tool/.idea
+shipping_tool/.vscode
+shipping_tool/.venv
