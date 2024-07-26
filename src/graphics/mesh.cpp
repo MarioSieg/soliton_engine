@@ -8,7 +8,7 @@
 #include <filesystem>
 
 #include "material.hpp"
-#include "mesh_utils.hpp"
+#include "utils/mesh_utils.hpp"
 
 namespace lu::graphics {
 	using namespace DirectX;

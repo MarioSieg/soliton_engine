@@ -23,8 +23,8 @@
 #include <vector>
 #include <unordered_set>
 
-#include <libshaderc_util/file_finder.h>
-#include <shaderc/shaderc.hpp>
+#include "libshaderc_util/file_finder.h"
+#include "shaderc/shaderc.hpp"
 
 namespace lu::graphics {
 

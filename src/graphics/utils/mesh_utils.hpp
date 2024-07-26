@@ -2,12 +2,12 @@
 
 #pragma once
 
-#include <assimp/DefaultLogger.hpp>
-#include <assimp/StringComparison.h>
-#include <assimp/IOSystem.hpp>
-#include <assimp/DefaultIOStream.h>
-#include <assimp/DefaultIOSystem.h>
-#include <assimp/LogStream.hpp>
+#include "assimp/DefaultLogger.hpp"
+#include "assimp/StringComparison.h"
+#include "assimp/IOSystem.hpp"
+#include "assimp/DefaultIOStream.h"
+#include "assimp/DefaultIOSystem.h"
+#include "assimp/LogStream.hpp"
 
 namespace lu::graphics {
     class assimp_logger final : public Assimp::LogStream {

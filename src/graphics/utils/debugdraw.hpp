@@ -2,11 +2,11 @@
 
 #pragma once
 
-#include <DirectXCollision.h>
-#include <DirectXMath.h>
+#include "DirectXCollision.h"
+#include "DirectXMath.h"
 
-#include "vulkancore/prelude.hpp"
-#include "vulkancore/buffer.hpp"
+#include "../vulkancore/prelude.hpp"
+#include "../vulkancore/buffer.hpp"
 
 namespace lu::graphics {
     class debugdraw final : public no_copy, public no_move {

@@ -204,8 +204,8 @@ namespace lu::graphics {
             // m_render_query.query.destruct(); TODO: leak
             m_render_query.query = scene.query<const com::transform, const com::mesh_renderer>();
         }
-        scene.readonly_begin();
         m_render_data.clear();
+        scene.readonly_begin();
         m_render_query.query.iter([this](const flecs::iter& i, const com::transform* transforms, const com::mesh_renderer* renderers) {
             const std::size_t n = i.count();
             m_render_data.emplace_back(std::span{transforms, n}, std::span{renderers, n});
@@ -221,6 +221,8 @@ namespace lu::graphics {
             //render_uis(); TODO
 
             vkb::ctx().end_frame(m_cmd);
+        } else {
+            scene.readonly_end();
         }
     }
 

@@ -2,8 +2,8 @@
 
 #include "debugdraw.hpp"
 
-#include "../scripting/convar.hpp"
-#include "vulkancore/context.hpp"
+#include "../../scripting/convar.hpp"
+#include "../vulkancore/context.hpp"
 
 namespace lu::graphics {
     static convar<std::uint32_t> k_debug_draw_max_verts {

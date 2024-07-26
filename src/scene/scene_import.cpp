@@ -3,7 +3,7 @@
 #include "scene.hpp"
 #include "../core/kernel.hpp"
 #include "../graphics/mesh.hpp"
-#include "../graphics/mesh_utils.hpp"
+#include "../graphics/utils/mesh_utils.hpp"
 #include "../graphics/vulkancore/context.hpp"
 
 #include <filesystem>

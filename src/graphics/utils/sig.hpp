@@ -7,7 +7,7 @@
 #include <mutex>
 #include <type_traits>
 
-#include "../core/core.hpp"
+#include "../../core/core.hpp"
 
 namespace lu::graphics {
     class thread_sig final : public no_copy, public no_move {
