@@ -117,7 +117,9 @@ add_subdirectory(extern/luv)
 target_include_directories(lunam PRIVATE extern/luv/src)
 target_link_libraries(lunam libluv_a)
 
-target_compile_definitions(lunam PRIVATE SQLITE_API="__attribute__((visibility(\"default\")))")
+add_subdirectory(extern/SPIRV-Reflect)
+target_include_directories(lunam PRIVATE extern/SPIRV-Reflect/include)
+target_link_libraries(lunam spirv-reflect-static)
 
 ##################################################################################################
 # Libraries, which sadly requires C++ exceptions and have no way to disable them
