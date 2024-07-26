@@ -3,6 +3,7 @@
 #pragma once
 
 #include "platform.hpp"
+#include "crc32.hpp"
 
 #include <array>
 #include <string>
