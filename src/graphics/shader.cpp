@@ -34,6 +34,29 @@ namespace lu::graphics {
         }
     }
 
+    static const shaderc_util::FileFinder s_file_finder {
+        [] {
+            shaderc_util::FileFinder f {};
+            for (auto&& dir : shader::k_shader_include_dirs) {
+                f.search_path().emplace_back(dir);
+            }
+            return f;
+        }()
+    };
+
+    auto shader_variant::get_hash() const noexcept -> std::size_t {
+        std::size_t hash = std::hash<std::string>{}(m_path);
+        hash = hash_merge(hash, std::hash<std::underlying_type_t<shader_stage>>{}(static_cast<std::underlying_type_t<shader_stage>>(m_stage)));
+        for (auto&& macro : m_macros) {
+            hash = hash_merge(hash, std::hash<std::decay_t<decltype(macro)>>{}(macro));
+        }
+        for (auto&& [k, v] : m_macro_values) {
+            hash = hash_merge(hash, std::hash<std::decay_t<decltype(k)>>{}(k));
+            hash = hash_merge(hash, std::hash<std::decay_t<decltype(v)>>{}(v));
+        }
+        return hash;
+    }
+
     // Returns GLSL shader source text after preprocessing.
     [[nodiscard]] static auto preprocess_shader(
         shaderc::Compiler& com,
@@ -97,43 +120,26 @@ namespace lu::graphics {
         return true;
     }
 
-    static const shaderc_util::FileFinder s_file_finder {
-        [] {
-            shaderc_util::FileFinder f {};
-            for (auto&& dir : shader::k_shader_include_dirs) {
-                f.search_path().emplace_back(dir);
-            }
-            return f;
-        }()
-    };
-
-    auto shader::compile(
-        std::string&& file_name,
-        const bool keep_assembly,
-        const bool keep_source,
-        const bool keep_bytecode,
-        const std::unordered_map<std::string, std::string>& macros
-    ) -> std::shared_ptr<shader> {
+    auto shader::compile(shader_variant&& variant) -> std::shared_ptr<shader> {
         const auto start = std::chrono::high_resolution_clock::now();
 
         shaderc::Compiler compiler {};
         passert(compiler.IsValid());
 
         // Load string BLOB from file
-        std::string buffer {};
+        std::string source_code_glsl {};
         bool success {};
         assetmgr::with_primary_accessor_lock([&](assetmgr::asset_accessor &acc) {
-            success = acc.load_txt_file(file_name.c_str(), buffer);
+            success = acc.load_txt_file(variant.get_path().c_str(), source_code_glsl);
         });
         if (!success) [[unlikely]] {
-            log_error("Failed to load shader file: {}", file_name);
+            log_error("Failed to load shader file: {}", variant.get_path());
             return nullptr;
         }
 
         shaderc::CompileOptions options {};
         options.SetOptimizationLevel(shaderc_optimization_level_performance);
         options.SetSourceLanguage(shaderc_source_language_glsl);
-
         options.SetIncluder(std::make_unique<graphics::FileIncluder>(&s_file_finder)); // todo make shared
         std::uint32_t vk_version = 0;
         switch (vkb::device::k_vulkan_api_version) {
@@ -148,28 +154,36 @@ namespace lu::graphics {
         options.SetTargetEnvironment(shaderc_target_env_vulkan, vk_version);
         options.SetWarningsAsErrors();
 
-        for (auto&& [k, v] : macros) {
-            options.AddMacroDefinition(k, v);
+        for (auto&& macro : variant.m_macros) {
+            options.AddMacroDefinition(macro);
+        }
+        for (auto&& [k, v] : variant.m_macro_values) {
+            options.AddMacroDefinition(k, std::to_string(v));
         }
 
         shaderc_shader_kind kind = shaderc_glsl_infer_from_source;
-        if (std::filesystem::path fspath {file_name}; fspath.has_extension()) { // try to infer shader kind from file extension
-            const std::string ext {fspath.extension().string()};
-            bool found = false;
-            for (auto&& [sex, skind] : k_extensions) {
-                if (ext == sex && skind) {
-                    kind = *skind;
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) [[unlikely]] {
-                log_error("Unknown shader file extension: {}", fspath.string());
+        vk::ShaderStageFlagBits vk_stage {};
+        switch (variant.m_stage) {
+            case shader_stage::vertex:
+                kind = shaderc_vertex_shader;
+                vk_stage = vk::ShaderStageFlagBits::eVertex;
+                break;
+            case shader_stage::fragment:
+                kind = shaderc_fragment_shader;
+                vk_stage = vk::ShaderStageFlagBits::eFragment;
+                break;
+            case shader_stage::compute:
+                kind = shaderc_compute_shader;
+                vk_stage = vk::ShaderStageFlagBits::eCompute;
+                break;
+            default:
+                log_error("Unsupported shader stage: {}", static_cast<std::underlying_type_t<shader_stage>>(variant.m_stage));
                 return nullptr;
-            }
         }
 
-        if (!preprocess_shader(compiler, file_name, kind, buffer, options, buffer)) [[unlikely]] {
+        const std::string file_name = std::filesystem::path{variant.get_path()}.filename().string();
+
+        if (!preprocess_shader(compiler, file_name, kind, source_code_glsl, options, source_code_glsl)) [[unlikely]] {
             return nullptr;
         }
 
@@ -177,7 +191,7 @@ namespace lu::graphics {
         auto shader = std::make_shared<proxy>();
 
         std::vector<std::uint32_t> bytecode {};
-        if (!compile_file_to_bin(compiler, file_name, kind, buffer, options, bytecode) || bytecode.empty()) [[unlikely]] {
+        if (!compile_file_to_bin(compiler, file_name, kind, source_code_glsl, options, bytecode) || bytecode.empty()) [[unlikely]] {
             log_error("Failed to compile shader: {}", file_name);
             return nullptr;
         }
@@ -190,15 +204,25 @@ namespace lu::graphics {
             return nullptr;
         }
 
-        if (keep_assembly && !compile_file_to_assembly(compiler, file_name, kind, buffer, options, shader->m_assembly)) {
-            return nullptr;
+        if (variant.m_keep_source) {
+            shader->m_source = std::move(source_code_glsl);
         }
-        if (keep_source) {
-            shader->m_source = std::move(buffer);
-        }
-        if (keep_bytecode) {
+        if (variant.m_keep_bytecode) {
             shader->m_bytecode = std::move(bytecode);
         }
+        if (variant.m_keep_assembly) {
+            std::string assembly {};
+            if (!compile_file_to_assembly(compiler, file_name, kind, source_code_glsl, options, assembly)) [[unlikely]] {
+                return nullptr;
+            }
+            shader->m_assembly = std::move(assembly);
+        }
+        shader->m_variant = std::move(variant);
+
+        vk::PipelineShaderStageCreateInfo& stage_info = shader->m_stage_info;
+        stage_info.stage = vk_stage;
+        stage_info.module = shader->m_module;
+        stage_info.pName = shader->m_variant.get_entry_point().c_str();
 
         log_info("Compiled shader: {} in {:.03f}s", file_name, std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - start).count());
 
@@ -208,4 +232,31 @@ namespace lu::graphics {
     shader::~shader() noexcept {
         vkb::vkdvc().destroyShaderModule(m_module, vkb::get_alloc());
     }
+
+    shader_cache::shader_cache(std::string&& shader_dir) : m_shader_dir{std::move(shader_dir)} {
+        if (!std::filesystem::exists(m_shader_dir)) {
+            panic("Shader directory does not exist: {}", m_shader_dir);
+        }
+    }
+
+    [[nodiscard]] auto shader_cache::get_shader(shader_variant&& variant) -> std::shared_ptr<shader> {
+        const std::size_t hash = variant.get_hash();
+        const bool exists = m_shaders.find(hash) != m_shaders.end();
+        if (exists) {
+            return m_shaders[hash];
+        }
+        auto shader = shader::compile(std::move(variant));
+        passert(shader != nullptr);
+        m_shaders[hash] = shader;
+        return shader;
+    }
+
+    auto shader_cache::get() noexcept -> shader_cache& {
+        passert(s_instance != nullptr);
+        return *s_instance;
+    }
+    auto shader_cache::init(std::string&& shader_dir) -> void {
+        if (!s_instance) s_instance = std::make_unique<shader_cache>(std::move(shader_dir));
+    }
+    auto shader_cache::shutdown() noexcept -> void { s_instance.reset(); }
 }

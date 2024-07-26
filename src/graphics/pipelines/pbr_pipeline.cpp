@@ -5,7 +5,6 @@
 #include "../material.hpp"
 #include "../vulkancore/context.hpp"
 #include "../../core/kernel.hpp"
-#include "../shader_registry.hpp"
 
 namespace lu::graphics::pipelines {
     // WARNING! RENDER THREAD LOCAL
@@ -18,7 +17,6 @@ namespace lu::graphics::pipelines {
         DirectX::FXMMATRIX vp
     ) const -> void {
         if (renderer.meshes.empty() || renderer.materials.empty()) [[unlikely]] {
-            log_warn("Mesh renderer has no meshes or materials");
             return;
         }
         if (renderer.flags & com::render_flags::skip_rendering) [[unlikely]] {
@@ -27,7 +25,6 @@ namespace lu::graphics::pipelines {
         const DirectX::XMMATRIX model = transform.compute_matrix();
         for (const mesh* mesh : renderer.meshes) {
             if (!mesh) [[unlikely]] {
-                log_warn("Mesh renderer has a null mesh");
                 continue;
             }
 
@@ -62,7 +59,7 @@ namespace lu::graphics::pipelines {
                 &pc_fs
             );
 
-            draw_mesh(*mesh, cmd_buf, renderer.materials, layout);
+            pipeline_base::draw_mesh(*mesh, cmd_buf, renderer.materials, layout);
         }
     }
 
@@ -77,11 +74,13 @@ namespace lu::graphics::pipelines {
         device.freeMemory(m_brdf_lut.memory, vkb::get_alloc());
     }
 
-    auto pbr_pipeline::configure_shaders(std::vector<std::pair<std::shared_ptr<shader>, vk::ShaderStageFlagBits>>& cfg) -> void {
-        auto vs = shader_registry::get().get_shader("pbr_uber_surface.vert");
-        auto fs = shader_registry::get().get_shader("pbr_uber_surface.frag");
-        cfg.emplace_back(vs, vk::ShaderStageFlagBits::eVertex);
-        cfg.emplace_back(fs, vk::ShaderStageFlagBits::eFragment);
+    auto pbr_pipeline::configure_shaders(std::vector<std::shared_ptr<shader>>& cfg) -> void {
+        shader_variant vs_variant {"/engine_assets/shaders/src/pbr_uber_surface.vert", shader_stage::vertex};
+        shader_variant fs_variant {"/engine_assets/shaders/src/pbr_uber_surface.frag", shader_stage::fragment};
+        auto vs = shader_cache::get().get_shader(std::move(vs_variant));
+        auto fs = shader_cache::get().get_shader(std::move(fs_variant));
+        cfg.emplace_back(vs);
+        cfg.emplace_back(fs);
     }
 
     auto pbr_pipeline::configure_pipeline_layout(

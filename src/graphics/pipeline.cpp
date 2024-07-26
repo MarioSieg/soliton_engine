@@ -38,16 +38,12 @@ namespace lu::graphics {
         vk::GraphicsPipelineCreateInfo pipeline_info {};
 
         std::vector<vk::PipelineShaderStageCreateInfo> shader_stages {};
-        std::vector<std::pair<std::shared_ptr<shader>, vk::ShaderStageFlagBits>> shaders {};
+        std::vector<std::shared_ptr<shader>> shaders {};
         configure_shaders(shaders);
         passert(!shaders.empty());
         shader_stages.reserve(shaders.size());
-        for (const auto& [shader, stage] : shaders) {
-            shader_stages.emplace_back(vk::PipelineShaderStageCreateInfo {
-                .stage = stage,
-                .module = shader->get_module(),
-                .pName = "main"
-            });
+        for (auto&& shader : shaders) {
+            shader_stages.emplace_back(shader->get_stage_info());
         }
         pipeline_info.stageCount = static_cast<std::uint32_t>(shader_stages.size());
         pipeline_info.pStages = shader_stages.data();

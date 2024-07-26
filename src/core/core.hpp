@@ -9,6 +9,8 @@
 #include <span>
 #include <vector>
 
+#define USE_MIMALLOC 1
+
 #define FMT_CONSTEVAL constexpr
 #include <spdlog/spdlog.h>
 
@@ -68,12 +70,21 @@ namespace lu {
         panic_impl(fmt::format(message, std::forward<Args>(args)...));
     }
 
-#define passert(expr) \
-	do { \
-		if (!(expr)) [[unlikely]] { \
-			::lu::panic("Assertion failed: {} in {}:{}", #expr, __FILE__, __LINE__); \
-		} \
-	} while (false)
+    #define passert(expr) \
+        do { \
+            if (!(expr)) [[unlikely]] { \
+                ::lu::panic("Assertion failed: {} in {}:{}", #expr, __FILE__, __LINE__); \
+            } \
+        } while (false)
 
-#define USE_MIMALLOC 1
+    constexpr auto hash_merge(std::size_t lhs, const std::size_t rhs) noexcept -> std::size_t {
+        lhs ^= rhs + 0x9e3779b9 + (lhs << 6) + (lhs >> 2);
+        return lhs;
+    }
+
+    template <typename T>
+    constexpr auto hash_merge(std::size_t& seed, const T& v) noexcept -> void {
+        std::hash<T> hasher {};
+        seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+    }
 }

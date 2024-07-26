@@ -1,7 +1,6 @@
 // Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "sky.hpp"
-#include "../shader_registry.hpp"
 #include "../vulkancore/context.hpp"
 #include "../graphics_subsystem.hpp"
 
@@ -30,7 +29,6 @@ namespace lu::graphics::pipelines {
         vk::DescriptorPoolSize pool_size {};
         pool_size.type = vk::DescriptorType::eCombinedImageSampler;
         pool_size.descriptorCount = 2u;
-
 
         const vk::DescriptorPoolCreateInfo pool_info {
             .maxSets = 1u,
@@ -65,11 +63,11 @@ namespace lu::graphics::pipelines {
         device.destroyDescriptorSetLayout(m_descriptor_set_layout, vkb::get_alloc());
     }
 
-    auto sky_pipeline::configure_shaders(std::vector<std::pair<std::shared_ptr<shader>, vk::ShaderStageFlagBits>>& cfg) -> void {
-        auto vs = shader_registry::get().get_shader("skybox.vert");
-        auto fs = shader_registry::get().get_shader("skybox.frag");
-        cfg.emplace_back(vs, vk::ShaderStageFlagBits::eVertex);
-        cfg.emplace_back(fs, vk::ShaderStageFlagBits::eFragment);
+    auto sky_pipeline::configure_shaders(std::vector<std::shared_ptr<shader>>& cfg) -> void {
+        auto vs = shader_cache::get().get_shader(shader_variant{"/engine_assets/shaders/src/skybox.vert", shader_stage::vertex});
+        auto fs = shader_cache::get().get_shader(shader_variant{"/engine_assets/shaders/src/skybox.frag", shader_stage::fragment});
+        cfg.emplace_back(vs);
+        cfg.emplace_back(fs);
     }
 
     auto sky_pipeline::configure_pipeline_layout(std::vector<vk::DescriptorSetLayout>& layouts, std::vector<vk::PushConstantRange>& ranges) -> void {
@@ -83,7 +81,6 @@ namespace lu::graphics::pipelines {
     }
 
     auto sky_pipeline::render(const vk::CommandBuffer cmd) const -> void {
-        const vk::Device device = vkb::vkdvc();
         const vk::PipelineLayout layout = get_layout();
         cmd.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, layout, 0u, 1u, &m_descriptor_set, 0u, nullptr);
         gpu_vertex_push_constants push_constants {};

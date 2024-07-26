@@ -1,7 +1,6 @@
 // Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "pbr_pipeline.hpp"
-#include "../shader_registry.hpp"
 #include "../vulkancore/context.hpp"
 #include "../../scripting/convar.hpp"
 
@@ -197,14 +196,10 @@ namespace lu::graphics::pipelines {
 
         vk::PipelineVertexInputStateCreateInfo vertex_input_ci {};
 
-        std::array<vk::PipelineShaderStageCreateInfo, 2> shader_stages {};
-        shader_stages[0].stage = vk::ShaderStageFlagBits::eVertex;
-        shader_stages[0].module = shader_registry::get().get_shader("gen_brdf_lut.vert")->get_module();
-        shader_stages[0].pName = "main";
-
-        shader_stages[1].stage = vk::ShaderStageFlagBits::eFragment;
-        shader_stages[1].module = shader_registry::get().get_shader("gen_brdf_lut.frag")->get_module();
-        shader_stages[1].pName = "main";
+        std::array<vk::PipelineShaderStageCreateInfo, 2> shader_stages {
+            shader_cache::get().get_shader(shader_variant{"/engine_assets/shaders/src/gen_brdf_lut.vert", shader_stage::vertex})->get_stage_info(),
+            shader_cache::get().get_shader(shader_variant{"/engine_assets/shaders/src/gen_brdf_lut.frag", shader_stage::fragment})->get_stage_info()
+        };
 
         vk::Pipeline shader_pipeline {};
         vk::GraphicsPipelineCreateInfo pipeline_ci {};

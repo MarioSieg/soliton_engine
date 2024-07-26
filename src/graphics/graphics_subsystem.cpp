@@ -10,7 +10,6 @@
 #endif
 
 #include "material.hpp"
-#include "shader_registry.hpp"
 #include "pipeline.hpp"
 
 #include "pipelines/pbr_pipeline.hpp"
@@ -43,10 +42,7 @@ namespace lu::graphics {
 
         create_descriptor_pool();
 
-        shader_registry::init(cv_shader_dir());
-        if (!shader_registry::get().compile_all(cv_enable_parallel_shader_compilation())) [[unlikely]] {
-           log_error("Failed to compile shaders");
-        }
+        shader_cache::init(cv_shader_dir());
 
         pipeline_registry::init();
         auto& reg = pipeline_registry::get();
@@ -69,7 +65,7 @@ namespace lu::graphics {
         m_imgui_context.reset();
         m_noesis_context.reset();
 
-        shader_registry::shutdown();
+        shader_cache::shutdown();
         pipeline_registry::shutdown();
         m_render_thread_pool.reset();
         if (m_debugdraw) {
@@ -295,7 +291,7 @@ namespace lu::graphics {
     auto graphics_subsystem::reload_pipelines() -> void {
         log_info("Reloading pipelines");
         const auto now = std::chrono::high_resolution_clock::now();
-        if (shader_registry::get().compile_all(cv_enable_parallel_shader_compilation())) [[likely]] {
+        if (true) [[likely]] { // TODO
             auto& reg = pipeline_registry::get();
             reg.try_recreate_all();
             log_info("Reloaded pipelines in {}ms", std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - now).count());
