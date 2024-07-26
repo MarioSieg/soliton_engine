@@ -111,7 +111,7 @@ namespace lu::graphics {
         for (std::uint32_t i = 0; i < info.bindingCount; ++i) {
             layout_info.bindings.emplace_back(info.pBindings[i]);
             if (static_cast<decltype(last_binding)>(info.pBindings[i].binding) > last_binding) {
-                last_binding = info.pBindings[i].binding;
+                last_binding = static_cast<decltype(last_binding)>(info.pBindings[i].binding);
             } else {
                 is_sorted = false;
             }
