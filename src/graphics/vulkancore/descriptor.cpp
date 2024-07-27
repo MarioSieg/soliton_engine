@@ -131,4 +131,126 @@ namespace lu::graphics {
             return layout;
         }
     }
+
+    auto descriptor_factory::build_no_info(vk::DescriptorSetLayout& layout, vk::DescriptorSet& set) -> void {
+        vk::DescriptorSetLayoutCreateInfo layout_info {};
+        layout_info.bindingCount = static_cast<std::uint32_t>(m_bindings.size());
+        layout_info.pBindings = m_bindings.data();
+        layout = m_cache.create_layout(layout_info);
+        passert(m_allocator.allocate(set, layout));
+    }
+
+    auto descriptor_factory::build_no_info(vk::DescriptorSet& set) -> void {
+        vk::DescriptorSetLayout layout {};
+        build_no_info(layout, set);
+    }
+
+    auto descriptor_factory::build_no_info_push(vk::DescriptorSetLayout& layout) -> void {
+        vk::DescriptorSetLayoutCreateInfo layout_info {};
+        layout_info.bindingCount = static_cast<std::uint32_t>(m_bindings.size());
+        layout_info.pBindings = m_bindings.data();
+        layout = m_cache.create_layout(layout_info);
+    }
+
+    auto descriptor_factory::build(vk::DescriptorSet& set, vk::DescriptorSetLayout& layout) -> bool {
+        vk::DescriptorSet ret_set {};
+        vk::DescriptorSetLayout ret_layout {};
+        vk::DescriptorSetLayoutCreateInfo layout_info {};
+        layout_info.bindingCount = static_cast<std::uint32_t>(m_bindings.size());
+        layout_info.pBindings = m_bindings.data();
+        ret_layout = m_cache.create_layout(layout_info);
+        if (!m_allocator.allocate(ret_set, ret_layout)) [[unlikely]] {
+            return false;
+        }
+        std::vector<vk::WriteDescriptorSet> writes {};
+        writes.reserve(m_write_descriptors.size());
+        for (auto&& dc : m_write_descriptors) {
+            vk::WriteDescriptorSet write {};
+            write.dstSet = ret_set;
+            write.dstBinding = dc.binding;
+            write.descriptorCount = dc.count;
+            write.descriptorType = dc.type;
+            if (dc.is_image) {
+                write.pImageInfo = dc.image_info;
+            } else {
+                write.pBufferInfo = dc.buffer_info;
+            }
+            writes.emplace_back(write);
+        }
+        vkb::vkdvc().updateDescriptorSets(static_cast<std::uint32_t>(writes.size()), writes.data(), 0, nullptr);
+        set = ret_set;
+        layout = ret_layout;
+        return true;
+    }
+
+    auto descriptor_factory::build(vk::DescriptorSet& set) -> bool {
+        vk::DescriptorSetLayout layout {};
+        return build(set, layout);
+    }
+
+    auto descriptor_factory::bind_no_info_stage(const vk::DescriptorType type, const vk::ShaderStageFlagBits stage_flags, const std::uint32_t binding, const std::uint32_t count) -> descriptor_factory& {
+        vk::DescriptorSetLayoutBinding binding_info {};
+        binding_info.binding = binding;
+        binding_info.descriptorCount = count;
+        binding_info.descriptorType = type;
+        binding_info.stageFlags = stage_flags;
+        m_bindings.emplace_back(binding_info);
+        return *this;
+    }
+
+    auto descriptor_factory::bind_no_info_stage(const vk::DescriptorType type, const std::uint32_t binding, const std::uint32_t count) -> descriptor_factory& {
+        return bind_no_info_stage(type, static_cast<vk::ShaderStageFlagBits>(static_cast<std::underlying_type_t<vk::ShaderStageFlagBits>>(k_common_stages)), binding, count);
+    }
+
+    auto descriptor_factory::bind_buffers(
+        const std::uint32_t bindings,
+        const std::uint32_t count,
+        vk::DescriptorBufferInfo* const buffer_info,
+        const vk::DescriptorType type,
+        const vk::ShaderStageFlagBits flags
+    ) -> descriptor_factory& {
+
+        vk::DescriptorSetLayoutBinding binding_info {};
+        binding_info.binding = bindings;
+        binding_info.descriptorCount = count;
+        binding_info.descriptorType = type;
+        binding_info.stageFlags = flags;
+        m_bindings.emplace_back(binding_info);
+
+        descriptor_write_container dc {};
+        dc.buffer_info = buffer_info;
+        dc.binding = bindings;
+        dc.count = count;
+        dc.type = type;
+        dc.is_image = false;
+        m_write_descriptors.emplace_back(dc);
+
+        return *this;
+    }
+
+    auto descriptor_factory::bind_images(
+        const std::uint32_t bindings,
+        const std::uint32_t count,
+        vk::DescriptorImageInfo* const buffer_info,
+        const vk::DescriptorType type,
+        const vk::ShaderStageFlagBits flags
+    ) -> descriptor_factory& {
+
+        vk::DescriptorSetLayoutBinding binding_info {};
+        binding_info.binding = bindings;
+        binding_info.descriptorCount = count;
+        binding_info.descriptorType = type;
+        binding_info.stageFlags = flags;
+        m_bindings.emplace_back(binding_info);
+
+        descriptor_write_container dc {};
+        dc.image_info = buffer_info;
+        dc.binding = bindings;
+        dc.count = count;
+        dc.type = type;
+        dc.is_image = true;
+        m_write_descriptors.emplace_back(dc);
+
+        return *this;
+    }
 }
