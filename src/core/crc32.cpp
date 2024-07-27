@@ -178,12 +178,6 @@ namespace lu {
             }
     };
 
-    template <typename T>
-    [[nodiscard]] static constexpr auto align_to(const T v, const std::size_t align) noexcept -> T {
-        return static_cast<T>((static_cast<std::size_t>(v) + align - 1) & ~(align - 1));
-    }
-
-
     auto TARGET_ARMV8_WITH_CRC crc32(const void* buf, std::size_t len, std::uint32_t crc) noexcept -> std::uint32_t {
 #if CPU_X86 && defined(__SSE4_2__) && defined(__PCLMUL__)
         // Definitions of the bit-reflected domain constants k1,k2,k3, etc and
@@ -202,7 +196,7 @@ namespace lu {
         x4 = _mm_loadu_si128(reinterpret_cast<const __m128i*>((static_cast<const std::byte*>(buf)+0x30)));
 
         x1 = _mm_xor_si128(x1, _mm_cvtsi32_si128(crc));
-        x0 = _mm_load_si128((__m128i *)k1k2);
+        x0 = _mm_load_si128(reinterpret_cast<const __m128i*>(k1k2));
 
         buf = static_cast<const std::byte*>(buf) + 64;
         len -= 64;
@@ -234,7 +228,7 @@ namespace lu {
         }
 
         // Fold into 128-bits.
-        x0 = _mm_load_si128((__m128i *)k3k4);
+        x0 = _mm_load_si128(reinterpret_cast<const __m128i*>(k3k4));
         x5 = _mm_clmulepi64_si128(x1, x0, 0x00);
         x1 = _mm_clmulepi64_si128(x1, x0, 0x11);
         x1 = _mm_xor_si128(x1, x2);
@@ -271,7 +265,7 @@ namespace lu {
         x1 = _mm_xor_si128(x1, x2);
 
         // Barret reduce to 32-bits.
-        x0 = _mm_load_si128((__m128i*)poly);
+        x0 = _mm_load_si128(reinterpret_cast<const __m128i*>(poly));
         x2 = _mm_and_si128(x1, x3);
         x2 = _mm_clmulepi64_si128(x2, x0, 0x10);
         x2 = _mm_and_si128(x2, x3);

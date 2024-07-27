@@ -143,7 +143,7 @@ else()
 endif()
 
 if(WIN32 AND NOT MSVC)
-	target_compile_options(infoware PRIVATE -march=native)
+	#target_compile_options(infoware PRIVATE -march=native)
 endif()
 
 if(WIN32)
