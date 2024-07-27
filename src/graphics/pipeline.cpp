@@ -177,7 +177,6 @@ namespace lu::graphics {
         passert(type == pipeline_type::graphics);
         cfg.rasterizationSamples = vkb::k_msaa_sample_count;
         cfg.alphaToCoverageEnable = vk::False;
-        cfg.pSampleMask = nullptr;
     }
 
     auto pipeline_base::configure_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> void {
@@ -312,5 +311,17 @@ namespace lu::graphics {
             graphics_subsystem::s_num_draw_calls.fetch_add(1, std::memory_order_relaxed);
             graphics_subsystem::s_num_draw_verts.fetch_add(mesh.get_vertex_count(), std::memory_order_relaxed);
         }
+    }
+
+    auto pipeline_base::configure_enable_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> void {
+        passert(type == pipeline_type::graphics);
+        cfg.colorWriteMask = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA;
+        cfg.blendEnable = vk::True;
+        cfg.srcColorBlendFactor = vk::BlendFactor::eSrcAlpha;
+        cfg.dstColorBlendFactor = vk::BlendFactor::eOneMinusSrcAlpha;
+        cfg.colorBlendOp = vk::BlendOp::eAdd;
+        cfg.srcAlphaBlendFactor = vk::BlendFactor::eOne;
+        cfg.dstAlphaBlendFactor = vk::BlendFactor::eZero;
+        cfg.alphaBlendOp = vk::BlendOp::eAdd;
     }
 }

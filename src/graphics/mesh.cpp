@@ -8,7 +8,7 @@
 #include <filesystem>
 
 #include "material.hpp"
-#include "utils/mesh_utils.hpp"
+#include "utils/assimp_utils.hpp"
 
 namespace lu::graphics {
 	using namespace DirectX;
@@ -70,6 +70,8 @@ namespace lu::graphics {
 	}
 
 	mesh::mesh(std::string&& path) : asset{assetmgr::asset_source::filesystem, std::move(path)} {
+        log_info("Loading mesh from file '{}'", get_asset_path());
+
         Assimp::DefaultLogger::create("", Assimp::Logger::NORMAL);
         Assimp::DefaultLogger::get()->attachStream(new assimp_logger {}, Assimp::Logger::Info | Assimp::Logger::Err | Assimp::Logger::Warn);
 
@@ -82,6 +84,7 @@ namespace lu::graphics {
 
         Assimp::Importer importer {};
         const auto load_flags = k_import_flags;
+        importer.SetIOHandler(new graphics::lunam_assimp_io_system {});
         passert(importer.ValidateFlags(load_flags));
         std::string hint {};
         auto a_path {std::filesystem::path{get_asset_path()}};

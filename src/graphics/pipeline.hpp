@@ -33,13 +33,13 @@ namespace lu::graphics {
 
         HOTPROC static auto draw_mesh(
             const mesh& mesh,
-            const vk::CommandBuffer cmd,
+            vk::CommandBuffer cmd,
             const std::vector<material*>& mats,
-            const vk::PipelineLayout layout
+            vk::PipelineLayout layout
         ) -> void;
         HOTPROC static auto draw_mesh(
             const mesh& mesh,
-            const vk::CommandBuffer cmd
+            vk::CommandBuffer cmd
         ) -> void;
 
         virtual auto pre_configure() -> void;
@@ -60,6 +60,9 @@ namespace lu::graphics {
         vk::PipelineLayout m_layout {};
         vk::Pipeline m_pipeline {};
         std::uint32_t m_num_creations = 0;
+
+    protected:
+        auto configure_enable_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> void;
     };
 
     class pipeline_registry final : public no_copy, public no_move {

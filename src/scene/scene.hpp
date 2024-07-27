@@ -29,13 +29,8 @@ namespace lu {
 
         auto spawn(const char* name) const -> flecs::entity;
 
-        template <typename A>
-        [[nodiscard]] auto get_asset_registry() -> assetmgr::asset_registry<std::decay_t<A>>& {
-            if constexpr (std::is_same_v<std::decay_t<A>, graphics::mesh>) { return m_meshes; }
-            else if constexpr (std::is_same_v<std::decay_t<A>, graphics::texture>) { return m_textures; }
-            else if constexpr (std::is_same_v<std::decay_t<A>, graphics::material>) { return m_materials; }
-            else { panic("Unknown asset type!"); }
-        }
+        template <typename T>
+        [[nodiscard]] constexpr auto get_asset_registry() -> assetmgr::asset_registry<T>&;
 
         flecs::entity active_camera {};
 
@@ -51,4 +46,19 @@ namespace lu {
         static inline constinit std::unique_ptr<scene> s_active {};
         scene();
     };
+
+    template <>
+    constexpr auto scene::get_asset_registry() -> assetmgr::asset_registry<graphics::mesh>& {
+        return m_meshes;
+    }
+
+    template <>
+    constexpr auto scene::get_asset_registry() -> assetmgr::asset_registry<graphics::texture>& {
+        return m_textures;
+    }
+
+    template <>
+    constexpr auto scene::get_asset_registry() -> assetmgr::asset_registry<graphics::material>& {
+        return m_materials;
+    }
 }

@@ -79,6 +79,10 @@ namespace lu::assetmgr {
     auto asset_accessor::file_count(const char* const vpath) const noexcept -> std::size_t {
         return assetsys_file_count(m_sys, vpath);
     }
+    auto asset_accessor::file_exists(const char* const vpath) const noexcept -> bool {
+        assetsys_file_t file {};
+        return assetsys_file(m_sys, vpath, &file) == ASSETSYS_SUCCESS;
+    }
     auto asset_accessor::file_name(const char* const vpath, const std::size_t idx) const noexcept -> const char* {
         return assetsys_file_name(m_sys, vpath, static_cast<int>(idx));
     }

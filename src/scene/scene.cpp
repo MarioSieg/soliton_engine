@@ -4,6 +4,7 @@
 #include "../core/kernel.hpp"
 #include "../graphics/vulkancore/context.hpp"
 
+#include <filesystem>
 #include <assimp/scene.h>
 #include <ankerl/unordered_dense.h>
 

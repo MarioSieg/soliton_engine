@@ -3,7 +3,7 @@
 #include "scene.hpp"
 #include "../core/kernel.hpp"
 #include "../graphics/mesh.hpp"
-#include "../graphics/utils/mesh_utils.hpp"
+#include "../graphics/utils/assimp_utils.hpp"
 #include "../graphics/vulkancore/context.hpp"
 
 #include <filesystem>
@@ -25,6 +25,7 @@ namespace lu {
         const auto start = std::chrono::high_resolution_clock::now();
 
         Assimp::Importer importer {};
+        importer.SetIOHandler(new graphics::lunam_assimp_io_system {});
         passert(importer.ValidateFlags(load_flags));
         const aiScene* scene = importer.ReadFile(path.c_str(), load_flags);
         if (!scene || !scene->mNumMeshes) [[unlikely]] {
@@ -76,10 +77,10 @@ namespace lu {
 
                 const auto load_tex = [&](const std::initializer_list<aiTextureType> types) -> graphics::texture* {
                     for (auto textureType = types.begin(); textureType != types.end(); std::advance(textureType, 1)) {
-                        if (!mat->GetTextureCount(*textureType)) [[unlikely]] { continue; }
+                        if (!mat->GetTextureCount(*textureType)) [[unlikely]] continue;
                         aiString name {};
                         mat->Get(AI_MATKEY_TEXTURE(*textureType, 0), name);
-                        std::string tex_path = asset_root + name.C_Str();
+                        std::string tex_path = "/" + std::filesystem::relative(asset_root + name.C_Str()).string();
                         return get_asset_registry<graphics::texture>().load(std::move(tex_path));
                     }
                     return nullptr;

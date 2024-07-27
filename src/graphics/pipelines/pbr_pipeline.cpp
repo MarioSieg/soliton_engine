@@ -100,4 +100,14 @@ namespace lu::graphics::pipelines {
         push_constant_range.size = sizeof(push_constants_fs);
         ranges.emplace_back(push_constant_range);
     }
+
+    auto pbr_pipeline::configure_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> void {
+        pipeline_base::configure_enable_color_blending(cfg);
+    }
+
+    auto pbr_pipeline::configure_multisampling(vk::PipelineMultisampleStateCreateInfo &cfg) -> void {
+        passert(type == pipeline_type::graphics);
+        cfg.rasterizationSamples = vkb::k_msaa_sample_count;
+        cfg.alphaToCoverageEnable = vk::True;
+    }
 }

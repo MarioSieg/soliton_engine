@@ -22,13 +22,13 @@ layout (push_constant, std430) uniform PushConstants { // TODO: move to per fram
 } pushConstants;
 
 void main() {
-  const vec3 tex_color = texture(samplerAlbedoMap, outUV).rgb;
+  const vec4 tex_color = texture(samplerAlbedoMap, outUV);
   const vec3 normal = normal_map(outTBN, texture(samplerNormalMap, outUV).xyz);
-  vec3 final = diffuse_lambert_lit(tex_color, normal);
+  vec3 final = diffuse_lambert_lit(tex_color.rgb, normal);
   //vec3 final = tex_color;
   final = color_saturation(final, 1.25);
   final = gamma_correct(final);
-  final += vec3(film_noise(pushConstants.time*outUV)) * 0.1;
-  outFragColor.rgb = final * 0.9;
-  outFragColor.a = 1.0;
+  final += vec3(film_noise(pushConstants.time*outUV)) * 0.05;
+  outFragColor.rgb = final;
+  outFragColor.a = tex_color.a;
 }
