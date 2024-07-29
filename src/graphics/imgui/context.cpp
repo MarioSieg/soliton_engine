@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "context.hpp"
 
@@ -9,7 +9,7 @@
 #include "font_awesome_pro_5.hpp"
 #include "text_editor.hpp"
 #include "implot.h"
-#include "../pipeline_base.hpp"
+#include "../pipeline_cache.hpp"
 #include "../../platform/platform_subsystem.hpp"
 #include "../../scripting/convar.hpp"
 
