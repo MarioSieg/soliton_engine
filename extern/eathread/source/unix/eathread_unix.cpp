@@ -418,7 +418,7 @@
 					// on older kernels), and hence distinguish which thread might be responsible for the high 
 					// CPU load or similar problems.
 					char8_t nameBuf[16]; // Limited to 16 bytes, null terminated if < 16 bytes
-					strncpy(nameBuf, pName, sizeof(nameBuf));
+					strncpy((char*)nameBuf, (const char*)pName, sizeof(nameBuf));
 					nameBuf[15] = 0;
 					prctl(PR_SET_NAME, (unsigned long)nameBuf, 0, 0, 0);
 
