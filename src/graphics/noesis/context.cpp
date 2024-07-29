@@ -301,9 +301,9 @@ namespace noesis {
         };
         m_device = NoesisApp::VKFactory::CreateDevice(false, instance_info);
 
-        platform_subsystem::s_cursor_pos_callbacks.emplace_back(&on_mouse_event);
-        platform_subsystem::s_mouse_button_callbacks.emplace_back(&on_mouse_click_event);
-        platform_subsystem::s_key_callbacks.emplace_back(&on_key_event);
+        platform_subsystem::s_cursor_pos_callbacks += &on_mouse_event;
+        platform_subsystem::s_mouse_button_callbacks += &on_mouse_click_event;
+        platform_subsystem::s_key_callbacks += &on_key_event;
     }
 
     context::~context() {

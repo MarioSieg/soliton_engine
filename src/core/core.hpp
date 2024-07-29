@@ -2,24 +2,23 @@
 
 #pragma once
 
-#include "platform.hpp"
-#include "crc32.hpp"
-
 #include <array>
+#include <algorithm>
+#include <bit>
+#include <memory>
 #include <string>
+#include <limits>
 #include <span>
 #include <vector>
 
+#include "platform.hpp"
+#include "crc32.hpp"
+#include "delegate.hpp"
+#include "utils.hpp"
+
+#include <ankerl/unordered_dense.h>
+
 #define USE_MIMALLOC 1
-
-#define FMT_CONSTEVAL constexpr
-#include <spdlog/spdlog.h>
-
-#define log_info SPDLOG_INFO
-#define log_warn SPDLOG_WARN
-#define log_error SPDLOG_ERROR
-#define log_critical SPDLOG_CRITICAL
-#define print_sep() log_info("------------------------------------------------------------")
 
 namespace lu {
     [[nodiscard]] consteval auto make_version(const std::uint8_t major, const std::uint8_t minor) -> std::uint32_t { return (static_cast<std::uint32_t>(major)<<8)|minor; }
@@ -63,20 +62,6 @@ namespace lu {
     private:
         const F m_f;
     };
-
-    [[noreturn]] extern auto panic_impl(std::string&& message) -> void;
-
-    template <typename... Args>
-    [[noreturn]] auto panic(std::string_view message, Args&&... args) -> void {
-        panic_impl(fmt::format(message, std::forward<Args>(args)...));
-    }
-
-    #define passert(expr) \
-        do { \
-            if (!(expr)) [[unlikely]] { \
-                ::lu::panic("Assertion failed: {} in {}:{}", #expr, __FILE__, __LINE__); \
-            } \
-        } while (false)
 
     constexpr auto hash_merge(std::size_t lhs, const std::size_t rhs) noexcept -> std::size_t {
         lhs ^= rhs + 0x9e3779b9 + (lhs << 6) + (lhs >> 2);

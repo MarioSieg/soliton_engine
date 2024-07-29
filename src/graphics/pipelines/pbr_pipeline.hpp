@@ -4,11 +4,11 @@
 
 #include <DirectXMath.h>
 
-#include "../pipeline_base.hpp"
+#include "../graphics_pipeline.hpp"
 #include "../../scene/components.hpp"
 
 namespace lu::graphics::pipelines {
-    class pbr_pipeline final : public pipeline_base {
+    class pbr_pipeline final : public graphics_pipeline {
     public:
         explicit pbr_pipeline();
         ~pbr_pipeline() override;

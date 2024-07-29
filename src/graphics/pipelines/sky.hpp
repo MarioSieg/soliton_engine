@@ -2,13 +2,13 @@
 
 #pragma once
 
-#include "../pipeline_base.hpp"
+#include "../graphics_pipeline.hpp"
 #include "../texture.hpp"
 #include "../mesh.hpp"
 #include "../../scene/components.hpp"
 
 namespace lu::graphics::pipelines {
-    class sky_pipeline final : public pipeline_base {
+    class sky_pipeline final : public graphics_pipeline {
     public:
         explicit sky_pipeline();
         ~sky_pipeline() override;

@@ -59,11 +59,11 @@ namespace lu::graphics::pipelines {
                 &pc_fs
             );
 
-            pipeline_base::draw_mesh(*mesh, cmd_buf, renderer.materials, layout);
+            graphics_pipeline::draw_mesh(*mesh, cmd_buf, renderer.materials, layout);
         }
     }
 
-    pbr_pipeline::pbr_pipeline() : pipeline_base{"pbr", pipeline_type::graphics} {
+    pbr_pipeline::pbr_pipeline() : graphics_pipeline{"mat_pbr"} {
         generate_brdf_lut();
     }
 
@@ -102,7 +102,7 @@ namespace lu::graphics::pipelines {
     }
 
     auto pbr_pipeline::configure_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> void {
-        pipeline_base::configure_enable_color_blending(cfg);
+        graphics_pipeline::configure_enable_color_blending(cfg);
     }
 
     auto pbr_pipeline::configure_multisampling(vk::PipelineMultisampleStateCreateInfo &cfg) -> void {

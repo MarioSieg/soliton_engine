@@ -5,7 +5,7 @@
 #include "../graphics_subsystem.hpp"
 
 namespace lu::graphics::pipelines {
-    sky_pipeline::sky_pipeline() : pipeline_base{"sky", pipeline_type::graphics} {
+    sky_pipeline::sky_pipeline() : graphics_pipeline{"sky_composite"} {
         m_skybox_texture.emplace("/engine_assets/textures/hdr/gcanyon_cube.ktx");
         m_skydome.emplace("/engine_assets/meshes/skydome.fbx");
 

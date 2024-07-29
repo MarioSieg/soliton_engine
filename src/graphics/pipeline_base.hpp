@@ -13,7 +13,8 @@ namespace lu::graphics {
     class material;
 
     enum class pipeline_type : std::uint8_t {
-        graphics
+        graphics,
+        compute
     };
 
     class pipeline_base : public no_copy, public no_move {
@@ -31,38 +32,15 @@ namespace lu::graphics {
     protected:
         explicit pipeline_base(std::string&& name, pipeline_type type);
 
-        HOTPROC static auto draw_mesh(
-            const mesh& mesh,
-            vk::CommandBuffer cmd,
-            const std::vector<material*>& mats,
-            vk::PipelineLayout layout
-        ) -> void;
-        HOTPROC static auto draw_mesh(
-            const mesh& mesh,
-            vk::CommandBuffer cmd
-        ) -> void;
-
         virtual auto pre_configure() -> void;
-        virtual auto configure_shaders(std::vector<std::shared_ptr<shader>>& cfg) -> void = 0;
-        virtual auto configure_pipeline_layout(std::vector<vk::DescriptorSetLayout>& layouts, std::vector<vk::PushConstantRange>& ranges) -> void = 0;
-        virtual auto configure_vertex_info(std::vector<vk::VertexInputBindingDescription>& cfg, std::vector<vk::VertexInputAttributeDescription>& bindings) -> void;
-        virtual auto configure_viewport_state(vk::PipelineViewportStateCreateInfo& cfg) -> void;
-        virtual auto configure_input_assembly(vk::PipelineInputAssemblyStateCreateInfo& cfg) -> void;
-        virtual auto configure_rasterizer(vk::PipelineRasterizationStateCreateInfo& cfg) -> void;
-        virtual auto configure_dynamic_states(std::vector<vk::DynamicState>& states) -> void;
-        virtual auto configure_depth_stencil(vk::PipelineDepthStencilStateCreateInfo& cfg) -> void;
-        virtual auto configure_multisampling(vk::PipelineMultisampleStateCreateInfo& cfg) -> void;
-        virtual auto configure_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> void;
-        virtual auto configure_render_pass(vk::RenderPass& pass) -> void;
         virtual auto post_configure() -> void;
+
+        virtual auto create(vk::PipelineLayout& out_layout, vk::Pipeline& out_pipeline, vk::PipelineCache cache) -> void = 0;
 
     private:
         vk::PipelineLayout m_layout {};
         vk::Pipeline m_pipeline {};
         std::uint32_t m_num_creations = 0;
-
-    protected:
-        auto configure_enable_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> void;
     };
 
     class pipeline_registry final : public no_copy, public no_move {
@@ -82,12 +60,12 @@ namespace lu::graphics {
             return *m_pipelines.at(name);
         }
 
-        template<typename T, typename... Args> requires std::is_base_of_v<pipeline_base, T>
+        template <typename T, typename... Args> requires std::is_base_of_v<pipeline_base, T>
         auto register_pipeline(Args&&... args) -> T& {
             auto instance = std::make_unique<T>(std::forward<Args>(args)...);
             passert(!m_pipelines.contains(instance->name));
             auto name = instance->name;
-            instance->create(m_cache);
+            static_cast<pipeline_base&>(*instance).create(m_cache);
             m_pipelines[name] = std::move(instance);
             return *static_cast<T*>(&*m_pipelines[name]);
         }

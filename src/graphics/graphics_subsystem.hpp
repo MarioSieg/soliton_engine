@@ -63,7 +63,7 @@ namespace lu::graphics {
         }
 
     private:
-        friend class pipeline_base;
+        friend class graphics_pipeline;
         static auto reload_pipelines() -> void;
         auto create_descriptor_pool() -> void;
         auto render_uis() -> void;

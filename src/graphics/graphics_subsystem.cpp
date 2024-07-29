@@ -135,7 +135,7 @@ namespace lu::graphics {
         passert(usr != nullptr);
         auto& self = *static_cast<graphics_subsystem*>(usr);
 
-        const auto& pbr_pipeline = dynamic_cast<const pipelines::pbr_pipeline&>(pipeline_registry::get().get_pipeline("pbr"));
+        const auto& pbr_pipeline = dynamic_cast<const pipelines::pbr_pipeline&>(pipeline_registry::get().get_pipeline("mat_pbr"));
 
         cmd.bindPipeline(vk::PipelineBindPoint::eGraphics, pbr_pipeline.get_pipeline());
         const DirectX::XMMATRIX vp = DirectX::XMLoadFloat4x4A(&graphics_subsystem::s_view_proj_mtx);

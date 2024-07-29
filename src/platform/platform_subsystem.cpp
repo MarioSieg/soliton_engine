@@ -305,39 +305,25 @@ namespace lu::platform {
     }
 
     static auto glfw_cursor_pos_callback(GLFWwindow* window, double x, double y) noexcept -> void {
-        for (auto* const cb : platform_subsystem::s_cursor_pos_callbacks) {
-            cb(window, x, y);
-        }
+        platform_subsystem::s_cursor_pos_callbacks(window, x, y);
     }
     static auto glfw_scroll_callback(GLFWwindow* window, double x, double y) noexcept -> void {
-        for (auto* const cb : platform_subsystem::s_scroll_callbacks) {
-            cb(window, x, y);
-        }
+        platform_subsystem::s_scroll_callbacks(window, x, y);
     }
     static auto glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) noexcept -> void {
-        for (auto* const cb : platform_subsystem::s_key_callbacks) {
-            cb(window, key, scancode, action, mods);
-        }
+        platform_subsystem::s_key_callbacks(window, key, scancode, action, mods);
     }
     static auto glfw_char_callback(GLFWwindow* window, unsigned int codepoint) noexcept -> void {
-        for (auto* const cb : platform_subsystem::s_char_callbacks) {
-            cb(window, codepoint);
-        }
+        platform_subsystem::s_char_callbacks(window, codepoint);
     }
     static auto glfw_mouse_button_callback(GLFWwindow* window, int button, int action, int mods) noexcept -> void {
-        for (auto* const cb : platform_subsystem::s_mouse_button_callbacks) {
-            cb(window, button, action, mods);
-        }
+        platform_subsystem::s_mouse_button_callbacks(window, button, action, mods);
     }
     static auto glfw_cursor_enter_callback(GLFWwindow* window, int entered) noexcept -> void {
-        for (auto* const cb : platform_subsystem::s_cursor_enter_callbacks) {
-            cb(window, entered);
-        }
+        platform_subsystem::s_cursor_enter_callbacks(window, entered);
     }
     static auto glfw_framebuffer_size_callback(GLFWwindow* window, int w, int h) noexcept -> void {
-        for (auto* const cb : platform_subsystem::s_framebuffer_size_callbacks) {
-            cb(window, w, h);
-        }
+        platform_subsystem::s_framebuffer_size_callbacks(window, w, h);
     }
 
     static convar<int> cv_default_width {"Window.defaultWidth", 1280, scripting::convar_flags::read_only};
@@ -409,7 +395,7 @@ namespace lu::platform {
         glfwSetFramebufferSizeCallback(s_window, &glfw_framebuffer_size_callback);
 
         // setup framebuffer resize hook
-        s_framebuffer_size_callbacks.emplace_back(&proxy_resize_hook);
+        s_framebuffer_size_callbacks += &proxy_resize_hook;
 
         // query monitor and print some info
         constexpr auto print_mon_info = [](GLFWmonitor* mon) {
