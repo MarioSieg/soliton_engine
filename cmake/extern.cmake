@@ -10,6 +10,10 @@ else()
     target_link_libraries(lunam tbb)
 endif()
 
+add_subdirectory(extern/eastl)
+target_include_directories(lunam PRIVATE extern/eastl/include)
+target_link_libraries(lunam EASTL)
+
 add_subdirectory(extern/spdlog)
 target_include_directories(lunam PRIVATE extern/spdlog/include)
 target_link_libraries(lunam spdlog::spdlog_header_only)
