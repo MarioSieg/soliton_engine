@@ -4,7 +4,7 @@
 
 #include <DirectXMath.h>
 
-#include "../pipeline.hpp"
+#include "../pipeline_base.hpp"
 #include "../../scene/components.hpp"
 
 namespace lu::graphics::pipelines {

@@ -1,6 +1,6 @@
 // Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
-#include "pipeline.hpp"
+#include "pipeline_base.hpp"
 
 #include "vulkancore/context.hpp"
 #include "graphics_subsystem.hpp"

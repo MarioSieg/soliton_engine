@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "../pipeline.hpp"
+#include "../pipeline_base.hpp"
 #include "../texture.hpp"
 #include "../mesh.hpp"
 #include "../../scene/components.hpp"

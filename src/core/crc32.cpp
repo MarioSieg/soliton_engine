@@ -6,7 +6,7 @@
 #include <array>
 #include <bit>
 
-#ifdef CPU_X86
+#if CPU_X86
 #   include <emmintrin.h>
 #   include <smmintrin.h>
 #   include <wmmintrin.h>
@@ -17,7 +17,7 @@
 #       define __crc32d __builtin_arm_crc32d
 #       define __crc32w __builtin_arm_crc32w
 #       define __crc32cw __builtin_arm_crc32cw
-#       if defined(__aarch64__)
+#       ifdef __aarch64__
 #           define TARGET_ARMV8_WITH_CRC __attribute__((target("crc")))
 #       else
 #           define TARGET_ARMV8_WITH_CRC __attribute__((target("armv8-a,crc")))
@@ -277,7 +277,7 @@ namespace lu {
 #elif CPU_ARM && defined(__ARM_NEON) && defined(__ARM_FEATURE_CRC32)
     std::uint32_t c = ~crc;
     while (len && (std::bit_cast<std::uintptr_t>(buf) & 7)) {
-        c = __crc32b(c, *static_cast<const std::byte*>(buf));
+        c = __crc32b(c, *static_cast<const std::uint8_t*>(buf));
         buf = static_cast<const std::byte*>(buf) + 1;
         --len;
     }
@@ -299,7 +299,7 @@ namespace lu {
     }
     buf = reinterpret_cast<const std::byte*>(buf8);
     while (len--) {
-        c = __crc32b(c, *static_cast<const std::byte*>(buf));
+        c = __crc32b(c, *static_cast<const std::uint8_t*>(buf));
         buf = static_cast<const std::byte*>(buf) + 1;
     }
     return ~c;

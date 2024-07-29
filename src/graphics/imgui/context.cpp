@@ -9,7 +9,7 @@
 #include "font_awesome_pro_5.hpp"
 #include "text_editor.hpp"
 #include "implot.h"
-#include "../pipeline.hpp"
+#include "../pipeline_base.hpp"
 #include "../../platform/platform_subsystem.hpp"
 #include "../../scripting/convar.hpp"
 

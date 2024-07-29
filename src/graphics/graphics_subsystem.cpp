@@ -10,7 +10,7 @@
 #endif
 
 #include "material.hpp"
-#include "pipeline.hpp"
+#include "pipeline_base.hpp"
 
 #include "pipelines/pbr_pipeline.hpp"
 #include "pipelines/sky.hpp"
