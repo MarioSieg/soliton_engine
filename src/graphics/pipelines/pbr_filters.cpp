@@ -87,7 +87,7 @@ namespace lu::graphics::pipelines {
         subpass.colorAttachmentCount = 1;
         subpass.pColorAttachments = &color_reference;
 
-        std::array<vk::SubpassDependency, 2> dependencies {};
+        eastl::array<vk::SubpassDependency, 2> dependencies {};
         dependencies[0].srcSubpass = vk::SubpassExternal;
         dependencies[0].dstSubpass = 0;
         dependencies[0].srcStageMask = vk::PipelineStageFlagBits::eBottomOfPipe;
@@ -185,7 +185,7 @@ namespace lu::graphics::pipelines {
         vk::PipelineMultisampleStateCreateInfo multisample_ci {};
         multisample_ci.rasterizationSamples = vk::SampleCountFlagBits::e1;
 
-        std::array<vk::DynamicState, 2> dynamic_states {
+        eastl::array<vk::DynamicState, 2> dynamic_states {
             vk::DynamicState::eViewport,
             vk::DynamicState::eScissor
         };
@@ -196,7 +196,7 @@ namespace lu::graphics::pipelines {
 
         vk::PipelineVertexInputStateCreateInfo vertex_input_ci {};
 
-        std::array<vk::PipelineShaderStageCreateInfo, 2> shader_stages {
+        eastl::array<vk::PipelineShaderStageCreateInfo, 2> shader_stages {
             shader_cache::get().get_shader(shader_variant{"/engine_assets/shaders/src/gen_brdf_lut.vert", shader_stage::vertex})->get_stage_info(),
             shader_cache::get().get_shader(shader_variant{"/engine_assets/shaders/src/gen_brdf_lut.frag", shader_stage::fragment})->get_stage_info()
         };
@@ -220,7 +220,7 @@ namespace lu::graphics::pipelines {
 
         // now render
         vk::ClearValue clear_value {};
-        clear_value.color = vk::ClearColorValue { std::array<float, 4> { 0.F, 0.F, 0.F, 1.F } };
+        clear_value.color = vk::ClearColorValue { 0.0f, 0.0f, 0.0f, 1.0f };
 
         vk::RenderPassBeginInfo render_pass_bi {};
         render_pass_bi.renderPass = render_pass;

@@ -33,7 +33,7 @@ namespace lu::graphics {
         VkFormat fmt_srgb {};
         VkComponentMapping mapping {};
     };
-    extern const std::array<texture_format_info, 96> k_texture_format_map;
+    extern const eastl::array<texture_format_info, 96> k_texture_format_map;
 
 #if USE_MIMALLOC
     static constexpr std::size_t k_natural_align = 8;
@@ -75,7 +75,7 @@ namespace lu::graphics {
 
     texture::texture(std::string&& asset_path) : asset {assetmgr::asset_source::filesystem, std::move(asset_path)} {
         log_info("Loading texture '{}'", get_asset_path());
-        std::vector<std::byte> texels {};
+        eastl::vector<std::byte> texels {};
         assetmgr::with_primary_accessor_lock([&](assetmgr::asset_accessor &acc) {
             if (!acc.load_bin_file(get_asset_path().c_str(), texels)) {
                 panic("Failed to load texture '{}'", get_asset_path());
@@ -388,7 +388,7 @@ namespace lu::graphics {
             );
         }
         // copy all mip levels
-        std::vector<vk::BufferImageCopy> regions {};
+        eastl::vector<vk::BufferImageCopy> regions {};
         regions.reserve(m_mip_levels);
         std::size_t offset = 0;
         // To remove loop and replace with sub-viewport blitting inside VRAM (safes m_mip_levels-1 copies from host to GPU)
@@ -616,7 +616,7 @@ namespace lu::graphics {
         );
     }
 
-    const std::array<texture_format_info, 96> k_texture_format_map = {
+    const eastl::array<texture_format_info, 96> k_texture_format_map = {
         #define $_ VK_COMPONENT_SWIZZLE_IDENTITY
         #define $0 VK_COMPONENT_SWIZZLE_ZERO
         #define $1 VK_COMPONENT_SWIZZLE_ONE

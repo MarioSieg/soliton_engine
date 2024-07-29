@@ -211,14 +211,14 @@ namespace lu::physics {
 		log_info("Creating static colliders...");
 
     	auto filter = scene.filter<const com::transform, const com::mesh_renderer>();
-		std::vector<std::pair<std::span<const com::transform>, std::span<const com::mesh_renderer>>> targets {};
+		eastl::vector<std::pair<std::span<const com::transform>, std::span<const com::mesh_renderer>>> targets {};
     	std::size_t total = 0;
     	filter.iter([&](flecs::iter i, const com::transform* transform, const com::mesh_renderer* renderer) {
     		const std::size_t n = i.count();
     		total += n;
     		targets.emplace_back(std::span{transform, n}, std::span{renderer, n});
 		});
-    	std::vector<JPH::BodyID> bodies {};
+    	eastl::vector<JPH::BodyID> bodies {};
     	bodies.resize(total);
     	for (std::size_t base_idx = 0; auto&& target : targets) {
     		const auto& transforms = target.first;

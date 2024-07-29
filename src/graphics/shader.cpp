@@ -106,7 +106,7 @@ namespace lu::graphics {
         shaderc_shader_kind kind,
         const std::string& source,
         const shaderc::CompileOptions& options,
-        std::vector<uint32_t>& out
+        eastl::vector<uint32_t>& out
     ) -> bool {
         const shaderc::SpvCompilationResult result =
             com.CompileGlslToSpv(source, kind, source_name.c_str(), options);
@@ -190,7 +190,7 @@ namespace lu::graphics {
         struct proxy : shader {};
         auto shader = std::make_shared<proxy>();
 
-        std::vector<std::uint32_t> bytecode {};
+        eastl::vector<std::uint32_t> bytecode {};
         if (!compile_file_to_bin(compiler, file_name, kind, source_code_glsl, options, bytecode) || bytecode.empty()) [[unlikely]] {
             log_error("Failed to compile shader: {}", file_name);
             return nullptr;

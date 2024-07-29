@@ -13,8 +13,8 @@ namespace lu::graphics {
 
         vk::GraphicsPipelineCreateInfo pipeline_info {};
 
-        std::vector<vk::PipelineShaderStageCreateInfo> shader_stages {};
-        std::vector<std::shared_ptr<shader>> shaders {};
+        eastl::vector<vk::PipelineShaderStageCreateInfo> shader_stages {};
+        eastl::vector<std::shared_ptr<shader>> shaders {};
         configure_shaders(shaders);
         passert(!shaders.empty());
         shader_stages.reserve(shaders.size());
@@ -29,8 +29,8 @@ namespace lu::graphics {
         pipeline_info.pViewportState = &viewport_state;
 
         vk::PipelineVertexInputStateCreateInfo vertex_input_info {};
-        std::vector<vk::VertexInputBindingDescription> vertex_bindings {};
-        std::vector<vk::VertexInputAttributeDescription> vertex_attributes {};
+        eastl::vector<vk::VertexInputBindingDescription> vertex_bindings {};
+        eastl::vector<vk::VertexInputAttributeDescription> vertex_attributes {};
         configure_vertex_info(vertex_bindings, vertex_attributes);
         vertex_input_info.vertexBindingDescriptionCount = static_cast<std::uint32_t>(vertex_bindings.size());
         vertex_input_info.pVertexBindingDescriptions = vertex_bindings.data();
@@ -47,7 +47,7 @@ namespace lu::graphics {
         pipeline_info.pRasterizationState = &rasterization_state;
 
         vk::PipelineDynamicStateCreateInfo dynamic_state {};
-        std::vector<vk::DynamicState> dynamic_states {};
+        eastl::vector<vk::DynamicState> dynamic_states {};
         configure_dynamic_states(dynamic_states);
         dynamic_state.dynamicStateCount = static_cast<std::uint32_t>(dynamic_states.size());
         dynamic_state.pDynamicStates = dynamic_states.data();
@@ -76,8 +76,8 @@ namespace lu::graphics {
         pipeline_info.renderPass = render_pass;
 
         // finally, create pipeline layout
-        std::vector<vk::DescriptorSetLayout> layouts {};
-        std::vector<vk::PushConstantRange> ranges {};
+        eastl::vector<vk::DescriptorSetLayout> layouts {};
+        eastl::vector<vk::PushConstantRange> ranges {};
         configure_pipeline_layout(layouts, ranges);
         vk::PipelineLayoutCreateInfo layout_info {};
         layout_info.setLayoutCount = static_cast<std::uint32_t>(layouts.size());
@@ -115,7 +115,7 @@ namespace lu::graphics {
         cfg.lineWidth = 1.0f;
     }
 
-    auto graphics_pipeline::configure_dynamic_states(std::vector<vk::DynamicState>& states) -> void {
+    auto graphics_pipeline::configure_dynamic_states(eastl::vector<vk::DynamicState>& states) -> void {
         passert(type == pipeline_type::graphics);
         states.emplace_back(vk::DynamicState::eViewport);
         states.emplace_back(vk::DynamicState::eScissor);
@@ -157,7 +157,7 @@ namespace lu::graphics {
         pass = vkb::ctx().get_scene_render_pass();
     }
 
-    auto graphics_pipeline::configure_vertex_info(std::vector<vk::VertexInputBindingDescription>& cfg, std::vector<vk::VertexInputAttributeDescription>& bindings) -> void {
+    auto graphics_pipeline::configure_vertex_info(eastl::vector<vk::VertexInputBindingDescription>& cfg, eastl::vector<vk::VertexInputAttributeDescription>& bindings) -> void {
         cfg.emplace_back(vk::VertexInputBindingDescription {
                 .binding = 0,
                 .stride = sizeof(mesh::vertex),
@@ -192,7 +192,7 @@ namespace lu::graphics {
     auto graphics_pipeline::draw_mesh(
         const mesh& mesh,
         const vk::CommandBuffer cmd,
-        const std::vector<material*>& mats,
+        const eastl::vector<material*>& mats,
         const vk::PipelineLayout layout
     ) -> void {
         constexpr vk::DeviceSize offsets = 0;

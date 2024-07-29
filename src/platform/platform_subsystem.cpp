@@ -87,7 +87,7 @@ namespace lu::platform {
     }
 
     #if CPU_X86 // TODO: AArch64
-    static constexpr std::array<std::string_view, 38> k_amd64_extensions = {
+    static constexpr eastl::array<std::string_view, 38> k_amd64_extensions = {
         "3DNow",
         "3DNow Extended",
         "MMX",
@@ -267,12 +267,12 @@ namespace lu::platform {
 
     auto dump_loaded_dylibs() -> void {
     #if PLATFORM_WINDOWS
-        std::array<HMODULE, 8192 << 2> hMods {};
+        eastl::array<HMODULE, 8192 << 2> hMods {};
         HANDLE hProcess = GetCurrentProcess();
         DWORD cbNeeded;
         if (EnumProcessModules(hProcess, hMods.data(), sizeof(hMods), &cbNeeded)) {
             for (UINT i = 0; i < cbNeeded / sizeof(HMODULE); ++i) {
-                std::array<TCHAR, MAX_PATH> szModName {};
+                eastl::array<TCHAR, MAX_PATH> szModName {};
                 if (GetModuleFileNameEx(hProcess, hMods[i], szModName.data(), sizeof(szModName) / sizeof(TCHAR))) {
                     log_info("{}", szModName.data());
                 }
@@ -438,7 +438,7 @@ namespace lu::platform {
 
         // set window icon
         if constexpr (!PLATFORM_OSX) { // Cocoa - regular windows do not have icons on macOS
-            std::vector<std::byte> pixel_buf {};
+            eastl::vector<std::byte> pixel_buf {};
             const std::string k_window_icon_file = cv_window_icon();
             bool success = false;
             assetmgr::with_primary_accessor_lock([&](assetmgr::asset_accessor& acc) {

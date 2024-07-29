@@ -16,7 +16,7 @@ namespace lu::graphics {
         log_info("[Mesh Import]: {}", copy);
     }
 
-    lunam_io_stream::lunam_io_stream(std::vector<std::byte>&& stream) : m_stream{std::move(stream)} {}
+    lunam_io_stream::lunam_io_stream(eastl::vector<std::byte>&& stream) : m_stream{std::move(stream)} {}
 
     auto lunam_io_stream::Read(void* const buf, const std::size_t len, const std::size_t count) -> std::size_t {
         const std::size_t bytes_to_read = len * count;
@@ -78,7 +78,7 @@ namespace lu::graphics {
     }
 
     auto lunam_assimp_io_system::Open(const char* const file, const char* const mode) -> Assimp::IOStream* {
-        std::vector<std::byte> data {};
+        eastl::vector<std::byte> data {};
         bool status = false;
         const std::string abs_path = "/" + std::filesystem::relative(file).string();
         assetmgr::with_primary_accessor_lock([&](assetmgr::asset_accessor& accessor) {

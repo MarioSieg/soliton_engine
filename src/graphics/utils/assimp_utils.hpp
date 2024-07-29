@@ -9,6 +9,8 @@
 #include <assimp/DefaultIOSystem.h>
 #include <assimp/LogStream.hpp>
 
+#include <EASTL/vector.h>
+
 namespace lu::graphics {
     class assimp_logger final : public Assimp::LogStream {
         auto write(const char* message) -> void override;
@@ -16,7 +18,7 @@ namespace lu::graphics {
 
     class lunam_io_stream final : public Assimp::IOStream {
     public:
-        explicit lunam_io_stream(std::vector<std::byte>&& stream);
+        explicit lunam_io_stream(eastl::vector<std::byte>&& stream);
         auto Read(void* buf, std::size_t len, std::size_t count) -> std::size_t override;
         auto Write(const void* buf, size_t len, size_t count) -> std::size_t override;
         auto Seek(std::size_t offset, aiOrigin origin) -> aiReturn override;
@@ -26,7 +28,7 @@ namespace lu::graphics {
 
     private:
         std::size_t pos = 0;
-        const std::vector<std::byte> m_stream;
+        const eastl::vector<std::byte> m_stream;
     };
 
     class lunam_assimp_io_system final : public Assimp::DefaultIOSystem {

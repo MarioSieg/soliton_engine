@@ -43,6 +43,6 @@ namespace lu::physics {
         std::unique_ptr<JPH::ContactListener> m_contact_listener {};
         static inline JPH::PhysicsSystem m_physics_system {};
         static inline constinit std::unique_ptr<debug_renderer> m_debug_renderer {};
-        std::vector<JPH::BodyID> m_static_bodies {};
+        eastl::vector<JPH::BodyID> m_static_bodies {};
     };
 }

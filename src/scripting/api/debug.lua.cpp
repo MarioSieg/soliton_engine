@@ -190,7 +190,7 @@ public:
         assert(frameId == frameIndex);
         frameIndex++;
     }
-    std::vector<legit::ProfilerTask>& GetProfilerTasks()
+    eastl::vector<legit::ProfilerTask>& GetProfilerTasks()
     {
         return profilerTasks;
     }
@@ -230,7 +230,7 @@ private:
 private:
     using hrc = std::chrono::high_resolution_clock;
     size_t frameIndex;
-    std::vector<legit::ProfilerTask> profilerTasks;
+    eastl::vector<legit::ProfilerTask> profilerTasks;
     hrc::time_point frameStartTime;
 };
 

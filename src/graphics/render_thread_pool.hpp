@@ -46,7 +46,7 @@ namespace lu::graphics {
         thread_shared_ctx& m_shared_ctx;
         std::thread m_thread {};
         vk::CommandPool m_command_pool {};
-        std::array<vk::CommandBuffer, vkb::context::k_max_concurrent_frames> m_command_buffers {};
+        eastl::array<vk::CommandBuffer, vkb::context::k_max_concurrent_frames> m_command_buffers {};
         vk::CommandBuffer m_active_command_buffer {};
     };
 

@@ -14,7 +14,7 @@ namespace lu::graphics {
 
     using namespace DirectX;
 
-    static constexpr std::array<const std::uint32_t, 1532 / 4> k_debug_draw_vs_spirv {
+    static constexpr eastl::array<const std::uint32_t, 1532 / 4> k_debug_draw_vs_spirv {
         0x07230203,
         0x00010000,
         0x000d0008,
@@ -400,7 +400,7 @@ namespace lu::graphics {
         0x00010038,
     };
 
-    static constexpr std::array<const std::uint32_t, 1904 / 4> k_debug_draw_fs_spirv {
+    static constexpr eastl::array<const std::uint32_t, 1904 / 4> k_debug_draw_fs_spirv {
         0x07230203,
         0x00010000,
         0x000d0008,
@@ -908,7 +908,7 @@ namespace lu::graphics {
                     pipe = draw_cmd.depth_test ? m_line_strip_depth_pipeline : m_line_strip_no_depth_pipeline;
                 }
                 cmd.bindPipeline(vk::PipelineBindPoint::eGraphics, pipe);
-                std::array<XMFLOAT4A, 2> params {};
+                eastl::array<XMFLOAT4A, 2> params {};
                 static_assert(sizeof(params) == sizeof(float) * 4 * 2);
                 XMStoreFloat4A(&params[0], view_pos);
                 XMStoreFloat4A(&params[1], XMVectorSet(draw_cmd.distance_fade ? draw_cmd.fade_start : -1.0f, draw_cmd.fade_end, 0.0f, 0.0f));
@@ -993,7 +993,7 @@ namespace lu::graphics {
     }
 
     auto debugdraw::draw_obb(const BoundingOrientedBox& obb, FXMMATRIX model, const XMFLOAT3& color) -> void {
-        std::array<XMFLOAT3, 8> verts {};
+        eastl::array<XMFLOAT3, 8> verts {};
         for (int i = 0; i < 2; ++i) {
             for (int j = 0; j < 2; ++j) {
                 for (int k = 0; k < 2; ++k) {
@@ -1110,7 +1110,7 @@ namespace lu::graphics {
 
         vk::GraphicsPipelineCreateInfo pipeline_info {};
 
-        std::array<vk::PipelineShaderStageCreateInfo, 2> shader_stages {};
+        eastl::array<vk::PipelineShaderStageCreateInfo, 2> shader_stages {};
         shader_stages[0].stage = vk::ShaderStageFlagBits::eVertex;
         shader_stages[0].module = vs;
         shader_stages[0].pName = "main";
@@ -1134,7 +1134,7 @@ namespace lu::graphics {
         vertex_input_info.vertexBindingDescriptionCount = 1;
         vertex_input_info.pVertexBindingDescriptions = &binding_description;
 
-        constexpr std::array<vk::VertexInputAttributeDescription, 3> vertex_attributes {
+        constexpr eastl::array<vk::VertexInputAttributeDescription, 3> vertex_attributes {
             vk::VertexInputAttributeDescription {
                 .location = 0,
                 .binding = 0,
@@ -1179,7 +1179,7 @@ namespace lu::graphics {
         // Most states are baked into the pipeline, but there are still a few dynamic states that can be changed within a command buffer
         // To be able to change these we need do specify which dynamic states will be changed using this pipeline. Their actual states are set later on in the command buffer.
         // For this example we will set the viewport and scissor using dynamic states
-        constexpr std::array<vk::DynamicState, 2> dynamic_states {
+        constexpr eastl::array<vk::DynamicState, 2> dynamic_states {
             vk::DynamicState::eViewport,
             vk::DynamicState::eScissor
         };
@@ -1221,7 +1221,7 @@ namespace lu::graphics {
         pipeline_info.pColorBlendState = &color_blend_state;
 
         vk::PipelineLayoutCreateInfo pipeline_layout_create_info {};
-        const std::array<vk::DescriptorSetLayout, 1> set_layouts {
+        const eastl::array<vk::DescriptorSetLayout, 1> set_layouts {
             m_descriptor_set_layout,
         };
         pipeline_layout_create_info.setLayoutCount = static_cast<std::uint32_t>(set_layouts.size());

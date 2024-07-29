@@ -25,8 +25,8 @@ namespace lu::graphics {
 	}
 
 	static auto load_primitive(
-		std::vector<mesh::vertex>& vertices,
-		std::vector<mesh::index>& indices,
+		eastl::vector<mesh::vertex>& vertices,
+		eastl::vector<mesh::index>& indices,
 		const aiMesh* mesh,
 		mesh::primitive& prim_info,
 		BoundingBox& full_aabb
@@ -75,7 +75,7 @@ namespace lu::graphics {
         Assimp::DefaultLogger::create("", Assimp::Logger::NORMAL);
         Assimp::DefaultLogger::get()->attachStream(new assimp_logger {}, Assimp::Logger::Info | Assimp::Logger::Err | Assimp::Logger::Warn);
 
-        std::vector<std::byte> blob {};
+        eastl::vector<std::byte> blob {};
         assetmgr::with_primary_accessor_lock([&](assetmgr::asset_accessor &accessor) {
             if (!accessor.load_bin_file(get_asset_path().c_str(), blob)) {
                 panic("Failed to load mesh from file '{}'", get_asset_path());
@@ -131,8 +131,8 @@ namespace lu::graphics {
 			num_vertices += mesh->mNumVertices;
 			num_indices += mesh->mNumFaces * 3;
 		}
-		std::vector<vertex> vertices {};
-		std::vector<index> indices {};
+		eastl::vector<vertex> vertices {};
+		eastl::vector<index> indices {};
 		vertices.reserve(num_vertices);
 		indices.reserve(num_indices);
 		m_primitives.reserve(meshes.size());
@@ -165,7 +165,7 @@ namespace lu::graphics {
         m_vertex_count = static_cast<std::uint32_t>(vertices.size());
 
     	if (indices.size() <= std::numeric_limits<std::uint16_t>::max()) { // 16 bit indices
-    		std::vector<std::uint16_t> indices16 {};
+    		eastl::vector<std::uint16_t> indices16 {};
     		indices16.reserve(indices.size());
     		for (const index idx : indices) {
                 if (idx > std::numeric_limits<std::uint16_t>::max()) [[unlikely]] {

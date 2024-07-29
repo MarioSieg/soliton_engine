@@ -69,7 +69,7 @@ namespace lu::graphics {
     }
 
     auto descriptor_allocator::create_pool(const pool_sizes& sizes, const std::int32_t count, const vk::DescriptorPoolCreateFlagBits flags) -> vk::DescriptorPool {
-        std::vector<vk::DescriptorPoolSize> pool_sizes {};
+        eastl::vector<vk::DescriptorPoolSize> pool_sizes {};
         pool_sizes.reserve(sizes.size());
         for (auto&& [type, num] : sizes) {
             pool_sizes.emplace_back(vk::DescriptorPoolSize{.type=type, .descriptorCount=static_cast<std::uint32_t>(num * static_cast<float>(count))});
@@ -162,7 +162,7 @@ namespace lu::graphics {
         if (!m_allocator.allocate(ret_set, ret_layout)) [[unlikely]] {
             return false;
         }
-        std::vector<vk::WriteDescriptorSet> writes {};
+        eastl::vector<vk::WriteDescriptorSet> writes {};
         writes.reserve(m_write_descriptors.size());
         for (auto&& dc : m_write_descriptors) {
             vk::WriteDescriptorSet write {};

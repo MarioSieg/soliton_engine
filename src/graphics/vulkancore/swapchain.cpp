@@ -38,14 +38,14 @@ namespace lu::vkb {
         // Get available queue family properties
         std::uint32_t num_qeueues = 0;
         m_physical_device.getQueueFamilyProperties(&num_qeueues, nullptr);
-        std::vector<vk::QueueFamilyProperties> families {};
+        eastl::vector<vk::QueueFamilyProperties> families {};
         families.resize(num_qeueues);
         m_physical_device.getQueueFamilyProperties(&num_qeueues, families.data());
 
         // Iterate over each queue to learn whether it supports presenting:
         // Find a queue with present support
         // Will be used to present the swap chain images to the windowing system
-        std::vector<vk::Bool32> supports_present {};
+        eastl::vector<vk::Bool32> supports_present {};
         supports_present.resize(num_qeueues);
         for (std::uint32_t i = 0; i < num_qeueues; ++i) {
             vkcheck(m_physical_device.getSurfaceSupportKHR(i, m_surface, &supports_present[i]));
@@ -86,14 +86,14 @@ namespace lu::vkb {
 
         std::uint32_t num_formats = 0;
         vkcheck(m_physical_device.getSurfaceFormatsKHR(m_surface, &num_formats, nullptr));
-        std::vector<vk::SurfaceFormatKHR> formats {};
+        eastl::vector<vk::SurfaceFormatKHR> formats {};
         formats.resize(num_formats);
         vkcheck(m_physical_device.getSurfaceFormatsKHR(m_surface, &num_formats, formats.data()));
 
         // We want to get a format that best suits our needs, so we try to get one from a set of preferred formats
         // Initialize the format to the first one returned by the implementation in case we can't find one of the preffered formats
         vk::SurfaceFormatKHR selected_format = formats[0];
-        std::vector<vk::Format> preferred_image_formats = {
+        eastl::vector<vk::Format> preferred_image_formats = {
             vk::Format::eR8G8B8A8Unorm,
             vk::Format::eB8G8R8A8Unorm,
             vk::Format::eA8B8G8R8UnormPack32
@@ -120,7 +120,7 @@ namespace lu::vkb {
         std::uint32_t num_present_modes = 0;
         vkcheck(m_physical_device.getSurfacePresentModesKHR(m_surface, &num_present_modes, nullptr));
         passert(num_present_modes != 0);
-        std::vector<vk::PresentModeKHR> present_modes {};
+        eastl::vector<vk::PresentModeKHR> present_modes {};
         present_modes.resize(num_present_modes);
         vkcheck(m_physical_device.getSurfacePresentModesKHR(m_surface, &num_present_modes, present_modes.data()));
         vk::Extent2D swapchain_extent {};
@@ -172,7 +172,7 @@ namespace lu::vkb {
         // Find a supported composite alpha format (not all devices support alpha opaque)
         vk::CompositeAlphaFlagBitsKHR composite_alpha = vk::CompositeAlphaFlagBitsKHR::eOpaque;
         // Simply select the first composite alpha format available
-        static constexpr std::array<vk::CompositeAlphaFlagBitsKHR, 4> composite_alpha_flags = {
+        static constexpr eastl::array<vk::CompositeAlphaFlagBitsKHR, 4> composite_alpha_flags = {
             vk::CompositeAlphaFlagBitsKHR::eOpaque,
             vk::CompositeAlphaFlagBitsKHR::ePreMultiplied,
             vk::CompositeAlphaFlagBitsKHR::ePostMultiplied,

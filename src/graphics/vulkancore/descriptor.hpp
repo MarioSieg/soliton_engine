@@ -16,7 +16,7 @@ namespace lu::graphics {
         [[nodiscard]] auto allocate(vk::DescriptorSet& set, vk::DescriptorSetLayout layout) -> bool;
 
     private:
-        using pool_sizes = std::vector<std::pair<vk::DescriptorType, float>>;
+        using pool_sizes = eastl::vector<std::pair<vk::DescriptorType, float>>;
         pool_sizes m_pool_sizes {
             { vk::DescriptorType::eSampler, .5f },
             { vk::DescriptorType::eCombinedImageSampler, 4.f },
@@ -33,8 +33,8 @@ namespace lu::graphics {
         };
 
         vk::DescriptorPool m_current_pool {};
-        std::vector<vk::DescriptorPool> m_used_pools {};
-        std::vector<vk::DescriptorPool> m_free_pools {};
+        eastl::vector<vk::DescriptorPool> m_used_pools {};
+        eastl::vector<vk::DescriptorPool> m_free_pools {};
 
         [[nodiscard]] auto request_pool() -> vk::DescriptorPool;
         [[nodiscard]] static auto create_pool(const pool_sizes& sizes, std::int32_t count, vk::DescriptorPoolCreateFlagBits flags) -> vk::DescriptorPool;
@@ -48,7 +48,7 @@ namespace lu::graphics {
         [[nodiscard]] auto create_layout(vk::DescriptorSetLayoutCreateInfo& info) -> vk::DescriptorSetLayout;
 
         struct descriptor_layout_info final {
-            std::vector<vk::DescriptorSetLayoutBinding> bindings {};
+            eastl::vector<vk::DescriptorSetLayoutBinding> bindings {};
             auto operator == (const descriptor_layout_info& other) const -> bool;
             auto operator != (const descriptor_layout_info& other) const -> bool;
             [[nodiscard]] auto get_hash() const noexcept -> std::size_t;
@@ -101,8 +101,8 @@ namespace lu::graphics {
             bool is_image {};
         };
 
-        std::vector<descriptor_write_container> m_write_descriptors {};
-        std::vector<vk::DescriptorSetLayoutBinding> m_bindings {};
+        eastl::vector<descriptor_write_container> m_write_descriptors {};
+        eastl::vector<vk::DescriptorSetLayoutBinding> m_bindings {};
         descriptor_layout_cache& m_cache;
         descriptor_allocator& m_allocator;
     };

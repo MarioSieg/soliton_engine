@@ -150,7 +150,7 @@ namespace lu::assetmgr {
         return true;
     }
 
-    auto asset_accessor::load_bin_file(const char* const vpath, std::vector<std::byte>& dat) -> bool {
+    auto asset_accessor::load_bin_file(const char* const vpath, eastl::vector<std::byte>& dat) -> bool {
         const auto result = load_file_impl(m_sys, vpath, dat, m_num_request, m_num_failed_requests);
         m_total_bytes_loaded += dat.size();
         return result;

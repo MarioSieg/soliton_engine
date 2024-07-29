@@ -31,7 +31,7 @@ namespace lu::scripting {
         using convar_ref = std::pair<std::optional<luabridge::LuaRef>*, bool*>;
         inline constinit std::uint32_t s_convar_i = 0;
         inline const auto tid = std::this_thread::get_id();
-        inline std::vector<convar_ref> s_convars {};
+        inline eastl::vector<convar_ref> s_convars {};
 
         inline auto disconnect_all_convars() -> void {
             log_info("Disconnecting {} CONVARs", s_convars.size());

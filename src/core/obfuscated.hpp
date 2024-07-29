@@ -37,7 +37,7 @@ namespace lu {
 
         LU_FORCEINLINE auto get() const noexcept -> T {
             const std::uint32_t xor_v = m_xor ^ (std::uint32_t)(size_t)this;
-            std::array<std::uint32_t, sizeof(T)/sizeof(std::uint32_t)> ret;
+            eastl::array<std::uint32_t, sizeof(T)/sizeof(std::uint32_t)> ret;
             auto* src = const_cast<std::uint32_t*>(&m_data[0]);
             auto* const dest = ret.data();
             for (std::size_t i = 0; i < (sizeof(T)>>2); ++i) {
@@ -95,7 +95,7 @@ namespace lu {
         LU_FORCEINLINE inline operator T() const noexcept { return get(); }
 
     private:
-        mutable std::array<std::uint32_t, (Mutate ? (sizeof(T)<<1) : sizeof(T)) / sizeof(std::uint32_t)> m_data {};
+        mutable eastl::array<std::uint32_t, (Mutate ? (sizeof(T)<<1) : sizeof(T)) / sizeof(std::uint32_t)> m_data {};
         mutable std::uint32_t m_xor {};
         mutable std::uint32_t m_mutate {};
 

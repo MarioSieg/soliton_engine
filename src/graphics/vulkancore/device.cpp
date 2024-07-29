@@ -145,7 +145,7 @@ namespace lu::vkb {
         uint32_t extCount = 0;
         vkcheck(vk::enumerateInstanceExtensionProperties(nullptr, &extCount, nullptr));
         if (extCount > 0) {
-            std::vector<vk::ExtensionProperties> extensions {extCount};
+            eastl::vector<vk::ExtensionProperties> extensions {extCount};
             if (vk::enumerateInstanceExtensionProperties(nullptr, &extCount, extensions.data()) == vk::Result::eSuccess) {
                 for (vk::ExtensionProperties& extension : extensions) {
                     m_supported_instance_extensions.emplace_back(extension.extensionName);
@@ -187,7 +187,7 @@ namespace lu::vkb {
         }
 
         // Setup enabled instance extensions
-        std::vector<const char*> vk_instance_extensions {};
+        eastl::vector<const char*> vk_instance_extensions {};
         if (!instance_extensions.empty()) [[likely]] {
             vk_instance_extensions.reserve(instance_extensions.size());
             for (const auto& ext : instance_extensions) {
@@ -207,7 +207,7 @@ namespace lu::vkb {
             // Check if this layer is available at instance level
             std::uint32_t layer_count;
             vkcheck(vk::enumerateInstanceLayerProperties(&layer_count, nullptr));
-            std::vector<vk::LayerProperties> layer_propertieses{layer_count};
+            eastl::vector<vk::LayerProperties> layer_propertieses{layer_count};
             vkcheck(vk::enumerateInstanceLayerProperties(&layer_count, layer_propertieses.data()));
             bool validationLayerPresent = false;
             for (vk::LayerProperties& layer : layer_propertieses) {
@@ -243,7 +243,7 @@ namespace lu::vkb {
     auto device::find_physical_device() -> void {
         std::uint32_t num_gpus = 0;
         vkcheck(m_instance.enumeratePhysicalDevices(&num_gpus, nullptr));
-        std::vector<vk::PhysicalDevice> physical_devices {num_gpus};
+        eastl::vector<vk::PhysicalDevice> physical_devices {num_gpus};
         vkcheck(m_instance.enumeratePhysicalDevices(&num_gpus, physical_devices.data()));
         log_info("Found {} Vulkan physical device(s)", num_gpus);
         passert(num_gpus > 0 && "No Vulkan physical devices found");
@@ -308,7 +308,7 @@ namespace lu::vkb {
         // Due to differing queue family configurations of Vulkan implementations this can be a bit tricky, especially if the application
         // requests different queue types
 
-        std::vector<vk::DeviceQueueCreateInfo> queue_infos{};
+        eastl::vector<vk::DeviceQueueCreateInfo> queue_infos{};
 
         // Get queue family indices for the requested queue family types
         // Note that the indices may overlap depending on the implementation
@@ -446,7 +446,7 @@ namespace lu::vkb {
     }
 
     auto device::find_supported_depth_format(const bool stencil_required, vk::Format& out_format) const -> bool {
-        std::vector<vk::Format> formats {};
+        eastl::vector<vk::Format> formats {};
         if (stencil_required) {
             formats = {
                 vk::Format::eD24UnormS8Uint,

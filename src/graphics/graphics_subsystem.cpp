@@ -75,7 +75,7 @@ namespace lu::graphics {
         s_instance = nullptr;
     }
 
-    [[nodiscard]] static auto compute_render_bucket_range(const std::size_t id, const std::size_t num_entities, const std::size_t num_threads) noexcept -> std::array<std::size_t, 2> {
+    [[nodiscard]] static auto compute_render_bucket_range(const std::size_t id, const std::size_t num_entities, const std::size_t num_threads) noexcept -> eastl::array<std::size_t, 2> {
         const std::size_t base_bucket_size = num_entities/num_threads;
         const std::size_t num_extra_entities = num_entities%num_threads;
         const std::size_t begin = base_bucket_size*id + std::min(id, num_extra_entities);
@@ -140,7 +140,7 @@ namespace lu::graphics {
         const DirectX::XMMATRIX vp = DirectX::XMLoadFloat4x4A(&graphics_subsystem::s_view_proj_mtx);
 
         // thread workload distribution
-        const std::vector<std::pair<std::span<const com::transform>, std::span<const com::mesh_renderer>>>& render_data = self.get_render_data();
+        const eastl::vector<std::pair<std::span<const com::transform>, std::span<const com::mesh_renderer>>>& render_data = self.get_render_data();
         const std::size_t total_entities = std::accumulate(render_data.cbegin(), render_data.cend(), 0, [](const std::size_t acc, const auto& pair) noexcept {
             passert(pair.first.size() == pair.second.size());
             return acc + pair.first.size();
@@ -239,7 +239,7 @@ namespace lu::graphics {
         const vkb::device& dvc = vkb::dvc();
         const vk::Device device = vkb::vkdvc();
 
-        const std::array<vk::DescriptorPoolSize, 1> sizes {
+        const eastl::array<vk::DescriptorPoolSize, 1> sizes {
             vk::DescriptorPoolSize {
                 .type = vk::DescriptorType::eUniformBufferDynamic,
                 .descriptorCount = 128u

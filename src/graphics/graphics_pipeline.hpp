@@ -15,7 +15,7 @@ namespace lu::graphics {
         HOTPROC static auto draw_mesh(
             const mesh& mesh,
             vk::CommandBuffer cmd,
-            const std::vector<material*>& mats,
+            const eastl::vector<material*>& mats,
             vk::PipelineLayout layout
         ) -> void;
 
@@ -24,13 +24,13 @@ namespace lu::graphics {
             vk::CommandBuffer cmd
         ) -> void;
 
-        virtual auto configure_shaders(std::vector<std::shared_ptr<shader>>& cfg) -> void = 0;
-        virtual auto configure_pipeline_layout(std::vector<vk::DescriptorSetLayout>& layouts, std::vector<vk::PushConstantRange>& ranges) -> void = 0;
-        virtual auto configure_vertex_info(std::vector<vk::VertexInputBindingDescription>& cfg, std::vector<vk::VertexInputAttributeDescription>& bindings) -> void;
+        virtual auto configure_shaders(eastl::vector<std::shared_ptr<shader>>& cfg) -> void = 0;
+        virtual auto configure_pipeline_layout(eastl::vector<vk::DescriptorSetLayout>& layouts, eastl::vector<vk::PushConstantRange>& ranges) -> void = 0;
+        virtual auto configure_vertex_info(eastl::vector<vk::VertexInputBindingDescription>& cfg, eastl::vector<vk::VertexInputAttributeDescription>& bindings) -> void;
         virtual auto configure_viewport_state(vk::PipelineViewportStateCreateInfo& cfg) -> void;
         virtual auto configure_input_assembly(vk::PipelineInputAssemblyStateCreateInfo& cfg) -> void;
         virtual auto configure_rasterizer(vk::PipelineRasterizationStateCreateInfo& cfg) -> void;
-        virtual auto configure_dynamic_states(std::vector<vk::DynamicState>& states) -> void;
+        virtual auto configure_dynamic_states(eastl::vector<vk::DynamicState>& states) -> void;
         virtual auto configure_depth_stencil(vk::PipelineDepthStencilStateCreateInfo& cfg) -> void;
         virtual auto configure_multisampling(vk::PipelineMultisampleStateCreateInfo& cfg) -> void;
         virtual auto configure_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> void;

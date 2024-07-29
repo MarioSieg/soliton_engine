@@ -20,8 +20,8 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
-#include <vector>
 #include <unordered_set>
+#include <vector>
 
 #include "libshaderc_util/file_finder.h"
 #include "shaderc/shaderc.hpp"

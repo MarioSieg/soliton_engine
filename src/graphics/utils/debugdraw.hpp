@@ -67,8 +67,8 @@ namespace lu::graphics {
         auto create_pipeline_states(vk::Device device, vk::RenderPass pass) -> void;
 
         const std::uint32_t k_max_vertices;
-        std::vector<vertex> m_vertices {};
-        std::vector<draw_command> m_draw_commands {};
+        eastl::vector<vertex> m_vertices {};
+        eastl::vector<draw_command> m_draw_commands {};
         bool m_depth_test = false;
         std::uint32_t m_batch_start = 0;
         std::uint32_t m_batch_end = 0;

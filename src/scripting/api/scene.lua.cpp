@@ -55,7 +55,7 @@ LUA_INTEROP_API auto __lu_scene_get_active_camera_entity() -> lua_entity_id {
 struct scene_iter_context final {
     flecs::query<const com::metadata> query {};
     scene* ref {};
-    std::vector<flecs::id_t> data {};
+    eastl::vector<flecs::id_t> data {};
 };
 
 static constinit std::optional<scene_iter_context> s_scene_iter_context;

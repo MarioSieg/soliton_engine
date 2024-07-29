@@ -12,13 +12,13 @@ namespace lu {
     struct fixed_ring_scalar_buffer final {
         auto submit(Scalar value) noexcept -> void;
         [[nodiscard]] auto offset() const noexcept -> std::size_t;
-        [[nodiscard]] auto data() const noexcept -> const std::array<Scalar, Size>&;
+        [[nodiscard]] auto data() const noexcept -> const eastl::array<Scalar, Size>&;
         [[nodiscard]] auto min() const noexcept -> Scalar;
         [[nodiscard]] auto max() const noexcept -> Scalar;
         [[nodiscard]] auto avg() const noexcept -> Scalar;
 
     private:
-        std::array<Scalar, Size> m_buf {};
+        eastl::array<Scalar, Size> m_buf {};
         std::size_t m_offs {};
         Scalar m_min {};
         Scalar m_max {};
@@ -26,7 +26,7 @@ namespace lu {
     };
 
     template <typename Scalar, const std::size_t Size> requires std::is_arithmetic_v<Scalar>
-    inline auto fixed_ring_scalar_buffer<Scalar, Size>::data() const noexcept -> const std::array<Scalar, Size>& {
+    inline auto fixed_ring_scalar_buffer<Scalar, Size>::data() const noexcept -> const eastl::array<Scalar, Size>& {
         return this->m_buf;
     }
 

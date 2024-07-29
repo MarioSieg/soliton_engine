@@ -57,7 +57,7 @@ namespace lu::graphics {
 
     class shader : public no_copy, public no_move {
     public:
-        static constexpr std::array<const std::string_view, 1> k_shader_include_dirs {
+        static constexpr eastl::array<const std::string_view, 1> k_shader_include_dirs {
             "engine_assets/shaders/include"
         };
 
@@ -68,7 +68,7 @@ namespace lu::graphics {
         [[nodiscard]] auto get_variant() const noexcept -> const shader_variant& { return m_variant; }
         [[nodiscard]] auto get_source() const noexcept -> const std::optional<std::string>& { return m_source; }
         [[nodiscard]] auto get_assembly() const noexcept -> const std::optional<std::string>& { return m_assembly; }
-        [[nodiscard]] auto get_bytecode() const noexcept -> const std::optional<std::vector<std::uint32_t>>& { return m_bytecode; }
+        [[nodiscard]] auto get_bytecode() const noexcept -> const std::optional<eastl::vector<std::uint32_t>>& { return m_bytecode; }
         [[nodiscard]] auto get_module() const noexcept -> vk::ShaderModule { return m_module; }
         [[nodiscard]] auto get_stage_info() const noexcept -> const vk::PipelineShaderStageCreateInfo& { return m_stage_info; }
 
@@ -76,7 +76,7 @@ namespace lu::graphics {
         shader() = default;
         std::optional<std::string> m_source {};
         std::optional<std::string> m_assembly {};
-        std::optional<std::vector<std::uint32_t>> m_bytecode {};
+        std::optional<eastl::vector<std::uint32_t>> m_bytecode {};
         shader_variant m_variant {};
         vk::ShaderModule m_module {};
         vk::PipelineShaderStageCreateInfo m_stage_info {};

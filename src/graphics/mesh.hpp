@@ -69,7 +69,7 @@ class mesh final : public assetmgr::asset {
         std::uint32_t m_vertex_count = 0;
         std::uint32_t m_index_count = 0;
         bool m_index_32bit = false;
-        std::vector<primitive> m_primitives {};
+        eastl::vector<primitive> m_primitives {};
         DirectX::BoundingBox m_aabb {};
         JPH::MeshShape* m_collision_mesh {};
     };

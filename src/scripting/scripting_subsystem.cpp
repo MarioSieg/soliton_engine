@@ -130,7 +130,7 @@ namespace lu::scripting {
         };
 
         // print proxy
-        static constexpr std::array<const luaL_Reg, 2> lib = {
+        static constexpr eastl::array<const luaL_Reg, 2> lib = {
             luaL_Reg { "print", +print_proxy },
             luaL_Reg { nullptr, nullptr } // terminator
         };

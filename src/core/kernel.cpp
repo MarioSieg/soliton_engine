@@ -47,7 +47,7 @@ namespace lu {
         bool print_stdout = true, bool enroll = true
     ) -> std::shared_ptr<spdlog::logger> {
         const auto time = fmt::localtime(std::time(nullptr));
-        std::vector<std::shared_ptr<spdlog::sinks::sink>> sinks {
+        eastl::vector<std::shared_ptr<spdlog::sinks::sink>> sinks {
             std::make_shared<buffered_sink>(k_log_queue_size),
             std::make_shared<spdlog::sinks::basic_file_sink_mt>(
             fmt::format("{}/session {:%d-%m-%Y  %H-%M-%S}/{}.log", kernel::log_dir, time, name)),

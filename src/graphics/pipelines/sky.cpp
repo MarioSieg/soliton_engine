@@ -11,7 +11,7 @@ namespace lu::graphics::pipelines {
 
         const vk::Device device = vkb::vkdvc();
 
-        constexpr std::array<vk::DescriptorSetLayoutBinding, 1> bindings {
+        constexpr eastl::array<vk::DescriptorSetLayoutBinding, 1> bindings {
             vk::DescriptorSetLayoutBinding {
                 .binding = 0u,
                 .descriptorType = vk::DescriptorType::eCombinedImageSampler,
@@ -63,14 +63,14 @@ namespace lu::graphics::pipelines {
         device.destroyDescriptorSetLayout(m_descriptor_set_layout, vkb::get_alloc());
     }
 
-    auto sky_pipeline::configure_shaders(std::vector<std::shared_ptr<shader>>& cfg) -> void {
+    auto sky_pipeline::configure_shaders(eastl::vector<std::shared_ptr<shader>>& cfg) -> void {
         auto vs = shader_cache::get().get_shader(shader_variant{"/engine_assets/shaders/src/skybox.vert", shader_stage::vertex});
         auto fs = shader_cache::get().get_shader(shader_variant{"/engine_assets/shaders/src/skybox.frag", shader_stage::fragment});
         cfg.emplace_back(vs);
         cfg.emplace_back(fs);
     }
 
-    auto sky_pipeline::configure_pipeline_layout(std::vector<vk::DescriptorSetLayout>& layouts, std::vector<vk::PushConstantRange>& ranges) -> void {
+    auto sky_pipeline::configure_pipeline_layout(eastl::vector<vk::DescriptorSetLayout>& layouts, eastl::vector<vk::PushConstantRange>& ranges) -> void {
         layouts.emplace_back(m_descriptor_set_layout);
 
         vk::PushConstantRange push_constant_range {};

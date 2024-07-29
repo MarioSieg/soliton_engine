@@ -51,8 +51,8 @@ namespace lu::vkb {
         vk::ColorSpaceKHR m_color_space {};
         vk::SwapchainKHR m_swapchain {};
         std::uint32_t m_image_count {};
-        std::vector<vk::Image> m_images {};
-        std::vector<buffer> m_buffers {};
+        eastl::vector<vk::Image> m_images {};
+        eastl::vector<buffer> m_buffers {};
         std::uint32_t m_queue_node_index {};
     };
 }

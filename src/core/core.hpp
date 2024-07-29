@@ -2,14 +2,15 @@
 
 #pragma once
 
-#include <array>
 #include <algorithm>
 #include <bit>
 #include <memory>
 #include <string>
 #include <limits>
 #include <span>
-#include <vector>
+
+#include <EASTL/array.h>
+#include <EASTL/vector.h>
 
 #include "crc32.hpp"
 #include "delegate.hpp"

@@ -16,7 +16,7 @@ namespace lu {
         auto clear() noexcept -> void { m_Backtrace.clear(); }
 
     private:
-        std::vector<std::pair<spdlog::level::level_enum, std::string>> m_Backtrace{};
+        eastl::vector<std::pair<spdlog::level::level_enum, std::string>> m_Backtrace{};
 
         auto sink_it_(const spdlog::details::log_msg& msg) -> void override {
             spdlog::memory_buf_t buffer{};

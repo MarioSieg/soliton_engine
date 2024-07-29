@@ -51,7 +51,7 @@ namespace lu {
         alignas(k_hardware_destructive_interference_size) std::size_t m_read_idx_cache {};
         alignas(k_hardware_destructive_interference_size) std::atomic<std::size_t> m_read_idx {};
         alignas(k_hardware_destructive_interference_size) std::size_t m_write_idx_cache {};
-        [[maybe_unused]] std::array<std::byte, k_hardware_destructive_interference_size - sizeof(m_write_idx_cache)> m_pad {};
+        [[maybe_unused]] eastl::array<std::byte, k_hardware_destructive_interference_size - sizeof(m_write_idx_cache)> m_pad {};
 
     public:
         /**

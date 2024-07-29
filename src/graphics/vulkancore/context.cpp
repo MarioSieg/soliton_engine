@@ -252,7 +252,7 @@ namespace lu::vkb {
     // This allows the driver to know up-front what the rendering will look like and is a good opportunity to optimize especially on tile-based renderers (with multiple subpasses)
     // Using sub pass dependencies also adds implicit layout transitions for the attachment used, so we don't need to add explicit image memory barriers to transform them
     auto context::setup_render_pass() -> void {
-        std::array<vk::AttachmentDescription, 3> attachments {};
+        eastl::array<vk::AttachmentDescription, 3> attachments {};
 
         // Multisampled attachment that we render to
         attachments[0].format = m_swapchain->get_format();
@@ -310,7 +310,7 @@ namespace lu::vkb {
         subpass_description.pResolveAttachments = &resolve_reference;
 
         // Subpass dependencies for layout transitions
-        std::array<vk::SubpassDependency, 2> dependencies {};
+        eastl::array<vk::SubpassDependency, 2> dependencies {};
 
         dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
         dependencies[0].dstSubpass = 0;
@@ -341,7 +341,7 @@ namespace lu::vkb {
         // Create a frame buffer for every image in the swapchain
         m_framebuffers.resize(m_swapchain->get_image_count());
         for (std::size_t i = 0; i < m_framebuffers.size(); ++i) {
-            std::array<vk::ImageView, 3> attachments {};
+            eastl::array<vk::ImageView, 3> attachments {};
             attachments[0] = m_msaa_target.color.view;
             attachments[1] = m_swapchain->get_buffer(i).view;
             attachments[2] = m_msaa_target.depth.view;

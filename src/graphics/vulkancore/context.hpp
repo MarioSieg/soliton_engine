@@ -158,14 +158,14 @@ namespace lu::vkb {
         std::optional<device> m_device;
         std::optional<swapchain> m_swapchain;
         struct {
-            std::array<vk::Semaphore, k_max_concurrent_frames> present_complete {}; // Swap chain image presentation
-            std::array<vk::Semaphore, k_max_concurrent_frames> render_complete {}; // Command buffer submission and execution
+            eastl::array<vk::Semaphore, k_max_concurrent_frames> present_complete {}; // Swap chain image presentation
+            eastl::array<vk::Semaphore, k_max_concurrent_frames> render_complete {}; // Command buffer submission and execution
         } m_semaphores {}; // Semaphores are used to coordinate operations within the graphics queue and ensure correct command ordering
         vk::CommandPool m_graphics_command_pool {};
         vk::CommandPool m_compute_command_pool {};
         vk::CommandPool m_transfer_command_pool {};
-        std::array<vk::CommandBuffer, k_max_concurrent_frames> m_command_buffers {}; // Command buffers used for rendering
-        std::array<vk::Fence, k_max_concurrent_frames> m_wait_fences {}; // Wait fences to sync command buffer access
+        eastl::array<vk::CommandBuffer, k_max_concurrent_frames> m_command_buffers {}; // Command buffers used for rendering
+        eastl::array<vk::Fence, k_max_concurrent_frames> m_wait_fences {}; // Wait fences to sync command buffer access
         struct {
             vk::Image image {};
             vk::ImageView view {};
@@ -173,7 +173,7 @@ namespace lu::vkb {
         } m_depth_stencil {};
         vk::RenderPass m_scene_render_pass {};
         vk::RenderPass m_ui_render_pass {};
-        std::vector<vk::Framebuffer> m_framebuffers {};
+        eastl::vector<vk::Framebuffer> m_framebuffers {};
         vk::PipelineCache m_pipeline_cache {};
         std::uint32_t m_current_frame = 0; // To select the correct sync objects, we need to keep track of the current frame
         std::uint32_t m_image_index = 0; // The current swap chain image index
@@ -190,7 +190,7 @@ namespace lu::vkb {
                 VmaAllocation memory {};
             } depth {};
         } m_msaa_target {};
-        std::array<vk::ClearValue, 3> m_clear_values {};
+        eastl::array<vk::ClearValue, 3> m_clear_values {};
     };
 
     // Get global vulkan context wrapper class
