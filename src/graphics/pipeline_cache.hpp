@@ -10,10 +10,10 @@
 #include "pipeline_base.hpp"
 
 namespace lu::graphics {
-    class pipeline_registry final : public no_copy, public no_move {
+    class pipeline_cache final : public no_copy, public no_move {
     public:
-        explicit pipeline_registry(vk::Device device);
-        ~pipeline_registry();
+        explicit pipeline_cache(vk::Device device);
+        ~pipeline_cache();
 
         [[nodiscard]] auto get_pipelines() const -> const ankerl::unordered_dense::map<std::string, std::unique_ptr<pipeline_base>>& { return m_pipelines; }
         [[nodiscard]] auto get_pipeline(std::string&& name) -> pipeline_base& {
@@ -42,7 +42,7 @@ namespace lu::graphics {
 
         [[nodiscard]] auto get_cache() const -> vk::PipelineCache { return m_cache; }
 
-        [[nodiscard]] static auto get() -> pipeline_registry& {
+        [[nodiscard]] static auto get() -> pipeline_cache& {
             assert(s_instance);
             return *s_instance;
         }
@@ -51,7 +51,7 @@ namespace lu::graphics {
         static auto shutdown() -> void;
 
     private:
-        static inline constinit std::unique_ptr<pipeline_registry> s_instance {};
+        static inline constinit std::unique_ptr<pipeline_cache> s_instance {};
         ankerl::unordered_dense::map<std::string, std::unique_ptr<pipeline_base>> m_pipelines {};
         const vk::Device m_device;
         vk::PipelineCache m_cache {};

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.11.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lunam Engine: graphics::pipeline_registry Class Reference</title>
+<title>Lunam Engine: graphics::pipeline_cache Class Reference</title>
 <link rel="icon" href="logo_small.png" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
@@ -107,13 +107,13 @@ $(function(){initNavTree('classgraphics_1_1pipeline__registry.html',''); initRes
 <a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="#pri-static-attribs">Static Private Attributes</a> &#124;
 <a href="classgraphics_1_1pipeline__registry-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">graphics::pipeline_registry Class Reference<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+  <div class="headertitle"><div class="title">graphics::pipeline_cache Class Reference<span class="mlabels"><span class="mlabel">final</span></span></div></div>
 </div><!--header-->
 <div class="contents">
 
 <p><code>#include &lt;<a class="el" href="pipeline_8hpp_source.html">pipeline.hpp</a>&gt;</code></p>
 <div class="dynheader">
-Inheritance diagram for graphics::pipeline_registry:</div>
+Inheritance diagram for graphics::pipeline_cache:</div>
 <div class="dyncontent">
  <div class="center">
   <img src="classgraphics_1_1pipeline__registry.png" usemap="#graphics::pipeline_5Fregistry_map" alt=""/>
@@ -125,9 +125,9 @@ Inheritance diagram for graphics::pipeline_registry:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ae2fe37cf538775a084c01f033b100a9f" id="r_ae2fe37cf538775a084c01f033b100a9f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae2fe37cf538775a084c01f033b100a9f">pipeline_registry</a> (vk::Device device)</td></tr>
+<tr class="memitem:ae2fe37cf538775a084c01f033b100a9f" id="r_ae2fe37cf538775a084c01f033b100a9f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae2fe37cf538775a084c01f033b100a9f">pipeline_cache</a> (vk::Device device)</td></tr>
 <tr class="separator:ae2fe37cf538775a084c01f033b100a9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a255b28fece9d35af4f2001af454e7d4c" id="r_a255b28fece9d35af4f2001af454e7d4c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a255b28fece9d35af4f2001af454e7d4c">~pipeline_registry</a> ()</td></tr>
+<tr class="memitem:a255b28fece9d35af4f2001af454e7d4c" id="r_a255b28fece9d35af4f2001af454e7d4c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a255b28fece9d35af4f2001af454e7d4c">pipeline_cache> ()</td></tr>
 <tr class="separator:a255b28fece9d35af4f2001af454e7d4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ada0f7229e8a9003c1c6b4c6f7717d804" id="r_ada0f7229e8a9003c1c6b4c6f7717d804"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ada0f7229e8a9003c1c6b4c6f7717d804">get_pipelines</a> () const -&gt; const ankerl::unordered_dense::map&lt; std::string, std::unique_ptr&lt; <a class="el" href="classgraphics_1_1pipeline__base.html">pipeline_base</a> &gt; &gt; &amp;</td></tr>
 <tr class="separator:ada0f7229e8a9003c1c6b4c6f7717d804"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -172,7 +172,7 @@ requires std::is_base_of_v&lt;<a class="el" href="classgraphics_1_1pipeline__bas
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a80d2f7f9de12c9c4a50b106851b29689" id="r_a80d2f7f9de12c9c4a50b106851b29689"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a80d2f7f9de12c9c4a50b106851b29689">get</a> () -&gt; <a class="el" href="classgraphics_1_1pipeline__registry.html">pipeline_registry</a> &amp;</td></tr>
+<tr class="memitem:a80d2f7f9de12c9c4a50b106851b29689" id="r_a80d2f7f9de12c9c4a50b106851b29689"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a80d2f7f9de12c9c4a50b106851b29689">get</a> () -&gt; <a class="el" href="classgraphics_1_1pipeline__registry.html">pipeline_cache</a> &amp;</td></tr>
 <tr class="separator:a80d2f7f9de12c9c4a50b106851b29689"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa3442830970218b862f612afb9abef34" id="r_aa3442830970218b862f612afb9abef34"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa3442830970218b862f612afb9abef34">init</a> () -&gt; <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a></td></tr>
 <tr class="separator:aa3442830970218b862f612afb9abef34"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -190,12 +190,12 @@ Private Attributes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-static-attribs" name="pri-static-attribs"></a>
 Static Private Attributes</h2></td></tr>
-<tr class="memitem:a3c5f11434d39d4a7617e0c157e6fbf74" id="r_a3c5f11434d39d4a7617e0c157e6fbf74"><td class="memItemLeft" align="right" valign="top">static constinit std::unique_ptr&lt; <a class="el" href="classgraphics_1_1pipeline__registry.html">pipeline_registry</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3c5f11434d39d4a7617e0c157e6fbf74">s_instance</a> {}</td></tr>
+<tr class="memitem:a3c5f11434d39d4a7617e0c157e6fbf74" id="r_a3c5f11434d39d4a7617e0c157e6fbf74"><td class="memItemLeft" align="right" valign="top">static constinit std::unique_ptr&lt; <a class="el" href="classgraphics_1_1pipeline__registry.html">pipeline_cache</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3c5f11434d39d4a7617e0c157e6fbf74">s_instance</a> {}</td></tr>
 <tr class="separator:a3c5f11434d39d4a7617e0c157e6fbf74"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ae2fe37cf538775a084c01f033b100a9f" name="ae2fe37cf538775a084c01f033b100a9f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae2fe37cf538775a084c01f033b100a9f">&#9670;&#160;</a></span>pipeline_registry()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2fe37cf538775a084c01f033b100a9f">&#9670;&#160;</a></span>pipeline_cache()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -204,7 +204,7 @@ Static Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">graphics::pipeline_registry::pipeline_registry </td>
+          <td class="memname">graphics::pipeline_cache::pipeline_cache </td>
           <td>(</td>
           <td class="paramtype">vk::Device</td>          <td class="paramname"><span class="paramname"><em>device</em></span></td><td>)</td>
           <td></td>
@@ -220,13 +220,13 @@ Static Private Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a255b28fece9d35af4f2001af454e7d4c" name="a255b28fece9d35af4f2001af454e7d4c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a255b28fece9d35af4f2001af454e7d4c">&#9670;&#160;</a></span>~pipeline_registry()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a255b28fece9d35af4f2001af454e7d4c">&#9670;&#160;</a></span>pipeline_cache/h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">graphics::pipeline_registry::~pipeline_registry </td>
+          <td class="memname">graphics::pipeline_cache::pipeline_cachetd>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
@@ -247,10 +247,10 @@ Static Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static auto graphics::pipeline_registry::get </td>
+          <td class="memname">static auto graphics::pipeline_cache::get </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td> -&gt; <a class="el" href="classgraphics_1_1pipeline__registry.html">pipeline_registry</a>&amp; </td>
+          <td> -&gt; <a class="el" href="classgraphics_1_1pipeline__registry.html">pipeline_cache</a>&amp; </td>
         </tr>
       </table>
   </td>
@@ -272,7 +272,7 @@ Static Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">auto graphics::pipeline_registry::get_cache </td>
+          <td class="memname">auto graphics::pipeline_cache::get_cache </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const -&gt; vk::PipelineCache </td>
@@ -297,7 +297,7 @@ Static Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">auto graphics::pipeline_registry::get_pipeline </td>
+          <td class="memname">auto graphics::pipeline_cache::get_pipeline </td>
           <td>(</td>
           <td class="paramtype">std::string &amp;&amp;</td>          <td class="paramname"><span class="paramname"><em>name</em></span></td><td>)</td>
           <td> -&gt; <a class="el" href="classgraphics_1_1pipeline__base.html">pipeline_base</a>&amp; </td>
@@ -322,7 +322,7 @@ Static Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">auto graphics::pipeline_registry::get_pipelines </td>
+          <td class="memname">auto graphics::pipeline_cache::get_pipelines </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const -&gt; const ankerl::unordered_dense::map&lt;std::string, std::unique_ptr&lt;<a class="el" href="classgraphics_1_1pipeline__base.html">pipeline_base</a>&gt;&gt;&amp; </td>
@@ -347,7 +347,7 @@ Static Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">auto graphics::pipeline_registry::init </td>
+          <td class="memname">auto graphics::pipeline_cache::init </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> -&gt; <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a></td>
@@ -369,7 +369,7 @@ Static Private Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">auto graphics::pipeline_registry::invalidate_all </td>
+          <td class="memname">auto graphics::pipeline_cache::invalidate_all </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> -&gt; <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a></td>
@@ -392,7 +392,7 @@ requires std::is_base_of_v&lt;<a class="el" href="classgraphics_1_1pipeline__bas
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">auto graphics::pipeline_registry::register_pipeline </td>
+          <td class="memname">auto graphics::pipeline_cache::register_pipeline </td>
           <td>(</td>
           <td class="paramtype">Args &amp;&amp;...</td>          <td class="paramname"><span class="paramname"><em>args</em></span></td><td>)</td>
           <td> -&gt; T&amp; </td>
@@ -417,7 +417,7 @@ requires std::is_base_of_v&lt;<a class="el" href="classgraphics_1_1pipeline__bas
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">auto graphics::pipeline_registry::shutdown </td>
+          <td class="memname">auto graphics::pipeline_cache::shutdown </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> -&gt; <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a></td>
@@ -439,7 +439,7 @@ requires std::is_base_of_v&lt;<a class="el" href="classgraphics_1_1pipeline__bas
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">auto graphics::pipeline_registry::try_recreate_all </td>
+          <td class="memname">auto graphics::pipeline_cache::try_recreate_all </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> -&gt; <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a></td>
@@ -460,7 +460,7 @@ requires std::is_base_of_v&lt;<a class="el" href="classgraphics_1_1pipeline__bas
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">vk::PipelineCache graphics::pipeline_registry::m_cache {}</td>
+          <td class="memname">vk::PipelineCache graphics::pipeline_cache::m_cache {}</td>
         </tr>
       </table>
   </td>
@@ -482,7 +482,7 @@ requires std::is_base_of_v&lt;<a class="el" href="classgraphics_1_1pipeline__bas
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const vk::Device graphics::pipeline_registry::m_device</td>
+          <td class="memname">const vk::Device graphics::pipeline_cache::m_device</td>
         </tr>
       </table>
   </td>
@@ -504,7 +504,7 @@ requires std::is_base_of_v&lt;<a class="el" href="classgraphics_1_1pipeline__bas
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">ankerl::unordered_dense::map&lt;std::string, std::unique_ptr&lt;<a class="el" href="classgraphics_1_1pipeline__base.html">pipeline_base</a>&gt; &gt; graphics::pipeline_registry::m_pipelines {}</td>
+          <td class="memname">ankerl::unordered_dense::map&lt;std::string, std::unique_ptr&lt;<a class="el" href="classgraphics_1_1pipeline__base.html">pipeline_base</a>&gt; &gt; graphics::pipeline_cache::m_pipelines {}</td>
         </tr>
       </table>
   </td>
@@ -526,7 +526,7 @@ requires std::is_base_of_v&lt;<a class="el" href="classgraphics_1_1pipeline__bas
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::unique_ptr&lt;<a class="el" href="classgraphics_1_1pipeline__registry.html">pipeline_registry</a>&gt; graphics::pipeline_registry::s_instance {}</td>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classgraphics_1_1pipeline__registry.html">pipeline_cache</a>&gt; graphics::pipeline_cache::s_instance {}</td>
         </tr>
       </table>
   </td>
@@ -547,7 +547,7 @@ requires std::is_base_of_v&lt;<a class="el" href="classgraphics_1_1pipeline__bas
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="namespacegraphics.html">graphics</a></li><li class="navelem"><a class="el" href="classgraphics_1_1pipeline__registry.html">pipeline_registry</a></li>
+    <li class="navelem"><a class="el" href="namespacegraphics.html">graphics</a></li><li class="navelem"><a class="el" href="classgraphics_1_1pipeline__registry.html">pipeline_cache</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.11.0 </li>
   </ul>
 </div>

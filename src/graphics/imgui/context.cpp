@@ -74,7 +74,7 @@ namespace lu::imgui {
         init_info.Device = device.get_logical_device();
         init_info.QueueFamily = vkb::ctx().get_swapchain().get_queue_node_index();
         init_info.Queue = device.get_graphics_queue();
-        init_info.PipelineCache = graphics::pipeline_registry::get().get_cache();
+        init_info.PipelineCache = graphics::pipeline_cache::get().get_cache();
         init_info.DescriptorPool = m_imgui_descriptor_pool;
         init_info.ImageCount = vkb::context::k_max_concurrent_frames;
         init_info.MinImageCount = vkb::context::k_max_concurrent_frames;

@@ -43,8 +43,8 @@ namespace lu::graphics {
 
         shader_cache::init(cv_shader_dir());
 
-        pipeline_registry::init();
-        auto& reg = pipeline_registry::get();
+        pipeline_cache::init();
+        auto& reg = pipeline_cache::get();
         reg.register_pipeline<pipelines::pbr_pipeline>();
         reg.register_pipeline<pipelines::sky_pipeline>();
 
@@ -65,7 +65,7 @@ namespace lu::graphics {
         m_noesis_context.reset();
 
         shader_cache::shutdown();
-        pipeline_registry::shutdown();
+        pipeline_cache::shutdown();
         m_render_thread_pool.reset();
         if (m_debugdraw) {
             m_debugdraw.reset();
@@ -134,7 +134,7 @@ namespace lu::graphics {
         passert(usr != nullptr);
         auto& self = *static_cast<graphics_subsystem*>(usr);
 
-        const auto& pbr_pipeline = dynamic_cast<const pipelines::pbr_pipeline&>(pipeline_registry::get().get_pipeline("mat_pbr"));
+        const auto& pbr_pipeline = dynamic_cast<const pipelines::pbr_pipeline&>(pipeline_cache::get().get_pipeline("mat_pbr"));
 
         cmd.bindPipeline(vk::PipelineBindPoint::eGraphics, pbr_pipeline.get_pipeline());
         const DirectX::XMMATRIX vp = DirectX::XMLoadFloat4x4A(&graphics_subsystem::s_view_proj_mtx);
@@ -293,7 +293,7 @@ namespace lu::graphics {
         log_info("Reloading pipelines");
         const auto now = std::chrono::high_resolution_clock::now();
         if (true) [[likely]] { // TODO
-            auto& reg = pipeline_registry::get();
+            auto& reg = pipeline_cache::get();
             reg.try_recreate_all();
             log_info("Reloaded pipelines in {}ms", std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - now).count());
         } else {
