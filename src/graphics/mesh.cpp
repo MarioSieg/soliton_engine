@@ -13,7 +13,7 @@
 namespace lu::graphics {
 	using namespace DirectX;
 
-	static auto compute_aabb(BoundingBox& aabb, const std::span<const mesh::vertex> vertices) noexcept -> void {
+	static auto compute_aabb(BoundingBox& aabb, const eastl::span<const mesh::vertex> vertices) noexcept -> void {
 		DirectX::XMVECTOR min = XMVectorReplicate(1e10f);
         DirectX::XMVECTOR max = XMVectorReplicate(-1e10f);
 		for (const auto& v : vertices) {
@@ -116,16 +116,16 @@ namespace lu::graphics {
         }
 
         const aiMesh* mesh = scene->mMeshes[node->mMeshes[0]];
-        std::span span {&mesh, 1};
+        eastl::span span {&mesh, 1};
 
 		create_from_assimp(span);
 	}
 
-    mesh::mesh(const std::span<const aiMesh*> meshes) : asset{assetmgr::asset_source::memory} {
+    mesh::mesh(const eastl::span<const aiMesh*> meshes) : asset{assetmgr::asset_source::memory} {
 		create_from_assimp(meshes);
     }
 
-    auto mesh::create_from_assimp(const std::span<const aiMesh*> meshes) -> void {
+    auto mesh::create_from_assimp(const eastl::span<const aiMesh*> meshes) -> void {
 		std::size_t num_vertices = 0, num_indices = 0;
 		for (const aiMesh* mesh : meshes) {
 			num_vertices += mesh->mNumVertices;
@@ -151,7 +151,7 @@ namespace lu::graphics {
 			+ m_primitives.size() * sizeof(primitive);
     }
 
-    auto mesh::create_buffers(const std::span<const vertex> vertices, const std::span<const index> indices) -> void {
+    auto mesh::create_buffers(const eastl::span<const vertex> vertices, const eastl::span<const index> indices) -> void {
     	passert(indices.size() <= std::numeric_limits<index>::max());
 
     	m_vertex_buffer.create(
@@ -199,7 +199,7 @@ namespace lu::graphics {
     	}
     }
 
-    auto mesh::create_collision_mesh(const std::span<const vertex> vertices, const std::span<const index> indices) -> void {
+    auto mesh::create_collision_mesh(const eastl::span<const vertex> vertices, const eastl::span<const index> indices) -> void {
 		for (const vertex& v : vertices) {
 			verts.emplace_back(std::bit_cast<JPH::Float3>(v.position));
 		}

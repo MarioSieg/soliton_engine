@@ -23,8 +23,8 @@ namespace lu::vkb {
         [[nodiscard]] auto get_physical_device_props() const noexcept -> const vk::PhysicalDeviceProperties& { return m_device_properties; }
         [[nodiscard]] auto get_physical_device_features() const noexcept -> const vk::PhysicalDeviceFeatures& { return m_device_features; }
         [[nodiscard]] auto get_physical_device_enabled_features() const noexcept -> const vk::PhysicalDeviceFeatures& { return m_enabled_features; }
-        [[nodiscard]] auto get_supported_device_extensions() const noexcept -> std::span<const vk::ExtensionProperties> { return m_supported_device_extensions; }
-        [[nodiscard]] auto get_supported_instance_extensions() const noexcept -> std::span<const eastl::string> { return m_supported_instance_extensions; }
+        [[nodiscard]] auto get_supported_device_extensions() const noexcept -> eastl::span<const vk::ExtensionProperties> { return m_supported_device_extensions; }
+        [[nodiscard]] auto get_supported_instance_extensions() const noexcept -> eastl::span<const eastl::string> { return m_supported_instance_extensions; }
         [[nodiscard]] auto is_device_extension_supported(const char* extension) const -> bool;
         [[nodiscard]] auto is_instance_extension_supported(const char* extension) const -> bool;
         [[nodiscard]] auto get_memory_properties() const noexcept -> const vk::PhysicalDeviceMemoryProperties& { return m_memory_properties; }
@@ -69,7 +69,7 @@ namespace lu::vkb {
         auto find_physical_device() -> void;
         auto create_logical_device(
             const vk::PhysicalDeviceFeatures& enabled_features,
-            std::span<const char*> enabled_extensions,
+            eastl::span<const char*> enabled_extensions,
             void* next_chain,
             vk::QueueFlags requested_queue_types = vk::QueueFlagBits::eGraphics | vk::QueueFlagBits::eCompute | vk::QueueFlagBits::eTransfer
         ) -> void;

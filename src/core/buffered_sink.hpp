@@ -9,7 +9,7 @@ namespace lu {
     public:
         explicit buffered_sink(const std::size_t cap) { m_Backtrace.reserve(cap); }
 
-        auto get() const noexcept -> std::span<const std::pair<spdlog::level::level_enum, eastl::string>> {
+        auto get() const noexcept -> eastl::span<const std::pair<spdlog::level::level_enum, eastl::string>> {
             return m_Backtrace;
         }
 

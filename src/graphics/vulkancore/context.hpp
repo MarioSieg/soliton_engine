@@ -103,14 +103,14 @@ namespace lu::vkb {
             }
         }
 
-        [[nodiscard]] auto get_command_buffers() const noexcept -> std::span<const vk::CommandBuffer> { return m_command_buffers; }
+        [[nodiscard]] auto get_command_buffers() const noexcept -> eastl::span<const vk::CommandBuffer> { return m_command_buffers; }
         [[nodiscard]] auto get_current_frame() const noexcept -> std::uint32_t { return m_current_frame; }
         [[nodiscard]] auto get_image_index() const noexcept -> std::uint32_t { return m_image_index; }
         [[nodiscard]] auto get_pipeline_cache() const noexcept -> vk::PipelineCache { return m_pipeline_cache; }
         [[nodiscard]] auto get_imgui_descriptor_pool() const noexcept -> vk::DescriptorPool { return m_imgui_descriptor_pool; }
         [[nodiscard]] auto get_scene_render_pass() const noexcept -> vk::RenderPass { return m_scene_render_pass; }
         [[nodiscard]] auto get_ui_render_pass() const noexcept -> vk::RenderPass { return m_ui_render_pass; }
-        [[nodiscard]] auto get_framebuffers() const noexcept -> std::span<const vk::Framebuffer> { return m_framebuffers; }
+        [[nodiscard]] auto get_framebuffers() const noexcept -> eastl::span<const vk::Framebuffer> { return m_framebuffers; }
         [[nodiscard]] auto get_swapchain_image() const noexcept -> vk::Image { return m_swapchain->get_images()[m_image_index]; }
         [[nodiscard]] auto get_swapchain_image_view() const noexcept -> vk::ImageView { return m_swapchain->get_buffer(m_image_index).view; }
         [[nodiscard]] auto get_swapchain_image_format() const noexcept -> vk::Format { return m_swapchain->get_format(); }

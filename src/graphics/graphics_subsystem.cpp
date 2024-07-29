@@ -140,7 +140,7 @@ namespace lu::graphics {
         const DirectX::XMMATRIX vp = DirectX::XMLoadFloat4x4A(&graphics_subsystem::s_view_proj_mtx);
 
         // thread workload distribution
-        const eastl::vector<std::pair<std::span<const com::transform>, std::span<const com::mesh_renderer>>>& render_data = self.get_render_data();
+        const eastl::vector<std::pair<eastl::span<const com::transform>, eastl::span<const com::mesh_renderer>>>& render_data = self.get_render_data();
         const std::size_t total_entities = std::accumulate(render_data.cbegin(), render_data.cend(), 0, [](const std::size_t acc, const auto& pair) noexcept {
             passert(pair.first.size() == pair.second.size());
             return acc + pair.first.size();
@@ -207,7 +207,7 @@ namespace lu::graphics {
         scene.readonly_begin();
         m_render_query.query.iter([this](const flecs::iter& i, const com::transform* transforms, const com::mesh_renderer* renderers) {
             const std::size_t n = i.count();
-            m_render_data.emplace_back(std::span{transforms, n}, std::span{renderers, n});
+            m_render_data.emplace_back(eastl::span{transforms, n}, eastl::span{renderers, n});
         });
         if (m_cmd) [[likely]] { // TODO: refractor
             m_render_thread_pool->begin_frame(&m_inheritance_info);

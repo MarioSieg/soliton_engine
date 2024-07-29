@@ -97,7 +97,7 @@ namespace lu {
 
                 renderer->materials.emplace_back(material);
 
-                std::span span {&mesh, 1};
+                eastl::span span {&mesh, 1};
                 renderer->meshes.emplace_back(get_asset_registry<graphics::mesh>().load_from_memory(span));
             }
             for (unsigned i = 0; i < node->mNumChildren; ++i) {

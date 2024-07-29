@@ -300,7 +300,7 @@ namespace lu::vkb {
 
     auto device::create_logical_device(
         const vk::PhysicalDeviceFeatures& enabled_features,
-        const std::span<const char*> enabled_extensions,
+        const eastl::span<const char*> enabled_extensions,
         void* next_chain,
         vk::QueueFlags requested_queue_types
     ) -> void {

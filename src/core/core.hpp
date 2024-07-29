@@ -13,6 +13,7 @@
 #include <EASTL/vector.h>
 #include <EASTL/string.h>
 #include <EASTL/string_view.h>
+#include <EASTL/span.h>
 
 #include <ankerl/unordered_dense.h>
 

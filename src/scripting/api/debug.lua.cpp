@@ -122,7 +122,7 @@ LUA_INTEROP_API auto __lu_dd_draw_native_log(const bool scroll) -> void {
     if (!buffered) [[unlikely]] {
         return;
     }
-    const std::span<const std::pair<spdlog::level::level_enum, eastl::string>> logs = buffered->get();
+    const eastl::span<const std::pair<spdlog::level::level_enum, eastl::string>> logs = buffered->get();
     using namespace ImGui;
     const float footer = GetStyle().ItemSpacing.y + GetFrameHeightWithSpacing();
     const auto id = static_cast<ImGuiID>(std::bit_cast<std::uintptr_t>(logs.data()) ^ 0xfefefefe);
