@@ -57,7 +57,7 @@ namespace lu::graphics {
 
     class shader : public no_copy, public no_move {
     public:
-        static constexpr eastl::array<const std::string_view, 1> k_shader_include_dirs {
+        static constexpr eastl::array<const eastl::string_view, 1> k_shader_include_dirs {
             "engine_assets/shaders/include"
         };
 

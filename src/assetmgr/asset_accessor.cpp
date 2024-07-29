@@ -51,11 +51,11 @@ namespace lu::assetmgr {
         m_sys = assetsys_create(nullptr);
         passert(m_sys != nullptr);
         for (const auto [fs, vfs] : k_vfs_mounts) {
-            log_info("Mounting asset root '{}' -> '{}", fs, vfs);
+            log_info("Mounting asset root '{}' -> '{}", fs.data(), vfs.data());
             if (assetsys_error_t err = assetsys_mount(m_sys, fs.data(), vfs.data()); err != ASSETSYS_SUCCESS) { // Attempt to mount dir first
-                const auto lupack_file = fmt::format("{}.lupack", fs);
+                const auto lupack_file = fmt::format("{}.lupack", fs.data());
                 if (err = assetsys_mount(m_sys, lupack_file.c_str(), vfs.data()); err != ASSETSYS_SUCCESS) [[unlikely]] { // Attempt to mount LUPACK file now
-                    panic("Failed to mount asset root (PFS or VFS) '{}' / '{} to '{}: {}", fs, lupack_file.c_str(), vfs, asset_sys_err_info(err)); // Panic if both failed
+                    panic("Failed to mount asset root (PFS or VFS) '{}' / '{} to '{}: {}", fs.data(), lupack_file.c_str(), vfs.data(), asset_sys_err_info(err)); // Panic if both failed
                 }
             }
         }

@@ -38,7 +38,7 @@ namespace lu::graphics {
         [] {
             shaderc_util::FileFinder f {};
             for (auto&& dir : shader::k_shader_include_dirs) {
-                f.search_path().emplace_back(dir);
+                f.search_path().emplace_back(dir.data());
             }
             return f;
         }()

@@ -9,8 +9,12 @@
 #include <span>
 
 #include <EASTL/array.h>
+#include <EASTL/fixed_vector.h>
 #include <EASTL/vector.h>
 #include <EASTL/string.h>
+#include <EASTL/string_view.h>
+
+#include <ankerl/unordered_dense.h>
 
 #include "crc32.hpp"
 #include "delegate.hpp"
@@ -24,8 +28,6 @@
 #include "stopwatch.hpp"
 #include "thread_signal.hpp"
 #include "utils.hpp"
-
-#include <ankerl/unordered_dense.h>
 
 #define USE_MIMALLOC 1
 

@@ -91,7 +91,7 @@ namespace lu::scripting {
                     if constexpr (std::is_same_v<T, eastl::string>) s_fallback = fallback();
                     else s_fallback = fallback() ? "true" : "false";
                 }
-               log_info("Registering CONVAR #{} [{} : {}] | Flags: {:#x}, Fallback: {}", ++detail::s_convar_i, full_name().c_str(), type_name(), m_flags, s_fallback.c_str());
+               log_info("Registering CONVAR #{} [{} : {}] | Flags: {:#x}, Fallback: {}", ++detail::s_convar_i, full_name().c_str(), type_name().data(), m_flags, s_fallback.c_str());
             } else {
                 if (m_fallback) {
                     s_fallback = eastl::to_string(fallback());
@@ -102,7 +102,7 @@ namespace lu::scripting {
                 } else {
                     has_range = m_min != std::numeric_limits<T>::min() || m_max != std::numeric_limits<T>::max();
                 }
-                log_info("Registering CONVAR #{} [{} : {}] | Flags: {:#x}, Fallback: {}", ++detail::s_convar_i, full_name().c_str(), type_name(), m_flags, s_fallback.c_str());
+                log_info("Registering CONVAR #{} [{} : {}] | Flags: {:#x}, Fallback: {}", ++detail::s_convar_i, full_name().c_str(), type_name().data(), m_flags, s_fallback.c_str());
             }
             if constexpr (!std::is_same_v<T, bool> && std::is_integral_v<T> || std::is_floating_point_v<T>) {
                 if (m_min > m_max) [[unlikely]] {
@@ -177,7 +177,7 @@ namespace lu::scripting {
             }
         }
 
-        static constexpr auto type_name() noexcept -> std::string_view {
+        static constexpr auto type_name() noexcept -> eastl::string_view {
             if constexpr (!std::is_same_v<T, bool> && (std::is_integral_v<T> || std::is_floating_point_v<T>)) return "number";
             else if constexpr (std::is_same_v<T, bool>) return "boolean";
             else if constexpr (std::is_same_v<T, eastl::string>) return "string";

@@ -20,9 +20,9 @@ namespace lu::assetmgr {
         }
         log_info("Initializing VFS asset manager");
         for (const auto [fs, vfs] : k_vfs_mounts) {
-            log_info("VFS Mounting point '{}' -> '{}", fs, vfs);
-            if (!std::filesystem::exists(fs)) {
-                panic("Physical asset root VFS '{}' does not exist", fs);
+            log_info("VFS Mounting point '{}' -> '{}", fs.data(), vfs.data());
+            if (!std::filesystem::exists(fs.data())) {
+                panic("Physical asset root VFS '{}' does not exist", fs.data());
             }
         }
         s_is_initialized.store(true, std::memory_order_relaxed);

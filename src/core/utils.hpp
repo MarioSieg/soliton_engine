@@ -15,7 +15,7 @@ namespace lu {
     [[noreturn]] extern auto panic_impl(std::string&& message) -> void;
 
     template <typename... Args>
-    [[noreturn]] auto panic(std::string_view message, Args&&... args) -> void {
+    [[noreturn]] auto panic(const std::string_view message, Args&&... args) -> void {
         panic_impl(fmt::format(message, std::forward<Args>(args)...));
     }
 
