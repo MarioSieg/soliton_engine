@@ -39,22 +39,22 @@
         </StackPanel>
         <Border Background="{DynamicResource Brush.Background.Popup}" BorderBrush="{DynamicResource Brush.Border.Normal}" BorderThickness="1">
           <DockPanel Width="350" Height="240" LastChildFill="{Binding IsChecked, ElementName=fill}">
-            <Border Background="Turquoise" Padding="10" DockPanel.Dock="Top" Margin="2">
+            <Border Background="Turquoise" k_padding="10" DockPanel.Dock="Top" Margin="2">
               <TextBlock Text="Top" FontSize="16" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
-            <Border Background="LightSeaGreen" Padding="10" DockPanel.Dock="Bottom" Margin="2">
+            <Border Background="LightSeaGreen" k_padding="10" DockPanel.Dock="Bottom" Margin="2">
               <TextBlock Text="Bottom" FontSize="16" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
-            <Border Background="Teal" Padding="20,10" DockPanel.Dock="Left" Margin="2">
+            <Border Background="Teal" k_padding="20,10" DockPanel.Dock="Left" Margin="2">
               <TextBlock Text="Left" FontSize="16" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
-            <Border Background="Teal" Padding="20,10" DockPanel.Dock="Right" Margin="2">
+            <Border Background="Teal" k_padding="20,10" DockPanel.Dock="Right" Margin="2">
               <TextBlock Text="Right" FontSize="16" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
-            <Border Background="LightSeaGreen" Padding="10" DockPanel.Dock="Top" Margin="2">
+            <Border Background="LightSeaGreen" k_padding="10" DockPanel.Dock="Top" Margin="2">
               <TextBlock Text="Top" FontSize="16" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
-            <Border Background="Turquoise" Padding="20,10" DockPanel.Dock="{Binding SelectedItem.Content, ElementName=dock}" Margin="2">
+            <Border Background="Turquoise" k_padding="20,10" DockPanel.Dock="{Binding SelectedItem.Content, ElementName=dock}" Margin="2">
               <TextBlock Text="{Binding SelectedItem.Content, ElementName=dock}" FontSize="16" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
           </DockPanel>

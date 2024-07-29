@@ -11,7 +11,7 @@
   <Grid>
     <Grid Background="{StaticResource Brush.Window.Background}">
       <Border Width="670" Height="470" Margin="10">
-        <Expander Header="Theme Preview" IsExpanded="True" VerticalAlignment="Top" Padding="15">
+        <Expander Header="Theme Preview" IsExpanded="True" VerticalAlignment="Top" k_padding="15">
           <StackPanel>
             <StackPanel Orientation="Horizontal">
               <StackPanel>

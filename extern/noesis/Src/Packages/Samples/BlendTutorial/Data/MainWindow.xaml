@@ -67,7 +67,7 @@
                     </Expander>
                 </StackPanel>
             </Viewbox>
-            <Border x:Name="ContainerBorder" DockPanel.Dock="Left" BorderBrush="DimGray" BorderThickness="1" Margin="10" CornerRadius="2" Background="White" Padding="1" ClipToBounds="True" PreviewMouseLeftButtonDown="ContainerBorder_MouseDown"
+            <Border x:Name="ContainerBorder" DockPanel.Dock="Left" BorderBrush="DimGray" BorderThickness="1" Margin="10" CornerRadius="2" Background="White" k_padding="1" ClipToBounds="True" PreviewMouseLeftButtonDown="ContainerBorder_MouseDown"
               PreviewMouseLeftButtonUp="ContainerBorder_MouseUp"
               PreviewMouseMove="ContainerBorder_MouseMove">
                 <Canvas x:Name="ContainerCanvas"/>

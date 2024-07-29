@@ -63,7 +63,7 @@
   <Viewbox>
     <Viewbox Height="600">
         <Border x:Name="page" Background="White" BorderBrush="#444" BorderThickness="1,1,5,5"
-                Width="2100" Height="2900" Margin="100" Padding="300,200"
+                Width="2100" Height="2900" Margin="100" k_padding="300,200"
                 TextElement.Foreground="Black" TextElement.FontFamily="Fonts/#Bitter"
                 RenderTransformOrigin="0.5,0.5">
         <Border.RenderTransform>

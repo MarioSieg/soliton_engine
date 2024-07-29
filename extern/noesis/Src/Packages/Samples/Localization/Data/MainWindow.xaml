@@ -188,7 +188,7 @@
               </StackPanel>
             </Viewbox>
             <Border Grid.Row="2" BorderThickness="1" Background="{noesis:Loc Flag}" BorderBrush="{StaticResource IndentBorder}" Margin="0,0,0,16" noesis:Element.PPAAMode="Disabled">
-              <Border Padding="2">
+              <Border k_padding="2">
                 <Border.Background>
                   <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
                     <GradientStop Color="#00304C62" Offset="0"/>

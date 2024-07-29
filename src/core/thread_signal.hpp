@@ -7,9 +7,10 @@
 #include <mutex>
 #include <type_traits>
 
-#include "../../core/core.hpp"
+#include "utils.hpp"
+#include "move_copy_base.hpp"
 
-namespace lu::graphics {
+namespace lu {
     class thread_sig final : public no_copy, public no_move {
     public:
         static_assert(std::atomic_int32_t::is_always_lock_free);
@@ -34,8 +35,8 @@ namespace lu::graphics {
         //  -> acquire a std::mutex (typically via std::lock_guard)
         //  -> perform the modification while the lock is held
         //  -> execute notify_one or notify_all on the std::condition_variable (the lock does not need to be held for notification)
-
-        passert(value != 0); {
+        passert(value != 0);
+        {
             std::unique_lock lock {m_mtx};
             passert(!m_signaled.load(std::memory_order_seq_cst) && !m_threads_awaken.load(std::memory_order_seq_cst));
             m_signaled.store(value, std::memory_order_seq_cst);

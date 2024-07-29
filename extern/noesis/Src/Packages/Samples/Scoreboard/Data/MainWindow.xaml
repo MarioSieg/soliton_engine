@@ -268,7 +268,7 @@
             </Style>
             <Style TargetType="{x:Type ComboBox}">
                 <Setter Property="MinHeight" Value="15"/>
-                <Setter Property="Padding" Value="2,4"/>
+                <Setter Property="k_padding" Value="2,4"/>
                 <Setter Property="FontSize" Value="24"/>
                 <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
                 <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
@@ -294,13 +294,13 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <Border Padding="1">
+                                    <Border k_padding="1">
                                         <ContentPresenter x:Name="ContentSite"
                                             HorizontalAlignment="Left"
                                             VerticalAlignment="Center"
                                             ContentSource="SelectionBoxItem"
                                             IsHitTestVisible="False"
-                                            Margin="{TemplateBinding Padding}"/>
+                                            Margin="{TemplateBinding k_padding}"/>
                                     </Border>
                                     <Border Grid.Column="1" MinWidth="{TemplateBinding MinHeight}" IsHitTestVisible="False"/>
                                 </Grid>
@@ -337,7 +337,7 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type ComboBoxItem}">
-                            <Border x:Name="Border" Background="{TemplateBinding Background}" Padding="10,4">
+                            <Border x:Name="Border" Background="{TemplateBinding Background}" k_padding="10,4">
                                 <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Center" />
                             </Border>
                             <ControlTemplate.Triggers>
@@ -362,7 +362,7 @@
                         <ControlTemplate TargetType="{x:Type ButtonBase}">
                             <Border x:Name="Bg"
                                     Background="{TemplateBinding Background}"
-                                    Padding="10,4"
+                                    k_padding="10,4"
                                     CornerRadius="1">
                                 <ContentPresenter
                                     HorizontalAlignment="Center"
@@ -564,7 +564,7 @@
                             ContentTemplate="{TemplateBinding ContentTemplate}"
                             ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
                             CanContentScroll="{TemplateBinding CanContentScroll}"
-                            Margin="{TemplateBinding Padding}"/>
+                            Margin="{TemplateBinding k_padding}"/>
                     </Grid>
                     <ScrollBar x:Name="PART_VerticalScrollBar"
                             Grid.Column="1"
@@ -655,7 +655,7 @@
                 <TextBlock Text="{Binding AllianceScore}" Grid.Row="1" VerticalAlignment="Center" Foreground="#FFFFDC64" FontSize="48" HorizontalAlignment="Center" Margin="8,0,0,14" Grid.Column="1"/>
                 <Rectangle Grid.Row="1" Grid.Column="3" Margin="8,18,8,26" Fill="{StaticResource HighlightScore}"/>
                 <TextBlock Text="{Binding HordeScore}" Grid.Row="1" VerticalAlignment="Center" Foreground="#FFFFDC64" FontSize="48" HorizontalAlignment="Center" Margin="0,0,8,14" Grid.Column="3"/>
-                <Border Grid.ColumnSpan="10" Grid.Row="2" Padding="8,0">
+                <Border Grid.ColumnSpan="10" Grid.Row="2" k_padding="8,0">
                     <Grid Margin="0,4,16,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="8*"/>
@@ -697,7 +697,7 @@
                         <ColumnDefinition Width="20*"/>
                         <ColumnDefinition Width="20*"/>
                     </Grid.ColumnDefinitions>
-                    <ComboBox x:Name="VisibleTeam" ItemsSource="{Binding VisibleTeams}" SelectedIndex="{Binding SelectedTeam}" Foreground="{StaticResource ScoreFg}" Grid.Column="0" Width="150" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="8,0,0,0" Padding="8,4"/>
+                    <ComboBox x:Name="VisibleTeam" ItemsSource="{Binding VisibleTeams}" SelectedIndex="{Binding SelectedTeam}" Foreground="{StaticResource ScoreFg}" Grid.Column="0" Width="150" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="8,0,0,0" k_padding="8,4"/>
                     <TextBlock Text="Elapsed time: " Grid.Column="1" Style="{StaticResource PlayersHeaderStyle}" HorizontalAlignment="Right"/>
                     <TextBlock Text="{Binding ElapsedTime}" Grid.Column="2" Style="{StaticResource PlayersHeaderStyle}" Foreground="White" HorizontalAlignment="Right"/>
                     <TextBlock Text="Minutes" Grid.Column="3" Style="{StaticResource PlayersHeaderStyle}" Foreground="White" HorizontalAlignment="Left" Margin="8,0,0,0"/>

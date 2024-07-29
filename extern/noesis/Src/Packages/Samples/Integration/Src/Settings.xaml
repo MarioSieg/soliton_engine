@@ -31,11 +31,11 @@
         </Grid.ColumnDefinitions>
         <Viewbox Grid.Row="1" Grid.Column="1">
             <StackPanel Width="520">
-                <Border Background="{StaticResource Brush.Primary}" Padding="0,2" CornerRadius="4,4,0,0">
+                <Border Background="{StaticResource Brush.Primary}" k_padding="0,2" CornerRadius="4,4,0,0">
                     <TextBlock Text="S E T T I N G S" Foreground="White" FontSize="24" HorizontalAlignment="Center"/>
                 </Border>
-                <Border Background="#FF1E2225" BorderThickness="1,0,1,1" BorderBrush="{StaticResource Brush.Primary}" Height="310" Padding="10">
-                    <TabControl Padding="10">
+                <Border Background="#FF1E2225" BorderThickness="1,0,1,1" BorderBrush="{StaticResource Brush.Primary}" Height="310" k_padding="10">
+                    <TabControl k_padding="10">
                         <TabItem Header="Game">
                             <Grid>
                                 <StackPanel>
@@ -72,7 +72,7 @@
                                         </StackPanel>
                                         <StackPanel Grid.Column="1" Margin="10,0,0,0">
                                             <CheckBox Content="Decline party and guild invites"/>
-                                            <Border BorderThickness="1" BorderBrush="{StaticResource Brush.Primary.Shade0}" Padding="4" Margin="0,8,0,0">
+                                            <Border BorderThickness="1" BorderBrush="{StaticResource Brush.Primary.Shade0}" k_padding="4" Margin="0,8,0,0">
                                                 <StackPanel>
                                                     <RadioButton Content="Always display name" Margin="0,0,0,0" IsChecked="True"/>
                                                     <RadioButton Content="Always hide name" Margin="0,8,0,0"/>
@@ -97,7 +97,7 @@
                                             <ColumnDefinition Width="4*"/>
                                         </Grid.ColumnDefinitions>
                                         <TextBlock Grid.Column="0" Text="Screen Resolution" VerticalAlignment="Center"/>
-                                        <ComboBox Grid.Column="1" MaxDropDownHeight="160" Margin="0,0,8,0" Padding="6,5" SelectedIndex="6">
+                                        <ComboBox Grid.Column="1" MaxDropDownHeight="160" Margin="0,0,8,0" k_padding="6,5" SelectedIndex="6">
                                             <ComboBoxItem Content="800x600"/>
                                             <ComboBoxItem Content="1024x768"/>
                                             <ComboBoxItem Content="1280x720"/>
@@ -116,7 +116,7 @@
                                             <ColumnDefinition Width="4*"/>
                                         </Grid.ColumnDefinitions>
                                         <TextBlock Grid.Column="0" Text="Texture Quality" VerticalAlignment="Center"/>
-                                        <ComboBox Grid.Column="1" MaxDropDownHeight="160" Margin="0,0,8,0" Padding="6,5" SelectedIndex="2">
+                                        <ComboBox Grid.Column="1" MaxDropDownHeight="160" Margin="0,0,8,0" k_padding="6,5" SelectedIndex="2">
                                             <ComboBoxItem Content="Low"/>
                                             <ComboBoxItem Content="Medium"/>
                                             <ComboBoxItem Content="High"/>
@@ -130,7 +130,7 @@
                                             <ColumnDefinition Width="4*"/>
                                         </Grid.ColumnDefinitions>
                                         <TextBlock Grid.Column="0" Text="Graphic Quality" VerticalAlignment="Center"/>
-                                        <ComboBox Grid.Column="1" MaxDropDownHeight="160" Margin="0,0,8,0" Padding="6,5" SelectedIndex="2">
+                                        <ComboBox Grid.Column="1" MaxDropDownHeight="160" Margin="0,0,8,0" k_padding="6,5" SelectedIndex="2">
                                             <ComboBoxItem Content="Low"/>
                                             <ComboBoxItem Content="Medium"/>
                                             <ComboBoxItem Content="High"/>

@@ -214,7 +214,7 @@
           <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <Decorator x:Name="ShowBarsRef" IsEnabled="False"/>
-        <ScrollContentPresenter Grid.RowSpan="2" Grid.ColumnSpan="2" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}" CanContentScroll="{TemplateBinding CanContentScroll}" Margin="{TemplateBinding Padding}"/>
+        <ScrollContentPresenter Grid.RowSpan="2" Grid.ColumnSpan="2" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}" CanContentScroll="{TemplateBinding CanContentScroll}" Margin="{TemplateBinding k_padding}"/>
         <Rectangle x:Name="Corner" Grid.Row="1" Grid.Column="1" Fill="{StaticResource Brush.Track.Normal}" IsEnabled="False" Opacity="0"/>
         <ScrollBar x:Name="PART_HorizontalScrollBar" Grid.Column="0" Grid.Row="1" Orientation="Horizontal" MaxHeight="{TemplateBinding MinHeight}" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportWidth}" Minimum="0" Maximum="{TemplateBinding ScrollableWidth}" Opacity="0"/>
         <ScrollBar x:Name="PART_VerticalScrollBar" Grid.Column="1" Grid.Row="0" Orientation="Vertical" MaxWidth="{TemplateBinding MinWidth}" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportHeight}" Minimum="0" Maximum="{TemplateBinding ScrollableHeight}" Opacity="0"/>
@@ -271,7 +271,7 @@
   <Style x:Key="RssReader.Style.ScrollViewer" TargetType="ScrollViewer" BasedOn="{StaticResource {x:Type ContentControl}}">
     <Setter Property="OverridesDefaultStyle" Value="True"/>
     <Setter Property="PanningMode" Value="VerticalFirst"/>
-    <Setter Property="Padding" Value="6,6,16,6"/>
+    <Setter Property="k_padding" Value="6,6,16,6"/>
     <Setter Property="Template" Value="{StaticResource Template.ScrollViewer}"/>
     <Setter Property="Background" Value="{StaticResource RssReader.Brush.TextBlock}"/>
     <Setter Property="BorderBrush" Value="Transparent"/>
@@ -289,7 +289,7 @@
   <!-- TextBlock Style -->
   <Style x:Key="RssReader.Style.TextBlock" TargetType="{x:Type TextBlock}">
     <Setter Property="Foreground" Value="{StaticResource RssReader.Brush.Entry.Foreground}"/>
-    <Setter Property="Padding" Value="5"/>
+    <Setter Property="k_padding" Value="5"/>
     <Setter Property="TextAlignment" Value="Justify"/>
     <Setter Property="TextWrapping" Value="Wrap"/>
     <Setter Property="TextTrimming" Value="None"/>

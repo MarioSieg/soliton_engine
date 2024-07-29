@@ -240,7 +240,7 @@
                                 </VisualStateGroup>
                             </VisualStateManager.VisualStateGroups>
                             <Border CornerRadius="4" BorderThickness="1" BorderBrush="{StaticResource Brush.OuterBorder}" Background="Silver">
-                                <Border CornerRadius="3" BorderThickness="1" BorderBrush="{StaticResource Brush.OuterBorderInset}" Padding="6">
+                                <Border CornerRadius="3" BorderThickness="1" BorderBrush="{StaticResource Brush.OuterBorderInset}" k_padding="6">
                                     <Border CornerRadius="2" BorderThickness="1" BorderBrush="{StaticResource Brush.InnerBorder}">
                                         <Grid>
                                             <Grid x:Name="OnGroup">
@@ -304,7 +304,7 @@
                         <Setter Property="ClickMode" Value="Press"/>
                     </Style>
                 </Grid.Resources>
-                <ToggleButton Width="150" Height="50" Padding="10,5"
+                <ToggleButton Width="150" Height="50" k_padding="10,5"
                 Style="{StaticResource Style.ToggleButton.Switch}" Background="#FF0CC736"/>
             </Grid>
         </HeaderedContentControl>

@@ -87,7 +87,7 @@
 
   <!-- ToolTip -->
   <ControlTemplate x:Key="Template.ToolTip" TargetType="ToolTip">
-    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" CornerRadius="{DynamicResource Corner.Popup}" Padding="{TemplateBinding Padding}">
+    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" CornerRadius="{DynamicResource Corner.Popup}" k_padding="{TemplateBinding k_padding}">
       <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
     </Border>
   </ControlTemplate>
@@ -98,7 +98,7 @@
     <Setter Property="Background" Value="{DynamicResource Brush.Background.Popup}"/>
     <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Popup}"/>
     <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="Padding" Value="8,6"/>
+    <Setter Property="k_padding" Value="8,6"/>
     <Setter Property="Placement" Value="Mouse"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
     <Setter Property="Template" Value="{StaticResource Template.ToolTip}"/>
@@ -106,8 +106,8 @@
 
   <!-- Label -->
   <ControlTemplate x:Key="Template.Label" TargetType="Label">
-    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
-      <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}"/>
+    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" k_padding="{TemplateBinding k_padding}">
+      <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding k_padding}"/>
     </Border>
     <ControlTemplate.Triggers>
       <Trigger Property="IsEnabled" Value="False">
@@ -130,7 +130,7 @@
         <ScaleTransform />
       </Grid.RenderTransform>
       <Border x:Name="Border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{DynamicResource Corner.Border0}"/>
-      <ContentPresenter x:Name="PART_ContentPresenter" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}"/>
+      <ContentPresenter x:Name="PART_ContentPresenter" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding k_padding}"/>
     </Grid>
     <ControlTemplate.Resources>
       <Storyboard x:Key="Anim.Press">
@@ -173,7 +173,7 @@
     <Setter Property="BorderThickness" Value="{DynamicResource Border.Normal}"/>
     <Setter Property="HorizontalContentAlignment" Value="Center"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
-    <Setter Property="Padding" Value="8,7"/>
+    <Setter Property="k_padding" Value="8,7"/>
     <Setter Property="UseLayoutRounding" Value="True"/>
     <Setter Property="Template" Value="{StaticResource Template.ButtonBase}"/>
     <Setter Property="FocusVisualStyle" Value="{StaticResource Style.Focus.Outer.Uniform}"/>
@@ -188,7 +188,7 @@
         <ScaleTransform />
       </Grid.RenderTransform>
       <Border x:Name="Border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{DynamicResource Corner.Border0}"/>
-      <ContentPresenter x:Name="PART_ContentPresenter" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}"/>
+      <ContentPresenter x:Name="PART_ContentPresenter" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding k_padding}"/>
     </Grid>
     <ControlTemplate.Resources>
       <Storyboard x:Key="Anim.Press">
@@ -243,7 +243,7 @@
     <Setter Property="BorderThickness" Value="{DynamicResource Border.Normal}"/>
     <Setter Property="HorizontalContentAlignment" Value="Center"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
-    <Setter Property="Padding" Value="8,7"/>
+    <Setter Property="k_padding" Value="8,7"/>
     <Setter Property="UseLayoutRounding" Value="True"/>
     <Setter Property="Template" Value="{StaticResource Template.ToggleButton}"/>
     <Setter Property="FocusVisualStyle" Value="{StaticResource Style.Focus.Outer.Uniform}"/>
@@ -281,7 +281,7 @@
           </Ellipse.RenderTransform>
         </Ellipse>
       </Decorator>
-      <ContentPresenter x:Name="PART_ContentPresenter" Grid.Column="1" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}"/>
+      <ContentPresenter x:Name="PART_ContentPresenter" Grid.Column="1" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding k_padding}"/>
     </Grid>
     <ControlTemplate.Triggers>
       <EventTrigger RoutedEvent="FrameworkElement.Loaded" SourceName="Root">
@@ -346,7 +346,7 @@
     <Setter Property="BorderThickness" Value="{DynamicResource Border.Normal}"/>
     <Setter Property="HorizontalContentAlignment" Value="Left"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
-    <Setter Property="Padding" Value="6,0,0,0"/>
+    <Setter Property="k_padding" Value="6,0,0,0"/>
     <Setter Property="UseLayoutRounding" Value="True"/>
     <Setter Property="Template" Value="{StaticResource Template.ToggleSwitch}"/>
     <Setter Property="FocusVisualStyle" Value="{StaticResource Style.Focus.Outer.Padded}"/>
@@ -391,7 +391,7 @@
           <Rectangle x:Name="CheckIndeterminate" Width="10" Height="10" Fill="{DynamicResource Brush.Glyph.Normal}" Visibility="Collapsed"/>
         </Grid>
       </Decorator>
-      <ContentPresenter x:Name="PART_ContentPresenter" Grid.Column="1" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}"/>
+      <ContentPresenter x:Name="PART_ContentPresenter" Grid.Column="1" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding k_padding}"/>
     </Grid>
     <ControlTemplate.Triggers>
       <EventTrigger RoutedEvent="FrameworkElement.Loaded" SourceName="Root">
@@ -463,7 +463,7 @@
     <Setter Property="BorderThickness" Value="{DynamicResource Border.Normal}"/>
     <Setter Property="HorizontalContentAlignment" Value="Left"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
-    <Setter Property="Padding" Value="6,0,0,0"/>
+    <Setter Property="k_padding" Value="6,0,0,0"/>
     <Setter Property="UseLayoutRounding" Value="True"/>
     <Setter Property="Template" Value="{StaticResource Template.CheckBox}"/>
     <Setter Property="FocusVisualStyle" Value="{StaticResource Style.Focus.Outer.Padded}"/>
@@ -504,7 +504,7 @@
           </Ellipse.RenderTransform>
         </Ellipse>
       </Decorator>
-      <ContentPresenter x:Name="PART_ContentPresenter" Grid.Column="1" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}"/>
+      <ContentPresenter x:Name="PART_ContentPresenter" Grid.Column="1" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding k_padding}"/>
     </Grid>
     <ControlTemplate.Triggers>
       <EventTrigger RoutedEvent="FrameworkElement.Loaded" SourceName="Root">
@@ -565,7 +565,7 @@
     <Setter Property="BorderThickness" Value="{DynamicResource Border.Normal}"/>
     <Setter Property="HorizontalContentAlignment" Value="Left"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
-    <Setter Property="Padding" Value="6,0,0,0"/>
+    <Setter Property="k_padding" Value="6,0,0,0"/>
     <Setter Property="UseLayoutRounding" Value="True"/>
     <Setter Property="Template" Value="{StaticResource Template.RadioButton}"/>
     <Setter Property="FocusVisualStyle" Value="{StaticResource Style.Focus.Outer.Padded}"/>
@@ -676,7 +676,7 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="RepeatButton">
-          <Border Background="Transparent" Padding="{TemplateBinding Padding}">
+          <Border Background="Transparent" k_padding="{TemplateBinding k_padding}">
             <Border Background="{TemplateBinding Background}" CornerRadius="{DynamicResource Corner.Border2}"/>
           </Border>
         </ControlTemplate>
@@ -699,10 +699,10 @@
       </Border>
       <Track x:Name="PART_Track" Grid.RowSpan="3" Orientation="Horizontal">
         <Track.DecreaseRepeatButton>
-          <RepeatButton x:Name="DecreaseButton" Command="Slider.DecreaseLarge" Padding="0,9" Margin="0,0,-1,0" Background="{TemplateBinding Foreground}" Style="{StaticResource Style.Slider.RepeatButton}"/>
+          <RepeatButton x:Name="DecreaseButton" Command="Slider.DecreaseLarge" k_padding="0,9" Margin="0,0,-1,0" Background="{TemplateBinding Foreground}" Style="{StaticResource Style.Slider.RepeatButton}"/>
         </Track.DecreaseRepeatButton>
         <Track.IncreaseRepeatButton>
-          <RepeatButton x:Name="IncreaseButton" Command="Slider.IncreaseLarge" Padding="0,9" Background="Transparent" Style="{StaticResource Style.Slider.RepeatButton}"/>
+          <RepeatButton x:Name="IncreaseButton" Command="Slider.IncreaseLarge" k_padding="0,9" Background="Transparent" Style="{StaticResource Style.Slider.RepeatButton}"/>
         </Track.IncreaseRepeatButton>
         <Track.Thumb>
           <Thumb x:Name="Thumb" Background="{TemplateBinding Foreground}" Style="{StaticResource Style.Slider.Thumb}"/>
@@ -750,10 +750,10 @@
       </Border>
       <Track x:Name="PART_Track" Grid.ColumnSpan="3" Orientation="Vertical">
         <Track.DecreaseRepeatButton>
-          <RepeatButton x:Name="DecreaseButton" Command="Slider.DecreaseLarge" Padding="9,0" Margin="0,-1,0,0" Background="{TemplateBinding Foreground}" Style="{StaticResource Style.Slider.RepeatButton}"/>
+          <RepeatButton x:Name="DecreaseButton" Command="Slider.DecreaseLarge" k_padding="9,0" Margin="0,-1,0,0" Background="{TemplateBinding Foreground}" Style="{StaticResource Style.Slider.RepeatButton}"/>
         </Track.DecreaseRepeatButton>
         <Track.IncreaseRepeatButton>
-          <RepeatButton x:Name="IncreaseButton" Command="Slider.IncreaseLarge" Padding="9,0" Background="Transparent" Style="{StaticResource Style.Slider.RepeatButton}"/>
+          <RepeatButton x:Name="IncreaseButton" Command="Slider.IncreaseLarge" k_padding="9,0" Background="Transparent" Style="{StaticResource Style.Slider.RepeatButton}"/>
         </Track.IncreaseRepeatButton>
         <Track.Thumb>
           <Thumb x:Name="Thumb" Background="{TemplateBinding Foreground}" Style="{StaticResource Style.Slider.Thumb}"/>
@@ -1006,7 +1006,7 @@
           <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <Decorator x:Name="ShowBarsRef" IsEnabled="False"/>
-        <ScrollContentPresenter Grid.RowSpan="2" Grid.ColumnSpan="2" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}" CanContentScroll="{TemplateBinding CanContentScroll}" Margin="{TemplateBinding Padding}"/>
+        <ScrollContentPresenter Grid.RowSpan="2" Grid.ColumnSpan="2" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}" CanContentScroll="{TemplateBinding CanContentScroll}" Margin="{TemplateBinding k_padding}"/>
         <Rectangle x:Name="Corner" Grid.Row="1" Grid.Column="1" Fill="{DynamicResource Brush.Track.Normal}" IsEnabled="False" Opacity="0"/>
         <ScrollBar x:Name="PART_HorizontalScrollBar" Grid.Column="0" Grid.Row="1" Orientation="Horizontal" MaxHeight="{TemplateBinding MinHeight}" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportWidth}" Minimum="0" Maximum="{TemplateBinding ScrollableWidth}" Opacity="0"/>
         <ScrollBar x:Name="PART_VerticalScrollBar" Grid.Column="1" Grid.Row="0" Orientation="Vertical" MaxWidth="{TemplateBinding MinWidth}" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportHeight}" Minimum="0" Maximum="{TemplateBinding ScrollableHeight}" Opacity="0"/>
@@ -1072,7 +1072,7 @@
     <Grid>
       <Rectangle Stroke="{TemplateBinding BorderBrush}" StrokeThickness="{DynamicResource Size.GroupBox.Border}" RadiusX="4" RadiusY="4"/>
       <Decorator Margin="5">
-        <ContentPresenter Margin="{TemplateBinding Padding}"/>
+        <ContentPresenter Margin="{TemplateBinding k_padding}"/>
       </Decorator>
     </Grid>
   </ControlTemplate>
@@ -1100,7 +1100,7 @@
       <Path Grid.Row="1" Grid.Column="3" Data="M8,4A4,4,0,0,0,4,0L0,0" StrokeStartLineCap="Square" Stretch="Fill" StrokeEndLineCap="Square" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="{DynamicResource Size.GroupBox.Border}" VerticalAlignment="Bottom" Margin="0,4,0,-4"/>
       <Border Grid.Row="1" Grid.Column="2" Background="{TemplateBinding BorderBrush}" Height="{DynamicResource Size.GroupBox.Border}" VerticalAlignment="Bottom"/>
       <Border x:Name="ContentHost" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Margin="-4,0">
-        <ContentPresenter Margin="{TemplateBinding Padding}"/>
+        <ContentPresenter Margin="{TemplateBinding k_padding}"/>
       </Border>
       <ContentPresenter x:Name="HeaderHost" Grid.Row="0" Grid.RowSpan="3" Grid.Column="1" ContentSource="Header" Margin="4,0" TextElement.FontSize="{DynamicResource Font.Size.Header}"/>
     </Grid>
@@ -1117,7 +1117,7 @@
   <Style TargetType="GroupBox" BasedOn="{StaticResource {x:Type HeaderedContentControl}}">
     <Setter Property="OverridesDefaultStyle" Value="True"/>
     <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Normal}"/>
-    <Setter Property="Padding" Value="4"/>
+    <Setter Property="k_padding" Value="4"/>
     <Setter Property="Template" Value="{StaticResource Template.GroupBox}"/>
     <Style.Triggers>
       <Trigger Property="Header" Value="{x:Null}">
@@ -1248,7 +1248,7 @@
         </Border>
       </ToggleButton>
       <Decorator x:Name="ContentBorder" Grid.Row="1" Grid.Column="1" Visibility="Collapsed">
-        <Border x:Name="ContentBg" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{DynamicResource Corner.Border0.Bottom}" Padding="{TemplateBinding Padding}">
+        <Border x:Name="ContentBg" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{DynamicResource Corner.Border0.Bottom}" k_padding="{TemplateBinding k_padding}">
           <Border.RenderTransform>
             <ScaleTransform ScaleX="0" ScaleY="0"/>
           </Border.RenderTransform>
@@ -1424,7 +1424,7 @@
     <Setter Property="OverridesDefaultStyle" Value="True"/>
     <Setter Property="Background" Value="{DynamicResource Brush.Header.Normal}"/>
     <Setter Property="BorderBrush" Value="Transparent"/>
-    <Setter Property="Padding" Value="8"/>
+    <Setter Property="k_padding" Value="8"/>
     <Setter Property="Template" Value="{StaticResource Template.Expander}"/>
   </Style>
 
@@ -1448,7 +1448,7 @@
 
   <!-- Menu -->
   <ControlTemplate x:Key="Template.Menu" TargetType="Menu">
-    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
+    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" k_padding="{TemplateBinding k_padding}">
       <ItemsPresenter />
     </Border>
     <ControlTemplate.Triggers>
@@ -1480,11 +1480,11 @@
   <Geometry x:Key="Geometry.MenuItem.Arrow">M0,0L6,6 0,12</Geometry>
   <ControlTemplate x:Key="Template.MenuItem.TopLevelHeader" TargetType="MenuItem">
     <Grid>
-      <Border x:Name="Header" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
+      <Border x:Name="Header" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" k_padding="{TemplateBinding k_padding}">
         <ContentPresenter ContentSource="Header" VerticalAlignment="Center"/>
       </Border>
       <Popup IsOpen="{TemplateBinding IsSubmenuOpen}" Focusable="False" Placement="Bottom" PopupAnimation="Fade" AllowsTransparency="True">
-        <Border Background="{DynamicResource Brush.Background.Popup}" BorderBrush="{DynamicResource Brush.Border.Popup}" BorderThickness="1" CornerRadius="{DynamicResource Corner.Border1}" Padding="0,6">
+        <Border Background="{DynamicResource Brush.Background.Popup}" BorderBrush="{DynamicResource Brush.Border.Popup}" BorderThickness="1" CornerRadius="{DynamicResource Corner.Border1}" k_padding="0,6">
           <ItemsPresenter />
         </Border>
       </Popup>
@@ -1496,7 +1496,7 @@
     </ControlTemplate.Triggers>
   </ControlTemplate>
   <ControlTemplate x:Key="Template.MenuItem.TopLevelItem" TargetType="MenuItem">
-    <Border x:Name="Header" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
+    <Border x:Name="Header" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" k_padding="{TemplateBinding k_padding}">
       <ContentPresenter ContentSource="Header" VerticalAlignment="Center"/>
     </Border>
     <ControlTemplate.Triggers>
@@ -1507,7 +1507,7 @@
   </ControlTemplate>
   <ControlTemplate x:Key="Template.MenuItem.SubmenuHeader" TargetType="MenuItem">
     <Grid>
-      <Border x:Name="Header" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
+      <Border x:Name="Header" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" k_padding="{TemplateBinding k_padding}">
         <Grid>
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" SharedSizeGroup="Icon"/>
@@ -1525,7 +1525,7 @@
         </Grid>
       </Border>
       <Popup IsOpen="{TemplateBinding IsSubmenuOpen}" Focusable="False" HorizontalOffset="-2" VerticalOffset="-7" Placement="Right" PopupAnimation="Fade" AllowsTransparency="True">
-        <Border Background="{DynamicResource Brush.Background.Popup}" BorderBrush="{DynamicResource Brush.Border.Popup}" BorderThickness="1" CornerRadius="{DynamicResource Corner.Border1}" Padding="0,6">
+        <Border Background="{DynamicResource Brush.Background.Popup}" BorderBrush="{DynamicResource Brush.Border.Popup}" BorderThickness="1" CornerRadius="{DynamicResource Corner.Border1}" k_padding="0,6">
           <ItemsPresenter />
         </Border>
       </Popup>
@@ -1538,7 +1538,7 @@
     </ControlTemplate.Triggers>
   </ControlTemplate>
   <ControlTemplate x:Key="Template.MenuItem.SubmenuItem" TargetType="MenuItem">
-    <Border x:Name="Header" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
+    <Border x:Name="Header" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" k_padding="{TemplateBinding k_padding}">
       <Grid>
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="Auto" SharedSizeGroup="Icon"/>
@@ -1587,22 +1587,22 @@
       </Trigger>
       <Trigger Property="Role" Value="TopLevelHeader">
         <Setter Property="FontSize" Value="{DynamicResource Font.Size.Header}"/>
-        <Setter Property="Padding" Value="12,7.5"/>
+        <Setter Property="k_padding" Value="12,7.5"/>
         <Setter Property="Template" Value="{StaticResource Template.MenuItem.TopLevelHeader}"/>
       </Trigger>
       <Trigger Property="Role" Value="TopLevelItem">
         <Setter Property="FontSize" Value="{DynamicResource Font.Size.Header}"/>
-        <Setter Property="Padding" Value="12,7.5"/>
+        <Setter Property="k_padding" Value="12,7.5"/>
         <Setter Property="Template" Value="{StaticResource Template.MenuItem.TopLevelItem}"/>
       </Trigger>
       <Trigger Property="Role" Value="SubmenuHeader">
         <Setter Property="FontSize" Value="{DynamicResource Font.Size.Normal}"/>
-        <Setter Property="Padding" Value="0,7"/>
+        <Setter Property="k_padding" Value="0,7"/>
         <Setter Property="Template" Value="{StaticResource Template.MenuItem.SubmenuHeader}"/>
       </Trigger>
       <Trigger Property="Role" Value="SubmenuItem">
         <Setter Property="FontSize" Value="{DynamicResource Font.Size.Normal}"/>
-        <Setter Property="Padding" Value="0,7"/>
+        <Setter Property="k_padding" Value="0,7"/>
         <Setter Property="Template" Value="{StaticResource Template.MenuItem.SubmenuItem}"/>
       </Trigger>
     </Style.Triggers>
@@ -1613,7 +1613,7 @@
 
   <!-- ContextMenu -->
   <ControlTemplate x:Key="Template.ContextMenu" TargetType="ContextMenu">
-    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" CornerRadius="{DynamicResource Corner.Border1}">
+    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" k_padding="{TemplateBinding k_padding}" CornerRadius="{DynamicResource Corner.Border1}">
       <ItemsPresenter />
     </Border>
     <ControlTemplate.Triggers>
@@ -1630,7 +1630,7 @@
     <Setter Property="Background" Value="{DynamicResource Brush.Background.Popup}"/>
     <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Popup}"/>
     <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="Padding" Value="0,6"/>
+    <Setter Property="k_padding" Value="0,6"/>
     <Setter Property="Cursor" Value="Arrow"/>
     <Setter Property="ForceCursor" Value="True"/>
     <Setter Property="ItemsPanel" Value="{StaticResource Template.MenuItem.ItemsPanel}"/>
@@ -1650,10 +1650,10 @@
     <Grid>
       <Border Background="{TemplateBinding Background}" CornerRadius="{DynamicResource Corner.Border0}"/>
       <Grid>
-        <Border x:Name="Placeholder" Padding="{TemplateBinding Padding}" Margin="2,0" Visibility="Collapsed">
+        <Border x:Name="Placeholder" k_padding="{TemplateBinding k_padding}" Margin="2,0" Visibility="Collapsed">
           <TextBlock Text="{Binding (local:Text.Placeholder), RelativeSource={RelativeSource TemplatedParent}}" Style="{DynamicResource Style.TextBox.Placeholder}"/>
         </Border>
-        <ScrollViewer x:Name="PART_ContentHost" Focusable="False" Padding="{TemplateBinding Padding}" Foreground="{TemplateBinding Foreground}"/>
+        <ScrollViewer x:Name="PART_ContentHost" Focusable="False" k_padding="{TemplateBinding k_padding}" Foreground="{TemplateBinding Foreground}"/>
       </Grid>
       <Border x:Name="Border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{DynamicResource Corner.Border1}"/>
     </Grid>
@@ -1686,7 +1686,7 @@
     <Setter Property="CaretBrush" Value="{DynamicResource Brush.Foreground.Normal}"/>
     <Setter Property="SelectionBrush" Value="{DynamicResource Brush.Background.Checked}"/>
     <Setter Property="SelectionOpacity" Value="0.25"/>
-    <Setter Property="Padding" Value="6,7"/>
+    <Setter Property="k_padding" Value="6,7"/>
     <Setter Property="KeyboardNavigation.TabNavigation" Value="None"/>
     <Setter Property="AllowDrop" Value="True"/>
     <Setter Property="Template" Value="{StaticResource Template.TextBox}"/>
@@ -1708,16 +1708,16 @@
 
   <!-- PasswordBox -->
   <ControlTemplate x:Key="Template.PasswordBox.Scroll" TargetType="ScrollViewer">
-    <ScrollContentPresenter Margin="{TemplateBinding Padding}"/>
+    <ScrollContentPresenter Margin="{TemplateBinding k_padding}"/>
   </ControlTemplate>
   <ControlTemplate x:Key="Template.PasswordBox" TargetType="PasswordBox">
     <Grid>
       <Border x:Name="Border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{DynamicResource Corner.Border1}"/>
       <Grid>
-        <Border x:Name="Placeholder" Padding="{TemplateBinding Padding}" Margin="2,0" Visibility="Collapsed">
+        <Border x:Name="Placeholder" k_padding="{TemplateBinding k_padding}" Margin="2,0" Visibility="Collapsed">
           <TextBlock Text="{Binding (local:Text.Placeholder), RelativeSource={RelativeSource TemplatedParent}}" Style="{DynamicResource Style.TextBox.Placeholder}"/>
         </Border>
-        <ScrollViewer x:Name="PART_ContentHost" Template="{StaticResource Template.PasswordBox.Scroll}" Focusable="False" Padding="{TemplateBinding Padding}" Foreground="{TemplateBinding Foreground}"/>
+        <ScrollViewer x:Name="PART_ContentHost" Template="{StaticResource Template.PasswordBox.Scroll}" Focusable="False" k_padding="{TemplateBinding k_padding}" Foreground="{TemplateBinding Foreground}"/>
       </Grid>
     </Grid>
     <ControlTemplate.Triggers>
@@ -1749,7 +1749,7 @@
     <Setter Property="CaretBrush" Value="{DynamicResource Brush.Foreground.Normal}"/>
     <Setter Property="SelectionBrush" Value="{DynamicResource Brush.Background.Checked}"/>
     <Setter Property="SelectionOpacity" Value="0.5"/>
-    <Setter Property="Padding" Value="6,7"/>
+    <Setter Property="k_padding" Value="6,7"/>
     <Setter Property="KeyboardNavigation.TabNavigation" Value="None"/>
     <Setter Property="PasswordChar" Value="•"/>
     <Setter Property="Template" Value="{StaticResource Template.PasswordBox}"/>
@@ -1762,7 +1762,7 @@
 
   <!-- ListBox -->
   <ControlTemplate x:Key="Template.ListBox" TargetType="ListBox">
-    <ScrollViewer Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" Focusable="False">
+    <ScrollViewer Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" k_padding="{TemplateBinding k_padding}" Focusable="False">
       <ItemsPresenter />
     </ScrollViewer>
   </ControlTemplate>
@@ -1786,7 +1786,7 @@
 
   <!-- ListBoxItem -->
   <ControlTemplate x:Key="Template.ListBoxItem" TargetType="ListBoxItem">
-    <Border x:Name="Border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
+    <Border x:Name="Border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" k_padding="{TemplateBinding k_padding}">
       <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
     </Border>
     <ControlTemplate.Triggers>
@@ -1810,7 +1810,7 @@
     <Setter Property="Background" Value="Transparent"/>
     <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"/>
     <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"/>
-    <Setter Property="Padding" Value="12,8.5"/>
+    <Setter Property="k_padding" Value="12,8.5"/>
     <Setter Property="Template" Value="{StaticResource Template.ListBoxItem}"/>
     <Setter Property="FocusVisualStyle" Value="{StaticResource Style.Focus.Inner.Uniform}"/>
     <Style.Triggers>
@@ -1839,7 +1839,7 @@
               <ScrollViewer Grid.Row="0" Grid.ColumnSpan="2" MinHeight="0" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" PanningMode="HorizontalFirst" Focusable="False">
                 <GridViewHeaderRowPresenter AllowsColumnReorder="{Binding Path=TemplatedParent.View.AllowsColumnReorder, RelativeSource={RelativeSource TemplatedParent}}" ColumnHeaderContainerStyle="{Binding Path=TemplatedParent.View.ColumnHeaderContainerStyle, RelativeSource={RelativeSource TemplatedParent}}" ColumnHeaderContextMenu="{Binding Path=TemplatedParent.View.ColumnHeaderContextMenu, RelativeSource={RelativeSource TemplatedParent}}" ColumnHeaderTemplate="{Binding Path=TemplatedParent.View.ColumnHeaderTemplate, RelativeSource={RelativeSource TemplatedParent}}" ColumnHeaderTemplateSelector="{Binding Path=TemplatedParent.View.ColumnHeaderTemplateSelector, RelativeSource={RelativeSource TemplatedParent}}" ColumnHeaderToolTip="{Binding Path=TemplatedParent.View.ColumnHeaderToolTip, RelativeSource={RelativeSource TemplatedParent}}" Columns="{Binding Path=TemplatedParent.View.Columns, RelativeSource={RelativeSource TemplatedParent}}"/>
               </ScrollViewer>
-              <ScrollContentPresenter x:Name="PART_ScrollContentPresenter" Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="2" CanContentScroll="{TemplateBinding CanContentScroll}" Margin="{TemplateBinding Padding}" KeyboardNavigation.DirectionalNavigation="Local"/>
+              <ScrollContentPresenter x:Name="PART_ScrollContentPresenter" Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="2" CanContentScroll="{TemplateBinding CanContentScroll}" Margin="{TemplateBinding k_padding}" KeyboardNavigation.DirectionalNavigation="Local"/>
               <Rectangle x:Name="Corner" Grid.Row="2" Grid.Column="1" Fill="{DynamicResource Brush.Track.Normal}" IsEnabled="False" Opacity="0"/>
               <ScrollBar x:Name="PART_VerticalScrollBar" Grid.Row="1" Grid.Column="1" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" Orientation="Vertical" ViewportSize="{TemplateBinding ViewportHeight}" Maximum="{TemplateBinding ScrollableHeight}" Minimum="0.0" Value="{Binding Path=VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" Opacity="0"/>
               <ScrollBar x:Name="PART_HorizontalScrollBar" Grid.Row="2" Grid.Column="0" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" Orientation="Horizontal" ViewportSize="{TemplateBinding ViewportWidth}" Maximum="{TemplateBinding ScrollableWidth}" Minimum="0.0" Value="{Binding Path=HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" Opacity="0"/>
@@ -1890,7 +1890,7 @@
     </Setter>
   </Style>
   <ControlTemplate x:Key="Template.ListView" TargetType="ListView">
-    <ScrollViewer Style="{StaticResource Style.GridView.Scroll}" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" Focusable="False">
+    <ScrollViewer Style="{StaticResource Style.GridView.Scroll}" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" k_padding="{TemplateBinding k_padding}" Focusable="False">
       <ItemsPresenter />
     </ScrollViewer>
   </ControlTemplate>
@@ -1914,7 +1914,7 @@
 
   <!-- ListViewItem -->
   <ControlTemplate x:Key="Template.ListViewItem" TargetType="ListViewItem">
-    <Border x:Name="Border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
+    <Border x:Name="Border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" k_padding="{TemplateBinding k_padding}">
       <GridViewRowPresenter />
     </Border>
     <ControlTemplate.Triggers>
@@ -1938,7 +1938,7 @@
     <Setter Property="Background" Value="Transparent"/>
     <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ListView}}}"/>
     <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ListView}}}"/>
-    <Setter Property="Padding" Value="0,8.5"/>
+    <Setter Property="k_padding" Value="0,8.5"/>
     <Setter Property="Template" Value="{StaticResource Template.ListViewItem}"/>
     <Setter Property="FocusVisualStyle" Value="{StaticResource Style.Focus.Inner.Uniform}"/>
     <Style.Triggers>
@@ -1975,7 +1975,7 @@
   <ControlTemplate x:Key="Template.GridViewColumnHeader.Normal" TargetType="GridViewColumnHeader">
     <Grid>
       <Border x:Name="HeaderBorder" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"/>
-      <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}"/>
+      <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding k_padding}"/>
       <Thumb x:Name="PART_HeaderGripper" Style="{StaticResource Style.GridViewColumnHeader.Gripper}" BorderBrush="{TemplateBinding BorderBrush}" HorizontalAlignment="Right"/>
     </Grid>
     <ControlTemplate.Triggers>
@@ -1992,7 +1992,7 @@
       <Rectangle Width="{TemplateBinding ActualWidth}" Height="{TemplateBinding ActualHeight}" Fill="#7F7F7F7F"/>
     </Canvas>
   </ControlTemplate>
-  <ControlTemplate x:Key="Template.GridViewColumnHeader.Padding" TargetType="GridViewColumnHeader">
+  <ControlTemplate x:Key="Template.GridViewColumnHeader.k_padding" TargetType="GridViewColumnHeader">
     <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"/>
   </ControlTemplate>
   <Style TargetType="GridViewColumnHeader" BasedOn="{StaticResource {x:Type ContentControl}}">
@@ -2002,7 +2002,7 @@
     <Setter Property="BorderThickness" Value="0,0,0,1"/>
     <Setter Property="HorizontalContentAlignment" Value="Center"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
-    <Setter Property="Padding" Value="6,5"/>
+    <Setter Property="k_padding" Value="6,5"/>
     <Style.Triggers>
       <Trigger Property="Role" Value="Normal">
         <Setter Property="Template" Value="{StaticResource Template.GridViewColumnHeader.Normal}"/>
@@ -2010,8 +2010,8 @@
       <Trigger Property="Role" Value="Floating">
         <Setter Property="Template" Value="{StaticResource Template.GridViewColumnHeader.Floating}"/>
       </Trigger>
-      <Trigger Property="Role" Value="Padding">
-        <Setter Property="Template" Value="{StaticResource Template.GridViewColumnHeader.Padding}"/>
+      <Trigger Property="Role" Value="k_padding">
+        <Setter Property="Template" Value="{StaticResource Template.GridViewColumnHeader.k_padding}"/>
       </Trigger>
       <Trigger Property="IsEnabled" Value="False">
         <Setter Property="Foreground" Value="{DynamicResource Brush.Foreground.Disabled}"/>
@@ -2023,12 +2023,12 @@
   <!-- ComboBox -->
   <Style x:Key="Style.ComboBox.Toggle" TargetType="ToggleButton" BasedOn="{StaticResource Style.Expander.Toggle}"/>
   <ControlTemplate x:Key="Template.ComboBox.TextScroll" TargetType="ScrollViewer">
-    <Border Background="Transparent" Padding="{TemplateBinding Padding}">
+    <Border Background="Transparent" k_padding="{TemplateBinding k_padding}">
       <ScrollContentPresenter />
     </Border>
   </ControlTemplate>
   <ControlTemplate x:Key="Template.ComboBox.Text" TargetType="TextBox">
-    <ScrollViewer x:Name="PART_ContentHost" Template="{StaticResource Template.ComboBox.TextScroll}" Padding="{TemplateBinding Padding}" Foreground="{TemplateBinding Foreground}" Focusable="False" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled"/>
+    <ScrollViewer x:Name="PART_ContentHost" Template="{StaticResource Template.ComboBox.TextScroll}" k_padding="{TemplateBinding k_padding}" Foreground="{TemplateBinding Foreground}" Focusable="False" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled"/>
   </ControlTemplate>
   <Geometry x:Key="Geometry.ComboBox.Arrow">M0,0L6,6 12,0</Geometry>
   <ControlTemplate x:Key="Template.ComboBox" TargetType="ComboBox">
@@ -2041,8 +2041,8 @@
           </Grid.ColumnDefinitions>
           <Border x:Name="Border" Grid.ColumnSpan="2" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{DynamicResource Corner.Border1}"/>
           <Grid Grid.Column="0" Margin="2,0">
-            <ContentPresenter x:Name="SelectionBoxItemHost" ContentSource="SelectionBoxItem" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
-            <TextBlock x:Name="Placeholder" Text="{Binding (local:Text.Placeholder), RelativeSource={RelativeSource TemplatedParent}}" Style="{DynamicResource Style.TextBox.Placeholder}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="{TemplateBinding Padding}" Visibility="Collapsed"/>
+            <ContentPresenter x:Name="SelectionBoxItemHost" ContentSource="SelectionBoxItem" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="{TemplateBinding k_padding}"/>
+            <TextBlock x:Name="Placeholder" Text="{Binding (local:Text.Placeholder), RelativeSource={RelativeSource TemplatedParent}}" Style="{DynamicResource Style.TextBox.Placeholder}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="{TemplateBinding k_padding}" Visibility="Collapsed"/>
           </Grid>
           <Path x:Name="Arrow" Grid.Column="1" Data="{StaticResource Geometry.ComboBox.Arrow}" Stroke="{DynamicResource Brush.Glyph.Normal}" VerticalAlignment="Center" Margin="10,1,10,0" IsHitTestVisible="False">
             <Path.RenderTransform>
@@ -2053,7 +2053,7 @@
       </ToggleButton>
       <Popup x:Name="PART_Popup" IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}" Focusable="False" Placement="Bottom" PopupAnimation="Slide" AllowsTransparency="True">
         <Border x:Name="DropDownBorder" Background="{DynamicResource Brush.Background.Popup}" BorderBrush="{DynamicResource Brush.Border.Popup}" BorderThickness="1,0,1,1" CornerRadius="{DynamicResource Corner.Border1.Bottom}" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="{TemplateBinding MaxDropDownHeight}">
-          <ScrollViewer Focusable="False" Padding="0,6" KeyboardNavigation.TabNavigation="Cycle" KeyboardNavigation.DirectionalNavigation="Contained">
+          <ScrollViewer Focusable="False" k_padding="0,6" KeyboardNavigation.TabNavigation="Cycle" KeyboardNavigation.DirectionalNavigation="Contained">
             <ItemsPresenter />
           </ScrollViewer>
         </Border>
@@ -2110,9 +2110,9 @@
           <Border x:Name="Base" Grid.ColumnSpan="2" Background="{TemplateBinding Background}" CornerRadius="{DynamicResource Corner.Border0}"/>
           <Border x:Name="ArrowBorder" Grid.Column="1" Background="{TemplateBinding Background}" BorderBrush="{DynamicResource Brush.Border.Popup}" BorderThickness="1,0,0,0" CornerRadius="{DynamicResource Corner.Border0.Right}"/>
           <Border x:Name="Border" Grid.ColumnSpan="2" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{DynamicResource Corner.Border1}" IsHitTestVisible="False"/>
-          <TextBox x:Name="PART_EditableTextBox" Template="{StaticResource Template.ComboBox.Text}" Foreground="{TemplateBinding Foreground}" IsReadOnly="{TemplateBinding IsReadOnly}" Padding="{TemplateBinding Padding}" CaretBrush="{TemplateBinding Foreground}" SelectionBrush="{DynamicResource Brush.Background.Checked}" SelectionOpacity="0.5" FocusVisualStyle="{x:Null}"/>
+          <TextBox x:Name="PART_EditableTextBox" Template="{StaticResource Template.ComboBox.Text}" Foreground="{TemplateBinding Foreground}" IsReadOnly="{TemplateBinding IsReadOnly}" k_padding="{TemplateBinding k_padding}" CaretBrush="{TemplateBinding Foreground}" SelectionBrush="{DynamicResource Brush.Background.Checked}" SelectionOpacity="0.5" FocusVisualStyle="{x:Null}"/>
           <Decorator Grid.Column="0" Margin="2,0">
-            <TextBlock x:Name="Placeholder" Text="{Binding (local:Text.Placeholder), RelativeSource={RelativeSource TemplatedParent}}" Style="{DynamicResource Style.TextBox.Placeholder}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="{TemplateBinding Padding}" Visibility="Collapsed"/>
+            <TextBlock x:Name="Placeholder" Text="{Binding (local:Text.Placeholder), RelativeSource={RelativeSource TemplatedParent}}" Style="{DynamicResource Style.TextBox.Placeholder}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="{TemplateBinding k_padding}" Visibility="Collapsed"/>
           </Decorator>
           <Path x:Name="Arrow" Grid.Column="1" Data="{StaticResource Geometry.ComboBox.Arrow}" Stroke="{DynamicResource Brush.Glyph.Normal}" VerticalAlignment="Center" Margin="10,1,10,0" IsHitTestVisible="False">
             <Path.RenderTransform>
@@ -2123,7 +2123,7 @@
       </ToggleButton>
       <Popup x:Name="PART_Popup" IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}" Focusable="False" Placement="Bottom" PopupAnimation="Slide" AllowsTransparency="True">
         <Border x:Name="DropDownBorder" Background="{DynamicResource Brush.Background.Popup}" BorderBrush="{DynamicResource Brush.Border.Popup}" BorderThickness="1,0,1,1" CornerRadius="{DynamicResource Corner.Border1.Bottom}" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="{TemplateBinding MaxDropDownHeight}">
-          <ScrollViewer Focusable="False" Padding="0,6" KeyboardNavigation.TabNavigation="Cycle" KeyboardNavigation.DirectionalNavigation="Contained">
+          <ScrollViewer Focusable="False" k_padding="0,6" KeyboardNavigation.TabNavigation="Cycle" KeyboardNavigation.DirectionalNavigation="Contained">
             <ItemsPresenter />
           </ScrollViewer>
         </Border>
@@ -2187,7 +2187,7 @@
     <Setter Property="Background" Value="{DynamicResource Brush.TextBox.Normal}"/>
     <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Normal}"/>
     <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="Padding" Value="6,7"/>
+    <Setter Property="k_padding" Value="6,7"/>
     <Setter Property="MaxDropDownHeight" Value="200"/>
     <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
     <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
@@ -2207,7 +2207,7 @@
 
   <!-- ComboBoxItem -->
   <ControlTemplate x:Key="Template.ComboBoxItem" TargetType="ComboBoxItem">
-    <Border x:Name="Border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
+    <Border x:Name="Border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" k_padding="{TemplateBinding k_padding}">
       <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
     </Border>
     <ControlTemplate.Triggers>
@@ -2234,7 +2234,7 @@
     <Setter Property="Background" Value="Transparent"/>
     <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ComboBox}}}"/>
     <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ComboBox}}}"/>
-    <Setter Property="Padding" Value="12,8.5"/>
+    <Setter Property="k_padding" Value="12,8.5"/>
     <Setter Property="Template" Value="{StaticResource Template.ComboBoxItem}"/>
     <Setter Property="FocusVisualStyle" Value="{StaticResource Style.Focus.Inner.Uniform}"/>
   </Style>
@@ -2251,7 +2251,7 @@
         <ColumnDefinition x:Name="Col1"/>
       </Grid.ColumnDefinitions>
       <TabPanel x:Name="HeaderPanel" Panel.ZIndex="1" Background="Transparent" IsItemsHost="True" KeyboardNavigation.TabIndex="1"/>
-      <Border x:Name="SelectedContentBorder" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" KeyboardNavigation.DirectionalNavigation="Contained" KeyboardNavigation.TabIndex="2" KeyboardNavigation.TabNavigation="Local">
+      <Border x:Name="SelectedContentBorder" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" k_padding="{TemplateBinding k_padding}" KeyboardNavigation.DirectionalNavigation="Contained" KeyboardNavigation.TabIndex="2" KeyboardNavigation.TabNavigation="Local">
         <ContentPresenter x:Name="PART_SelectedContentHost" ContentSource="SelectedContent" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
       </Border>
     </Grid>
@@ -2309,13 +2309,13 @@
   <Style TargetType="TabControl" BasedOn="{StaticResource {x:Type ItemsControl}}">
     <Setter Property="OverridesDefaultStyle" Value="True"/>
     <Setter Property="Background" Value="{DynamicResource Brush.TabControl.Normal}"/>
-    <Setter Property="Padding" Value="12"/>
+    <Setter Property="k_padding" Value="12"/>
     <Setter Property="Template" Value="{StaticResource Template.TabControl}"/>
   </Style>
 
   <!-- TabItem -->
   <ControlTemplate x:Key="Template.TabItem" TargetType="TabItem">
-    <Border x:Name="Border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+    <Border x:Name="Border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding Background}" k_padding="{TemplateBinding k_padding}">
       <ContentPresenter x:Name="ContentHost" ContentSource="Header" TextElement.FontSize="{DynamicResource Font.Size.Header}" TextElement.Foreground="{DynamicResource Brush.Glyph.Normal}"/>
     </Border>
     <ControlTemplate.Triggers>
@@ -2359,14 +2359,14 @@
     <Setter Property="OverridesDefaultStyle" Value="True"/>
     <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}"/>
     <Setter Property="Background" Value="Transparent"/>
-    <Setter Property="Padding" Value="12,7.5"/>
+    <Setter Property="k_padding" Value="12,7.5"/>
     <Setter Property="Template" Value="{StaticResource Template.TabItem}"/>
     <Setter Property="FocusVisualStyle" Value="{StaticResource Style.Focus.Inner.Uniform}"/>
   </Style>
 
   <!-- TreeView -->
   <ControlTemplate x:Key="Template.TreeView" TargetType="TreeView">
-    <ScrollViewer Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" Focusable="False">
+    <ScrollViewer Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" k_padding="{TemplateBinding k_padding}" Focusable="False">
       <ItemsPresenter Tag="12"/>
     </ScrollViewer>
   </ControlTemplate>
@@ -2403,7 +2403,7 @@
           <ToggleButton x:Name="ExpandButton" Grid.Column="1" Style="{StaticResource Style.TreeViewItem.Toggle}" IsChecked="{Binding IsExpanded, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" IsTabStop="False" Width="32" Margin="-8,0">
             <Path x:Name="Arrow" Data="{StaticResource Geometry.TreeViewItem.Arrow}" Stroke="{DynamicResource Brush.TreeView.Collapsed}" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" RenderTransformOrigin="0.5,0.5"/>
           </ToggleButton>
-          <ContentPresenter x:Name="PART_Header" Grid.Column="2" ContentSource="Header" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}"/>
+          <ContentPresenter x:Name="PART_Header" Grid.Column="2" ContentSource="Header" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding k_padding}"/>
         </Grid>
       </Border>
       <Decorator x:Name="ItemsBorder" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Visibility="Collapsed">
@@ -2506,7 +2506,7 @@
               </Path.RenderTransform>
             </Path>
           </ToggleButton>
-          <ContentPresenter x:Name="PART_Header" Grid.Column="2" ContentSource="Header" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}"/>
+          <ContentPresenter x:Name="PART_Header" Grid.Column="2" ContentSource="Header" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding k_padding}"/>
         </Grid>
       </Border>
       <Decorator x:Name="ItemsBorder" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Visibility="Collapsed">
@@ -2580,7 +2580,7 @@
     <Setter Property="OverridesDefaultStyle" Value="True"/>
     <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type TreeView}}}"/>
     <Setter Property="Background" Value="Transparent"/>
-    <Setter Property="Padding" Value="12,7"/>
+    <Setter Property="k_padding" Value="12,7"/>
     <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type TreeView}}}"/>
     <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type TreeView}}}"/>
     <Setter Property="Template" Value="{StaticResource Template.TreeViewItem}"/>
@@ -2595,7 +2595,7 @@
     <Setter Property="Template" Value="{StaticResource Template.ToolBar.Separator}"/>
   </Style>
   <ControlTemplate x:Key="Template.ToolBar.Button" TargetType="Button">
-    <Border x:Name="Border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" CornerRadius="{DynamicResource Corner.Border0}">
+    <Border x:Name="Border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" k_padding="{TemplateBinding k_padding}" CornerRadius="{DynamicResource Corner.Border0}">
       <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
     </Border>
     <ControlTemplate.Triggers>
@@ -2613,7 +2613,7 @@
   <Style x:Key="Style.ToolBar.Button" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
     <Setter Property="Background" Value="Transparent"/>
     <Setter Property="BorderThickness" Value="0"/>
-    <Setter Property="Padding" Value="5"/>
+    <Setter Property="k_padding" Value="5"/>
     <Setter Property="Margin" Value="1"/>
     <Setter Property="MinWidth" Value="28"/>
     <Setter Property="HorizontalAlignment" Value="Center"/>
@@ -2623,7 +2623,7 @@
   <ControlTemplate x:Key="Template.ToolBar.Toggle" TargetType="ToggleButton">
     <Grid>
       <Border x:Name="Border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{DynamicResource Corner.Border0}"/>
-      <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}"/>
+      <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding k_padding}"/>
     </Grid>
     <ControlTemplate.Triggers>
       <Trigger Property="IsMouseOver" Value="True">
@@ -2645,7 +2645,7 @@
   <Style x:Key="Style.ToolBar.Toggle" TargetType="ToggleButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
     <Setter Property="Background" Value="Transparent"/>
     <Setter Property="BorderThickness" Value="0"/>
-    <Setter Property="Padding" Value="5"/>
+    <Setter Property="k_padding" Value="5"/>
     <Setter Property="Margin" Value="1"/>
     <Setter Property="MinWidth" Value="28"/>
     <Setter Property="HorizontalAlignment" Value="Center"/>
@@ -2664,10 +2664,10 @@
           <Border x:Name="ArrowBorder" Grid.Column="1" Background="{DynamicResource Brush.ComboBox.Normal}" BorderBrush="{DynamicResource Brush.Border.Popup}" BorderThickness="1,0,0,0" CornerRadius="{DynamicResource Corner.Border0.Right}"/>
           <Border x:Name="Border" Grid.ColumnSpan="2" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{DynamicResource Corner.Border1}" IsHitTestVisible="False"/>
           <Grid Grid.Column="0" Margin="2,0">
-            <ContentPresenter x:Name="SelectionBoxItemHost" ContentSource="SelectionBoxItem" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
-            <TextBlock x:Name="Placeholder" Text="{Binding (local:Text.Placeholder), RelativeSource={RelativeSource TemplatedParent}}" Style="{DynamicResource Style.TextBox.Placeholder}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="{TemplateBinding Padding}" Visibility="Collapsed"/>
+            <ContentPresenter x:Name="SelectionBoxItemHost" ContentSource="SelectionBoxItem" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="{TemplateBinding k_padding}"/>
+            <TextBlock x:Name="Placeholder" Text="{Binding (local:Text.Placeholder), RelativeSource={RelativeSource TemplatedParent}}" Style="{DynamicResource Style.TextBox.Placeholder}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="{TemplateBinding k_padding}" Visibility="Collapsed"/>
           </Grid>
-          <TextBox x:Name="PART_EditableTextBox" Template="{StaticResource Template.ComboBox.Text}" Foreground="{TemplateBinding Foreground}" IsReadOnly="{TemplateBinding IsReadOnly}" Padding="{TemplateBinding Padding}" CaretBrush="{TemplateBinding Foreground}" SelectionBrush="{DynamicResource Brush.Background.Checked}" SelectionOpacity="0.5" Visibility="Hidden"/>
+          <TextBox x:Name="PART_EditableTextBox" Template="{StaticResource Template.ComboBox.Text}" Foreground="{TemplateBinding Foreground}" IsReadOnly="{TemplateBinding IsReadOnly}" k_padding="{TemplateBinding k_padding}" CaretBrush="{TemplateBinding Foreground}" SelectionBrush="{DynamicResource Brush.Background.Checked}" SelectionOpacity="0.5" Visibility="Hidden"/>
           <Path x:Name="Arrow" Grid.Column="1" Data="{StaticResource Geometry.ComboBox.Arrow}" Stroke="{DynamicResource Brush.Glyph.Normal}" VerticalAlignment="Center" Margin="7.5,1,7.5,0" IsHitTestVisible="False">
             <Path.RenderTransform>
               <TranslateTransform />
@@ -2677,7 +2677,7 @@
       </ToggleButton>
       <Popup x:Name="PART_Popup" IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}" Focusable="False" Placement="Bottom" PopupAnimation="Slide" AllowsTransparency="True">
         <Border x:Name="DropDownBorder" Background="{DynamicResource Brush.Background.Popup}" BorderBrush="{DynamicResource Brush.Border.Popup}" BorderThickness="1,0,1,1" CornerRadius="{DynamicResource Corner.Border1.Bottom}" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="{TemplateBinding MaxDropDownHeight}">
-          <ScrollViewer Focusable="False" Padding="0,6" KeyboardNavigation.TabNavigation="Cycle" KeyboardNavigation.DirectionalNavigation="Contained">
+          <ScrollViewer Focusable="False" k_padding="0,6" KeyboardNavigation.TabNavigation="Cycle" KeyboardNavigation.DirectionalNavigation="Contained">
             <ItemsPresenter />
           </ScrollViewer>
         </Border>
@@ -2758,28 +2758,28 @@
   <Style x:Key="Style.ToolBar.ComboBox" TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
     <Style.Resources>
       <Style TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
-        <Setter Property="Padding" Value="10,7"/>
+        <Setter Property="k_padding" Value="10,7"/>
       </Style>
     </Style.Resources>
     <Setter Property="Background" Value="{DynamicResource Brush.ComboBox.Normal}"/>
     <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Normal}"/>
     <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="Padding" Value="5,4.5"/>
+    <Setter Property="k_padding" Value="5,4.5"/>
     <Setter Property="Margin" Value="1"/>
     <Setter Property="VerticalAlignment" Value="Center"/>
     <Setter Property="Template" Value="{StaticResource Template.ToolBar.ComboBox}"/>
   </Style>
   <ControlTemplate x:Key="Template.ToolBar.TextBox.Scroll" TargetType="ScrollViewer">
-    <ScrollContentPresenter Margin="{TemplateBinding Padding}"/>
+    <ScrollContentPresenter Margin="{TemplateBinding k_padding}"/>
   </ControlTemplate>
   <ControlTemplate x:Key="Template.ToolBar.TextBox" TargetType="TextBox">
     <Grid>
       <Border x:Name="Border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{DynamicResource Corner.Border1}"/>
       <Grid>
-        <Border x:Name="Placeholder" Padding="{TemplateBinding Padding}" Margin="2,0" Visibility="Collapsed">
+        <Border x:Name="Placeholder" k_padding="{TemplateBinding k_padding}" Margin="2,0" Visibility="Collapsed">
           <TextBlock Text="{Binding (local:Text.Placeholder), RelativeSource={RelativeSource TemplatedParent}}" Style="{DynamicResource Style.TextBox.Placeholder}"/>
         </Border>
-        <ScrollViewer x:Name="PART_ContentHost" Template="{StaticResource Template.ToolBar.TextBox.Scroll}" Padding="{TemplateBinding Padding}" Foreground="{TemplateBinding Foreground}" Focusable="False"/>
+        <ScrollViewer x:Name="PART_ContentHost" Template="{StaticResource Template.ToolBar.TextBox.Scroll}" k_padding="{TemplateBinding k_padding}" Foreground="{TemplateBinding Foreground}" Focusable="False"/>
       </Grid>
     </Grid>
     <ControlTemplate.Triggers>
@@ -2803,7 +2803,7 @@
     <Setter Property="Background" Value="{DynamicResource Brush.TextBox.Normal}"/>
     <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Normal}"/>
     <Setter Property="BorderThickness" Value="{DynamicResource Border.Box}"/>
-    <Setter Property="Padding" Value="6,4.5"/>
+    <Setter Property="k_padding" Value="6,4.5"/>
     <Setter Property="Margin" Value="1"/>
     <Setter Property="VerticalAlignment" Value="Center"/>
     <Setter Property="TextAlignment" Value="Left"/>
@@ -2815,24 +2815,24 @@
     <Style.Triggers>
       <Trigger Property="Role" Value="TopLevelHeader">
         <Setter Property="FontSize" Value="{DynamicResource Font.Size.Normal}"/>
-        <Setter Property="Padding" Value="6,5"/>
+        <Setter Property="k_padding" Value="6,5"/>
         <Setter Property="Margin" Value="1,0"/>
         <Setter Property="Template" Value="{StaticResource Template.MenuItem.TopLevelHeader}"/>
       </Trigger>
       <Trigger Property="Role" Value="TopLevelItem">
         <Setter Property="FontSize" Value="{DynamicResource Font.Size.Normal}"/>
-        <Setter Property="Padding" Value="6,5"/>
+        <Setter Property="k_padding" Value="6,5"/>
         <Setter Property="Margin" Value="1,0"/>
         <Setter Property="Template" Value="{StaticResource Template.MenuItem.TopLevelItem}"/>
       </Trigger>
       <Trigger Property="Role" Value="SubmenuHeader">
         <Setter Property="FontSize" Value="{DynamicResource Font.Size.Normal}"/>
-        <Setter Property="Padding" Value="0,7"/>
+        <Setter Property="k_padding" Value="0,7"/>
         <Setter Property="Template" Value="{StaticResource Template.MenuItem.SubmenuHeader}"/>
       </Trigger>
       <Trigger Property="Role" Value="SubmenuItem">
         <Setter Property="FontSize" Value="{DynamicResource Font.Size.Normal}"/>
-        <Setter Property="Padding" Value="0,7"/>
+        <Setter Property="k_padding" Value="0,7"/>
         <Setter Property="Template" Value="{StaticResource Template.MenuItem.SubmenuItem}"/>
       </Trigger>
     </Style.Triggers>
@@ -2900,11 +2900,11 @@
       <Border Grid.ColumnSpan="4" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"/>
       <Thumb x:Name="ToolBarThumb" Grid.Column="0" Margin="0,2" Style="{StaticResource Style.ToolBar.Thumb}"/>
       <ContentPresenter x:Name="ToolBarHeader" Grid.Column="1" ContentSource="Header" VerticalAlignment="Center" TextElement.Foreground="{DynamicResource Brush.Foreground.Placeholder}" Margin="0,0,8,0"/>
-      <ToolBarPanel x:Name="PART_ToolBarPanel" Grid.Column="2" IsItemsHost="true" Margin="{TemplateBinding Padding}"/>
+      <ToolBarPanel x:Name="PART_ToolBarPanel" Grid.Column="2" IsItemsHost="true" Margin="{TemplateBinding k_padding}"/>
       <Grid Grid.Column="3">
         <ToggleButton x:Name="OverflowButton" Style="{StaticResource Style.ToolBar.OverflowButton}" Visibility="Collapsed" ClickMode="Press" IsChecked="{Binding IsOverflowOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"/>
         <Popup x:Name="OverflowPopup" IsOpen="{Binding IsOverflowOpen, RelativeSource={RelativeSource TemplatedParent}}" Placement="Bottom" StaysOpen="True" Focusable="False">
-          <Border Background="{DynamicResource Brush.Background.Popup}" BorderBrush="{DynamicResource Brush.Border.Popup}" BorderThickness="1" CornerRadius="{DynamicResource Corner.Border1.Bottom}" Padding="8">
+          <Border Background="{DynamicResource Brush.Background.Popup}" BorderBrush="{DynamicResource Brush.Border.Popup}" BorderThickness="1" CornerRadius="{DynamicResource Corner.Border1.Bottom}" k_padding="8">
             <ToolBarOverflowPanel x:Name="PART_ToolBarOverflowPanel" Focusable="True" KeyboardNavigation.DirectionalNavigation="Cycle" KeyboardNavigation.TabNavigation="Cycle"/>
           </Border>
         </Popup>
@@ -2941,14 +2941,14 @@
     </Style.Resources>
     <Setter Property="OverridesDefaultStyle" Value="True"/>
     <Setter Property="Background" Value="{DynamicResource Brush.ToolBar.Normal}"/>
-    <Setter Property="Padding" Value="0,1"/>
+    <Setter Property="k_padding" Value="0,1"/>
     <Setter Property="MinHeight" Value="28"/>
     <Setter Property="Template" Value="{StaticResource Template.ToolBar}"/>
   </Style>
 
   <!-- StatusBar Style -->
   <ControlTemplate x:Key="Template.StatusBar" TargetType="StatusBar">
-    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
+    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" k_padding="{TemplateBinding k_padding}">
       <ItemsPresenter />
     </Border>
     <ControlTemplate.Triggers>
@@ -2969,14 +2969,14 @@
 
   <!-- StatusBarItem Style -->
   <ControlTemplate x:Key="Template.StatusBarItem" TargetType="StatusBarItem">
-    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
+    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" k_padding="{TemplateBinding k_padding}">
       <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
     </Border>
   </ControlTemplate>
   <Style TargetType="StatusBarItem" BasedOn="{StaticResource {x:Type ContentControl}}">
     <Setter Property="OverridesDefaultStyle" Value="True"/>
     <Setter Property="Background" Value="Transparent"/>
-    <Setter Property="Padding" Value="4"/>
+    <Setter Property="k_padding" Value="4"/>
     <Setter Property="Template" Value="{StaticResource Template.StatusBarItem}"/>
   </Style>
 

@@ -206,7 +206,7 @@
             <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;Foreground&quot;</span> <span class="na">Value=</span><span class="s">&quot;LightBlue&quot;</span><span class="nt">/&gt;</span>
             <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;FontSize&quot;</span> <span class="na">Value=</span><span class="s">&quot;21&quot;</span><span class="nt">/&gt;</span>
             <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;Margin&quot;</span> <span class="na">Value=</span><span class="s">&quot;2,1&quot;</span><span class="nt">/&gt;</span>
-            <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;Padding&quot;</span> <span class="na">Value=</span><span class="s">&quot;20,5&quot;</span><span class="nt">/&gt;</span>
+            <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;k_padding&quot;</span> <span class="na">Value=</span><span class="s">&quot;20,5&quot;</span><span class="nt">/&gt;</span>
         <span class="nt">&lt;/Style&gt;</span>
         <span class="c">&lt;!-- typed style --&gt;</span>
         <span class="nt">&lt;Style</span> <span class="na">TargetType=</span><span class="s">&quot;{x:Type Button}&quot;</span> <span class="na">BasedOn=</span><span class="s">&quot;{StaticResource ButtonStyle}&quot;</span><span class="nt">&gt;</span>
@@ -238,7 +238,7 @@ which contains the tree of elements that define the desired look. After you defi
 <p>Templates can also contain all types of triggers in the Triggers collection to add interactivity to the control.</p>
 <p>Naming an element with x:Name inside a template does not make it become a field to access programmatically, unlike its behavior outside of a template. This is because a template can be applied to multiple elements in the same scope. The main purpose of naming elements in a template is for referencing them from triggers (typically defined in XAML).</p>
 <p>Unlike a Style, the use of TargetType does not enable you to remove the template's x:Key (when used in a dictionary). There is no such thing as a default control template; you have to set the template inside a typed Style to get such behavior.</p>
-<p>In order to respect the templated parent's properties we can use the <em>TemplateBinding</em> extension to bind the value of template element properties. No matter what type of control you're creating a control template for, there are undoubtedly other properties on the target control that should be honored if you want the template to be reusable: Height and Width, perhaps Background, Padding, and so on. Some properties (such as Foreground, FontSize, FontWeight, and so on) might automatically inherit their desired values thanks to property value inheritance in the visual tree, but other properties need explicit attention.</p>
+<p>In order to respect the templated parent's properties we can use the <em>TemplateBinding</em> extension to bind the value of template element properties. No matter what type of control you're creating a control template for, there are undoubtedly other properties on the target control that should be honored if you want the template to be reusable: Height and Width, perhaps Background, k_padding, and so on. Some properties (such as Foreground, FontSize, FontWeight, and so on) might automatically inherit their desired values thanks to property value inheritance in the visual tree, but other properties need explicit attention.</p>
 <p>Defining a template:</p>
 <div class="highlight"><pre><span></span><span class="nt">&lt;Grid.Resources&gt;</span>
     <span class="c">&lt;!-- template --&gt;</span>
@@ -248,7 +248,7 @@ which contains the tree of elements that define the desired look. After you defi
             <span class="na">BorderBrush=</span><span class="s">&quot;LightBlue&quot;</span>
             <span class="na">BorderThickness=</span><span class="s">&quot;4&quot;</span>
             <span class="na">CornerRadius=</span><span class="s">&quot;4&quot;</span><span class="nt">&gt;</span>
-            <span class="nt">&lt;ContentPresenter</span> <span class="na">Margin=</span><span class="s">&quot;{TemplateBinding Padding}&quot;</span><span class="nt">/&gt;</span>
+            <span class="nt">&lt;ContentPresenter</span> <span class="na">Margin=</span><span class="s">&quot;{TemplateBinding k_padding}&quot;</span><span class="nt">/&gt;</span>
         <span class="nt">&lt;/Border&gt;</span>
         <span class="nt">&lt;ControlTemplate.Triggers&gt;</span>
             <span class="nt">&lt;Trigger</span> <span class="na">Property=</span><span class="s">&quot;IsMouseOver&quot;</span> <span class="na">Value=</span><span class="s">&quot;True&quot;</span><span class="nt">&gt;</span>

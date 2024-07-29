@@ -151,7 +151,7 @@
             <ColumnDefinition Width="Auto"/>
           </Grid.ColumnDefinitions>
           <TextBlock Text="{Binding Caption, ElementName=TheMessageBox, FallbackValue=Caption}" FontWeight="Bold" FontSize="17" Foreground="{Binding Foreground, ElementName=OkBtn}" Margin="8,6"/>
-          <Button x:Name="CloseBtn" Grid.Column="1" Background="Red" Width="{Binding ActualHeight, ElementName=CloseBtn}" Padding="0,0,0,4" Style="{StaticResource Style.Button.Close}"/>
+          <Button x:Name="CloseBtn" Grid.Column="1" Background="Red" Width="{Binding ActualHeight, ElementName=CloseBtn}" k_padding="0,0,0,4" Style="{StaticResource Style.Button.Close}"/>
         </Grid>
         <Grid Background="#20FFFFFF">
           <Grid.ColumnDefinitions>

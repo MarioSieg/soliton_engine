@@ -31,7 +31,7 @@
       <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
         <StackPanel.Resources>
           <ControlTemplate x:Key="ToolTipTemplate" TargetType="ToolTip">
-            <Border BorderThickness="4" BorderBrush="#FFA48A00" CornerRadius="6" Background="#EE000000" Padding="20,10">
+            <Border BorderThickness="4" BorderBrush="#FFA48A00" CornerRadius="6" Background="#EE000000" k_padding="20,10">
               <ContentPresenter/>
             </Border>
           </ControlTemplate>
@@ -39,7 +39,7 @@
             <Setter Property="Template" Value="{StaticResource ToolTipTemplate}"/>
           </Style>
         </StackPanel.Resources>
-        <Button Padding="0">
+        <Button k_padding="0">
           <Button.ToolTip>
             <ToolTip>
               <StackPanel>
@@ -49,7 +49,7 @@
               </StackPanel>
             </ToolTip>
           </Button.ToolTip>
-          <Border Width="64" Height="64" BorderThickness="4" BorderBrush="#FF7E6A52" CornerRadius="1" Background="#FFC7A990" Padding="5">
+          <Border Width="64" Height="64" BorderThickness="4" BorderBrush="#FF7E6A52" CornerRadius="1" Background="#FFC7A990" k_padding="5">
             <Image Source="Images/search.png" Stretch="Uniform"/>
           </Border>
         </Button>

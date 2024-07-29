@@ -24,11 +24,11 @@
                 </StackPanel>
             </HeaderedContentControl.Header>
             <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-                <ItemsControl BorderBrush="{DynamicResource Brush.Border.Normal}" BorderThickness="1" Width="300" Padding="8,2">
+                <ItemsControl BorderBrush="{DynamicResource Brush.Border.Normal}" BorderThickness="1" Width="300" k_padding="8,2">
                     This is a string inside an ItemsControl
                     <sys:Double>199.95</sys:Double>
                     <Rectangle Height="10" Fill="Red"/>
-                    <Button Content="Button as an item" Margin="0,4" Padding="0,2"/>
+                    <Button Content="Button as an item" Margin="0,4" k_padding="0,2"/>
                     <StackPanel Orientation="Horizontal">
                         <Ellipse Width="12" Height="12" Fill="Blue"/>
                         <TextBlock Text="A Panel with children" VerticalAlignment="Center" Margin="10,0"/>
@@ -144,12 +144,12 @@
                         <TextBlock Text="{Binding Offset, StringFormat='Data Item {0}'}"/>
                     </DataTemplate>
                     <ControlTemplate x:Key="VirtualizedItems" TargetType="ItemsControl">
-                        <ScrollViewer BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
+                        <ScrollViewer BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" k_padding="{TemplateBinding k_padding}">
                             <ItemsPresenter/>
                         </ScrollViewer>
                     </ControlTemplate>
                 </Grid.Resources>
-                <ItemsControl ItemsSource="{Binding Source={StaticResource Items}}" ItemsPanel="{StaticResource PanelTemplate}" ItemTemplate="{StaticResource ItemTemplate}" Template="{StaticResource VirtualizedItems}" ScrollViewer.CanContentScroll="True" VirtualizingPanel.ScrollUnit="Pixel" BorderBrush="{DynamicResource Brush.Border.Normal}" BorderThickness="1" Width="150" Height="80" Padding="8,4"/>
+                <ItemsControl ItemsSource="{Binding Source={StaticResource Items}}" ItemsPanel="{StaticResource PanelTemplate}" ItemTemplate="{StaticResource ItemTemplate}" Template="{StaticResource VirtualizedItems}" ScrollViewer.CanContentScroll="True" VirtualizingPanel.ScrollUnit="Pixel" BorderBrush="{DynamicResource Brush.Border.Normal}" BorderThickness="1" Width="150" Height="80" k_padding="8,4"/>
             </Grid>
         </HeaderedContentControl>
     </StackPanel>

@@ -50,10 +50,10 @@
     
     <Viewbox>
 	  <StackPanel Margin="40">
-	      <Border Padding="5">
+	      <Border k_padding="5">
 	        <TextBlock Text="Image Atlas" HorizontalAlignment="Center" FontSize="28"/>
 	      </Border>
-        <Border Padding="10">
+        <Border k_padding="10">
           <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
 
             <Border BorderBrush="Gray" BorderThickness="1" Background="White" HorizontalAlignment="Center" Margin="5">

@@ -87,7 +87,7 @@
       </ToggleButton>
       <Popup x:Name="PART_Popup" IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}" Focusable="False" Placement="Bottom" PopupAnimation="Slide" AllowsTransparency="True" VerticalOffset="4">
         <Border x:Name="DropDownBorder" Background="{DynamicResource Brush.Background.Popup}" BorderBrush="{DynamicResource Brush.Border.Popup}" BorderThickness="1" CornerRadius="6" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="{TemplateBinding MaxDropDownHeight}">
-          <ScrollViewer Focusable="False" Padding="0,6" KeyboardNavigation.TabNavigation="Cycle" KeyboardNavigation.DirectionalNavigation="Contained">
+          <ScrollViewer Focusable="False" k_padding="0,6" KeyboardNavigation.TabNavigation="Cycle" KeyboardNavigation.DirectionalNavigation="Contained">
             <ItemsPresenter/>
           </ScrollViewer>
         </Border>
@@ -203,7 +203,7 @@
     <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
   </Style>
   <Style x:Key="ColorSelectorComboBoxItemStyle" TargetType="{x:Type ComboBoxItem}" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
-    <Setter Property="Padding" Value="8,7"/>
+    <Setter Property="k_padding" Value="8,7"/>
   </Style>
   <DataTemplate x:Key="ColorItemTemplate">
     <Grid>
@@ -256,7 +256,7 @@
                 <RotateTransform />
               </Path.RenderTransform>
             </Path>
-            <ContentPresenter x:Name="PART_Header" ContentSource="Header" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}"/>
+            <ContentPresenter x:Name="PART_Header" ContentSource="Header" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding k_padding}"/>
           </StackPanel>
         </ToggleButton>
       </Border>
@@ -303,7 +303,7 @@
     <Setter Property="OverridesDefaultStyle" Value="True"/>
     <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type TreeView}}}"/>
     <Setter Property="Background" Value="Transparent"/>
-    <Setter Property="Padding" Value="12,7"/>
+    <Setter Property="k_padding" Value="12,7"/>
     <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type TreeView}}}"/>
     <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type TreeView}}}"/>
     <Setter Property="Template" Value="{StaticResource SampleSelectorItemTemplate}"/>
@@ -333,7 +333,7 @@
     <ControlTemplate.Resources>
       <Geometry x:Key="IconGeometry">M2,8L10,0M7,0L10,0 10,3M5,0L0,0 0,10 10,10 10,5</Geometry>
     </ControlTemplate.Resources>
-    <Border Background="Transparent" Padding="2">
+    <Border Background="Transparent" k_padding="2">
       <b:Interaction.Triggers>
         <b:EventTrigger EventName="MouseLeftButtonDown">
           <b:LaunchUriOrFileAction Path="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}"/>
@@ -431,11 +431,11 @@
             <Hyperlink NavigateUri="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}" TextDecorations="None">Show XAML</Hyperlink>
         </TextBlock>
         <TextBlock Grid.Row="0" Text="Enable" FontSize="12" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,60,0"/>
-        <ToggleButton x:Name="EnableContent" Grid.Row="0" Style="{StaticResource Style.ToggleSwitch}" HorizontalAlignment="Right" FontSize="12" IsChecked="True" FocusVisualStyle="{x:Null}" Margin="4,4,10,4" Padding="0"/>
+        <ToggleButton x:Name="EnableContent" Grid.Row="0" Style="{StaticResource Style.ToggleSwitch}" HorizontalAlignment="Right" FontSize="12" IsChecked="True" FocusVisualStyle="{x:Null}" Margin="4,4,10,4" k_padding="0"/>
         <Border Grid.Row="1" Margin="10">
           <Decorator x:Name="ContentWidthRef"/>
         </Border>
-        <Border x:Name="ContentHost" Grid.Row="1" Background="{TemplateBinding Background}" Padding="10,20">
+        <Border x:Name="ContentHost" Grid.Row="1" Background="{TemplateBinding Background}" k_padding="10,20">
           <Viewbox StretchDirection="DownOnly">
             <ContentPresenter MinWidth="380" Width="{Binding ActualWidth, ElementName=ContentWidthRef}" ContentSource="Content" IsEnabled="{Binding IsChecked, ElementName=EnableContent}"/>
           </Viewbox>

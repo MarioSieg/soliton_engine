@@ -14,7 +14,7 @@
   <Viewbox>
     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="50">
       <StackPanel Orientation="Horizontal">
-        <GroupBox Header="BACKGROUND: " HorizontalAlignment="Center" Margin="0,20,0,0" Padding="10">
+        <GroupBox Header="BACKGROUND: " HorizontalAlignment="Center" Margin="0,20,0,0" k_padding="10">
           <Grid>
             <Grid.ColumnDefinitions>
               <ColumnDefinition/>
@@ -60,7 +60,7 @@
           </Grid>
         </GroupBox>
 
-        <GroupBox Header="FOREGROUND: " HorizontalAlignment="Center" Margin="20,20,0,0" Padding="10">
+        <GroupBox Header="FOREGROUND: " HorizontalAlignment="Center" Margin="20,20,0,0" k_padding="10">
           <Grid>
             <Grid.ColumnDefinitions>
               <ColumnDefinition/>
@@ -106,7 +106,7 @@
           </Grid>
         </GroupBox>
       </StackPanel>
-      <TextBlock Text="Sample Text" HorizontalAlignment="Center" Margin="20,30,20,0" FontSize="30" Padding="20,10"
+      <TextBlock Text="Sample Text" HorizontalAlignment="Center" Margin="20,30,20,0" FontSize="30" k_padding="20,10"
                   VerticalAlignment="Center" Background="{Binding ElementName=BgColor}"
                   Foreground="{Binding ElementName=FgColor}"/>
     </StackPanel>

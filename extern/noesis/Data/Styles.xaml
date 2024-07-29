@@ -12,11 +12,11 @@
 
     <Viewbox>
         <StackPanel Margin="40,20,40,40">
-            <Border Padding="5">
+            <Border k_padding="5">
                 <TextBlock HorizontalAlignment="Center" FontSize="28" Text="Styles"/>
             </Border>
-            <Border Background="#202830" CornerRadius="2" Padding="10" Margin="0,10,0,0">
-                <TabControl Width="400" Height="240" Padding="0">
+            <Border Background="#202830" CornerRadius="2" k_padding="10" Margin="0,10,0,0">
+                <TabControl Width="400" Height="240" k_padding="0">
                     <TabItem Header="Noesis">
                         <Grid Margin="10" Background="#FF282C31">
                             <Grid.ColumnDefinitions>

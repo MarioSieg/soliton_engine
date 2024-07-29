@@ -31,7 +31,7 @@
                     <b:ChangePropertyAction TargetName="XBOXCancel" PropertyName="Visibility" Value="Collapsed"/>
                 </b:DataTrigger>
             </b:Interaction.Triggers>
-            <Border x:Name="PCAccept" CornerRadius="4" BorderThickness="2" BorderBrush="{StaticResource TransparentWhiteBrush75}" Padding="8,2" VerticalAlignment="Center">
+            <Border x:Name="PCAccept" CornerRadius="4" BorderThickness="2" BorderBrush="{StaticResource TransparentWhiteBrush75}" k_padding="8,2" VerticalAlignment="Center">
                 <TextBlock Text="ENTER" Foreground="{StaticResource TransparentWhiteBrush75}" FontSize="20" FontFamily="Fonts/#WeblySleek UI Semibold"/>
             </Border>
             <Grid x:Name="XBOXAccept">
@@ -43,7 +43,7 @@
                 <TextBlock Text="X" FontSize="20" FontFamily="Fonts/#WeblySleek UI Semibold" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-2,0,0" Foreground="#BF9ABAFF"/>
             </Grid>
             <TextBlock Text="{Binding AcceptText, ElementName=Root, FallbackValue=ACCEPT}" Foreground="{StaticResource TransparentWhiteBrush75}" VerticalAlignment="Center" Margin="10,-10,50,-7" FontSize="30"/>
-            <Border x:Name="PCCancel" CornerRadius="4" BorderThickness="2" BorderBrush="{StaticResource TransparentWhiteBrush75}" Padding="8,2" VerticalAlignment="Center">
+            <Border x:Name="PCCancel" CornerRadius="4" BorderThickness="2" BorderBrush="{StaticResource TransparentWhiteBrush75}" k_padding="8,2" VerticalAlignment="Center">
                 <TextBlock Text="ESC" Foreground="{StaticResource TransparentWhiteBrush75}" FontSize="20" FontFamily="Fonts/#WeblySleek UI Semibold"/>
             </Border>
             <Grid x:Name="XBOXCancel" Margin="0,-2">
