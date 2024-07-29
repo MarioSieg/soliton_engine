@@ -16,7 +16,7 @@ namespace lu::graphics {
 
     class texture final : public assetmgr::asset {
     public:
-        explicit texture(std::string&& asset_path);
+        explicit texture(eastl::string&& asset_path);
         explicit texture(std::span<const std::byte> raw_mem);
         texture(
             vk::ImageType type,

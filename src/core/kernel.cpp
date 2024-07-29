@@ -42,27 +42,27 @@ namespace lu {
     static constinit bool g_kernel_online = true;
 
     [[nodiscard]] static auto create_logger(
-        const std::string& name,
-        const std::string& pattern,
+        const eastl::string& name,
+        const eastl::string& pattern,
         bool print_stdout = true, bool enroll = true
     ) -> std::shared_ptr<spdlog::logger> {
         const auto time = fmt::localtime(std::time(nullptr));
         eastl::vector<std::shared_ptr<spdlog::sinks::sink>> sinks {
             std::make_shared<buffered_sink>(k_log_queue_size),
             std::make_shared<spdlog::sinks::basic_file_sink_mt>(
-            fmt::format("{}/session {:%d-%m-%Y  %H-%M-%S}/{}.log", kernel::log_dir, time, name)),
+            fmt::format("{}/session {:%d-%m-%Y  %H-%M-%S}/{}.log", kernel::log_dir.c_str(), time, name.c_str())),
         };
         if (print_stdout) {
             sinks.emplace_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
         }
         std::shared_ptr<spdlog::logger> result = std::make_shared<spdlog::async_logger>(
-            name,
+            name.c_str(),
             sinks.begin(),
             sinks.end(),
             spdlog::thread_pool(),
             spdlog::async_overflow_policy::overrun_oldest
         );
-        result->set_pattern(pattern);
+        result->set_pattern(pattern.c_str());
         if (enroll) {
             register_logger(result);
         }
@@ -148,8 +148,8 @@ static auto redirect_io() -> void {
         for (int i = 0; $environ[i] != nullptr; ++i) {
             log_info("  {}: {}", i, $environ[i]);
         }
-        log_info("Engine config dir: {}", config_dir);
-        log_info("Engine log dir: {}", log_dir);
+        log_info("Engine config dir: {}", config_dir.c_str());
+        log_info("Engine log dir: {}", log_dir.c_str());
 
         assetmgr::init();
 

@@ -19,7 +19,7 @@ namespace lu::graphics {
     using platform::platform_subsystem;
     using vkb::context;
 
-    static convar<std::string> cv_shader_dir {"Renderer.shaderDir", std::nullopt, scripting::convar_flags::read_only};
+    static convar<eastl::string> cv_shader_dir {"Renderer.shaderDir", std::nullopt, scripting::convar_flags::read_only};
     static convar<bool> cv_enable_parallel_shader_compilation {"Renderer.enableParallelShaderCompilation", true, scripting::convar_flags::read_only};
     static convar<std::uint32_t> cv_max_render_threads {
         "Threads.renderThreads",

@@ -125,7 +125,7 @@ namespace lu::vkb {
         app_info.engineVersion = VK_MAKE_VERSION(0, 1, 0);
         app_info.apiVersion = m_api_version;
 
-        std::unordered_set<std::string> instance_extensions = {
+        ankerl::unordered_dense::set<eastl::string> instance_extensions = {
             VK_KHR_SURFACE_EXTENSION_NAME,
         };
 
@@ -191,9 +191,9 @@ namespace lu::vkb {
         if (!instance_extensions.empty()) [[likely]] {
             vk_instance_extensions.reserve(instance_extensions.size());
             for (const auto& ext : instance_extensions) {
-                log_info("Enabling instance extension: {}", ext);
+                log_info("Enabling instance extension: {}", ext.c_str());
                 if (std::ranges::find(m_supported_instance_extensions, ext) == m_supported_instance_extensions.end()) [[unlikely]] {
-                    panic("Instance extension {} not supported", ext);
+                    panic("Instance extension {} not supported", ext.c_str());
                 }
                 vk_instance_extensions.emplace_back(ext.c_str());
             }

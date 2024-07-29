@@ -26,7 +26,7 @@ namespace lu::scripting {
             return m_config_table ? &*m_config_table : nullptr;
         }
 
-        static auto exec_file(const std::string& file) -> bool;
+        static auto exec_file(const eastl::string& file) -> bool;
 
     private:
         bool m_is_lua_host_online = false;

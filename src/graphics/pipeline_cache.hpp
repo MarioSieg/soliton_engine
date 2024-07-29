@@ -15,14 +15,14 @@ namespace lu::graphics {
         explicit pipeline_cache(vk::Device device);
         ~pipeline_cache();
 
-        [[nodiscard]] auto get_pipelines() const -> const ankerl::unordered_dense::map<std::string, std::unique_ptr<pipeline_base>>& { return m_pipelines; }
-        [[nodiscard]] auto get_pipeline(std::string&& name) -> pipeline_base& {
+        [[nodiscard]] auto get_pipelines() const -> const ankerl::unordered_dense::map<eastl::string, std::unique_ptr<pipeline_base>>& { return m_pipelines; }
+        [[nodiscard]] auto get_pipeline(eastl::string&& name) -> pipeline_base& {
             if (!m_pipelines.contains(name)) [[unlikely]] {
-                log_error("Pipeline not found in registry: '{}'", name);
+                log_error("Pipeline not found in registry: '{}'", name.c_str());
                 for (const auto& [key, value] : m_pipelines) {
-                    log_error("Available pipeline: '{}'", key);
+                    log_error("Available pipeline: '{}'", key.c_str());
                 }
-                panic("Pipeline not found in registry: '{}'", name);
+                panic("Pipeline not found in registry: '{}'", name.c_str());
             }
             return *m_pipelines.at(name);
         }
@@ -52,7 +52,7 @@ namespace lu::graphics {
 
     private:
         static inline constinit std::unique_ptr<pipeline_cache> s_instance {};
-        ankerl::unordered_dense::map<std::string, std::unique_ptr<pipeline_base>> m_pipelines {};
+        ankerl::unordered_dense::map<eastl::string, std::unique_ptr<pipeline_base>> m_pipelines {};
         const vk::Device m_device;
         vk::PipelineCache m_cache {};
     };

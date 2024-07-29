@@ -36,7 +36,7 @@ class mesh final : public assetmgr::asset {
             DirectX::BoundingBox aabb {};
         };
 
-        explicit mesh(std::string&& path);
+        explicit mesh(eastl::string&& path);
         explicit mesh(std::span<const aiMesh*> meshes);
         ~mesh() override = default;
 

@@ -69,8 +69,8 @@ namespace lu::graphics {
 		compute_aabb(prim_info.aabb, {vertices.data() + prim_info.vertex_start, prim_info.vertex_count});
 	}
 
-	mesh::mesh(std::string&& path) : asset{assetmgr::asset_source::filesystem, std::move(path)} {
-        log_info("Loading mesh from file '{}'", get_asset_path());
+	mesh::mesh(eastl::string&& path) : asset{assetmgr::asset_source::filesystem, std::move(path)} {
+        log_info("Loading mesh from file '{}'", get_asset_path().c_str());
 
         Assimp::DefaultLogger::create("", Assimp::Logger::NORMAL);
         Assimp::DefaultLogger::get()->attachStream(new assimp_logger {}, Assimp::Logger::Info | Assimp::Logger::Err | Assimp::Logger::Warn);
@@ -78,7 +78,7 @@ namespace lu::graphics {
         eastl::vector<std::byte> blob {};
         assetmgr::with_primary_accessor_lock([&](assetmgr::asset_accessor &accessor) {
             if (!accessor.load_bin_file(get_asset_path().c_str(), blob)) {
-                panic("Failed to load mesh from file '{}'", get_asset_path());
+                panic("Failed to load mesh from file '{}'", get_asset_path().c_str());
             }
         });
 
@@ -86,14 +86,14 @@ namespace lu::graphics {
         const auto load_flags = k_import_flags;
         importer.SetIOHandler(new graphics::lunam_assimp_io_system {});
         passert(importer.ValidateFlags(load_flags));
-        std::string hint {};
-        auto a_path {std::filesystem::path{get_asset_path()}};
+        eastl::string hint {};
+        auto a_path {std::filesystem::path{get_asset_path().c_str()}};
         if (a_path.has_extension()) {
-            hint = a_path.extension().string();
+            hint = a_path.extension().string().c_str();
         }
         const aiScene* scene = importer.ReadFileFromMemory(blob.data(), blob.size(), load_flags, hint.empty() ? nullptr : hint.c_str());
         if (!scene || !scene->mNumMeshes) [[unlikely]] {
-            panic("Failed to load scene from file '{}': {}", get_asset_path(), importer.GetErrorString());
+            panic("Failed to load scene from file '{}': {}", get_asset_path().c_str(), importer.GetErrorString());
         }
 
 		const aiNode* node = scene->mRootNode;

@@ -79,12 +79,12 @@ extern "C" void NsShutdownPackages_NoesisApp() {
 }
 
 namespace noesis {
-    static convar<std::string> cv_license { "GameUI.license.userId", std::nullopt, convar_flags::read_only };
-    static convar<std::string> cv_key { "GameUI.license.key", std::nullopt, convar_flags::read_only };
-    static convar<std::string> cv_xaml_root { "GameUI.xamlRootPath", "assets/ui", convar_flags::read_only };
-    static convar<std::string> cv_font_root { "GameUI.fontRootPath", "assets/ui", convar_flags::read_only };
-    static convar<std::string> cv_texture_root { "GameUI.textureRootPath", "assets/ui", convar_flags::read_only };
-    static convar<std::string> cv_default_font { "GameUI.defaultFont.family", "Fonts/#PT Root UI", convar_flags::read_only };
+    static convar<eastl::string> cv_license { "GameUI.license.userId", std::nullopt, convar_flags::read_only };
+    static convar<eastl::string> cv_key { "GameUI.license.key", std::nullopt, convar_flags::read_only };
+    static convar<eastl::string> cv_xaml_root { "GameUI.xamlRootPath", "assets/ui", convar_flags::read_only };
+    static convar<eastl::string> cv_font_root { "GameUI.fontRootPath", "assets/ui", convar_flags::read_only };
+    static convar<eastl::string> cv_texture_root { "GameUI.textureRootPath", "assets/ui", convar_flags::read_only };
+    static convar<eastl::string> cv_default_font { "GameUI.defaultFont.family", "Fonts/#PT Root UI", convar_flags::read_only };
     static convar<float> cv_default_font_size { "GameUI.defaultFont.size", 15.0f, convar_flags::read_only };
     static convar<std::int32_t> cv_default_font_weight { "GameUI.defaultFont.weight", {Noesis::FontWeight_Normal}, convar_flags::read_only };
     static convar<std::int32_t> cv_default_font_stretch { "GameUI.defaultFont.stretch", {Noesis::FontStretch_Normal}, convar_flags::read_only };
@@ -248,8 +248,8 @@ namespace noesis {
                 default: log_info("{}:{} [GUI] {}", file_name, line, msg); break;
             }
         });
-        static const std::string user_name {cv_license()};
-        static const std::string license_key {cv_key()};
+        static const eastl::string user_name {cv_license()};
+        static const eastl::string license_key {cv_key()};
         Noesis::GUI::SetLicense(
             user_name.c_str(),
             license_key.c_str()
@@ -269,13 +269,13 @@ namespace noesis {
         Noesis::RegisterComponent<Noesis::EnumConverter<Menu3D::State>>();
         Noesis::RegisterComponent<Menu3D::MultiplierConverter>();
 
-        static const std::string xaml_root = cv_xaml_root();
-        static const std::string font_root = cv_font_root();
-        static const std::string texture_root = cv_texture_root();
+        static const eastl::string xaml_root = cv_xaml_root();
+        static const eastl::string font_root = cv_font_root();
+        static const eastl::string texture_root = cv_texture_root();
         Noesis::GUI::SetXamlProvider(Noesis::MakePtr<NoesisApp::LocalXamlProvider>(xaml_root.c_str()));
         Noesis::GUI::SetFontProvider(Noesis::MakePtr<NoesisApp::LocalFontProvider>(font_root.c_str()));
         Noesis::GUI::SetTextureProvider(Noesis::MakePtr<NoesisApp::LocalTextureProvider>(texture_root.c_str()));
-        static const std::string default_font = cv_default_font();
+        static const eastl::string default_font = cv_default_font();
         const char* fonts[] = { default_font.c_str() };
         Noesis::GUI::SetFontFallbacks(fonts, 1);
         Noesis::GUI::SetFontDefaultProperties(

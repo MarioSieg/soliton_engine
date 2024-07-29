@@ -34,8 +34,8 @@ namespace lu {
         [[nodiscard]] auto get_subsystems() const noexcept -> std::span<const std::shared_ptr<subsystem>> { return m_subsystems; }
         [[nodiscard]] auto get_boot_stamp() const noexcept -> std::chrono::high_resolution_clock::time_point { return m_boot_stamp; }
 
-        static inline const std::string config_dir = "config/";
-        static inline const std::string log_dir = "log";
+        static inline const eastl::string config_dir = "config/";
+        static inline const eastl::string log_dir = "log";
 
     private:
         [[nodiscard]] HOTPROC auto tick() -> bool;

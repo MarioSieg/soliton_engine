@@ -11,7 +11,7 @@
     }();
     return *g_editor;
 }
-static std::string g_editor_text;
+static eastl::string g_editor_text;
 
 LUA_INTEROP_API auto __lu_script_editor_render(const char* title) -> void {
     title = title ? title : "Script Editor";
@@ -24,12 +24,12 @@ LUA_INTEROP_API auto __lu_script_editor_set_text(const char* text) -> void {
 }
 
 LUA_INTEROP_API auto __lu_script_editor_get_text() -> const char* {
-    g_editor_text = get_editor().GetText();
+    g_editor_text = get_editor().GetText().c_str();
     return g_editor_text.c_str();
 }
 
 LUA_INTEROP_API auto __lu_script_editor_get_text_len() -> std::size_t {
-    g_editor_text = get_editor().GetText();
+    g_editor_text = get_editor().GetText().c_str();
     return g_editor_text.size();
 }
 

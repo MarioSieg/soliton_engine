@@ -21,7 +21,7 @@ namespace lu::graphics {
     public:
         virtual ~pipeline_base();
 
-        const std::string name;
+        const eastl::string name;
         const pipeline_type type;
 
         auto create(vk::PipelineCache cache) -> void;
@@ -30,7 +30,7 @@ namespace lu::graphics {
         [[nodiscard]] auto get_num_creations() const -> std::uint32_t { return m_num_creations; }
 
     protected:
-        explicit pipeline_base(std::string&& name, pipeline_type type);
+        explicit pipeline_base(eastl::string&& name, pipeline_type type);
 
         virtual auto pre_configure() -> void;
         virtual auto post_configure() -> void;

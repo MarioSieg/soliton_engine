@@ -45,14 +45,14 @@ namespace lu::graphics {
     };
 
     auto shader_variant::get_hash() const noexcept -> std::size_t {
-        std::size_t hash = std::hash<std::string>{}(m_path);
+        std::size_t hash = eastl::hash<eastl::string>{}(m_path);
         hash = hash_merge(hash, std::hash<std::underlying_type_t<shader_stage>>{}(static_cast<std::underlying_type_t<shader_stage>>(m_stage)));
         for (auto&& macro : m_macros) {
-            hash = hash_merge(hash, std::hash<std::decay_t<decltype(macro)>>{}(macro));
+            hash = hash_merge(hash, eastl::hash<std::decay_t<decltype(macro)>>{}(macro));
         }
         for (auto&& [k, v] : m_macro_values) {
-            hash = hash_merge(hash, std::hash<std::decay_t<decltype(k)>>{}(k));
-            hash = hash_merge(hash, std::hash<std::decay_t<decltype(v)>>{}(v));
+            hash = hash_merge(hash, eastl::hash<std::decay_t<decltype(k)>>{}(k));
+            hash = hash_merge(hash, eastl::hash<std::decay_t<decltype(v)>>{}(v));
         }
         return hash;
     }
@@ -85,7 +85,7 @@ namespace lu::graphics {
         const shaderc_shader_kind kind,
         const std::string& source,
         const shaderc::CompileOptions& options,
-        std::string& out
+        eastl::string& out
     ) -> bool {
         const shaderc::AssemblyCompilationResult result = com.CompileGlslToSpvAssembly(
             source, kind, source_name.c_str(), options);
@@ -127,13 +127,13 @@ namespace lu::graphics {
         passert(compiler.IsValid());
 
         // Load string BLOB from file
-        std::string source_code_glsl {};
+        eastl::string source_code_glsl {};
         bool success {};
         assetmgr::with_primary_accessor_lock([&](assetmgr::asset_accessor &acc) {
             success = acc.load_txt_file(variant.get_path().c_str(), source_code_glsl);
         });
         if (!success) [[unlikely]] {
-            log_error("Failed to load shader file: {}", variant.get_path());
+            log_error("Failed to load shader file: {}", variant.get_path().c_str());
             return nullptr;
         }
 
@@ -155,10 +155,10 @@ namespace lu::graphics {
         options.SetWarningsAsErrors();
 
         for (auto&& macro : variant.m_macros) {
-            options.AddMacroDefinition(macro);
+            options.AddMacroDefinition(macro.c_str());
         }
         for (auto&& [k, v] : variant.m_macro_values) {
-            options.AddMacroDefinition(k, std::to_string(v));
+            options.AddMacroDefinition(k.c_str(), std::to_string(v));
         }
 
         shaderc_shader_kind kind = shaderc_glsl_infer_from_source;
@@ -181,9 +181,9 @@ namespace lu::graphics {
                 return nullptr;
         }
 
-        const std::string file_name = std::filesystem::path{variant.get_path()}.filename().string();
-
-        if (!preprocess_shader(compiler, file_name, kind, source_code_glsl, options, source_code_glsl)) [[unlikely]] {
+        const std::string file_name = std::filesystem::path{variant.get_path().c_str()}.filename().string();
+        std::string src = source_code_glsl.c_str();
+        if (!preprocess_shader(compiler, file_name, kind, src, options, src)) [[unlikely]] {
             return nullptr;
         }
 
@@ -191,7 +191,7 @@ namespace lu::graphics {
         auto shader = std::make_shared<proxy>();
 
         eastl::vector<std::uint32_t> bytecode {};
-        if (!compile_file_to_bin(compiler, file_name, kind, source_code_glsl, options, bytecode) || bytecode.empty()) [[unlikely]] {
+        if (!compile_file_to_bin(compiler, file_name, kind, src, options, bytecode) || bytecode.empty()) [[unlikely]] {
             log_error("Failed to compile shader: {}", file_name);
             return nullptr;
         }
@@ -211,8 +211,8 @@ namespace lu::graphics {
             shader->m_bytecode = std::move(bytecode);
         }
         if (variant.m_keep_assembly) {
-            std::string assembly {};
-            if (!compile_file_to_assembly(compiler, file_name, kind, source_code_glsl, options, assembly)) [[unlikely]] {
+            eastl::string assembly {};
+            if (!compile_file_to_assembly(compiler, file_name, kind, src, options, assembly)) [[unlikely]] {
                 return nullptr;
             }
             shader->m_assembly = std::move(assembly);
@@ -233,9 +233,9 @@ namespace lu::graphics {
         vkb::vkdvc().destroyShaderModule(m_module, vkb::get_alloc());
     }
 
-    shader_cache::shader_cache(std::string&& shader_dir) : m_shader_dir{std::move(shader_dir)} {
-        if (!std::filesystem::exists(m_shader_dir)) {
-            panic("Shader directory does not exist: {}", m_shader_dir);
+    shader_cache::shader_cache(eastl::string&& shader_dir) : m_shader_dir{std::move(shader_dir)} {
+        if (!std::filesystem::exists(m_shader_dir.c_str())) {
+            panic("Shader directory does not exist: {}", m_shader_dir.c_str());
         }
     }
 
@@ -255,7 +255,7 @@ namespace lu::graphics {
         passert(s_instance != nullptr);
         return *s_instance;
     }
-    auto shader_cache::init(std::string&& shader_dir) -> void {
+    auto shader_cache::init(eastl::string&& shader_dir) -> void {
         if (!s_instance) s_instance = std::make_unique<shader_cache>(std::move(shader_dir));
     }
     auto shader_cache::shutdown() noexcept -> void { s_instance.reset(); }

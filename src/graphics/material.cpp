@@ -9,8 +9,8 @@
 namespace lu::graphics {
     using scripting::scripting_subsystem;
 
-    static convar<std::string> cv_error_texture {"Renderer.fallbackTexture", std::nullopt, scripting::convar_flags::read_only};
-    static convar<std::string> cv_flat_normal {"Renderer.flatNormalTexture", std::nullopt, scripting::convar_flags::read_only};
+    static convar<eastl::string> cv_error_texture {"Renderer.fallbackTexture", std::nullopt, scripting::convar_flags::read_only};
+    static convar<eastl::string> cv_flat_normal {"Renderer.flatNormalTexture", std::nullopt, scripting::convar_flags::read_only};
 
     material::material(
         texture* albedo_map,

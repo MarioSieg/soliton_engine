@@ -25,13 +25,13 @@ namespace lu {
         vkcheck(vkb::vkdvc().waitIdle());
         m_meshes.invalidate();
         m_textures.invalidate();
-        log_info("Destroyed scene '{}', id: {}", name, id);
+        log_info("Destroyed scene '{}', id: {}", name.c_str(), id);
     }
 
-    auto scene::new_active(std::string&& name, std::string&& file, const float scale, const std::uint32_t load_flags) -> void {
+    auto scene::new_active(eastl::string&& name, eastl::string&& file, const float scale, const std::uint32_t load_flags) -> void {
         auto scene = std::make_unique<proxy>();
         scene->name = std::move(name);
-        log_info("Created scene '{}', id: {}", scene->name, scene->id);
+        log_info("Created scene '{}', id: {}", scene->name.c_str(), scene->id);
         if (!file.empty()) {
             scene->import_from_file(file, scale, load_flags);
         }

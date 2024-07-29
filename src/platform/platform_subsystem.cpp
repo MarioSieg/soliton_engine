@@ -330,7 +330,7 @@ namespace lu::platform {
     static convar<int> cv_default_height {"Window.defaultHeight", 720, scripting::convar_flags::read_only};
     static convar<int> cv_min_width {"Window.minWidth", 640, scripting::convar_flags::read_only};
     static convar<int> cv_min_height {"Window.minHeight", 480, scripting::convar_flags::read_only};
-    static convar<std::string> cv_window_icon {"Window.icon", "assets/icons/logo.png", scripting::convar_flags::read_only};
+    static convar<eastl::string> cv_window_icon {"Window.icon", "assets/icons/logo.png", scripting::convar_flags::read_only};
 
     platform_subsystem::platform_subsystem() : subsystem{"Platform"} {
         passert(s_window == nullptr);
@@ -439,7 +439,7 @@ namespace lu::platform {
         // set window icon
         if constexpr (!PLATFORM_OSX) { // Cocoa - regular windows do not have icons on macOS
             eastl::vector<std::byte> pixel_buf {};
-            const std::string k_window_icon_file = cv_window_icon();
+            const eastl::string k_window_icon_file = cv_window_icon();
             bool success = false;
             assetmgr::with_primary_accessor_lock([&](assetmgr::asset_accessor& acc) {
                 success = acc.load_bin_file(k_window_icon_file.c_str(), pixel_buf);

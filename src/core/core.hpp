@@ -5,12 +5,12 @@
 #include <algorithm>
 #include <bit>
 #include <memory>
-#include <string>
 #include <limits>
 #include <span>
 
 #include <EASTL/array.h>
 #include <EASTL/vector.h>
+#include <EASTL/string.h>
 
 #include "crc32.hpp"
 #include "delegate.hpp"
@@ -28,6 +28,15 @@
 #include <ankerl/unordered_dense.h>
 
 #define USE_MIMALLOC 1
+
+template <>
+struct ankerl::unordered_dense::hash<eastl::string> {
+    using is_avalanching = void;
+
+    [[nodiscard]] auto operator()(const eastl::string& x) const noexcept -> std::uint64_t {
+        return detail::wyhash::hash(x.data(), x.size());
+    }
+};
 
 namespace lu {
     [[nodiscard]] consteval auto make_version(const std::uint8_t major, const std::uint8_t minor) -> std::uint32_t { return (static_cast<std::uint32_t>(major)<<8)|minor; }

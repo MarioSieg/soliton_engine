@@ -24,7 +24,7 @@ namespace lu::vkb {
         [[nodiscard]] auto get_physical_device_features() const noexcept -> const vk::PhysicalDeviceFeatures& { return m_device_features; }
         [[nodiscard]] auto get_physical_device_enabled_features() const noexcept -> const vk::PhysicalDeviceFeatures& { return m_enabled_features; }
         [[nodiscard]] auto get_supported_device_extensions() const noexcept -> std::span<const vk::ExtensionProperties> { return m_supported_device_extensions; }
-        [[nodiscard]] auto get_supported_instance_extensions() const noexcept -> std::span<const std::string> { return m_supported_instance_extensions; }
+        [[nodiscard]] auto get_supported_instance_extensions() const noexcept -> std::span<const eastl::string> { return m_supported_instance_extensions; }
         [[nodiscard]] auto is_device_extension_supported(const char* extension) const -> bool;
         [[nodiscard]] auto is_instance_extension_supported(const char* extension) const -> bool;
         [[nodiscard]] auto get_memory_properties() const noexcept -> const vk::PhysicalDeviceMemoryProperties& { return m_memory_properties; }
@@ -79,7 +79,7 @@ namespace lu::vkb {
 
         bool m_enable_validation = false;
         std::uint32_t m_api_version = 0;
-        eastl::vector<std::string> m_supported_instance_extensions {};
+        eastl::vector<eastl::string> m_supported_instance_extensions {};
         vk::Instance m_instance {};
 
         PFN_vkCreateDebugUtilsMessengerEXT m_create_debug_utils_messenger_ext {};

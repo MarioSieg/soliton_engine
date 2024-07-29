@@ -10,6 +10,20 @@ else()
     target_link_libraries(lunam tbb)
 endif()
 
+target_include_directories(lunam PRIVATE extern/eabase/include/Common)
+
+add_subdirectory(extern/eaassert)
+target_include_directories(lunam PRIVATE extern/eaassert/include)
+target_link_libraries(lunam EAAssert)
+
+add_subdirectory(extern/eathread)
+target_include_directories(lunam PRIVATE extern/eathread/include)
+target_link_libraries(lunam EAThread)
+
+add_subdirectory(extern/eastdc)
+target_include_directories(lunam PRIVATE extern/eastdc/include)
+target_link_libraries(lunam EAStdC)
+
 add_subdirectory(extern/eastl)
 target_include_directories(lunam PRIVATE extern/eastl/include)
 target_link_libraries(lunam EASTL)

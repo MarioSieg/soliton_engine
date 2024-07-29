@@ -70,7 +70,8 @@ namespace lu::graphics {
 
     auto lunam_assimp_io_system::Exists(const char* const file) const -> bool {
         bool exists = false;
-        const std::string abs_path = "/" + std::filesystem::relative(file).string();
+        eastl::string abs_path = "/";
+        abs_path += std::filesystem::relative(file).string().c_str();
         assetmgr::with_primary_accessor_lock([&](assetmgr::asset_accessor& accessor) {
             exists = accessor.file_exists(abs_path.c_str());
         });
@@ -80,12 +81,13 @@ namespace lu::graphics {
     auto lunam_assimp_io_system::Open(const char* const file, const char* const mode) -> Assimp::IOStream* {
         eastl::vector<std::byte> data {};
         bool status = false;
-        const std::string abs_path = "/" + std::filesystem::relative(file).string();
+        eastl::string abs_path = "/";
+        abs_path += std::filesystem::relative(file).string().c_str();
         assetmgr::with_primary_accessor_lock([&](assetmgr::asset_accessor& accessor) {
             status = accessor.load_bin_file(abs_path.c_str(), data);
         });
         if (!status) [[unlikely]] {
-            log_error("Failed to open file '{}'", abs_path);
+            log_error("Failed to open file '{}'", abs_path.c_str());
         }
         return status ? new lunam_io_stream{std::move(data)} : nullptr;
     }

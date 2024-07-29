@@ -15,10 +15,10 @@ namespace lu {
     class scene : public flecs::world, public no_copy, public no_move {
     public:
         const int id;
-        std::string name = {};
+        eastl::string name = {};
         virtual ~scene() override;
 
-        static auto new_active(std::string&& name, std::string&& file, float scale, std::uint32_t load_flags) -> void;
+        static auto new_active(eastl::string&& name, eastl::string&& file, float scale, std::uint32_t load_flags) -> void;
         [[nodiscard]] static auto get_active() noexcept -> scene& {
             assert(s_active != nullptr);
             return *s_active;
@@ -36,7 +36,7 @@ namespace lu {
 
     private:
         friend class kernel;
-        auto import_from_file(const std::string& path, float scale, std::uint32_t load_flags) -> void;
+        auto import_from_file(const eastl::string& path, float scale, std::uint32_t load_flags) -> void;
 
         assetmgr::asset_registry<graphics::mesh> m_meshes {};
         assetmgr::asset_registry<graphics::texture> m_textures {};

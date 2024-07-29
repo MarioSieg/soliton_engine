@@ -10,7 +10,7 @@ namespace lu::graphics {
         virtual ~graphics_pipeline() override = default;
 
     protected:
-        explicit graphics_pipeline(std::string&& name) : pipeline_base{std::move(name), pipeline_type::graphics} {}
+        explicit graphics_pipeline(eastl::string&& name) : pipeline_base{std::move(name), pipeline_type::graphics} {}
 
         HOTPROC static auto draw_mesh(
             const mesh& mesh,

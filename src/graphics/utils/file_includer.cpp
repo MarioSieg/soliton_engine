@@ -31,11 +31,11 @@ shaderc_include_result* FileIncluder::GetInclude(
     const char* requested_source, shaderc_include_type include_type,
     const char* requesting_source, size_t) {
 
-  const std::string full_path =
+  const eastl::string full_path =
       (include_type == shaderc_include_type_relative)
           ? file_finder_.FindRelativeReadableFilepath(requesting_source,
-                                                      requested_source)
-          : file_finder_.FindReadableFilepath(requested_source);
+                                                      requested_source).c_str()
+          : file_finder_.FindReadableFilepath(requested_source).c_str();
 
   if (full_path.empty())
     return MakeErrorIncludeResult("Cannot find or open include file.");
@@ -45,7 +45,7 @@ shaderc_include_result* FileIncluder::GetInclude(
 
   // Read the file and save its full path and contents into stable addresses.
   FileInfo* new_file_info = new FileInfo{full_path, {}};
-  if (!shaderc_util::ReadFile(full_path, &(new_file_info->contents))) {
+  if (!shaderc_util::ReadFile(full_path.c_str(), &(new_file_info->contents))) {
     return MakeErrorIncludeResult("Cannot read file");
   }
 

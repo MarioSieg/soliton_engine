@@ -50,18 +50,18 @@ namespace lu::scripting {
         }
     }
 
-    auto scripting_subsystem::exec_file(const std::string& file) -> bool {
+    auto scripting_subsystem::exec_file(const eastl::string& file) -> bool {
         // this file must be loaded without asset mgr, as asset mgr is not yet initialized and
         // assetmgr needs access to the engine config which is stored in a lua script
-        std::string full_path {"/engine_assets/scripts/" + file};
-        std::string lua_source_code {};
+        eastl::string full_path {"/engine_assets/scripts/" + file};
+        eastl::string lua_source_code {};
         assetmgr::with_primary_accessor_lock([&](assetmgr::asset_accessor &acc) {
             if (!acc.load_txt_file(full_path.c_str(), lua_source_code)) {
-                lua_log_error("Failed to load script file '{}'", full_path);
+                lua_log_error("Failed to load script file '{}'", full_path.c_str());
             }
         });
         if (luaL_dostring(m_L, lua_source_code.c_str()) != LUA_OK) [[unlikely]] {
-            lua_log_error("script error in {}: {}", full_path, lua_tostring(m_L, -1));
+            lua_log_error("script error in {}: {}", full_path.c_str(), lua_tostring(m_L, -1));
             lua_pop(m_L, 1);
             return false;
         }

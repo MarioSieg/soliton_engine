@@ -14,7 +14,7 @@ namespace lu {
         static inline constinit std::atomic_uint64_t s_id_gen = 1;
 
     protected:
-        explicit subsystem(std::string&& name) noexcept
+        explicit subsystem(eastl::string&& name) noexcept
                 : name{std::move(name)}, id{s_id_gen.fetch_add(1, std::memory_order_seq_cst)} {}
         virtual ~subsystem() = default;
 
@@ -26,7 +26,7 @@ namespace lu {
         virtual auto on_post_tick() -> void {} // called each frame in reverse
 
     public:
-        const std::string name;
+        const eastl::string name;
         std::function<auto() -> void> resize_hook {};
         const std::uint64_t id;
     };

@@ -53,9 +53,9 @@ namespace lu::assetmgr {
         for (const auto [fs, vfs] : k_vfs_mounts) {
             log_info("Mounting asset root '{}' -> '{}", fs, vfs);
             if (assetsys_error_t err = assetsys_mount(m_sys, fs.data(), vfs.data()); err != ASSETSYS_SUCCESS) { // Attempt to mount dir first
-                const std::string lupack_file = fmt::format("{}.lupack", fs);
+                const auto lupack_file = fmt::format("{}.lupack", fs);
                 if (err = assetsys_mount(m_sys, lupack_file.c_str(), vfs.data()); err != ASSETSYS_SUCCESS) [[unlikely]] { // Attempt to mount LUPACK file now
-                    panic("Failed to mount asset root (PFS or VFS) '{}' / '{} to '{}: {}", fs, lupack_file, vfs, asset_sys_err_info(err)); // Panic if both failed
+                    panic("Failed to mount asset root (PFS or VFS) '{}' / '{} to '{}: {}", fs, lupack_file.c_str(), vfs, asset_sys_err_info(err)); // Panic if both failed
                 }
             }
         }
@@ -155,7 +155,7 @@ namespace lu::assetmgr {
         m_total_bytes_loaded += dat.size();
         return result;
     }
-    auto asset_accessor::load_txt_file(const char* const vpath, std::string& dat) -> bool {
+    auto asset_accessor::load_txt_file(const char* const vpath, eastl::string& dat) -> bool {
         const auto result = load_file_impl(m_sys, vpath, dat, m_num_request, m_num_failed_requests);
         m_total_bytes_loaded += dat.size();
         return result;

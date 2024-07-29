@@ -9,7 +9,7 @@
 #include "utils.hpp"
 
 namespace lu {
-    [[noreturn]] extern auto panic_impl(std::string&& message) -> void;
+    [[noreturn]] extern auto panic_impl(eastl::string&& message) -> void;
 
     template <typename T>
     struct multicast_delegate final {
