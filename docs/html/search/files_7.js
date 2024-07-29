@@ -13,6 +13,7 @@ var searchData=
   ['filterpredicate_2eh_10',['FilterPredicate.h',['../FilterPredicate_8h.html',1,'']]],
   ['find_2ecpp_11',['Find.cpp',['../Find_8cpp.html',1,'']]],
   ['find_2eh_12',['Find.h',['../Find_8h.html',1,'']]],
-  ['font_5fawesome_2ettf_2einl_13',['font_awesome.ttf.inl',['../font__awesome_8ttf_8inl.html',1,'']]],
-  ['font_5fawesome_5fpro_5f5_2ehpp_14',['font_awesome_pro_5.hpp',['../font__awesome__pro__5_8hpp.html',1,'']]]
+  ['fixed_5fring_5fscalar_5fbuffer_2ehpp_13',['fixed_ring_scalar_buffer.hpp',['../fixed__ring__scalar__buffer_8hpp.html',1,'']]],
+  ['font_5fawesome_2ettf_2einl_14',['font_awesome.ttf.inl',['../font__awesome_8ttf_8inl.html',1,'']]],
+  ['font_5fawesome_5fpro_5f5_2ehpp_15',['font_awesome_pro_5.hpp',['../font__awesome__pro__5_8hpp.html',1,'']]]
 ];

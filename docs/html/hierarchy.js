@@ -23,6 +23,9 @@ var hierarchy =
     ] ],
     [ "BenignMallocHooks", "structBenignMallocHooks.html", null ],
     [ "Bitvec", "structBitvec.html", null ],
+    [ "std::bool_constant", null, [
+      [ "lu::lazy< T >::allow_unwrap< T2 >", "structlu_1_1lazy_1_1allow__unwrap.html", null ]
+    ] ],
     [ "JPH::BroadPhaseLayerInterface", null, [
       [ "lu::physics::BPLayerInterfaceImpl", "classlu_1_1physics_1_1BPLayerInterfaceImpl.html", null ]
     ] ],
@@ -61,6 +64,12 @@ var hierarchy =
     [ "JPH::DebugRenderer", null, [
       [ "lu::physics::debug_renderer", "classlu_1_1physics_1_1debug__renderer.html", null ]
     ] ],
+    [ "Assimp::DefaultIOSystem", null, [
+      [ "lu::graphics::lunam_assimp_io_system", "classlu_1_1graphics_1_1lunam__assimp__io__system.html", null ]
+    ] ],
+    [ "lu::graphics::descriptor_layout_cache::descriptor_layout_hash", "structlu_1_1graphics_1_1descriptor__layout__cache_1_1descriptor__layout__hash.html", null ],
+    [ "lu::graphics::descriptor_layout_cache::descriptor_layout_info", "structlu_1_1graphics_1_1descriptor__layout__cache_1_1descriptor__layout__info.html", null ],
+    [ "lu::graphics::descriptor_factory::descriptor_write_container", "structlu_1_1graphics_1_1descriptor__factory_1_1descriptor__write__container.html", null ],
     [ "dir_data", "structdir__data.html", null ],
     [ "DistinctCtx", "structDistinctCtx.html", null ],
     [ "lu::graphics::debugdraw::draw_command", "structlu_1_1graphics_1_1debugdraw_1_1draw__command.html", null ],
@@ -71,9 +80,13 @@ var hierarchy =
     [ "Expr", "structExpr.html", null ],
     [ "ExprList", "structExprList.html", null ],
     [ "ExprList::ExprList_item", "structExprList_1_1ExprList__item.html", null ],
+    [ "std::false_type", null, [
+      [ "lu::spsc_queue< T, Alloc >::alloc_least< Alloc2, typename >", "structlu_1_1spsc__queue_1_1alloc__least.html", null ]
+    ] ],
     [ "FileChunk", "structFileChunk.html", null ],
     [ "lu::graphics::FileIncluder::FileInfo", "structlu_1_1graphics_1_1FileIncluder_1_1FileInfo.html", null ],
     [ "FilePoint", "structFilePoint.html", null ],
+    [ "lu::fixed_ring_scalar_buffer< Scalar, Size >", "structlu_1_1fixed__ring__scalar__buffer.html", null ],
     [ "FKey", "structFKey.html", null ],
     [ "FpDecode", "structFpDecode.html", null ],
     [ "FrameBound", "structFrameBound.html", null ],
@@ -106,6 +119,9 @@ var hierarchy =
     [ "IndexSample", "structIndexSample.html", null ],
     [ "InitData", "structInitData.html", null ],
     [ "IntegrityCk", "structIntegrityCk.html", null ],
+    [ "Assimp::IOStream", null, [
+      [ "lu::graphics::lunam_io_stream", "classlu_1_1graphics_1_1lunam__io__stream.html", null ]
+    ] ],
     [ "JsonCache", "structJsonCache.html", null ],
     [ "JsonEachConnection", "structJsonEachConnection.html", null ],
     [ "JsonEachCursor", "structJsonEachCursor.html", null ],
@@ -115,6 +131,8 @@ var hierarchy =
     [ "JsonString", "structJsonString.html", null ],
     [ "KeyInfo", "structKeyInfo.html", null ],
     [ "LastValueCtx", "structLastValueCtx.html", null ],
+    [ "lu::lazy< T >", "structlu_1_1lazy.html", null ],
+    [ "lu::lazy_flex< T >", "structlu_1_1lazy__flex.html", null ],
     [ "lfs_Lock", "structlfs__Lock.html", null ],
     [ "Assimp::LogStream", null, [
       [ "lu::graphics::assimp_logger", "classlu_1_1graphics_1_1assimp__logger.html", null ]
@@ -135,6 +153,14 @@ var hierarchy =
     [ "lu::com::mesh_renderer", "structlu_1_1com_1_1mesh__renderer.html", null ],
     [ "lu::com::metadata", "structlu_1_1com_1_1metadata.html", null ],
     [ "Module", "structModule.html", null ],
+    [ "lu::multicast_delegate< T >", "structlu_1_1multicast__delegate.html", null ],
+    [ "lu::multicast_delegate< GLFWcharfun >", "structlu_1_1multicast__delegate.html", null ],
+    [ "lu::multicast_delegate< GLFWcursorenterfun >", "structlu_1_1multicast__delegate.html", null ],
+    [ "lu::multicast_delegate< GLFWcursorposfun >", "structlu_1_1multicast__delegate.html", null ],
+    [ "lu::multicast_delegate< GLFWframebuffersizefun >", "structlu_1_1multicast__delegate.html", null ],
+    [ "lu::multicast_delegate< GLFWkeyfun >", "structlu_1_1multicast__delegate.html", null ],
+    [ "lu::multicast_delegate< GLFWmousebuttonfun >", "structlu_1_1multicast__delegate.html", null ],
+    [ "lu::multicast_delegate< GLFWscrollfun >", "structlu_1_1multicast__delegate.html", null ],
     [ "NameContext", "structNameContext.html", null ],
     [ "NanInfName", "structNanInfName.html", null ],
     [ "lu::no_copy", "classlu_1_1no__copy.html", [
@@ -144,17 +170,22 @@ var hierarchy =
         [ "lu::graphics::texture", "classlu_1_1graphics_1_1texture.html", null ]
       ] ],
       [ "lu::graphics::debugdraw", "classlu_1_1graphics_1_1debugdraw.html", null ],
+      [ "lu::graphics::descriptor_allocator", "classlu_1_1graphics_1_1descriptor__allocator.html", null ],
+      [ "lu::graphics::descriptor_factory", "classlu_1_1graphics_1_1descriptor__factory.html", null ],
+      [ "lu::graphics::descriptor_layout_cache", "classlu_1_1graphics_1_1descriptor__layout__cache.html", null ],
       [ "lu::graphics::pipeline_base", "classlu_1_1graphics_1_1pipeline__base.html", [
-        [ "lu::graphics::pipelines::pbr_pipeline", "classlu_1_1graphics_1_1pipelines_1_1pbr__pipeline.html", null ],
-        [ "lu::graphics::pipelines::sky_pipeline", "classlu_1_1graphics_1_1pipelines_1_1sky__pipeline.html", null ]
+        [ "lu::graphics::graphics_pipeline", "classlu_1_1graphics_1_1graphics__pipeline.html", [
+          [ "lu::graphics::pipelines::pbr_pipeline", "classlu_1_1graphics_1_1pipelines_1_1pbr__pipeline.html", null ],
+          [ "lu::graphics::pipelines::sky_pipeline", "classlu_1_1graphics_1_1pipelines_1_1sky__pipeline.html", null ]
+        ] ]
       ] ],
-      [ "lu::graphics::pipeline_registry", "classlu_1_1graphics_1_1pipeline__registry.html", null ],
+      [ "lu::graphics::pipeline_cache", "classlu_1_1graphics_1_1pipeline__cache.html", null ],
       [ "lu::graphics::render_thread", "classlu_1_1graphics_1_1render__thread.html", null ],
       [ "lu::graphics::render_thread_pool", "classlu_1_1graphics_1_1render__thread__pool.html", null ],
       [ "lu::graphics::shader", "classlu_1_1graphics_1_1shader.html", null ],
-      [ "lu::graphics::shader_registry", "classlu_1_1graphics_1_1shader__registry.html", null ],
-      [ "lu::graphics::thread_sig", "classlu_1_1graphics_1_1thread__sig.html", null ],
+      [ "lu::graphics::shader_cache", "classlu_1_1graphics_1_1shader__cache.html", null ],
       [ "lu::kernel", "classlu_1_1kernel.html", null ],
+      [ "lu::obfuscated< T, Mutate >", "classlu_1_1obfuscated.html", null ],
       [ "lu::scene", "classlu_1_1scene.html", [
         [ "lu::proxy", "structlu_1_1proxy.html", null ]
       ] ],
@@ -164,6 +195,7 @@ var hierarchy =
         [ "lu::platform::platform_subsystem", "classlu_1_1platform_1_1platform__subsystem.html", null ],
         [ "lu::scripting::scripting_subsystem", "classlu_1_1scripting_1_1scripting__subsystem.html", null ]
       ] ],
+      [ "lu::thread_sig", "classlu_1_1thread__sig.html", null ],
       [ "lu::vkb::buffer", "classlu_1_1vkb_1_1buffer.html", null ],
       [ "lu::vkb::context", "classlu_1_1vkb_1_1context.html", null ],
       [ "lu::vkb::device", "classlu_1_1vkb_1_1device.html", null ],
@@ -172,16 +204,20 @@ var hierarchy =
     [ "lu::no_move", "classlu_1_1no__move.html", [
       [ "lu::assetmgr::asset", "classlu_1_1assetmgr_1_1asset.html", null ],
       [ "lu::graphics::debugdraw", "classlu_1_1graphics_1_1debugdraw.html", null ],
+      [ "lu::graphics::descriptor_allocator", "classlu_1_1graphics_1_1descriptor__allocator.html", null ],
+      [ "lu::graphics::descriptor_factory", "classlu_1_1graphics_1_1descriptor__factory.html", null ],
+      [ "lu::graphics::descriptor_layout_cache", "classlu_1_1graphics_1_1descriptor__layout__cache.html", null ],
       [ "lu::graphics::pipeline_base", "classlu_1_1graphics_1_1pipeline__base.html", null ],
-      [ "lu::graphics::pipeline_registry", "classlu_1_1graphics_1_1pipeline__registry.html", null ],
+      [ "lu::graphics::pipeline_cache", "classlu_1_1graphics_1_1pipeline__cache.html", null ],
       [ "lu::graphics::render_thread", "classlu_1_1graphics_1_1render__thread.html", null ],
       [ "lu::graphics::render_thread_pool", "classlu_1_1graphics_1_1render__thread__pool.html", null ],
       [ "lu::graphics::shader", "classlu_1_1graphics_1_1shader.html", null ],
-      [ "lu::graphics::shader_registry", "classlu_1_1graphics_1_1shader__registry.html", null ],
-      [ "lu::graphics::thread_sig", "classlu_1_1graphics_1_1thread__sig.html", null ],
+      [ "lu::graphics::shader_cache", "classlu_1_1graphics_1_1shader__cache.html", null ],
       [ "lu::kernel", "classlu_1_1kernel.html", null ],
+      [ "lu::obfuscated< T, Mutate >", "classlu_1_1obfuscated.html", null ],
       [ "lu::scene", "classlu_1_1scene.html", null ],
       [ "lu::subsystem", "classlu_1_1subsystem.html", null ],
+      [ "lu::thread_sig", "classlu_1_1thread__sig.html", null ],
       [ "lu::vkb::buffer", "classlu_1_1vkb_1_1buffer.html", null ],
       [ "lu::vkb::context", "classlu_1_1vkb_1_1context.html", null ],
       [ "lu::vkb::device", "classlu_1_1vkb_1_1device.html", null ],
@@ -237,11 +273,13 @@ var hierarchy =
     [ "FKey::sColMap", "structFKey_1_1sColMap.html", null ],
     [ "Select", "structSelect.html", null ],
     [ "SelectDest", "structSelectDest.html", null ],
+    [ "lu::graphics::shader_variant", "structlu_1_1graphics_1_1shader__variant.html", null ],
     [ "SortCtx", "structSortCtx.html", null ],
     [ "SorterFile", "structSorterFile.html", null ],
     [ "SorterList", "structSorterList.html", null ],
     [ "SorterRecord", "structSorterRecord.html", null ],
     [ "SortSubtask", "structSortSubtask.html", null ],
+    [ "lu::spsc_queue< T, Alloc >", "structlu_1_1spsc__queue.html", null ],
     [ "sqlite3", "structsqlite3.html", null ],
     [ "sqlite3_api_routines", "structsqlite3__api__routines.html", null ],
     [ "sqlite3_backup", "structsqlite3__backup.html", null ],
@@ -277,6 +315,7 @@ var hierarchy =
     [ "SrcList", "structSrcList.html", null ],
     [ "StatAccum", "structStatAccum.html", null ],
     [ "StatSample", "structStatSample.html", null ],
+    [ "lu::stopwatch< Clock >", "classlu_1_1stopwatch.html", null ],
     [ "SubProgram", "structSubProgram.html", null ],
     [ "SubstContext", "structSubstContext.html", null ],
     [ "SumCtx", "structSumCtx.html", null ],

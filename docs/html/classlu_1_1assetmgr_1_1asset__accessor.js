@@ -10,6 +10,7 @@ var classlu_1_1assetmgr_1_1asset__accessor =
     [ "dir_path", "classlu_1_1assetmgr_1_1asset__accessor.html#a44679a3da5b5072bd5f1ae3f7b63af37", null ],
     [ "dump_dir_tree", "classlu_1_1assetmgr_1_1asset__accessor.html#ab438577acfc4e501144049f7e2531efa", null ],
     [ "file_count", "classlu_1_1assetmgr_1_1asset__accessor.html#a5a754462260d90bab471982f4673aa73", null ],
+    [ "file_exists", "classlu_1_1assetmgr_1_1asset__accessor.html#ada3c18a9de234838cd37cd704db8c48d", null ],
     [ "file_name", "classlu_1_1assetmgr_1_1asset__accessor.html#a7d65457ce90c439aeeef7d1037e12ce8", null ],
     [ "file_path", "classlu_1_1assetmgr_1_1asset__accessor.html#aa50c9bb961a83d92ccdb5655acfa0d00", null ],
     [ "load_bin_file", "classlu_1_1assetmgr_1_1asset__accessor.html#a0b52ac177a67bdaf8c1a83a233ba3f17", null ],

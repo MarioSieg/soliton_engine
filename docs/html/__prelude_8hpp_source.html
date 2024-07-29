@@ -88,7 +88,7 @@ $(document).ready(function(){initNavTree('__prelude_8hpp_source.html',''); initR
   <div class="headertitle"><div class="title">_prelude.hpp</div></div>
 </div><!--header-->
 <div class="contents">
-<a href="__prelude_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">// Copyright (c) 2022-2023 Mario &quot;Neo&quot; Sieg. All Rights Reserved.</span></div>
+<a href="__prelude_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">// Copyright (c) 2022-2024 Mario &quot;Neo&quot; Sieg. All Rights Reserved.</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
@@ -112,16 +112,16 @@ $(document).ready(function(){initNavTree('__prelude_8hpp_source.html',''); initR
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>[[nodiscard]] <span class="keyword">inline</span> __attribute__((always_inline)) <span class="keyword">auto</span> resolve_entity(<span class="keyword">const</span> <a class="code hl_typedef" href="__prelude_8hpp.html#a540ebdabe9ca20b0d80679875d775679">lua_entity_id</a> <span class="keywordtype">id</span>) <span class="keyword">noexcept</span> -&gt; std::optional&lt;flecs::entity&gt; {</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keyword">const</span> <span class="keyword">auto</span> f_id = std::bit_cast&lt;flecs::id_t&gt;(<span class="keywordtype">id</span>);</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keywordflow">if</span> (f_id == 0) [[<a class="code hl_define" href="sqlite3_8c.html#abc731794bf58cdf8374f2be21cdfd62d">unlikely</a>]] {</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <a class="code hl_define" href="core_8hpp.html#afd32891494579f4d9319e2839ddf4c4c">log_warn</a>(<span class="stringliteral">&quot;Entity ID is null&quot;</span>);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <a class="code hl_define" href="utils_8hpp.html#afd32891494579f4d9319e2839ddf4c4c">log_warn</a>(<span class="stringliteral">&quot;Entity ID is null&quot;</span>);</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <span class="keywordflow">return</span> std::nullopt;</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    }</div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keyword">const</span> flecs::entity ent {scene::get_active(), f_id};</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">if</span> (!ent.is_valid()) [[<a class="code hl_define" href="sqlite3_8c.html#abc731794bf58cdf8374f2be21cdfd62d">unlikely</a>]] {</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <a class="code hl_define" href="core_8hpp.html#afd32891494579f4d9319e2839ddf4c4c">log_warn</a>(<span class="stringliteral">&quot;Entity ID is invalid&quot;</span>);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <a class="code hl_define" href="utils_8hpp.html#afd32891494579f4d9319e2839ddf4c4c">log_warn</a>(<span class="stringliteral">&quot;Entity ID is invalid&quot;</span>);</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keywordflow">return</span> std::nullopt;</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    }</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordflow">if</span> (!ent.is_alive()) [[<a class="code hl_define" href="sqlite3_8c.html#abc731794bf58cdf8374f2be21cdfd62d">unlikely</a>]] {</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <a class="code hl_define" href="core_8hpp.html#afd32891494579f4d9319e2839ddf4c4c">log_warn</a>(<span class="stringliteral">&quot;Entity ID is not alive&quot;</span>);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <a class="code hl_define" href="utils_8hpp.html#afd32891494579f4d9319e2839ddf4c4c">log_warn</a>(<span class="stringliteral">&quot;Entity ID is not alive&quot;</span>);</div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <span class="keywordflow">return</span> std::nullopt;</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    }</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordflow">return</span> ent;</div>
@@ -261,7 +261,6 @@ $(document).ready(function(){initNavTree('__prelude_8hpp_source.html',''); initR
 <div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span><span class="preprocessor">        ent-&gt;remove&lt;com::name&gt;();\</span></div>
 <div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span><span class="preprocessor">    }</span></div>
 <div class="ttc" id="a__prelude_8hpp_html_a540ebdabe9ca20b0d80679875d775679"><div class="ttname"><a href="__prelude_8hpp.html#a540ebdabe9ca20b0d80679875d775679">lua_entity_id</a></div><div class="ttdeci">std::uint64_t lua_entity_id</div><div class="ttdef"><b>Definition:</b> _prelude.hpp:18</div></div>
-<div class="ttc" id="acore_8hpp_html_afd32891494579f4d9319e2839ddf4c4c"><div class="ttname"><a href="core_8hpp.html#afd32891494579f4d9319e2839ddf4c4c">log_warn</a></div><div class="ttdeci">#define log_warn</div><div class="ttdef"><b>Definition:</b> core.hpp:16</div></div>
 <div class="ttc" id="anamespacelu_html"><div class="ttname"><a href="namespacelu.html">lu</a></div><div class="ttdef"><b>Definition:</b> asset.cpp:5</div></div>
 <div class="ttc" id="asqlite3_8c_html_abc731794bf58cdf8374f2be21cdfd62d"><div class="ttname"><a href="sqlite3_8c.html#abc731794bf58cdf8374f2be21cdfd62d">unlikely</a></div><div class="ttdeci">#define unlikely(X)</div><div class="ttdef"><b>Definition:</b> sqlite3.c:14385</div></div>
 <div class="ttc" id="astructlua__vec2_html"><div class="ttname"><a href="structlua__vec2.html">lua_vec2</a></div><div class="ttdef"><b>Definition:</b> _prelude.hpp:43</div></div>
@@ -284,6 +283,7 @@ $(document).ready(function(){initNavTree('__prelude_8hpp_source.html',''); initR
 <div class="ttc" id="astructlua__vec4_html_accfc8011c6fe3c8aa365ddd69d447242"><div class="ttname"><a href="structlua__vec4.html#accfc8011c6fe3c8aa365ddd69d447242">lua_vec4::w</a></div><div class="ttdeci">double w</div><div class="ttdef"><b>Definition:</b> _prelude.hpp:131</div></div>
 <div class="ttc" id="astructlua__vec4_html_ace3d84951bcc0b833e1ec3dc9352961d"><div class="ttname"><a href="structlua__vec4.html#ace3d84951bcc0b833e1ec3dc9352961d">lua_vec4::x</a></div><div class="ttdeci">double x</div><div class="ttdef"><b>Definition:</b> _prelude.hpp:128</div></div>
 <div class="ttc" id="astructlua__vec4_html_af48fdab789fb543267a5fe415c368859"><div class="ttname"><a href="structlua__vec4.html#af48fdab789fb543267a5fe415c368859">lua_vec4::y</a></div><div class="ttdeci">double y</div><div class="ttdef"><b>Definition:</b> _prelude.hpp:129</div></div>
+<div class="ttc" id="autils_8hpp_html_afd32891494579f4d9319e2839ddf4c4c"><div class="ttname"><a href="utils_8hpp.html#afd32891494579f4d9319e2839ddf4c4c">log_warn</a></div><div class="ttdeci">#define log_warn</div><div class="ttdef"><b>Definition:</b> utils.hpp:9</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

@@ -19,8 +19,10 @@ var searchData=
   ['asset_5fregistry_2ehpp_16',['asset_registry.hpp',['../asset__registry_8hpp.html',1,'']]],
   ['assetmgr_2ecpp_17',['assetmgr.cpp',['../assetmgr_8cpp.html',1,'']]],
   ['assetmgr_2ehpp_18',['assetmgr.hpp',['../assetmgr_8hpp.html',1,'']]],
-  ['attachablecollection_2eh_19',['AttachableCollection.h',['../AttachableCollection_8h.html',1,'']]],
-  ['attachablecollection_2einl_20',['AttachableCollection.inl',['../AttachableCollection_8inl.html',1,'']]],
-  ['attachableobject_2ecpp_21',['AttachableObject.cpp',['../AttachableObject_8cpp.html',1,'']]],
-  ['attachableobject_2eh_22',['AttachableObject.h',['../AttachableObject_8h.html',1,'']]]
+  ['assimp_5futils_2ecpp_19',['assimp_utils.cpp',['../assimp__utils_8cpp.html',1,'']]],
+  ['assimp_5futils_2ehpp_20',['assimp_utils.hpp',['../assimp__utils_8hpp.html',1,'']]],
+  ['attachablecollection_2eh_21',['AttachableCollection.h',['../AttachableCollection_8h.html',1,'']]],
+  ['attachablecollection_2einl_22',['AttachableCollection.inl',['../AttachableCollection_8inl.html',1,'']]],
+  ['attachableobject_2ecpp_23',['AttachableObject.cpp',['../AttachableObject_8cpp.html',1,'']]],
+  ['attachableobject_2eh_24',['AttachableObject.h',['../AttachableObject_8h.html',1,'']]]
 ];

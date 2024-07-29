@@ -94,7 +94,7 @@ $(document).ready(function(){initNavTree('shader_8cpp.html',''); initResizable()
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="shader_8hpp_source.html">shader.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="vulkancore_2context_8hpp_source.html">vulkancore/context.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="file__includer_8hpp_source.html">file_includer.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="file__includer_8hpp_source.html">utils/file_includer.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="assetmgr_8hpp_source.html">../assetmgr/assetmgr.hpp</a>&quot;</code><br />
 <code>#include &lt;filesystem&gt;</code><br />
 </div><table class="memberdecls">
@@ -107,6 +107,8 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a36f72332104da36e804223b29c529aef"><td class="memItemLeft" align="right" valign="top">static constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu_1_1graphics.html#a36f72332104da36e804223b29c529aef">lu::graphics::get_shaderc_err</a> (const shaderc_compilation_status status) noexcept -&gt; const char *</td></tr>
+<tr class="separator:a36f72332104da36e804223b29c529aef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5066d5f45f7c136aaf4d7688ca6ba3f2"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu_1_1graphics.html#a5066d5f45f7c136aaf4d7688ca6ba3f2">lu::graphics::preprocess_shader</a> (shaderc::Compiler &amp;com, const std::string &amp;source_name, const shaderc_shader_kind kind, const std::string &amp;source, const shaderc::CompileOptions &amp;options, std::string &amp;out) -&gt; bool</td></tr>
 <tr class="separator:a5066d5f45f7c136aaf4d7688ca6ba3f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3309fa07cbf329b1d0c4350d6cedd56b"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu_1_1graphics.html#a3309fa07cbf329b1d0c4350d6cedd56b">lu::graphics::compile_file_to_assembly</a> (shaderc::Compiler &amp;com, const std::string &amp;source_name, const shaderc_shader_kind kind, const std::string &amp;source, const shaderc::CompileOptions &amp;options, std::string &amp;out) -&gt; bool</td></tr>

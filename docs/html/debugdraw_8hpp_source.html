@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.4"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lunam Engine: src/graphics/debugdraw.hpp Source File</title>
+<title>Lunam Engine: src/graphics/utils/debugdraw.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -88,15 +88,15 @@ $(document).ready(function(){initNavTree('debugdraw_8hpp_source.html',''); initR
   <div class="headertitle"><div class="title">debugdraw.hpp</div></div>
 </div><!--header-->
 <div class="contents">
-<a href="debugdraw_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">// Copyright (c) 2022-2023 Mario &quot;Neo&quot; Sieg. All Rights Reserved.</span></div>
+<a href="debugdraw_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">// Copyright (c) 2022-2024 Mario &quot;Neo&quot; Sieg. All Rights Reserved.</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;DirectXCollision.h&gt;</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;DirectXMath.h&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;DirectXCollision.h&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;DirectXMath.h&quot;</span></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="prelude_8hpp.html">vulkancore/prelude.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="buffer_8hpp.html">vulkancore/buffer.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;../vulkancore/prelude.hpp&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;../vulkancore/buffer.hpp&quot;</span></div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacelu_1_1graphics.html">lu::graphics</a> {</div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="classlu_1_1graphics_1_1debugdraw.html">   12</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classlu_1_1graphics_1_1debugdraw.html">debugdraw</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classlu_1_1no__copy.html">no_copy</a>, <span class="keyword">public</span> <a class="code hl_class" href="classlu_1_1no__move.html">no_move</a> {</div>
@@ -177,7 +177,6 @@ $(document).ready(function(){initNavTree('debugdraw_8hpp_source.html',''); initR
 <div class="line"><a id="l00087" name="l00087"></a><span class="lineno"><a class="line" href="classlu_1_1graphics_1_1debugdraw.html#a2646bd6e83d336e72f3542fbcf2fb2fc">   87</a></span>        vk::Pipeline <a class="code hl_variable" href="classlu_1_1graphics_1_1debugdraw.html#a2646bd6e83d336e72f3542fbcf2fb2fc">m_line_strip_no_depth_pipeline</a> {};</div>
 <div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    };</div>
 <div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>}</div>
-<div class="ttc" id="abuffer_8hpp_html"><div class="ttname"><a href="buffer_8hpp.html">buffer.hpp</a></div></div>
 <div class="ttc" id="aclasslu_1_1graphics_1_1debugdraw_html"><div class="ttname"><a href="classlu_1_1graphics_1_1debugdraw.html">lu::graphics::debugdraw</a></div><div class="ttdef"><b>Definition:</b> debugdraw.hpp:12</div></div>
 <div class="ttc" id="aclasslu_1_1graphics_1_1debugdraw_html_a00be10d6234d116d9ac697ae00af8a03"><div class="ttname"><a href="classlu_1_1graphics_1_1debugdraw.html#a00be10d6234d116d9ac697ae00af8a03">lu::graphics::debugdraw::draw_obb</a></div><div class="ttdeci">auto draw_obb(const DirectX::BoundingOrientedBox &amp;obb, DirectX::FXMMATRIX model, const DirectX::XMFLOAT3 &amp;color) -&gt; void</div><div class="ttdef"><b>Definition:</b> debugdraw.cpp:995</div></div>
 <div class="ttc" id="aclasslu_1_1graphics_1_1debugdraw_html_a01811761773eed44afdd8f4059bb4524"><div class="ttname"><a href="classlu_1_1graphics_1_1debugdraw.html#a01811761773eed44afdd8f4059bb4524">lu::graphics::debugdraw::set_distance_fade_enable</a></div><div class="ttdeci">auto set_distance_fade_enable(const bool enable) noexcept -&gt; void</div><div class="ttdef"><b>Definition:</b> debugdraw.hpp:39</div></div>
@@ -222,11 +221,10 @@ $(document).ready(function(){initNavTree('debugdraw_8hpp_source.html',''); initR
 <div class="ttc" id="aclasslu_1_1graphics_1_1debugdraw_html_aefd506e6728e41a497e816972b1179ee"><div class="ttname"><a href="classlu_1_1graphics_1_1debugdraw.html#aefd506e6728e41a497e816972b1179ee">lu::graphics::debugdraw::m_line_strip_depth_pipeline</a></div><div class="ttdeci">vk::Pipeline m_line_strip_depth_pipeline</div><div class="ttdef"><b>Definition:</b> debugdraw.hpp:86</div></div>
 <div class="ttc" id="aclasslu_1_1graphics_1_1debugdraw_html_af77f02111b6d43432029a85fed346509"><div class="ttname"><a href="classlu_1_1graphics_1_1debugdraw.html#af77f02111b6d43432029a85fed346509">lu::graphics::debugdraw::m_distance_fade</a></div><div class="ttdeci">bool m_distance_fade</div><div class="ttdef"><b>Definition:</b> debugdraw.hpp:78</div></div>
 <div class="ttc" id="aclasslu_1_1graphics_1_1debugdraw_html_afd9c2a4bab43a5c2058a6c57671c6b87"><div class="ttname"><a href="classlu_1_1graphics_1_1debugdraw.html#afd9c2a4bab43a5c2058a6c57671c6b87">lu::graphics::debugdraw::m_line_no_depth_pipeline</a></div><div class="ttdeci">vk::Pipeline m_line_no_depth_pipeline</div><div class="ttdef"><b>Definition:</b> debugdraw.hpp:85</div></div>
-<div class="ttc" id="aclasslu_1_1no__copy_html"><div class="ttname"><a href="classlu_1_1no__copy.html">lu::no_copy</a></div><div class="ttdef"><b>Definition:</b> core.hpp:28</div></div>
-<div class="ttc" id="aclasslu_1_1no__move_html"><div class="ttname"><a href="classlu_1_1no__move.html">lu::no_move</a></div><div class="ttdef"><b>Definition:</b> core.hpp:38</div></div>
+<div class="ttc" id="aclasslu_1_1no__copy_html"><div class="ttname"><a href="classlu_1_1no__copy.html">lu::no_copy</a></div><div class="ttdef"><b>Definition:</b> move_copy_base.hpp:6</div></div>
+<div class="ttc" id="aclasslu_1_1no__move_html"><div class="ttname"><a href="classlu_1_1no__move.html">lu::no_move</a></div><div class="ttdef"><b>Definition:</b> move_copy_base.hpp:16</div></div>
 <div class="ttc" id="aclasslu_1_1vkb_1_1buffer_html"><div class="ttname"><a href="classlu_1_1vkb_1_1buffer.html">lu::vkb::buffer</a></div><div class="ttdef"><b>Definition:</b> buffer.hpp:10</div></div>
-<div class="ttc" id="anamespacelu_1_1graphics_html"><div class="ttname"><a href="namespacelu_1_1graphics.html">lu::graphics</a></div><div class="ttdef"><b>Definition:</b> debugdraw.cpp:8</div></div>
-<div class="ttc" id="aprelude_8hpp_html"><div class="ttname"><a href="prelude_8hpp.html">prelude.hpp</a></div></div>
+<div class="ttc" id="anamespacelu_1_1graphics_html"><div class="ttname"><a href="namespacelu_1_1graphics.html">lu::graphics</a></div><div class="ttdef"><b>Definition:</b> graphics_pipeline.cpp:10</div></div>
 <div class="ttc" id="astructlu_1_1graphics_1_1debugdraw_1_1draw__command_html"><div class="ttname"><a href="structlu_1_1graphics_1_1debugdraw_1_1draw__command.html">lu::graphics::debugdraw::draw_command</a></div><div class="ttdef"><b>Definition:</b> debugdraw.hpp:24</div></div>
 <div class="ttc" id="astructlu_1_1graphics_1_1debugdraw_1_1draw__command_html_a1ccea12370484fd290c219dc7155664b"><div class="ttname"><a href="structlu_1_1graphics_1_1debugdraw_1_1draw__command.html#a1ccea12370484fd290c219dc7155664b">lu::graphics::debugdraw::draw_command::fade_end</a></div><div class="ttdeci">float fade_end</div><div class="ttdef"><b>Definition:</b> debugdraw.hpp:30</div></div>
 <div class="ttc" id="astructlu_1_1graphics_1_1debugdraw_1_1draw__command_html_a4e0b137936079f7e9f81c959979b8f5d"><div class="ttname"><a href="structlu_1_1graphics_1_1debugdraw_1_1draw__command.html#a4e0b137936079f7e9f81c959979b8f5d">lu::graphics::debugdraw::draw_command::fade_start</a></div><div class="ttdeci">float fade_start</div><div class="ttdef"><b>Definition:</b> debugdraw.hpp:29</div></div>
@@ -247,7 +245,7 @@ $(document).ready(function(){initNavTree('debugdraw_8hpp_source.html',''); initR
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_560415a5d2bc4999842279f4fc1debef.html">graphics</a></li><li class="navelem"><a class="el" href="debugdraw_8hpp.html">debugdraw.hpp</a></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_560415a5d2bc4999842279f4fc1debef.html">graphics</a></li><li class="navelem"><a class="el" href="dir_bba79e88fb3a3133e9c0e0849fa1ffee.html">utils</a></li><li class="navelem"><a class="el" href="debugdraw_8hpp.html">debugdraw.hpp</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4 </li>
   </ul>
 </div>
