@@ -10,6 +10,24 @@ else()
     target_link_libraries(lunam tbb)
 endif()
 
+target_include_directories(lunam PRIVATE extern/eabase/include/Common)
+
+add_subdirectory(extern/eaassert)
+target_include_directories(lunam PRIVATE extern/eaassert/include)
+target_link_libraries(lunam EAAssert)
+
+add_subdirectory(extern/eathread)
+target_include_directories(lunam PRIVATE extern/eathread/include)
+target_link_libraries(lunam EAThread)
+
+add_subdirectory(extern/eastdc)
+target_include_directories(lunam PRIVATE extern/eastdc/include)
+target_link_libraries(lunam EAStdC)
+
+add_subdirectory(extern/eastl)
+target_include_directories(lunam PRIVATE extern/eastl/include)
+target_link_libraries(lunam EASTL)
+
 add_subdirectory(extern/spdlog)
 target_include_directories(lunam PRIVATE extern/spdlog/include)
 target_link_libraries(lunam spdlog::spdlog_header_only)
@@ -117,7 +135,9 @@ add_subdirectory(extern/luv)
 target_include_directories(lunam PRIVATE extern/luv/src)
 target_link_libraries(lunam libluv_a)
 
-target_compile_definitions(lunam PRIVATE SQLITE_API="__attribute__((visibility(\"default\")))")
+add_subdirectory(extern/SPIRV-Reflect)
+target_include_directories(lunam PRIVATE extern/SPIRV-Reflect/include)
+target_link_libraries(lunam spirv-reflect-static)
 
 ##################################################################################################
 # Libraries, which sadly requires C++ exceptions and have no way to disable them

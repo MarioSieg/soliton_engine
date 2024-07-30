@@ -15,7 +15,7 @@ var searchData=
   ['pgroup_12',['PGroup',['../structPGroup.html',1,'']]],
   ['physics_5fsubsystem_13',['physics_subsystem',['../classlu_1_1physics_1_1physics__subsystem.html',1,'lu::physics']]],
   ['pipeline_5fbase_14',['pipeline_base',['../classlu_1_1graphics_1_1pipeline__base.html',1,'lu::graphics']]],
-  ['pipeline_5fregistry_15',['pipeline_registry',['../classlu_1_1graphics_1_1pipeline__registry.html',1,'lu::graphics']]],
+  ['pipeline_5fcache_15',['pipeline_cache',['../classlu_1_1graphics_1_1pipeline__cache.html',1,'lu::graphics']]],
   ['platform_5fsubsystem_16',['platform_subsystem',['../classlu_1_1platform_1_1platform__subsystem.html',1,'lu::platform']]],
   ['pmareader_17',['PmaReader',['../structPmaReader.html',1,'']]],
   ['pmawriter_18',['PmaWriter',['../structPmaWriter.html',1,'']]],

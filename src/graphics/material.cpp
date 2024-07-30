@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "material.hpp"
 
@@ -9,8 +9,8 @@
 namespace lu::graphics {
     using scripting::scripting_subsystem;
 
-    static convar<std::string> cv_error_texture {"Renderer.fallbackTexture", std::nullopt, scripting::convar_flags::read_only};
-    static convar<std::string> cv_flat_normal {"Renderer.flatNormalTexture", std::nullopt, scripting::convar_flags::read_only};
+    static convar<eastl::string> cv_error_texture {"Renderer.fallbackTexture", eastl::nullopt, scripting::convar_flags::read_only};
+    static convar<eastl::string> cv_flat_normal {"Renderer.flatNormalTexture", eastl::nullopt, scripting::convar_flags::read_only};
 
     material::material(
         texture* albedo_map,
@@ -37,8 +37,8 @@ namespace lu::graphics {
     material::~material() = default;
 
     auto material::flush_property_updates() const -> void {
-        std::array<vk::DescriptorImageInfo, 4> image_infos {};
-        auto make_write_tex_info = [i = 0u, this, &image_infos](const texture* tex, const texture* fallback) mutable -> vk::WriteDescriptorSet {
+        eastl::array<vk::DescriptorImageInfo, 4> image_infos {};
+        auto make_write_tex_info = [i=0u, this, &image_infos](const texture* tex, const texture* fallback) mutable -> vk::WriteDescriptorSet {
             passert(fallback != nullptr);
             image_infos[i].imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
             image_infos[i].imageView = tex ? tex->get_view() : fallback->get_view();
@@ -55,7 +55,7 @@ namespace lu::graphics {
             ++i;
             return result;
         };
-        const std::array<vk::WriteDescriptorSet, 4> write_descriptor_sets = {
+        const eastl::array<vk::WriteDescriptorSet, 4> write_descriptor_sets = {
             make_write_tex_info(albedo_map, &*s_error_texture),
             make_write_tex_info(normal_map, &*s_flat_normal),
             make_write_tex_info(metallic_roughness_map, &*s_error_texture),
@@ -74,7 +74,7 @@ namespace lu::graphics {
         s_flat_normal.emplace(cv_flat_normal());
 
         constexpr unsigned lim = 16384u*4;
-        std::array<vk::DescriptorPoolSize, 1> pool_sizes = {
+        eastl::array<vk::DescriptorPoolSize, 1> pool_sizes = {
             vk::DescriptorPoolSize {
                 .type = vk::DescriptorType::eCombinedImageSampler,
                 .descriptorCount = lim
@@ -96,7 +96,7 @@ namespace lu::graphics {
             return binding;
         };
 
-        const std::array<const vk::DescriptorSetLayoutBinding, 4> bindings = {
+        const eastl::array<const vk::DescriptorSetLayoutBinding, 4> bindings = {
             get_texture_binding(),
             get_texture_binding(),
             get_texture_binding(),

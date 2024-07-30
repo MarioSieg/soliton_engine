@@ -1,18 +1,17 @@
-// Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "sky.hpp"
-#include "../shader_registry.hpp"
 #include "../vulkancore/context.hpp"
 #include "../graphics_subsystem.hpp"
 
 namespace lu::graphics::pipelines {
-    sky_pipeline::sky_pipeline() : pipeline_base{"sky", pipeline_type::graphics} {
+    sky_pipeline::sky_pipeline() : graphics_pipeline{"sky_composite"} {
         m_skybox_texture.emplace("/engine_assets/textures/hdr/gcanyon_cube.ktx");
         m_skydome.emplace("/engine_assets/meshes/skydome.fbx");
 
         const vk::Device device = vkb::vkdvc();
 
-        constexpr std::array<vk::DescriptorSetLayoutBinding, 1> bindings {
+        constexpr eastl::array<vk::DescriptorSetLayoutBinding, 1> bindings {
             vk::DescriptorSetLayoutBinding {
                 .binding = 0u,
                 .descriptorType = vk::DescriptorType::eCombinedImageSampler,
@@ -30,7 +29,6 @@ namespace lu::graphics::pipelines {
         vk::DescriptorPoolSize pool_size {};
         pool_size.type = vk::DescriptorType::eCombinedImageSampler;
         pool_size.descriptorCount = 2u;
-
 
         const vk::DescriptorPoolCreateInfo pool_info {
             .maxSets = 1u,
@@ -65,14 +63,14 @@ namespace lu::graphics::pipelines {
         device.destroyDescriptorSetLayout(m_descriptor_set_layout, vkb::get_alloc());
     }
 
-    auto sky_pipeline::configure_shaders(std::vector<std::pair<std::shared_ptr<shader>, vk::ShaderStageFlagBits>>& cfg) -> void {
-        auto vs = shader_registry::get().get_shader("skybox.vert");
-        auto fs = shader_registry::get().get_shader("skybox.frag");
-        cfg.emplace_back(vs, vk::ShaderStageFlagBits::eVertex);
-        cfg.emplace_back(fs, vk::ShaderStageFlagBits::eFragment);
+    auto sky_pipeline::configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> void {
+        auto vs = shader_cache::get().get_shader(shader_variant{"/engine_assets/shaders/src/skybox.vert", shader_stage::vertex});
+        auto fs = shader_cache::get().get_shader(shader_variant{"/engine_assets/shaders/src/skybox.frag", shader_stage::fragment});
+        cfg.emplace_back(vs);
+        cfg.emplace_back(fs);
     }
 
-    auto sky_pipeline::configure_pipeline_layout(std::vector<vk::DescriptorSetLayout>& layouts, std::vector<vk::PushConstantRange>& ranges) -> void {
+    auto sky_pipeline::configure_pipeline_layout(eastl::vector<vk::DescriptorSetLayout>& layouts, eastl::vector<vk::PushConstantRange>& ranges) -> void {
         layouts.emplace_back(m_descriptor_set_layout);
 
         vk::PushConstantRange push_constant_range {};
@@ -83,7 +81,6 @@ namespace lu::graphics::pipelines {
     }
 
     auto sky_pipeline::render(const vk::CommandBuffer cmd) const -> void {
-        const vk::Device device = vkb::vkdvc();
         const vk::PipelineLayout layout = get_layout();
         cmd.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, layout, 0u, 1u, &m_descriptor_set, 0u, nullptr);
         gpu_vertex_push_constants push_constants {};

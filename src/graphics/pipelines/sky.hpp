@@ -1,14 +1,14 @@
-// Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #pragma once
 
-#include "../pipeline.hpp"
+#include "../graphics_pipeline.hpp"
 #include "../texture.hpp"
 #include "../mesh.hpp"
 #include "../../scene/components.hpp"
 
 namespace lu::graphics::pipelines {
-    class sky_pipeline final : public pipeline_base {
+    class sky_pipeline final : public graphics_pipeline {
     public:
         explicit sky_pipeline();
         ~sky_pipeline() override;
@@ -21,12 +21,12 @@ namespace lu::graphics::pipelines {
         auto render(vk::CommandBuffer cmd) const -> void;
 
     protected:
-        virtual auto configure_shaders(std::vector<std::pair<std::shared_ptr<shader>, vk::ShaderStageFlagBits>>& cfg) -> void override;
-        virtual auto configure_pipeline_layout(std::vector<vk::DescriptorSetLayout>& layouts, std::vector<vk::PushConstantRange>& ranges) -> void override;
+        virtual auto configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> void override;
+        virtual auto configure_pipeline_layout(eastl::vector<vk::DescriptorSetLayout>& layouts, eastl::vector<vk::PushConstantRange>& ranges) -> void override;
 
     private:
-        std::optional<texture> m_skybox_texture {};
-        std::optional<mesh> m_skydome {};
+        eastl::optional<texture> m_skybox_texture {};
+        eastl::optional<mesh> m_skydome {};
         vk::DescriptorPool m_descriptor_pool {};
         vk::DescriptorSet m_descriptor_set {};
         vk::DescriptorSetLayout m_descriptor_set_layout {};

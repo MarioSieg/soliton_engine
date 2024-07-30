@@ -32,7 +32,7 @@ namespace CustomRender
         protected override void OnRender(DrawingContext context)
         {
             long t = mClock.ElapsedTicks;
-            double dt = (double)(t - mLastTime) / Stopwatch.Frequency;
+            double dt = (double)(t - mLastTime) / stopwatch.Frequency;
             mLastTime = t;
 
             // Draw background
@@ -157,7 +157,7 @@ namespace CustomRender
 
         long mLastTime;
 
-        Stopwatch mClock = new Stopwatch();
+        stopwatch mClock = new stopwatch();
     }
 
     /// <summary>

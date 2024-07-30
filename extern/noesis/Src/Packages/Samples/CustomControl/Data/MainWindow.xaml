@@ -128,9 +128,9 @@
         <StackPanel Margin="50">
 
             <TextBlock Text="DateTime Custom Control" Background="DodgerBlue" Foreground="White"
-                FontSize="40" Padding="0,20" TextAlignment="Center"/>
+                FontSize="40" k_padding="0,20" TextAlignment="Center"/>
 
-            <Border Background="WhiteSmoke" Padding="40">
+            <Border Background="WhiteSmoke" k_padding="40">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,40">
                         <TextBlock Text="Analog Clock Template: " VerticalAlignment="Center" FontSize="20" Width="230"/>

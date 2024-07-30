@@ -1,14 +1,14 @@
-// Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #pragma once
 
 #include <DirectXMath.h>
 
-#include "../pipeline.hpp"
+#include "../graphics_pipeline.hpp"
 #include "../../scene/components.hpp"
 
 namespace lu::graphics::pipelines {
-    class pbr_pipeline final : public pipeline_base {
+    class pbr_pipeline final : public graphics_pipeline {
     public:
         explicit pbr_pipeline();
         ~pbr_pipeline() override;
@@ -35,8 +35,10 @@ namespace lu::graphics::pipelines {
         ) const -> void;
 
     protected:
-        virtual auto configure_shaders(std::vector<std::pair<std::shared_ptr<shader>, vk::ShaderStageFlagBits>>& cfg) -> void override;
-        virtual auto configure_pipeline_layout(std::vector<vk::DescriptorSetLayout>& layouts, std::vector<vk::PushConstantRange>& ranges) -> void override;
+        virtual auto configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> void override;
+        virtual auto configure_pipeline_layout(eastl::vector<vk::DescriptorSetLayout>& layouts, eastl::vector<vk::PushConstantRange>& ranges) -> void override;
+        virtual auto configure_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> void override;
+        virtual auto configure_multisampling(vk::PipelineMultisampleStateCreateInfo& cfg) -> void override;
 
     private:
         // Generate a BRDF integration map used as a look-up-table (stores roughness / NdotV)

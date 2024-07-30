@@ -8,7 +8,7 @@
         <SolidColorBrush x:Key="Brush.GPU" Color="#FFF04040"/>
         <ControlTemplate x:Key="Template.ToggleButton" TargetType="ToggleButton">
             <Grid Background="Transparent">
-                <Border x:Name="label" HorizontalAlignment="Left" VerticalAlignment="Center" Height="45" Background="#2FFF" Padding="17,4,12,4" Margin="0,0,-100,0" Visibility="Collapsed">
+                <Border x:Name="label" HorizontalAlignment="Left" VerticalAlignment="Center" Height="45" Background="#2FFF" k_padding="17,4,12,4" Margin="0,0,-100,0" Visibility="Collapsed">
                     <Border.RenderTransform>
                         <TranslateTransform X="48"/>
                     </Border.RenderTransform>

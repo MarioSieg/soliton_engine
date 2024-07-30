@@ -1,17 +1,16 @@
-// Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "pbr_pipeline.hpp"
-#include "../shader_registry.hpp"
 #include "../vulkancore/context.hpp"
 #include "../../scripting/convar.hpp"
 
 namespace lu::graphics::pipelines {
     static constexpr vk::Format brfd_lut_fmt = vk::Format::eR16G16Sfloat;
-    static convar<std::uint32_t> brdf_lut_size { "Renderer.brdfLutSize", 512u, convar_flags::read_only, 128u, 8192u };
+    static convar<std::uint32_t> brdf_lut_size { "Renderer.brdfLutSize", {{512u}}, convar_flags::read_only, 128u, 8192u };
 
     auto pbr_pipeline::generate_brdf_lut() -> void {
         log_info("Generating BRDF LUT...");
-        const auto now = std::chrono::high_resolution_clock::now();
+        const auto now = eastl::chrono::high_resolution_clock::now();
 
         const vk::Device dvc = vkb::vkdvc();
 
@@ -88,7 +87,7 @@ namespace lu::graphics::pipelines {
         subpass.colorAttachmentCount = 1;
         subpass.pColorAttachments = &color_reference;
 
-        std::array<vk::SubpassDependency, 2> dependencies {};
+        eastl::array<vk::SubpassDependency, 2> dependencies {};
         dependencies[0].srcSubpass = vk::SubpassExternal;
         dependencies[0].dstSubpass = 0;
         dependencies[0].srcStageMask = vk::PipelineStageFlagBits::eBottomOfPipe;
@@ -186,7 +185,7 @@ namespace lu::graphics::pipelines {
         vk::PipelineMultisampleStateCreateInfo multisample_ci {};
         multisample_ci.rasterizationSamples = vk::SampleCountFlagBits::e1;
 
-        std::array<vk::DynamicState, 2> dynamic_states {
+        eastl::array<vk::DynamicState, 2> dynamic_states {
             vk::DynamicState::eViewport,
             vk::DynamicState::eScissor
         };
@@ -197,14 +196,10 @@ namespace lu::graphics::pipelines {
 
         vk::PipelineVertexInputStateCreateInfo vertex_input_ci {};
 
-        std::array<vk::PipelineShaderStageCreateInfo, 2> shader_stages {};
-        shader_stages[0].stage = vk::ShaderStageFlagBits::eVertex;
-        shader_stages[0].module = shader_registry::get().get_shader("gen_brdf_lut.vert")->get_module();
-        shader_stages[0].pName = "main";
-
-        shader_stages[1].stage = vk::ShaderStageFlagBits::eFragment;
-        shader_stages[1].module = shader_registry::get().get_shader("gen_brdf_lut.frag")->get_module();
-        shader_stages[1].pName = "main";
+        eastl::array<vk::PipelineShaderStageCreateInfo, 2> shader_stages {
+            shader_cache::get().get_shader(shader_variant{"/engine_assets/shaders/src/gen_brdf_lut.vert", shader_stage::vertex})->get_stage_info(),
+            shader_cache::get().get_shader(shader_variant{"/engine_assets/shaders/src/gen_brdf_lut.frag", shader_stage::fragment})->get_stage_info()
+        };
 
         vk::Pipeline shader_pipeline {};
         vk::GraphicsPipelineCreateInfo pipeline_ci {};
@@ -225,7 +220,7 @@ namespace lu::graphics::pipelines {
 
         // now render
         vk::ClearValue clear_value {};
-        clear_value.color = vk::ClearColorValue { std::array<float, 4> { 0.F, 0.F, 0.F, 1.F } };
+        clear_value.color = vk::ClearColorValue { 0.0f, 0.0f, 0.0f, 1.0f };
 
         vk::RenderPassBeginInfo render_pass_bi {};
         render_pass_bi.renderPass = render_pass;
@@ -263,6 +258,6 @@ namespace lu::graphics::pipelines {
         dvc.destroyDescriptorSetLayout(descriptor_set_layout, vkb::get_alloc());
         dvc.destroyDescriptorPool(descriptor_pool, vkb::get_alloc());
 
-        log_info("BRDF LUT generated in {} ms", std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(std::chrono::high_resolution_clock::now() - now).count());
+        log_info("BRDF LUT generated in {} ms", eastl::chrono::duration_cast<eastl::chrono::duration<double, std::milli>>(eastl::chrono::high_resolution_clock::now() - now).count());
     }
 }

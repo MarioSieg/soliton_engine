@@ -32,7 +32,7 @@
         </StackPanel>
       </HeaderedContentControl.Header>
       <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-        <GroupBox Header="Rectangle 1" Margin="0,0,0,20" Padding="0,10">
+        <GroupBox Header="Rectangle 1" Margin="0,0,0,20" k_padding="0,10">
           <StackPanel>
             <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
               <TextBlock Text="Canvas.Top" Width="120" TextAlignment="Right" VerticalAlignment="Center"/>
@@ -48,7 +48,7 @@
             </StackPanel>
           </StackPanel>
         </GroupBox>
-        <GroupBox Header="Rectangle 4" Margin="0,0,0,20" Padding="0,10">
+        <GroupBox Header="Rectangle 4" Margin="0,0,0,20" k_padding="0,10">
           <StackPanel>
             <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
               <TextBlock Text="Canvas.Bottom" Width="120" TextAlignment="Right" VerticalAlignment="Center"/>
@@ -66,16 +66,16 @@
         </GroupBox>
         <Border Background="{DynamicResource Brush.Background.Popup}" BorderBrush="{DynamicResource Brush.Border.Normal}" BorderThickness="1">
           <Canvas Width="350" Height="250">
-            <Border Background="Teal" Width="200" Height="100" Canvas.Left="{Binding Value, ElementName=left}" Canvas.Top="{Binding Value, ElementName=top}" Canvas.ZIndex="{Binding Value, ElementName=zIndex1}" Padding="10">
+            <Border Background="Teal" Width="200" Height="100" Canvas.Left="{Binding Value, ElementName=left}" Canvas.Top="{Binding Value, ElementName=top}" Canvas.ZIndex="{Binding Value, ElementName=zIndex1}" k_padding="10">
               <TextBlock Text="1" FontSize="24" Foreground="Black"/>
             </Border>
-            <Border Background="LightSeaGreen" Width="200" Height="100" Canvas.Left="50" Canvas.Top="50" Panel.ZIndex="1" Padding="10">
+            <Border Background="LightSeaGreen" Width="200" Height="100" Canvas.Left="50" Canvas.Top="50" Panel.ZIndex="1" k_padding="10">
               <TextBlock Text="2" FontSize="24" Foreground="Black"/>
             </Border>
-            <Border Background="Turquoise" Width="200" Height="100" Canvas.Left="100" Canvas.Top="100" Panel.ZIndex="2" Padding="10">
+            <Border Background="Turquoise" Width="200" Height="100" Canvas.Left="100" Canvas.Top="100" Panel.ZIndex="2" k_padding="10">
               <TextBlock Text="3" FontSize="24" Foreground="Black"/>
             </Border>
-            <Border Background="#7FFFEC" Width="200" Height="100" Canvas.Right="{Binding Value, ElementName=right}" Canvas.Bottom="{Binding Value, ElementName=bottom}" Canvas.ZIndex="{Binding Value, ElementName=zIndex4}" Padding="10">
+            <Border Background="#7FFFEC" Width="200" Height="100" Canvas.Right="{Binding Value, ElementName=right}" Canvas.Bottom="{Binding Value, ElementName=bottom}" Canvas.ZIndex="{Binding Value, ElementName=zIndex4}" k_padding="10">
               <TextBlock Text="4" FontSize="24" Foreground="Black"/>
             </Border>
           </Canvas>

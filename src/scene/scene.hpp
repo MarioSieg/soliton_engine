@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #pragma once
 
@@ -15,10 +15,10 @@ namespace lu {
     class scene : public flecs::world, public no_copy, public no_move {
     public:
         const int id;
-        std::string name = {};
+        eastl::string name = {};
         virtual ~scene() override;
 
-        static auto new_active(std::string&& name, std::string&& file, float scale, std::uint32_t load_flags) -> void;
+        static auto new_active(eastl::string&& name, eastl::string&& file, float scale, std::uint32_t load_flags) -> void;
         [[nodiscard]] static auto get_active() noexcept -> scene& {
             assert(s_active != nullptr);
             return *s_active;
@@ -29,26 +29,36 @@ namespace lu {
 
         auto spawn(const char* name) const -> flecs::entity;
 
-        template <typename A>
-        [[nodiscard]] auto get_asset_registry() -> assetmgr::asset_registry<std::decay_t<A>>& {
-            if constexpr (std::is_same_v<std::decay_t<A>, graphics::mesh>) { return m_meshes; }
-            else if constexpr (std::is_same_v<std::decay_t<A>, graphics::texture>) { return m_textures; }
-            else if constexpr (std::is_same_v<std::decay_t<A>, graphics::material>) { return m_materials; }
-            else { panic("Unknown asset type!"); }
-        }
+        template <typename T>
+        [[nodiscard]] constexpr auto get_asset_registry() -> assetmgr::asset_registry<T>&;
 
         flecs::entity active_camera {};
 
     private:
         friend class kernel;
-        auto import_from_file(const std::string& path, float scale, std::uint32_t load_flags) -> void;
+        auto import_from_file(const eastl::string& path, float scale, std::uint32_t load_flags) -> void;
 
         assetmgr::asset_registry<graphics::mesh> m_meshes {};
         assetmgr::asset_registry<graphics::texture> m_textures {};
         assetmgr::asset_registry<graphics::material> m_materials {};
 
         friend struct proxy;
-        static inline constinit std::unique_ptr<scene> s_active {};
+        static inline eastl::unique_ptr<scene> s_active {};
         scene();
     };
+
+    template <>
+    constexpr auto scene::get_asset_registry() -> assetmgr::asset_registry<graphics::mesh>& {
+        return m_meshes;
+    }
+
+    template <>
+    constexpr auto scene::get_asset_registry() -> assetmgr::asset_registry<graphics::texture>& {
+        return m_textures;
+    }
+
+    template <>
+    constexpr auto scene::get_asset_registry() -> assetmgr::asset_registry<graphics::material>& {
+        return m_materials;
+    }
 }

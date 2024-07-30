@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "kernel.hpp"
 #include "buffered_sink.hpp"
@@ -34,7 +34,7 @@ extern "C" { // Ensure that the application uses the dedicated GPU instead of th
 
 namespace lu {
     using namespace std::filesystem;
-    using namespace std::chrono;
+    using namespace eastl::chrono;
 
     static constexpr std::size_t k_log_threads = 1;
     static constexpr std::size_t k_log_queue_size = 8192;
@@ -42,27 +42,27 @@ namespace lu {
     static constinit bool g_kernel_online = true;
 
     [[nodiscard]] static auto create_logger(
-        const std::string& name,
-        const std::string& pattern,
+        const eastl::string& name,
+        const eastl::string& pattern,
         bool print_stdout = true, bool enroll = true
     ) -> std::shared_ptr<spdlog::logger> {
         const auto time = fmt::localtime(std::time(nullptr));
-        std::vector<std::shared_ptr<spdlog::sinks::sink>> sinks {
+        eastl::vector<std::shared_ptr<spdlog::sinks::sink>> sinks {
             std::make_shared<buffered_sink>(k_log_queue_size),
             std::make_shared<spdlog::sinks::basic_file_sink_mt>(
-            fmt::format("{}/session {:%d-%m-%Y  %H-%M-%S}/{}.log", kernel::log_dir, time, name)),
+            fmt::format("{}/session {:%d-%m-%Y  %H-%M-%S}/{}.log", kernel::log_dir.c_str(), time, name.c_str())),
         };
         if (print_stdout) {
             sinks.emplace_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
         }
         std::shared_ptr<spdlog::logger> result = std::make_shared<spdlog::async_logger>(
-            name,
+            name.c_str(),
             sinks.begin(),
             sinks.end(),
             spdlog::thread_pool(),
             spdlog::async_overflow_policy::overrun_oldest
         );
-        result->set_pattern(pattern);
+        result->set_pattern(pattern.c_str());
         if (enroll) {
             register_logger(result);
         }
@@ -78,15 +78,15 @@ static auto redirect_io() -> void {
     if (!AttachConsole(ATTACH_PARENT_PROCESS))
         return;
     HANDLE consoleOutput = GetStdHandle(STD_OUTPUT_HANDLE);
-    int systemOutput = _open_osfhandle(std::bit_cast<std::intptr_t>(consoleOutput), _O_TEXT);
+    int systemOutput = _open_osfhandle(eastl::bit_cast<std::intptr_t>(consoleOutput), _O_TEXT);
     if (!_isatty(systemOutput))
         return; // return if it's not a TTY
     FILE* cOutputHandle = _fdopen(systemOutput, "w");
     HANDLE consoleError = GetStdHandle(STD_ERROR_HANDLE);
-    int systemError = _open_osfhandle(std::bit_cast<std::intptr_t>(consoleError), _O_TEXT);
+    int systemError = _open_osfhandle(eastl::bit_cast<std::intptr_t>(consoleError), _O_TEXT);
     FILE* cErrorHandle = _fdopen(systemError, "w");
     HANDLE consoleInput = GetStdHandle(STD_INPUT_HANDLE);
-    int systemInput = _open_osfhandle(std::bit_cast<std::intptr_t>(consoleInput), _O_TEXT);
+    int systemInput = _open_osfhandle(eastl::bit_cast<std::intptr_t>(consoleInput), _O_TEXT);
     FILE* cInputHandle = _fdopen(systemInput, "r");
     std::ios::sync_with_stdio(true);
     freopen_s(&cInputHandle, "CONIN$", "r", stdin);
@@ -126,9 +126,9 @@ static auto redirect_io() -> void {
 #endif
         std::ostream::sync_with_stdio(false);
         spdlog::init_thread_pool(k_log_queue_size, k_log_threads);
-        std::shared_ptr<spdlog::logger> engineLogger = create_logger("engine", "%H:%M:%S:%e %s:%# %^[%l]%$ T:%t %v");
-        std::shared_ptr<spdlog::logger> scriptLogger = create_logger("app", "%H:%M:%S:%e %v");
-        spdlog::set_default_logger(engineLogger);
+        std::shared_ptr<spdlog::logger> engine_ogger = create_logger("engine", "%H:%M:%S:%e %s:%# %^[%l]%$ T:%t %v");
+        std::shared_ptr<spdlog::logger> script_ogger = create_logger("app", "%H:%M:%S:%e %v");
+        spdlog::set_default_logger(engine_ogger);
 
         log_info("-- ENGINE KERNEL BOOT --");
         log_info("LunamEngine v.{}.{}", major_version(k_lunam_engine_v), minor_version(k_lunam_engine_v));
@@ -148,8 +148,8 @@ static auto redirect_io() -> void {
         for (int i = 0; $environ[i] != nullptr; ++i) {
             log_info("  {}: {}", i, $environ[i]);
         }
-        log_info("Engine config dir: {}", config_dir);
-        log_info("Engine log dir: {}", log_dir);
+        log_info("Engine config dir: {}", config_dir.c_str());
+        log_info("Engine log dir: {}", log_dir.c_str());
 
         assetmgr::init();
 

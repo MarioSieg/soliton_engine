@@ -27,5 +27,7 @@ var searchData=
   ['controlstoryboardaction_2eh_24',['ControlStoryboardAction.h',['../ControlStoryboardAction_8h.html',1,'']]],
   ['convar_2ehpp_25',['convar.hpp',['../convar_8hpp.html',1,'']]],
   ['core_2ecpp_26',['core.cpp',['../core_8cpp.html',1,'']]],
-  ['core_2ehpp_27',['core.hpp',['../core_8hpp.html',1,'']]]
+  ['core_2ehpp_27',['core.hpp',['../core_8hpp.html',1,'']]],
+  ['crc32_2ecpp_28',['crc32.cpp',['../crc32_8cpp.html',1,'']]],
+  ['crc32_2ehpp_29',['crc32.hpp',['../crc32_8hpp.html',1,'']]]
 ];

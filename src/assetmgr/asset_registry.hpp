@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #pragma once
 
@@ -16,24 +16,24 @@ namespace lu::assetmgr {
 
         template <typename... Args>
         [[nodiscard]] auto load_from_memory(Args&&... args) -> T* {
-            std::unique_ptr<T> ptr {std::make_unique<T>(std::forward<Args>(args)...)};
+            eastl::unique_ptr<T> ptr {eastl::make_unique<T>(std::forward<Args>(args)...)};
             ++m_cache_misses;
-            return &*m_registry.emplace(fmt::format("mem_{:#X}", ++m_id_gen), std::move(ptr)).first->second;
+            return &*m_registry.emplace(eastl::to_string(++m_id_gen), std::move(ptr)).first->second;
         }
 
         template <typename... Args>
-        [[nodiscard]] auto load(std::string&& path, Args&&... args) -> T* {
+        [[nodiscard]] auto load(eastl::string&& path, Args&&... args) -> T* {
             if (m_registry.contains(path)) {
                 ++m_cache_hits;
                 return &*m_registry[path];
             }
-            std::string key {path};
-            std::unique_ptr<T> ptr {std::make_unique<T>(std::move(path), std::forward<Args>(args)...)};
+            eastl::string key {path};
+            eastl::unique_ptr<T> ptr {eastl::make_unique<T>(std::move(path), std::forward<Args>(args)...)};
             ++m_cache_misses;
             return &*m_registry.emplace(std::move(key), std::move(ptr)).first->second;
         }
 
-        [[nodiscard]] auto get_map() const noexcept -> const ankerl::unordered_dense::map<std::string, std::unique_ptr<T>>& {
+        [[nodiscard]] auto get_map() const noexcept -> const ankerl::unordered_dense::map<eastl::string, eastl::unique_ptr<T>>& {
             return m_registry;
         }
 
@@ -48,7 +48,7 @@ namespace lu::assetmgr {
         }
 
     private:
-        ankerl::unordered_dense::map<std::string, std::unique_ptr<T>> m_registry {};
+        ankerl::unordered_dense::map<eastl::string, eastl::unique_ptr<T>> m_registry {};
         std::uint32_t m_cache_hits = 0;
         std::uint32_t m_cache_misses = 0;
         std::uint32_t m_id_gen = 0;

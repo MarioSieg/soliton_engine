@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['u_0',['u',['../structSorterRecord.html#a57a0212bfb6f74909dbeda4cea339280',1,'SorterRecord::u()'],['../structsqlite3__value.html#a42f95901ca8184d4ffbf388894dd5eaf',1,'sqlite3_value::u()'],['../structWalker.html#a72a52dc4ac27ff0498b1019f81f558d3',1,'Walker::u()'],['../structExprList_1_1ExprList__item.html#a2a4d2becee3667deb25f095c705c1689',1,'ExprList::ExprList_item::u()'],['../structExpr.html#a9ce931270229b483f13f12a4e2243358',1,'Expr::u()'],['../structUnpackedRecord.html#a55d24bcc16441be0adaeb1ce5dae3b21',1,'UnpackedRecord::u()'],['../structTable.html#af5aa2b1b8301819ef9dbf5f1bd565bdc',1,'Table::u()'],['../structFuncDef.html#a28006dbd8993215e327fe353b5254ee5',1,'FuncDef::u()'],['../structBitvec.html#a0803aa54b8e88323f6d81c34cc446a07',1,'Bitvec::u()'],['../structIndexIterator.html#ac79b7a6b94ef943405da46cd48af86c6',1,'IndexIterator::u()'],['../structWhereLevel.html#a05185f89b70104a10aa3fc12dcce1af8',1,'WhereLevel::u()'],['../structWhereLoop.html#a1bd5de605f81e0e925767fd95bd51499',1,'WhereLoop::u()'],['../structWhereTerm.html#ae60b10992dfc46dee5eb93f9be028e24',1,'WhereTerm::u()']]],
+  ['u_0',['u',['../structSorterRecord.html#a57a0212bfb6f74909dbeda4cea339280',1,'SorterRecord::u()'],['../structWalker.html#a72a52dc4ac27ff0498b1019f81f558d3',1,'Walker::u()'],['../structExprList_1_1ExprList__item.html#a2a4d2becee3667deb25f095c705c1689',1,'ExprList::ExprList_item::u()'],['../structExpr.html#a9ce931270229b483f13f12a4e2243358',1,'Expr::u()'],['../structUnpackedRecord.html#a55d24bcc16441be0adaeb1ce5dae3b21',1,'UnpackedRecord::u()'],['../structTable.html#af5aa2b1b8301819ef9dbf5f1bd565bdc',1,'Table::u()'],['../structFuncDef.html#a28006dbd8993215e327fe353b5254ee5',1,'FuncDef::u()'],['../structsqlite3__value.html#a42f95901ca8184d4ffbf388894dd5eaf',1,'sqlite3_value::u()'],['../structBitvec.html#a0803aa54b8e88323f6d81c34cc446a07',1,'Bitvec::u()'],['../structIndexIterator.html#ac79b7a6b94ef943405da46cd48af86c6',1,'IndexIterator::u()'],['../structWhereLevel.html#a05185f89b70104a10aa3fc12dcce1af8',1,'WhereLevel::u()'],['../structWhereLoop.html#a1bd5de605f81e0e925767fd95bd51499',1,'WhereLoop::u()'],['../structWhereTerm.html#ae60b10992dfc46dee5eb93f9be028e24',1,'WhereTerm::u()']]],
   ['u1_1',['u1',['../structsqlite3.html#a52ff8aba081dcf98a915fe914881fa46',1,'sqlite3::u1()'],['../structSrcItem.html#acef96992ac098c4c37889f5a7c8f0b97',1,'SrcItem::u1()'],['../structParse.html#a8e1806c56340e78a16554455a9c551a9',1,'Parse::u1()']]],
   ['u16_2',['u16',['../sqlite3_8c.html#a20f2299e322dcbde37cb07b16910b843',1,'sqlite3.c']]],
   ['u2_3',['u2',['../structSrcItem.html#a338f6ef61b5cd5542220a4d8512e17f0',1,'SrcItem']]],
@@ -38,7 +38,7 @@ var searchData=
   ['unixepochfunc_35',['unixepochFunc',['../sqlite3_8c.html#a429a6bc44b6aaa9fb884e513f470cd4f',1,'sqlite3.c']]],
   ['unixfcntlexternalreader_36',['unixFcntlExternalReader',['../sqlite3_8c.html#aec6e912c3fcae3ebd79e175f426b9dcc',1,'sqlite3.c']]],
   ['unixfetch_37',['unixFetch',['../sqlite3_8c.html#a24d6f578f75c75a216e6c6f32986d655',1,'sqlite3.c']]],
-  ['unixfile_38',['unixFile',['../sqlite3_8c.html#a9b0a4a49351944af6c47ea0dd7f144b7',1,'unixFile():&#160;sqlite3.c'],['../structunixFile.html',1,'unixFile']]],
+  ['unixfile_38',['unixFile',['../structunixFile.html',1,'unixFile'],['../sqlite3_8c.html#a9b0a4a49351944af6c47ea0dd7f144b7',1,'unixFile():&#160;sqlite3.c']]],
   ['unixfile_5fdelete_39',['UNIXFILE_DELETE',['../sqlite3_8c.html#a6ec7fd0e4326907b15cbe5f3b3e7d2b5',1,'sqlite3.c']]],
   ['unixfile_5fdirsync_40',['UNIXFILE_DIRSYNC',['../sqlite3_8c.html#a3a7a50440aec23d2e1e9a5b6db05ff60',1,'sqlite3.c']]],
   ['unixfile_5fexcl_41',['UNIXFILE_EXCL',['../sqlite3_8c.html#a1cc711e36bdd4aac96a4e233e0fae79a',1,'sqlite3.c']]],
@@ -119,7 +119,7 @@ var searchData=
   ['uppertolower_116',['UpperToLower',['../sqlite3_8c.html#aad84227f921d88a5adf7a2f5a9047426',1,'sqlite3.c']]],
   ['upsample_5fps_5fsize_117',['Upsample_PS_Size',['../Shaders_8h.html#a74d6c0123f6988aa7b0930b2648ed149',1,'Shaders.h']]],
   ['upsample_5fps_5fstart_118',['Upsample_PS_Start',['../Shaders_8h.html#afc86d5c78142fb6edb37d34016655aed',1,'Shaders.h']]],
-  ['upsert_119',['Upsert',['../structUpsert.html',1,'Upsert'],['../sqlite3_8c.html#a9055566575a063f7ce78d7612cee23ef',1,'Upsert():&#160;sqlite3.c']]],
+  ['upsert_119',['Upsert',['../sqlite3_8c.html#a9055566575a063f7ce78d7612cee23ef',1,'Upsert():&#160;sqlite3.c'],['../structUpsert.html',1,'Upsert']]],
   ['upsertdelete_120',['upsertDelete',['../sqlite3_8c.html#ae21519d7b23d51cdd41f1e068d699d13',1,'sqlite3.c']]],
   ['uptr_121',['uptr',['../sqlite3_8c.html#ae5d879883125f0415852a3e6bb1de47f',1,'sqlite3.c']]],
   ['uri_5fboolean_122',['uri_boolean',['../structsqlite3__api__routines.html#a5b22d69516c01562f7e5bfa61a5a09e4',1,'sqlite3_api_routines']]],
@@ -129,8 +129,8 @@ var searchData=
   ['uriparameter_126',['uriParameter',['../sqlite3_8c.html#a6656e9f86c7843269e24c2f492af3dbe',1,'sqlite3.c']]],
   ['usable_127',['usable',['../structsqlite3__index__info_1_1sqlite3__index__constraint.html#ae16e62caeab743cc68bb22227dacb501',1,'sqlite3_index_info::sqlite3_index_constraint']]],
   ['usablesize_128',['usableSize',['../structBtShared.html#a3209efe543084a7e60f22913a794f5cb',1,'BtShared']]],
-  ['use_5fmimalloc_129',['use_mimalloc',['../classlu_1_1scripting_1_1scripting__subsystem.html#a931e4103450c70505aed0e912cad13a5',1,'lu::scripting::scripting_subsystem']]],
-  ['use_5fmimalloc_130',['USE_MIMALLOC',['../core_8hpp.html#a6b065076224164db282b12037cb9095d',1,'core.hpp']]],
+  ['use_5fmimalloc_129',['USE_MIMALLOC',['../core_8hpp.html#a6b065076224164db282b12037cb9095d',1,'core.hpp']]],
+  ['use_5fmimalloc_130',['use_mimalloc',['../classlu_1_1scripting_1_1scripting__subsystem.html#a931e4103450c70505aed0e912cad13a5',1,'lu::scripting::scripting_subsystem']]],
   ['usefetch_131',['USEFETCH',['../sqlite3_8c.html#a329387e0102205525d839f09011b0233',1,'sqlite3.c']]],
   ['usejournal_132',['useJournal',['../structPager.html#af7783f866150d7e322c28cb324ad85d6',1,'Pager']]],
   ['user_5fdata_133',['user_data',['../structsqlite3__api__routines.html#a8efc9fccb8b3e3c0daa87bbeeff2a1e1',1,'sqlite3_api_routines']]],
@@ -142,5 +142,6 @@ var searchData=
   ['utemp_139',['uTemp',['../structsqlite3__value.html#adfa9a766a43e673a8a90fe50f2b36fc4',1,'sqlite3_value']]],
   ['utf8charlength_140',['UTF8CharLength',['../text__editor_8cpp.html#aceba6d048800dffb9e099dfc48674683',1,'text_editor.cpp']]],
   ['utf8read_141',['Utf8Read',['../sqlite3_8c.html#a6e740a592b6385483aea0cb3622cb2f6',1,'sqlite3.c']]],
-  ['uv_142',['uv',['../structlu_1_1graphics_1_1mesh_1_1vertex.html#af906f037af1c7f64c5a5382caa597aad',1,'lu::graphics::mesh::vertex::uv()'],['../structlu_1_1graphics_1_1debugdraw_1_1vertex.html#a30f3a0f271e6a53a5a4dd107808dbc51',1,'lu::graphics::debugdraw::vertex::uv()']]]
+  ['utils_2ehpp_142',['utils.hpp',['../utils_8hpp.html',1,'']]],
+  ['uv_143',['uv',['../structlu_1_1graphics_1_1debugdraw_1_1vertex.html#a30f3a0f271e6a53a5a4dd107808dbc51',1,'lu::graphics::debugdraw::vertex::uv()'],['../structlu_1_1graphics_1_1mesh_1_1vertex.html#af906f037af1c7f64c5a5382caa597aad',1,'lu::graphics::mesh::vertex::uv()']]]
 ];

@@ -86,7 +86,6 @@ $(document).ready(function(){initNavTree('core_8hpp.html',''); initResizable(); 
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#define-members">Macros</a> &#124;
 <a href="#func-members">Functions</a> &#124;
@@ -94,24 +93,30 @@ $(document).ready(function(){initNavTree('core_8hpp.html',''); initResizable(); 
   <div class="headertitle"><div class="title">core.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="platform_8hpp_source.html">platform.hpp</a>&quot;</code><br />
-<code>#include &lt;array&gt;</code><br />
+<div class="textblock"><code>#include &lt;array&gt;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;bit&gt;</code><br />
+<code>#include &lt;memory&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
+<code>#include &lt;limits&gt;</code><br />
 <code>#include &lt;span&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
-<code>#include &lt;spdlog/spdlog.h&gt;</code><br />
+<code>#include &quot;<a class="el" href="crc32_8hpp_source.html">crc32.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="delegate_8hpp_source.html">delegate.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="exit__guard_8hpp_source.html">exit_guard.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="hash_8hpp_source.html">hash.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="lazy_8hpp_source.html">lazy.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="lazy__flex_8hpp_source.html">lazy_flex.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="move__copy__base_8hpp_source.html">move_copy_base.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="platform_8hpp_source.html">platform.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="spsc__queue_8hpp_source.html">spsc_queue.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="stopwatch_8hpp_source.html">stopwatch.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="thread__signal_8hpp_source.html">thread_signal.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="utils_8hpp_source.html">utils.hpp</a>&quot;</code><br />
+<code>#include &lt;ankerl/unordered_dense.h&gt;</code><br />
 </div>
 <p><a href="core_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlu_1_1no__copy.html">lu::no_copy</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlu_1_1no__move.html">lu::no_move</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlu_1_1exit__guard.html">lu::exit_guard&lt; F &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespacelu"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu.html">lu</a></td></tr>
@@ -119,20 +124,6 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:a1adadf095006629612166782177c39f2"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="core_8hpp.html#a1adadf095006629612166782177c39f2">FMT_CONSTEVAL</a>&#160;&#160;&#160;constexpr</td></tr>
-<tr class="separator:a1adadf095006629612166782177c39f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab76882eaa7958050b86772c7d5ef06b1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="core_8hpp.html#ab76882eaa7958050b86772c7d5ef06b1">log_info</a>&#160;&#160;&#160;SPDLOG_INFO</td></tr>
-<tr class="separator:ab76882eaa7958050b86772c7d5ef06b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afd32891494579f4d9319e2839ddf4c4c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="core_8hpp.html#afd32891494579f4d9319e2839ddf4c4c">log_warn</a>&#160;&#160;&#160;SPDLOG_WARN</td></tr>
-<tr class="separator:afd32891494579f4d9319e2839ddf4c4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a08859378593fd71943ca4d82533c351f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="core_8hpp.html#a08859378593fd71943ca4d82533c351f">log_error</a>&#160;&#160;&#160;SPDLOG_ERROR</td></tr>
-<tr class="separator:a08859378593fd71943ca4d82533c351f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1c3b22efa78556bf6dd0b68e43fb4c50"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="core_8hpp.html#a1c3b22efa78556bf6dd0b68e43fb4c50">log_critical</a>&#160;&#160;&#160;SPDLOG_CRITICAL</td></tr>
-<tr class="separator:a1c3b22efa78556bf6dd0b68e43fb4c50"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abf06da51423fd8e311bafbc7eb39b045"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="core_8hpp.html#abf06da51423fd8e311bafbc7eb39b045">print_sep</a>()&#160;&#160;&#160;<a class="el" href="core_8hpp.html#ab76882eaa7958050b86772c7d5ef06b1">log_info</a>(&quot;------------------------------------------------------------&quot;)</td></tr>
-<tr class="separator:abf06da51423fd8e311bafbc7eb39b045"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3a3368fccf3ab044d115cbee4ddd58c2"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="core_8hpp.html#a3a3368fccf3ab044d115cbee4ddd58c2">passert</a>(expr)</td></tr>
-<tr class="separator:a3a3368fccf3ab044d115cbee4ddd58c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6b065076224164db282b12037cb9095d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="core_8hpp.html#a6b065076224164db282b12037cb9095d">USE_MIMALLOC</a>&#160;&#160;&#160;1</td></tr>
 <tr class="separator:a6b065076224164db282b12037cb9095d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -144,11 +135,6 @@ Functions</h2></td></tr>
 <tr class="separator:a3a188e46527969cedcdde7a54f5ec319"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a38b72f381ba2136900d238c824aedeed"><td class="memItemLeft" align="right" valign="top">consteval auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu.html#a38b72f381ba2136900d238c824aedeed">lu::minor_version</a> (const std::uint32_t v) -&gt; std::uint8_t</td></tr>
 <tr class="separator:a38b72f381ba2136900d238c824aedeed"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa1f2f91d900e4efd1c3b65427c1a9e40"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelu.html#aa1f2f91d900e4efd1c3b65427c1a9e40">lu::panic_impl</a> (std::string &amp;&amp;message) -&gt; <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a></td></tr>
-<tr class="separator:aa1f2f91d900e4efd1c3b65427c1a9e40"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1457aa0c7f295baf3a35b1c933295e59"><td class="memTemplParams" colspan="2">template&lt;typename... Args&gt; </td></tr>
-<tr class="memitem:a1457aa0c7f295baf3a35b1c933295e59"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacelu.html#a1457aa0c7f295baf3a35b1c933295e59">lu::panic</a> (std::string_view message, Args &amp;&amp;... args) -&gt; <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a></td></tr>
-<tr class="separator:a1457aa0c7f295baf3a35b1c933295e59"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
@@ -156,118 +142,6 @@ Variables</h2></td></tr>
 <tr class="separator:a62090f7168563162b929d7781c1e8c75"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
-<a id="a1adadf095006629612166782177c39f2" name="a1adadf095006629612166782177c39f2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1adadf095006629612166782177c39f2">&#9670;&nbsp;</a></span>FMT_CONSTEVAL</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define FMT_CONSTEVAL&#160;&#160;&#160;constexpr</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a1c3b22efa78556bf6dd0b68e43fb4c50" name="a1c3b22efa78556bf6dd0b68e43fb4c50"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1c3b22efa78556bf6dd0b68e43fb4c50">&#9670;&nbsp;</a></span>log_critical</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define log_critical&#160;&#160;&#160;SPDLOG_CRITICAL</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a08859378593fd71943ca4d82533c351f" name="a08859378593fd71943ca4d82533c351f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a08859378593fd71943ca4d82533c351f">&#9670;&nbsp;</a></span>log_error</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define log_error&#160;&#160;&#160;SPDLOG_ERROR</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ab76882eaa7958050b86772c7d5ef06b1" name="ab76882eaa7958050b86772c7d5ef06b1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab76882eaa7958050b86772c7d5ef06b1">&#9670;&nbsp;</a></span>log_info</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define log_info&#160;&#160;&#160;SPDLOG_INFO</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="afd32891494579f4d9319e2839ddf4c4c" name="afd32891494579f4d9319e2839ddf4c4c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afd32891494579f4d9319e2839ddf4c4c">&#9670;&nbsp;</a></span>log_warn</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define log_warn&#160;&#160;&#160;SPDLOG_WARN</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a3a3368fccf3ab044d115cbee4ddd58c2" name="a3a3368fccf3ab044d115cbee4ddd58c2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3a3368fccf3ab044d115cbee4ddd58c2">&#9670;&nbsp;</a></span>passert</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define passert</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">expr</td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">    <span class="keywordflow">do</span> { \</div>
-<div class="line">        if (!(expr)) [[<a class="code hl_define" href="sqlite3_8c.html#abc731794bf58cdf8374f2be21cdfd62d">unlikely</a>]] { <a class="code hl_function" href="namespacelu.html#a1457aa0c7f295baf3a35b1c933295e59">\</a></div>
-<div class="line"><a class="code hl_function" href="namespacelu.html#a1457aa0c7f295baf3a35b1c933295e59">			::lu::panic</a>(<span class="stringliteral">&quot;Assertion failed: {} in {}:{}&quot;</span>, #expr, __FILE__, __LINE__); \</div>
-<div class="line">        } \</div>
-<div class="line">    } <span class="keywordflow">while</span> (<span class="keyword">false</span>)</div>
-<div class="ttc" id="anamespacelu_html_a1457aa0c7f295baf3a35b1c933295e59"><div class="ttname"><a href="namespacelu.html#a1457aa0c7f295baf3a35b1c933295e59">lu::panic</a></div><div class="ttdeci">auto panic(std::string_view message, Args &amp;&amp;... args) -&gt; void</div><div class="ttdef"><b>Definition:</b> core.hpp:67</div></div>
-<div class="ttc" id="asqlite3_8c_html_abc731794bf58cdf8374f2be21cdfd62d"><div class="ttname"><a href="sqlite3_8c.html#abc731794bf58cdf8374f2be21cdfd62d">unlikely</a></div><div class="ttdeci">#define unlikely(X)</div><div class="ttdef"><b>Definition:</b> sqlite3.c:14385</div></div>
-</div><!-- fragment -->
-</div>
-</div>
-<a id="abf06da51423fd8e311bafbc7eb39b045" name="abf06da51423fd8e311bafbc7eb39b045"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abf06da51423fd8e311bafbc7eb39b045">&#9670;&nbsp;</a></span>print_sep</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define print_sep</td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td>&#160;&#160;&#160;<a class="el" href="core_8hpp.html#ab76882eaa7958050b86772c7d5ef06b1">log_info</a>(&quot;------------------------------------------------------------&quot;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="a6b065076224164db282b12037cb9095d" name="a6b065076224164db282b12037cb9095d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6b065076224164db282b12037cb9095d">&#9670;&nbsp;</a></span>USE_MIMALLOC</h2>
 

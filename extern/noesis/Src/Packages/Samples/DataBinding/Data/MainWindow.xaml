@@ -67,7 +67,7 @@
                                 </Border.Effect>
                             </Border>
                             <StackPanel Width="300">
-                                <TextBlock Text="{Binding Name}" FontSize="18" FontWeight="Bold" Foreground="#FF365264" Background="LightSkyBlue" Padding="0,4" TextAlignment="Center"/>
+                                <TextBlock Text="{Binding Name}" FontSize="18" FontWeight="Bold" Foreground="#FF365264" Background="LightSkyBlue" k_padding="0,4" TextAlignment="Center"/>
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="{Binding Orbit, StringFormat=Orbit: \{0:F2\} AU}" FontSize="14" Foreground="White" Margin="12,8"/>
                                     <TextBlock Text="{Binding Diameter, StringFormat=Diameter: \{0:F2\} Km}" FontSize="14" Foreground="White" Margin="8"/>

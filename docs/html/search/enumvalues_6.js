@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['read_5fonly_0',['read_only',['../structlu_1_1scripting_1_1convar__flags.html#a027c71e69c64bb33be869a18b8ee7d7da02af24a8230d9f772bbaa8bf170b4e99',1,'lu::scripting::convar_flags']]]
+  ['package_0',['package',['../namespacelu_1_1assetmgr.html#ac88730a6fda11f3afb602c1d2a6e48b4aefe90a8e604a7c840e88d03a67f6b7d8',1,'lu::assetmgr']]]
 ];

@@ -1,11 +1,10 @@
-// Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "pbr_pipeline.hpp"
 #include "../mesh.hpp"
 #include "../material.hpp"
 #include "../vulkancore/context.hpp"
 #include "../../core/kernel.hpp"
-#include "../shader_registry.hpp"
 
 namespace lu::graphics::pipelines {
     // WARNING! RENDER THREAD LOCAL
@@ -18,7 +17,6 @@ namespace lu::graphics::pipelines {
         DirectX::FXMMATRIX vp
     ) const -> void {
         if (renderer.meshes.empty() || renderer.materials.empty()) [[unlikely]] {
-            log_warn("Mesh renderer has no meshes or materials");
             return;
         }
         if (renderer.flags & com::render_flags::skip_rendering) [[unlikely]] {
@@ -27,7 +25,6 @@ namespace lu::graphics::pipelines {
         const DirectX::XMMATRIX model = transform.compute_matrix();
         for (const mesh* mesh : renderer.meshes) {
             if (!mesh) [[unlikely]] {
-                log_warn("Mesh renderer has a null mesh");
                 continue;
             }
 
@@ -62,11 +59,12 @@ namespace lu::graphics::pipelines {
                 &pc_fs
             );
 
-            draw_mesh(*mesh, cmd_buf, renderer.materials, layout);
+            const eastl::span<material* const> mats {renderer.materials.data(), renderer.materials.size()};
+            graphics_pipeline::draw_mesh(*mesh, cmd_buf, mats, layout);
         }
     }
 
-    pbr_pipeline::pbr_pipeline() : pipeline_base{"pbr", pipeline_type::graphics} {
+    pbr_pipeline::pbr_pipeline() : graphics_pipeline{"mat_pbr"} {
         generate_brdf_lut();
     }
 
@@ -77,16 +75,18 @@ namespace lu::graphics::pipelines {
         device.freeMemory(m_brdf_lut.memory, vkb::get_alloc());
     }
 
-    auto pbr_pipeline::configure_shaders(std::vector<std::pair<std::shared_ptr<shader>, vk::ShaderStageFlagBits>>& cfg) -> void {
-        auto vs = shader_registry::get().get_shader("pbr_uber_surface.vert");
-        auto fs = shader_registry::get().get_shader("pbr_uber_surface.frag");
-        cfg.emplace_back(vs, vk::ShaderStageFlagBits::eVertex);
-        cfg.emplace_back(fs, vk::ShaderStageFlagBits::eFragment);
+    auto pbr_pipeline::configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> void {
+        shader_variant vs_variant {"/engine_assets/shaders/src/pbr_uber_surface.vert", shader_stage::vertex};
+        shader_variant fs_variant {"/engine_assets/shaders/src/pbr_uber_surface.frag", shader_stage::fragment};
+        auto vs = shader_cache::get().get_shader(std::move(vs_variant));
+        auto fs = shader_cache::get().get_shader(std::move(fs_variant));
+        cfg.emplace_back(vs);
+        cfg.emplace_back(fs);
     }
 
     auto pbr_pipeline::configure_pipeline_layout(
-        std::vector<vk::DescriptorSetLayout>& layouts,
-        std::vector<vk::PushConstantRange>& ranges
+        eastl::vector<vk::DescriptorSetLayout>& layouts,
+        eastl::vector<vk::PushConstantRange>& ranges
     ) -> void {
         layouts.emplace_back(material::get_descriptor_set_layout());
 
@@ -100,5 +100,15 @@ namespace lu::graphics::pipelines {
         push_constant_range.offset = sizeof(push_constants_vs);
         push_constant_range.size = sizeof(push_constants_fs);
         ranges.emplace_back(push_constant_range);
+    }
+
+    auto pbr_pipeline::configure_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> void {
+        graphics_pipeline::configure_enable_color_blending(cfg);
+    }
+
+    auto pbr_pipeline::configure_multisampling(vk::PipelineMultisampleStateCreateInfo &cfg) -> void {
+        passert(type == pipeline_type::graphics);
+        cfg.rasterizationSamples = vkb::k_msaa_sample_count;
+        cfg.alphaToCoverageEnable = vk::True;
     }
 }

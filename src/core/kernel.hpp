@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #pragma once
 
@@ -14,8 +14,8 @@ namespace lu {
         ~kernel();
 
         template <typename T, typename... Ar> requires is_subsystem<T, Ar...>
-        auto install(Ar&&... args) -> std::shared_ptr<T> {
-            auto subsystem = std::make_shared<T>(std::forward<Ar>(args)...);
+        auto install(Ar&&... args) -> eastl::shared_ptr<T> {
+            auto subsystem = eastl::make_shared<T>(std::forward<Ar>(args)...);
             subsystem->resize_hook = [this] { this->resize(); };
             m_subsystems.emplace_back(subsystem);
             return subsystem;
@@ -31,16 +31,16 @@ namespace lu {
         HOTPROC auto run() -> void;
         auto resize() -> void;
 
-        [[nodiscard]] auto get_subsystems() const noexcept -> std::span<const std::shared_ptr<subsystem>> { return m_subsystems; }
-        [[nodiscard]] auto get_boot_stamp() const noexcept -> std::chrono::high_resolution_clock::time_point { return m_boot_stamp; }
+        [[nodiscard]] auto get_subsystems() const noexcept -> eastl::span<const eastl::shared_ptr<subsystem>> { return m_subsystems; }
+        [[nodiscard]] auto get_boot_stamp() const noexcept -> eastl::chrono::high_resolution_clock::time_point { return m_boot_stamp; }
 
-        static inline const std::string config_dir = "config/";
-        static inline const std::string log_dir = "log";
+        static inline const eastl::string config_dir = "config/";
+        static inline const eastl::string log_dir = "log";
 
     private:
         [[nodiscard]] HOTPROC auto tick() -> bool;
-        const std::chrono::high_resolution_clock::time_point m_boot_stamp = std::chrono::high_resolution_clock::now();
-        std::vector<std::shared_ptr<subsystem>> m_subsystems {};
+        const eastl::chrono::high_resolution_clock::time_point m_boot_stamp = eastl::chrono::high_resolution_clock::now();
+        eastl::vector<eastl::shared_ptr<subsystem>> m_subsystems {};
         std::uint64_t m_frame = 0;
     };
 }

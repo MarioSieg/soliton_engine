@@ -19,7 +19,7 @@
         </StackPanel>
       </HeaderedContentControl.Header>
       <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-        <Border Background="{DynamicResource Brush.Header.Normal}" Width="360" Padding="20">
+        <Border Background="{DynamicResource Brush.Header.Normal}" Width="360" k_padding="20">
           <Border.ContextMenu>
             <ContextMenu>
               <MenuItem Header="Option 1"/>
@@ -48,7 +48,7 @@
         </StackPanel>
       </HeaderedContentControl.Header>
       <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-        <Border Background="{DynamicResource Brush.Header.Normal}" Width="360" Padding="20">
+        <Border Background="{DynamicResource Brush.Header.Normal}" Width="360" k_padding="20">
           <Border.ContextMenu>
             <ContextMenu>
               <MenuItem Header="View">

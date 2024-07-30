@@ -228,12 +228,12 @@
 <div class="highlight"><pre><span></span><span class="nt">&lt;ControlTemplate</span> <span class="na">x:Key=</span><span class="s">&quot;Template.TextBox&quot;</span> <span class="na">TargetType=</span><span class="s">&quot;TextBox&quot;</span><span class="nt">&gt;</span>
   <span class="nt">&lt;Grid</span> <span class="na">Background=</span><span class="s">&quot;{TemplateBinding Background}&quot;</span><span class="nt">&gt;</span>
     <span class="nt">&lt;Border</span> <span class="na">x:Name=</span><span class="s">&quot;Placeholder&quot;</span>
-      <span class="na">Padding=</span><span class="s">&quot;{TemplateBinding Padding}&quot;</span>
+      <span class="na">k_padding=</span><span class="s">&quot;{TemplateBinding k_padding}&quot;</span>
       <span class="na">Margin=</span><span class="s">&quot;2,0&quot;</span> <span class="na">Visibility=</span><span class="s">&quot;Collapsed&quot;</span><span class="nt">&gt;</span>
       <span class="nt">&lt;TextBlock</span> <span class="na">Text=</span><span class="s">&quot;{Binding (noesis:Text.Placeholder), RelativeSource={RelativeSource TemplatedParent}}&quot;</span><span class="nt">/&gt;</span>
     <span class="nt">&lt;/Border&gt;</span>
     <span class="nt">&lt;ScrollViewer</span> <span class="na">x:Name=</span><span class="s">&quot;PART_ContentHost&quot;</span> <span class="na">Focusable=</span><span class="s">&quot;False&quot;</span>
-      <span class="na">Padding=</span><span class="s">&quot;{TemplateBinding Padding}&quot;</span>
+      <span class="na">k_padding=</span><span class="s">&quot;{TemplateBinding k_padding}&quot;</span>
       <span class="na">Foreground=</span><span class="s">&quot;{TemplateBinding Foreground}&quot;</span><span class="nt">/&gt;</span>
   <span class="nt">&lt;/Grid&gt;</span>
   <span class="nt">&lt;ControlTemplate.Triggers&gt;</span>

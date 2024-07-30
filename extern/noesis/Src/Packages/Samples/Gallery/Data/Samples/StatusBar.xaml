@@ -33,10 +33,10 @@
           <StatusBarItem DockPanel.Dock="Right">
             <TextBlock Text="{Binding Value, ElementName=DownloadProgress, StringFormat={}{0:F0} %}" VerticalAlignment="Center"/>
           </StatusBarItem>
-          <StatusBarItem DockPanel.Dock="Right" VerticalContentAlignment="Stretch" Padding="4,3">
+          <StatusBarItem DockPanel.Dock="Right" VerticalContentAlignment="Stretch" k_padding="4,3">
             <ProgressBar x:Name="DownloadProgress" Value="60" Width="80" Height="10"/>
           </StatusBarItem>
-          <StatusBarItem Content="Building..." DockPanel.Dock="Right" Padding="0,5"/>
+          <StatusBarItem Content="Building..." DockPanel.Dock="Right" k_padding="0,5"/>
         </StatusBar>
       </StackPanel>
     </HeaderedContentControl>

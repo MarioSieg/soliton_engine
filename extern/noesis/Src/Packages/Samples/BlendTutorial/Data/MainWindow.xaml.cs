@@ -28,7 +28,7 @@ namespace BlendTutorial
             this.SelectionBorder.BorderThickness = new Thickness(2);
             this.SelectionBorder.CornerRadius = new CornerRadius(4);
             this.SelectionBorder.Margin = new Thickness(-3, -3, 0, 0);
-            this.SelectionBorder.Padding = new Thickness(2, 2, 0, 0);
+            this.SelectionBorder.k_padding = new Thickness(2, 2, 0, 0);
         }
 
         private void AddButton_Click(object sender, RoutedEventArgs e)

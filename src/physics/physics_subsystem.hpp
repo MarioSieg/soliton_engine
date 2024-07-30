@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #pragma once
 
@@ -35,14 +35,14 @@ namespace lu::physics {
         static auto create_static_body(JPH::BodyCreationSettings& ci, const com::transform& transform, const com::mesh_renderer& renderer) -> void;
 
         auto post_sync() const -> void;
-        std::unique_ptr<JPH::TempAllocatorImpl> m_temp_allocator {};
-        std::unique_ptr<JPH::JobSystemThreadPool> m_job_system {};
-        std::unique_ptr<JPH::BroadPhaseLayerInterface> m_broad_phase {};
-        std::unique_ptr<JPH::ObjectVsBroadPhaseLayerFilter> m_broad_phase_filter {};
-        std::unique_ptr<JPH::ObjectLayerPairFilter> m_object_layer_pair_filter {};
-        std::unique_ptr<JPH::ContactListener> m_contact_listener {};
+        eastl::unique_ptr<JPH::TempAllocatorImpl> m_temp_allocator {};
+        eastl::unique_ptr<JPH::JobSystemThreadPool> m_job_system {};
+        eastl::unique_ptr<JPH::BroadPhaseLayerInterface> m_broad_phase {};
+        eastl::unique_ptr<JPH::ObjectVsBroadPhaseLayerFilter> m_broad_phase_filter {};
+        eastl::unique_ptr<JPH::ObjectLayerPairFilter> m_object_layer_pair_filter {};
+        eastl::unique_ptr<JPH::ContactListener> m_contact_listener {};
         static inline JPH::PhysicsSystem m_physics_system {};
-        static inline constinit std::unique_ptr<debug_renderer> m_debug_renderer {};
-        std::vector<JPH::BodyID> m_static_bodies {};
+        static inline eastl::unique_ptr<debug_renderer> m_debug_renderer {};
+        eastl::vector<JPH::BodyID> m_static_bodies {};
     };
 }

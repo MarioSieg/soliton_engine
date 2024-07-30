@@ -11,8 +11,11 @@ var searchData=
   ['debug_5frenderer_2ehpp_8',['debug_renderer.hpp',['../debug__renderer_8hpp.html',1,'']]],
   ['debugdraw_2ecpp_9',['debugdraw.cpp',['../debugdraw_8cpp.html',1,'']]],
   ['debugdraw_2ehpp_10',['debugdraw.hpp',['../debugdraw_8hpp.html',1,'']]],
-  ['delegatecommand_2ecpp_11',['DelegateCommand.cpp',['../DelegateCommand_8cpp.html',1,'']]],
-  ['delegatecommand_2eh_12',['DelegateCommand.h',['../DelegateCommand_8h.html',1,'']]],
-  ['device_2ecpp_13',['device.cpp',['../device_8cpp.html',1,'']]],
-  ['device_2ehpp_14',['device.hpp',['../device_8hpp.html',1,'']]]
+  ['delegate_2ehpp_11',['delegate.hpp',['../delegate_8hpp.html',1,'']]],
+  ['delegatecommand_2ecpp_12',['DelegateCommand.cpp',['../DelegateCommand_8cpp.html',1,'']]],
+  ['delegatecommand_2eh_13',['DelegateCommand.h',['../DelegateCommand_8h.html',1,'']]],
+  ['descriptor_2ecpp_14',['descriptor.cpp',['../descriptor_8cpp.html',1,'']]],
+  ['descriptor_2ehpp_15',['descriptor.hpp',['../descriptor_8hpp.html',1,'']]],
+  ['device_2ecpp_16',['device.cpp',['../device_8cpp.html',1,'']]],
+  ['device_2ehpp_17',['device.hpp',['../device_8hpp.html',1,'']]]
 ];
