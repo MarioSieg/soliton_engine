@@ -19,11 +19,11 @@ namespace lu::graphics {
     using platform::platform_subsystem;
     using vkb::context;
 
-    static convar<eastl::string> cv_shader_dir {"Renderer.shaderDir", std::nullopt, scripting::convar_flags::read_only};
-    static convar<bool> cv_enable_parallel_shader_compilation {"Renderer.enableParallelShaderCompilation", true, scripting::convar_flags::read_only};
+    static convar<eastl::string> cv_shader_dir {"Renderer.shaderDir", eastl::nullopt, scripting::convar_flags::read_only};
+    static convar<bool> cv_enable_parallel_shader_compilation {"Renderer.enableParallelShaderCompilation", {{true}}, scripting::convar_flags::read_only};
     static convar<std::uint32_t> cv_max_render_threads {
         "Threads.renderThreads",
-        2u,
+        {{2u}},
         scripting::convar_flags::read_only,
         1u,
         std::max(1u, std::thread::hardware_concurrency())
@@ -140,7 +140,7 @@ namespace lu::graphics {
         const DirectX::XMMATRIX vp = DirectX::XMLoadFloat4x4A(&graphics_subsystem::s_view_proj_mtx);
 
         // thread workload distribution
-        const eastl::vector<std::pair<eastl::span<const com::transform>, eastl::span<const com::mesh_renderer>>>& render_data = self.get_render_data();
+        const eastl::vector<eastl::pair<eastl::span<const com::transform>, eastl::span<const com::mesh_renderer>>>& render_data = self.get_render_data();
         const std::size_t total_entities = std::accumulate(render_data.cbegin(), render_data.cend(), 0, [](const std::size_t acc, const auto& pair) noexcept {
             passert(pair.first.size() == pair.second.size());
             return acc + pair.first.size();
@@ -163,7 +163,7 @@ namespace lu::graphics {
         }
 
         if (bucket_id == num_threads - 1) { // Last thread
-            if (std::optional<debugdraw>& dd = self.get_debug_draw_opt(); dd) {
+            if (eastl::optional<debugdraw>& dd = self.get_debug_draw_opt(); dd) {
                 dd->render(
                     cmd,
                     DirectX::XMLoadFloat4x4A(&graphics_subsystem::s_view_proj_mtx),

@@ -25,11 +25,11 @@ LUA_INTEROP_API auto __lu_scene_start() -> void {
 }
 
 LUA_INTEROP_API auto __lu_scene_spawn_entity(const char* const name) -> lua_entity_id {
-    return std::bit_cast<lua_entity_id>(scene::get_active().spawn(name).raw_id());
+    return eastl::bit_cast<lua_entity_id>(scene::get_active().spawn(name).raw_id());
 }
 
 LUA_INTEROP_API auto __lu_scene_despawn_entity(const lua_entity_id id) -> void {
-    const flecs::entity ent {scene::get_active(), std::bit_cast<flecs::id_t>(id)};
+    const flecs::entity ent {scene::get_active(), eastl::bit_cast<flecs::id_t>(id)};
     ent.destruct();
 }
 
@@ -38,16 +38,16 @@ LUA_INTEROP_API auto __lu_scene_get_entity_by_name(const char* const name) -> lu
     if (!entity) [[unlikely]] {
         return 0;
     }
-    return std::bit_cast<lua_entity_id>(entity.raw_id());
+    return eastl::bit_cast<lua_entity_id>(entity.raw_id());
 }
 
 LUA_INTEROP_API auto __lu_scene_set_active_camera_entity(const lua_entity_id id) -> void {
-    const flecs::entity ent {scene::get_active(), std::bit_cast<flecs::id_t>(id)};
+    const flecs::entity ent {scene::get_active(), eastl::bit_cast<flecs::id_t>(id)};
     scene::get_active().active_camera = ent;
 }
 
 LUA_INTEROP_API auto __lu_scene_get_active_camera_entity() -> lua_entity_id {
-    return std::bit_cast<lua_entity_id>(scene::get_active().active_camera.raw_id());
+    return eastl::bit_cast<lua_entity_id>(scene::get_active().active_camera.raw_id());
 }
 
 // TODO: Convert to FLECS C++ API
@@ -58,10 +58,11 @@ struct scene_iter_context final {
     eastl::vector<flecs::id_t> data {};
 };
 
-static constinit std::optional<scene_iter_context> s_scene_iter_context;
+static eastl::optional<scene_iter_context> s_scene_iter_context {};
 
 LUA_INTEROP_API auto __lu_scene_full_entity_query_start() -> void {
-    auto& ctx = s_scene_iter_context.emplace();
+    s_scene_iter_context.emplace();
+    auto& ctx = s_scene_iter_context.value();
     scene& active = scene::get_active();
     if (&active != ctx.ref || !ctx.query) {
         ctx.ref = &active;
@@ -79,7 +80,7 @@ LUA_INTEROP_API auto __lu_scene_full_entity_query_next_table() -> std::int32_t {
 
 LUA_INTEROP_API auto __lu_scene_full_entity_query_get(const std::int32_t i) -> lua_entity_id {
     auto& ctx = s_scene_iter_context;
-    return ctx && !ctx->data.empty() ? std::bit_cast<lua_entity_id>(ctx->data[std::clamp<std::size_t>(i, 0, ctx->data.size())]) : 0.0;
+    return ctx && !ctx->data.empty() ? eastl::bit_cast<lua_entity_id>(ctx->data[std::clamp<std::size_t>(i, 0, ctx->data.size())]) : 0.0;
 }
 
 LUA_INTEROP_API auto __lu_scene_full_entity_query_end() -> void {

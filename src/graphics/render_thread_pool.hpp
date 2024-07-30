@@ -61,7 +61,7 @@ namespace lu::graphics {
     private:
         const std::int32_t m_num_threads {};
         thread_shared_ctx m_shared_ctx {};
-        std::unique_ptr<std::optional<render_thread>[]> m_threads {};
+        eastl::unique_ptr<eastl::optional<render_thread>[]> m_threads {};
         std::atomic_bool m_stop_source {};
     };
 }

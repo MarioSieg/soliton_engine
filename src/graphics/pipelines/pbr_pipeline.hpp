@@ -35,7 +35,7 @@ namespace lu::graphics::pipelines {
         ) const -> void;
 
     protected:
-        virtual auto configure_shaders(eastl::vector<std::shared_ptr<shader>>& cfg) -> void override;
+        virtual auto configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> void override;
         virtual auto configure_pipeline_layout(eastl::vector<vk::DescriptorSetLayout>& layouts, eastl::vector<vk::PushConstantRange>& ranges) -> void override;
         virtual auto configure_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> void override;
         virtual auto configure_multisampling(vk::PipelineMultisampleStateCreateInfo& cfg) -> void override;

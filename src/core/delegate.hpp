@@ -2,10 +2,6 @@
 
 #pragma once
 
-#include <functional>
-#include <list>
-#include <vector>
-
 #include "utils.hpp"
 
 namespace lu {
@@ -37,13 +33,13 @@ namespace lu {
         }
 
         [[nodiscard]] inline auto empty() const noexcept -> bool { return m_delegates.empty(); }
-        [[nodiscard]] inline auto listeners() const noexcept -> const std::list<T>& { return m_delegates; }
+        [[nodiscard]] inline auto listeners() const noexcept -> const eastl::list<T>& { return m_delegates; }
         [[nodiscard]] inline auto invocations() const noexcept -> std::uint64_t { return m_invocations; }
         [[nodiscard]] inline auto is_locked() const noexcept -> bool { return m_is_locked; }
         inline auto set_locked(const bool locked) noexcept -> void { m_is_locked = locked; }
 
     private:
-        std::list<T> m_delegates {};
+        eastl::list<T> m_delegates {};
         std::uint64_t m_invocations {};
         bool m_is_locked {};
     };

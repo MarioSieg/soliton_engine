@@ -43,7 +43,7 @@ namespace lu {
         assetmgr::asset_registry<graphics::material> m_materials {};
 
         friend struct proxy;
-        static inline constinit std::unique_ptr<scene> s_active {};
+        static inline eastl::unique_ptr<scene> s_active {};
         scene();
     };
 

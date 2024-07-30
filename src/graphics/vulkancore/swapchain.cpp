@@ -53,11 +53,11 @@ namespace lu::vkb {
 
         // Search for a graphics and a present queue in the array of queue
         // families, try to find one that supports both
-        std::uint32_t graphics_queue_node_index = std::numeric_limits<std::uint32_t>::max();
-        std::uint32_t present_queue_node_index = std::numeric_limits<std::uint32_t>::max();
+        std::uint32_t graphics_queue_node_index = eastl::numeric_limits<std::uint32_t>::max();
+        std::uint32_t present_queue_node_index = eastl::numeric_limits<std::uint32_t>::max();
         for (std::uint32_t i = 0; i < num_qeueues; ++i)  {
             if (families[i].queueFlags & vk::QueueFlagBits::eGraphics)  {
-                if (graphics_queue_node_index == std::numeric_limits<std::uint32_t>::max())  {
+                if (graphics_queue_node_index == eastl::numeric_limits<std::uint32_t>::max())  {
                     graphics_queue_node_index = i;
                 }
                 if (supports_present[i] == vk::True)  {
@@ -67,7 +67,7 @@ namespace lu::vkb {
                 }
             }
         }
-        if (present_queue_node_index == std::numeric_limits<std::uint32_t>::max()) {
+        if (present_queue_node_index == eastl::numeric_limits<std::uint32_t>::max()) {
             // If there's no queue that supports both present and graphics
             // try to find a separate present queue
             for (std::uint32_t i = 0; i < num_qeueues; ++i)  {
@@ -78,8 +78,8 @@ namespace lu::vkb {
             }
         }
 
-        passert(graphics_queue_node_index != std::numeric_limits<std::uint32_t>::max()
-            && present_queue_node_index != std::numeric_limits<std::uint32_t>::max()); // Exit if either a graphics or a presenting queue hasn't been found
+        passert(graphics_queue_node_index != eastl::numeric_limits<std::uint32_t>::max()
+            && present_queue_node_index != eastl::numeric_limits<std::uint32_t>::max()); // Exit if either a graphics or a presenting queue hasn't been found
         passert(graphics_queue_node_index == present_queue_node_index); // Separate graphics and presenting queues are not supported yet
 
         m_queue_node_index = graphics_queue_node_index;
@@ -255,7 +255,7 @@ namespace lu::vkb {
     auto swapchain::acquire_next_image(const vk::Semaphore present_complete_semaphore, std::uint32_t& idx) const -> vk::Result {
         return m_logical_device.acquireNextImageKHR(
             m_swapchain,
-            std::numeric_limits<std::uint64_t>::max(),
+            eastl::numeric_limits<std::uint64_t>::max(),
             present_complete_semaphore,
             nullptr,
             &idx

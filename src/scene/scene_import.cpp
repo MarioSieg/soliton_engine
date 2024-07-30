@@ -42,7 +42,7 @@ namespace lu {
         ankerl::unordered_dense::map<eastl::string, std::uint32_t> resolved_names {};
 
         std::uint32_t num_nodes = 0;
-        std::function<auto (aiNode*) -> void> visitor = [&](aiNode* node) -> void {
+        eastl::function<auto (aiNode*) -> void> visitor = [&](aiNode* node) -> void {
             if (!node) [[unlikely]] {
                 return;
             }

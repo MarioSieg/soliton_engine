@@ -326,11 +326,11 @@ namespace lu::platform {
         platform_subsystem::s_framebuffer_size_callbacks(window, w, h);
     }
 
-    static convar<int> cv_default_width {"Window.defaultWidth", 1280, scripting::convar_flags::read_only};
-    static convar<int> cv_default_height {"Window.defaultHeight", 720, scripting::convar_flags::read_only};
-    static convar<int> cv_min_width {"Window.minWidth", 640, scripting::convar_flags::read_only};
-    static convar<int> cv_min_height {"Window.minHeight", 480, scripting::convar_flags::read_only};
-    static convar<eastl::string> cv_window_icon {"Window.icon", "assets/icons/logo.png", scripting::convar_flags::read_only};
+    static convar<int> cv_default_width {"Window.defaultWidth", {{1280}}, scripting::convar_flags::read_only};
+    static convar<int> cv_default_height {"Window.defaultHeight", {{720}}, scripting::convar_flags::read_only};
+    static convar<int> cv_min_width {"Window.minWidth", {{640}}, scripting::convar_flags::read_only};
+    static convar<int> cv_min_height {"Window.minHeight", {{480}}, scripting::convar_flags::read_only};
+    static convar<eastl::string> cv_window_icon {"Window.icon", {{"assets/icons/logo.png"}}, scripting::convar_flags::read_only};
 
     platform_subsystem::platform_subsystem() : subsystem{"Platform"} {
         passert(s_window == nullptr);

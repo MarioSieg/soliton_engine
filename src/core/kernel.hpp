@@ -14,8 +14,8 @@ namespace lu {
         ~kernel();
 
         template <typename T, typename... Ar> requires is_subsystem<T, Ar...>
-        auto install(Ar&&... args) -> std::shared_ptr<T> {
-            auto subsystem = std::make_shared<T>(std::forward<Ar>(args)...);
+        auto install(Ar&&... args) -> eastl::shared_ptr<T> {
+            auto subsystem = eastl::make_shared<T>(std::forward<Ar>(args)...);
             subsystem->resize_hook = [this] { this->resize(); };
             m_subsystems.emplace_back(subsystem);
             return subsystem;
@@ -31,7 +31,7 @@ namespace lu {
         HOTPROC auto run() -> void;
         auto resize() -> void;
 
-        [[nodiscard]] auto get_subsystems() const noexcept -> eastl::span<const std::shared_ptr<subsystem>> { return m_subsystems; }
+        [[nodiscard]] auto get_subsystems() const noexcept -> eastl::span<const eastl::shared_ptr<subsystem>> { return m_subsystems; }
         [[nodiscard]] auto get_boot_stamp() const noexcept -> std::chrono::high_resolution_clock::time_point { return m_boot_stamp; }
 
         static inline const eastl::string config_dir = "config/";
@@ -40,7 +40,7 @@ namespace lu {
     private:
         [[nodiscard]] HOTPROC auto tick() -> bool;
         const std::chrono::high_resolution_clock::time_point m_boot_stamp = std::chrono::high_resolution_clock::now();
-        eastl::vector<std::shared_ptr<subsystem>> m_subsystems {};
+        eastl::vector<eastl::shared_ptr<subsystem>> m_subsystems {};
         std::uint64_t m_frame = 0;
     };
 }

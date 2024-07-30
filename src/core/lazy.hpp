@@ -25,7 +25,7 @@ namespace lu {
         std::negation<std::is_same<std::remove_cvref_t<T2>, std::in_place_t>>, std::is_constructible<T, T2>>>;
 
         template <typename T2>
-        struct allow_unwrap : std::bool_constant<!std::disjunction_v<std::is_same<T, T2>, std::is_constructible<T, std::optional<T2>&>,
+        struct allow_unwrap : std::bool_constant<!std::disjunction_v<std::is_same<T, T2>, std::is_constructible<T, eastl::optional<T2>&>,
         std::is_constructible<T, const lazy<T2>&>,
         std::is_constructible<T, const lazy<T2>>, std::is_constructible<T, lazy<T2>>,
         std::is_convertible<lazy<T2>&, T>, std::is_convertible<const lazy<T2>&, T>,
@@ -57,7 +57,7 @@ namespace lu {
         constexpr auto operator =(decltype(nullptr)) noexcept -> lazy<T>&;
 
     private:
-        std::optional<T> m_dat {std::nullopt };
+        eastl::optional<T> m_dat {std::nullopt };
     };
 
     template <typename T>

@@ -14,7 +14,7 @@ namespace lu::graphics {
         vk::GraphicsPipelineCreateInfo pipeline_info {};
 
         eastl::vector<vk::PipelineShaderStageCreateInfo> shader_stages {};
-        eastl::vector<std::shared_ptr<shader>> shaders {};
+        eastl::vector<eastl::shared_ptr<shader>> shaders {};
         configure_shaders(shaders);
         passert(!shaders.empty());
         shader_stages.reserve(shaders.size());

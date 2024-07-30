@@ -35,16 +35,16 @@ namespace lu::graphics {
 		prim_info.index_start = indices.size();
 		for (unsigned i = 0; i < mesh->mNumVertices; ++i) {
 			mesh::vertex v {};
-			v.position = std::bit_cast<XMFLOAT3>(mesh->mVertices[i]);
+			v.position = eastl::bit_cast<XMFLOAT3>(mesh->mVertices[i]);
 			if (mesh->HasNormals()) {
-				v.normal = std::bit_cast<XMFLOAT3>(mesh->mNormals[i]);
+				v.normal = eastl::bit_cast<XMFLOAT3>(mesh->mNormals[i]);
 			}
 			if (mesh->HasTextureCoords(0)) {
 				v.uv = XMFLOAT2{mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
 			}
 			if (mesh->HasTangentsAndBitangents()) {
-				v.tangent = std::bit_cast<XMFLOAT3>(mesh->mTangents[i]);
-				v.bitangent = std::bit_cast<XMFLOAT3>(mesh->mBitangents[i]);
+				v.tangent = eastl::bit_cast<XMFLOAT3>(mesh->mTangents[i]);
+				v.bitangent = eastl::bit_cast<XMFLOAT3>(mesh->mBitangents[i]);
 			}
 			vertices.emplace_back(v);
 		}
@@ -98,7 +98,7 @@ namespace lu::graphics {
 
 		const aiNode* node = scene->mRootNode;
         if (!node || node->mNumMeshes == 0) [[unlikely]] { // search for other nodes with meshes
-            std::function<auto(const aiNode*) -> const aiNode*> search_for_meshes = [&search_for_meshes](const aiNode* const node) -> const aiNode* {
+            eastl::function<auto(const aiNode*) -> const aiNode*> search_for_meshes = [&search_for_meshes](const aiNode* const node) -> const aiNode* {
                 for (unsigned i = 0; i < node->mNumChildren; ++i) {
                     auto* local_node = node->mChildren[i];
                     if (local_node && local_node->mNumMeshes > 0) {
@@ -152,7 +152,7 @@ namespace lu::graphics {
     }
 
     auto mesh::create_buffers(const eastl::span<const vertex> vertices, const eastl::span<const index> indices) -> void {
-    	passert(indices.size() <= std::numeric_limits<index>::max());
+    	passert(indices.size() <= eastl::numeric_limits<index>::max());
 
     	m_vertex_buffer.create(
 			vertices.size() * sizeof(vertices[0]),
@@ -164,11 +164,11 @@ namespace lu::graphics {
 		);
         m_vertex_count = static_cast<std::uint32_t>(vertices.size());
 
-    	if (indices.size() <= std::numeric_limits<std::uint16_t>::max()) { // 16 bit indices
+    	if (indices.size() <= eastl::numeric_limits<std::uint16_t>::max()) { // 16 bit indices
     		eastl::vector<std::uint16_t> indices16 {};
     		indices16.reserve(indices.size());
     		for (const index idx : indices) {
-                if (idx > std::numeric_limits<std::uint16_t>::max()) [[unlikely]] {
+                if (idx > eastl::numeric_limits<std::uint16_t>::max()) [[unlikely]] {
                     log_warn("Index {} is greater than 16 bit limit, switching to 32 bit indices", idx);
                     goto index32;
                 }
@@ -201,7 +201,7 @@ namespace lu::graphics {
 
     auto mesh::create_collision_mesh(const eastl::span<const vertex> vertices, const eastl::span<const index> indices) -> void {
 		for (const vertex& v : vertices) {
-			verts.emplace_back(std::bit_cast<JPH::Float3>(v.position));
+			verts.emplace_back(eastl::bit_cast<JPH::Float3>(v.position));
 		}
 		triangles.reserve(indices.size() / 3);
 		for (std::size_t i = 0; i < indices.size(); i += 3) {

@@ -16,7 +16,7 @@
 #include <vk_mem_alloc.h>
 
 namespace lu::imgui {
-    static convar<float> cv_font_size {"EditorUI.fontSize", 18.0f, scripting::convar_flags::read_only};
+    static convar<float> cv_font_size {"EditorUI.fontSize", {{18.0f}}, scripting::convar_flags::read_only};
 
     context::context() {
 #if USE_MIMALLOC

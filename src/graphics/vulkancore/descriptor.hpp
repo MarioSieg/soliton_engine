@@ -16,7 +16,7 @@ namespace lu::graphics {
         [[nodiscard]] auto allocate(vk::DescriptorSet& set, vk::DescriptorSetLayout layout) -> bool;
 
     private:
-        using pool_sizes = eastl::vector<std::pair<vk::DescriptorType, float>>;
+        using pool_sizes = eastl::vector<eastl::pair<vk::DescriptorType, float>>;
         pool_sizes m_pool_sizes {
             { vk::DescriptorType::eSampler, .5f },
             { vk::DescriptorType::eCombinedImageSampler, 4.f },

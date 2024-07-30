@@ -34,7 +34,7 @@ namespace lu::graphics {
         [[nodiscard]] auto get_descriptor_pool() const noexcept -> vk::DescriptorPool { return m_descriptor_pool; }
         [[nodiscard]] auto get_render_thread_pool() const noexcept -> const render_thread_pool& { return *m_render_thread_pool; }
 
-        [[nodiscard]] auto get_render_data() const noexcept -> const eastl::vector<std::pair<eastl::span<const com::transform>, eastl::span<const com::mesh_renderer>>>& { return m_render_data; }
+        [[nodiscard]] auto get_render_data() const noexcept -> const eastl::vector<eastl::pair<eastl::span<const com::transform>, eastl::span<const com::mesh_renderer>>>& { return m_render_data; }
         [[nodiscard]] auto get_debug_draw() -> debugdraw& {
             if (!m_debugdraw.has_value()) {
                 m_debugdraw.emplace(m_descriptor_pool);
@@ -42,7 +42,7 @@ namespace lu::graphics {
             return *m_debugdraw;
         }
 
-        [[nodiscard]] auto get_debug_draw_opt() noexcept -> std::optional<debugdraw>& { return m_debugdraw; }
+        [[nodiscard]] auto get_debug_draw_opt() noexcept -> eastl::optional<debugdraw>& { return m_debugdraw; }
         [[nodiscard]] auto get_noesis_context() noexcept -> noesis::context& { return *m_noesis_context; }
         [[nodiscard]] auto get_imgui_context() noexcept -> imgui::context& { return *m_imgui_context; }
         [[nodiscard]] static auto get() noexcept -> graphics_subsystem& {
@@ -89,11 +89,11 @@ namespace lu::graphics {
         vk::CommandBuffer m_cmd = nullptr;
         vk::DescriptorPool m_descriptor_pool {};
         vk::CommandBufferInheritanceInfo m_inheritance_info {};
-        std::optional<render_thread_pool> m_render_thread_pool {};
-        eastl::vector<std::pair<eastl::span<const com::transform>, eastl::span<const com::mesh_renderer>>> m_render_data {};
-        std::optional<debugdraw> m_debugdraw {};
-        std::optional<imgui::context> m_imgui_context {};
-        std::optional<noesis::context> m_noesis_context {};
+        eastl::optional<render_thread_pool> m_render_thread_pool {};
+        eastl::vector<eastl::pair<eastl::span<const com::transform>, eastl::span<const com::mesh_renderer>>> m_render_data {};
+        eastl::optional<debugdraw> m_debugdraw {};
+        eastl::optional<imgui::context> m_imgui_context {};
+        eastl::optional<noesis::context> m_noesis_context {};
         bool m_reload_pipelines_next_frame {};
 
         struct {

@@ -31,7 +31,7 @@ namespace lu {
         auto init(Args&&... args) -> void;
         [[nodiscard]] auto is_init() const noexcept -> bool;
         auto swap(lazy_flex<T>& other) -> void;
-        auto reset(std::unique_ptr<T>&& val) noexcept -> void;
+        auto reset(eastl::unique_ptr<T>&& val) noexcept -> void;
         auto reset(decltype(nullptr)) noexcept -> void;
         auto reset() noexcept -> void;
         auto destruct() noexcept -> void;
@@ -40,11 +40,11 @@ namespace lu {
         auto operator *() noexcept -> T&;
         auto operator ->() const noexcept -> const T*;
         auto operator ->() noexcept -> T*;
-        auto operator =(std::unique_ptr<T>&& other) noexcept -> lazy_flex<T>&;
+        auto operator =(eastl::unique_ptr<T>&& other) noexcept -> lazy_flex<T>&;
         auto operator =(decltype(nullptr)) noexcept -> lazy_flex<T>&;
 
     private:
-        std::unique_ptr<T> m_dat {nullptr };
+        eastl::unique_ptr<T> m_dat {nullptr };
     };
 
     template<typename T>
@@ -84,7 +84,7 @@ namespace lu {
     }
 
     template <typename T>
-    inline auto lazy_flex<T>::reset(std::unique_ptr<T>&& val) noexcept -> void {
+    inline auto lazy_flex<T>::reset(eastl::unique_ptr<T>&& val) noexcept -> void {
         this->m_dat = std::move(val);
     }
 
@@ -114,7 +114,7 @@ namespace lu {
     }
 
     template <typename T>
-    inline auto lazy_flex<T>::operator = (std::unique_ptr<T>&& other) noexcept -> lazy_flex<T>& {
+    inline auto lazy_flex<T>::operator = (eastl::unique_ptr<T>&& other) noexcept -> lazy_flex<T>& {
         this->reset(std::move(other));
         return *this;
     }

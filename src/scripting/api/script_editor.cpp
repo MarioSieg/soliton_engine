@@ -4,8 +4,8 @@
 #include "../../graphics/imgui/text_editor.hpp"
 
 [[nodiscard]] static auto get_editor() -> TextEditor& { // lazy init
-    static const std::unique_ptr<TextEditor> g_editor = [] {
-        auto editor = std::make_unique<TextEditor>();
+    static const eastl::unique_ptr<TextEditor> g_editor = [] {
+        auto editor = eastl::make_unique<TextEditor>();
         editor->SetLanguageDefinition(TextEditor::LanguageDefinition::Lua());
         return editor;
     }();

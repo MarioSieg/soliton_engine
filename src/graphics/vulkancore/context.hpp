@@ -86,7 +86,7 @@ namespace lu::vkb {
                 panic("Invalid queue type");
             }
             vkcheck(queue.submit(1, &submit_info, fence));// TODO: not thread safe, use transfer queue
-            vkcheck(device.waitForFences(1, &fence, vk::True, std::numeric_limits<std::uint64_t>::max()));
+            vkcheck(device.waitForFences(1, &fence, vk::True, eastl::numeric_limits<std::uint64_t>::max()));
             device.destroyFence(fence, vkb::get_alloc());
             if constexpr (Owned) {
                 vk::CommandPool pool {};
@@ -151,12 +151,12 @@ namespace lu::vkb {
         auto destroy_command_buffers() const -> void;
         auto destroy_sync_prims() const -> void;
 
-        inline constinit static std::unique_ptr<context> s_instance {};
+        inline static eastl::unique_ptr<context> s_instance {};
         GLFWwindow* m_window = nullptr;
         std::uint32_t m_width = 0;
         std::uint32_t m_height = 0;
-        std::optional<device> m_device;
-        std::optional<swapchain> m_swapchain;
+        eastl::optional<device> m_device;
+        eastl::optional<swapchain> m_swapchain;
         struct {
             eastl::array<vk::Semaphore, k_max_concurrent_frames> present_complete {}; // Swap chain image presentation
             eastl::array<vk::Semaphore, k_max_concurrent_frames> render_complete {}; // Command buffer submission and execution

@@ -19,20 +19,20 @@ using lua_entity_id = std::uint64_t;
 static_assert(sizeof(flecs::id_t) == sizeof(lua_entity_id));
 static_assert(alignof(flecs::id_t) == alignof(lua_entity_id));
 
-[[nodiscard]] inline __attribute__((always_inline)) auto resolve_entity(const lua_entity_id id) noexcept -> std::optional<flecs::entity> {
-    const auto f_id = std::bit_cast<flecs::id_t>(id);
+[[nodiscard]] inline __attribute__((always_inline)) auto resolve_entity(const lua_entity_id id) noexcept -> eastl::optional<flecs::entity> {
+    const auto f_id = eastl::bit_cast<flecs::id_t>(id);
     if (f_id == 0) [[unlikely]] {
         log_warn("Entity ID is null");
-        return std::nullopt;
+        return eastl::nullopt;
     }
     const flecs::entity ent {scene::get_active(), f_id};
     if (!ent.is_valid()) [[unlikely]] {
         log_warn("Entity ID is invalid");
-        return std::nullopt;
+        return eastl::nullopt;
     }
     if (!ent.is_alive()) [[unlikely]] {
         log_warn("Entity ID is not alive");
-        return std::nullopt;
+        return eastl::nullopt;
     }
     return ent;
 }
@@ -156,17 +156,17 @@ static_assert(sizeof(lua_vec4) == sizeof(double) * 4 && std::is_standard_layout_
 
 #define impl_component_core(name)\
     LUA_INTEROP_API auto __lu_com_##name##_exists(const lua_entity_id id) -> bool {\
-        const std::optional<flecs::entity> ent {resolve_entity(id)};\
+        const eastl::optional<flecs::entity> ent {resolve_entity(id)};\
         if (!ent) [[unlikely]] { return false; }\
         return ent->has<com::name>();\
     }\
     LUA_INTEROP_API auto __lu_com_##name##_add(const lua_entity_id id) -> void { \
-        std::optional<flecs::entity> ent {resolve_entity(id)};\
+        eastl::optional<flecs::entity> ent {resolve_entity(id)};\
         if (!ent) [[unlikely]] { return; }\
         ent->add<com::name>();\
     }\
     LUA_INTEROP_API auto __lu_com_##name##_remove(const lua_entity_id id) -> void {\
-        std::optional<flecs::entity> ent {resolve_entity(id)};\
+        eastl::optional<flecs::entity> ent {resolve_entity(id)};\
         if (!ent) [[unlikely]] { return; }\
         ent->remove<com::name>();\
     }

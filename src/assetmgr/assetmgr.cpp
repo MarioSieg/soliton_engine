@@ -6,7 +6,7 @@
 #include <filesystem>
 
 namespace lu::assetmgr {
-    static std::optional<asset_accessor> s_primary_accessor {};
+    static eastl::optional<asset_accessor> s_primary_accessor {};
     static std::mutex s_mtx {};
     constinit std::atomic_size_t s_asset_requests = 0;
     constinit std::atomic_size_t s_asset_requests_failed = 0;
@@ -50,7 +50,7 @@ namespace lu::assetmgr {
         return s_total_bytes_loaded.load(std::memory_order_relaxed);
     }
 
-    auto with_primary_accessor_lock(const std::function<auto(asset_accessor& acc) -> void>& callback) -> void {
+    auto with_primary_accessor_lock(const eastl::function<auto(asset_accessor& acc) -> void>& callback) -> void {
         std::unique_lock lock {s_mtx};
         if (!s_primary_accessor.has_value()) // Lazy init
             s_primary_accessor.emplace();

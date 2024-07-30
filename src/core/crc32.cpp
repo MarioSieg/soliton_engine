@@ -276,7 +276,7 @@ namespace lu {
         return _mm_extract_epi32(x1, 1);
 #elif CPU_ARM && defined(__ARM_NEON) && defined(__ARM_FEATURE_CRC32)
     std::uint32_t c = ~crc;
-    while (len && (std::bit_cast<std::uintptr_t>(buf) & 7)) {
+    while (len && (eastl::bit_cast<std::uintptr_t>(buf) & 7)) {
         c = __crc32b(c, *static_cast<const std::uint8_t*>(buf));
         buf = static_cast<const std::byte*>(buf) + 1;
         --len;
@@ -306,7 +306,7 @@ namespace lu {
 #else
         crc = ~crc;
         const auto* __restrict__ data = static_cast<const std::byte*>(buf);
-        auto init = static_cast<std::int32_t>((std::bit_cast<const std::byte*>((std::bit_cast<std::uintptr_t>(data) + 4 - 1) & ~(4 - 1))) - data);
+        auto init = static_cast<std::int32_t>((eastl::bit_cast<const std::byte*>((eastl::bit_cast<std::uintptr_t>(data) + 4 - 1) & ~(4 - 1))) - data);
         if (len > init) {
             len -= init;
             for (; init; --init) {

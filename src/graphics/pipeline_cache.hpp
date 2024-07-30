@@ -15,7 +15,7 @@ namespace lu::graphics {
         explicit pipeline_cache(vk::Device device);
         ~pipeline_cache();
 
-        [[nodiscard]] auto get_pipelines() const -> const ankerl::unordered_dense::map<eastl::string, std::unique_ptr<pipeline_base>>& { return m_pipelines; }
+        [[nodiscard]] auto get_pipelines() const -> const ankerl::unordered_dense::map<eastl::string, eastl::unique_ptr<pipeline_base>>& { return m_pipelines; }
         [[nodiscard]] auto get_pipeline(eastl::string&& name) -> pipeline_base& {
             if (!m_pipelines.contains(name)) [[unlikely]] {
                 log_error("Pipeline not found in registry: '{}'", name.c_str());
@@ -29,7 +29,7 @@ namespace lu::graphics {
 
         template <typename T, typename... Args> requires std::is_base_of_v<pipeline_base, T>
         auto register_pipeline(Args&&... args) -> T& {
-            auto instance = std::make_unique<T>(std::forward<Args>(args)...);
+            auto instance = eastl::make_unique<T>(std::forward<Args>(args)...);
             passert(!m_pipelines.contains(instance->name));
             auto name = instance->name;
             static_cast<pipeline_base&>(*instance).create(m_cache);
@@ -51,8 +51,8 @@ namespace lu::graphics {
         static auto shutdown() -> void;
 
     private:
-        static inline constinit std::unique_ptr<pipeline_cache> s_instance {};
-        ankerl::unordered_dense::map<eastl::string, std::unique_ptr<pipeline_base>> m_pipelines {};
+        static inline eastl::unique_ptr<pipeline_cache> s_instance {};
+        ankerl::unordered_dense::map<eastl::string, eastl::unique_ptr<pipeline_base>> m_pipelines {};
         const vk::Device m_device;
         vk::PipelineCache m_cache {};
     };

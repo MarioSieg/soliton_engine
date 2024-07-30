@@ -63,7 +63,7 @@ namespace lu::graphics::pipelines {
         device.destroyDescriptorSetLayout(m_descriptor_set_layout, vkb::get_alloc());
     }
 
-    auto sky_pipeline::configure_shaders(eastl::vector<std::shared_ptr<shader>>& cfg) -> void {
+    auto sky_pipeline::configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> void {
         auto vs = shader_cache::get().get_shader(shader_variant{"/engine_assets/shaders/src/skybox.vert", shader_stage::vertex});
         auto fs = shader_cache::get().get_shader(shader_variant{"/engine_assets/shaders/src/skybox.frag", shader_stage::fragment});
         cfg.emplace_back(vs);

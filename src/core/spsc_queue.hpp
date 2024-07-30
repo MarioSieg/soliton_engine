@@ -152,8 +152,8 @@ namespace lu {
         this->m_cap = capacity < 1 ? 0 : capacity;
         this->m_alloc = allocator;
         ++this->m_cap;
-        if (this->m_cap > std::numeric_limits<std::size_t>::max() - (k_padding << 1))
-            this->m_cap = std::numeric_limits<std::size_t>::max() - (k_padding << 1);
+        if (this->m_cap > eastl::numeric_limits<std::size_t>::max() - (k_padding << 1))
+            this->m_cap = eastl::numeric_limits<std::size_t>::max() - (k_padding << 1);
         if constexpr(alloc_least<Alloc>::value) {
             auto res = this->m_alloc.allocate_at_least(this->m_cap + (k_padding << 1));
             this->m_slots = res.ptr;

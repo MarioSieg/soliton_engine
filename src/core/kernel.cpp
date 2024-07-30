@@ -78,15 +78,15 @@ static auto redirect_io() -> void {
     if (!AttachConsole(ATTACH_PARENT_PROCESS))
         return;
     HANDLE consoleOutput = GetStdHandle(STD_OUTPUT_HANDLE);
-    int systemOutput = _open_osfhandle(std::bit_cast<std::intptr_t>(consoleOutput), _O_TEXT);
+    int systemOutput = _open_osfhandle(eastl::bit_cast<std::intptr_t>(consoleOutput), _O_TEXT);
     if (!_isatty(systemOutput))
         return; // return if it's not a TTY
     FILE* cOutputHandle = _fdopen(systemOutput, "w");
     HANDLE consoleError = GetStdHandle(STD_ERROR_HANDLE);
-    int systemError = _open_osfhandle(std::bit_cast<std::intptr_t>(consoleError), _O_TEXT);
+    int systemError = _open_osfhandle(eastl::bit_cast<std::intptr_t>(consoleError), _O_TEXT);
     FILE* cErrorHandle = _fdopen(systemError, "w");
     HANDLE consoleInput = GetStdHandle(STD_INPUT_HANDLE);
-    int systemInput = _open_osfhandle(std::bit_cast<std::intptr_t>(consoleInput), _O_TEXT);
+    int systemInput = _open_osfhandle(eastl::bit_cast<std::intptr_t>(consoleInput), _O_TEXT);
     FILE* cInputHandle = _fdopen(systemInput, "r");
     std::ios::sync_with_stdio(true);
     freopen_s(&cInputHandle, "CONIN$", "r", stdin);
@@ -126,9 +126,9 @@ static auto redirect_io() -> void {
 #endif
         std::ostream::sync_with_stdio(false);
         spdlog::init_thread_pool(k_log_queue_size, k_log_threads);
-        std::shared_ptr<spdlog::logger> engineLogger = create_logger("engine", "%H:%M:%S:%e %s:%# %^[%l]%$ T:%t %v");
-        std::shared_ptr<spdlog::logger> scriptLogger = create_logger("app", "%H:%M:%S:%e %v");
-        spdlog::set_default_logger(engineLogger);
+        std::shared_ptr<spdlog::logger> engine_ogger = create_logger("engine", "%H:%M:%S:%e %s:%# %^[%l]%$ T:%t %v");
+        std::shared_ptr<spdlog::logger> script_ogger = create_logger("app", "%H:%M:%S:%e %v");
+        spdlog::set_default_logger(engine_ogger);
 
         log_info("-- ENGINE KERNEL BOOT --");
         log_info("LunamEngine v.{}.{}", major_version(k_lunam_engine_v), minor_version(k_lunam_engine_v));

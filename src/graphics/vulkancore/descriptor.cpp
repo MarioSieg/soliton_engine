@@ -117,7 +117,7 @@ namespace lu::graphics {
             }
         }
         if (!is_sorted) {
-            std::sort(layout_info.bindings.begin(), layout_info.bindings.end(), [](const vk::DescriptorSetLayoutBinding& a, const vk::DescriptorSetLayoutBinding& b) {
+            eastl::sort(layout_info.bindings.begin(), layout_info.bindings.end(), [](const vk::DescriptorSetLayoutBinding& a, const vk::DescriptorSetLayoutBinding& b) {
                 return a.binding < b.binding;
             });
         }

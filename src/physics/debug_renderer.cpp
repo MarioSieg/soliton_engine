@@ -20,8 +20,8 @@ namespace lu::physics {
 
     auto debug_renderer::DrawLine(JPH::RVec3Arg from, JPH::RVec3Arg to, const JPH::ColorArg color) -> void {
         dd().draw_line(
-            std::bit_cast<DirectX::XMFLOAT3A>(from),
-            std::bit_cast<DirectX::XMFLOAT3A>(to),
+            eastl::bit_cast<DirectX::XMFLOAT3A>(from),
+            eastl::bit_cast<DirectX::XMFLOAT3A>(to),
             k_physics_debug_color
         );
     }
@@ -34,18 +34,18 @@ namespace lu::physics {
         ECastShadow shadow
     ) -> void {
         dd().draw_line(
-            std::bit_cast<DirectX::XMFLOAT3A>(a),
-            std::bit_cast<DirectX::XMFLOAT3A>(b),
+            eastl::bit_cast<DirectX::XMFLOAT3A>(a),
+            eastl::bit_cast<DirectX::XMFLOAT3A>(b),
             k_physics_debug_color
         );
         dd().draw_line(
-            std::bit_cast<DirectX::XMFLOAT3A>(b),
-            std::bit_cast<DirectX::XMFLOAT3A>(c),
+            eastl::bit_cast<DirectX::XMFLOAT3A>(b),
+            eastl::bit_cast<DirectX::XMFLOAT3A>(c),
             k_physics_debug_color
         );
         dd().draw_line(
-            std::bit_cast<DirectX::XMFLOAT3A>(c),
-            std::bit_cast<DirectX::XMFLOAT3A>(a),
+            eastl::bit_cast<DirectX::XMFLOAT3A>(c),
+            eastl::bit_cast<DirectX::XMFLOAT3A>(a),
             k_physics_debug_color
         );
     }

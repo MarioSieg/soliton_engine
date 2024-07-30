@@ -8,12 +8,12 @@
 namespace lu::vkb {
     static convar<bool> cv_enable_vulkan_validation_layers {
         "Renderer.enableVulkanValidationLayers",
-        false,
+        {{false}},
         convar_flags::read_only
     };
     static convar<bool> cv_enable_vsync {
         "Renderer.enableVSync",
-        false,
+        {{false}},
         convar_flags::read_only
     };
 
@@ -65,12 +65,12 @@ namespace lu::vkb {
     // Set clear values for all framebuffer attachments with loadOp set to clear
     // We use two attachments (color and depth) that are cleared at the start of the subpass and as such we need to set clear values for both
     auto context::begin_frame(const DirectX::XMFLOAT4A& clear_color, vk::CommandBufferInheritanceInfo* out_inheritance_info) -> vk::CommandBuffer {
-        m_clear_values[0].color = std::bit_cast<vk::ClearColorValue>(clear_color);
-        m_clear_values[1].color = std::bit_cast<vk::ClearColorValue>(clear_color);
+        m_clear_values[0].color = eastl::bit_cast<vk::ClearColorValue>(clear_color);
+        m_clear_values[1].color = eastl::bit_cast<vk::ClearColorValue>(clear_color);
         m_clear_values[2].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
 
         // Use a fence to wait until the command buffer has finished execution before using it again
-        vkcheck(m_device->get_logical_device().waitForFences(1, &m_wait_fences[m_current_frame], vk::True, std::numeric_limits<std::uint64_t>::max()));
+        vkcheck(m_device->get_logical_device().waitForFences(1, &m_wait_fences[m_current_frame], vk::True, eastl::numeric_limits<std::uint64_t>::max()));
         vkcheck(m_device->get_logical_device().resetFences(1, &m_wait_fences[m_current_frame]));
 
         // Get the next swap chain image from the implementation
@@ -489,7 +489,7 @@ namespace lu::vkb {
             return;
         }
         passert(window != nullptr);
-        s_instance = std::make_unique<context>(window);
+        s_instance = eastl::make_unique<context>(window);
         s_init.store(true, std::memory_order_relaxed);
     }
 

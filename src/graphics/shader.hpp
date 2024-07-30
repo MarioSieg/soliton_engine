@@ -61,22 +61,22 @@ namespace lu::graphics {
             "engine_assets/shaders/include"
         };
 
-        [[nodiscard]] static auto compile(shader_variant&& variant) -> std::shared_ptr<shader>;
+        [[nodiscard]] static auto compile(shader_variant&& variant) -> eastl::shared_ptr<shader>;
 
         virtual ~shader() noexcept;
 
         [[nodiscard]] auto get_variant() const noexcept -> const shader_variant& { return m_variant; }
-        [[nodiscard]] auto get_source() const noexcept -> const std::optional<eastl::string>& { return m_source; }
-        [[nodiscard]] auto get_assembly() const noexcept -> const std::optional<eastl::string>& { return m_assembly; }
-        [[nodiscard]] auto get_bytecode() const noexcept -> const std::optional<eastl::vector<std::uint32_t>>& { return m_bytecode; }
+        [[nodiscard]] auto get_source() const noexcept -> const eastl::optional<eastl::string>& { return m_source; }
+        [[nodiscard]] auto get_assembly() const noexcept -> const eastl::optional<eastl::string>& { return m_assembly; }
+        [[nodiscard]] auto get_bytecode() const noexcept -> const eastl::optional<eastl::vector<std::uint32_t>>& { return m_bytecode; }
         [[nodiscard]] auto get_module() const noexcept -> vk::ShaderModule { return m_module; }
         [[nodiscard]] auto get_stage_info() const noexcept -> const vk::PipelineShaderStageCreateInfo& { return m_stage_info; }
 
     private:
         shader() = default;
-        std::optional<eastl::string> m_source {};
-        std::optional<eastl::string> m_assembly {};
-        std::optional<eastl::vector<std::uint32_t>> m_bytecode {};
+        eastl::optional<eastl::string> m_source {};
+        eastl::optional<eastl::string> m_assembly {};
+        eastl::optional<eastl::vector<std::uint32_t>> m_bytecode {};
         shader_variant m_variant {};
         vk::ShaderModule m_module {};
         vk::PipelineShaderStageCreateInfo m_stage_info {};
@@ -86,16 +86,16 @@ namespace lu::graphics {
     public:
         explicit shader_cache(eastl::string&& shader_dir);
 
-        [[nodiscard]] auto get_shader(shader_variant&& variant) -> std::shared_ptr<shader>;
+        [[nodiscard]] auto get_shader(shader_variant&& variant) -> eastl::shared_ptr<shader>;
 
         [[nodiscard]] static auto get() noexcept -> shader_cache&;
         static auto init(eastl::string&& shader_dir) -> void;
         static auto shutdown() noexcept -> void;
 
     private:
-        static inline std::unique_ptr<shader_cache> s_instance {};
+        static inline eastl::unique_ptr<shader_cache> s_instance {};
 
         const eastl::string m_shader_dir;
-        ankerl::unordered_dense::map<std::size_t, std::shared_ptr<shader>> m_shaders {};
+        ankerl::unordered_dense::map<std::size_t, eastl::shared_ptr<shader>> m_shaders {};
     };
 }

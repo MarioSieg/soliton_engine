@@ -25,7 +25,7 @@ namespace lu::graphics {
         if (s_init.load(std::memory_order_relaxed)) {
             return;
         }
-        s_instance = std::make_unique<pipeline_cache>(vkb::vkdvc());
+        s_instance = eastl::make_unique<pipeline_cache>(vkb::vkdvc());
         s_init.store(true, std::memory_order_relaxed);
     }
 

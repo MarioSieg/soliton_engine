@@ -9,8 +9,8 @@
 namespace lu::graphics {
     using scripting::scripting_subsystem;
 
-    static convar<eastl::string> cv_error_texture {"Renderer.fallbackTexture", std::nullopt, scripting::convar_flags::read_only};
-    static convar<eastl::string> cv_flat_normal {"Renderer.flatNormalTexture", std::nullopt, scripting::convar_flags::read_only};
+    static convar<eastl::string> cv_error_texture {"Renderer.fallbackTexture", eastl::nullopt, scripting::convar_flags::read_only};
+    static convar<eastl::string> cv_flat_normal {"Renderer.flatNormalTexture", eastl::nullopt, scripting::convar_flags::read_only};
 
     material::material(
         texture* albedo_map,
@@ -38,7 +38,7 @@ namespace lu::graphics {
 
     auto material::flush_property_updates() const -> void {
         eastl::array<vk::DescriptorImageInfo, 4> image_infos {};
-        auto make_write_tex_info = [i = 0u, this, &image_infos](const texture* tex, const texture* fallback) mutable -> vk::WriteDescriptorSet {
+        auto make_write_tex_info = [i=0u, this, &image_infos](const texture* tex, const texture* fallback) mutable -> vk::WriteDescriptorSet {
             passert(fallback != nullptr);
             image_infos[i].imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
             image_infos[i].imageView = tex ? tex->get_view() : fallback->get_view();

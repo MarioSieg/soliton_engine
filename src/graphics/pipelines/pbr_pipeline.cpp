@@ -74,7 +74,7 @@ namespace lu::graphics::pipelines {
         device.freeMemory(m_brdf_lut.memory, vkb::get_alloc());
     }
 
-    auto pbr_pipeline::configure_shaders(eastl::vector<std::shared_ptr<shader>>& cfg) -> void {
+    auto pbr_pipeline::configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> void {
         shader_variant vs_variant {"/engine_assets/shaders/src/pbr_uber_surface.vert", shader_stage::vertex};
         shader_variant fs_variant {"/engine_assets/shaders/src/pbr_uber_surface.frag", shader_stage::fragment};
         auto vs = shader_cache::get().get_shader(std::move(vs_variant));

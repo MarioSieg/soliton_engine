@@ -37,8 +37,8 @@ namespace lu::scripting {
         static constexpr const char* k_tick_hook = "__on_tick__";
         static constexpr const char* k_engine_config_tab = "engine_cfg";
         static inline constinit lua_State* m_L = nullptr;
-        static inline constinit std::optional<luabridge::LuaRef> m_config_table {};
-        std::optional<luabridge::LuaRef> m_on_prepare {}; // Reference to __boot__.lua's on_prepare function
-        std::optional<luabridge::LuaRef> m_on_tick {}; // Reference to __boot__.lua's on_tick function
+        static inline eastl::optional<luabridge::LuaRef> m_config_table {};
+        eastl::optional<luabridge::LuaRef> m_on_prepare {}; // Reference to __boot__.lua's on_prepare function
+        eastl::optional<luabridge::LuaRef> m_on_tick {}; // Reference to __boot__.lua's on_tick function
     };
 }

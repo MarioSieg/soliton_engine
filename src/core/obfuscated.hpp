@@ -57,14 +57,14 @@ namespace lu {
                 }
             }
             if constexpr (Mutate) {
-                const_cast<obfuscated<T, Mutate>*>(this)->set(std::bit_cast<T>(ret));
+                const_cast<obfuscated<T, Mutate>*>(this)->set(eastl::bit_cast<T>(ret));
             }
-            return std::bit_cast<T>(ret);
+            return eastl::bit_cast<T>(ret);
         }
 
         LU_FORCEINLINE auto set(const T& value) noexcept -> void {
             init();
-            const std::uint32_t xor_v = m_xor ^ static_cast<std::uint32_t>(std::bit_cast<std::uintptr_t>(this));
+            const std::uint32_t xor_v = m_xor ^ static_cast<std::uint32_t>(eastl::bit_cast<std::uintptr_t>(this));
             auto* src = reinterpret_cast<const std::uint32_t*>(&value);
             auto* const dest = m_data.data();
             for (std::size_t i = 0; i < (sizeof(T)>>2); ++i) {

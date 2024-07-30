@@ -28,7 +28,7 @@ LUA_INTEROP_API auto __lu_dd_gizmo_enable(const bool enable) -> void {
 }
 
 LUA_INTEROP_API auto __lu_dd_gizmo_manipulator(const lua_entity_id id, const int op, const int mode, const bool enable_snap, const double snap_x, const lua_vec3 color) -> void {
-    const flecs::entity ent {scene::get_active(), std::bit_cast<flecs::id_t>(id)};
+    const flecs::entity ent {scene::get_active(), eastl::bit_cast<flecs::id_t>(id)};
     if (!ent.has<const com::transform>()) [[unlikely]] {
         return;
     }
@@ -122,10 +122,10 @@ LUA_INTEROP_API auto __lu_dd_draw_native_log(const bool scroll) -> void {
     if (!buffered) [[unlikely]] {
         return;
     }
-    const eastl::span<const std::pair<spdlog::level::level_enum, eastl::string>> logs = buffered->get();
+    const eastl::span<const eastl::pair<spdlog::level::level_enum, eastl::string>> logs = buffered->get();
     using namespace ImGui;
     const float footer = GetStyle().ItemSpacing.y + GetFrameHeightWithSpacing();
-    const auto id = static_cast<ImGuiID>(std::bit_cast<std::uintptr_t>(logs.data()) ^ 0xfefefefe);
+    const auto id = static_cast<ImGuiID>(eastl::bit_cast<std::uintptr_t>(logs.data()) ^ 0xfefefefe);
     if (BeginChild(id, { .0F, -footer }, false)) {
         PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2 { 4.F, 1.F });
         ImGuiListClipper clipper {};

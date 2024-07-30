@@ -54,8 +54,8 @@ namespace lu {
     auto fixed_ring_scalar_buffer<Scalar, Size>::submit(const Scalar value) noexcept -> void {
         this->m_buf[this->m_offs] = value;
         this->m_offs = (this->m_offs + 1) % Size;
-        Scalar min = std::numeric_limits<Scalar>::max();
-        Scalar max = std::numeric_limits<Scalar>::min();
+        Scalar min = eastl::numeric_limits<Scalar>::max();
+        Scalar max = eastl::numeric_limits<Scalar>::min();
         Scalar avg {};
         for (const Scalar* __restrict__ i { this->m_buf.begin() }, *const __restrict__ e = i + this->m_buf.size(); i < e; ++i)
         {

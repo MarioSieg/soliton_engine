@@ -28,7 +28,7 @@ namespace lu::scripting {
     };
 
     namespace detail {
-        using convar_ref = std::pair<std::optional<luabridge::LuaRef>*, bool*>;
+        using convar_ref = eastl::pair<eastl::optional<luabridge::LuaRef>*, bool*>;
         inline constinit std::uint32_t s_convar_i = 0;
         inline const auto tid = std::this_thread::get_id();
         inline eastl::vector<convar_ref> s_convars {};
@@ -48,7 +48,7 @@ namespace lu::scripting {
     public:
         convar(
             eastl::string&& name,
-            std::optional<std::variant<T, std::function<auto() -> T>>>&& fallback,
+            eastl::optional<eastl::variant<T, eastl::function<auto() -> T>>>&& fallback,
             std::underlying_type_t<convar_flags::$> flags,
             const T min = {},
             const T max = {}
@@ -98,9 +98,9 @@ namespace lu::scripting {
                 }
                 bool has_range = false;
                 if constexpr(std::is_floating_point_v<T>) {
-                    has_range = std::abs(m_min) > std::numeric_limits<T>::epsilon() || std::abs(m_max) > std::numeric_limits<T>::epsilon();
+                    has_range = std::abs(m_min) > eastl::numeric_limits<T>::epsilon() || std::abs(m_max) > eastl::numeric_limits<T>::epsilon();
                 } else {
-                    has_range = m_min != std::numeric_limits<T>::min() || m_max != std::numeric_limits<T>::max();
+                    has_range = m_min != eastl::numeric_limits<T>::min() || m_max != eastl::numeric_limits<T>::max();
                 }
                 log_info("Registering CONVAR #{} [{} : {}] | Flags: {:#x}, Fallback: {}", ++detail::s_convar_i, full_name().c_str(), type_name().data(), m_flags, s_fallback.c_str());
             }
@@ -110,13 +110,13 @@ namespace lu::scripting {
                     return;
                 }
                 if constexpr (std::is_floating_point_v<T>) {
-                    if (std::abs(m_min) < std::numeric_limits<T>::epsilon())
-                        m_min = std::numeric_limits<T>::min();
-                    if (std::abs(m_max) < std::numeric_limits<T>::epsilon())
-                        m_max = std::numeric_limits<T>::max();
+                    if (std::abs(m_min) < eastl::numeric_limits<T>::epsilon())
+                        m_min = eastl::numeric_limits<T>::min();
+                    if (std::abs(m_max) < eastl::numeric_limits<T>::epsilon())
+                        m_max = eastl::numeric_limits<T>::max();
                 } else {
-                    if (m_min == 0) m_min = std::numeric_limits<T>::min();
-                    if (m_max == 0) m_max = std::numeric_limits<T>::max();
+                    if (m_min == 0) m_min = eastl::numeric_limits<T>::min();
+                    if (m_max == 0) m_max = eastl::numeric_limits<T>::max();
                 }
             } else if constexpr (std::is_same_v<T, eastl::string>) {
                 if (!m_min.empty() || !m_max.empty()) [[unlikely]] {
@@ -166,14 +166,16 @@ namespace lu::scripting {
                 }
             }
             m_ref = key;
-            detail::s_convars.emplace_back(std::make_pair(&m_ref, &m_is_locked));
+            detail::s_convars.emplace_back(eastl::make_pair(&m_ref, &m_is_locked));
         }
 
         [[nodiscard]] auto fallback() const -> T {
-            if (std::holds_alternative<T>(*m_fallback)) {
-                return std::get<T>(*m_fallback);
+            if (!m_fallback) {
+                return T {};
+            } else if (eastl::holds_alternative<T>(*m_fallback)) {
+                return eastl::get<T>(*m_fallback);
             } else {
-                return std::get<std::function<auto()->T>>(*m_fallback)();
+                return eastl::get<eastl::function<auto()->T>>(*m_fallback)();
             }
         }
 
@@ -185,11 +187,11 @@ namespace lu::scripting {
         }
 
         const eastl::string m_name;
-        const std::optional<std::variant<T, std::function<auto() -> T>>> m_fallback;
+        const eastl::optional<eastl::variant<T, eastl::function<auto() -> T>>> m_fallback;
         const std::underlying_type_t<convar_flags::$> m_flags;
         T m_min {};
         T m_max {};
-        std::optional<luabridge::LuaRef> m_ref {};
+        eastl::optional<luabridge::LuaRef> m_ref {};
         std::uint32_t m_gets {}, m_sets {};
         bool m_is_locked {};
     };

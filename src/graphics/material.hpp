@@ -47,8 +47,8 @@ namespace lu::graphics {
         static auto init_static_resources() -> void;
         static auto free_static_resources() -> void;
 
-        static inline constinit std::optional<graphics::texture> s_error_texture {};
-        static inline constinit std::optional<graphics::texture> s_flat_normal {};
+        static inline eastl::optional<graphics::texture> s_error_texture {};
+        static inline eastl::optional<graphics::texture> s_flat_normal {};
         static inline constinit vk::DescriptorPool s_descriptor_pool {};
         static inline constinit vk::DescriptorSetLayout s_descriptor_set_layout {};
         vk::DescriptorSet m_descriptor_set {};

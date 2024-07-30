@@ -27,7 +27,7 @@ namespace lu {
 
     public:
         const eastl::string name;
-        std::function<auto() -> void> resize_hook {};
+        eastl::function<auto() -> void> resize_hook {};
         const std::uint64_t id;
     };
 }

@@ -21,12 +21,12 @@ namespace lu::graphics::pipelines {
         auto render(vk::CommandBuffer cmd) const -> void;
 
     protected:
-        virtual auto configure_shaders(eastl::vector<std::shared_ptr<shader>>& cfg) -> void override;
+        virtual auto configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> void override;
         virtual auto configure_pipeline_layout(eastl::vector<vk::DescriptorSetLayout>& layouts, eastl::vector<vk::PushConstantRange>& ranges) -> void override;
 
     private:
-        std::optional<texture> m_skybox_texture {};
-        std::optional<mesh> m_skydome {};
+        eastl::optional<texture> m_skybox_texture {};
+        eastl::optional<mesh> m_skydome {};
         vk::DescriptorPool m_descriptor_pool {};
         vk::DescriptorSet m_descriptor_set {};
         vk::DescriptorSetLayout m_descriptor_set_layout {};

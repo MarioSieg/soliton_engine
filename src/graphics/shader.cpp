@@ -120,7 +120,7 @@ namespace lu::graphics {
         return true;
     }
 
-    auto shader::compile(shader_variant&& variant) -> std::shared_ptr<shader> {
+    auto shader::compile(shader_variant&& variant) -> eastl::shared_ptr<shader> {
         const auto start = std::chrono::high_resolution_clock::now();
 
         shaderc::Compiler compiler {};
@@ -188,7 +188,7 @@ namespace lu::graphics {
         }
 
         struct proxy : shader {};
-        auto shader = std::make_shared<proxy>();
+        auto shader = eastl::make_shared<proxy>();
 
         eastl::vector<std::uint32_t> bytecode {};
         if (!compile_file_to_bin(compiler, file_name, kind, src, options, bytecode) || bytecode.empty()) [[unlikely]] {
@@ -239,7 +239,7 @@ namespace lu::graphics {
         }
     }
 
-    [[nodiscard]] auto shader_cache::get_shader(shader_variant&& variant) -> std::shared_ptr<shader> {
+    [[nodiscard]] auto shader_cache::get_shader(shader_variant&& variant) -> eastl::shared_ptr<shader> {
         const std::size_t hash = variant.get_hash();
         const bool exists = m_shaders.find(hash) != m_shaders.end();
         if (exists) {
@@ -256,7 +256,7 @@ namespace lu::graphics {
         return *s_instance;
     }
     auto shader_cache::init(eastl::string&& shader_dir) -> void {
-        if (!s_instance) s_instance = std::make_unique<shader_cache>(std::move(shader_dir));
+        if (!s_instance) s_instance = eastl::make_unique<shader_cache>(std::move(shader_dir));
     }
     auto shader_cache::shutdown() noexcept -> void { s_instance.reset(); }
 }

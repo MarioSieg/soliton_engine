@@ -29,7 +29,7 @@ namespace lu {
     }
 
     auto scene::new_active(eastl::string&& name, eastl::string&& file, const float scale, const std::uint32_t load_flags) -> void {
-        auto scene = std::make_unique<proxy>();
+        auto scene = eastl::make_unique<proxy>();
         scene->name = std::move(name);
         log_info("Created scene '{}', id: {}", scene->name.c_str(), scene->id);
         if (!file.empty()) {

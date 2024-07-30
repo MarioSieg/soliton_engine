@@ -245,7 +245,7 @@ namespace lu::graphics {
     }
 
     auto texture::parse_from_raw_memory(const eastl::span<const std::byte> texels) -> void {
-        passert(texels.size() <= std::numeric_limits<std::uint32_t>::max());
+        passert(texels.size() <= eastl::numeric_limits<std::uint32_t>::max());
         bimg::ImageContainer* image = bimg::imageParse(get_tex_alloc(), texels.data(), static_cast<std::uint32_t>(texels.size()));
         passert(image != nullptr);
 

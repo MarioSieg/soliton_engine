@@ -2,18 +2,25 @@
 
 #pragma once
 
-#include <algorithm>
-#include <bit>
-#include <memory>
-#include <limits>
-#include <span>
-
+#include <EASTL/algorithm.h>
 #include <EASTL/array.h>
+#include <EASTL/bit.h>
 #include <EASTL/fixed_vector.h>
 #include <EASTL/vector.h>
 #include <EASTL/string.h>
 #include <EASTL/string_view.h>
 #include <EASTL/span.h>
+#include <EASTL/optional.h>
+#include <EASTL/variant.h>
+#include <EASTL/tuple.h>
+#include <EASTL/functional.h>
+#include <EASTL/numeric_limits.h>
+#include <EASTL/sort.h>
+#include <EASTL/list.h>
+#include <EASTL/shared_ptr.h>
+#include <EASTL/weak_ptr.h>
+#include <EASTL/unique_ptr.h>
+#include <EASTL/chrono.h>
 
 #include <ankerl/unordered_dense.h>
 

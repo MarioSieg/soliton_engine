@@ -139,7 +139,7 @@ namespace lu::graphics {
         m_shared_ctx.render_callback = callback;
         m_shared_ctx.usr = usr;
         log_info("Creating render thread pool with {} threads", m_num_threads);
-        m_threads = std::make_unique<std::optional<render_thread>[]>(m_num_threads);
+        m_threads = eastl::make_unique<eastl::optional<render_thread>[]>(m_num_threads);
         for (std::int32_t i = 0; i < m_num_threads; ++i) {
             m_threads[i].emplace(m_stop_source, m_num_threads, i, m_shared_ctx);
         }
