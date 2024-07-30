@@ -1,7 +1,7 @@
 var lfs_8c =
 [
     [ "dir_data", "structdir__data.html", "structdir__data" ],
-    [ "lfs_Lock", "structlfs__Lock.html", "structlfs__Lock" ],
+    [ "lfs_Lock", "structlfs___lock.html", "structlfs___lock" ],
     [ "DIR_METATABLE", "lfs_8c.html#a1b944ebab6a0d371447d276b5369d59d", null ],
     [ "LFS_LIBNAME", "lfs_8c.html#ad99dd74d14fa91f1defb540aff17baef", null ],
     [ "LFS_MAXPATHLEN", "lfs_8c.html#aa344e279d10cef4b728e93e449c0f679", null ],

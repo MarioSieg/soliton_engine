@@ -28,7 +28,7 @@
 #include <Jolt/Physics/Collision/Shape/SphereShape.h>
 
 #include "../graphics/graphics_subsystem.hpp"
-#include "../scripting/convar.hpp"
+#include "../scripting/system_variable.hpp"
 #include "Jolt/Physics/Collision/Shape/ScaledShape.h"
 
 namespace lu::physics {
@@ -116,12 +116,12 @@ namespace lu::physics {
         log_info("[Physics]: {}", buf);
     }
 
-    static convar<std::uint64_t> cv_tmp_allocator_buffer_size {"Physics.tempAllocatorBufferSize", {{32ull<<20}}, convar_flags::read_only};
-    static convar<std::uint32_t> cv_num_physics_threads {"Threads.physicsThreads", {{1u}}, convar_flags::read_only};
-    static convar<std::uint32_t> cv_max_rigid_bodies {"Physics.maxRigidBodies", {{0x1000u}}, convar_flags::read_only};
-    static convar<std::uint32_t> cv_num_mutexes {"Physics.numMutexes", {{0x1000u}}, convar_flags::read_only};
-    static convar<std::uint32_t> cv_max_body_pairs {"Physics.maxBodyPairs", {{0x1000u}}, convar_flags::read_only};
-    static convar<std::uint32_t> cv_max_contacts {"Physics.maxContacts", {{0x1000u}}, convar_flags::read_only};
+    static const system_variable<std::uint64_t> cv_tmp_allocator_buffer_size {"Physics.tempAllocatorBufferSize", {32ull << 20}};
+    static const system_variable<std::uint32_t> cv_num_physics_threads {"Threads.physicsThreads", {1u}};
+    static const system_variable<std::uint32_t> cv_max_rigid_bodies {"Physics.maxRigidBodies", {0x1000u}};
+    static const system_variable<std::uint32_t> cv_num_mutexes {"Physics.numMutexes", {0x1000u}};
+    static const system_variable<std::uint32_t> cv_max_body_pairs {"Physics.maxBodyPairs", {0x1000u}};
+    static const system_variable<std::uint32_t> cv_max_contacts {"Physics.maxContacts", {0x1000u}};
 
     physics_subsystem::physics_subsystem() : subsystem{"Physics"} {
 #if USE_MIMALLOC

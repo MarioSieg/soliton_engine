@@ -4,13 +4,13 @@
 
 #include "vulkancore/context.hpp"
 #include "graphics_subsystem.hpp"
-#include "../scripting/convar.hpp"
+#include "../scripting/system_variable.hpp"
 
 namespace lu::graphics {
     using scripting::scripting_subsystem;
 
-    static convar<eastl::string> cv_error_texture {"Renderer.fallbackTexture", eastl::nullopt, scripting::convar_flags::read_only};
-    static convar<eastl::string> cv_flat_normal {"Renderer.flatNormalTexture", eastl::nullopt, scripting::convar_flags::read_only};
+    static const system_variable<eastl::string> cv_error_texture {"Renderer.fallbackTexture", eastl::monostate{}};
+    static const system_variable<eastl::string> cv_flat_normal {"Renderer.flatNormalTexture", eastl::monostate{}};
 
     material::material(
         texture* albedo_map,

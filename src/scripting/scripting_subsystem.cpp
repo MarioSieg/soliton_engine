@@ -8,7 +8,7 @@
 // #include "libs/luv/luv.h" also defined a panic() function which is ambiguous with the one in core.hpp, so:
 extern "C" int luaopen_luv (lua_State *L);
 
-#include "convar.hpp"
+#include "system_variable.hpp"
 
 #if USE_MIMALLOC
 #include <mimalloc.h>

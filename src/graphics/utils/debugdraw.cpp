@@ -2,14 +2,13 @@
 
 #include "debugdraw.hpp"
 
-#include "../../scripting/convar.hpp"
+#include "../../scripting/system_variable.hpp"
 #include "../vulkancore/context.hpp"
 
 namespace lu::graphics {
-    static convar<std::uint32_t> k_debug_draw_max_verts {
+    static const system_variable<std::uint32_t> k_debug_draw_max_verts {
         "Renderer.maxDebugDrawVertices",
-        {{100'000u}},
-        scripting::convar_flags::read_only
+        {100'000u}
     };
 
     using namespace DirectX;

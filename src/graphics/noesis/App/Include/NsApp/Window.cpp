@@ -4,21 +4,19 @@
 #include <GLFW/glfw3.h>
 
 #include "../../../../../platform/platform_subsystem.hpp"
-#include "../../../../../scripting/convar.hpp"
+#include "../../../../../scripting/system_variable.hpp"
 
 namespace NoesisApp
 {
     using namespace lu;
 
-    static convar<std::int32_t> ui_render_flags {
+    static const system_variable<std::int32_t> ui_render_flags {
         "GameUI.renderFlags",
-        {{Noesis::RenderFlags_LCD | Noesis::RenderFlags_FlipY | Noesis::RenderFlags_PPAA}},
-        scripting::convar_flags::none
+        {Noesis::RenderFlags_LCD | Noesis::RenderFlags_FlipY | Noesis::RenderFlags_PPAA}
     };
-    static convar<float> ui_tesselation_pixel_error {
+    static const system_variable<float> ui_tesselation_pixel_error {
         "GameUI.tesselationPixelError",
-        {{Noesis::TessellationMaxPixelError::HighQuality().error}},
-        scripting::convar_flags::none
+        {Noesis::TessellationMaxPixelError::HighQuality().error}
     };
 
     NS_IMPLEMENT_REFLECTION(Window) { }

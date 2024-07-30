@@ -1,11 +1,11 @@
 var searchData=
 [
-  ['datetime_0',['DateTime',['../structDateTime.html',1,'']]],
-  ['db_1',['Db',['../structDb.html',1,'']]],
-  ['dbclientdata_2',['DbClientData',['../structDbClientData.html',1,'']]],
-  ['dbfixer_3',['DbFixer',['../structDbFixer.html',1,'']]],
-  ['dblquotestr_4',['DblquoteStr',['../structDblquoteStr.html',1,'']]],
-  ['dbpath_5',['DbPath',['../structDbPath.html',1,'']]],
+  ['datetime_0',['DateTime',['../struct_date_time.html',1,'']]],
+  ['db_1',['Db',['../struct_db.html',1,'']]],
+  ['dbclientdata_2',['DbClientData',['../struct_db_client_data.html',1,'']]],
+  ['dbfixer_3',['DbFixer',['../struct_db_fixer.html',1,'']]],
+  ['dblquotestr_4',['DblquoteStr',['../struct_dblquote_str.html',1,'']]],
+  ['dbpath_5',['DbPath',['../struct_db_path.html',1,'']]],
   ['debug_5frenderer_6',['debug_renderer',['../classlu_1_1physics_1_1debug__renderer.html',1,'lu::physics']]],
   ['debugdraw_7',['debugdraw',['../classlu_1_1graphics_1_1debugdraw.html',1,'lu::graphics']]],
   ['descriptor_5fallocator_8',['descriptor_allocator',['../classlu_1_1graphics_1_1descriptor__allocator.html',1,'lu::graphics']]],
@@ -16,6 +16,6 @@ var searchData=
   ['descriptor_5fwrite_5fcontainer_13',['descriptor_write_container',['../structlu_1_1graphics_1_1descriptor__factory_1_1descriptor__write__container.html',1,'lu::graphics::descriptor_factory']]],
   ['device_14',['device',['../classlu_1_1vkb_1_1device.html',1,'lu::vkb']]],
   ['dir_5fdata_15',['dir_data',['../structdir__data.html',1,'']]],
-  ['distinctctx_16',['DistinctCtx',['../structDistinctCtx.html',1,'']]],
+  ['distinctctx_16',['DistinctCtx',['../struct_distinct_ctx.html',1,'']]],
   ['draw_5fcommand_17',['draw_command',['../structlu_1_1graphics_1_1debugdraw_1_1draw__command.html',1,'lu::graphics::debugdraw']]]
 ];

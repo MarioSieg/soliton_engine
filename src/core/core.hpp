@@ -18,6 +18,7 @@
 #include <EASTL/numeric_limits.h>
 #include <EASTL/sort.h>
 #include <EASTL/list.h>
+#include <EASTL/stack.h>
 #include <EASTL/shared_ptr.h>
 #include <EASTL/weak_ptr.h>
 #include <EASTL/unique_ptr.h>

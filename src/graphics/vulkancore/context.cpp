@@ -3,18 +3,16 @@
 #include "context.hpp"
 #include "../shader.hpp"
 
-#include "../../scripting/convar.hpp"
+#include "../../scripting/system_variable.hpp"
 
 namespace lu::vkb {
-    static convar<bool> cv_enable_vulkan_validation_layers {
+    static const system_variable<bool> cv_enable_vulkan_validation_layers {
         "Renderer.enableVulkanValidationLayers",
-        {{false}},
-        convar_flags::read_only
+        {false}
     };
-    static convar<bool> cv_enable_vsync {
+    static const system_variable<bool> cv_enable_vsync {
         "Renderer.enableVSync",
-        {{false}},
-        convar_flags::read_only
+        {false}
     };
 
     context::context(GLFWwindow* window) : m_window{window} {

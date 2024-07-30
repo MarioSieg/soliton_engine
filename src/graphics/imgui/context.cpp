@@ -11,12 +11,12 @@
 #include "implot.h"
 #include "../pipeline_cache.hpp"
 #include "../../platform/platform_subsystem.hpp"
-#include "../../scripting/convar.hpp"
+#include "../../scripting/system_variable.hpp"
 
 #include <vk_mem_alloc.h>
 
 namespace lu::imgui {
-    static convar<float> cv_font_size {"EditorUI.fontSize", {{18.0f}}, scripting::convar_flags::read_only};
+    static const system_variable<float> cv_font_size {"EditorUI.fontSize", {18.0f}};
 
     context::context() {
 #if USE_MIMALLOC

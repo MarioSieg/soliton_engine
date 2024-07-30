@@ -3,7 +3,7 @@
 #include "graphics_subsystem.hpp"
 
 #include "../platform/platform_subsystem.hpp"
-#include "../scripting/convar.hpp"
+#include "../scripting/system_variable.hpp"
 
 #if USE_MIMALLOC
 #include <mimalloc.h>
@@ -19,14 +19,11 @@ namespace lu::graphics {
     using platform::platform_subsystem;
     using vkb::context;
 
-    static convar<eastl::string> cv_shader_dir {"Renderer.shaderDir", eastl::nullopt, scripting::convar_flags::read_only};
-    static convar<bool> cv_enable_parallel_shader_compilation {"Renderer.enableParallelShaderCompilation", {{true}}, scripting::convar_flags::read_only};
-    static convar<std::uint32_t> cv_max_render_threads {
+    static const system_variable<eastl::string> cv_shader_dir {"Renderer.shaderDir", eastl::monostate{}};
+    static const system_variable<bool> cv_enable_parallel_shader_compilation {"Renderer.enableParallelShaderCompilation", {true}};
+    static const system_variable<std::uint32_t> cv_max_render_threads {
         "Threads.renderThreads",
-        {{2u}},
-        scripting::convar_flags::read_only,
-        1u,
-        std::max(1u, std::thread::hardware_concurrency())
+        {2u}
     };
 
     graphics_subsystem::graphics_subsystem() : subsystem{"Graphics"} {

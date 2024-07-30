@@ -26,7 +26,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 #include <nfd.hpp>
-#include "../scripting/convar.hpp"
+#include "../scripting/system_variable.hpp"
 
 namespace lu::platform {
     using scripting::scripting_subsystem;
@@ -326,11 +326,11 @@ namespace lu::platform {
         platform_subsystem::s_framebuffer_size_callbacks(window, w, h);
     }
 
-    static convar<int> cv_default_width {"Window.defaultWidth", {{1280}}, scripting::convar_flags::read_only};
-    static convar<int> cv_default_height {"Window.defaultHeight", {{720}}, scripting::convar_flags::read_only};
-    static convar<int> cv_min_width {"Window.minWidth", {{640}}, scripting::convar_flags::read_only};
-    static convar<int> cv_min_height {"Window.minHeight", {{480}}, scripting::convar_flags::read_only};
-    static convar<eastl::string> cv_window_icon {"Window.icon", {{"assets/icons/logo.png"}}, scripting::convar_flags::read_only};
+    static const system_variable<int> cv_default_width {"Window.defaultWidth", {1280}};
+    static const system_variable<int> cv_default_height {"Window.defaultHeight", {720}};
+    static const system_variable<int> cv_min_width {"Window.minWidth", {640}};
+    static const system_variable<int> cv_min_height {"Window.minHeight", {480}};
+    static const system_variable<eastl::string> cv_window_icon {"Window.icon", {"assets/icons/logo.png"}};
 
     platform_subsystem::platform_subsystem() : subsystem{"Platform"} {
         passert(s_window == nullptr);

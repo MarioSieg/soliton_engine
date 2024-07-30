@@ -1,6 +1,6 @@
 var kernel_8cpp =
 [
-    [ "create_logger", "kernel_8cpp.html#a894a92fec1721030637ed8b299752386", null ],
+    [ "create_logger", "kernel_8cpp.html#a8d4ea8ba9f79f2b43d743b4f0b282fc5", null ],
     [ "g_delta_time", "kernel_8cpp.html#afeab3df3ea4b84266168a6cfb14b07d6", null ],
     [ "g_kernel", "kernel_8cpp.html#a7066e7855afdcb20b36fa44bd74c9459", null ],
     [ "g_kernel_online", "kernel_8cpp.html#adc67f77eaf357f8476c021b46ad26e14", null ],

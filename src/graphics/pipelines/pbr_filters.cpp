@@ -2,11 +2,11 @@
 
 #include "pbr_pipeline.hpp"
 #include "../vulkancore/context.hpp"
-#include "../../scripting/convar.hpp"
+#include "../../scripting/system_variable.hpp"
 
 namespace lu::graphics::pipelines {
     static constexpr vk::Format brfd_lut_fmt = vk::Format::eR16G16Sfloat;
-    static convar<std::uint32_t> brdf_lut_size { "Renderer.brdfLutSize", {{512u}}, convar_flags::read_only, 128u, 8192u };
+    static const system_variable<std::uint32_t> brdf_lut_size {"Renderer.brdfLutSize", {512u}};
 
     auto pbr_pipeline::generate_brdf_lut() -> void {
         log_info("Generating BRDF LUT...");
