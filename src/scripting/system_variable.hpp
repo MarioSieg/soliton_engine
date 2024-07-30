@@ -39,9 +39,9 @@ namespace lu::scripting {
     class system_variable final {
     public:
         constexpr system_variable(
-            const char* name,
+            const char* const name,
             eastl::variant<eastl::monostate, T, eastl::function<auto() -> T>>&& fallback,
-            bool is_read_only = false
+            const bool is_read_only = false
         ) : m_name{name}, m_fallback{std::move(fallback)}, m_is_read_only{is_read_only} {}
 
         [[nodiscard]] auto operator()() const -> T {
