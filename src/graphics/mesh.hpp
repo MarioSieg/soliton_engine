@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #pragma once
 
@@ -36,11 +36,11 @@ class mesh final : public assetmgr::asset {
             DirectX::BoundingBox aabb {};
         };
 
-        explicit mesh(std::string&& path);
-        explicit mesh(std::span<const aiMesh*> meshes);
+        explicit mesh(eastl::string&& path);
+        explicit mesh(eastl::span<const aiMesh*> meshes);
         ~mesh() override = default;
 
-        [[nodiscard]] auto get_primitives() const noexcept -> std::span<const primitive> { return m_primitives; }
+        [[nodiscard]] auto get_primitives() const noexcept -> eastl::span<const primitive> { return m_primitives; }
         [[nodiscard]] auto get_aabb() const noexcept -> const DirectX::BoundingBox& { return m_aabb; }
         [[nodiscard]] auto get_vertex_buffer() const noexcept -> const vkb::buffer& { return m_vertex_buffer; }
         [[nodiscard]] auto get_index_buffer() const noexcept -> const vkb::buffer& { return m_index_buffer; }
@@ -60,16 +60,16 @@ class mesh final : public assetmgr::asset {
         std::vector<JPH::IndexedTriangle, JPH::STLAllocator<JPH::IndexedTriangle>> triangles {};
 
     private:
-        auto create_from_assimp(std::span<const aiMesh*> meshes) -> void;
-        auto create_buffers(std::span<const vertex> vertices, std::span<const index> indices) -> void;
-        auto create_collision_mesh(std::span<const vertex> vertices, std::span<const index> indices) -> void;
+        auto create_from_assimp(eastl::span<const aiMesh*> meshes) -> void;
+        auto create_buffers(eastl::span<const vertex> vertices, eastl::span<const index> indices) -> void;
+        auto create_collision_mesh(eastl::span<const vertex> vertices, eastl::span<const index> indices) -> void;
 
         vkb::buffer m_vertex_buffer {};
         vkb::buffer m_index_buffer {};
         std::uint32_t m_vertex_count = 0;
         std::uint32_t m_index_count = 0;
         bool m_index_32bit = false;
-        std::vector<primitive> m_primitives {};
+        eastl::vector<primitive> m_primitives {};
         DirectX::BoundingBox m_aabb {};
         JPH::MeshShape* m_collision_mesh {};
     };

@@ -72,7 +72,7 @@
 		<Setter Property="Control.BorderThickness" Value="1"/>
 		<Setter Property="Control.HorizontalContentAlignment" Value="Stretch"/>
 		<Setter Property="Control.VerticalContentAlignment" Value="Stretch"/>
-		<Setter Property="Control.Padding" Value="0"/>
+		<Setter Property="Control.k_padding" Value="0"/>
 		<Setter Property="Control.IsTabStop" Value="True"/>
 		<Setter Property="Control.OverridesDefaultStyle" Value="False"/>
 	</Style>
@@ -88,7 +88,7 @@
 						Background="{TemplateBinding Background}"
 						BorderBrush="{TemplateBinding BorderBrush}"
 						BorderThickness="{TemplateBinding BorderThickness}"
-						Padding="{TemplateBinding Padding}"/>
+						k_padding="{TemplateBinding k_padding}"/>
 				</ControlTemplate>
 			</Setter.Value>
 		</Setter>
@@ -105,7 +105,7 @@
 						Background="{TemplateBinding Background}"
 						BorderBrush="{TemplateBinding BorderBrush}"
 						BorderThickness="{TemplateBinding BorderThickness}"
-						Padding="{TemplateBinding Padding}">
+						k_padding="{TemplateBinding k_padding}">
 						<ContentPresenter
 							HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
 							VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
@@ -126,7 +126,7 @@
 						Background="{TemplateBinding Background}"
 						BorderBrush="{TemplateBinding BorderBrush}"
 						BorderThickness="{TemplateBinding BorderThickness}"
-						Padding="{TemplateBinding Padding}">
+						k_padding="{TemplateBinding k_padding}">
 						<StackPanel>
 							<ContentPresenter ContentSource="Header"/>
 							<ContentPresenter
@@ -150,7 +150,7 @@
 						Background="{TemplateBinding Background}"
 						BorderBrush="{TemplateBinding BorderBrush}"
 						BorderThickness="{TemplateBinding BorderThickness}"
-						Padding="{TemplateBinding Padding}">
+						k_padding="{TemplateBinding k_padding}">
 						<ItemsPresenter />
 					</Border>
 				</ControlTemplate>
@@ -169,7 +169,7 @@
 						Background="{TemplateBinding Background}"
 						BorderBrush="{TemplateBinding BorderBrush}"
 						BorderThickness="{TemplateBinding BorderThickness}"
-						Padding="{TemplateBinding Padding}">
+						k_padding="{TemplateBinding k_padding}">
 						<StackPanel>
 							<ContentPresenter ContentSource="Header"/>
 							<ItemsPresenter />
@@ -191,7 +191,7 @@
 						Background="{TemplateBinding Background}"
 						BorderBrush="{TemplateBinding BorderBrush}"
 						BorderThickness="{TemplateBinding BorderThickness}"
-						Padding="{TemplateBinding Padding}">
+						k_padding="{TemplateBinding k_padding}">
 						<ContentPresenter
 							HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
 							VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
@@ -229,7 +229,7 @@
 						Background="{TemplateBinding Background}"
 						BorderBrush="{TemplateBinding BorderBrush}"
 						BorderThickness="{TemplateBinding BorderThickness}"
-						Padding="{TemplateBinding Padding}">
+						k_padding="{TemplateBinding k_padding}">
 						<ContentPresenter x:Name="ContentHost"
 							HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
 							VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
@@ -362,7 +362,7 @@
 			</Border>
 			<Border
 				BorderThickness="{TemplateBinding BorderThickness}"
-				Padding="{TemplateBinding Padding}">
+				k_padding="{TemplateBinding k_padding}">
 				<ContentPresenter x:Name="ContentHost"
 					HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
 					VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
@@ -376,7 +376,7 @@
 
 	<!-- Button Style -->
 	<Style TargetType="{x:Type Button}" BasedOn="{StaticResource NoesisControlStyle}">
-		<Setter Property="Padding" Value="6,4"/>
+		<Setter Property="k_padding" Value="6,4"/>
 		<Setter Property="HorizontalContentAlignment" Value="Center"/>
 		<Setter Property="VerticalContentAlignment" Value="Center"/>
 		<Setter Property="Template" Value="{StaticResource ButtonTemplate}"/>
@@ -492,7 +492,7 @@
 			</Border>
 			<Border
 				BorderThickness="{TemplateBinding BorderThickness}"
-				Padding="{TemplateBinding Padding}">
+				k_padding="{TemplateBinding k_padding}">
 				<ContentPresenter x:Name="ContentHost"
 					HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
 					VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
@@ -506,7 +506,7 @@
 
 	<!-- RepeatButton Style -->
 	<Style TargetType="{x:Type RepeatButton}" BasedOn="{StaticResource NoesisControlStyle}">
-		<Setter Property="Padding" Value="6,4"/>
+		<Setter Property="k_padding" Value="6,4"/>
 		<Setter Property="HorizontalContentAlignment" Value="Center"/>
 		<Setter Property="VerticalContentAlignment" Value="Center"/>
 		<Setter Property="Template" Value="{StaticResource RepeatButtonTemplate}"/>
@@ -659,7 +659,7 @@
 			</Border>
 			<Border
 				BorderThickness="{TemplateBinding BorderThickness}"
-				Padding="{TemplateBinding Padding}">
+				k_padding="{TemplateBinding k_padding}">
 				<ContentPresenter x:Name="ContentHost"
 					HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
 					VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
@@ -673,7 +673,7 @@
 
 	<!-- ToggleButton Style -->
 	<Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource NoesisControlStyle}">
-		<Setter Property="Padding" Value="6,4"/>
+		<Setter Property="k_padding" Value="6,4"/>
 		<Setter Property="HorizontalContentAlignment" Value="Center"/>
 		<Setter Property="VerticalContentAlignment" Value="Center"/>
 		<Setter Property="Template" Value="{StaticResource ToggleButtonTemplate}"/>
@@ -826,7 +826,7 @@
 				</VisualStateGroup>
 			</VisualStateManager.VisualStateGroups>
 			<ContentPresenter x:Name="ContentHost"
-				Margin="{TemplateBinding Padding}"
+				Margin="{TemplateBinding k_padding}"
 				HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
 				VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
 				<TextElement.Foreground>
@@ -839,7 +839,7 @@
 	<!-- RadioButton Style -->
 	<Style TargetType="{x:Type RadioButton}" BasedOn="{StaticResource NoesisControlStyle}">
 		<Setter Property="Background" Value="Transparent"/>
-		<Setter Property="Padding" Value="4,0,0,0"/>
+		<Setter Property="k_padding" Value="4,0,0,0"/>
 		<Setter Property="HorizontalContentAlignment" Value="Left"/>
 		<Setter Property="VerticalContentAlignment" Value="Center"/>
 		<Setter Property="Template" Value="{StaticResource RadioButtonTemplate}"/>
@@ -1014,7 +1014,7 @@
 				</VisualStateGroup>
 			</VisualStateManager.VisualStateGroups>
 			<ContentPresenter x:Name="ContentHost"
-				Margin="{TemplateBinding Padding}"
+				Margin="{TemplateBinding k_padding}"
 				HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
 				VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
 				<TextElement.Foreground>
@@ -1027,7 +1027,7 @@
 	<!-- CheckBox Style -->
 	<Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource NoesisControlStyle}">
 		<Setter Property="Background" Value="Transparent"/>
-		<Setter Property="Padding" Value="4,0,0,0"/>
+		<Setter Property="k_padding" Value="4,0,0,0"/>
 		<Setter Property="HorizontalContentAlignment" Value="Left"/>
 		<Setter Property="VerticalContentAlignment" Value="Center"/>
 		<Setter Property="FocusVisualStyle" Value="{x:Null}"/>
@@ -1354,7 +1354,7 @@
 							ContentTemplate="{TemplateBinding ContentTemplate}"
 							ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
 							CanContentScroll="{TemplateBinding CanContentScroll}"
-							Margin="{TemplateBinding Padding}"/>
+							Margin="{TemplateBinding k_padding}"/>
 
 						<!-- The visibility of the ScrollBars is controlled by the implementation of the control -->
 						<ScrollBar x:Name="PART_HorizontalScrollBar"
@@ -1409,7 +1409,7 @@
 				<ControlTemplate TargetType="{x:Type RepeatButton}">
 					<Border
 						Background="Transparent"
-						Padding="{TemplateBinding Padding}">
+						k_padding="{TemplateBinding k_padding}">
 						<Border x:Name="CheckBorder"
 							Background="{TemplateBinding Background}"/>
 					</Border>
@@ -1606,7 +1606,7 @@
 				<Track.DecreaseRepeatButton>
 					<RepeatButton x:Name="DecBtn"
 						Style="{StaticResource SliderButtonStyle}"
-						Padding="4,7,0,7"
+						k_padding="4,7,0,7"
 						Command="Slider.DecreaseLarge">
 						<RepeatButton.Background>
 							<SolidColorBrush Color="{StaticResource CheckBgColor}"/>
@@ -1628,7 +1628,7 @@
 		</Grid>
 		<ControlTemplate.Triggers>
 			<Trigger Property="IsDirectionReversed" Value="True">
-				<Setter Property="Padding" TargetName="DecBtn" Value="0,7,4,7"/>
+				<Setter Property="k_padding" TargetName="DecBtn" Value="0,7,4,7"/>
 			</Trigger>
 			<Trigger Property="IsKeyboardFocused" Value="True">
 				<Setter TargetName="SliderThumb" Property="TabIndex" Value="-1"/>
@@ -1715,7 +1715,7 @@
 				<Track.DecreaseRepeatButton>
 					<RepeatButton x:Name="DecBtn"
 						Style="{StaticResource SliderButtonStyle}"
-						Padding="7,0,7,4"
+						k_padding="7,0,7,4"
 						Command="Slider.DecreaseLarge" >
 						<RepeatButton.Background>
 							<SolidColorBrush Color="{StaticResource CheckBgColor}"/>
@@ -1737,7 +1737,7 @@
 		</Grid>
 		<ControlTemplate.Triggers>
 			<Trigger Property="IsDirectionReversed" Value="True">
-				<Setter Property="Padding" TargetName="DecBtn" Value="7,4,7,0"/>
+				<Setter Property="k_padding" TargetName="DecBtn" Value="7,4,7,0"/>
 			</Trigger>
 			<Trigger Property="IsKeyboardFocused" Value="True">
 				<Setter TargetName="SliderThumb" Property="TabIndex" Value="-1"/>
@@ -1778,7 +1778,7 @@
 		<Setter Property="Background" Value="{StaticResource TrackBgBrush}"/>
 		<Setter Property="BorderBrush" Value="{StaticResource TrackBdBrush}"/>
 		<Setter Property="BorderThickness" Value="1"/>
-		<Setter Property="Padding" Value="1"/>
+		<Setter Property="k_padding" Value="1"/>
 		<Setter Property="IsTabStop" Value="False"/>
 		<Setter Property="Template">
 			<Setter.Value>
@@ -1832,7 +1832,7 @@
 						<Grid x:Name="PART_Indicator"
 							HorizontalAlignment="Left">
 							<Border x:Name="IndicatorBorder"
-								Margin="{TemplateBinding Padding}">
+								Margin="{TemplateBinding k_padding}">
 								<Border.Background>
 									<SolidColorBrush Color="{StaticResource CheckBgColor}"/>
 								</Border.Background>
@@ -1893,7 +1893,7 @@
 	<Style TargetType="{x:Type Expander}" BasedOn="{StaticResource NoesisControlStyle}">
 		<Setter Property="Background" Value="{StaticResource NormalDarkBgBrush}"/>
 		<Setter Property="BorderBrush" Value="{StaticResource NormalDarkBdBrush}"/>
-		<Setter Property="Padding" Value="4"/>
+		<Setter Property="k_padding" Value="4"/>
 		<Setter Property="Focusable" Value="False"/>
 		<Setter Property="Template">
 			<Setter.Value>
@@ -2127,7 +2127,7 @@
 										<SolidColorBrush Color="{StaticResource DisabledOverlay}" Opacity="0"/>
 									</Border.Background>
 								</Border>
-								<ContentPresenter x:Name="ContentHost" Margin="{TemplateBinding Padding}">
+								<ContentPresenter x:Name="ContentHost" Margin="{TemplateBinding k_padding}">
 									<TextElement.Foreground>
 										<SolidColorBrush Color="{StaticResource NormalFgColor}"/>
 									</TextElement.Foreground>
@@ -2165,7 +2165,7 @@
 	<Style TargetType="{x:Type GroupBox}" BasedOn="{StaticResource NoesisControlStyle}">
 		<Setter Property="Background" Value="{StaticResource NormalDarkBgBrush}"/>
 		<Setter Property="BorderBrush" Value="{StaticResource NormalDarkBdBrush}"/>
-		<Setter Property="Padding" Value="4"/>
+		<Setter Property="k_padding" Value="4"/>
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type GroupBox}">
@@ -2255,7 +2255,7 @@
 							<ContentPresenter
 								Grid.Row="1"
 								x:Name="ContentHost"
-								Margin="{TemplateBinding Padding}">
+								Margin="{TemplateBinding k_padding}">
 								<TextElement.Foreground>
 									<SolidColorBrush Color="{StaticResource NormalFgColor}"/>
 								</TextElement.Foreground>
@@ -2324,7 +2324,7 @@
 							BorderThickness="{TemplateBinding BorderThickness}">
 							<ScrollViewer
 								Focusable="False"
-								Padding="{TemplateBinding Padding}"
+								k_padding="{TemplateBinding k_padding}"
 								Foreground="{TemplateBinding Foreground}">
 								<ItemsPresenter />
 							</ScrollViewer>
@@ -2351,7 +2351,7 @@
 		<Setter Property="BorderBrush" Value="Transparent"/>
 		<Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
 		<Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
-		<Setter Property="Padding" Value="4"/>
+		<Setter Property="k_padding" Value="4"/>
 		<Setter Property="FocusVisualStyle" Value="{x:Null}"/>
 		<Setter Property="Template">
 			<Setter.Value>
@@ -2460,7 +2460,7 @@
 						</Border>
 						<Border x:Name="Border"
 							BorderThickness="{TemplateBinding BorderThickness}"
-							Padding="{TemplateBinding Padding}">
+							k_padding="{TemplateBinding k_padding}">
 							<ContentPresenter x:Name="ContentHost"
 								HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
 								VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
@@ -2517,7 +2517,7 @@
 						</Border>
 						<Border
 							BorderThickness="{TemplateBinding BorderThickness}"
-							Padding="{TemplateBinding Padding}">
+							k_padding="{TemplateBinding k_padding}">
 							<ItemsPresenter/>
 						</Border>
 					</Grid>
@@ -2591,7 +2591,7 @@
 			</Border>
 			<Border x:Name="Header"
 				BorderThickness="{TemplateBinding BorderThickness}"
-				Padding="{TemplateBinding Padding}">
+				k_padding="{TemplateBinding k_padding}">
 				<ContentPresenter x:Name="HeaderHost"
 					ContentSource="Header"
 					VerticalAlignment="Center">
@@ -2679,7 +2679,7 @@
 			</Border>
 			<Border x:Name="Header"
 				BorderThickness="{TemplateBinding BorderThickness}"
-				Padding="{TemplateBinding Padding}">
+				k_padding="{TemplateBinding k_padding}">
 				<ContentPresenter x:Name="HeaderHost"
 					ContentSource="Header"
 					VerticalAlignment="Center">
@@ -2758,7 +2758,7 @@
 			</Border>
 			<Border x:Name="Header"
 				BorderThickness="{TemplateBinding BorderThickness}"
-				Padding="{TemplateBinding Padding}">
+				k_padding="{TemplateBinding k_padding}">
 				<Grid>
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="Auto" SharedSizeGroup="Icon"/>
@@ -2892,7 +2892,7 @@
 			</Border>
 			<Border x:Name="Header"
 				BorderThickness="{TemplateBinding BorderThickness}"
-				Padding="{TemplateBinding Padding}">
+				k_padding="{TemplateBinding k_padding}">
 				<Grid>
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="Auto" SharedSizeGroup="Icon"/>
@@ -2987,20 +2987,20 @@
         <Setter Property="ItemsPanel" Value="{StaticResource MenuItemsPanelTemplate}"/>
 		<Style.Triggers>
 			<Trigger Property="Role" Value="TopLevelHeader">
-				<Setter Property="Padding" Value="6,4"/>
+				<Setter Property="k_padding" Value="6,4"/>
 				<Setter Property="Template" Value="{StaticResource TopLevelHeaderTemplate}"/>
 			</Trigger>
 			<Trigger Property="Role" Value="TopLevelItem">
-				<Setter Property="Padding" Value="6,4"/>
+				<Setter Property="k_padding" Value="6,4"/>
 				<Setter Property="Template" Value="{StaticResource TopLevelItemTemplate}"/>
 			</Trigger>
 			<Trigger Property="Role" Value="SubmenuHeader">
-				<Setter Property="Padding" Value="0,4"/>
+				<Setter Property="k_padding" Value="0,4"/>
 				<Setter Property="MinHeight" Value="15"/>
 				<Setter Property="Template" Value="{StaticResource SubmenuHeaderTemplate}"/>
 			</Trigger>
 			<Trigger Property="Role" Value="SubmenuItem">
-				<Setter Property="Padding" Value="0,4"/>
+				<Setter Property="k_padding" Value="0,4"/>
 				<Setter Property="MinHeight" Value="15"/>
 				<Setter Property="Template" Value="{StaticResource SubmenuItemTemplate}"/>
 			</Trigger>
@@ -3033,7 +3033,7 @@
 						</Border>
 						<Border x:Name="Border"
 							BorderThickness="{TemplateBinding BorderThickness}"
-							Padding="{TemplateBinding Padding}">
+							k_padding="{TemplateBinding k_padding}">
 							<ItemsPresenter/>
 						</Border>
 					</Grid>
@@ -3051,7 +3051,7 @@
 		<Setter Property="Background" Value="{StaticResource ToolTipBgBrush}"/>
 		<Setter Property="BorderBrush" Value="{StaticResource ToolTipBdBrush}"/>
 		<Setter Property="FontSize" Value="10"/>
-		<Setter Property="Padding" Value="6,4"/>
+		<Setter Property="k_padding" Value="6,4"/>
 		<Setter Property="Placement" Value="Mouse"/>
 		<Setter Property="VerticalOffset" Value="21"/> <!-- Cursor Height -->
 		<Setter Property="HorizontalContentAlignment" Value="Left"/>
@@ -3063,7 +3063,7 @@
 						Background="{TemplateBinding Background}"
 						BorderBrush="{TemplateBinding BorderBrush}"
 						BorderThickness="{TemplateBinding BorderThickness}"
-						Padding="{TemplateBinding Padding}"
+						k_padding="{TemplateBinding k_padding}"
 						CornerRadius="0">
 						<ContentPresenter
 							HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
@@ -3083,7 +3083,7 @@
 		<Setter Property="BorderBrush" Value="{StaticResource TrackBdBrush}"/>
 		<Setter Property="HorizontalContentAlignment" Value="Stretch"/>
 		<Setter Property="VerticalContentAlignment" Value="Stretch"/>
-		<Setter Property="Padding" Value="4"/>
+		<Setter Property="k_padding" Value="4"/>
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type TabControl}">
@@ -3134,7 +3134,7 @@
 						<Border x:Name="SelectedContentBorder"
 							Grid.Row="1"
 							BorderThickness="{TemplateBinding BorderThickness}"
-							Padding="{TemplateBinding Padding}"
+							k_padding="{TemplateBinding k_padding}"
 							KeyboardNavigation.DirectionalNavigation="Contained"
 							KeyboardNavigation.TabIndex="2"
 							KeyboardNavigation.TabNavigation="Local">
@@ -3155,7 +3155,7 @@
 
 	<!-- TabItem Style -->
 	<Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource NoesisControlStyle}">
-		<Setter Property="Padding" Value="6,4,6,2"/>
+		<Setter Property="k_padding" Value="6,4,6,2"/>
 		<Setter Property="BorderThickness" Value="1,1,1,0"/>
 		<Setter Property="HorizontalContentAlignment" Value="Stretch"/>
 		<Setter Property="VerticalContentAlignment" Value="Stretch"/>
@@ -3257,7 +3257,7 @@
 						</Border>
 						<Border x:Name="TabBorder"
 							BorderThickness="{TemplateBinding BorderThickness}"
-							Padding="{TemplateBinding Padding}"
+							k_padding="{TemplateBinding k_padding}"
 							CornerRadius="1,1,0,0">
 							<ContentPresenter x:Name="ContentHost"
 								ContentSource="Header"
@@ -3270,7 +3270,7 @@
 							<Setter TargetName="Tab" Property="Margin" Value="0,0,-1,0"/>
 							<Setter TargetName="OverBorder" Property="Visibility" Value="Hidden"/>
 							<Setter Property="Panel.ZIndex" Value="1"/>
-							<Setter Property="Padding" Value="6,4"/>
+							<Setter Property="k_padding" Value="6,4"/>
 							<Setter Property="Background" Value="{StaticResource NormalDarkBgBrush}"/>
 							<Setter Property="BorderBrush" Value="{StaticResource TrackLightBdBrush}"/>
 						</Trigger>
@@ -3371,7 +3371,7 @@
 			<Border BorderThickness="{TemplateBinding BorderThickness}">
 				<ScrollViewer x:Name="PART_ContentHost"
 					Focusable="False"
-					Padding="{TemplateBinding Padding}"
+					k_padding="{TemplateBinding k_padding}"
 					Foreground="{TemplateBinding Foreground}"/>
 			</Border>
 		</Grid>
@@ -3411,7 +3411,7 @@
 		<Setter Property="CaretBrush" Value="{StaticResource CaretBrush}"/>
 		<Setter Property="SelectionBrush" Value="{StaticResource SelectionBrush}"/>
 		<Setter Property="SelectionOpacity" Value="0.5"/>
-		<Setter Property="Padding" Value="2,4"/>
+		<Setter Property="k_padding" Value="2,4"/>
 		<Setter Property="TextAlignment" Value="Left"/>
 		<Setter Property="KeyboardNavigation.TabNavigation" Value="None"/>
 		<Setter Property="AllowDrop" Value="True"/>
@@ -3447,7 +3447,7 @@
 
 	<!-- SimpleScrollViewer Template -->
 	<ControlTemplate x:Key="SimpleScrollViewer" TargetType="{x:Type ScrollViewer}">
-		<ScrollContentPresenter Margin="{TemplateBinding Padding}"/>
+		<ScrollContentPresenter Margin="{TemplateBinding k_padding}"/>
 	</ControlTemplate>
 
 	<!-- TextBox NoWrap Template -->
@@ -3538,7 +3538,7 @@
 				<ScrollViewer x:Name="PART_ContentHost"
 					Focusable="False"
 					Template="{StaticResource SimpleScrollViewer}"
-					Padding="{TemplateBinding Padding}"
+					k_padding="{TemplateBinding k_padding}"
 					Foreground="{TemplateBinding Foreground}"/>
 			</Border>
 		</Grid>
@@ -3578,7 +3578,7 @@
 		<Setter Property="CaretBrush" Value="{StaticResource CaretBrush}"/>
 		<Setter Property="SelectionBrush" Value="{StaticResource SelectionBrush}"/>
 		<Setter Property="SelectionOpacity" Value="0.5"/>
-		<Setter Property="Padding" Value="2,4"/>
+		<Setter Property="k_padding" Value="2,4"/>
 		<Setter Property="KeyboardNavigation.TabNavigation" Value="None"/>
 		<Setter Property="AllowDrop" Value="true"/>
 		<Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden"/>
@@ -3651,7 +3651,7 @@
 	<!-- ComboBox Style -->
 	<Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource NoesisControlStyle}">
 		<Setter Property="MinHeight" Value="15"/>
-		<Setter Property="Padding" Value="2,4"/>
+		<Setter Property="k_padding" Value="2,4"/>
 		<Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
 		<Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
 		<Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
@@ -3914,7 +3914,7 @@
 							<Border x:Name="ContentBorder"
 								Grid.Column="0"
 								Margin="{TemplateBinding BorderThickness}"
-								Padding="{TemplateBinding Padding}"
+								k_padding="{TemplateBinding k_padding}"
 								Visibility="Visible">
 								<ContentPresenter x:Name="ContentHost"
 									HorizontalAlignment="Left"
@@ -3930,7 +3930,7 @@
 							<Border x:Name="EditableBorder"
 								Grid.Column="0"
 								Margin="{TemplateBinding BorderThickness}"
-								Padding="{TemplateBinding Padding}"
+								k_padding="{TemplateBinding k_padding}"
 								Visibility="Hidden">
 								<TextBox x:Name="PART_EditableTextBox"
 									VerticalAlignment="Center"
@@ -4007,7 +4007,7 @@
 		<Setter Property="Background" Value="Transparent"/>
 		<Setter Property="BorderBrush" Value="Transparent"/>
 		<Setter Property="BorderThickness" Value="0"/>
-		<Setter Property="Padding" Value="4"/>
+		<Setter Property="k_padding" Value="4"/>
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type ComboBoxItem}">
@@ -4034,7 +4034,7 @@
 							Background="{TemplateBinding Background}"
 							BorderBrush="{TemplateBinding BorderBrush}"
 							BorderThickness="{TemplateBinding BorderThickness}"
-							Padding="{TemplateBinding Padding}"/>
+							k_padding="{TemplateBinding k_padding}"/>
 						<Border x:Name="OverBorder">
 							<Border.Background>
 								<SolidColorBrush Color="{StaticResource PressOverlay}" Opacity="0"/>
@@ -4042,7 +4042,7 @@
 						</Border>
 						<Border x:Name="Border"
 							BorderThickness="{TemplateBinding BorderThickness}"
-							Padding="{TemplateBinding Padding}">
+							k_padding="{TemplateBinding k_padding}">
 							<ContentPresenter x:Name="ContentHost"
 								HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
 								VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
@@ -4145,7 +4145,7 @@
 		<Setter Property="Background" Value="Transparent"/>
 		<Setter Property="BorderBrush" Value="Transparent"/>
 		<Setter Property="BorderThickness" Value="0"/>
-		<Setter Property="Padding" Value="2,4"/>
+		<Setter Property="k_padding" Value="2,4"/>
 		<Setter Property="MinHeight" Value="15"/>
 		<Setter Property="Template">
 			<Setter.Value>
@@ -4291,7 +4291,7 @@
 							Width="{TemplateBinding MinHeight}"
 							Height="{TemplateBinding MinHeight}"
 							Margin="2,0,1,0"
-							Padding="3"
+							k_padding="3"
 							CornerRadius="1">
 							<Path x:Name="Arrow"
 								Data="M4,0 L8,4 4,8 Z"
@@ -4336,7 +4336,7 @@
 							Background="{TemplateBinding Background}"
 							BorderBrush="{TemplateBinding BorderBrush}"
 							BorderThickness="{TemplateBinding BorderThickness}"
-							Padding="{TemplateBinding Padding}">
+							k_padding="{TemplateBinding k_padding}">
 							<ContentPresenter x:Name="PART_Header"
 								ContentSource="Header"
 								HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}">
@@ -4419,7 +4419,7 @@
 						</Border>
 						<Border
 							BorderThickness="{TemplateBinding BorderThickness}"
-							Padding="{TemplateBinding Padding}">
+							k_padding="{TemplateBinding k_padding}">
 							<DockPanel IsItemsHost="True"/>
 						</Border>
 					</Grid>
@@ -4459,7 +4459,7 @@
 		<Setter Property="Background" Value="Transparent"/>
 		<Setter Property="BorderBrush" Value="{x:Null}"/>
 		<Setter Property="BorderThickness" Value="0"/>
-		<Setter Property="Padding" Value="4"/>
+		<Setter Property="k_padding" Value="4"/>
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type StatusBarItem}">
@@ -4482,7 +4482,7 @@
 							BorderThickness="{TemplateBinding BorderThickness}"/>
 						<Border
 							BorderThickness="{TemplateBinding BorderThickness}"
-							Padding="{TemplateBinding Padding}">
+							k_padding="{TemplateBinding k_padding}">
 							<ContentPresenter x:Name="ContentHost"
 								HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
 								VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
@@ -4718,7 +4718,7 @@
 										KeyboardNavigation.DirectionalNavigation="Cycle"
 										KeyboardNavigation.TabNavigation="Cycle"
 										WrapWidth="200"
-										Margin="{TemplateBinding Padding}"/>
+										Margin="{TemplateBinding k_padding}"/>
 								</Border>
 							</Popup>
 						</Grid>
@@ -4770,7 +4770,7 @@
 		<Setter Property="Background" Value="Transparent"/>
 		<Setter Property="BorderBrush" Value="Transparent"/>
 		<Setter Property="BorderThickness" Value="1"/>
-		<Setter Property="Padding" Value="2"/>
+		<Setter Property="k_padding" Value="2"/>
 		<Setter Property="Margin" Value="0,2,1,2"/>
 		<Setter Property="FocusVisualStyle" Value="{x:Null}"/>
 		<Setter Property="Template">
@@ -4833,7 +4833,7 @@
 						</Border>
 						<Border
 							BorderThickness="{TemplateBinding BorderThickness}"
-							Padding="{TemplateBinding Padding}">
+							k_padding="{TemplateBinding k_padding}">
 							<ContentPresenter
 								HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
 								VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
@@ -4849,7 +4849,7 @@
 		<Setter Property="Background" Value="Transparent"/>
 		<Setter Property="BorderBrush" Value="Transparent"/>
 		<Setter Property="BorderThickness" Value="1"/>
-		<Setter Property="Padding" Value="2"/>
+		<Setter Property="k_padding" Value="2"/>
 		<Setter Property="Margin" Value="0,2,1,2"/>
 		<Setter Property="ClickMode" Value="Press"/>
 		<Setter Property="FocusVisualStyle" Value="{x:Null}"/>
@@ -4941,7 +4941,7 @@
 						</Border>
 						<Border
 							BorderThickness="{TemplateBinding BorderThickness}"
-							Padding="{TemplateBinding Padding}">
+							k_padding="{TemplateBinding k_padding}">
 							<ContentPresenter
 								HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
 								VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
@@ -4957,7 +4957,7 @@
 		<Setter Property="Background" Value="Transparent"/>
 		<Setter Property="BorderBrush" Value="Transparent"/>
 		<Setter Property="BorderThickness" Value="1"/>
-		<Setter Property="Padding" Value="2"/>
+		<Setter Property="k_padding" Value="2"/>
 		<Setter Property="Margin" Value="0,2,1,2"/>
 		<Setter Property="ClickMode" Value="Press"/>
 		<Setter Property="FocusVisualStyle" Value="{x:Null}"/>
@@ -5049,7 +5049,7 @@
 						</Border>
 						<Border
 							BorderThickness="{TemplateBinding BorderThickness}"
-							Padding="{TemplateBinding Padding}">
+							k_padding="{TemplateBinding k_padding}">
 							<ContentPresenter
 								HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
 								VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
@@ -5065,7 +5065,7 @@
 		<Setter Property="Background" Value="Transparent"/>
 		<Setter Property="BorderBrush" Value="Transparent"/>
 		<Setter Property="BorderThickness" Value="1"/>
-		<Setter Property="Padding" Value="2"/>
+		<Setter Property="k_padding" Value="2"/>
 		<Setter Property="Margin" Value="0,2,1,2"/>
 		<Setter Property="ClickMode" Value="Press"/>
 		<Setter Property="FocusVisualStyle" Value="{x:Null}"/>
@@ -5157,7 +5157,7 @@
 						</Border>
 						<Border
 							BorderThickness="{TemplateBinding BorderThickness}"
-							Padding="{TemplateBinding Padding}">
+							k_padding="{TemplateBinding k_padding}">
 							<ContentPresenter
 								HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
 								VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
@@ -5175,7 +5175,7 @@
 		<Setter Property="CaretBrush" Value="{StaticResource CaretBrush}"/>
 		<Setter Property="SelectionBrush" Value="{StaticResource SelectionBrush}"/>
 		<Setter Property="SelectionOpacity" Value="0.5"/>
-		<Setter Property="Padding" Value="1,2"/>
+		<Setter Property="k_padding" Value="1,2"/>
 		<Setter Property="Margin" Value="0,2,1,2"/>
 		<Setter Property="Template">
 			<Setter.Value>
@@ -5258,7 +5258,7 @@
 							<ScrollViewer x:Name="PART_ContentHost"
 								Focusable="False"
 								Template="{StaticResource SimpleScrollViewer}"
-								Padding="{TemplateBinding Padding}"
+								k_padding="{TemplateBinding k_padding}"
 								Foreground="{TemplateBinding Foreground}"/>
 						</Border>
 					</Grid>
@@ -5272,7 +5272,7 @@
 		<Setter Property="Background" Value="{StaticResource TrackBgBrush}"/>
 		<Setter Property="BorderBrush" Value="Transparent"/>
 		<Setter Property="MinHeight" Value="15"/>
-		<Setter Property="Padding" Value="1,2"/>
+		<Setter Property="k_padding" Value="1,2"/>
 		<Setter Property="Margin" Value="0,2,1,2"/>
 		<Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
 		<Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
@@ -5511,7 +5511,7 @@
 							<Border x:Name="ContentBorder"
 								Grid.Column="0"
 								Margin="{TemplateBinding BorderThickness}"
-								Padding="{TemplateBinding Padding}"
+								k_padding="{TemplateBinding k_padding}"
 								Visibility="Visible">
 								<ContentPresenter x:Name="ContentHost"
 									HorizontalAlignment="Left"
@@ -5527,7 +5527,7 @@
 							<Border x:Name="EditableBorder"
 								Grid.Column="0"
 								Margin="{TemplateBinding BorderThickness}"
-								Padding="{TemplateBinding Padding}"
+								k_padding="{TemplateBinding k_padding}"
 								Visibility="Hidden">
 								<TextBox x:Name="PART_EditableTextBox"
 									VerticalAlignment="Center"
@@ -5607,7 +5607,7 @@
 			<Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource NoesisControlStyle}">
 				<Setter Property="Background" Value="Transparent"/>
 				<Setter Property="BorderBrush" Value="Transparent"/>
-				<Setter Property="Padding" Value="1,2"/>
+				<Setter Property="k_padding" Value="1,2"/>
 				<Setter Property="Margin" Value="0,2,1,2"/>
 				<Style.Triggers>
 					<Trigger Property="Role" Value="TopLevelHeader">
@@ -5672,7 +5672,7 @@
 										</Border>
 										<Border x:Name="Header"
 											BorderThickness="{TemplateBinding BorderThickness}"
-											Padding="{TemplateBinding Padding}">
+											k_padding="{TemplateBinding k_padding}">
 											<ContentPresenter x:Name="HeaderHost"
 												ContentSource="Header"
 												VerticalAlignment="Center">
@@ -5749,7 +5749,7 @@
 							BorderThickness="{TemplateBinding BorderThickness}"/>
 						<Border
 							BorderThickness="{TemplateBinding BorderThickness}"
-							Padding="{TemplateBinding Padding}">
+							k_padding="{TemplateBinding k_padding}">
 							<StackPanel IsItemsHost="True" Orientation="Horizontal"/>
 						</Border>
 					</Grid>
@@ -5883,7 +5883,7 @@
 
 	<!-- GridViewColumnHeader style -->
 	<Style TargetType="{x:Type GridViewColumnHeader}" BasedOn="{StaticResource NoesisControlStyle}">
-		<Setter Property="Padding" Value="2,4"/>
+		<Setter Property="k_padding" Value="2,4"/>
 		<Setter Property="HorizontalContentAlignment" Value="Center"/>
 		<Setter Property="VerticalContentAlignment" Value="Center"/>
 		<Style.Triggers>
@@ -5938,7 +5938,7 @@
 								<Border x:Name="BaseBorder"
 									Background="Transparent"/>
 								<Border x:Name="HeaderBorder"
-									Padding="{TemplateBinding Padding}">
+									k_padding="{TemplateBinding k_padding}">
 									<Border.Background>
 										<SolidColorBrush Color="{StaticResource OverOverlay}" Opacity="0"/>
 									</Border.Background>
@@ -5970,7 +5970,7 @@
 					</Setter.Value>
 				</Setter>
 			</Trigger>
-			<Trigger Property="Role" Value="Padding">
+			<Trigger Property="Role" Value="k_padding">
 				<Setter Property="Template">
 					<Setter.Value>
 						<ControlTemplate TargetType="{x:Type GridViewColumnHeader}">
@@ -6024,7 +6024,7 @@
 							BorderThickness="{TemplateBinding BorderThickness}">
 							<ScrollViewer x:Name="GridViewScroll"
 								Focusable="False"
-								Padding="{TemplateBinding Padding}"
+								k_padding="{TemplateBinding k_padding}"
 								Style="{StaticResource GridViewScrollViewerStyleKey}">
 								<ItemsPresenter />
 							</ScrollViewer>
@@ -6047,7 +6047,7 @@
 
 	<!-- ListViewItem style -->
 	<Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource NoesisControlStyle}">
-		<Setter Property="Padding" Value="2,4"/>
+		<Setter Property="k_padding" Value="2,4"/>
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type ListViewItem}">
@@ -6155,7 +6155,7 @@
 						</Border>
 						<Border x:Name="Border"
 							BorderThickness="1"
-							Padding="{TemplateBinding Padding}">
+							k_padding="{TemplateBinding k_padding}">
 							<GridViewRowPresenter x:Name="ContentHost"
 								HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
 								VerticalAlignment="{TemplateBinding VerticalContentAlignment}">

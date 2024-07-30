@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "context.hpp"
 
@@ -9,14 +9,14 @@
 #include "font_awesome_pro_5.hpp"
 #include "text_editor.hpp"
 #include "implot.h"
-#include "../pipeline.hpp"
+#include "../pipeline_cache.hpp"
 #include "../../platform/platform_subsystem.hpp"
 #include "../../scripting/convar.hpp"
 
 #include <vk_mem_alloc.h>
 
 namespace lu::imgui {
-    static convar<float> cv_font_size {"EditorUI.fontSize", 18.0f, scripting::convar_flags::read_only};
+    static convar<float> cv_font_size {"EditorUI.fontSize", {{18.0f}}, scripting::convar_flags::read_only};
 
     context::context() {
 #if USE_MIMALLOC
@@ -74,7 +74,7 @@ namespace lu::imgui {
         init_info.Device = device.get_logical_device();
         init_info.QueueFamily = vkb::ctx().get_swapchain().get_queue_node_index();
         init_info.Queue = device.get_graphics_queue();
-        init_info.PipelineCache = graphics::pipeline_registry::get().get_cache();
+        init_info.PipelineCache = graphics::pipeline_cache::get().get_cache();
         init_info.DescriptorPool = m_imgui_descriptor_pool;
         init_info.ImageCount = vkb::context::k_max_concurrent_frames;
         init_info.MinImageCount = vkb::context::k_max_concurrent_frames;

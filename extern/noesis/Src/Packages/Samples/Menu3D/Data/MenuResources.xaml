@@ -362,7 +362,7 @@
                     <VisualState x:Name="Indeterminate"/>
                 </VisualStateGroup>
             </VisualStateManager.VisualStateGroups>
-            <Border x:Name="Bd" BorderThickness="2" Padding="4,5,4,7" Width="36" Height="36" Background="Transparent">
+            <Border x:Name="Bd" BorderThickness="2" k_padding="4,5,4,7" Width="36" Height="36" Background="Transparent">
                 <Border.BorderBrush>
                     <SolidColorBrush Color="{StaticResource TransparentWhiteColor95}"/>
                 </Border.BorderBrush>

@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "_prelude.hpp"
 #include "../../core/buffered_sink.hpp"
@@ -28,7 +28,7 @@ LUA_INTEROP_API auto __lu_dd_gizmo_enable(const bool enable) -> void {
 }
 
 LUA_INTEROP_API auto __lu_dd_gizmo_manipulator(const lua_entity_id id, const int op, const int mode, const bool enable_snap, const double snap_x, const lua_vec3 color) -> void {
-    const flecs::entity ent {scene::get_active(), std::bit_cast<flecs::id_t>(id)};
+    const flecs::entity ent {scene::get_active(), eastl::bit_cast<flecs::id_t>(id)};
     if (!ent.has<const com::transform>()) [[unlikely]] {
         return;
     }
@@ -122,10 +122,10 @@ LUA_INTEROP_API auto __lu_dd_draw_native_log(const bool scroll) -> void {
     if (!buffered) [[unlikely]] {
         return;
     }
-    const std::span<const std::pair<spdlog::level::level_enum, std::string>> logs = buffered->get();
+    const eastl::span<const eastl::pair<spdlog::level::level_enum, eastl::string>> logs = buffered->get();
     using namespace ImGui;
     const float footer = GetStyle().ItemSpacing.y + GetFrameHeightWithSpacing();
-    const auto id = static_cast<ImGuiID>(std::bit_cast<std::uintptr_t>(logs.data()) ^ 0xfefefefe);
+    const auto id = static_cast<ImGuiID>(eastl::bit_cast<std::uintptr_t>(logs.data()) ^ 0xfefefefe);
     if (BeginChild(id, { .0F, -footer }, false)) {
         PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2 { 4.F, 1.F });
         ImGuiListClipper clipper {};
@@ -155,114 +155,6 @@ LUA_INTEROP_API auto __lu_dd_draw_native_log(const bool scroll) -> void {
     EndChild();
 }
 
-class cpu_profiler
-{
-public:
-    cpu_profiler()
-    {
-        frameIndex = 0;
-    }
-    size_t StartTask(std::string&& taskName, uint32_t taskColor)
-    {
-        legit::ProfilerTask task;
-        task.color = taskColor;
-        task.name = std::move(taskName);
-        task.startTime = GetCurrFrameTimeSeconds();
-        task.endTime = -1.0;
-        size_t taskId = profilerTasks.size();
-        profilerTasks.push_back(task);
-        return taskId;
-    }
-    legit::ProfilerTask EndTask(size_t taskId)
-    {
-        //assert(profilerTasks.size() == taskId + 1 && profilerTasks.back().endTime < 0.0);
-        profilerTasks.back().endTime = GetCurrFrameTimeSeconds();
-        return profilerTasks.back();
-    }
-    size_t StartFrame()
-    {
-        profilerTasks.clear();
-        frameStartTime = hrc::now();
-        return frameIndex;
-    }
-    void EndFrame(size_t frameId)
-    {
-        assert(frameId == frameIndex);
-        frameIndex++;
-    }
-    std::vector<legit::ProfilerTask>& GetProfilerTasks()
-    {
-        return profilerTasks;
-    }
-    double GetCurrFrameTimeSeconds()
-    {
-        return double(std::chrono::duration_cast<std::chrono::microseconds>(hrc::now() - frameStartTime).count()) / 1e6;
-    }
-private:
-    struct TaskHandleInfo
-    {
-        TaskHandleInfo(cpu_profiler *_profiler, size_t _taskId)
-        {
-            this->profiler = _profiler;
-            this->taskId = _taskId;
-        }
-        void Reset()
-        {
-            profiler->EndTask(taskId);
-        }
-        cpu_profiler *profiler;
-        size_t taskId;
-    };
-    struct FrameHandleInfo
-    {
-        FrameHandleInfo(cpu_profiler *_profiler, size_t _frameId)
-        {
-            this->profiler = _profiler;
-            this->frameId = _frameId;
-        }
-        void Reset()
-        {
-            profiler->EndFrame(frameId);
-        }
-        cpu_profiler *profiler;
-        size_t frameId;
-    };
-private:
-    using hrc = std::chrono::high_resolution_clock;
-    size_t frameIndex;
-    std::vector<legit::ProfilerTask> profilerTasks;
-    hrc::time_point frameStartTime;
-};
-
-static cpu_profiler s_cpuProfiler;
-
-auto profiler_start_task(std::string&& name, std::uint32_t color) -> std::size_t {
-    return s_cpuProfiler.StartTask(std::move(name), color);
-}
-
-auto profiler_end_task(const std::size_t id) -> void {
-    s_cpuProfiler.EndTask(id);
-}
-
-auto profiler_new_frame() -> void {
-    s_cpuProfiler.StartFrame();
-}
-
-auto profiler_get_frame_time() noexcept -> double {
-    return s_cpuProfiler.GetCurrFrameTimeSeconds();
-}
-
-auto profiler_submit_ex(std::string&& name, double start, double end, std::uint32_t color) -> void {
-    legit::ProfilerTask task {};
-    task.color = color;
-    task.name = std::move(name);
-    task.startTime = start;
-    task.endTime = end;
-    s_cpuProfiler.GetProfilerTasks().emplace_back(std::move(task));
-}
-
 LUA_INTEROP_API auto __lu_dd_draw_native_profiler() -> void {
-    static ImGuiUtils::ProfilersWindow s_profiler;
-    s_profiler.cpuGraph.LoadFrameData(s_cpuProfiler.GetProfilerTasks().data(), s_cpuProfiler.GetProfilerTasks().size());
-    s_profiler.Render();
+    panic("not implemented");
 }

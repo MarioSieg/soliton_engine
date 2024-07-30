@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #pragma once
 
@@ -6,8 +6,6 @@
 
 #include "vulkancore/prelude.hpp"
 #include "vulkancore/context.hpp"
-
-#include "sig.hpp"
 
 namespace lu::graphics {
     using render_bucket_callback = auto(const vk::CommandBuffer cmd_buf, const std::int32_t bucket_id, const std::int32_t num_threads, void* usr) -> void;
@@ -48,7 +46,7 @@ namespace lu::graphics {
         thread_shared_ctx& m_shared_ctx;
         std::thread m_thread {};
         vk::CommandPool m_command_pool {};
-        std::array<vk::CommandBuffer, vkb::context::k_max_concurrent_frames> m_command_buffers {};
+        eastl::array<vk::CommandBuffer, vkb::context::k_max_concurrent_frames> m_command_buffers {};
         vk::CommandBuffer m_active_command_buffer {};
     };
 
@@ -63,7 +61,7 @@ namespace lu::graphics {
     private:
         const std::int32_t m_num_threads {};
         thread_shared_ctx m_shared_ctx {};
-        std::unique_ptr<std::optional<render_thread>[]> m_threads {};
+        eastl::unique_ptr<eastl::optional<render_thread>[]> m_threads {};
         std::atomic_bool m_stop_source {};
     };
 }

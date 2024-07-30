@@ -15,7 +15,7 @@
   </Window.Background>
 
   <Viewbox>
-    <Border x:Name="myBorder" Width="400" Margin="50" Padding="20"
+    <Border x:Name="myBorder" Width="400" Margin="50" k_padding="20"
             Background="#801C1F21" BorderBrush="#40101611" BorderThickness="1" CornerRadius="5"
             HorizontalAlignment="Center" VerticalAlignment="Center">
       <StackPanel Orientation="Vertical">
@@ -29,7 +29,7 @@
         </DockPanel>
         <Button Content="Say Hello" Command="{Binding SayHelloCommand}"
                 CommandParameter="{Binding Text, ElementName=Param}"
-                FontSize="28" Margin="0,12,0,0" Padding="8"/>
+                FontSize="28" Margin="0,12,0,0" k_padding="8"/>
         <Viewbox Height="50" Margin="0,20,0,0">
           <TextBlock TextAlignment="Center" Text="{Binding Output}"
                      FontSize="28" Foreground="White"/>

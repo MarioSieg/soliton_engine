@@ -55,7 +55,7 @@
             <Border x:Name="BgOver" BorderBrush="{StaticResource BlendTutorialBorderOverBrush}" Background="{StaticResource BlendTutorialBackgroundOverBrush}" BorderThickness="1" Margin="1" CornerRadius="2" Opacity="0"/>
             <Border x:Name="BgPress" BorderBrush="{StaticResource BlendTutorialBorderPressBrush}" BorderThickness="1" Margin="1" Opacity="0" CornerRadius="2" Background="{StaticResource BlendTutorialBackgroundOverBrush}"/>
             <Border x:Name="BgFocused" BorderThickness="1" Margin="0" Opacity="0" CornerRadius="2" BorderBrush="{StaticResource BlendTutorialFocusedBrush}"/>
-            <ContentPresenter Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+            <ContentPresenter Margin="{TemplateBinding k_padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
         </Grid>
         <ControlTemplate.Triggers>
             <Trigger Property="IsFocused" Value="True">
@@ -89,7 +89,7 @@
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
         <Setter Property="Template" Value="{StaticResource BlendTutorialButtonTemplate}"/>
         <Setter Property="Foreground" Value="{StaticResource BlendTutorialForeground}"/>
-        <Setter Property="Padding" Value="10,5"/>
+        <Setter Property="k_padding" Value="10,5"/>
         <Setter Property="Background" Value="{StaticResource BlendTutorialBackgroundBrush}"/>
         <Setter Property="BorderBrush" Value="{StaticResource BlendTutorialBorderBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
@@ -145,8 +145,8 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <Border x:Name="ContentBorder" BorderBrush="{StaticResource BlendTutorialBorderBrush}" BorderThickness="1" Margin="0,-1,0,0" Grid.RowSpan="2" Grid.Row="1" CornerRadius="0,0,2,2" Background="{StaticResource BlendTutorialFormBackgroundBrush}" Padding="1" Visibility="Collapsed">
-                <ContentPresenter UseLayoutRounding="{TemplateBinding UseLayoutRounding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}"/>
+            <Border x:Name="ContentBorder" BorderBrush="{StaticResource BlendTutorialBorderBrush}" BorderThickness="1" Margin="0,-1,0,0" Grid.RowSpan="2" Grid.Row="1" CornerRadius="0,0,2,2" Background="{StaticResource BlendTutorialFormBackgroundBrush}" k_padding="1" Visibility="Collapsed">
+                <ContentPresenter UseLayoutRounding="{TemplateBinding UseLayoutRounding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding k_padding}"/>
             </Border>
             <Grid>
                 <ToggleButton Style="{StaticResource BlendTutorialExpanderButtonStyle}" IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"/>
@@ -167,7 +167,7 @@
         <Setter Property="BorderBrush" Value="{StaticResource BlendTutorialBorderBrush}"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="VerticalContentAlignment" Value="Stretch"/>
-        <Setter Property="Padding" Value="0"/>
+        <Setter Property="k_padding" Value="0"/>
     </Style>
     <ControlTemplate x:Key="BlendTutorialRadioButtonTemplate" TargetType="{x:Type RadioButton}">
         <ControlTemplate.Resources>
@@ -322,10 +322,10 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Border x:Name="BgFocused" Grid.ColumnSpan="2" BorderBrush="{StaticResource BlendTutorialFocusedBrush}" BorderThickness="1" CornerRadius="3" Margin="-2" Opacity="0"/>
-                <Border Grid.Column="0" CornerRadius="1.8,0,0,1.8" Background="{StaticResource BlendTutorialBackgroundOverBrush}" Padding="2">
+                <Border Grid.Column="0" CornerRadius="1.8,0,0,1.8" Background="{StaticResource BlendTutorialBackgroundOverBrush}" k_padding="2">
                     <TextBlock Text="{Binding Value, ElementName=PART_Track, StringFormat=F0}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
                 </Border>
-                <Border Grid.Column="1" Background="{StaticResource BlendTutorialFormBackgroundBrush}" CornerRadius="0,1.8,1.8,0" Margin="0" Padding="1" >
+                <Border Grid.Column="1" Background="{StaticResource BlendTutorialFormBackgroundBrush}" CornerRadius="0,1.8,1.8,0" Margin="0" k_padding="1" >
                     <Track x:Name="PART_Track">
                         <Track.Thumb>
                             <Thumb x:Name="thumb" Style="{StaticResource BlendTutorialSliderThumbStyle}"/>

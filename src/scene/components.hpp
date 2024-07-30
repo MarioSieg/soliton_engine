@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #pragma once
 
@@ -104,8 +104,8 @@ namespace lu::com {
     };
 
     struct mesh_renderer final {
-        std::vector<graphics::mesh*> meshes {};
-        std::vector<graphics::material*> materials {};
+        eastl::fixed_vector<graphics::mesh*, 4> meshes {};
+        eastl::fixed_vector<graphics::material*, 4> materials {};
         std::underlying_type_t<render_flags::$> flags = render_flags::none;
     };
 

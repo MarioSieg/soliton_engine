@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "_prelude.hpp"
 
@@ -19,7 +19,7 @@ static constinit int s_window_pos_x = 0;
 static constinit int s_window_pos_y = 0;
 static constinit int s_window_width = 1280;
 static constinit int s_window_height = 720;
-static std::string s_tmp_proxy;
+static eastl::string s_tmp_proxy;
 
 LUA_INTEROP_API auto __lu_panic(const char* const msg) -> void {
     panic(msg ? msg : "unknown error");
@@ -133,7 +133,7 @@ LUA_INTEROP_API auto __lu_app_get_draw_verts() -> std::uint32_t {
 }
 
 LUA_INTEROP_API auto __lu_app_host_get_cpu_name() -> const char* {
-    s_tmp_proxy = iware::cpu::model_name();
+    s_tmp_proxy = iware::cpu::model_name().c_str();
     return s_tmp_proxy.c_str();
 }
 
@@ -142,11 +142,11 @@ LUA_INTEROP_API auto __lu_app_host_get_gpu_name() -> const char* {
 }
 
 LUA_INTEROP_API auto __lu_app_host_get_gapi_name() -> const char* {
-    const std::uint32_t api = vkb::ctx().get_device().get_physical_device_props().apiVersion;
+    const volatile std::uint32_t api = vkb::ctx().get_device().get_physical_device_props().apiVersion;
     const std::uint32_t major = VK_API_VERSION_MAJOR(api);
     const std::uint32_t minor = VK_API_VERSION_MINOR(api);
     const std::uint32_t patch = VK_API_VERSION_PATCH(api);
-    s_tmp_proxy = fmt::format("Vulkan v.{}.{}.{}", major, minor, patch);
+    s_tmp_proxy = fmt::format("Vulkan v.{}.{}.{}", major, minor, patch).c_str();
     return s_tmp_proxy.c_str();
 }
 

@@ -1096,7 +1096,7 @@
                     </b:DataTrigger>
                 </b:Interaction.Triggers>
                 <StackPanel x:Name="HelpOptions" Orientation="Horizontal" UseLayoutRounding="False">
-                    <Border x:Name="SelectPC" CornerRadius="2" Background="#66C9B69C" Margin="0,5,5,5" Padding="4,0">
+                    <Border x:Name="SelectPC" CornerRadius="2" Background="#66C9B69C" Margin="0,5,5,5" k_padding="4,0">
                         <Path Data="M10,0 L10,4 0,4 M2,2 L0,4 2,6" Stroke="#7FFFFFFF" VerticalAlignment="Center" StrokeLineJoin="Round"/>
                     </Border>
                     <Grid x:Name="SelectXBOX" Margin="0,5,5,5">
@@ -1109,7 +1109,7 @@
                     </Grid>
                     <TextBlock Text="Select item" FontSize="10" Margin="0,0,5,0" VerticalAlignment="Center" Foreground="#7FFFFFFF"/>
                     <Rectangle Width="0.5" Fill="#3FFFFFFF" Margin="10,5"/>
-                    <Border x:Name="CancelPC" CornerRadius="2" Background="#66C9B69C" Margin="5" Padding="4,0">
+                    <Border x:Name="CancelPC" CornerRadius="2" Background="#66C9B69C" Margin="5" k_padding="4,0">
                         <TextBlock Text="ESC" FontFamily="Fonts/#Sequel" FontSize="8" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#7FFFFFFF"/>
                     </Border>
                     <Grid x:Name="CancelXBOX" Margin="0,5,5,5">

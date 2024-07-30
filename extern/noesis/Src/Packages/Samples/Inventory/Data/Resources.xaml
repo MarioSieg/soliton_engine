@@ -344,7 +344,7 @@
                 <Grid>
                     <Border x:Name="ItemInfo" CornerRadius="2"
                         BorderThickness="{Binding ActualWidth, ElementName=BorderRef}"
-                        Padding="{Binding ActualWidth, ElementName=MarginRef}" Background="#E532280F">
+                        k_padding="{Binding ActualWidth, ElementName=MarginRef}" Background="#E532280F">
                         <Border.BorderBrush>
                             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                                 <GradientStop Color="#66554222" Offset="0"/>
@@ -1113,7 +1113,7 @@
                                     ContentTemplate="{TemplateBinding ContentTemplate}"
                                     ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
                                     CanContentScroll="{TemplateBinding CanContentScroll}"
-                                    Margin="{TemplateBinding Padding}">
+                                    Margin="{TemplateBinding k_padding}">
                 <noesis:Element.Transform3D>
                     <noesis:CompositeTransform3D TranslateZ="10"/>
                 </noesis:Element.Transform3D>

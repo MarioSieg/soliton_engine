@@ -81,7 +81,7 @@
                         <ColumnDefinition Width="60"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.ColumnSpan="4" Text="Vertical Sliders" TextAlignment="Right" HorizontalAlignment="Center" FontWeight="Bold" Padding="0,0,0,8"/>
+                    <TextBlock Grid.ColumnSpan="4" Text="Vertical Sliders" TextAlignment="Right" HorizontalAlignment="Center" FontWeight="Bold" k_padding="0,0,0,8"/>
 
                     <Slider Grid.Row="1" Grid.Column="0" x:Name="SliderV0" Orientation="Vertical" TickPlacement="None" HorizontalAlignment="Center" Margin="8,0"/>
                     <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Text="{Binding Value, ElementName=SliderV0, StringFormat=F2}" Margin="0,4,8,0"/>

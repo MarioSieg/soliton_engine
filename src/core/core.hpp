@@ -1,22 +1,53 @@
-// Copyright (c) 2022 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #pragma once
 
+#include <EASTL/algorithm.h>
+#include <EASTL/array.h>
+#include <EASTL/bit.h>
+#include <EASTL/fixed_vector.h>
+#include <EASTL/vector.h>
+#include <EASTL/string.h>
+#include <EASTL/string_view.h>
+#include <EASTL/span.h>
+#include <EASTL/optional.h>
+#include <EASTL/variant.h>
+#include <EASTL/tuple.h>
+#include <EASTL/functional.h>
+#include <EASTL/numeric_limits.h>
+#include <EASTL/sort.h>
+#include <EASTL/list.h>
+#include <EASTL/shared_ptr.h>
+#include <EASTL/weak_ptr.h>
+#include <EASTL/unique_ptr.h>
+#include <EASTL/chrono.h>
+#include <EASTL/initializer_list.h>
+
+#include <ankerl/unordered_dense.h>
+
+#include "crc32.hpp"
+#include "delegate.hpp"
+#include "exit_guard.hpp"
+#include "hash.hpp"
+#include "lazy.hpp"
+#include "lazy_flex.hpp"
+#include "move_copy_base.hpp"
 #include "platform.hpp"
+#include "spsc_queue.hpp"
+#include "stopwatch.hpp"
+#include "thread_signal.hpp"
+#include "utils.hpp"
 
-#include <array>
-#include <string>
-#include <span>
-#include <vector>
+#define USE_MIMALLOC 1
 
-#define FMT_CONSTEVAL constexpr
-#include <spdlog/spdlog.h>
+template <>
+struct ankerl::unordered_dense::hash<eastl::string> {
+    using is_avalanching = void;
 
-#define log_info SPDLOG_INFO
-#define log_warn SPDLOG_WARN
-#define log_error SPDLOG_ERROR
-#define log_critical SPDLOG_CRITICAL
-#define print_sep() log_info("------------------------------------------------------------")
+    [[nodiscard]] auto operator()(const eastl::string& x) const noexcept -> std::uint64_t {
+        return detail::wyhash::hash(x.data(), x.size());
+    }
+};
 
 namespace lu {
     [[nodiscard]] consteval auto make_version(const std::uint8_t major, const std::uint8_t minor) -> std::uint32_t { return (static_cast<std::uint32_t>(major)<<8)|minor; }
@@ -24,56 +55,4 @@ namespace lu {
     [[nodiscard]] consteval auto minor_version(const std::uint32_t v) -> std::uint8_t { return v&0xff; }
 
     constexpr std::uint32_t k_lunam_engine_v = make_version(0, 3); // current engine version (must be known at compile time and we don't use patches yet)
-
-    class no_copy {
-    public:
-        constexpr no_copy() = default;
-        constexpr no_copy(const no_copy&) = delete;
-        constexpr auto operator = (const no_copy&) -> no_copy& = delete;
-        constexpr no_copy(no_copy&&) = default;
-        constexpr auto operator = (no_copy&&) -> no_copy& = default;
-        ~no_copy() = default;
-    };
-
-    class no_move {
-    public:
-        constexpr no_move() = default;
-        constexpr no_move(no_move&&) = delete;
-        constexpr auto operator = (no_move&&) -> no_move& = delete;
-        constexpr no_move(const no_move&) = default;
-        constexpr auto operator = (const no_move&) -> no_move& = default;
-        ~no_move() = default;
-    };
-
-    template <typename F>
-    class exit_guard final {
-    public:
-        constexpr explicit exit_guard(F&& f) noexcept : m_f{std::forward<F>(f)} {}
-        exit_guard(const exit_guard&) = delete;
-        exit_guard(exit_guard&&) = delete;
-        auto operator = (const exit_guard&) -> exit_guard& = delete;
-        auto operator = (exit_guard&&) -> exit_guard& = delete;
-        ~exit_guard() {
-            std::invoke(m_f);
-        }
-
-    private:
-        const F m_f;
-    };
-
-    [[noreturn]] extern auto panic_impl(std::string&& message) -> void;
-
-    template <typename... Args>
-    [[noreturn]] auto panic(std::string_view message, Args&&... args) -> void {
-        panic_impl(fmt::format(message, std::forward<Args>(args)...));
-    }
-
-#define passert(expr) \
-	do { \
-		if (!(expr)) [[unlikely]] { \
-			::lu::panic("Assertion failed: {} in {}:{}", #expr, __FILE__, __LINE__); \
-		} \
-	} while (false)
-
-#define USE_MIMALLOC 1
 }

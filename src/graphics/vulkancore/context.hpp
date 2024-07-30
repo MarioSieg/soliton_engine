@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #pragma once
 
@@ -86,7 +86,7 @@ namespace lu::vkb {
                 panic("Invalid queue type");
             }
             vkcheck(queue.submit(1, &submit_info, fence));// TODO: not thread safe, use transfer queue
-            vkcheck(device.waitForFences(1, &fence, vk::True, std::numeric_limits<std::uint64_t>::max()));
+            vkcheck(device.waitForFences(1, &fence, vk::True, eastl::numeric_limits<std::uint64_t>::max()));
             device.destroyFence(fence, vkb::get_alloc());
             if constexpr (Owned) {
                 vk::CommandPool pool {};
@@ -103,14 +103,14 @@ namespace lu::vkb {
             }
         }
 
-        [[nodiscard]] auto get_command_buffers() const noexcept -> std::span<const vk::CommandBuffer> { return m_command_buffers; }
+        [[nodiscard]] auto get_command_buffers() const noexcept -> eastl::span<const vk::CommandBuffer> { return m_command_buffers; }
         [[nodiscard]] auto get_current_frame() const noexcept -> std::uint32_t { return m_current_frame; }
         [[nodiscard]] auto get_image_index() const noexcept -> std::uint32_t { return m_image_index; }
         [[nodiscard]] auto get_pipeline_cache() const noexcept -> vk::PipelineCache { return m_pipeline_cache; }
         [[nodiscard]] auto get_imgui_descriptor_pool() const noexcept -> vk::DescriptorPool { return m_imgui_descriptor_pool; }
         [[nodiscard]] auto get_scene_render_pass() const noexcept -> vk::RenderPass { return m_scene_render_pass; }
         [[nodiscard]] auto get_ui_render_pass() const noexcept -> vk::RenderPass { return m_ui_render_pass; }
-        [[nodiscard]] auto get_framebuffers() const noexcept -> std::span<const vk::Framebuffer> { return m_framebuffers; }
+        [[nodiscard]] auto get_framebuffers() const noexcept -> eastl::span<const vk::Framebuffer> { return m_framebuffers; }
         [[nodiscard]] auto get_swapchain_image() const noexcept -> vk::Image { return m_swapchain->get_images()[m_image_index]; }
         [[nodiscard]] auto get_swapchain_image_view() const noexcept -> vk::ImageView { return m_swapchain->get_buffer(m_image_index).view; }
         [[nodiscard]] auto get_swapchain_image_format() const noexcept -> vk::Format { return m_swapchain->get_format(); }
@@ -151,21 +151,21 @@ namespace lu::vkb {
         auto destroy_command_buffers() const -> void;
         auto destroy_sync_prims() const -> void;
 
-        inline constinit static std::unique_ptr<context> s_instance {};
+        inline static eastl::unique_ptr<context> s_instance {};
         GLFWwindow* m_window = nullptr;
         std::uint32_t m_width = 0;
         std::uint32_t m_height = 0;
-        std::optional<device> m_device;
-        std::optional<swapchain> m_swapchain;
+        eastl::optional<device> m_device;
+        eastl::optional<swapchain> m_swapchain;
         struct {
-            std::array<vk::Semaphore, k_max_concurrent_frames> present_complete {}; // Swap chain image presentation
-            std::array<vk::Semaphore, k_max_concurrent_frames> render_complete {}; // Command buffer submission and execution
+            eastl::array<vk::Semaphore, k_max_concurrent_frames> present_complete {}; // Swap chain image presentation
+            eastl::array<vk::Semaphore, k_max_concurrent_frames> render_complete {}; // Command buffer submission and execution
         } m_semaphores {}; // Semaphores are used to coordinate operations within the graphics queue and ensure correct command ordering
         vk::CommandPool m_graphics_command_pool {};
         vk::CommandPool m_compute_command_pool {};
         vk::CommandPool m_transfer_command_pool {};
-        std::array<vk::CommandBuffer, k_max_concurrent_frames> m_command_buffers {}; // Command buffers used for rendering
-        std::array<vk::Fence, k_max_concurrent_frames> m_wait_fences {}; // Wait fences to sync command buffer access
+        eastl::array<vk::CommandBuffer, k_max_concurrent_frames> m_command_buffers {}; // Command buffers used for rendering
+        eastl::array<vk::Fence, k_max_concurrent_frames> m_wait_fences {}; // Wait fences to sync command buffer access
         struct {
             vk::Image image {};
             vk::ImageView view {};
@@ -173,7 +173,7 @@ namespace lu::vkb {
         } m_depth_stencil {};
         vk::RenderPass m_scene_render_pass {};
         vk::RenderPass m_ui_render_pass {};
-        std::vector<vk::Framebuffer> m_framebuffers {};
+        eastl::vector<vk::Framebuffer> m_framebuffers {};
         vk::PipelineCache m_pipeline_cache {};
         std::uint32_t m_current_frame = 0; // To select the correct sync objects, we need to keep track of the current frame
         std::uint32_t m_image_index = 0; // The current swap chain image index
@@ -190,7 +190,7 @@ namespace lu::vkb {
                 VmaAllocation memory {};
             } depth {};
         } m_msaa_target {};
-        std::array<vk::ClearValue, 3> m_clear_values {};
+        eastl::array<vk::ClearValue, 3> m_clear_values {};
     };
 
     // Get global vulkan context wrapper class

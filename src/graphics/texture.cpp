@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "texture.hpp"
 
@@ -33,7 +33,7 @@ namespace lu::graphics {
         VkFormat fmt_srgb {};
         VkComponentMapping mapping {};
     };
-    extern const std::array<texture_format_info, 96> k_texture_format_map;
+    extern const eastl::array<texture_format_info, 96> k_texture_format_map;
 
 #if USE_MIMALLOC
     static constexpr std::size_t k_natural_align = 8;
@@ -73,17 +73,18 @@ namespace lu::graphics {
 #endif
     }
 
-    texture::texture(std::string&& asset_path) : asset {assetmgr::asset_source::filesystem, std::move(asset_path)} {
-        std::vector<std::byte> texels {};
+    texture::texture(eastl::string&& asset_path) : asset {assetmgr::asset_source::filesystem, std::move(asset_path)} {
+        log_info("Loading texture '{}'", get_asset_path().c_str());
+        eastl::vector<std::byte> texels {};
         assetmgr::with_primary_accessor_lock([&](assetmgr::asset_accessor &acc) {
             if (!acc.load_bin_file(get_asset_path().c_str(), texels)) {
-                panic("Failed to load texture '{}'", get_asset_path());
+                panic("Failed to load texture '{}'", get_asset_path().c_str());
             }
         });
         parse_from_raw_memory(texels);
     }
 
-    texture::texture(const std::span<const std::byte> raw_mem) : asset {assetmgr::asset_source::memory} {
+    texture::texture(const eastl::span<const std::byte> raw_mem) : asset {assetmgr::asset_source::memory} {
         parse_from_raw_memory(raw_mem);
     }
 
@@ -243,8 +244,8 @@ namespace lu::graphics {
         create_sampler();
     }
 
-    auto texture::parse_from_raw_memory(const std::span<const std::byte> texels) -> void {
-        passert(texels.size() <= std::numeric_limits<std::uint32_t>::max());
+    auto texture::parse_from_raw_memory(const eastl::span<const std::byte> texels) -> void {
+        passert(texels.size() <= eastl::numeric_limits<std::uint32_t>::max());
         bimg::ImageContainer* image = bimg::imageParse(get_tex_alloc(), texels.data(), static_cast<std::uint32_t>(texels.size()));
         passert(image != nullptr);
 
@@ -267,7 +268,7 @@ namespace lu::graphics {
         );
         bool conversion_required = !is_format_supported; // if the hardware doesn't support the format, we'll convert it to a supported format
         if (!is_format_supported || (image->m_numMips <= 1 && !is_format_mipgen_supported)) {
-            const auto now = std::chrono::high_resolution_clock::now();
+            const auto now = eastl::chrono::high_resolution_clock::now();
 
             bimg::ImageContainer* original = image;
             if (k_enable_simd_cvt && original->m_format == bimg::TextureFormat::RGB8) { // User faster SIMD for conversion of common formats
@@ -323,7 +324,7 @@ namespace lu::graphics {
                 "Texture format not supported by GPU: {} converted to fallback format {} in {:.03f}ms",
                 string_VkFormat(static_cast<VkFormat>(format)),
                 string_VkFormat(k_texture_format_map[k_fallback_format].fmt),
-                std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(std::chrono::high_resolution_clock::now() - now).count()
+                eastl::chrono::duration_cast<eastl::chrono::duration<double, std::milli>>(eastl::chrono::high_resolution_clock::now() - now).count()
             );
             format = static_cast<vk::Format>(k_texture_format_map[k_fallback_format].fmt);
         }
@@ -387,7 +388,7 @@ namespace lu::graphics {
             );
         }
         // copy all mip levels
-        std::vector<vk::BufferImageCopy> regions {};
+        eastl::vector<vk::BufferImageCopy> regions {};
         regions.reserve(m_mip_levels);
         std::size_t offset = 0;
         // To remove loop and replace with sub-viewport blitting inside VRAM (safes m_mip_levels-1 copies from host to GPU)
@@ -615,7 +616,7 @@ namespace lu::graphics {
         );
     }
 
-    const std::array<texture_format_info, 96> k_texture_format_map = {
+    const eastl::array<texture_format_info, 96> k_texture_format_map = {
         #define $_ VK_COMPONENT_SWIZZLE_IDENTITY
         #define $0 VK_COMPONENT_SWIZZLE_ZERO
         #define $1 VK_COMPONENT_SWIZZLE_ONE

@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "mesh.hpp"
 #include "vulkancore/context.hpp"
@@ -8,12 +8,12 @@
 #include <filesystem>
 
 #include "material.hpp"
-#include "mesh_utils.hpp"
+#include "utils/assimp_utils.hpp"
 
 namespace lu::graphics {
 	using namespace DirectX;
 
-	static auto compute_aabb(BoundingBox& aabb, const std::span<const mesh::vertex> vertices) noexcept -> void {
+	static auto compute_aabb(BoundingBox& aabb, const eastl::span<const mesh::vertex> vertices) noexcept -> void {
 		DirectX::XMVECTOR min = XMVectorReplicate(1e10f);
         DirectX::XMVECTOR max = XMVectorReplicate(-1e10f);
 		for (const auto& v : vertices) {
@@ -25,8 +25,8 @@ namespace lu::graphics {
 	}
 
 	static auto load_primitive(
-		std::vector<mesh::vertex>& vertices,
-		std::vector<mesh::index>& indices,
+		eastl::vector<mesh::vertex>& vertices,
+		eastl::vector<mesh::index>& indices,
 		const aiMesh* mesh,
 		mesh::primitive& prim_info,
 		BoundingBox& full_aabb
@@ -35,16 +35,16 @@ namespace lu::graphics {
 		prim_info.index_start = indices.size();
 		for (unsigned i = 0; i < mesh->mNumVertices; ++i) {
 			mesh::vertex v {};
-			v.position = std::bit_cast<XMFLOAT3>(mesh->mVertices[i]);
+			v.position = eastl::bit_cast<XMFLOAT3>(mesh->mVertices[i]);
 			if (mesh->HasNormals()) {
-				v.normal = std::bit_cast<XMFLOAT3>(mesh->mNormals[i]);
+				v.normal = eastl::bit_cast<XMFLOAT3>(mesh->mNormals[i]);
 			}
 			if (mesh->HasTextureCoords(0)) {
 				v.uv = XMFLOAT2{mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
 			}
 			if (mesh->HasTangentsAndBitangents()) {
-				v.tangent = std::bit_cast<XMFLOAT3>(mesh->mTangents[i]);
-				v.bitangent = std::bit_cast<XMFLOAT3>(mesh->mBitangents[i]);
+				v.tangent = eastl::bit_cast<XMFLOAT3>(mesh->mTangents[i]);
+				v.bitangent = eastl::bit_cast<XMFLOAT3>(mesh->mBitangents[i]);
 			}
 			vertices.emplace_back(v);
 		}
@@ -69,33 +69,36 @@ namespace lu::graphics {
 		compute_aabb(prim_info.aabb, {vertices.data() + prim_info.vertex_start, prim_info.vertex_count});
 	}
 
-	mesh::mesh(std::string&& path) : asset{assetmgr::asset_source::filesystem, std::move(path)} {
+	mesh::mesh(eastl::string&& path) : asset{assetmgr::asset_source::filesystem, std::move(path)} {
+        log_info("Loading mesh from file '{}'", get_asset_path().c_str());
+
         Assimp::DefaultLogger::create("", Assimp::Logger::NORMAL);
         Assimp::DefaultLogger::get()->attachStream(new assimp_logger {}, Assimp::Logger::Info | Assimp::Logger::Err | Assimp::Logger::Warn);
 
-        std::vector<std::byte> blob {};
+        eastl::vector<std::byte> blob {};
         assetmgr::with_primary_accessor_lock([&](assetmgr::asset_accessor &accessor) {
             if (!accessor.load_bin_file(get_asset_path().c_str(), blob)) {
-                panic("Failed to load mesh from file '{}'", get_asset_path());
+                panic("Failed to load mesh from file '{}'", get_asset_path().c_str());
             }
         });
 
         Assimp::Importer importer {};
         const auto load_flags = k_import_flags;
+        importer.SetIOHandler(new graphics::lunam_assimp_io_system {});
         passert(importer.ValidateFlags(load_flags));
-        std::string hint {};
-        auto a_path {std::filesystem::path{get_asset_path()}};
+        eastl::string hint {};
+        auto a_path {std::filesystem::path{get_asset_path().c_str()}};
         if (a_path.has_extension()) {
-            hint = a_path.extension().string();
+            hint = a_path.extension().string().c_str();
         }
         const aiScene* scene = importer.ReadFileFromMemory(blob.data(), blob.size(), load_flags, hint.empty() ? nullptr : hint.c_str());
         if (!scene || !scene->mNumMeshes) [[unlikely]] {
-            panic("Failed to load scene from file '{}': {}", get_asset_path(), importer.GetErrorString());
+            panic("Failed to load scene from file '{}': {}", get_asset_path().c_str(), importer.GetErrorString());
         }
 
 		const aiNode* node = scene->mRootNode;
         if (!node || node->mNumMeshes == 0) [[unlikely]] { // search for other nodes with meshes
-            std::function<auto(const aiNode*) -> const aiNode*> search_for_meshes = [&search_for_meshes](const aiNode* const node) -> const aiNode* {
+            eastl::function<auto(const aiNode*) -> const aiNode*> search_for_meshes = [&search_for_meshes](const aiNode* const node) -> const aiNode* {
                 for (unsigned i = 0; i < node->mNumChildren; ++i) {
                     auto* local_node = node->mChildren[i];
                     if (local_node && local_node->mNumMeshes > 0) {
@@ -113,23 +116,23 @@ namespace lu::graphics {
         }
 
         const aiMesh* mesh = scene->mMeshes[node->mMeshes[0]];
-        std::span span {&mesh, 1};
+        eastl::span span {&mesh, 1};
 
 		create_from_assimp(span);
 	}
 
-    mesh::mesh(const std::span<const aiMesh*> meshes) : asset{assetmgr::asset_source::memory} {
+    mesh::mesh(const eastl::span<const aiMesh*> meshes) : asset{assetmgr::asset_source::memory} {
 		create_from_assimp(meshes);
     }
 
-    auto mesh::create_from_assimp(const std::span<const aiMesh*> meshes) -> void {
+    auto mesh::create_from_assimp(const eastl::span<const aiMesh*> meshes) -> void {
 		std::size_t num_vertices = 0, num_indices = 0;
 		for (const aiMesh* mesh : meshes) {
 			num_vertices += mesh->mNumVertices;
 			num_indices += mesh->mNumFaces * 3;
 		}
-		std::vector<vertex> vertices {};
-		std::vector<index> indices {};
+		eastl::vector<vertex> vertices {};
+		eastl::vector<index> indices {};
 		vertices.reserve(num_vertices);
 		indices.reserve(num_indices);
 		m_primitives.reserve(meshes.size());
@@ -148,8 +151,8 @@ namespace lu::graphics {
 			+ m_primitives.size() * sizeof(primitive);
     }
 
-    auto mesh::create_buffers(const std::span<const vertex> vertices, const std::span<const index> indices) -> void {
-    	passert(indices.size() <= std::numeric_limits<index>::max());
+    auto mesh::create_buffers(const eastl::span<const vertex> vertices, const eastl::span<const index> indices) -> void {
+    	passert(indices.size() <= eastl::numeric_limits<index>::max());
 
     	m_vertex_buffer.create(
 			vertices.size() * sizeof(vertices[0]),
@@ -161,11 +164,11 @@ namespace lu::graphics {
 		);
         m_vertex_count = static_cast<std::uint32_t>(vertices.size());
 
-    	if (indices.size() <= std::numeric_limits<std::uint16_t>::max()) { // 16 bit indices
-    		std::vector<std::uint16_t> indices16 {};
+    	if (indices.size() <= eastl::numeric_limits<std::uint16_t>::max()) { // 16 bit indices
+    		eastl::vector<std::uint16_t> indices16 {};
     		indices16.reserve(indices.size());
     		for (const index idx : indices) {
-                if (idx > std::numeric_limits<std::uint16_t>::max()) [[unlikely]] {
+                if (idx > eastl::numeric_limits<std::uint16_t>::max()) [[unlikely]] {
                     log_warn("Index {} is greater than 16 bit limit, switching to 32 bit indices", idx);
                     goto index32;
                 }
@@ -196,9 +199,9 @@ namespace lu::graphics {
     	}
     }
 
-    auto mesh::create_collision_mesh(const std::span<const vertex> vertices, const std::span<const index> indices) -> void {
+    auto mesh::create_collision_mesh(const eastl::span<const vertex> vertices, const eastl::span<const index> indices) -> void {
 		for (const vertex& v : vertices) {
-			verts.emplace_back(std::bit_cast<JPH::Float3>(v.position));
+			verts.emplace_back(eastl::bit_cast<JPH::Float3>(v.position));
 		}
 		triangles.reserve(indices.size() / 3);
 		for (std::size_t i = 0; i < indices.size(); i += 3) {

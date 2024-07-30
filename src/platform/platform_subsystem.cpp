@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "platform_subsystem.hpp"
 
@@ -87,7 +87,7 @@ namespace lu::platform {
     }
 
     #if CPU_X86 // TODO: AArch64
-    static constexpr std::array<std::string_view, 38> k_amd64_extensions = {
+    static constexpr eastl::array<std::string_view, 38> k_amd64_extensions = {
         "3DNow",
         "3DNow Extended",
         "MMX",
@@ -267,12 +267,12 @@ namespace lu::platform {
 
     auto dump_loaded_dylibs() -> void {
     #if PLATFORM_WINDOWS
-        std::array<HMODULE, 8192 << 2> hMods {};
+        eastl::array<HMODULE, 8192 << 2> hMods {};
         HANDLE hProcess = GetCurrentProcess();
         DWORD cbNeeded;
         if (EnumProcessModules(hProcess, hMods.data(), sizeof(hMods), &cbNeeded)) {
             for (UINT i = 0; i < cbNeeded / sizeof(HMODULE); ++i) {
-                std::array<TCHAR, MAX_PATH> szModName {};
+                eastl::array<TCHAR, MAX_PATH> szModName {};
                 if (GetModuleFileNameEx(hProcess, hMods[i], szModName.data(), sizeof(szModName) / sizeof(TCHAR))) {
                     log_info("{}", szModName.data());
                 }
@@ -305,46 +305,32 @@ namespace lu::platform {
     }
 
     static auto glfw_cursor_pos_callback(GLFWwindow* window, double x, double y) noexcept -> void {
-        for (auto* const cb : platform_subsystem::s_cursor_pos_callbacks) {
-            cb(window, x, y);
-        }
+        platform_subsystem::s_cursor_pos_callbacks(window, x, y);
     }
     static auto glfw_scroll_callback(GLFWwindow* window, double x, double y) noexcept -> void {
-        for (auto* const cb : platform_subsystem::s_scroll_callbacks) {
-            cb(window, x, y);
-        }
+        platform_subsystem::s_scroll_callbacks(window, x, y);
     }
     static auto glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) noexcept -> void {
-        for (auto* const cb : platform_subsystem::s_key_callbacks) {
-            cb(window, key, scancode, action, mods);
-        }
+        platform_subsystem::s_key_callbacks(window, key, scancode, action, mods);
     }
     static auto glfw_char_callback(GLFWwindow* window, unsigned int codepoint) noexcept -> void {
-        for (auto* const cb : platform_subsystem::s_char_callbacks) {
-            cb(window, codepoint);
-        }
+        platform_subsystem::s_char_callbacks(window, codepoint);
     }
     static auto glfw_mouse_button_callback(GLFWwindow* window, int button, int action, int mods) noexcept -> void {
-        for (auto* const cb : platform_subsystem::s_mouse_button_callbacks) {
-            cb(window, button, action, mods);
-        }
+        platform_subsystem::s_mouse_button_callbacks(window, button, action, mods);
     }
     static auto glfw_cursor_enter_callback(GLFWwindow* window, int entered) noexcept -> void {
-        for (auto* const cb : platform_subsystem::s_cursor_enter_callbacks) {
-            cb(window, entered);
-        }
+        platform_subsystem::s_cursor_enter_callbacks(window, entered);
     }
     static auto glfw_framebuffer_size_callback(GLFWwindow* window, int w, int h) noexcept -> void {
-        for (auto* const cb : platform_subsystem::s_framebuffer_size_callbacks) {
-            cb(window, w, h);
-        }
+        platform_subsystem::s_framebuffer_size_callbacks(window, w, h);
     }
 
-    static convar<int> cv_default_width {"Window.defaultWidth", 1280, scripting::convar_flags::read_only};
-    static convar<int> cv_default_height {"Window.defaultHeight", 720, scripting::convar_flags::read_only};
-    static convar<int> cv_min_width {"Window.minWidth", 640, scripting::convar_flags::read_only};
-    static convar<int> cv_min_height {"Window.minHeight", 480, scripting::convar_flags::read_only};
-    static convar<std::string> cv_window_icon {"Window.icon", "assets/icons/logo.png", scripting::convar_flags::read_only};
+    static convar<int> cv_default_width {"Window.defaultWidth", {{1280}}, scripting::convar_flags::read_only};
+    static convar<int> cv_default_height {"Window.defaultHeight", {{720}}, scripting::convar_flags::read_only};
+    static convar<int> cv_min_width {"Window.minWidth", {{640}}, scripting::convar_flags::read_only};
+    static convar<int> cv_min_height {"Window.minHeight", {{480}}, scripting::convar_flags::read_only};
+    static convar<eastl::string> cv_window_icon {"Window.icon", {{"assets/icons/logo.png"}}, scripting::convar_flags::read_only};
 
     platform_subsystem::platform_subsystem() : subsystem{"Platform"} {
         passert(s_window == nullptr);
@@ -409,7 +395,7 @@ namespace lu::platform {
         glfwSetFramebufferSizeCallback(s_window, &glfw_framebuffer_size_callback);
 
         // setup framebuffer resize hook
-        s_framebuffer_size_callbacks.emplace_back(&proxy_resize_hook);
+        s_framebuffer_size_callbacks += &proxy_resize_hook;
 
         // query monitor and print some info
         constexpr auto print_mon_info = [](GLFWmonitor* mon) {
@@ -452,8 +438,8 @@ namespace lu::platform {
 
         // set window icon
         if constexpr (!PLATFORM_OSX) { // Cocoa - regular windows do not have icons on macOS
-            std::vector<std::byte> pixel_buf {};
-            const std::string k_window_icon_file = cv_window_icon();
+            eastl::vector<std::byte> pixel_buf {};
+            const eastl::string k_window_icon_file = cv_window_icon();
             bool success = false;
             assetmgr::with_primary_accessor_lock([&](assetmgr::asset_accessor& acc) {
                 success = acc.load_bin_file(k_window_icon_file.c_str(), pixel_buf);

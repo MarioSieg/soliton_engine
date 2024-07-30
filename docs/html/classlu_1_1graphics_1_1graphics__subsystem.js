@@ -28,7 +28,7 @@ var classlu_1_1graphics_1_1graphics__subsystem =
     [ "render_scene_bucket", "classlu_1_1graphics_1_1graphics__subsystem.html#aaff12706a74b6a357d6428f27955aea5", null ],
     [ "render_uis", "classlu_1_1graphics_1_1graphics__subsystem.html#a613cb22548ec51c40272615c1e372787", null ],
     [ "update_main_camera", "classlu_1_1graphics_1_1graphics__subsystem.html#aac880540199d4cadce08a51ff31834a5", null ],
-    [ "pipeline_base", "classlu_1_1graphics_1_1graphics__subsystem.html#a0a6c5e8c04abcfdf4959fd9914ebdfbe", null ],
+    [ "graphics_pipeline", "classlu_1_1graphics_1_1graphics__subsystem.html#acd1edaeefd429fe0479cb3f8c5d01469", null ],
     [ "m_cmd", "classlu_1_1graphics_1_1graphics__subsystem.html#abc80bf434d41cc35f96ef2513d38daf3", null ],
     [ "m_debugdraw", "classlu_1_1graphics_1_1graphics__subsystem.html#a485e51c183c7dba8cf6a14892e0e0620", null ],
     [ "m_descriptor_pool", "classlu_1_1graphics_1_1graphics__subsystem.html#ab8a99b20a73eb820200de32d6e04a140", null ],

@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "assetmgr.hpp"
 
@@ -6,7 +6,7 @@
 #include <filesystem>
 
 namespace lu::assetmgr {
-    static std::optional<asset_accessor> s_primary_accessor {};
+    static eastl::optional<asset_accessor> s_primary_accessor {};
     static std::mutex s_mtx {};
     constinit std::atomic_size_t s_asset_requests = 0;
     constinit std::atomic_size_t s_asset_requests_failed = 0;
@@ -20,9 +20,9 @@ namespace lu::assetmgr {
         }
         log_info("Initializing VFS asset manager");
         for (const auto [fs, vfs] : k_vfs_mounts) {
-            log_info("VFS Mounting point '{}' -> '{}", fs, vfs);
-            if (!std::filesystem::exists(fs)) {
-                panic("Physical asset root VFS '{}' does not exist", fs);
+            log_info("VFS Mounting point '{}' -> '{}", fs.data(), vfs.data());
+            if (!std::filesystem::exists(fs.data())) {
+                panic("Physical asset root VFS '{}' does not exist", fs.data());
             }
         }
         s_is_initialized.store(true, std::memory_order_relaxed);
@@ -50,7 +50,7 @@ namespace lu::assetmgr {
         return s_total_bytes_loaded.load(std::memory_order_relaxed);
     }
 
-    auto with_primary_accessor_lock(const std::function<auto(asset_accessor& acc) -> void>& callback) -> void {
+    auto with_primary_accessor_lock(const eastl::function<auto(asset_accessor& acc) -> void>& callback) -> void {
         std::unique_lock lock {s_mtx};
         if (!s_primary_accessor.has_value()) // Lazy init
             s_primary_accessor.emplace();

@@ -54,12 +54,12 @@
           </CheckBox>
           <Separator/>
           <RadioButton GroupName="SelectTheme" IsChecked="True" ToolTip="Switch to Light Theme">
-            <Border Background="#F0F0F0" Padding="2,4">
+            <Border Background="#F0F0F0" k_padding="2,4">
               <TextBlock Text="Light" FontSize="11" Foreground="#000"/>
             </Border>
           </RadioButton>
           <RadioButton GroupName="SelectTheme" ToolTip="Switch to Dark Theme">
-            <Border Background="#111" Padding="3,4">
+            <Border Background="#111" k_padding="3,4">
               <TextBlock Text="Dark" FontSize="11" Foreground="#EEE"/>
             </Border>
           </RadioButton>

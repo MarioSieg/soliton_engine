@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "context.hpp"
 #include "../shader.hpp"
@@ -8,12 +8,12 @@
 namespace lu::vkb {
     static convar<bool> cv_enable_vulkan_validation_layers {
         "Renderer.enableVulkanValidationLayers",
-        false,
+        {{false}},
         convar_flags::read_only
     };
     static convar<bool> cv_enable_vsync {
         "Renderer.enableVSync",
-        false,
+        {{false}},
         convar_flags::read_only
     };
 
@@ -65,12 +65,12 @@ namespace lu::vkb {
     // Set clear values for all framebuffer attachments with loadOp set to clear
     // We use two attachments (color and depth) that are cleared at the start of the subpass and as such we need to set clear values for both
     auto context::begin_frame(const DirectX::XMFLOAT4A& clear_color, vk::CommandBufferInheritanceInfo* out_inheritance_info) -> vk::CommandBuffer {
-        m_clear_values[0].color = std::bit_cast<vk::ClearColorValue>(clear_color);
-        m_clear_values[1].color = std::bit_cast<vk::ClearColorValue>(clear_color);
+        m_clear_values[0].color = eastl::bit_cast<vk::ClearColorValue>(clear_color);
+        m_clear_values[1].color = eastl::bit_cast<vk::ClearColorValue>(clear_color);
         m_clear_values[2].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
 
         // Use a fence to wait until the command buffer has finished execution before using it again
-        vkcheck(m_device->get_logical_device().waitForFences(1, &m_wait_fences[m_current_frame], vk::True, std::numeric_limits<std::uint64_t>::max()));
+        vkcheck(m_device->get_logical_device().waitForFences(1, &m_wait_fences[m_current_frame], vk::True, eastl::numeric_limits<std::uint64_t>::max()));
         vkcheck(m_device->get_logical_device().resetFences(1, &m_wait_fences[m_current_frame]));
 
         // Get the next swap chain image from the implementation
@@ -252,7 +252,7 @@ namespace lu::vkb {
     // This allows the driver to know up-front what the rendering will look like and is a good opportunity to optimize especially on tile-based renderers (with multiple subpasses)
     // Using sub pass dependencies also adds implicit layout transitions for the attachment used, so we don't need to add explicit image memory barriers to transform them
     auto context::setup_render_pass() -> void {
-        std::array<vk::AttachmentDescription, 3> attachments {};
+        eastl::array<vk::AttachmentDescription, 3> attachments {};
 
         // Multisampled attachment that we render to
         attachments[0].format = m_swapchain->get_format();
@@ -310,7 +310,7 @@ namespace lu::vkb {
         subpass_description.pResolveAttachments = &resolve_reference;
 
         // Subpass dependencies for layout transitions
-        std::array<vk::SubpassDependency, 2> dependencies {};
+        eastl::array<vk::SubpassDependency, 2> dependencies {};
 
         dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
         dependencies[0].dstSubpass = 0;
@@ -341,7 +341,7 @@ namespace lu::vkb {
         // Create a frame buffer for every image in the swapchain
         m_framebuffers.resize(m_swapchain->get_image_count());
         for (std::size_t i = 0; i < m_framebuffers.size(); ++i) {
-            std::array<vk::ImageView, 3> attachments {};
+            eastl::array<vk::ImageView, 3> attachments {};
             attachments[0] = m_msaa_target.color.view;
             attachments[1] = m_swapchain->get_buffer(i).view;
             attachments[2] = m_msaa_target.depth.view;
@@ -489,7 +489,7 @@ namespace lu::vkb {
             return;
         }
         passert(window != nullptr);
-        s_instance = std::make_unique<context>(window);
+        s_instance = eastl::make_unique<context>(window);
         s_init.store(true, std::memory_order_relaxed);
     }
 

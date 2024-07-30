@@ -29,17 +29,17 @@
             </HeaderedContentControl.Header>
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                 <StackPanel Orientation="Horizontal">
-                    <Border BorderBrush="{DynamicResource Brush.Border.Normal}" BorderThickness="1" Padding="8,4" Width="100">
+                    <Border BorderBrush="{DynamicResource Brush.Border.Normal}" BorderThickness="1" k_padding="8,4" Width="100">
                         <TextBlock Text="Left" TextAlignment="Left"/>
                     </Border>
-                    <Border BorderBrush="{DynamicResource Brush.Border.Normal}" BorderThickness="1" Padding="8,4" Width="101" Margin="-1,0,0,0">
+                    <Border BorderBrush="{DynamicResource Brush.Border.Normal}" BorderThickness="1" k_padding="8,4" Width="101" Margin="-1,0,0,0">
                         <TextBlock Text="Center" TextAlignment="Center"/>
                     </Border>
-                    <Border BorderBrush="{DynamicResource Brush.Border.Normal}" BorderThickness="1" Padding="8,4" Width="101" Margin="-1,0,0,0">
+                    <Border BorderBrush="{DynamicResource Brush.Border.Normal}" BorderThickness="1" k_padding="8,4" Width="101" Margin="-1,0,0,0">
                         <TextBlock Text="Right" TextAlignment="Right"/>
                     </Border>
                 </StackPanel>
-                <Border BorderBrush="{DynamicResource Brush.Border.Normal}" BorderThickness="1" Padding="8,4" Width="300" Margin="0,-1,0,0">
+                <Border BorderBrush="{DynamicResource Brush.Border.Normal}" BorderThickness="1" k_padding="8,4" Width="300" Margin="0,-1,0,0">
                     <TextBlock Text="Justified text will adjust the size of white spaces so all lines fit perfectly into the width of the container." TextAlignment="Justify" TextWrapping="Wrap"/>
                 </Border>
             </StackPanel>
@@ -65,18 +65,18 @@
             </HeaderedContentControl.Header>
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
-                    <ComboBox x:Name="Wrap" noesis:Text.Placeholder="Select wrapping" FontSize="12" Width="170" Padding="6,4">
+                    <ComboBox x:Name="Wrap" noesis:Text.Placeholder="Select wrapping" FontSize="12" Width="170" k_padding="6,4">
                         <sys:String>NoWrap</sys:String>
                         <sys:String>Wrap</sys:String>
                         <sys:String>WrapWithOverflow</sys:String>
                     </ComboBox>
-                    <ComboBox x:Name="Trim" noesis:Text.Placeholder="Select trimming" FontSize="12" Width="170" Padding="6,4" Margin="10,0,0,0">
+                    <ComboBox x:Name="Trim" noesis:Text.Placeholder="Select trimming" FontSize="12" Width="170" k_padding="6,4" Margin="10,0,0,0">
                         <sys:String>None</sys:String>
                         <sys:String>CharacterEllipsis</sys:String>
                         <sys:String>WordEllipsis</sys:String>
                     </ComboBox>
                 </StackPanel>
-                <Border BorderBrush="{DynamicResource Brush.Border.Normal}" BorderThickness="1" Padding="8,4" Width="350">
+                <Border BorderBrush="{DynamicResource Brush.Border.Normal}" BorderThickness="1" k_padding="8,4" Width="350">
                     <TextBlock Text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer consectetur metus tortor, non accumsan ligula aliquet eu. Nam eu orci sed justo pretium malesuada quis sit amet justo. Proin vestibulum, elit in dignissim pretium, ex neque vestibulum mauris, ac cursus libero lectus eu massa. Sed faucibus sapien felis, quis luctus nibh tincidunt eu. Duis lorem neque, scelerisque ac odio eu, finibus posuere est. Integer posuere diam fringilla, hendrerit tellus ut, laoreet orci. Cras cursus nibh sit amet sagittis lobortis. Nullam gravida purus diam, id imperdiet mi ultrices eget." TextWrapping="{Binding SelectedItem, ElementName=Wrap}" TextTrimming="{Binding SelectedItem, ElementName=Trim}" Height="60"/>
                 </Border>
             </StackPanel>

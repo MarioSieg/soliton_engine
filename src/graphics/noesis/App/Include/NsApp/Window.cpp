@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "Window.h"
 #include <GLFW/glfw3.h>
@@ -12,12 +12,12 @@ namespace NoesisApp
 
     static convar<std::int32_t> ui_render_flags {
         "GameUI.renderFlags",
-        Noesis::RenderFlags_LCD | Noesis::RenderFlags_FlipY | Noesis::RenderFlags_PPAA,
+        {{Noesis::RenderFlags_LCD | Noesis::RenderFlags_FlipY | Noesis::RenderFlags_PPAA}},
         scripting::convar_flags::none
     };
     static convar<float> ui_tesselation_pixel_error {
         "GameUI.tesselationPixelError",
-        {Noesis::TessellationMaxPixelError::HighQuality().error},
+        {{Noesis::TessellationMaxPixelError::HighQuality().error}},
         scripting::convar_flags::none
     };
 

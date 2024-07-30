@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #pragma once
 
@@ -16,8 +16,8 @@ namespace lu::graphics {
 
     class texture final : public assetmgr::asset {
     public:
-        explicit texture(std::string&& asset_path);
-        explicit texture(std::span<const std::byte> raw_mem);
+        explicit texture(eastl::string&& asset_path);
+        explicit texture(eastl::span<const std::byte> raw_mem);
         texture(
             vk::ImageType type,
             std::uint32_t width,
@@ -87,7 +87,7 @@ namespace lu::graphics {
             vk::ImageTiling tiling = vk::ImageTiling::eOptimal
         ) -> void;
 
-        auto parse_from_raw_memory(std::span<const std::byte> texels) -> void;
+        auto parse_from_raw_memory(eastl::span<const std::byte> texels) -> void;
 
         auto upload(
             void* img,

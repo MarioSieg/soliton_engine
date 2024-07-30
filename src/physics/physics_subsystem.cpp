@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "physics_subsystem.hpp"
 #include "../core/kernel.hpp"
@@ -116,12 +116,12 @@ namespace lu::physics {
         log_info("[Physics]: {}", buf);
     }
 
-    static convar<std::uint64_t> cv_tmp_allocator_buffer_size {"Physics.tempAllocatorBufferSize", 32ull << 20, convar_flags::read_only};
-    static convar<std::uint32_t> cv_num_physics_threads {"Threads.physicsThreads", 1u, convar_flags::read_only};
-    static convar<std::uint32_t> cv_max_rigid_bodies {"Physics.maxRigidBodies", 0x1000u, convar_flags::read_only};
-    static convar<std::uint32_t> cv_num_mutexes {"Physics.numMutexes", 0x1000u, convar_flags::read_only};
-    static convar<std::uint32_t> cv_max_body_pairs {"Physics.maxBodyPairs", 0x1000u, convar_flags::read_only};
-    static convar<std::uint32_t> cv_max_contacts {"Physics.maxContacts", 0x1000u, convar_flags::read_only};
+    static convar<std::uint64_t> cv_tmp_allocator_buffer_size {"Physics.tempAllocatorBufferSize", {{32ull<<20}}, convar_flags::read_only};
+    static convar<std::uint32_t> cv_num_physics_threads {"Threads.physicsThreads", {{1u}}, convar_flags::read_only};
+    static convar<std::uint32_t> cv_max_rigid_bodies {"Physics.maxRigidBodies", {{0x1000u}}, convar_flags::read_only};
+    static convar<std::uint32_t> cv_num_mutexes {"Physics.numMutexes", {{0x1000u}}, convar_flags::read_only};
+    static convar<std::uint32_t> cv_max_body_pairs {"Physics.maxBodyPairs", {{0x1000u}}, convar_flags::read_only};
+    static convar<std::uint32_t> cv_max_contacts {"Physics.maxContacts", {{0x1000u}}, convar_flags::read_only};
 
     physics_subsystem::physics_subsystem() : subsystem{"Physics"} {
 #if USE_MIMALLOC
@@ -143,16 +143,16 @@ namespace lu::physics {
         JPH::Trace = &trace_proc;
         JPH::Factory::sInstance = new JPH::Factory();
         JPH::RegisterTypes();
-        m_temp_allocator = std::make_unique<JPH::TempAllocatorImpl>(cv_tmp_allocator_buffer_size());
-        m_job_system = std::make_unique<JPH::JobSystemThreadPool>(
+        m_temp_allocator = eastl::make_unique<JPH::TempAllocatorImpl>(cv_tmp_allocator_buffer_size());
+        m_job_system = eastl::make_unique<JPH::JobSystemThreadPool>(
         	JPH::cMaxPhysicsJobs,
         	JPH::cMaxPhysicsBarriers,
             cv_num_physics_threads()
         );
-    	m_broad_phase = std::make_unique<BPLayerInterfaceImpl>();
-		m_broad_phase_filter = std::make_unique<ObjectVsBroadPhaseLayerFilterImpl>();
-    	m_object_layer_pair_filter = std::make_unique<ObjectLayerPairFilterImpl>();
-    	m_contact_listener = std::make_unique<ContactListenerImpl>();
+    	m_broad_phase = eastl::make_unique<BPLayerInterfaceImpl>();
+		m_broad_phase_filter = eastl::make_unique<ObjectVsBroadPhaseLayerFilterImpl>();
+    	m_object_layer_pair_filter = eastl::make_unique<ObjectLayerPairFilterImpl>();
+    	m_contact_listener = eastl::make_unique<ContactListenerImpl>();
 
     	m_physics_system.Init(
             cv_max_rigid_bodies(),
@@ -165,7 +165,7 @@ namespace lu::physics {
     	);
     	m_physics_system.SetGravity(JPH::Vec3{0.0f, -9.81f, 0.0f}); // set gravity to earth's gravity
     	m_physics_system.SetContactListener(&*m_contact_listener);
-    	m_debug_renderer = std::make_unique<debug_renderer>();
+    	m_debug_renderer = eastl::make_unique<debug_renderer>();
     }
 
     physics_subsystem::~physics_subsystem() {
@@ -211,14 +211,14 @@ namespace lu::physics {
 		log_info("Creating static colliders...");
 
     	auto filter = scene.filter<const com::transform, const com::mesh_renderer>();
-		std::vector<std::pair<std::span<const com::transform>, std::span<const com::mesh_renderer>>> targets {};
+		eastl::vector<eastl::pair<eastl::span<const com::transform>, eastl::span<const com::mesh_renderer>>> targets {};
     	std::size_t total = 0;
     	filter.iter([&](flecs::iter i, const com::transform* transform, const com::mesh_renderer* renderer) {
     		const std::size_t n = i.count();
     		total += n;
-    		targets.emplace_back(std::span{transform, n}, std::span{renderer, n});
+    		targets.emplace_back(eastl::span{transform, n}, eastl::span{renderer, n});
 		});
-    	std::vector<JPH::BodyID> bodies {};
+    	eastl::vector<JPH::BodyID> bodies {};
     	bodies.resize(total);
     	for (std::size_t base_idx = 0; auto&& target : targets) {
     		const auto& transforms = target.first;
@@ -263,15 +263,15 @@ namespace lu::physics {
     	// sync loop 1 rigidbody => transform
     	active.filter<const com::rigidbody, com::transform>().each([&](const com::rigidbody& rb, com::transform& transform) {
 			const JPH::BodyID body_id = rb.phys_body;
-			transform.position = std::bit_cast<DirectX::XMFLOAT4>(bi.GetPosition(body_id));
-			transform.rotation = std::bit_cast<DirectX::XMFLOAT4>(bi.GetRotation(body_id));
+			transform.position = eastl::bit_cast<DirectX::XMFLOAT4>(bi.GetPosition(body_id));
+			transform.rotation = eastl::bit_cast<DirectX::XMFLOAT4>(bi.GetRotation(body_id));
 		});
 
     	// sync loop 2 character controller => transform
     	active.filter<const com::character_controller, com::transform>().each([&](const com::character_controller& cc, com::transform& transform) {
 			cc.phys_character->PostSimulation(0.05f);
-    		transform.position = std::bit_cast<DirectX::XMFLOAT4>(cc.phys_character->GetPosition());
-			transform.rotation = std::bit_cast<DirectX::XMFLOAT4>(cc.phys_character->GetPosition());
+    		transform.position = eastl::bit_cast<DirectX::XMFLOAT4>(cc.phys_character->GetPosition());
+			transform.rotation = eastl::bit_cast<DirectX::XMFLOAT4>(cc.phys_character->GetPosition());
 		});
     }
 
@@ -289,7 +289,7 @@ namespace lu::physics {
         DirectX::XMFLOAT3A scale {};
         DirectX::XMStoreFloat3A(&scale, DirectX::XMLoadFloat4(&transform.scale));
         ci = {
-            new JPH::ScaledShape{shape, std::bit_cast<JPH::Vec3>(scale)},
+            new JPH::ScaledShape{shape, eastl::bit_cast<JPH::Vec3>(scale)},
             pos,
             rot,
             JPH::EMotionType::Static,

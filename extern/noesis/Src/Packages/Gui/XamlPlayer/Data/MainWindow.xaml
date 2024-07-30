@@ -17,13 +17,13 @@
       <Setter Property="Background" Value="#F020262F"/>
       <Setter Property="BorderBrush" Value="#FF23262A"/>
       <Setter Property="BorderThickness" Value="0,1,0,0"/>
-      <Setter Property="Padding" Value="5,2"/>
+      <Setter Property="k_padding" Value="5,2"/>
       <Style.Triggers>
         <DataTrigger Binding="{Binding HasItems, ElementName=Errors}" Value="False">
           <Setter Property="Background" Value="{x:Null}"/>
           <Setter Property="BorderBrush" Value="{x:Null}"/>
           <Setter Property="BorderThickness" Value="0,0,0,0"/>
-          <Setter Property="Padding" Value="0"/>
+          <Setter Property="k_padding" Value="0"/>
         </DataTrigger>
       </Style.Triggers>
     </Style>

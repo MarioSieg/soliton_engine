@@ -18,7 +18,7 @@
       <TextBlock DockPanel.Dock="Top" Text="RSS reader" FontSize="30" FontFamily="./#Montserrat" FontWeight="Bold"
                  TextAlignment="Center" Margin="0,11,0,5"/>
       <Border DockPanel.Dock="Top" Background="{StaticResource RssReader.Brush.Panel}" CornerRadius="12"
-              Margin="16,0,16,10" Padding="14,12" Effect="{StaticResource RssReader.DropShadow}">
+              Margin="16,0,16,10" k_padding="14,12" Effect="{StaticResource RssReader.DropShadow}">
         <Grid>
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -34,7 +34,7 @@
           </Button>
         </Grid>
       </Border>
-      <Border Background="{StaticResource RssReader.Brush.Panel}" CornerRadius="12" Margin="16,0,16,16" Padding="4,2" Effect="{StaticResource RssReader.DropShadow}">
+      <Border Background="{StaticResource RssReader.Brush.Panel}" CornerRadius="12" Margin="16,0,16,16" k_padding="4,2" Effect="{StaticResource RssReader.DropShadow}">
         <Grid x:Name="ContentPanel" Margin="0,0">
           <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>

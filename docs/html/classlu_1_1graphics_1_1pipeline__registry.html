@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.4"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lunam Engine: lu::graphics::pipeline_registry Class Reference</title>
+<title>Lunam Engine: lu::graphics::pipeline_cache Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -91,13 +91,13 @@ $(document).ready(function(){initNavTree('classlu_1_1graphics_1_1pipeline__regis
 <a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="#pri-static-attribs">Static Private Attributes</a> &#124;
 <a href="classlu_1_1graphics_1_1pipeline__registry-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">lu::graphics::pipeline_registry Class Reference<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+  <div class="headertitle"><div class="title">lu::graphics::pipeline_cache Class Reference<span class="mlabels"><span class="mlabel">final</span></span></div></div>
 </div><!--header-->
 <div class="contents">
 
 <p><code>#include &lt;<a class="el" href="pipeline_8hpp_source.html">pipeline.hpp</a>&gt;</code></p>
 <div class="dynheader">
-Inheritance diagram for lu::graphics::pipeline_registry:</div>
+Inheritance diagram for lu::graphics::pipeline_cache:</div>
 <div class="dyncontent">
  <div class="center">
   <img src="classlu_1_1graphics_1_1pipeline__registry.png" usemap="#lu::graphics::pipeline_5Fregistry_map" alt=""/>
@@ -109,9 +109,9 @@ Inheritance diagram for lu::graphics::pipeline_registry:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:adb907556ce01d20206ca06d67f8d48fe"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlu_1_1graphics_1_1pipeline__registry.html#adb907556ce01d20206ca06d67f8d48fe">pipeline_registry</a> (vk::Device device)</td></tr>
+<tr class="memitem:adb907556ce01d20206ca06d67f8d48fe"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlu_1_1graphics_1_1pipeline__registry.html#adb907556ce01d20206ca06d67f8d48fe">pipeline_cache</a> (vk::Device device)</td></tr>
 <tr class="separator:adb907556ce01d20206ca06d67f8d48fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0424af1b83bc8a915d86f53bd22f3595"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlu_1_1graphics_1_1pipeline__registry.html#a0424af1b83bc8a915d86f53bd22f3595">~pipeline_registry</a> ()</td></tr>
+<tr class="memitem:a0424af1b83bc8a915d86f53bd22f3595"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlu_1_1graphics_1_1pipeline__registry.html#a0424af1b83bc8a915d86f53bd22f3595">pipeline_cache> ()</td></tr>
 <tr class="separator:a0424af1b83bc8a915d86f53bd22f3595"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2794e4b3270da74abda412730bdc3304"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlu_1_1graphics_1_1pipeline__registry.html#a2794e4b3270da74abda412730bdc3304">get_pipelines</a> () const -&gt; const ankerl::unordered_dense::map&lt; std::string, std::unique_ptr&lt; <a class="el" href="classlu_1_1graphics_1_1pipeline__base.html">pipeline_base</a> &gt; &gt; &amp;</td></tr>
 <tr class="separator:a2794e4b3270da74abda412730bdc3304"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -156,7 +156,7 @@ requires std::is_base_of_v&lt;<a class="el" href="classlu_1_1graphics_1_1pipelin
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:aa423192f6fdaada5333bc3e9ba6a0f3e"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlu_1_1graphics_1_1pipeline__registry.html#aa423192f6fdaada5333bc3e9ba6a0f3e">get</a> () -&gt; <a class="el" href="classlu_1_1graphics_1_1pipeline__registry.html">pipeline_registry</a> &amp;</td></tr>
+<tr class="memitem:aa423192f6fdaada5333bc3e9ba6a0f3e"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlu_1_1graphics_1_1pipeline__registry.html#aa423192f6fdaada5333bc3e9ba6a0f3e">get</a> () -&gt; <a class="el" href="classlu_1_1graphics_1_1pipeline__registry.html">pipeline_cache</a> &amp;</td></tr>
 <tr class="separator:aa423192f6fdaada5333bc3e9ba6a0f3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a49eb39f8bf1844d377c5c389f1700920"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlu_1_1graphics_1_1pipeline__registry.html#a49eb39f8bf1844d377c5c389f1700920">init</a> () -&gt; <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a></td></tr>
 <tr class="separator:a49eb39f8bf1844d377c5c389f1700920"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -174,12 +174,12 @@ Private Attributes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-static-attribs" name="pri-static-attribs"></a>
 Static Private Attributes</h2></td></tr>
-<tr class="memitem:aa2b516d1dedab769c535df26300d99f3"><td class="memItemLeft" align="right" valign="top">static constinit std::unique_ptr&lt; <a class="el" href="classlu_1_1graphics_1_1pipeline__registry.html">pipeline_registry</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlu_1_1graphics_1_1pipeline__registry.html#aa2b516d1dedab769c535df26300d99f3">s_instance</a> {}</td></tr>
+<tr class="memitem:aa2b516d1dedab769c535df26300d99f3"><td class="memItemLeft" align="right" valign="top">static constinit std::unique_ptr&lt; <a class="el" href="classlu_1_1graphics_1_1pipeline__registry.html">pipeline_cache</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlu_1_1graphics_1_1pipeline__registry.html#aa2b516d1dedab769c535df26300d99f3">s_instance</a> {}</td></tr>
 <tr class="separator:aa2b516d1dedab769c535df26300d99f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="adb907556ce01d20206ca06d67f8d48fe" name="adb907556ce01d20206ca06d67f8d48fe"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adb907556ce01d20206ca06d67f8d48fe">&#9670;&nbsp;</a></span>pipeline_registry()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#adb907556ce01d20206ca06d67f8d48fe">&#9670;&nbsp;</a></span>pipeline_cache()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -188,7 +188,7 @@ Static Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">lu::graphics::pipeline_registry::pipeline_registry </td>
+          <td class="memname">lu::graphics::pipeline_cache::pipeline_cache </td>
           <td>(</td>
           <td class="paramtype">vk::Device&#160;</td>
           <td class="paramname"><em>device</em></td><td>)</td>
@@ -205,13 +205,13 @@ Static Private Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a0424af1b83bc8a915d86f53bd22f3595" name="a0424af1b83bc8a915d86f53bd22f3595"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0424af1b83bc8a915d86f53bd22f3595">&#9670;&nbsp;</a></span>~pipeline_registry()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a0424af1b83bc8a915d86f53bd22f3595">&#9670;&nbsp;</a></span>pipeline_cache/h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">lu::graphics::pipeline_registry::~pipeline_registry </td>
+          <td class="memname">lu::graphics::pipeline_cache::pipeline_cachetd>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -232,10 +232,10 @@ Static Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static auto lu::graphics::pipeline_registry::get </td>
+          <td class="memname">static auto lu::graphics::pipeline_cache::get </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td> -&gt; <a class="el" href="classlu_1_1graphics_1_1pipeline__registry.html">pipeline_registry</a>&amp; </td>
+          <td> -&gt; <a class="el" href="classlu_1_1graphics_1_1pipeline__registry.html">pipeline_cache</a>&amp; </td>
         </tr>
       </table>
   </td>
@@ -257,7 +257,7 @@ Static Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">auto lu::graphics::pipeline_registry::get_cache </td>
+          <td class="memname">auto lu::graphics::pipeline_cache::get_cache </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const -&gt; vk::PipelineCache </td>
@@ -282,7 +282,7 @@ Static Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">auto lu::graphics::pipeline_registry::get_pipeline </td>
+          <td class="memname">auto lu::graphics::pipeline_cache::get_pipeline </td>
           <td>(</td>
           <td class="paramtype">std::string &amp;&amp;&#160;</td>
           <td class="paramname"><em>name</em></td><td>)</td>
@@ -308,7 +308,7 @@ Static Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">auto lu::graphics::pipeline_registry::get_pipelines </td>
+          <td class="memname">auto lu::graphics::pipeline_cache::get_pipelines </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const -&gt; const ankerl::unordered_dense::map&lt;std::string, std::unique_ptr&lt;<a class="el" href="classlu_1_1graphics_1_1pipeline__base.html">pipeline_base</a>&gt;&gt;&amp; </td>
@@ -333,7 +333,7 @@ Static Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">auto lu::graphics::pipeline_registry::init </td>
+          <td class="memname">auto lu::graphics::pipeline_cache::init </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> -&gt; <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a></td>
@@ -355,7 +355,7 @@ Static Private Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">auto lu::graphics::pipeline_registry::invalidate_all </td>
+          <td class="memname">auto lu::graphics::pipeline_cache::invalidate_all </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> -&gt; <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a></td>
@@ -378,7 +378,7 @@ requires std::is_base_of_v&lt;<a class="el" href="classlu_1_1graphics_1_1pipelin
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">auto lu::graphics::pipeline_registry::register_pipeline </td>
+          <td class="memname">auto lu::graphics::pipeline_cache::register_pipeline </td>
           <td>(</td>
           <td class="paramtype">Args &amp;&amp;...&#160;</td>
           <td class="paramname"><em>args</em></td><td>)</td>
@@ -404,7 +404,7 @@ requires std::is_base_of_v&lt;<a class="el" href="classlu_1_1graphics_1_1pipelin
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">auto lu::graphics::pipeline_registry::shutdown </td>
+          <td class="memname">auto lu::graphics::pipeline_cache::shutdown </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> -&gt; <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a></td>
@@ -426,7 +426,7 @@ requires std::is_base_of_v&lt;<a class="el" href="classlu_1_1graphics_1_1pipelin
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">auto lu::graphics::pipeline_registry::try_recreate_all </td>
+          <td class="memname">auto lu::graphics::pipeline_cache::try_recreate_all </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> -&gt; <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a></td>
@@ -447,7 +447,7 @@ requires std::is_base_of_v&lt;<a class="el" href="classlu_1_1graphics_1_1pipelin
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">vk::PipelineCache lu::graphics::pipeline_registry::m_cache {}</td>
+          <td class="memname">vk::PipelineCache lu::graphics::pipeline_cache::m_cache {}</td>
         </tr>
       </table>
   </td>
@@ -469,7 +469,7 @@ requires std::is_base_of_v&lt;<a class="el" href="classlu_1_1graphics_1_1pipelin
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const vk::Device lu::graphics::pipeline_registry::m_device</td>
+          <td class="memname">const vk::Device lu::graphics::pipeline_cache::m_device</td>
         </tr>
       </table>
   </td>
@@ -491,7 +491,7 @@ requires std::is_base_of_v&lt;<a class="el" href="classlu_1_1graphics_1_1pipelin
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">ankerl::unordered_dense::map&lt;std::string, std::unique_ptr&lt;<a class="el" href="classlu_1_1graphics_1_1pipeline__base.html">pipeline_base</a>&gt; &gt; lu::graphics::pipeline_registry::m_pipelines {}</td>
+          <td class="memname">ankerl::unordered_dense::map&lt;std::string, std::unique_ptr&lt;<a class="el" href="classlu_1_1graphics_1_1pipeline__base.html">pipeline_base</a>&gt; &gt; lu::graphics::pipeline_cache::m_pipelines {}</td>
         </tr>
       </table>
   </td>
@@ -513,7 +513,7 @@ requires std::is_base_of_v&lt;<a class="el" href="classlu_1_1graphics_1_1pipelin
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constinit std::unique_ptr&lt;<a class="el" href="classlu_1_1graphics_1_1pipeline__registry.html">pipeline_registry</a>&gt; lu::graphics::pipeline_registry::s_instance {}</td>
+          <td class="memname">constinit std::unique_ptr&lt;<a class="el" href="classlu_1_1graphics_1_1pipeline__registry.html">pipeline_cache</a>&gt; lu::graphics::pipeline_cache::s_instance {}</td>
         </tr>
       </table>
   </td>
@@ -534,7 +534,7 @@ requires std::is_base_of_v&lt;<a class="el" href="classlu_1_1graphics_1_1pipelin
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="namespacelu.html">lu</a></li><li class="navelem"><a class="el" href="namespacelu_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classlu_1_1graphics_1_1pipeline__registry.html">pipeline_registry</a></li>
+    <li class="navelem"><a class="el" href="namespacelu.html">lu</a></li><li class="navelem"><a class="el" href="namespacelu_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classlu_1_1graphics_1_1pipeline__registry.html">pipeline_cache</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4 </li>
   </ul>
 </div>

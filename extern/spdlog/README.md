@@ -170,9 +170,9 @@ spdlog::flush_every(std::chrono::seconds(3));
 ```
 
 ---
-#### Stopwatch
+#### stopwatch
 ```c++
-// Stopwatch support for spdlog
+// stopwatch support for spdlog
 #include "spdlog/stopwatch.h"
 void stopwatch_example()
 {

@@ -36,7 +36,7 @@ var searchData=
   ['truncateoncommit_33',['truncateOnCommit',['../structWal.html#a12870bbe7755271c94c3eb1fd0280c56',1,'Wal']]],
   ['truthprob_34',['truthProb',['../structWhereTerm.html#a6e6c9c0c1b959f0f4d30a8a00ac4eeec',1,'WhereTerm']]],
   ['txn_5fstate_35',['txn_state',['../structsqlite3__api__routines.html#a0d6b7fa66cf48d285556dda16455d45a',1,'sqlite3_api_routines']]],
-  ['type_36',['type',['../structet__info.html#a148bd1efa49018c9a723701ba5747825',1,'et_info::type()'],['../classlu_1_1graphics_1_1pipeline__base.html#a163380ce57fbacc0741dfb1fe267ad8d',1,'lu::graphics::pipeline_base::type()']]],
+  ['type_36',['type',['../structet__info.html#a148bd1efa49018c9a723701ba5747825',1,'et_info::type()'],['../structlu_1_1graphics_1_1descriptor__factory_1_1descriptor__write__container.html#acf563ab8b7ea98e30063feb8927d3896',1,'lu::graphics::descriptor_factory::descriptor_write_container::type()'],['../classlu_1_1graphics_1_1pipeline__base.html#a163380ce57fbacc0741dfb1fe267ad8d',1,'lu::graphics::pipeline_base::type()']]],
   ['typemask_37',['typeMask',['../structVdbeSorter.html#a75a7b43b4fe86ee6348dd576b4fb1c1f',1,'VdbeSorter']]],
   ['tz_38',['tz',['../structDateTime.html#a7f5c2e587ee18014982d85eb616f09b8',1,'DateTime']]]
 ];

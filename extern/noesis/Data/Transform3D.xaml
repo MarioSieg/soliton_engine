@@ -256,7 +256,7 @@
                             <DropShadowEffect BlurRadius="12" ShadowDepth="0" Color="#FFFF3971"/>
                         </Border.Effect>
                     </Border>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="{TemplateBinding Padding}">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="{TemplateBinding k_padding}">
                         <Decorator x:Name="contentPad" Width="{TemplateBinding MinWidth}">
                             <Decorator.LayoutTransform>
                                 <ScaleTransform ScaleX="0"/>
@@ -294,7 +294,7 @@
             <Setter Property="Template" Value="{StaticResource ButtonTemplate}"/>
             <Setter Property="Width" Value="360"/>
             <Setter Property="Height" Value="40"/>
-            <Setter Property="Padding" Value="20,0"/>
+            <Setter Property="k_padding" Value="20,0"/>
             <Setter Property="Margin" Value="0,10"/>
             <Setter Property="RenderTransformOrigin" Value="0,0.5"/>
         </Style>

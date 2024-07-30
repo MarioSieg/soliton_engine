@@ -196,13 +196,13 @@
   <span class="na">xmlns=</span><span class="s">&quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot;</span>
   <span class="na">xmlns:x=</span><span class="s">&quot;http://schemas.microsoft.com/winfx/2006/xaml&quot;</span><span class="nt">&gt;</span>
   <span class="nt">&lt;TextBlock</span> <span class="na">Text=</span><span class="s">&quot;John Doe&quot;</span> <span class="na">FontSize=</span><span class="s">&quot;18&quot;</span> <span class="na">FontWeight=</span><span class="s">&quot;Bold&quot;</span>
-    <span class="na">Foreground=</span><span class="s">&quot;Crimson&quot;</span> <span class="na">Background=</span><span class="s">&quot;LightYellow&quot;</span> <span class="na">Padding=</span><span class="s">&quot;20,5&quot;</span> <span class="na">Margin=</span><span class="s">&quot;5&quot;</span><span class="nt">/&gt;</span>
+    <span class="na">Foreground=</span><span class="s">&quot;Crimson&quot;</span> <span class="na">Background=</span><span class="s">&quot;LightYellow&quot;</span> <span class="na">k_padding=</span><span class="s">&quot;20,5&quot;</span> <span class="na">Margin=</span><span class="s">&quot;5&quot;</span><span class="nt">/&gt;</span>
   <span class="nt">&lt;TextBlock</span> <span class="na">Text=</span><span class="s">&quot;251 Amazing Road&quot;</span> <span class="na">FontSize=</span><span class="s">&quot;18&quot;</span> <span class="na">FontWeight=</span><span class="s">&quot;Bold&quot;</span>
-    <span class="na">Foreground=</span><span class="s">&quot;Crimson&quot;</span> <span class="na">Background=</span><span class="s">&quot;LightYellow&quot;</span> <span class="na">Padding=</span><span class="s">&quot;20,5&quot;</span> <span class="na">Margin=</span><span class="s">&quot;5&quot;</span><span class="nt">/&gt;</span>
+    <span class="na">Foreground=</span><span class="s">&quot;Crimson&quot;</span> <span class="na">Background=</span><span class="s">&quot;LightYellow&quot;</span> <span class="na">k_padding=</span><span class="s">&quot;20,5&quot;</span> <span class="na">Margin=</span><span class="s">&quot;5&quot;</span><span class="nt">/&gt;</span>
   <span class="nt">&lt;TextBlock</span> <span class="na">Text=</span><span class="s">&quot;Great City, ST 23145&quot;</span> <span class="na">FontSize=</span><span class="s">&quot;18&quot;</span> <span class="na">FontWeight=</span><span class="s">&quot;Bold&quot;</span>
-    <span class="na">Foreground=</span><span class="s">&quot;Crimson&quot;</span> <span class="na">Background=</span><span class="s">&quot;LightYellow&quot;</span> <span class="na">Padding=</span><span class="s">&quot;20,5&quot;</span> <span class="na">Margin=</span><span class="s">&quot;5&quot;</span><span class="nt">/&gt;</span>
+    <span class="na">Foreground=</span><span class="s">&quot;Crimson&quot;</span> <span class="na">Background=</span><span class="s">&quot;LightYellow&quot;</span> <span class="na">k_padding=</span><span class="s">&quot;20,5&quot;</span> <span class="na">Margin=</span><span class="s">&quot;5&quot;</span><span class="nt">/&gt;</span>
   <span class="nt">&lt;TextBlock</span> <span class="na">Text=</span><span class="s">&quot;(555) 123.4224&quot;</span> <span class="na">FontSize=</span><span class="s">&quot;18&quot;</span> <span class="na">FontWeight=</span><span class="s">&quot;Bold&quot;</span>
-    <span class="na">Foreground=</span><span class="s">&quot;Crimson&quot;</span> <span class="na">Background=</span><span class="s">&quot;LightYellow&quot;</span> <span class="na">Padding=</span><span class="s">&quot;20,5&quot;</span> <span class="na">Margin=</span><span class="s">&quot;5&quot;</span><span class="nt">/&gt;</span>
+    <span class="na">Foreground=</span><span class="s">&quot;Crimson&quot;</span> <span class="na">Background=</span><span class="s">&quot;LightYellow&quot;</span> <span class="na">k_padding=</span><span class="s">&quot;20,5&quot;</span> <span class="na">Margin=</span><span class="s">&quot;5&quot;</span><span class="nt">/&gt;</span>
 <span class="nt">&lt;/StackPanel&gt;</span>
 </pre></div>
 <p>But with a <em>Style</em>, you can add a level of indirection setting them in one place and pointing each <a class="reference external" href="Gui.Core._TextBlock.html">TextBlock</a> to this new element, as shown in the following code snippet.</p>
@@ -215,7 +215,7 @@
 </span><span class="hll">      <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;TextBlock.FontWeight&quot;</span> <span class="na">Value=</span><span class="s">&quot;Bold&quot;</span><span class="nt">/&gt;</span>
 </span><span class="hll">      <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;TextBlock.Foreground&quot;</span> <span class="na">Value=</span><span class="s">&quot;Crimson&quot;</span><span class="nt">/&gt;</span>
 </span><span class="hll">      <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;TextBlock.Background&quot;</span> <span class="na">Value=</span><span class="s">&quot;LightYellow&quot;</span><span class="nt">/&gt;</span>
-</span><span class="hll">      <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;TextBlock.Padding&quot;</span> <span class="na">Value=</span><span class="s">&quot;20,5&quot;</span><span class="nt">/&gt;</span>
+</span><span class="hll">      <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;TextBlock.k_padding&quot;</span> <span class="na">Value=</span><span class="s">&quot;20,5&quot;</span><span class="nt">/&gt;</span>
 </span><span class="hll">      <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;TextBlock.Margin&quot;</span> <span class="na">Value=</span><span class="s">&quot;5&quot;</span><span class="nt">/&gt;</span>
 </span><span class="hll">    <span class="nt">&lt;/Style&gt;</span>
 </span>  <span class="nt">&lt;/StackPanel.Resources&gt;</span>
@@ -236,7 +236,7 @@
 </span><span class="hll">      <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;FontWeight&quot;</span> <span class="na">Value=</span><span class="s">&quot;Bold&quot;</span><span class="nt">/&gt;</span>
 </span><span class="hll">      <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;Foreground&quot;</span> <span class="na">Value=</span><span class="s">&quot;Crimson&quot;</span><span class="nt">/&gt;</span>
 </span><span class="hll">      <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;Background&quot;</span> <span class="na">Value=</span><span class="s">&quot;LightYellow&quot;</span><span class="nt">/&gt;</span>
-</span><span class="hll">      <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;Padding&quot;</span> <span class="na">Value=</span><span class="s">&quot;20,5&quot;</span><span class="nt">/&gt;</span>
+</span><span class="hll">      <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;k_padding&quot;</span> <span class="na">Value=</span><span class="s">&quot;20,5&quot;</span><span class="nt">/&gt;</span>
 </span><span class="hll">      <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;Margin&quot;</span> <span class="na">Value=</span><span class="s">&quot;5&quot;</span><span class="nt">/&gt;</span>
 </span><span class="hll">    <span class="nt">&lt;/Style&gt;</span>
 </span>  <span class="nt">&lt;/StackPanel.Resources&gt;</span>
@@ -256,7 +256,7 @@
       <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;FontWeight&quot;</span> <span class="na">Value=</span><span class="s">&quot;Bold&quot;</span><span class="nt">/&gt;</span>
       <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;Foreground&quot;</span> <span class="na">Value=</span><span class="s">&quot;Crimson&quot;</span><span class="nt">/&gt;</span>
       <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;Background&quot;</span> <span class="na">Value=</span><span class="s">&quot;LightYellow&quot;</span><span class="nt">/&gt;</span>
-      <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;Padding&quot;</span> <span class="na">Value=</span><span class="s">&quot;20,5&quot;</span><span class="nt">/&gt;</span>
+      <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;k_padding&quot;</span> <span class="na">Value=</span><span class="s">&quot;20,5&quot;</span><span class="nt">/&gt;</span>
       <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;Margin&quot;</span> <span class="na">Value=</span><span class="s">&quot;5&quot;</span><span class="nt">/&gt;</span>
 <span class="hll">      <span class="nt">&lt;Style.Triggers&gt;</span>
 </span><span class="hll">        <span class="nt">&lt;Trigger</span> <span class="na">Property=</span><span class="s">&quot;IsMouseOver&quot;</span> <span class="na">Value=</span><span class="s">&quot;True&quot;</span><span class="nt">&gt;</span>
@@ -282,7 +282,7 @@
       <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;FontWeight&quot;</span> <span class="na">Value=</span><span class="s">&quot;Bold&quot;</span><span class="nt">/&gt;</span>
       <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;Foreground&quot;</span> <span class="na">Value=</span><span class="s">&quot;Crimson&quot;</span><span class="nt">/&gt;</span>
       <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;Background&quot;</span> <span class="na">Value=</span><span class="s">&quot;LightYellow&quot;</span><span class="nt">/&gt;</span>
-      <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;Padding&quot;</span> <span class="na">Value=</span><span class="s">&quot;20,5&quot;</span><span class="nt">/&gt;</span>
+      <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;k_padding&quot;</span> <span class="na">Value=</span><span class="s">&quot;20,5&quot;</span><span class="nt">/&gt;</span>
       <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;Margin&quot;</span> <span class="na">Value=</span><span class="s">&quot;5&quot;</span><span class="nt">/&gt;</span>
 <span class="hll">      <span class="nt">&lt;Style.Triggers&gt;</span>
 </span><span class="hll">        <span class="nt">&lt;Trigger</span> <span class="na">Property=</span><span class="s">&quot;IsMouseOver&quot;</span> <span class="na">Value=</span><span class="s">&quot;True&quot;</span><span class="nt">&gt;</span>
@@ -438,7 +438,7 @@
 </span><span class="hll">          <span class="na">Fill=</span><span class="s">&quot;{TemplateBinding Background}&quot;</span><span class="nt">/&gt;</span>
 </span><span class="hll">        <span class="nt">&lt;ContentPresenter</span> <span class="na">HorizontalAlignment=</span><span class="s">&quot;Center&quot;</span> <span class="na">VerticalAlignment=</span><span class="s">&quot;Center&quot;</span>
 </span><span class="hll">          <span class="na">Content=</span><span class="s">&quot;{TemplateBinding Content}&quot;</span>
-</span><span class="hll">          <span class="na">Margin=</span><span class="s">&quot;{TemplateBinding Padding}&quot;</span><span class="nt">/&gt;</span>
+</span><span class="hll">          <span class="na">Margin=</span><span class="s">&quot;{TemplateBinding k_padding}&quot;</span><span class="nt">/&gt;</span>
 </span>      <span class="nt">&lt;/Grid&gt;</span>
       <span class="nt">&lt;ControlTemplate.Triggers&gt;</span>
         <span class="nt">&lt;Trigger</span> <span class="na">Property=</span><span class="s">&quot;IsMouseOver&quot;</span> <span class="na">Value=</span><span class="s">&quot;True&quot;</span><span class="nt">&gt;</span>
@@ -454,13 +454,13 @@
     <span class="nt">&lt;Style</span> <span class="na">TargetType=</span><span class="s">&quot;{x:Type Button}&quot;</span><span class="nt">&gt;</span>
 <span class="hll">      <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;BorderBrush&quot;</span> <span class="na">Value=</span><span class="s">&quot;Black&quot;</span><span class="nt">/&gt;</span>
 </span><span class="hll">      <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;Background&quot;</span> <span class="na">Value=</span><span class="s">&quot;Silver&quot;</span><span class="nt">/&gt;</span>
-</span><span class="hll">      <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;Padding&quot;</span> <span class="na">Value=</span><span class="s">&quot;10&quot;</span><span class="nt">/&gt;</span>
+</span><span class="hll">      <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;k_padding&quot;</span> <span class="na">Value=</span><span class="s">&quot;10&quot;</span><span class="nt">/&gt;</span>
 </span>      <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;Template&quot;</span> <span class="na">Value=</span><span class="s">&quot;{StaticResource ButtonTemplate}&quot;</span><span class="nt">/&gt;</span>
     <span class="nt">&lt;/Style&gt;</span>
   <span class="nt">&lt;/StackPanel.Resources&gt;</span>
   <span class="nt">&lt;Button</span> <span class="na">Content=</span><span class="s">&quot;First&quot;</span><span class="nt">/&gt;</span>
   <span class="nt">&lt;Button</span> <span class="na">Content=</span><span class="s">&quot;Second&quot;</span> <span class="na">Margin=</span><span class="s">&quot;0,5&quot;</span><span class="nt">/&gt;</span>
-<span class="hll">  <span class="nt">&lt;Button</span> <span class="na">Content=</span><span class="s">&quot;Third&quot;</span> <span class="na">BorderBrush=</span><span class="s">&quot;Blue&quot;</span> <span class="na">Background=</span><span class="s">&quot;SkyBlue&quot;</span> <span class="na">Padding=</span><span class="s">&quot;30&quot;</span><span class="nt">/&gt;</span>
+<span class="hll">  <span class="nt">&lt;Button</span> <span class="na">Content=</span><span class="s">&quot;Third&quot;</span> <span class="na">BorderBrush=</span><span class="s">&quot;Blue&quot;</span> <span class="na">Background=</span><span class="s">&quot;SkyBlue&quot;</span> <span class="na">k_padding=</span><span class="s">&quot;30&quot;</span><span class="nt">/&gt;</span>
 </span><span class="nt">&lt;/StackPanel&gt;</span>
 </pre></div>
 </blockquote>
@@ -563,7 +563,7 @@
   <span class="nt">&lt;Grid.Resources&gt;</span>
     <span class="nt">&lt;Style</span> <span class="na">x:Key=</span><span class="s">&quot;BigButtonStyle&quot;</span> <span class="na">TargetType=</span><span class="s">&quot;{x:Type Button}&quot;</span> <span class="na">BasedOn=</span><span class="s">&quot;{StaticResource {x:Type Button}}&quot;</span><span class="nt">&gt;</span>
       <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;FontSize&quot;</span> <span class="na">Value=</span><span class="s">&quot;30&quot;</span><span class="nt">/&gt;</span>
-      <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;Padding&quot;</span> <span class="na">Value=</span><span class="s">&quot;20,10&quot;</span><span class="nt">/&gt;</span>
+      <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;k_padding&quot;</span> <span class="na">Value=</span><span class="s">&quot;20,10&quot;</span><span class="nt">/&gt;</span>
     <span class="nt">&lt;/Style&gt;</span>
     <span class="nt">&lt;Style</span> <span class="na">x:Key=</span><span class="s">&quot;RedButtonStyle&quot;</span> <span class="na">TargetType=</span><span class="s">&quot;{x:Type Button}&quot;</span> <span class="na">BasedOn=</span><span class="s">&quot;{StaticResource BigButtonStyle}&quot;</span><span class="nt">&gt;</span>
       <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;Background&quot;</span> <span class="na">Value=</span><span class="s">&quot;Red&quot;</span><span class="nt">/&gt;</span>
@@ -575,7 +575,7 @@
       <span class="nt">&lt;Grid&gt;</span>
         <span class="nt">&lt;Ellipse</span> <span class="na">Fill=</span><span class="s">&quot;{TemplateBinding Background}&quot;</span><span class="nt">/&gt;</span>
         <span class="nt">&lt;ContentPresenter</span> <span class="na">HorizontalAlignment=</span><span class="s">&quot;Center&quot;</span> <span class="na">VerticalAlignment=</span><span class="s">&quot;Center&quot;</span>
-          <span class="na">Margin=</span><span class="s">&quot;{TemplateBinding Padding}&quot;</span><span class="nt">/&gt;</span>
+          <span class="na">Margin=</span><span class="s">&quot;{TemplateBinding k_padding}&quot;</span><span class="nt">/&gt;</span>
       <span class="nt">&lt;/Grid&gt;</span>
     <span class="nt">&lt;/ControlTemplate&gt;</span>
     <span class="nt">&lt;Style</span> <span class="na">TargetType=</span><span class="s">&quot;{x:Type Button}&quot;</span> <span class="na">BasedOn=</span><span class="s">&quot;{StaticResource {x:Type Button}}&quot;</span><span class="nt">&gt;</span>
@@ -600,7 +600,7 @@
       <span class="nt">&lt;Grid&gt;</span>
         <span class="nt">&lt;Ellipse</span> <span class="na">Fill=</span><span class="s">&quot;{TemplateBinding Background}&quot;</span><span class="nt">/&gt;</span>
         <span class="nt">&lt;ContentPresenter</span> <span class="na">HorizontalAlignment=</span><span class="s">&quot;Center&quot;</span> <span class="na">VerticalAlignment=</span><span class="s">&quot;Center&quot;</span>
-          <span class="na">Margin=</span><span class="s">&quot;{TemplateBinding Padding}&quot;</span><span class="nt">/&gt;</span>
+          <span class="na">Margin=</span><span class="s">&quot;{TemplateBinding k_padding}&quot;</span><span class="nt">/&gt;</span>
       <span class="nt">&lt;/Grid&gt;</span>
     <span class="nt">&lt;/ControlTemplate&gt;</span>
     <span class="nt">&lt;Style</span> <span class="na">TargetType=</span><span class="s">&quot;{x:Type Button}&quot;</span> <span class="na">BasedOn=</span><span class="s">&quot;{StaticResource {x:Type Button}}&quot;</span><span class="nt">&gt;</span>
@@ -608,7 +608,7 @@
     <span class="nt">&lt;/Style&gt;</span>
     <span class="nt">&lt;Style</span> <span class="na">x:Key=</span><span class="s">&quot;BigButtonStyle&quot;</span> <span class="na">TargetType=</span><span class="s">&quot;{x:Type Button}&quot;</span> <span class="na">BasedOn=</span><span class="s">&quot;{StaticResource {x:Type Button}}&quot;</span><span class="nt">&gt;</span>
       <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;FontSize&quot;</span> <span class="na">Value=</span><span class="s">&quot;30&quot;</span><span class="nt">/&gt;</span>
-      <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;Padding&quot;</span> <span class="na">Value=</span><span class="s">&quot;20,10&quot;</span><span class="nt">/&gt;</span>
+      <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;k_padding&quot;</span> <span class="na">Value=</span><span class="s">&quot;20,10&quot;</span><span class="nt">/&gt;</span>
     <span class="nt">&lt;/Style&gt;</span>
     <span class="nt">&lt;Style</span> <span class="na">x:Key=</span><span class="s">&quot;RedButtonStyle&quot;</span> <span class="na">TargetType=</span><span class="s">&quot;{x:Type Button}&quot;</span> <span class="na">BasedOn=</span><span class="s">&quot;{StaticResource BigButtonStyle}&quot;</span><span class="nt">&gt;</span>
       <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;Background&quot;</span> <span class="na">Value=</span><span class="s">&quot;Red&quot;</span><span class="nt">/&gt;</span>

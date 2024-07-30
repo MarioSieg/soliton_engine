@@ -32,5 +32,5 @@ var searchData=
   ['usesubsec_29',['useSubsec',['../structDateTime.html#adc571d9687b1f20f203dd577808cdc56',1,'DateTime']]],
   ['usr_30',['usr',['../structlu_1_1graphics_1_1thread__shared__ctx.html#a3888658172f0bb8f3b1ed7c2e6824bd5',1,'lu::graphics::thread_shared_ctx']]],
   ['utemp_31',['uTemp',['../structsqlite3__value.html#adfa9a766a43e673a8a90fe50f2b36fc4',1,'sqlite3_value']]],
-  ['uv_32',['uv',['../structlu_1_1graphics_1_1debugdraw_1_1vertex.html#a30f3a0f271e6a53a5a4dd107808dbc51',1,'lu::graphics::debugdraw::vertex::uv()'],['../structlu_1_1graphics_1_1mesh_1_1vertex.html#af906f037af1c7f64c5a5382caa597aad',1,'lu::graphics::mesh::vertex::uv()']]]
+  ['uv_32',['uv',['../structlu_1_1graphics_1_1mesh_1_1vertex.html#af906f037af1c7f64c5a5382caa597aad',1,'lu::graphics::mesh::vertex::uv()'],['../structlu_1_1graphics_1_1debugdraw_1_1vertex.html#a30f3a0f271e6a53a5a4dd107808dbc51',1,'lu::graphics::debugdraw::vertex::uv()']]]
 ];

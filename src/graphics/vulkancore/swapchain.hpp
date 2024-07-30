@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #pragma once
 
@@ -40,7 +40,7 @@ namespace lu::vkb {
         [[nodiscard]] auto get_color_space() const noexcept -> vk::ColorSpaceKHR { return m_color_space; }
         [[nodiscard]] auto get_surface() const noexcept -> vk::SurfaceKHR { return m_surface; }
         [[nodiscard]] auto get_swapchain() const noexcept -> vk::SwapchainKHR { return m_swapchain; }
-        [[nodiscard]] auto get_images() const noexcept -> std::span<const vk::Image> { return m_images; }
+        [[nodiscard]] auto get_images() const noexcept -> eastl::span<const vk::Image> { return m_images; }
 
     private:
         vk::Instance m_instance {};
@@ -51,8 +51,8 @@ namespace lu::vkb {
         vk::ColorSpaceKHR m_color_space {};
         vk::SwapchainKHR m_swapchain {};
         std::uint32_t m_image_count {};
-        std::vector<vk::Image> m_images {};
-        std::vector<buffer> m_buffers {};
+        eastl::vector<vk::Image> m_images {};
+        eastl::vector<buffer> m_buffers {};
         std::uint32_t m_queue_node_index {};
     };
 }

@@ -8,8 +8,14 @@ var searchData=
   ['dbpath_5',['DbPath',['../structDbPath.html',1,'']]],
   ['debug_5frenderer_6',['debug_renderer',['../classlu_1_1physics_1_1debug__renderer.html',1,'lu::physics']]],
   ['debugdraw_7',['debugdraw',['../classlu_1_1graphics_1_1debugdraw.html',1,'lu::graphics']]],
-  ['device_8',['device',['../classlu_1_1vkb_1_1device.html',1,'lu::vkb']]],
-  ['dir_5fdata_9',['dir_data',['../structdir__data.html',1,'']]],
-  ['distinctctx_10',['DistinctCtx',['../structDistinctCtx.html',1,'']]],
-  ['draw_5fcommand_11',['draw_command',['../structlu_1_1graphics_1_1debugdraw_1_1draw__command.html',1,'lu::graphics::debugdraw']]]
+  ['descriptor_5fallocator_8',['descriptor_allocator',['../classlu_1_1graphics_1_1descriptor__allocator.html',1,'lu::graphics']]],
+  ['descriptor_5ffactory_9',['descriptor_factory',['../classlu_1_1graphics_1_1descriptor__factory.html',1,'lu::graphics']]],
+  ['descriptor_5flayout_5fcache_10',['descriptor_layout_cache',['../classlu_1_1graphics_1_1descriptor__layout__cache.html',1,'lu::graphics']]],
+  ['descriptor_5flayout_5fhash_11',['descriptor_layout_hash',['../structlu_1_1graphics_1_1descriptor__layout__cache_1_1descriptor__layout__hash.html',1,'lu::graphics::descriptor_layout_cache']]],
+  ['descriptor_5flayout_5finfo_12',['descriptor_layout_info',['../structlu_1_1graphics_1_1descriptor__layout__cache_1_1descriptor__layout__info.html',1,'lu::graphics::descriptor_layout_cache']]],
+  ['descriptor_5fwrite_5fcontainer_13',['descriptor_write_container',['../structlu_1_1graphics_1_1descriptor__factory_1_1descriptor__write__container.html',1,'lu::graphics::descriptor_factory']]],
+  ['device_14',['device',['../classlu_1_1vkb_1_1device.html',1,'lu::vkb']]],
+  ['dir_5fdata_15',['dir_data',['../structdir__data.html',1,'']]],
+  ['distinctctx_16',['DistinctCtx',['../structDistinctCtx.html',1,'']]],
+  ['draw_5fcommand_17',['draw_command',['../structlu_1_1graphics_1_1debugdraw_1_1draw__command.html',1,'lu::graphics::debugdraw']]]
 ];

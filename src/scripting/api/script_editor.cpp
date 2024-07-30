@@ -1,17 +1,17 @@
-// Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "_prelude.hpp"
 #include "../../graphics/imgui/text_editor.hpp"
 
 [[nodiscard]] static auto get_editor() -> TextEditor& { // lazy init
-    static const std::unique_ptr<TextEditor> g_editor = [] {
-        auto editor = std::make_unique<TextEditor>();
+    static const eastl::unique_ptr<TextEditor> g_editor = [] {
+        auto editor = eastl::make_unique<TextEditor>();
         editor->SetLanguageDefinition(TextEditor::LanguageDefinition::Lua());
         return editor;
     }();
     return *g_editor;
 }
-static std::string g_editor_text;
+static eastl::string g_editor_text;
 
 LUA_INTEROP_API auto __lu_script_editor_render(const char* title) -> void {
     title = title ? title : "Script Editor";
@@ -24,12 +24,12 @@ LUA_INTEROP_API auto __lu_script_editor_set_text(const char* text) -> void {
 }
 
 LUA_INTEROP_API auto __lu_script_editor_get_text() -> const char* {
-    g_editor_text = get_editor().GetText();
+    g_editor_text = get_editor().GetText().c_str();
     return g_editor_text.c_str();
 }
 
 LUA_INTEROP_API auto __lu_script_editor_get_text_len() -> std::size_t {
-    g_editor_text = get_editor().GetText();
+    g_editor_text = get_editor().GetText().c_str();
     return g_editor_text.size();
 }
 

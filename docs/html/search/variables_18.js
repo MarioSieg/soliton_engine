@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['y_0',['y',['../structlua__vec2.html#ab6631db8247a632a884e7b6d67e6c81a',1,'lua_vec2::y()'],['../transform_8lua_8cpp.html#a536b5df3d99aa841599665038c874866',1,'y():&#160;transform.lua.cpp']]],
+  ['y_0',['y',['../structlua__vec3.html#ab0883279848097e8d4b04cc2a0c5fc57',1,'lua_vec3::y()'],['../transform_8lua_8cpp.html#a536b5df3d99aa841599665038c874866',1,'y():&#160;transform.lua.cpp'],['../structlua__vec2.html#ab6631db8247a632a884e7b6d67e6c81a',1,'lua_vec2::y()']]],
   ['y_1',['Y',['../structDateTime.html#ad39449618b2a15128e32766a208753cf',1,'DateTime']]],
-  ['y_2',['y',['../structExpr.html#a1cdd3cc6b2bcb9f74bd9423f27b9aac4',1,'Expr::y()'],['../structlua__vec4.html#af48fdab789fb543267a5fe415c368859',1,'lua_vec4::y()'],['../structlua__vec3.html#ab0883279848097e8d4b04cc2a0c5fc57',1,'lua_vec3::y()']]],
+  ['y_2',['y',['../structExpr.html#a1cdd3cc6b2bcb9f74bd9423f27b9aac4',1,'Expr::y()'],['../structlua__vec4.html#af48fdab789fb543267a5fe415c368859',1,'lua_vec4::y()']]],
   ['yy0_3',['yy0',['../unionYYMINORTYPE.html#a827d6a1bc7ac8df062b3f419db3f50ac',1,'YYMINORTYPE']]],
   ['yy122_4',['yy122',['../unionYYMINORTYPE.html#aa01276b15c60e88cece5fc8dbaaad2b2',1,'YYMINORTYPE']]],
   ['yy132_5',['yy132',['../unionYYMINORTYPE.html#ab809cfec12e178587cb9a8544f9b72dd',1,'YYMINORTYPE']]],

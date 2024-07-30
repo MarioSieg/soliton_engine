@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "graphics_subsystem.hpp"
 
@@ -10,22 +10,20 @@
 #endif
 
 #include "material.hpp"
-#include "shader_registry.hpp"
-#include "pipeline.hpp"
+#include "pipeline_cache.hpp"
 
 #include "pipelines/pbr_pipeline.hpp"
 #include "pipelines/sky.hpp"
-
 
 namespace lu::graphics {
     using platform::platform_subsystem;
     using vkb::context;
 
-    static convar<std::string> cv_shader_dir {"Renderer.shaderDir", std::nullopt, scripting::convar_flags::read_only};
-    static convar<bool> cv_enable_parallel_shader_compilation {"Renderer.enableParallelShaderCompilation", true, scripting::convar_flags::read_only};
+    static convar<eastl::string> cv_shader_dir {"Renderer.shaderDir", eastl::nullopt, scripting::convar_flags::read_only};
+    static convar<bool> cv_enable_parallel_shader_compilation {"Renderer.enableParallelShaderCompilation", {{true}}, scripting::convar_flags::read_only};
     static convar<std::uint32_t> cv_max_render_threads {
         "Threads.renderThreads",
-        2u,
+        {{2u}},
         scripting::convar_flags::read_only,
         1u,
         std::max(1u, std::thread::hardware_concurrency())
@@ -43,13 +41,10 @@ namespace lu::graphics {
 
         create_descriptor_pool();
 
-        shader_registry::init(cv_shader_dir());
-        if (!shader_registry::get().compile_all(cv_enable_parallel_shader_compilation())) [[unlikely]] {
-           log_error("Failed to compile shaders");
-        }
+        shader_cache::init(cv_shader_dir());
 
-        pipeline_registry::init();
-        auto& reg = pipeline_registry::get();
+        pipeline_cache::init();
+        auto& reg = pipeline_cache::get();
         reg.register_pipeline<pipelines::pbr_pipeline>();
         reg.register_pipeline<pipelines::sky_pipeline>();
 
@@ -69,8 +64,8 @@ namespace lu::graphics {
         m_imgui_context.reset();
         m_noesis_context.reset();
 
-        shader_registry::shutdown();
-        pipeline_registry::shutdown();
+        shader_cache::shutdown();
+        pipeline_cache::shutdown();
         m_render_thread_pool.reset();
         if (m_debugdraw) {
             m_debugdraw.reset();
@@ -80,7 +75,7 @@ namespace lu::graphics {
         s_instance = nullptr;
     }
 
-    [[nodiscard]] static auto compute_render_bucket_range(const std::size_t id, const std::size_t num_entities, const std::size_t num_threads) noexcept -> std::array<std::size_t, 2> {
+    [[nodiscard]] static auto compute_render_bucket_range(const std::size_t id, const std::size_t num_entities, const std::size_t num_threads) noexcept -> eastl::array<std::size_t, 2> {
         const std::size_t base_bucket_size = num_entities/num_threads;
         const std::size_t num_extra_entities = num_entities%num_threads;
         const std::size_t begin = base_bucket_size*id + std::min(id, num_extra_entities);
@@ -139,13 +134,13 @@ namespace lu::graphics {
         passert(usr != nullptr);
         auto& self = *static_cast<graphics_subsystem*>(usr);
 
-        const auto& pbr_pipeline = dynamic_cast<const pipelines::pbr_pipeline&>(pipeline_registry::get().get_pipeline("pbr"));
+        const auto& pbr_pipeline = dynamic_cast<const pipelines::pbr_pipeline&>(pipeline_cache::get().get_pipeline("mat_pbr"));
 
         cmd.bindPipeline(vk::PipelineBindPoint::eGraphics, pbr_pipeline.get_pipeline());
         const DirectX::XMMATRIX vp = DirectX::XMLoadFloat4x4A(&graphics_subsystem::s_view_proj_mtx);
 
         // thread workload distribution
-        const std::vector<std::pair<std::span<const com::transform>, std::span<const com::mesh_renderer>>>& render_data = self.get_render_data();
+        const eastl::vector<eastl::pair<eastl::span<const com::transform>, eastl::span<const com::mesh_renderer>>>& render_data = self.get_render_data();
         const std::size_t total_entities = std::accumulate(render_data.cbegin(), render_data.cend(), 0, [](const std::size_t acc, const auto& pair) noexcept {
             passert(pair.first.size() == pair.second.size());
             return acc + pair.first.size();
@@ -168,7 +163,7 @@ namespace lu::graphics {
         }
 
         if (bucket_id == num_threads - 1) { // Last thread
-            if (std::optional<debugdraw>& dd = self.get_debug_draw_opt(); dd) {
+            if (eastl::optional<debugdraw>& dd = self.get_debug_draw_opt(); dd) {
                 dd->render(
                     cmd,
                     DirectX::XMLoadFloat4x4A(&graphics_subsystem::s_view_proj_mtx),
@@ -208,11 +203,11 @@ namespace lu::graphics {
             // m_render_query.query.destruct(); TODO: leak
             m_render_query.query = scene.query<const com::transform, const com::mesh_renderer>();
         }
-        scene.readonly_begin();
         m_render_data.clear();
+        scene.readonly_begin();
         m_render_query.query.iter([this](const flecs::iter& i, const com::transform* transforms, const com::mesh_renderer* renderers) {
             const std::size_t n = i.count();
-            m_render_data.emplace_back(std::span{transforms, n}, std::span{renderers, n});
+            m_render_data.emplace_back(eastl::span{transforms, n}, eastl::span{renderers, n});
         });
         if (m_cmd) [[likely]] { // TODO: refractor
             m_render_thread_pool->begin_frame(&m_inheritance_info);
@@ -225,6 +220,8 @@ namespace lu::graphics {
             //render_uis(); TODO
 
             vkb::ctx().end_frame(m_cmd);
+        } else {
+            scene.readonly_end();
         }
     }
 
@@ -242,7 +239,7 @@ namespace lu::graphics {
         const vkb::device& dvc = vkb::dvc();
         const vk::Device device = vkb::vkdvc();
 
-        const std::array<vk::DescriptorPoolSize, 1> sizes {
+        const eastl::array<vk::DescriptorPoolSize, 1> sizes {
             vk::DescriptorPoolSize {
                 .type = vk::DescriptorType::eUniformBufferDynamic,
                 .descriptorCount = 128u
@@ -294,11 +291,11 @@ namespace lu::graphics {
 
     auto graphics_subsystem::reload_pipelines() -> void {
         log_info("Reloading pipelines");
-        const auto now = std::chrono::high_resolution_clock::now();
-        if (shader_registry::get().compile_all(cv_enable_parallel_shader_compilation())) [[likely]] {
-            auto& reg = pipeline_registry::get();
+        const auto now = eastl::chrono::high_resolution_clock::now();
+        if (true) [[likely]] { // TODO
+            auto& reg = pipeline_cache::get();
             reg.try_recreate_all();
-            log_info("Reloaded pipelines in {}ms", std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - now).count());
+            log_info("Reloaded pipelines in {}ms", eastl::chrono::duration_cast<eastl::chrono::milliseconds>(eastl::chrono::high_resolution_clock::now() - now).count());
         } else {
             log_error("Failed to compile shaders");
         }
