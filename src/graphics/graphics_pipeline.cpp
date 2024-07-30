@@ -192,7 +192,7 @@ namespace lu::graphics {
     auto graphics_pipeline::draw_mesh(
         const mesh& mesh,
         const vk::CommandBuffer cmd,
-        const eastl::vector<material*>& mats,
+        const eastl::span<material* const> mats,
         const vk::PipelineLayout layout
     ) -> void {
         constexpr vk::DeviceSize offsets = 0;

@@ -59,7 +59,8 @@ namespace lu::graphics::pipelines {
                 &pc_fs
             );
 
-            graphics_pipeline::draw_mesh(*mesh, cmd_buf, renderer.materials, layout);
+            const eastl::span<material* const> mats {renderer.materials.data(), renderer.materials.size()};
+            graphics_pipeline::draw_mesh(*mesh, cmd_buf, mats, layout);
         }
     }
 

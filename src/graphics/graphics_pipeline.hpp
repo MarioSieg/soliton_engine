@@ -15,7 +15,7 @@ namespace lu::graphics {
         HOTPROC static auto draw_mesh(
             const mesh& mesh,
             vk::CommandBuffer cmd,
-            const eastl::vector<material*>& mats,
+            eastl::span<material* const> mats,
             vk::PipelineLayout layout
         ) -> void;
 

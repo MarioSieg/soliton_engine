@@ -104,8 +104,8 @@ namespace lu::com {
     };
 
     struct mesh_renderer final {
-        eastl::vector<graphics::mesh*> meshes {};
-        eastl::vector<graphics::material*> materials {};
+        eastl::fixed_vector<graphics::mesh*, 4> meshes {};
+        eastl::fixed_vector<graphics::material*, 4> materials {};
         std::underlying_type_t<render_flags::$> flags = render_flags::none;
     };
 

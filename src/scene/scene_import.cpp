@@ -76,7 +76,7 @@ namespace lu {
                 const aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
                 const aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
 
-                const auto load_tex = [&](const eastl::initializer_list<aiTextureType> types) -> graphics::texture* {
+                const auto load_tex = [&](const std::initializer_list<aiTextureType> types) -> graphics::texture* {
                     for (auto textureType = types.begin(); textureType != types.end(); std::advance(textureType, 1)) {
                         if (!mat->GetTextureCount(*textureType)) [[unlikely]] continue;
                         aiString name {};
