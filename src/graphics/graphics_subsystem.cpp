@@ -291,11 +291,11 @@ namespace lu::graphics {
 
     auto graphics_subsystem::reload_pipelines() -> void {
         log_info("Reloading pipelines");
-        const auto now = std::chrono::high_resolution_clock::now();
+        const auto now = eastl::chrono::high_resolution_clock::now();
         if (true) [[likely]] { // TODO
             auto& reg = pipeline_cache::get();
             reg.try_recreate_all();
-            log_info("Reloaded pipelines in {}ms", std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - now).count());
+            log_info("Reloaded pipelines in {}ms", eastl::chrono::duration_cast<eastl::chrono::milliseconds>(eastl::chrono::high_resolution_clock::now() - now).count());
         } else {
             log_error("Failed to compile shaders");
         }

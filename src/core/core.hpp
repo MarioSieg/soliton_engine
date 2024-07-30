@@ -21,6 +21,7 @@
 #include <EASTL/weak_ptr.h>
 #include <EASTL/unique_ptr.h>
 #include <EASTL/chrono.h>
+#include <EASTL/initializer_list.h>
 
 #include <ankerl/unordered_dense.h>
 

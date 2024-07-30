@@ -16,7 +16,7 @@ namespace lu::graphics {
 
     auto pipeline_base::create(const vk::PipelineCache cache) -> void {
         log_info("Creating graphics pipeline '{}' {}st time", name.c_str(), ++m_num_creations);
-        const auto now = std::chrono::high_resolution_clock::now();
+        const auto now = eastl::chrono::high_resolution_clock::now();
         const auto device = vkb::vkdvc();
         auto prev_pipeline = m_pipeline;
         auto prev_layout = m_layout;
@@ -31,7 +31,7 @@ namespace lu::graphics {
             "Created {} pipeline '{}' in {:.03}s",
             type == pipeline_type::graphics ? "graphics" : "compute",
             name.c_str(),
-            std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - now).count()
+            eastl::chrono::duration_cast<eastl::chrono::duration<double>>(eastl::chrono::high_resolution_clock::now() - now).count()
         );
         if (prev_pipeline && prev_layout) { // Destroy old pipeline and layout now that the new one is created
             device.destroyPipeline(prev_pipeline, vkb::get_alloc());

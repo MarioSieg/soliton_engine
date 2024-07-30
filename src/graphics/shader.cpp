@@ -121,7 +121,7 @@ namespace lu::graphics {
     }
 
     auto shader::compile(shader_variant&& variant) -> eastl::shared_ptr<shader> {
-        const auto start = std::chrono::high_resolution_clock::now();
+        const auto start = eastl::chrono::high_resolution_clock::now();
 
         shaderc::Compiler compiler {};
         passert(compiler.IsValid());
@@ -224,7 +224,7 @@ namespace lu::graphics {
         stage_info.module = shader->m_module;
         stage_info.pName = shader->m_variant.get_entry_point().c_str();
 
-        log_info("Compiled shader: {} in {:.03f}s", file_name, std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - start).count());
+        log_info("Compiled shader: {} in {:.03f}s", file_name, eastl::chrono::duration_cast<eastl::chrono::duration<double>>(eastl::chrono::high_resolution_clock::now() - start).count());
 
         return shader;
     }

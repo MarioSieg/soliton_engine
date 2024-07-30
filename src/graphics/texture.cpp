@@ -268,7 +268,7 @@ namespace lu::graphics {
         );
         bool conversion_required = !is_format_supported; // if the hardware doesn't support the format, we'll convert it to a supported format
         if (!is_format_supported || (image->m_numMips <= 1 && !is_format_mipgen_supported)) {
-            const auto now = std::chrono::high_resolution_clock::now();
+            const auto now = eastl::chrono::high_resolution_clock::now();
 
             bimg::ImageContainer* original = image;
             if (k_enable_simd_cvt && original->m_format == bimg::TextureFormat::RGB8) { // User faster SIMD for conversion of common formats
@@ -324,7 +324,7 @@ namespace lu::graphics {
                 "Texture format not supported by GPU: {} converted to fallback format {} in {:.03f}ms",
                 string_VkFormat(static_cast<VkFormat>(format)),
                 string_VkFormat(k_texture_format_map[k_fallback_format].fmt),
-                std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(std::chrono::high_resolution_clock::now() - now).count()
+                eastl::chrono::duration_cast<eastl::chrono::duration<double, std::milli>>(eastl::chrono::high_resolution_clock::now() - now).count()
             );
             format = static_cast<vk::Format>(k_texture_format_map[k_fallback_format].fmt);
         }

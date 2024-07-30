@@ -22,7 +22,7 @@ namespace lu {
         Assimp::DefaultLogger::create("", Assimp::Logger::NORMAL);
         Assimp::DefaultLogger::get()->attachStream(new graphics::assimp_logger {}, Assimp::Logger::Info | Assimp::Logger::Err | Assimp::Logger::Warn);
 
-        const auto start = std::chrono::high_resolution_clock::now();
+        const auto start = eastl::chrono::high_resolution_clock::now();
 
         Assimp::Importer importer {};
         importer.SetIOHandler(new graphics::lunam_assimp_io_system {});
@@ -76,7 +76,7 @@ namespace lu {
                 const aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
                 const aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
 
-                const auto load_tex = [&](const std::initializer_list<aiTextureType> types) -> graphics::texture* {
+                const auto load_tex = [&](const eastl::initializer_list<aiTextureType> types) -> graphics::texture* {
                     for (auto textureType = types.begin(); textureType != types.end(); std::advance(textureType, 1)) {
                         if (!mat->GetTextureCount(*textureType)) [[unlikely]] continue;
                         aiString name {};
@@ -109,6 +109,6 @@ namespace lu {
 
         Assimp::DefaultLogger::kill();
 
-        log_info("Imported scene from file '{}', {} nodes in {:.03}s", path.c_str(), num_nodes, std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - start).count());
+        log_info("Imported scene from file '{}', {} nodes in {:.03}s", path.c_str(), num_nodes, eastl::chrono::duration_cast<eastl::chrono::duration<double>>(eastl::chrono::high_resolution_clock::now() - start).count());
     }
 }

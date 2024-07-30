@@ -34,7 +34,7 @@ extern "C" { // Ensure that the application uses the dedicated GPU instead of th
 
 namespace lu {
     using namespace std::filesystem;
-    using namespace std::chrono;
+    using namespace eastl::chrono;
 
     static constexpr std::size_t k_log_threads = 1;
     static constexpr std::size_t k_log_queue_size = 8192;

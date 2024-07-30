@@ -8,22 +8,22 @@
 
 namespace lu {
     /**
-    * @brief A stopwatch class that uses std::chrono for timekeeping.
+    * @brief A stopwatch class that uses eastl::chrono for timekeeping.
     * @tparam Clock
     */
-    template<typename Clock = std::chrono::high_resolution_clock>
+    template<typename Clock = eastl::chrono::high_resolution_clock>
     class stopwatch final {
     public:
         [[nodiscard]] inline auto stamp() const noexcept -> auto { return m_stamp; }
 
         template<typename Dur = typename Clock::duration>
         [[nodiscard]] inline auto elapsed() const -> Dur {
-            return std::chrono::duration_cast<Dur>(Clock::now() - m_stamp);
+            return eastl::chrono::duration_cast<Dur>(Clock::now() - m_stamp);
         }
 
         template <typename S = float> requires std::is_floating_point_v<S>
         [[nodiscard]] inline auto elapsed_secs() const -> S {
-            return std::chrono::duration_cast<std::chrono::duration<S>>(elapsed<>()).count();
+            return eastl::chrono::duration_cast<eastl::chrono::duration<S>>(elapsed<>()).count();
         }
 
         inline auto restart() -> void { m_stamp = Clock::now(); }

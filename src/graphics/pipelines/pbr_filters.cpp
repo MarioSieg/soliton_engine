@@ -10,7 +10,7 @@ namespace lu::graphics::pipelines {
 
     auto pbr_pipeline::generate_brdf_lut() -> void {
         log_info("Generating BRDF LUT...");
-        const auto now = std::chrono::high_resolution_clock::now();
+        const auto now = eastl::chrono::high_resolution_clock::now();
 
         const vk::Device dvc = vkb::vkdvc();
 
@@ -258,6 +258,6 @@ namespace lu::graphics::pipelines {
         dvc.destroyDescriptorSetLayout(descriptor_set_layout, vkb::get_alloc());
         dvc.destroyDescriptorPool(descriptor_pool, vkb::get_alloc());
 
-        log_info("BRDF LUT generated in {} ms", std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(std::chrono::high_resolution_clock::now() - now).count());
+        log_info("BRDF LUT generated in {} ms", eastl::chrono::duration_cast<eastl::chrono::duration<double, std::milli>>(eastl::chrono::high_resolution_clock::now() - now).count());
     }
 }
