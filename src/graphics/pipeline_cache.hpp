@@ -18,11 +18,11 @@ namespace lu::graphics {
         [[nodiscard]] auto get_pipelines() const -> const ankerl::unordered_dense::map<eastl::string, eastl::unique_ptr<pipeline_base>>& { return m_pipelines; }
         [[nodiscard]] auto get_pipeline(eastl::string&& name) -> pipeline_base& {
             if (!m_pipelines.contains(name)) [[unlikely]] {
-                log_error("Pipeline not found in registry: '{}'", name.c_str());
+                log_error("Pipeline not found in registry: '{}'", name);
                 for (const auto& [key, value] : m_pipelines) {
-                    log_error("Available pipeline: '{}'", key.c_str());
+                    log_error("Available pipeline: '{}'", key);
                 }
-                panic("Pipeline not found in registry: '{}'", name.c_str());
+                panic("Pipeline not found in registry: '{}'", name);
             }
             return *m_pipelines.at(name);
         }

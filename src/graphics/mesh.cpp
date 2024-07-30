@@ -70,7 +70,7 @@ namespace lu::graphics {
 	}
 
 	mesh::mesh(eastl::string&& path) : asset{assetmgr::asset_source::filesystem, std::move(path)} {
-        log_info("Loading mesh from file '{}'", get_asset_path().c_str());
+        log_info("Loading mesh from file '{}'", get_asset_path());
 
         Assimp::DefaultLogger::create("", Assimp::Logger::NORMAL);
         Assimp::DefaultLogger::get()->attachStream(new assimp_logger {}, Assimp::Logger::Info | Assimp::Logger::Err | Assimp::Logger::Warn);
@@ -78,7 +78,7 @@ namespace lu::graphics {
         eastl::vector<std::byte> blob {};
         assetmgr::with_primary_accessor_lock([&](assetmgr::asset_accessor &accessor) {
             if (!accessor.load_bin_file(get_asset_path().c_str(), blob)) {
-                panic("Failed to load mesh from file '{}'", get_asset_path().c_str());
+                panic("Failed to load mesh from file '{}'", get_asset_path());
             }
         });
 
@@ -93,7 +93,7 @@ namespace lu::graphics {
         }
         const aiScene* scene = importer.ReadFileFromMemory(blob.data(), blob.size(), load_flags, hint.empty() ? nullptr : hint.c_str());
         if (!scene || !scene->mNumMeshes) [[unlikely]] {
-            panic("Failed to load scene from file '{}': {}", get_asset_path().c_str(), importer.GetErrorString());
+            panic("Failed to load scene from file '{}': {}", get_asset_path(), importer.GetErrorString());
         }
 
 		const aiNode* node = scene->mRootNode;

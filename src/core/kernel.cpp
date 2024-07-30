@@ -50,7 +50,7 @@ namespace lu {
         eastl::vector<std::shared_ptr<spdlog::sinks::sink>> sinks {
             std::make_shared<buffered_sink>(k_log_queue_size),
             std::make_shared<spdlog::sinks::basic_file_sink_mt>(
-            fmt::format("{}/session {:%d-%m-%Y  %H-%M-%S}/{}.log", kernel::log_dir.c_str(), time, name.c_str())),
+            fmt::format("{}/session {:%d-%m-%Y  %H-%M-%S}/{}.log", kernel::log_dir, time, name)),
         };
         if (print_stdout) {
             sinks.emplace_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
@@ -148,8 +148,8 @@ static auto redirect_io() -> void {
         for (int i = 0; $environ[i] != nullptr; ++i) {
             log_info("  {}: {}", i, $environ[i]);
         }
-        log_info("Engine config dir: {}", config_dir.c_str());
-        log_info("Engine log dir: {}", log_dir.c_str());
+        log_info("Engine config dir: {}", config_dir);
+        log_info("Engine log dir: {}", log_dir);
 
         assetmgr::init();
 

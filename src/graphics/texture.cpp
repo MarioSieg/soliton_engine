@@ -74,11 +74,11 @@ namespace lu::graphics {
     }
 
     texture::texture(eastl::string&& asset_path) : asset {assetmgr::asset_source::filesystem, std::move(asset_path)} {
-        log_info("Loading texture '{}'", get_asset_path().c_str());
+        log_info("Loading texture '{}'", get_asset_path());
         eastl::vector<std::byte> texels {};
         assetmgr::with_primary_accessor_lock([&](assetmgr::asset_accessor &acc) {
             if (!acc.load_bin_file(get_asset_path().c_str(), texels)) {
-                panic("Failed to load texture '{}'", get_asset_path().c_str());
+                panic("Failed to load texture '{}'", get_asset_path());
             }
         });
         parse_from_raw_memory(texels);

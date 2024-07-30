@@ -191,9 +191,9 @@ namespace lu::vkb {
         if (!instance_extensions.empty()) [[likely]] {
             vk_instance_extensions.reserve(instance_extensions.size());
             for (const auto& ext : instance_extensions) {
-                log_info("Enabling instance extension: {}", ext.c_str());
+                log_info("Enabling instance extension: {}", ext);
                 if (std::ranges::find(m_supported_instance_extensions, ext) == m_supported_instance_extensions.end()) [[unlikely]] {
-                    panic("Instance extension {} not supported", ext.c_str());
+                    panic("Instance extension {} not supported", ext);
                 }
                 vk_instance_extensions.emplace_back(ext.c_str());
             }

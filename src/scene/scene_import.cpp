@@ -17,7 +17,7 @@
 
 namespace lu {
     auto scene::import_from_file(const eastl::string& path, const float scale, const std::uint32_t load_flags) -> void {
-        log_info("Importing scene from file '{}'", path.c_str());
+        log_info("Importing scene from file '{}'", path);
 
         Assimp::DefaultLogger::create("", Assimp::Logger::NORMAL);
         Assimp::DefaultLogger::get()->attachStream(new graphics::assimp_logger {}, Assimp::Logger::Info | Assimp::Logger::Err | Assimp::Logger::Warn);
@@ -29,10 +29,10 @@ namespace lu {
         passert(importer.ValidateFlags(load_flags));
         const aiScene* scene = importer.ReadFile(path.c_str(), load_flags);
         if (!scene || !scene->mNumMeshes) [[unlikely]] {
-            panic("Failed to load scene from file '{}': {}", path.c_str(), importer.GetErrorString());
+            panic("Failed to load scene from file '{}': {}", path, importer.GetErrorString());
         }
 
-        eastl::string asset_root = std::filesystem::path {path.c_str()}.parent_path().string().c_str();
+        eastl::string asset_root = std::filesystem::path{path.c_str()}.parent_path().string().c_str();
         asset_root += "/";
 
         auto* missing_material = get_asset_registry<graphics::material>().load_from_memory();
@@ -109,6 +109,6 @@ namespace lu {
 
         Assimp::DefaultLogger::kill();
 
-        log_info("Imported scene from file '{}', {} nodes in {:.03}s", path.c_str(), num_nodes, eastl::chrono::duration_cast<eastl::chrono::duration<double>>(eastl::chrono::high_resolution_clock::now() - start).count());
+        log_info("Imported scene from file '{}', {} nodes in {:.03}s", path, num_nodes, eastl::chrono::duration_cast<eastl::chrono::duration<double>>(eastl::chrono::high_resolution_clock::now() - start).count());
     }
 }

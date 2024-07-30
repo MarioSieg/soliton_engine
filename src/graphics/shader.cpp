@@ -133,7 +133,7 @@ namespace lu::graphics {
             success = acc.load_txt_file(variant.get_path().c_str(), source_code_glsl);
         });
         if (!success) [[unlikely]] {
-            log_error("Failed to load shader file: {}", variant.get_path().c_str());
+            log_error("Failed to load shader file: {}", variant.get_path());
             return nullptr;
         }
 
@@ -235,7 +235,7 @@ namespace lu::graphics {
 
     shader_cache::shader_cache(eastl::string&& shader_dir) : m_shader_dir{std::move(shader_dir)} {
         if (!std::filesystem::exists(m_shader_dir.c_str())) {
-            panic("Shader directory does not exist: {}", m_shader_dir.c_str());
+            panic("Shader directory does not exist: {}", m_shader_dir);
         }
     }
 
