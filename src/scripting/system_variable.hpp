@@ -125,6 +125,11 @@ namespace lu::scripting {
     template class system_variable<bool>;
     template class system_variable<float>;
     template class system_variable<double>;
+    template class system_variable<std::byte>;
+    template class system_variable<std::int8_t>;
+    template class system_variable<std::uint8_t>;
+    template class system_variable<std::int16_t>;
+    template class system_variable<std::uint16_t>;
     template class system_variable<std::int32_t>;
     template class system_variable<std::uint32_t>;
     template class system_variable<std::int64_t>;

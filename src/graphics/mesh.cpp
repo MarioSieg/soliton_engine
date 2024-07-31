@@ -168,10 +168,6 @@ namespace lu::graphics {
     		eastl::vector<std::uint16_t> indices16 {};
     		indices16.reserve(indices.size());
     		for (const index idx : indices) {
-                if (idx > eastl::numeric_limits<std::uint16_t>::max()) [[unlikely]] {
-                    log_warn("Index {} is greater than 16 bit limit, switching to 32 bit indices", idx);
-                    goto index32;
-                }
     			indices16.emplace_back(static_cast<std::uint16_t>(idx));
     		}
     		m_index_32bit = false;
@@ -184,8 +180,7 @@ namespace lu::graphics {
 				0,
 				indices16.data()
 			);
-    	} else {
-        index32: // 32 bit indices
+    	} else { // 32 bit indices
     		m_index_32bit = true;
     		m_index_count = static_cast<std::uint32_t>(indices.size());
     		m_index_buffer.create(
