@@ -4,6 +4,7 @@
 
 #include "vulkancore/buffer.hpp"
 #include "../assetmgr/assetmgr.hpp"
+#include "vertex.hpp"
 
 #include <DirectXMath.h>
 #include <DirectXCollision.h>
@@ -16,26 +17,8 @@
 namespace lu::graphics {
     class material;
 
-class mesh final : public assetmgr::asset {
+    class mesh final : public assetmgr::asset {
     public:
-        struct vertex final {
-            DirectX::XMFLOAT3 position;
-            DirectX::XMFLOAT3 normal;
-            DirectX::XMFLOAT2 uv;
-            DirectX::XMFLOAT3 tangent;
-            DirectX::XMFLOAT3 bitangent;
-        };
-
-        using index = std::uint32_t; // Meshes generally use 32-bit indices, 16-bit indices are used internally, when possible
-
-        struct primitive final {
-            std::uint32_t index_start = 0;
-            std::uint32_t index_count = 0;
-            std::uint32_t vertex_start = 0;
-            std::uint32_t vertex_count = 0;
-            DirectX::BoundingBox aabb {};
-        };
-
         explicit mesh(eastl::string&& path);
         explicit mesh(eastl::span<const aiMesh*> meshes);
         ~mesh() override = default;

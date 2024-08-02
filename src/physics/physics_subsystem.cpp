@@ -2,12 +2,16 @@
 
 #include "physics_subsystem.hpp"
 #include "../core/kernel.hpp"
+#include "layerdef.hpp"
+#include "broad_phase_layer.hpp"
+#include "broad_phase_layer_filter.hpp"
+#include "contact_listener.hpp"
+#include "object_layer_filter.hpp"
 
 #if USE_MIMALLOC
 #include <mimalloc.h>
 #endif
 
-#define RND_IMPLEMENTATION
 #include <execution>
 #include <Jolt/Jolt.h>
 #include <Jolt/RegisterTypes.h>
@@ -26,94 +30,21 @@
 #include <Jolt/Physics/Collision/Shape/ConvexHullShape.h>
 #include <Jolt/Physics/Collision/Shape/RotatedTranslatedShape.h>
 #include <Jolt/Physics/Collision/Shape/SphereShape.h>
+#include <Jolt/Physics/Collision/Shape/ScaledShape.h>
 
 #include "../graphics/graphics_subsystem.hpp"
 #include "../scripting/system_variable.hpp"
-#include "Jolt/Physics/Collision/Shape/ScaledShape.h"
 
 namespace lu::physics {
     using scripting::scripting_subsystem;
 
-	namespace Layers {
-		static constexpr JPH::ObjectLayer NON_MOVING = 0;
-		static constexpr JPH::ObjectLayer MOVING = 1;
-		static constexpr JPH::ObjectLayer NUM_LAYERS = 2;
-	}
-	namespace BroadPhaseLayers {
-		static constexpr JPH::BroadPhaseLayer NON_MOVING {0};
-		static constexpr JPH::BroadPhaseLayer MOVING {1};
-		static constexpr JPH::uint NUM_LAYERS = 2;
-	}
-
-	// BroadPhaseLayerInterface implementation
-	// This defines a mapping between object and broadphase layers.
-	class BPLayerInterfaceImpl : public JPH::BroadPhaseLayerInterface {
-	public:
-		BPLayerInterfaceImpl() {
-			// Create a mapping table from object to broad phase layer
-			mObjectToBroadPhase[Layers::NON_MOVING] = BroadPhaseLayers::NON_MOVING;
-			mObjectToBroadPhase[Layers::MOVING] = BroadPhaseLayers::MOVING;
-		}
-		virtual JPH::uint GetNumBroadPhaseLayers() const override {
-			return BroadPhaseLayers::NUM_LAYERS;
-		}
-		virtual JPH::BroadPhaseLayer GetBroadPhaseLayer(JPH::ObjectLayer inLayer) const override {
-			JPH_ASSERT(inLayer < Layers::NUM_LAYERS);
-			return mObjectToBroadPhase[inLayer];
-		}
-#if defined(JPH_EXTERNAL_PROFILE) || defined(JPH_PROFILE_ENABLED)
-		virtual const char* GetBroadPhaseLayerName(JPH::BroadPhaseLayer inLayer) const override {
-			return "";
-		}
-#endif
-	private:
-		JPH::BroadPhaseLayer mObjectToBroadPhase[Layers::NUM_LAYERS] {};
-	};
-
-	/// Class that determines if an object layer can collide with a broadphase layer
-	class ObjectVsBroadPhaseLayerFilterImpl : public JPH::ObjectVsBroadPhaseLayerFilter {
-	public:
-		virtual bool ShouldCollide(JPH::ObjectLayer inLayer1, JPH::BroadPhaseLayer inLayer2) const override {
-			switch (inLayer1) {
-				case Layers::NON_MOVING: return inLayer2 == BroadPhaseLayers::MOVING;
-				case Layers::MOVING: return true;
-				default: return false;
-			}
-		}
-	};
-
-	/// Class that determines if two object layers can collide
-	class ObjectLayerPairFilterImpl : public JPH::ObjectLayerPairFilter {
-	public:
-		virtual bool ShouldCollide(JPH::ObjectLayer inObject1, JPH::ObjectLayer inObject2) const override {
-			switch (inObject1) {
-				case Layers::NON_MOVING: return inObject2 == Layers::MOVING; // Non moving only collides with moving
-				case Layers::MOVING: return true; // Moving collides with everything
-				default: return false;
-			}
-		}
-	};
-
-	class ContactListenerImpl : public JPH::ContactListener {
-		virtual auto OnContactAdded(const JPH::Body& inBody1, const JPH::Body& inBody2,
-		                            const JPH::ContactManifold& inManifold,
-		                            JPH::ContactSettings& ioSettings) -> void override {
-			ioSettings.mCombinedFriction = std::sqrt(inBody1.GetFriction() * inBody2.GetFriction());
-			ioSettings.mCombinedRestitution = std::max(inBody1.GetRestitution(), inBody2.GetRestitution());
-		}
-		virtual auto OnContactPersisted(const JPH::Body& inBody1, const JPH::Body& inBody2,
-		                                const JPH::ContactManifold& inManifold,
-		                                JPH::ContactSettings& ioSettings) -> void override {
-		}
-	};
-
     static auto trace_proc(const char* msg, ...) -> void {
         va_list list;
         va_start(list, msg);
-        char buf[0x1000];
-        vsnprintf(buf, sizeof(buf), msg, list);
+        eastl::array<char, 0x1000> tmp {};
+        vsnprintf(tmp.data(), sizeof(tmp), msg, list);
         va_end(list);
-        log_info("[Physics]: {}", buf);
+        log_info("[Physics]: {}", tmp.data());
     }
 
     static const system_variable<std::uint64_t> cv_tmp_allocator_buffer_size {"Physics.tempAllocatorBufferSize", {32ull << 20}};
@@ -149,11 +80,10 @@ namespace lu::physics {
         	JPH::cMaxPhysicsBarriers,
             cv_num_physics_threads()
         );
-    	m_broad_phase = eastl::make_unique<BPLayerInterfaceImpl>();
-		m_broad_phase_filter = eastl::make_unique<ObjectVsBroadPhaseLayerFilterImpl>();
-    	m_object_layer_pair_filter = eastl::make_unique<ObjectLayerPairFilterImpl>();
-    	m_contact_listener = eastl::make_unique<ContactListenerImpl>();
-
+    	m_broad_phase = eastl::make_unique<broad_phase_layer>();
+		m_broad_phase_filter = eastl::make_unique<broad_phase_layer_filter>();
+    	m_object_layer_pair_filter = eastl::make_unique<object_layer_filter>();
+    	m_contact_listener = eastl::make_unique<contact_listener>();
     	m_physics_system.Init(
             cv_max_rigid_bodies(),
             cv_num_mutexes(),
@@ -195,7 +125,7 @@ namespace lu::physics {
 			settings->mMaxSlopeAngle = JPH::DegreesToRadians(55.0f);
     		settings->mMass = 80.0f;
     		settings->mGravityFactor = 2.0f;
-			settings->mLayer = Layers::MOVING;
+			settings->mLayer = layers::k_dynamic;
 			settings->mShape = capsule;
 			settings->mFriction = 0.5f;
 			settings->mSupportingVolume = JPH::Plane(JPH::Vec3::sAxisY(), -cCharacterRadiusStanding); // Accept contacts that touch the lower sphere of the capsule
@@ -285,7 +215,7 @@ namespace lu::physics {
         JPH::Quat rot;
         static_assert(sizeof(rot) == sizeof(DirectX::XMFLOAT4));
         DirectX::XMStoreFloat4(reinterpret_cast<DirectX::XMFLOAT4*>(&rot), DirectX::XMQuaternionNormalize(DirectX::XMLoadFloat4(&transform.rotation)));
-        auto shape = new JPH::MeshShape{JPH::MeshShapeSettings{mesh->verts, mesh->triangles}, result};
+        auto* const shape = new JPH::MeshShape{JPH::MeshShapeSettings{mesh->verts, mesh->triangles}, result};
         DirectX::XMFLOAT3A scale {};
         DirectX::XMStoreFloat3A(&scale, DirectX::XMLoadFloat4(&transform.scale));
         ci = {
@@ -293,7 +223,7 @@ namespace lu::physics {
             pos,
             rot,
             JPH::EMotionType::Static,
-            Layers::NON_MOVING
+            layers::k_static
         };
     }
 }

@@ -13,7 +13,7 @@
 namespace lu::graphics {
 	using namespace DirectX;
 
-	static auto compute_aabb(BoundingBox& aabb, const eastl::span<const mesh::vertex> vertices) noexcept -> void {
+	static auto compute_aabb(BoundingBox& aabb, const eastl::span<const vertex> vertices) noexcept -> void {
 		DirectX::XMVECTOR min = XMVectorReplicate(1e10f);
         DirectX::XMVECTOR max = XMVectorReplicate(-1e10f);
 		for (const auto& v : vertices) {
@@ -25,16 +25,16 @@ namespace lu::graphics {
 	}
 
 	static auto load_primitive(
-		eastl::vector<mesh::vertex>& vertices,
-		eastl::vector<mesh::index>& indices,
+		eastl::vector<vertex>& vertices,
+		eastl::vector<index>& indices,
 		const aiMesh* mesh,
-		mesh::primitive& prim_info,
+		primitive& prim_info,
 		BoundingBox& full_aabb
 	) -> void {
 		prim_info.vertex_start = vertices.size();
 		prim_info.index_start = indices.size();
 		for (unsigned i = 0; i < mesh->mNumVertices; ++i) {
-			mesh::vertex v {};
+			vertex v {};
 			v.position = eastl::bit_cast<XMFLOAT3>(mesh->mVertices[i]);
 			if (mesh->HasNormals()) {
 				v.normal = eastl::bit_cast<XMFLOAT3>(mesh->mNormals[i]);

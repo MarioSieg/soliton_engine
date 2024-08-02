@@ -159,9 +159,9 @@ namespace lu::graphics {
 
     auto graphics_pipeline::configure_vertex_info(eastl::vector<vk::VertexInputBindingDescription>& cfg, eastl::vector<vk::VertexInputAttributeDescription>& bindings) -> void {
         cfg.emplace_back(vk::VertexInputBindingDescription {
-                .binding = 0,
-                .stride = sizeof(mesh::vertex),
-                .inputRate = vk::VertexInputRate::eVertex
+            .binding = 0,
+            .stride = sizeof(vertex),
+            .inputRate = vk::VertexInputRate::eVertex
         });
 
         auto push_attribute = [&](const vk::Format format, const std::uint32_t offset) mutable  {
@@ -171,11 +171,11 @@ namespace lu::graphics {
             desc.format = format;
             desc.offset = offset;
         };
-        push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(mesh::vertex, position));
-        push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(mesh::vertex, normal));
-        push_attribute(vk::Format::eR32G32Sfloat, offsetof(mesh::vertex, uv));
-        push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(mesh::vertex, tangent));
-        push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(mesh::vertex, bitangent));
+        push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(vertex, position));
+        push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(vertex, normal));
+        push_attribute(vk::Format::eR32G32Sfloat, offsetof(vertex, uv));
+        push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(vertex, tangent));
+        push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(vertex, bitangent));
     }
 
     // graphics_pipeline! MIGHT BE RENDER THREAD LOCAL
@@ -183,7 +183,7 @@ namespace lu::graphics {
         constexpr vk::DeviceSize offsets = 0;
         cmd.bindIndexBuffer(mesh.get_index_buffer().get_buffer(), 0, mesh.is_index_32bit() ? vk::IndexType::eUint32 : vk::IndexType::eUint16);
         cmd.bindVertexBuffers(0, 1, &mesh.get_vertex_buffer().get_buffer(), &offsets);
-        for (const mesh::primitive& prim : mesh.get_primitives()) {
+        for (auto&& prim : mesh.get_primitives()) {
             cmd.drawIndexed(prim.index_count, 1, prim.index_start, 0, 1);
         }
     }
@@ -199,7 +199,7 @@ namespace lu::graphics {
         cmd.bindIndexBuffer(mesh.get_index_buffer().get_buffer(), 0, mesh.is_index_32bit() ? vk::IndexType::eUint32 : vk::IndexType::eUint16);
         cmd.bindVertexBuffers(0, 1, &mesh.get_vertex_buffer().get_buffer(), &offsets);
         if (mesh.get_primitives().size() <= mats.size()) { // we have at least one material for each primitive
-            for (std::size_t idx = 0; const mesh::primitive& prim : mesh.get_primitives()) {
+            for (std::size_t idx = 0; auto&& prim : mesh.get_primitives()) {
                 cmd.bindDescriptorSets(
                     vk::PipelineBindPoint::eGraphics,
                     layout,
