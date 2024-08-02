@@ -69,7 +69,7 @@ namespace lu::graphics {
 		compute_aabb(prim_info.aabb, {vertices.data() + prim_info.vertex_start, prim_info.vertex_count});
 	}
 
-	mesh::mesh(eastl::string&& path) : asset{assetmgr::asset_source::filesystem, std::move(path)} {
+	mesh::mesh(eastl::string&& path, const bool create_collider_mesh) : asset{assetmgr::asset_source::filesystem, std::move(path)} {
         log_info("Loading mesh from file '{}'", get_asset_path());
 
         Assimp::DefaultLogger::create("", Assimp::Logger::NORMAL);
@@ -118,14 +118,14 @@ namespace lu::graphics {
         const aiMesh* mesh = scene->mMeshes[node->mMeshes[0]];
         eastl::span span {&mesh, 1};
 
-		create_from_assimp(span);
+		create_from_assimp(span, create_collider_mesh);
 	}
 
-    mesh::mesh(const eastl::span<const aiMesh*> meshes) : asset{assetmgr::asset_source::memory} {
-		create_from_assimp(meshes);
+    mesh::mesh(const eastl::span<const aiMesh*> meshes, const bool create_collider_mesh) : asset{assetmgr::asset_source::memory} {
+		create_from_assimp(meshes, create_collider_mesh);
     }
 
-    auto mesh::create_from_assimp(const eastl::span<const aiMesh*> meshes) -> void {
+    auto mesh::create_from_assimp(const eastl::span<const aiMesh*> meshes, const bool create_collider_mesh) -> void {
 		std::size_t num_vertices = 0, num_indices = 0;
 		for (const aiMesh* mesh : meshes) {
 			num_vertices += mesh->mNumVertices;
@@ -143,12 +143,14 @@ namespace lu::graphics {
 		}
 		m_primitives.shrink_to_fit();
 		compute_aabb(m_aabb, vertices);
-		create_collision_mesh(vertices, indices);
 		create_buffers(vertices, indices);
 		m_approx_byte_size = sizeof(*this)
 			+ m_vertex_buffer.get_size()
 			+ m_index_buffer.get_size()
 			+ m_primitives.size() * sizeof(primitive);
+        if (create_collider_mesh) {
+            m_collision_mesh.emplace(physics::collider::new_mesh(vertices, indices));
+        }
     }
 
     auto mesh::create_buffers(const eastl::span<const vertex> vertices, const eastl::span<const index> indices) -> void {
@@ -193,18 +195,4 @@ namespace lu::graphics {
 			);
     	}
     }
-
-    auto mesh::create_collision_mesh(const eastl::span<const vertex> vertices, const eastl::span<const index> indices) -> void {
-		for (const vertex& v : vertices) {
-			verts.emplace_back(eastl::bit_cast<JPH::Float3>(v.position));
-		}
-		triangles.reserve(indices.size() / 3);
-		for (std::size_t i = 0; i < indices.size(); i += 3) {
-			JPH::IndexedTriangle tri {};
-			tri.mIdx[0] = indices[i];
-			tri.mIdx[1] = indices[i + 1];
-			tri.mIdx[2] = indices[i + 2];
-			triangles.emplace_back(tri);
-		}
-	}
 }

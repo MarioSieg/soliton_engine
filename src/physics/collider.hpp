@@ -14,7 +14,7 @@
 #include <Jolt/Physics/Collision/Shape/MeshShape.h>
 
 namespace lu::physics {
-    class collider final : public no_copy, public no_move {
+    class collider final : public no_copy {
     public:
         enum class shape_type {
             box,
@@ -35,9 +35,9 @@ namespace lu::physics {
         [[nodiscard]] auto data() const noexcept -> JPH::Shape* { return &*m_shape; }
 
     private:
-        explicit collider(const shape_type type, eastl::unique_ptr<JPH::Shape>&& shape) noexcept
+        explicit collider(const shape_type type, JPH::Ref<JPH::Shape>&& shape) noexcept
             : m_shape_type{type}, m_shape{std::move(shape)} {}
-        const shape_type m_shape_type {};
-        eastl::unique_ptr<JPH::Shape> m_shape {};
+        shape_type m_shape_type {};
+        JPH::Ref<JPH::Shape> m_shape {};
     };
 }

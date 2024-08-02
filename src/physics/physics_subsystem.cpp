@@ -206,8 +206,15 @@ namespace lu::physics {
     }
 
     auto physics_subsystem::create_static_body(JPH::BodyCreationSettings& ci, const com::transform& transform, const com::mesh_renderer& renderer) -> void {
-        passert(!renderer.meshes.empty());
-        const auto& mesh = renderer.meshes.front();
+        if (renderer.meshes.empty()) [[unlikely]] {
+            log_warn("Mesh renderer has no meshes");
+            return;
+        }
+        const auto* const mesh = renderer.meshes.front();
+        if (!mesh->get_collision_mesh()) [[unlikely]] {
+            log_warn("Mesh has no collision mesh");
+            return;
+        }
         JPH::Shape::ShapeResult result {};
         JPH::Vec3 pos;
         static_assert(sizeof(pos) == sizeof(DirectX::XMFLOAT3A));
@@ -215,11 +222,10 @@ namespace lu::physics {
         JPH::Quat rot;
         static_assert(sizeof(rot) == sizeof(DirectX::XMFLOAT4));
         DirectX::XMStoreFloat4(reinterpret_cast<DirectX::XMFLOAT4*>(&rot), DirectX::XMQuaternionNormalize(DirectX::XMLoadFloat4(&transform.rotation)));
-        auto* const shape = new JPH::MeshShape{JPH::MeshShapeSettings{mesh->verts, mesh->triangles}, result};
         DirectX::XMFLOAT3A scale {};
         DirectX::XMStoreFloat3A(&scale, DirectX::XMLoadFloat4(&transform.scale));
         ci = {
-            new JPH::ScaledShape{shape, eastl::bit_cast<JPH::Vec3>(scale)},
+            new JPH::ScaledShape{mesh->get_collision_mesh()->data(), eastl::bit_cast<JPH::Vec3>(scale)},
             pos,
             rot,
             JPH::EMotionType::Static,

@@ -11,16 +11,15 @@
 #include <assimp/mesh.h>
 #include <assimp/postprocess.h>
 
-#include <Jolt/Jolt.h>
-#include <Jolt/Physics/Collision/Shape/MeshShape.h>
+#include "../physics/collider.hpp"
 
 namespace lu::graphics {
     class material;
 
     class mesh final : public assetmgr::asset {
     public:
-        explicit mesh(eastl::string&& path);
-        explicit mesh(eastl::span<const aiMesh*> meshes);
+        explicit mesh(eastl::string&& path, bool create_collider_mesh = true);
+        explicit mesh(eastl::span<const aiMesh*> meshes, bool create_collider_mesh = true);
         ~mesh() override = default;
 
         [[nodiscard]] auto get_primitives() const noexcept -> eastl::span<const primitive> { return m_primitives; }
@@ -30,7 +29,7 @@ namespace lu::graphics {
         [[nodiscard]] auto get_vertex_count() const noexcept -> std::uint32_t { return m_vertex_count; }
         [[nodiscard]] auto get_index_count() const noexcept -> std::uint32_t { return m_index_count; }
         [[nodiscard]] auto is_index_32bit() const noexcept -> bool { return m_index_32bit; }
-        [[nodiscard]] auto get_collision_mesh() const noexcept -> const JPH::MeshShape* { return m_collision_mesh; }
+        [[nodiscard]] auto get_collision_mesh() const noexcept -> const eastl::optional<physics::collider>& { return m_collision_mesh; }
 
         static constexpr std::uint32_t k_import_flags = []() noexcept -> std::uint32_t { // TODO use flags from lua
             std::uint32_t k_import_flags = aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_ConvertToLeftHanded;
@@ -39,13 +38,9 @@ namespace lu::graphics {
             return k_import_flags;
         }();
 
-        std::vector<JPH::Float3, JPH::STLAllocator<JPH::Float3>> verts {};
-        std::vector<JPH::IndexedTriangle, JPH::STLAllocator<JPH::IndexedTriangle>> triangles {};
-
     private:
-        auto create_from_assimp(eastl::span<const aiMesh*> meshes) -> void;
+        auto create_from_assimp(eastl::span<const aiMesh*> meshes, bool create_collider_mesh) -> void;
         auto create_buffers(eastl::span<const vertex> vertices, eastl::span<const index> indices) -> void;
-        auto create_collision_mesh(eastl::span<const vertex> vertices, eastl::span<const index> indices) -> void;
 
         vkb::buffer m_vertex_buffer {};
         vkb::buffer m_index_buffer {};
@@ -54,6 +49,6 @@ namespace lu::graphics {
         bool m_index_32bit = false;
         eastl::vector<primitive> m_primitives {};
         DirectX::BoundingBox m_aabb {};
-        JPH::MeshShape* m_collision_mesh {};
+        eastl::optional<physics::collider> m_collision_mesh {};
     };
 }

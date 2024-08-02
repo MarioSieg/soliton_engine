@@ -5,28 +5,28 @@ namespace lu::physics {
     auto collider::new_box(const DirectX::XMFLOAT3A& half_extent) -> collider {
         return collider{
             shape_type::box,
-            eastl::make_unique<JPH::BoxShape>(eastl::bit_cast<JPH::Vec3>(half_extent))
+            new JPH::BoxShape(eastl::bit_cast<JPH::Vec3>(half_extent))
         };
     }
 
     auto collider::new_sphere(const float radius) -> collider {
         return collider{
             shape_type::sphere,
-            eastl::make_unique<JPH::SphereShape>(radius)
+            new JPH::SphereShape(radius)
         };
     }
 
     auto collider::new_cylinder(const float half_height, const float radius) -> collider {
         return collider{
             shape_type::cylinder,
-            eastl::make_unique<JPH::CylinderShape>(half_height, radius)
+            new JPH::CylinderShape(half_height, radius)
         };
     }
 
     auto collider::new_capsule(const float half_height, const float radius) -> collider {
         return collider{
             shape_type::capsule,
-            eastl::make_unique<JPH::CapsuleShape>(half_height, radius)
+            new JPH::CapsuleShape(half_height, radius)
         };
     }
 
@@ -46,9 +46,16 @@ namespace lu::physics {
             triangles.emplace_back(tri);
         }
         JPH::Shape::ShapeResult result {};
-        return collider{
+        auto self = collider{
             shape_type::mesh,
-            eastl::make_unique<JPH::MeshShape>(JPH::MeshShapeSettings{verts, triangles}, result)
+            new JPH::MeshShape{JPH::MeshShapeSettings{verts, triangles}, result}
         };
+        if (!result.IsValid()) [[unlikely]] {
+            if (result.HasError()) {
+                log_error("Failed to create mesh collider: {}", result.GetError());
+            }
+            panic("Failed to create mesh collider");
+        }
+        return self;
     }
 }
