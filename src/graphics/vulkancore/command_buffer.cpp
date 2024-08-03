@@ -11,14 +11,46 @@ namespace lu::vkb {
     static constinit std::atomic_uint32_t s_draw_call_count;
     static constinit std::atomic_uint32_t s_vertex_count;
 
-    command_buffer::command_buffer(const vk::CommandBuffer cmd, const vk::Queue queue, const vk::QueueFlagBits queue_flags) noexcept {
-        m_cmd = cmd;
-        m_queue = queue;
-        m_queue_flags = queue_flags;
-        bool valid_queue = queue_flags == vk::QueueFlagBits::eGraphics;
-        valid_queue |= queue_flags == vk::QueueFlagBits::eCompute;
-        valid_queue |= queue_flags == vk::QueueFlagBits::eTransfer;
-        passert(valid_queue);
+    static auto validate_queue_type(const vk::QueueFlagBits flags) -> void {
+        passert(flags == vk::QueueFlagBits::eGraphics || flags == vk::QueueFlagBits::eCompute || flags == vk::QueueFlagBits::eTransfer);
+    }
+
+    command_buffer::command_buffer(
+        const vk::CommandPool pool,
+        const vk::CommandBuffer cmd,
+        const vk::Queue queue,
+        const vk::QueueFlagBits queue_flags
+    ) : m_pool{pool}, m_cmd{cmd}, m_queue{queue}, m_queue_flags{queue_flags} {
+        validate_queue_type(queue_flags);
+    }
+
+    command_buffer::command_buffer(const vk::QueueFlagBits queue_flags, const vk::CommandBufferLevel level) : m_queue_flags{queue_flags} {
+        validate_queue_type(queue_flags);
+        vk::CommandBufferAllocateInfo cmd_alloc_info {};
+        switch (queue_flags) {
+            case vk::QueueFlagBits::eGraphics:
+                m_pool = ctx().get_graphics_command_pool();
+                m_queue = dvc().get_graphics_queue();
+                break;
+            case vk::QueueFlagBits::eCompute:
+                m_pool = ctx().get_compute_command_pool();
+                m_queue = dvc().get_compute_queue();
+                break;
+            case vk::QueueFlagBits::eTransfer:
+                m_pool = ctx().get_transfer_command_pool();
+                m_queue = dvc().get_transfer_queue();
+                break;
+            default:
+                panic("Invalid queue type");
+        }
+        cmd_alloc_info.commandPool = m_pool;
+        cmd_alloc_info.level = level;
+        cmd_alloc_info.commandBufferCount = 1;
+        vkcheck(vkdvc().allocateCommandBuffers(&cmd_alloc_info, &m_cmd)); // TODO: not thread safe
+    }
+
+    command_buffer::~command_buffer() {
+        vkdvc().freeCommandBuffers(m_pool, 1, &m_cmd);
     }
 
     auto command_buffer::begin(const vk::CommandBufferUsageFlagBits usage) -> void {

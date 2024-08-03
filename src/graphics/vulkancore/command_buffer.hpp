@@ -20,9 +20,11 @@ namespace lu::vkb {
         alignof(T) <= 16;
     };
 
-    class command_buffer final {
+    class command_buffer final : public no_move, public no_copy {
     public:
-        explicit command_buffer(vk::CommandBuffer cmd, vk::Queue queue, vk::QueueFlagBits queue_flags) noexcept;
+        explicit command_buffer(vk::CommandPool pool, vk::CommandBuffer cmd, vk::Queue queue, vk::QueueFlagBits queue_flags);
+        explicit command_buffer(vk::QueueFlagBits queue_flags, vk::CommandBufferLevel level);
+        ~command_buffer();
         [[nodiscard]] constexpr auto get() const noexcept -> vk::CommandBuffer { return m_cmd; }
         constexpr operator vk::CommandBuffer() const noexcept { return m_cmd; }
 
@@ -48,6 +50,7 @@ namespace lu::vkb {
         }
 
     private:
+        vk::CommandPool m_pool {};
         vk::CommandBuffer m_cmd {};
         vk::Queue m_queue {};
         vk::QueueFlagBits m_queue_flags {};
