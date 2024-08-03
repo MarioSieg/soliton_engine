@@ -10,8 +10,8 @@
 #endif
 
 #include "material.hpp"
+#include "draw_partition.hpp"
 #include "pipeline_cache.hpp"
-
 #include "pipelines/pbr_pipeline.hpp"
 #include "pipelines/sky.hpp"
 
@@ -72,15 +72,6 @@ namespace lu::graphics {
         s_instance = nullptr;
     }
 
-    [[nodiscard]] static auto compute_render_bucket_range(const std::size_t id, const std::size_t num_entities, const std::size_t num_threads) noexcept -> eastl::array<std::size_t, 2> {
-        const std::size_t base_bucket_size = num_entities/num_threads;
-        const std::size_t num_extra_entities = num_entities%num_threads;
-        const std::size_t begin = base_bucket_size*id + std::min(id, num_extra_entities);
-        const std::size_t end = begin + base_bucket_size + (id < num_extra_entities ? 1 : 0);
-        passert(begin <= end && end <= num_entities);
-        return {begin, end};
-    }
-
     [[nodiscard]] static auto find_main_camera() -> flecs::entity {
         const auto filter = scene::get_active().filter<const com::transform, const com::camera>();
         if (filter.count() > 0) {
@@ -137,27 +128,13 @@ namespace lu::graphics {
         const DirectX::XMMATRIX vp = DirectX::XMLoadFloat4x4A(&graphics_subsystem::s_view_proj_mtx);
 
         // thread workload distribution
-        const eastl::vector<eastl::pair<eastl::span<const com::transform>, eastl::span<const com::mesh_renderer>>>& render_data = self.get_render_data();
-        const std::size_t total_entities = std::accumulate(render_data.cbegin(), render_data.cend(), 0, [](const std::size_t acc, const auto& pair) noexcept {
-            passert(pair.first.size() == pair.second.size());
-            return acc + pair.first.size();
+        partitioned_draw(bucket_id, num_threads, self.get_render_data(), [&pbr_pipeline, &vp, cmd](
+            const std::size_t i,
+            const com::transform& transform,
+            const com::mesh_renderer& renderer
+        ) -> void {
+            pbr_pipeline.render_mesh(cmd, pbr_pipeline.get_layout(), transform, renderer, s_frustum, vp);
         });
-
-        // Compute start and end for this thread across all entities
-        const auto [global_start, global_end] = compute_render_bucket_range(bucket_id, total_entities, num_threads);
-        std::size_t processed_entities = 0;
-        for (const auto& [transforms, renderers] : render_data) {
-            if (processed_entities >= global_end) break; // Already processed all entities this thread is responsible for
-            std::size_t local_start = 0;
-            std::size_t local_end = transforms.size();
-            if (processed_entities < global_start)
-                local_start = std::min(transforms.size(), global_start - processed_entities);
-            if (processed_entities + transforms.size() > global_end)
-                local_end = std::min(transforms.size(), global_end - processed_entities);
-            for (std::size_t i = local_start; i < local_end; ++i)
-                pbr_pipeline.render_mesh(cmd, pbr_pipeline.get_layout(), transforms[i], renderers[i], s_frustum, vp);
-            processed_entities += transforms.size();
-        }
 
         if (bucket_id == num_threads - 1) { // Last thread
             if (eastl::optional<debugdraw>& dd = self.get_debug_draw_opt(); dd) {
