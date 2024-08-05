@@ -145,8 +145,8 @@ namespace lu::graphics {
 		compute_aabb(m_aabb, vertices);
 		create_buffers(vertices, indices);
 		m_approx_byte_size = sizeof(*this)
-			+ m_vertex_buffer.get_size()
-			+ m_index_buffer.get_size()
+			+ m_vertex_buffer->get_size()
+			+ m_index_buffer->get_size()
 			+ m_primitives.size() * sizeof(primitive);
         if (create_collider_mesh) {
             m_collision_mesh.emplace(physics::collider::new_mesh(vertices, indices));
@@ -156,7 +156,7 @@ namespace lu::graphics {
     auto mesh::create_buffers(const eastl::span<const vertex> vertices, const eastl::span<const index> indices) -> void {
     	passert(indices.size() <= eastl::numeric_limits<index>::max());
 
-    	m_vertex_buffer.create(
+    	m_vertex_buffer.emplace(
 			vertices.size() * sizeof(vertices[0]),
 			0,
 			vk::BufferUsageFlagBits::eVertexBuffer,
@@ -174,7 +174,7 @@ namespace lu::graphics {
     		}
     		m_index_32bit = false;
     		m_index_count = static_cast<std::uint32_t>(indices16.size());
-    		m_index_buffer.create(
+    		m_index_buffer.emplace(
 				indices16.size() * sizeof(indices16[0]),
 				0,
 				vk::BufferUsageFlagBits::eIndexBuffer,
@@ -185,7 +185,7 @@ namespace lu::graphics {
     	} else { // 32 bit indices
     		m_index_32bit = true;
     		m_index_count = static_cast<std::uint32_t>(indices.size());
-    		m_index_buffer.create(
+    		m_index_buffer.emplace(
 				indices.size() * sizeof(indices[0]),
 				0,
 				vk::BufferUsageFlagBits::eIndexBuffer,

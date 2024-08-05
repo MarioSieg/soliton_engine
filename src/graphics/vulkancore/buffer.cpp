@@ -5,14 +5,14 @@
 #include "command_buffer.hpp"
 
 namespace lu::vkb {
-    auto buffer::create(
+    buffer::buffer(
         const std::size_t size,
         const std::size_t alignment,
         vk::BufferUsageFlags buffer_usage,
         const VmaMemoryUsage memory_usage,
         const VmaAllocationCreateFlags create_flags,
         const void* data
-    ) -> void {
+    ) {
         m_allocator = vkb::dvc().get_allocator();
         vk::BufferCreateInfo buffer_create_info {};
         buffer_create_info.size = size;
@@ -93,15 +93,14 @@ namespace lu::vkb {
     auto buffer::upload_data(const void* data, const std::size_t size, const std::size_t offset) -> void {
         const vk::Device device = vkb::vkdvc();
         if (m_memory_usage == VMA_MEMORY_USAGE_GPU_ONLY) {
-            buffer staging_buffer {};
-            staging_buffer.create(
+            buffer staging_buffer {
                 size,
                 0,
                 vk::BufferUsageFlagBits::eTransferSrc,
                 VMA_MEMORY_USAGE_CPU_ONLY,
                 VMA_ALLOCATION_CREATE_MAPPED_BIT,
                 data
-            );
+            };
 
             command_buffer copy_cmd {vk::QueueFlagBits::eTransfer};
             copy_cmd.begin();

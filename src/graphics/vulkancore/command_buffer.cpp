@@ -142,10 +142,12 @@ namespace lu::vkb {
 
     auto command_buffer::push_consts_start() -> void {
         m_push_constant_offset = 0;
+        m_push_consts_init = true;
     }
 
     auto command_buffer::push_consts_raw(const vk::ShaderStageFlagBits stage, const void* buf, std::size_t size) -> void {
         passert(m_bounded_pipeline != nullptr);
+        passert(m_push_consts_init);
         m_cmd.pushConstants(
             m_bounded_pipeline->get_layout(),
             stage,

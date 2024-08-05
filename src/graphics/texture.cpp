@@ -367,8 +367,14 @@ namespace lu::graphics {
         const vk::ImageLayout src_layout,
         const vk::ImageLayout dst_layout
     ) const -> void {
-        vkb::buffer staging {};
-        staging.create(size, 0, vk::BufferUsageFlagBits::eTransferSrc, VMA_MEMORY_USAGE_CPU_ONLY, VMA_ALLOCATION_CREATE_MAPPED_BIT, data);
+        vkb::buffer staging {
+            size,
+            0,
+            vk::BufferUsageFlagBits::eTransferSrc,
+            VMA_MEMORY_USAGE_CPU_ONLY,
+            VMA_ALLOCATION_CREATE_MAPPED_BIT,
+            data
+        };
 
         vk::ImageSubresourceRange subresource_range {};
         subresource_range.aspectMask = vk::ImageAspectFlagBits::eColor;

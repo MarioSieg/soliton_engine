@@ -37,6 +37,8 @@ namespace lu::graphics::pipelines {
                 }
             }
 
+            cmd_buf.push_consts_start();
+
             push_constants_vs pc_vs {};
             DirectX::XMStoreFloat4x4A(&pc_vs.model_view_proj, DirectX::XMMatrixMultiply(model, vp));
             DirectX::XMStoreFloat4x4A(&pc_vs.normal_matrix, DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(nullptr, model)));

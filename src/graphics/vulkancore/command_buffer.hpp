@@ -90,5 +90,6 @@ namespace lu::vkb {
         const graphics::pipeline_base* m_bounded_pipeline {};
         std::size_t m_push_constant_offset {};
         bool m_is_owned {};
+        bool m_push_consts_init {};
     };
 }

@@ -24,8 +24,8 @@ namespace lu::graphics {
 
         [[nodiscard]] auto get_primitives() const noexcept -> eastl::span<const primitive> { return m_primitives; }
         [[nodiscard]] auto get_aabb() const noexcept -> const DirectX::BoundingBox& { return m_aabb; }
-        [[nodiscard]] auto get_vertex_buffer() const noexcept -> const vkb::buffer& { return m_vertex_buffer; }
-        [[nodiscard]] auto get_index_buffer() const noexcept -> const vkb::buffer& { return m_index_buffer; }
+        [[nodiscard]] auto get_vertex_buffer() const noexcept -> const vkb::buffer& { return *m_vertex_buffer; }
+        [[nodiscard]] auto get_index_buffer() const noexcept -> const vkb::buffer& { return *m_index_buffer; }
         [[nodiscard]] auto get_vertex_count() const noexcept -> std::uint32_t { return m_vertex_count; }
         [[nodiscard]] auto get_index_count() const noexcept -> std::uint32_t { return m_index_count; }
         [[nodiscard]] auto is_index_32bit() const noexcept -> bool { return m_index_32bit; }
@@ -42,8 +42,8 @@ namespace lu::graphics {
         auto create_from_assimp(eastl::span<const aiMesh*> meshes, bool create_collider_mesh) -> void;
         auto create_buffers(eastl::span<const vertex> vertices, eastl::span<const index> indices) -> void;
 
-        vkb::buffer m_vertex_buffer {};
-        vkb::buffer m_index_buffer {};
+        eastl::optional<vkb::buffer> m_vertex_buffer {};
+        eastl::optional<vkb::buffer> m_index_buffer {};
         std::uint32_t m_vertex_count = 0;
         std::uint32_t m_index_count = 0;
         bool m_index_32bit = false;

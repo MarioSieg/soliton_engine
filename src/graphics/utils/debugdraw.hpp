@@ -76,8 +76,8 @@ namespace lu::graphics {
         float m_fade_start = 0.0f;
         float m_fade_end = 0.0f;
         bool m_distance_fade = false;
-        vkb::buffer m_vertex_buffer {};
-        vkb::buffer m_uniform {};
+        eastl::optional<vkb::buffer> m_vertex_buffer {};
+        eastl::optional<vkb::buffer> m_uniform {};
         vk::PipelineLayout m_pipeline_layout {};
         vk::DescriptorSetLayout m_descriptor_set_layout {};
         vk::DescriptorSet m_descriptor_set {};
