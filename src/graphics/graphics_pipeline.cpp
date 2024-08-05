@@ -178,57 +178,6 @@ namespace lu::graphics {
         push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(vertex, bitangent));
     }
 
-    // graphics_pipeline! MIGHT BE RENDER THREAD LOCAL
-    auto graphics_pipeline::draw_mesh(const mesh& mesh, const vk::CommandBuffer cmd) -> void {
-        constexpr vk::DeviceSize offsets = 0;
-        cmd.bindIndexBuffer(mesh.get_index_buffer().get_buffer(), 0, mesh.is_index_32bit() ? vk::IndexType::eUint32 : vk::IndexType::eUint16);
-        cmd.bindVertexBuffers(0, 1, &mesh.get_vertex_buffer().get_buffer(), &offsets);
-        for (auto&& prim : mesh.get_primitives()) {
-            cmd.drawIndexed(prim.index_count, 1, prim.index_start, 0, 1);
-        }
-    }
-
-    // WARNING! MIGHT BE RENDER THREAD LOCAL
-    auto graphics_pipeline::draw_mesh(
-        const mesh& mesh,
-        const vk::CommandBuffer cmd,
-        const eastl::span<material* const> mats,
-        const vk::PipelineLayout layout
-    ) -> void {
-        constexpr vk::DeviceSize offsets = 0;
-        cmd.bindIndexBuffer(mesh.get_index_buffer().get_buffer(), 0, mesh.is_index_32bit() ? vk::IndexType::eUint32 : vk::IndexType::eUint16);
-        cmd.bindVertexBuffers(0, 1, &mesh.get_vertex_buffer().get_buffer(), &offsets);
-        if (mesh.get_primitives().size() <= mats.size()) { // we have at least one material for each primitive
-            for (std::size_t idx = 0; auto&& prim : mesh.get_primitives()) {
-                cmd.bindDescriptorSets(
-                    vk::PipelineBindPoint::eGraphics,
-                    layout,
-                    0,
-                    1,
-                    &mats[idx++]->get_descriptor_set(),
-                    0,
-                    nullptr
-                );
-                cmd.drawIndexed(prim.index_count, 1, prim.index_start, 0, 1);
-                graphics_subsystem::s_num_draw_calls.fetch_add(1, std::memory_order_relaxed);
-                graphics_subsystem::s_num_draw_verts.fetch_add(prim.vertex_count, std::memory_order_relaxed);
-            }
-        } else {
-            cmd.bindDescriptorSets(
-                    vk::PipelineBindPoint::eGraphics,
-                    layout,
-                    0,
-                    1,
-                    &mats[0]->get_descriptor_set(),
-                    0,
-                    nullptr
-            );
-            cmd.drawIndexed(mesh.get_index_count(), 1, 0, 0, 0);
-            graphics_subsystem::s_num_draw_calls.fetch_add(1, std::memory_order_relaxed);
-            graphics_subsystem::s_num_draw_verts.fetch_add(mesh.get_vertex_count(), std::memory_order_relaxed);
-        }
-    }
-
     auto graphics_pipeline::configure_enable_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> void {
         passert(type == pipeline_type::graphics);
         cfg.colorWriteMask = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA;

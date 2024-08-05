@@ -2,13 +2,17 @@
 
 #pragma once
 
-#include <optional>
-
 #include "vulkancore/prelude.hpp"
 #include "vulkancore/context.hpp"
+#include "vulkancore/command_buffer.hpp"
 
 namespace lu::graphics {
-    using render_bucket_callback = auto(const vk::CommandBuffer cmd_buf, const std::int32_t bucket_id, const std::int32_t num_threads, void* usr) -> void;
+    using render_bucket_callback = auto (
+        vkb::command_buffer& cmd,
+        const std::int32_t bucket_id,
+        const std::int32_t num_threads,
+        void* usr
+    ) -> void;
 
     struct thread_shared_ctx final {
         thread_sig m_sig_render_subset {};
@@ -31,9 +35,7 @@ namespace lu::graphics {
         );
         ~render_thread();
 
-        [[nodiscard]] auto get_active_command_buffer() const noexcept -> vk::CommandBuffer {
-            return m_active_command_buffer;
-        }
+        [[nodiscard]] auto get_active_command_buffer() const noexcept -> vkb::command_buffer* { return m_active_command_buffer; }
 
     private:
         HOTPROC auto thread_routine() -> void;
@@ -46,8 +48,8 @@ namespace lu::graphics {
         thread_shared_ctx& m_shared_ctx;
         std::thread m_thread {};
         vk::CommandPool m_command_pool {};
-        eastl::array<vk::CommandBuffer, vkb::context::k_max_concurrent_frames> m_command_buffers {};
-        vk::CommandBuffer m_active_command_buffer {};
+        eastl::vector<vkb::command_buffer> m_command_buffers {};
+        vkb::command_buffer* m_active_command_buffer;
     };
 
     class render_thread_pool final : public no_copy, public no_move {
@@ -56,7 +58,7 @@ namespace lu::graphics {
         ~render_thread_pool();
 
         auto begin_frame(const vk::CommandBufferInheritanceInfo* inheritance_info) -> void;
-        auto process_frame(vk::CommandBuffer primary) -> void;
+        auto process_frame(vkb::command_buffer& primary_cmd) -> void;
 
     private:
         const std::int32_t m_num_threads {};

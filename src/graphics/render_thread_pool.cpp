@@ -17,6 +17,8 @@ namespace lu::graphics {
         thread_shared_ctx& shared_ctx
     ) : m_token {token}, m_num_threads {num_threads}, m_thread_id {thread_id}, m_shared_ctx {shared_ctx} {
         const vk::Device device = vkb::vkdvc();
+        const vk::Queue queue = vkb::dvc().get_graphics_queue();
+
         // create command pool
         const vk::CommandPoolCreateInfo pool_info {
             .flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer,
@@ -29,19 +31,27 @@ namespace lu::graphics {
             .level = vk::CommandBufferLevel::eSecondary,
             .commandBufferCount = vkb::context::k_max_concurrent_frames
         };
-        vkcheck(device.allocateCommandBuffers(&alloc_info, m_command_buffers.data()));
+
+        eastl::vector<vk::CommandBuffer> command_buffers {};
+        command_buffers.resize(vkb::context::k_max_concurrent_frames);
+        vkcheck(device.allocateCommandBuffers(&alloc_info, command_buffers.data()));
+
+        m_command_buffers.reserve(command_buffers.size());
+        for (const vk::CommandBuffer cmd : command_buffers) {
+            m_command_buffers.emplace_back(m_command_pool, cmd, queue, vk::QueueFlagBits::eGraphics);
+        }
 
         // start thread
         m_thread = std::thread { [=, this] () -> void { thread_routine(); }};
     }
 
     render_thread::~render_thread() {
-        std::this_thread::sleep_for(std::chrono::milliseconds{100}); // wait for thread to finish (if it's still running
+        std::this_thread::sleep_for(std::chrono::milliseconds{100}); // wait for thread to finish (if it's still running)
         if (m_thread.joinable()) {
             m_thread.join();
         }
         const vk::Device device = vkb::vkdvc();
-        device.freeCommandBuffers(m_command_pool, vkb::context::k_max_concurrent_frames, m_command_buffers.data());
+        m_command_buffers.clear();
         device.destroyCommandPool(m_command_pool, vkb::get_alloc());
     }
 
@@ -64,11 +74,10 @@ namespace lu::graphics {
         pthread_attr_destroy(&thr_attr);
 #endif
 
-        while (!m_token.load(std::memory_order_relaxed)) [[likely]] {
-            if (!begin_thread_frame()) [[unlikely]] {
-                break;
-            }
-            (*m_shared_ctx.render_callback)(m_active_command_buffer, m_thread_id, m_num_threads, m_shared_ctx.usr);
+        for (;;) {
+            if (m_token.load(std::memory_order_relaxed)) [[unlikely]] break;
+            if (!begin_thread_frame()) [[unlikely]] break;
+            (*m_shared_ctx.render_callback)(*m_active_command_buffer, m_thread_id, m_num_threads, m_shared_ctx.usr);
             end_thread_frame();
         }
 
@@ -77,44 +86,22 @@ namespace lu::graphics {
 
     auto render_thread::begin_thread_frame() -> bool {
         const std::int32_t signaled = m_shared_ctx.m_sig_render_subset.wait(true, m_num_threads);
-        if (signaled < 0) [[unlikely]] {
-            return false;
-        }
+        if (signaled < 0) [[unlikely]] return false;
 
-        const vk::CommandBufferBeginInfo begin_info {
-            .flags = vk::CommandBufferUsageFlagBits::eRenderPassContinue,
-            .pInheritanceInfo = m_shared_ctx.inheritance_info
-        };
-
-        m_active_command_buffer = m_command_buffers[vkb::ctx().get_current_frame()];
-        vkcheck(m_active_command_buffer.begin(&begin_info));
+        m_active_command_buffer = &m_command_buffers[vkb::ctx().get_current_frame()];
+        m_active_command_buffer->begin(vk::CommandBufferUsageFlagBits::eRenderPassContinue, m_shared_ctx.inheritance_info);
 
         const auto w = static_cast<float>(vkb::ctx().get_width());
         const auto h = static_cast<float>(vkb::ctx().get_height());
 
-        // Update dynamic viewport state
-        vk::Viewport viewport {};
-        viewport.width = w;
-        viewport.height = -h;
-        viewport.x = 0.0f;
-        viewport.y = h;
-        viewport.minDepth = 0.0f;
-        viewport.maxDepth = 1.0f;
-        m_active_command_buffer.setViewport(0, 1, &viewport);
-
-        // Update dynamic scissor state
-        vk::Rect2D scissor {};
-        scissor.extent.width = w;
-        scissor.extent.height = h;
-        scissor.offset.x = 0.0f;
-        scissor.offset.y = 0.0f;
-        m_active_command_buffer.setScissor(0, 1, &scissor);
+        m_active_command_buffer->set_viewport(0.0f, h, w, -h);
+        m_active_command_buffer->set_scissor(w, h);
 
         return true;
     }
 
     auto render_thread::end_thread_frame() const -> void {
-        vkcheck(m_active_command_buffer.end());
+        m_active_command_buffer->end();
 
         // Atomically increment the number of completed threads
         const std::int32_t completed = 1 + m_shared_ctx.m_num_threads_completed.fetch_add(1, std::memory_order_seq_cst);
@@ -161,16 +148,14 @@ namespace lu::graphics {
         m_shared_ctx.m_sig_render_subset.trigger(true);
     }
 
-    auto render_thread_pool::process_frame(const vk::CommandBuffer primary) -> void {
-        if (!m_num_threads) [[unlikely]] {
-            return;
-        }
+    auto render_thread_pool::process_frame(vkb::command_buffer& primary_cmd) -> void {
+        if (!m_num_threads) [[unlikely]] return;
         m_shared_ctx.m_sig_execute_command_buffers.wait(true, 1);
         auto* secondary_command_buffers = static_cast<vk::CommandBuffer*>(alloca(m_num_threads * sizeof(vk::CommandBuffer)));
         for (std::int32_t i = 0; i < m_num_threads; ++i) {
-            secondary_command_buffers[i] = m_threads[i]->get_active_command_buffer();
+            secondary_command_buffers[i] = **m_threads[i]->get_active_command_buffer();
         }
-        primary.executeCommands(m_num_threads, secondary_command_buffers);
+        primary_cmd.execute_commands(eastl::span{secondary_command_buffers, static_cast<std::size_t>(m_num_threads)});
         m_shared_ctx.m_num_threads_ready.store(0, std::memory_order_seq_cst);
         m_shared_ctx.m_sig_next_frame.trigger(true);
     }

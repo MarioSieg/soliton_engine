@@ -2,6 +2,7 @@
 
 #include "buffer.hpp"
 #include "context.hpp"
+#include "command_buffer.hpp"
 
 namespace lu::vkb {
     auto buffer::create(
@@ -102,14 +103,11 @@ namespace lu::vkb {
                 data
             );
 
-            const vk::CommandBuffer copy_cmd = vkb::ctx().start_command_buffer<vk::QueueFlagBits::eTransfer>();
-
-            vk::BufferCopy copy_region {};
-            copy_region.size = size;
-            copy_region.dstOffset = offset;
-            copy_cmd.copyBuffer(staging_buffer.get_buffer(), m_buffer, 1, &copy_region);
-
-            vkb::ctx().flush_command_buffer<vk::QueueFlagBits::eTransfer>(copy_cmd);
+            command_buffer copy_cmd {vk::QueueFlagBits::eTransfer};
+            copy_cmd.begin();
+            copy_cmd.copy_buffer(staging_buffer.get_buffer(), m_buffer, size, offset);
+            copy_cmd.end();
+            copy_cmd.flush();
         } else {
             if (!m_mapped) {
                 vkcheck(device.mapMemory(m_memory, 0, size, {}, &m_mapped));

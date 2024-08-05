@@ -62,7 +62,10 @@ namespace lu::vkb {
 
     // Set clear values for all framebuffer attachments with loadOp set to clear
     // We use two attachments (color and depth) that are cleared at the start of the subpass and as such we need to set clear values for both
-    auto context::begin_frame(const DirectX::XMFLOAT4A& clear_color, vk::CommandBufferInheritanceInfo* out_inheritance_info) -> vk::CommandBuffer {
+    auto context::begin_frame(
+        const DirectX::XMFLOAT4A& clear_color,
+        vk::CommandBufferInheritanceInfo* out_inheritance_info
+    ) -> eastl::optional<command_buffer> {
         m_clear_values[0].color = eastl::bit_cast<vk::ClearColorValue>(clear_color);
         m_clear_values[1].color = eastl::bit_cast<vk::ClearColorValue>(clear_color);
         m_clear_values[2].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
@@ -77,7 +80,7 @@ namespace lu::vkb {
         if (result == vk::Result::eErrorOutOfDateKHR || result == vk::Result::eSuboptimalKHR) [[unlikely]] {
             if (result == vk::Result::eErrorOutOfDateKHR) {
                 on_resize();
-                return nullptr; // Skip rendering this frame
+                return eastl::nullopt; // Skip rendering this frame
             }
         } else {
             vkcheck(result);
@@ -94,15 +97,15 @@ namespace lu::vkb {
         constexpr vk::CommandBufferBeginInfo command_buffer_begin_info {};
         vkcheck(cmd_buf.begin(&command_buffer_begin_info));
 
-        return cmd_buf;
+        return command_buffer{m_graphics_command_pool, cmd_buf, dvc().get_graphics_queue(), vk::QueueFlagBits::eGraphics};
     }
 
-    auto context::end_frame(const vk::CommandBuffer cmd) -> void {
+    auto context::end_frame(command_buffer& cmd) -> void {
         vk::PipelineStageFlags wait_stage_mask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
         vk::SubmitInfo submit_info {};
         submit_info.pWaitDstStageMask = &wait_stage_mask;
         submit_info.commandBufferCount = 1;
-        submit_info.pCommandBuffers = &cmd;
+        submit_info.pCommandBuffers = &*cmd;
         // Semaphore to wait upon before the submitted command buffer starts executing
         submit_info.waitSemaphoreCount = 1;
         submit_info.pWaitSemaphores = &m_semaphores.present_complete[m_current_frame];
@@ -111,7 +114,7 @@ namespace lu::vkb {
         submit_info.pSignalSemaphores = &m_semaphores.render_complete[m_current_frame];
 
         // Submit to the graphics queue passing a wait fence
-        vkcheck(m_device->get_graphics_queue().submit(1, &submit_info, m_wait_fences[m_current_frame]));
+        vkcheck(cmd.queue().submit(1, &submit_info, m_wait_fences[m_current_frame]));
 
         // Present the current frame buffer to the swap chain
         // Pass the semaphore signaled by the command buffer submission from the submit info as the wait semaphore for swap chain presentation
@@ -465,7 +468,7 @@ namespace lu::vkb {
         }
     }
 
-    auto context::begin_render_pass(vk::CommandBuffer cmd, vk::RenderPass pass, vk::SubpassContents contents) -> void {
+    auto context::begin_render_pass(command_buffer& cmd, vk::RenderPass pass, vk::SubpassContents contents) -> void {
         vk::RenderPassBeginInfo render_pass_begin_info {};
         render_pass_begin_info.renderPass = pass;
         render_pass_begin_info.framebuffer = m_framebuffers[m_image_index];
@@ -473,11 +476,11 @@ namespace lu::vkb {
         render_pass_begin_info.renderArea.extent.height = m_height;
         render_pass_begin_info.clearValueCount = static_cast<std::uint32_t>(m_clear_values.size());
         render_pass_begin_info.pClearValues = m_clear_values.data();
-        cmd.beginRenderPass(&render_pass_begin_info, contents);
+        (*cmd).beginRenderPass(&render_pass_begin_info, contents);
     }
 
-    auto context::end_render_pass(vk::CommandBuffer cmd) -> void {
-        cmd.endRenderPass();
+    auto context::end_render_pass(command_buffer& cmd) -> void {
+        (*cmd).endRenderPass();
     }
 
     static constinit std::atomic_bool s_init;

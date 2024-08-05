@@ -57,16 +57,6 @@ namespace lu::graphics {
         [[nodiscard]] auto get_tiling() const noexcept -> vk::ImageTiling { return m_tiling; }
         [[nodiscard]] auto get_sampler() const noexcept -> const vk::Sampler& { return m_sampler; }
 
-        static auto set_image_layout_barrier(
-            vk::CommandBuffer cmd_buf,
-            vk::Image image,
-            vk::ImageLayout old_layout,
-            vk::ImageLayout new_layout,
-            vk::ImageSubresourceRange range,
-            vk::PipelineStageFlags src_stage = vk::PipelineStageFlagBits::eAllCommands,
-            vk::PipelineStageFlags dst_stage = vk::PipelineStageFlagBits::eAllCommands
-        ) -> void;
-
     private:
         auto create(
             void* img,

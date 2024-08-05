@@ -12,18 +12,6 @@ namespace lu::graphics {
     protected:
         explicit graphics_pipeline(eastl::string&& name) : pipeline_base{std::move(name), pipeline_type::graphics} {}
 
-        HOTPROC static auto draw_mesh(
-            const mesh& mesh,
-            vk::CommandBuffer cmd,
-            eastl::span<material* const> mats,
-            vk::PipelineLayout layout
-        ) -> void;
-
-        HOTPROC static auto draw_mesh(
-            const mesh& mesh,
-            vk::CommandBuffer cmd
-        ) -> void;
-
         virtual auto configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> void = 0;
         virtual auto configure_pipeline_layout(eastl::vector<vk::DescriptorSetLayout>& layouts, eastl::vector<vk::PushConstantRange>& ranges) -> void = 0;
         virtual auto configure_vertex_info(eastl::vector<vk::VertexInputBindingDescription>& cfg, eastl::vector<vk::VertexInputAttributeDescription>& bindings) -> void;

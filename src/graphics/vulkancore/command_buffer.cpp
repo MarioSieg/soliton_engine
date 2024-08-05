@@ -20,11 +20,11 @@ namespace lu::vkb {
         const vk::CommandBuffer cmd,
         const vk::Queue queue,
         const vk::QueueFlagBits queue_flags
-    ) : m_pool{pool}, m_cmd{cmd}, m_queue{queue}, m_queue_flags{queue_flags} {
+    ) : m_pool{pool}, m_cmd{cmd}, m_queue{queue}, m_queue_flags{queue_flags}, m_is_owned{false} {
         validate_queue_type(queue_flags);
     }
 
-    command_buffer::command_buffer(const vk::QueueFlagBits queue_flags, const vk::CommandBufferLevel level) : m_queue_flags{queue_flags} {
+    command_buffer::command_buffer(const vk::QueueFlagBits queue_flags, const vk::CommandBufferLevel level) : m_queue_flags{queue_flags}, m_is_owned{true} {
         validate_queue_type(queue_flags);
         vk::CommandBufferAllocateInfo cmd_alloc_info {};
         switch (queue_flags) {
@@ -50,11 +50,16 @@ namespace lu::vkb {
     }
 
     command_buffer::~command_buffer() {
-        vkdvc().freeCommandBuffers(m_pool, 1, &m_cmd);
+        if (m_is_owned && m_pool) {
+            vkdvc().freeCommandBuffers(m_pool, 1, &m_cmd);
+        }
     }
 
-    auto command_buffer::begin(const vk::CommandBufferUsageFlagBits usage) -> void {
-        const vk::CommandBufferBeginInfo info {.flags = usage};
+    auto command_buffer::begin(
+        const vk::CommandBufferUsageFlagBits usage,
+        const vk::CommandBufferInheritanceInfo* const inheritance
+    ) -> void {
+        const vk::CommandBufferBeginInfo info {.flags = usage, .pInheritanceInfo = inheritance};
         vkcheck(m_cmd.begin(&info));
     }
 
@@ -149,5 +154,126 @@ namespace lu::vkb {
             buf
         );
         m_push_constant_offset += size;
+    }
+
+    auto command_buffer::begin_render_pass(const vk::RenderPassBeginInfo& info, const vk::SubpassContents contents) -> void {
+        m_cmd.beginRenderPass(&info, contents);
+    }
+
+    auto command_buffer::begin_render_pass(const vk::RenderPass pass, const vk::SubpassContents contents) -> void {
+
+    }
+
+    auto command_buffer::end_render_pass() -> void {
+        m_cmd.endRenderPass();
+    }
+
+    auto command_buffer::set_viewport(const float x, const float y, const float width, const float height, const float min_depth, const float max_depth) -> void {
+        vk::Viewport viewport {};
+        viewport.x = x;
+        viewport.y = y;
+        viewport.width = width;
+        viewport.height = height;
+        viewport.minDepth = min_depth;
+        viewport.maxDepth = max_depth;
+        m_cmd.setViewport(0, 1, &viewport);
+    }
+
+    auto command_buffer::set_scissor(const std::uint32_t width, const std::uint32_t height) -> void {
+        vk::Rect2D scissor {};
+        scissor.extent.width = width;
+        scissor.extent.height = height;
+        m_cmd.setScissor(0, 1, &scissor);
+    }
+
+    auto command_buffer::copy_buffer(const vk::Buffer src, const vk::Buffer dst, const vk::DeviceSize size, const vk::DeviceSize offset) -> void {
+        vk::BufferCopy copy_region {};
+        copy_region.size = size;
+        copy_region.dstOffset = offset;
+        m_cmd.copyBuffer(src, dst, 1, &copy_region);
+    }
+
+    command_buffer::command_buffer(command_buffer&& other) noexcept = default;
+    auto command_buffer::operator=(command_buffer&& other) noexcept -> command_buffer& = default;
+
+    auto command_buffer::execute_commands(const eastl::span<const vk::CommandBuffer> cmds) -> void {
+        m_cmd.executeCommands(cmds.size(), cmds.data());
+    }
+
+    auto command_buffer::set_image_layout_barrier(
+        const vk::Image image,
+        const vk::ImageLayout old_layout,
+        const vk::ImageLayout new_layout,
+        const vk::ImageSubresourceRange range,
+        const vk::PipelineStageFlags src_stage,
+        const vk::PipelineStageFlags dst_stage
+    ) -> void {
+        vk::ImageMemoryBarrier barrier {};
+        barrier.oldLayout = old_layout;
+        barrier.newLayout = new_layout;
+        barrier.image = image;
+        barrier.subresourceRange = range;
+
+        // Source layouts (old)
+        // Source access mask controls actions that have to be finished on the old layout
+        // before it will be transitioned to the new layout
+        switch (old_layout) {
+            case vk::ImageLayout::eUndefined: barrier.srcAccessMask = {}; break;
+            case vk::ImageLayout::ePreinitialized: barrier.srcAccessMask = vk::AccessFlagBits::eHostWrite; break;
+            case vk::ImageLayout::eColorAttachmentOptimal: barrier.srcAccessMask = vk::AccessFlagBits::eColorAttachmentWrite; break;
+            case vk::ImageLayout::eDepthStencilAttachmentOptimal: barrier.srcAccessMask = vk::AccessFlagBits::eDepthStencilAttachmentWrite; break;
+            case vk::ImageLayout::eTransferSrcOptimal: barrier.srcAccessMask = vk::AccessFlagBits::eTransferRead; break;
+            case vk::ImageLayout::eTransferDstOptimal: barrier.srcAccessMask = vk::AccessFlagBits::eTransferWrite; break;
+            case vk::ImageLayout::eShaderReadOnlyOptimal: barrier.srcAccessMask = vk::AccessFlagBits::eShaderRead; break;
+            default:
+                panic("unsupported layout transition!");
+        }
+
+        // Target layouts (new)
+        // Destination access mask controls the dependency for the new image layout
+        switch (new_layout) {
+            case vk::ImageLayout::eTransferDstOptimal: barrier.dstAccessMask = vk::AccessFlagBits::eTransferWrite; break;
+            case vk::ImageLayout::eTransferSrcOptimal: barrier.dstAccessMask = vk::AccessFlagBits::eTransferRead; break;
+            case vk::ImageLayout::eColorAttachmentOptimal: barrier.dstAccessMask = vk::AccessFlagBits::eColorAttachmentWrite; break;
+            case vk::ImageLayout::eDepthStencilAttachmentOptimal: barrier.dstAccessMask = barrier.dstAccessMask | vk::AccessFlagBits::eDepthStencilAttachmentWrite; break;
+            case vk::ImageLayout::eShaderReadOnlyOptimal:
+                if (barrier.srcAccessMask == vk::AccessFlagBits {}) {
+                    barrier.srcAccessMask = vk::AccessFlagBits::eHostWrite | vk::AccessFlagBits::eTransferWrite;
+                }
+                barrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
+                break;
+            default:
+                panic("unsupported layout transition!");
+        }
+
+        m_cmd.pipelineBarrier(
+            src_stage,
+            dst_stage,
+            {},
+            0,
+            nullptr,
+            0,
+            nullptr,
+            1,
+            &barrier
+        );
+    }
+
+    auto command_buffer::copy_buffer_to_image(const vk::Buffer buffer, const vk::Image image, const eastl::span<const vk::BufferImageCopy> regions) -> void {
+        m_cmd.copyBufferToImage(
+            buffer,
+            image,
+            vk::ImageLayout::eTransferDstOptimal,
+            regions.size(),
+            regions.data()
+        );
+    }
+
+    auto command_buffer::get_total_draw_calls() noexcept -> const std::atomic_uint32_t& {
+        return s_draw_call_count;
+    }
+
+    auto command_buffer::get_total_draw_verts() noexcept -> const std::atomic_uint32_t& {
+        return s_vertex_count;
     }
 }

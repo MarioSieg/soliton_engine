@@ -296,7 +296,7 @@ namespace noesis {
             .vkGetInstanceProcAddr = &vkGetInstanceProcAddr,
             .stereoSupport = false,
             .QueueSubmit = +[](const VkCommandBuffer cmd) noexcept -> void {
-                lu::vkb::ctx().flush_command_buffer<vk::QueueFlagBits::eGraphics, false>(cmd);
+                //lu::vkb::ctx().flush_command_buffer<vk::QueueFlagBits::eGraphics, false>(cmd);
             }
         };
         m_device = NoesisApp::VKFactory::CreateDevice(false, instance_info);

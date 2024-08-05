@@ -80,20 +80,15 @@ namespace lu::graphics::pipelines {
         ranges.emplace_back(push_constant_range);
     }
 
-    auto sky_pipeline::render(const vk::CommandBuffer cmd) const -> void {
+    auto sky_pipeline::render(vkb::command_buffer& cmd) const -> void {
         const vk::PipelineLayout layout = get_layout();
-        cmd.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, layout, 0u, 1u, &m_descriptor_set, 0u, nullptr);
+        (*cmd).bindDescriptorSets(vk::PipelineBindPoint::eGraphics, layout, 0u, 1u, &m_descriptor_set, 0u, nullptr);
         gpu_vertex_push_constants push_constants {};
         const DirectX::XMMATRIX model = DirectX::XMMatrixScalingFromVector(DirectX::XMVectorReplicate(10.0f));
         const auto& vp = graphics_subsystem::get_view_proj_mtx();
         DirectX::XMStoreFloat4x4A(&push_constants.model_view_proj, DirectX::XMMatrixMultiply(model, DirectX::XMLoadFloat4x4A(&vp)));
-        cmd.pushConstants(
-            layout,
-            vk::ShaderStageFlagBits::eVertex,
-            0,
-            sizeof(push_constants),
-            &push_constants
-        );
-        draw_mesh(*m_skydome, cmd);
+        cmd.bind_pipeline(*this);
+        cmd.push_consts(vk::ShaderStageFlagBits::eVertex, push_constants);
+        cmd.draw_mesh(*m_skydome);
     }
 }

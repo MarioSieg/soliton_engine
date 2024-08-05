@@ -25,6 +25,8 @@ namespace lu::graphics {
         "Threads.renderThreads",
         {2u}
     };
+    static constinit std::uint32_t s_num_draw_calls_prev = 0;
+    static constinit std::uint32_t s_num_draw_verts_prev = 0;
 
     graphics_subsystem::graphics_subsystem() : subsystem{"Graphics"} {
         log_info("Initializing graphics subsystem");
@@ -114,7 +116,7 @@ namespace lu::graphics {
 
     // WARNING! RENDER THREAD LOCAL
     HOTPROC auto graphics_subsystem::render_scene_bucket(
-        const vk::CommandBuffer cmd,
+        vkb::command_buffer& cmd,
         const std::int32_t bucket_id,
         const std::int32_t num_threads,
         void* const usr
@@ -124,19 +126,19 @@ namespace lu::graphics {
 
         const auto& pbr_pipeline = dynamic_cast<const pipelines::pbr_pipeline&>(pipeline_cache::get().get_pipeline("mat_pbr"));
 
-        cmd.bindPipeline(vk::PipelineBindPoint::eGraphics, pbr_pipeline.get_pipeline());
+        cmd.bind_pipeline(pbr_pipeline);
         const DirectX::XMMATRIX vp = DirectX::XMLoadFloat4x4A(&graphics_subsystem::s_view_proj_mtx);
 
         // thread workload distribution
-        partitioned_draw(bucket_id, num_threads, self.get_render_data(), [&pbr_pipeline, &vp, cmd](
+        partitioned_draw(bucket_id, num_threads, self.get_render_data(), [&](
             const std::size_t i,
             const com::transform& transform,
             const com::mesh_renderer& renderer
         ) -> void {
-            pbr_pipeline.render_mesh(cmd, pbr_pipeline.get_layout(), transform, renderer, s_frustum, vp);
+            pbr_pipeline.render_mesh(cmd, transform, renderer, s_frustum, vp);
         });
 
-        if (bucket_id == num_threads - 1) { // Last thread
+        if (bucket_id == num_threads-1) { // Last thread
             if (eastl::optional<debugdraw>& dd = self.get_debug_draw_opt(); dd) {
                 dd->render(
                     cmd,
@@ -149,10 +151,10 @@ namespace lu::graphics {
     }
 
     HOTPROC auto graphics_subsystem::on_pre_tick() -> bool {
-        s_num_draw_verts_prev = s_num_draw_verts.load(std::memory_order_relaxed);
-        s_num_draw_calls_prev = s_num_draw_calls.load(std::memory_order_relaxed);
-        s_num_draw_calls.store(0, std::memory_order_relaxed);
-        s_num_draw_verts.store(0, std::memory_order_relaxed);
+        auto& num_draw_calls = const_cast<std::atomic_uint32_t&>(vkb::command_buffer::get_total_draw_calls());
+        auto& num_draw_verts = const_cast<std::atomic_uint32_t&>(vkb::command_buffer::get_total_draw_verts());
+        s_num_draw_verts_prev = num_draw_calls.exchange(0, std::memory_order_relaxed);
+        s_num_draw_calls_prev = num_draw_verts.exchange(0, std::memory_order_relaxed);
         if (m_reload_pipelines_next_frame) [[unlikely]] {
             vkcheck(vkb::vkdvc().waitIdle());
             reload_pipelines();
@@ -163,8 +165,11 @@ namespace lu::graphics {
         const auto h = static_cast<float>(vkb::ctx().get_height());
         m_imgui_context->begin_frame();
         update_main_camera(w, h);
+
+        m_cmd.reset();
         m_cmd = vkb::ctx().begin_frame(s_clear_color, &m_inheritance_info);
-        vkb::ctx().begin_render_pass(m_cmd, vkb::ctx().get_scene_render_pass(), vk::SubpassContents::eSecondaryCommandBuffers);
+        m_cmd->begin(vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
+        vkb::ctx().begin_render_pass(*m_cmd, vkb::ctx().get_scene_render_pass(), vk::SubpassContents::eSecondaryCommandBuffers);
         return true;
     }
 
@@ -185,15 +190,15 @@ namespace lu::graphics {
         });
         if (m_cmd) [[likely]] { // TODO: refractor
             m_render_thread_pool->begin_frame(&m_inheritance_info);
-            m_render_thread_pool->process_frame(m_cmd);
+            m_render_thread_pool->process_frame(*m_cmd);
             scene.readonly_end();
-            vkb::ctx().end_render_pass(m_cmd);
-            vkcheck(m_cmd.end());
+            m_cmd->end_render_pass();
+            m_cmd->end();
             m_render_data.clear();
 
             //render_uis(); TODO
 
-            vkb::ctx().end_frame(m_cmd);
+            vkb::ctx().end_frame(*m_cmd);
         } else {
             scene.readonly_end();
         }
@@ -230,37 +235,21 @@ namespace lu::graphics {
     }
 
     auto graphics_subsystem::render_uis() -> void {
-        constexpr vk::CommandBufferBeginInfo begin_info {};
-        vkcheck(m_cmd.begin(&begin_info));
-        m_noesis_context->render_offscreen(m_cmd);
+        m_cmd->begin();
+        m_noesis_context->render_offscreen(*m_cmd);
 
         auto w = static_cast<float>(vkb::ctx().get_width());
         auto h = static_cast<float>(vkb::ctx().get_height());
 
         // Update dynamic viewport state
-        vk::Viewport viewport {};
-        viewport.width = w;
-        viewport.height = -h;
-        viewport.x = 0.0f;
-        viewport.y = h;
-        viewport.minDepth = 0.0f;
-        viewport.maxDepth = 1.0f;
-        m_cmd.setViewport(0, 1, &viewport);
+        m_cmd->set_viewport(0.0f, h, w, -h);
+        m_cmd->set_scissor(w, h);
 
-        // Update dynamic scissor state
-        vk::Rect2D scissor {};
-        scissor.extent.width = w;
-        scissor.extent.height = h;
-        scissor.offset.x = 0.0f;
-        scissor.offset.y = 0.0f;
-        m_cmd.setScissor(0, 1, &scissor);
-
-        vkb::ctx().begin_render_pass(m_cmd, vkb::ctx().get_ui_render_pass(), vk::SubpassContents::eInline);
+        vkb::ctx().begin_render_pass(*m_cmd, vkb::ctx().get_ui_render_pass(), vk::SubpassContents::eInline);
         m_noesis_context->render_onscreen(vkb::ctx().get_ui_render_pass());
-        m_imgui_context->submit_imgui(m_cmd);
-        vkb::ctx().end_render_pass(m_cmd);
-
-        vkcheck(m_cmd.end());
+        m_imgui_context->submit_imgui(*m_cmd);
+        m_cmd->end_render_pass();
+        m_cmd->end();
     }
 
     auto graphics_subsystem::reload_pipelines() -> void {
@@ -273,5 +262,13 @@ namespace lu::graphics {
         } else {
             log_error("Failed to compile shaders");
         }
+    }
+
+    auto graphics_subsystem::get_num_draw_calls() noexcept -> std::uint32_t {
+        return s_num_draw_calls_prev;
+    }
+
+    auto graphics_subsystem::get_num_draw_verts() noexcept -> std::uint32_t {
+        return s_num_draw_verts_prev;
     }
 }

@@ -5,6 +5,7 @@
 #include "../assetmgr/assetmgr.hpp"
 #include "vulkancore/context.hpp"
 #include "vulkancore/buffer.hpp"
+#include "vulkancore/command_buffer.hpp"
 
 #include <bimg/bimg.h>
 #include <bimg/decode.h>
@@ -199,7 +200,8 @@ namespace lu::graphics {
         m_mapped = alloc_info.pMappedData;
 
         if (data && size) [[likely]] {
-            const vk::CommandBuffer copy_cmd = vkb::ctx().start_command_buffer<vk::QueueFlagBits::eTransfer>();
+            vkb::command_buffer copy_cmd {vk::QueueFlagBits::eTransfer};
+            copy_cmd.begin();
 
             vk::ImageSubresourceRange subresource_range {};
             subresource_range.aspectMask = vk::ImageAspectFlagBits::eColor;
@@ -210,15 +212,14 @@ namespace lu::graphics {
 
             // Image barrier for optimal image (target)
             // Optimal image will be used as destination for the copy
-            set_image_layout_barrier(
-                copy_cmd,
+            copy_cmd.set_image_layout_barrier(
                 m_image,
                 vk::ImageLayout::eUndefined,
                 vk::ImageLayout::eTransferDstOptimal,
                 subresource_range
             );
 
-            vkb::ctx().flush_command_buffer<vk::QueueFlagBits::eTransfer>(copy_cmd);
+            copy_cmd.flush();
 
             upload(img, 0, 0, data, size, vk::ImageLayout::eTransferDstOptimal);
 
@@ -376,11 +377,11 @@ namespace lu::graphics {
         subresource_range.layerCount = 1;
         subresource_range.baseArrayLayer = array_idx;
 
-        const vk::CommandBuffer copy_cmd = vkb::ctx().start_command_buffer<vk::QueueFlagBits::eTransfer>();
+        vkb::command_buffer copy_cmd {vk::QueueFlagBits::eTransfer};
+        copy_cmd.begin();
 
         if (src_layout != vk::ImageLayout::eTransferDstOptimal) {
-            set_image_layout_barrier(
-                copy_cmd,
+            copy_cmd.set_image_layout_barrier(
                 m_image,
                 src_layout,
                 vk::ImageLayout::eTransferDstOptimal,
@@ -413,16 +414,13 @@ namespace lu::graphics {
             region.imageExtent.depth = 1;
             regions.emplace_back(region);
         }
-        copy_cmd.copyBufferToImage( // TODO: replace with single big blit (if possible)
+        copy_cmd.copy_buffer_to_image( // TODO: replace with single big blit (if possible)
             staging.get_buffer(),
             m_image,
-            vk::ImageLayout::eTransferDstOptimal,
-            regions.size(),
-            regions.data()
+            regions
         );
         if (dst_layout != vk::ImageLayout::eTransferDstOptimal) {
-            set_image_layout_barrier(
-                copy_cmd,
+            copy_cmd.set_image_layout_barrier(
                 m_image,
                 vk::ImageLayout::eTransferDstOptimal,
                 dst_layout,
@@ -430,7 +428,8 @@ namespace lu::graphics {
             );
         }
 
-        vkb::ctx().flush_command_buffer<vk::QueueFlagBits::eTransfer>(copy_cmd);
+        copy_cmd.end();
+        copy_cmd.flush();
     }
 
     auto texture::generate_mips(
@@ -440,7 +439,8 @@ namespace lu::graphics {
         const vk::ImageAspectFlags aspect_mask,
         const vk::Filter filter
     ) const -> void {
-        const vk::CommandBuffer blit_cmd = vkb::ctx().start_command_buffer<vk::QueueFlagBits::eGraphics>();
+        vkb::command_buffer blit_cmd {vk::QueueFlagBits::eGraphics};
+        blit_cmd.begin();
 
         vk::ImageSubresourceRange intial_subresource_range {};
         intial_subresource_range.aspectMask = aspect_mask;
@@ -449,8 +449,7 @@ namespace lu::graphics {
         intial_subresource_range.layerCount = m_array_size;
         intial_subresource_range.baseArrayLayer = 0;
 
-        set_image_layout_barrier(
-            blit_cmd,
+        blit_cmd.set_image_layout_barrier(
             m_image,
             vk::ImageLayout::eUndefined,
             vk::ImageLayout::eTransferDstOptimal,
@@ -473,8 +472,7 @@ namespace lu::graphics {
                     layout = src_layout;
                 }
                 if (layout != vk::ImageLayout::eTransferSrcOptimal) {
-                    set_image_layout_barrier(
-                        blit_cmd,
+                    blit_cmd.set_image_layout_barrier(
                         m_image,
                         layout,
                         vk::ImageLayout::eTransferSrcOptimal,
@@ -499,7 +497,7 @@ namespace lu::graphics {
                     blit.dstSubresource.mipLevel = j;
                     blit.dstSubresource.baseArrayLayer = i;
                     blit.dstSubresource.layerCount = 1;
-                    blit_cmd.blitImage(
+                    (*blit_cmd).blitImage(
                         m_image,
                         vk::ImageLayout::eTransferSrcOptimal,
                         m_image,
@@ -509,8 +507,7 @@ namespace lu::graphics {
                         filter
                     );
                 }
-                set_image_layout_barrier(
-                    blit_cmd,
+                blit_cmd.set_image_layout_barrier(
                     m_image,
                     vk::ImageLayout::eTransferSrcOptimal,
                     dst_layout,
@@ -522,15 +519,15 @@ namespace lu::graphics {
         }
 
         subresource_range.baseMipLevel = m_mip_levels - 1;
-        set_image_layout_barrier(
-            blit_cmd,
+        blit_cmd.set_image_layout_barrier(
             m_image,
             vk::ImageLayout::eTransferDstOptimal,
             dst_layout,
             subresource_range
         );
 
-        vkb::ctx().flush_command_buffer<vk::QueueFlagBits::eGraphics>(blit_cmd);
+        blit_cmd.end();
+        blit_cmd.flush();
         log_info("{} mip-chain with {} maps", transfer_only ? "Loaded" : "Generated", m_mip_levels);
     }
 
@@ -556,67 +553,7 @@ namespace lu::graphics {
         vkcheck(vkb::vkdvc().createSampler(&sampler_info, vkb::get_alloc(), &m_sampler));
     }
 
-    auto texture::set_image_layout_barrier(
-        const vk::CommandBuffer cmd_buf,
-        const vk::Image image,
-        const vk::ImageLayout old_layout,
-        const vk::ImageLayout new_layout,
-        const vk::ImageSubresourceRange range,
-        const vk::PipelineStageFlags src_stage,
-        const vk::PipelineStageFlags dst_stage
-    ) -> void {
-        vk::ImageMemoryBarrier barrier {};
-        barrier.oldLayout = old_layout;
-        barrier.newLayout = new_layout;
-        barrier.image = image;
-        barrier.subresourceRange = range;
-
-        // Source layouts (old)
-        // Source access mask controls actions that have to be finished on the old layout
-        // before it will be transitioned to the new layout
-        switch (old_layout) {
-            case vk::ImageLayout::eUndefined: barrier.srcAccessMask = {}; break;
-            case vk::ImageLayout::ePreinitialized: barrier.srcAccessMask = vk::AccessFlagBits::eHostWrite; break;
-            case vk::ImageLayout::eColorAttachmentOptimal: barrier.srcAccessMask = vk::AccessFlagBits::eColorAttachmentWrite; break;
-            case vk::ImageLayout::eDepthStencilAttachmentOptimal: barrier.srcAccessMask = vk::AccessFlagBits::eDepthStencilAttachmentWrite; break;
-            case vk::ImageLayout::eTransferSrcOptimal: barrier.srcAccessMask = vk::AccessFlagBits::eTransferRead; break;
-            case vk::ImageLayout::eTransferDstOptimal: barrier.srcAccessMask = vk::AccessFlagBits::eTransferWrite; break;
-            case vk::ImageLayout::eShaderReadOnlyOptimal: barrier.srcAccessMask = vk::AccessFlagBits::eShaderRead; break;
-            default:
-                panic("unsupported layout transition!");
-        }
-
-        // Target layouts (new)
-        // Destination access mask controls the dependency for the new image layout
-        switch (new_layout) {
-            case vk::ImageLayout::eTransferDstOptimal: barrier.dstAccessMask = vk::AccessFlagBits::eTransferWrite; break;
-            case vk::ImageLayout::eTransferSrcOptimal: barrier.dstAccessMask = vk::AccessFlagBits::eTransferRead; break;
-            case vk::ImageLayout::eColorAttachmentOptimal: barrier.dstAccessMask = vk::AccessFlagBits::eColorAttachmentWrite; break;
-            case vk::ImageLayout::eDepthStencilAttachmentOptimal: barrier.dstAccessMask = barrier.dstAccessMask | vk::AccessFlagBits::eDepthStencilAttachmentWrite; break;
-            case vk::ImageLayout::eShaderReadOnlyOptimal:
-                if (barrier.srcAccessMask == vk::AccessFlagBits {}) {
-                    barrier.srcAccessMask = vk::AccessFlagBits::eHostWrite | vk::AccessFlagBits::eTransferWrite;
-                }
-                barrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
-            break;
-            default:
-                panic("unsupported layout transition!");
-        }
-
-        cmd_buf.pipelineBarrier(
-            src_stage,
-            dst_stage,
-            {},
-            0,
-            nullptr,
-            0,
-            nullptr,
-            1,
-            &barrier
-        );
-    }
-
-    const eastl::array<texture_format_info, 96> k_texture_format_map = {
+    const eastl::array<texture_format_info, 96> k_texture_format_map {
         #define $_ VK_COMPONENT_SWIZZLE_IDENTITY
         #define $0 VK_COMPONENT_SWIZZLE_ZERO
         #define $1 VK_COMPONENT_SWIZZLE_ONE

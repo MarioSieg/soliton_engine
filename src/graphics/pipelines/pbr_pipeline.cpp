@@ -9,8 +9,7 @@
 namespace lu::graphics::pipelines {
     // WARNING! RENDER THREAD LOCAL
     HOTPROC auto pbr_pipeline::render_mesh(
-        const vk::CommandBuffer cmd_buf,
-        const vk::PipelineLayout layout,
+        vkb::command_buffer& cmd_buf,
         const com::transform& transform,
         const com::mesh_renderer& renderer,
         const DirectX::BoundingFrustum& frustum,
@@ -41,26 +40,14 @@ namespace lu::graphics::pipelines {
             push_constants_vs pc_vs {};
             DirectX::XMStoreFloat4x4A(&pc_vs.model_view_proj, DirectX::XMMatrixMultiply(model, vp));
             DirectX::XMStoreFloat4x4A(&pc_vs.normal_matrix, DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(nullptr, model)));
-            cmd_buf.pushConstants(
-                layout,
-                vk::ShaderStageFlagBits::eVertex,
-                0,
-                sizeof(pc_vs),
-                &pc_vs
-            );
+            cmd_buf.push_consts(vk::ShaderStageFlagBits::eVertex, pc_vs);
 
             push_constants_fs pc_fs {};
             pc_fs.time = static_cast<float>(kernel::get().get_time());
-            cmd_buf.pushConstants(
-                layout,
-                vk::ShaderStageFlagBits::eFragment,
-                sizeof(pc_vs),
-                sizeof(pc_fs),
-                &pc_fs
-            );
+            cmd_buf.push_consts(vk::ShaderStageFlagBits::eFragment, pc_fs);
 
             const eastl::span<material* const> mats {renderer.materials.data(), renderer.materials.size()};
-            graphics_pipeline::draw_mesh(*mesh, cmd_buf, mats, layout);
+            cmd_buf.draw_mesh_with_materials(*mesh, mats);
         }
     }
 

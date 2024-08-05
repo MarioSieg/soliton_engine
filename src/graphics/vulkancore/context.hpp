@@ -6,6 +6,7 @@
 
 #include "device.hpp"
 #include "swapchain.hpp"
+#include "command_buffer.hpp"
 
 #include <DirectXMath.h>
 
@@ -38,71 +39,6 @@ namespace lu::vkb {
         [[nodiscard]] auto get_compute_command_pool() const noexcept -> vk::CommandPool { return m_compute_command_pool; }
         [[nodiscard]] auto get_transfer_command_pool() const noexcept -> vk::CommandPool { return m_transfer_command_pool; }
 
-        template <const vk::QueueFlagBits QueueType> requires is_queue_type<QueueType>
-        [[nodiscard]] auto start_command_buffer() const -> vk::CommandBuffer {
-            vk::CommandBuffer cmd {};
-            vk::CommandBufferAllocateInfo cmd_alloc_info {};
-            vk::CommandPool pool {};
-            if constexpr (QueueType == vk::QueueFlagBits::eGraphics) {
-                pool = get_graphics_command_pool();
-            } else if constexpr (QueueType == vk::QueueFlagBits::eCompute) {
-                pool = get_compute_command_pool();
-            } else if constexpr (QueueType == vk::QueueFlagBits::eTransfer) {
-                pool = get_transfer_command_pool();
-            } else {
-                panic("Invalid queue type");
-            }
-            cmd_alloc_info.commandPool = pool;
-            cmd_alloc_info.level = vk::CommandBufferLevel::ePrimary;
-            cmd_alloc_info.commandBufferCount = 1;
-            vkcheck(m_device->get_logical_device().allocateCommandBuffers(&cmd_alloc_info, &cmd)); // TODO: not thread safe
-
-            vk::CommandBufferBeginInfo cmd_begin_info {};
-            cmd_begin_info.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
-            vkcheck(cmd.begin(&cmd_begin_info));
-            return cmd;
-        }
-
-        template <const vk::QueueFlagBits QueueType, const bool Owned = true> requires is_queue_type<QueueType>
-        auto flush_command_buffer(const vk::CommandBuffer cmd) const -> void {
-            const vk::Device device = m_device->get_logical_device();
-            if constexpr (Owned) {
-                vkcheck(cmd.end());
-            }
-            constexpr vk::FenceCreateInfo fence_info {};
-            vk::Fence fence {};
-            vkcheck(device.createFence(&fence_info, vkb::get_alloc(), &fence));
-            vk::SubmitInfo submit_info {};
-            submit_info.commandBufferCount = 1;
-            submit_info.pCommandBuffers = &cmd;
-            vk::Queue queue {};
-            if constexpr (QueueType == vk::QueueFlagBits::eGraphics) {
-                queue = m_device->get_graphics_queue();
-            } else if constexpr (QueueType == vk::QueueFlagBits::eCompute) {
-                queue = m_device->get_compute_queue();
-            } else if constexpr (QueueType == vk::QueueFlagBits::eTransfer) {
-                queue = m_device->get_transfer_queue();
-            } else {
-                panic("Invalid queue type");
-            }
-            vkcheck(queue.submit(1, &submit_info, fence));// TODO: not thread safe, use transfer queue
-            vkcheck(device.waitForFences(1, &fence, vk::True, eastl::numeric_limits<std::uint64_t>::max()));
-            device.destroyFence(fence, vkb::get_alloc());
-            if constexpr (Owned) {
-                vk::CommandPool pool {};
-                if constexpr (QueueType == vk::QueueFlagBits::eGraphics) {
-                    pool = get_graphics_command_pool();
-                } else if constexpr (QueueType == vk::QueueFlagBits::eCompute) {
-                    pool = get_compute_command_pool();
-                } else if constexpr (QueueType == vk::QueueFlagBits::eTransfer) {
-                    pool = get_transfer_command_pool();
-                } else {
-                    panic("Invalid queue type");
-                }
-                device.freeCommandBuffers(pool, 1, &cmd);
-            }
-        }
-
         [[nodiscard]] auto get_command_buffers() const noexcept -> eastl::span<const vk::CommandBuffer> { return m_command_buffers; }
         [[nodiscard]] auto get_current_frame() const noexcept -> std::uint32_t { return m_current_frame; }
         [[nodiscard]] auto get_image_index() const noexcept -> std::uint32_t { return m_image_index; }
@@ -122,10 +58,13 @@ namespace lu::vkb {
         [[nodiscard]] auto get_swapchain_image_scissor() const noexcept -> vk::Rect2D { return { { 0, 0 }, { m_width, m_height } }; }
         [[nodiscard]] auto get_swapchain_image_depth_stencil_view() const noexcept -> vk::ImageView { return m_depth_stencil.view; }
 
-        HOTPROC auto begin_frame(const DirectX::XMFLOAT4A& clear_color, vk::CommandBufferInheritanceInfo* out_inheritance_info = nullptr) -> vk::CommandBuffer;
-        HOTPROC auto end_frame(vk::CommandBuffer cmd) -> void;
-        auto begin_render_pass(vk::CommandBuffer cmd, vk::RenderPass pass, vk::SubpassContents contents) -> void;
-        auto end_render_pass(vk::CommandBuffer cmd) -> void;
+        [[nodiscard]] HOTPROC auto begin_frame(
+            const DirectX::XMFLOAT4A& clear_color,
+            vk::CommandBufferInheritanceInfo* out_inheritance_info = nullptr
+        ) -> eastl::optional<command_buffer>;
+        HOTPROC auto end_frame(command_buffer& cmd) -> void;
+        auto begin_render_pass(command_buffer& cmd, vk::RenderPass pass, vk::SubpassContents contents) -> void;
+        auto end_render_pass(command_buffer& cmd) -> void;
         auto on_resize() -> void;
 
         static auto init(GLFWwindow* window) -> void;

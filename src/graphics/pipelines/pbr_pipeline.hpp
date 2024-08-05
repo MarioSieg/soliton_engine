@@ -4,6 +4,7 @@
 
 #include <DirectXMath.h>
 
+#include "../vulkancore/command_buffer.hpp"
 #include "../graphics_pipeline.hpp"
 #include "../../scene/components.hpp"
 
@@ -26,8 +27,7 @@ namespace lu::graphics::pipelines {
 
         // WARNING! RENDER THREAD LOCAL
         HOTPROC auto XM_CALLCONV render_mesh(
-            vk::CommandBuffer cmd_buf,
-            vk::PipelineLayout layout,
+            vkb::command_buffer& cmd_buf,
             const com::transform& transform,
             const com::mesh_renderer& renderer,
             const DirectX::BoundingFrustum& frustum,

@@ -2,6 +2,7 @@
 
 #include "pbr_pipeline.hpp"
 #include "../vulkancore/context.hpp"
+#include "../vulkancore/command_buffer.hpp"
 #include "../../scripting/system_variable.hpp"
 
 namespace lu::graphics::pipelines {
@@ -229,25 +230,18 @@ namespace lu::graphics::pipelines {
         render_pass_bi.clearValueCount = 1;
         render_pass_bi.pClearValues = &clear_value;
 
-        vk::CommandBuffer cmd = vkb::ctx().start_command_buffer<vk::QueueFlagBits::eGraphics>();
-        cmd.beginRenderPass(&render_pass_bi, vk::SubpassContents::eInline);
+        vkb::command_buffer cmd {vk::QueueFlagBits::eGraphics, vk::CommandBufferLevel::ePrimary};
+        cmd.begin();
+        cmd.begin_render_pass(render_pass_bi, vk::SubpassContents::eInline);
+        cmd.set_viewport(0.0f, 0.0f, static_cast<float>(brdf_lut_size()), static_cast<float>(brdf_lut_size()));
+        cmd.set_scissor(brdf_lut_size(), brdf_lut_size());
 
-        vk::Viewport viewport {};
-        viewport.width = static_cast<float>(brdf_lut_size());
-        viewport.height = static_cast<float>(brdf_lut_size());
-        viewport.minDepth = .0F;
-        viewport.maxDepth = 1.F;
-        cmd.setViewport(0, 1, &viewport);
+        (*cmd).bindPipeline(vk::PipelineBindPoint::eGraphics, shader_pipeline);
+        (*cmd).draw(3, 1, 0, 0);
 
-        vk::Rect2D scissor {};
-        scissor.extent = { brdf_lut_size(), brdf_lut_size() };
-        cmd.setScissor(0, 1, &scissor);
-
-        cmd.bindPipeline(vk::PipelineBindPoint::eGraphics, shader_pipeline);
-        cmd.draw(3, 1, 0, 0);
-
-        cmd.endRenderPass();
-        vkb::ctx().flush_command_buffer<vk::QueueFlagBits::eGraphics>(cmd);
+        cmd.end_render_pass();
+        cmd.end();
+        cmd.flush();
 
         vkcheck(dvc.waitIdle());
 
