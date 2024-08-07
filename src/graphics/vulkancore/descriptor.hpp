@@ -28,8 +28,8 @@ namespace lu::vkb {
             { vk::DescriptorType::eStorageBuffer, 2.f },
             { vk::DescriptorType::eUniformBufferDynamic, 1.f },
             { vk::DescriptorType::eStorageBufferDynamic, 1.f },
-            { vk::DescriptorType::eInputAttachment, .5f },
-            { vk::DescriptorType::eAccelerationStructureKHR, .5f },
+            { vk::DescriptorType::eInputAttachment, .5f }
+            //{ vk::DescriptorType::eAccelerationStructureKHR, .5f },
         };
 
         std::uint32_t alloc_granularity {1024 };

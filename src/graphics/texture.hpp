@@ -32,8 +32,13 @@ namespace lu::graphics {
             vk::ImageLayout initial_layout,
             const void* data,
             std::size_t size,
-            vk::ImageCreateFlags flags = {},
-            vk::ImageTiling tiling = vk::ImageTiling::eOptimal
+            vk::ImageCreateFlags flags,
+            vk::ImageTiling tiling,
+            vk::Filter mag_filter,
+            vk::Filter min_filter,
+            vk::SamplerMipmapMode mipmap_mode,
+            vk::SamplerAddressMode address_mode,
+            bool aniso_enable
         );
         ~texture() override;
 
@@ -73,8 +78,13 @@ namespace lu::graphics {
             vk::ImageLayout initial_layout,
             const void* data,
             std::size_t size,
-            vk::ImageCreateFlags flags = {},
-            vk::ImageTiling tiling = vk::ImageTiling::eOptimal
+            vk::ImageCreateFlags flags,
+            vk::ImageTiling tiling,
+            vk::Filter mag_filter,
+            vk::Filter min_filter,
+            vk::SamplerMipmapMode mipmap_mode,
+            vk::SamplerAddressMode address_mode,
+            bool aniso_enable
         ) -> void;
 
         auto parse_from_raw_memory(eastl::span<const std::byte> texels) -> void;
@@ -97,7 +107,13 @@ namespace lu::graphics {
             vk::Filter filter = vk::Filter::eLinear
         ) const -> void;
 
-        auto create_sampler() -> void;
+        auto create_sampler(
+            vk::Filter mag_filter,
+            vk::Filter min_filter,
+            vk::SamplerMipmapMode mipmap_mode,
+            vk::SamplerAddressMode address_mode,
+            bool aniso_enable
+        ) -> void;
 
         std::uint32_t m_width = 0;
         std::uint32_t m_height = 0;

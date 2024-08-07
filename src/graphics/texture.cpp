@@ -104,7 +104,12 @@ namespace lu::graphics {
         const void* data,
         const std::size_t size,
         const vk::ImageCreateFlags flags,
-        const vk::ImageTiling tiling
+        const vk::ImageTiling tiling,
+        const vk::Filter mag_filter,
+        const vk::Filter min_filter,
+        const vk::SamplerMipmapMode mipmap_mode,
+        const vk::SamplerAddressMode address_mode,
+        const bool aniso_enable
     ) : asset {assetmgr::asset_source::memory} {
         create(
             nullptr,
@@ -122,7 +127,12 @@ namespace lu::graphics {
             data,
             size,
             flags,
-            tiling
+            tiling,
+            mag_filter,
+            min_filter,
+            mipmap_mode,
+            address_mode,
+            aniso_enable
         );
     }
 
@@ -151,7 +161,12 @@ namespace lu::graphics {
         const void* data,
         const std::size_t size,
         const vk::ImageCreateFlags flags,
-        const vk::ImageTiling tiling
+        const vk::ImageTiling tiling,
+        const vk::Filter mag_filter,
+        const vk::Filter min_filter,
+        const vk::SamplerMipmapMode mipmap_mode,
+        const vk::SamplerAddressMode address_mode,
+        const bool aniso_enable
     ) -> void {
         m_width = width;
         m_height = height;
@@ -219,6 +234,7 @@ namespace lu::graphics {
                 subresource_range
             );
 
+            copy_cmd.end();
             copy_cmd.flush();
 
             upload(img, 0, 0, data, size, vk::ImageLayout::eTransferDstOptimal);
@@ -232,7 +248,7 @@ namespace lu::graphics {
 
         // image view:
         vk::ImageViewCreateInfo image_view_ci {};
-        image_view_ci.viewType = vk::ImageViewType::e2D;
+        image_view_ci.viewType = (flags & vk::ImageCreateFlagBits::eCubeCompatible) ? vk::ImageViewType::eCube : vk::ImageViewType::e2D;
         image_view_ci.format = m_format;
         image_view_ci.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
         image_view_ci.subresourceRange.baseMipLevel = 0;
@@ -242,17 +258,30 @@ namespace lu::graphics {
         image_view_ci.image = m_image;
         vkcheck(vkb::vkdvc().createImageView(&image_view_ci, vkb::get_alloc(), &m_image_view));
 
-        create_sampler();
+        create_sampler(
+            min_filter,
+            mag_filter,
+            mipmap_mode,
+            address_mode,
+            aniso_enable
+        );
     }
 
     auto texture::parse_from_raw_memory(const eastl::span<const std::byte> texels) -> void {
         passert(texels.size() <= eastl::numeric_limits<std::uint32_t>::max());
-        bimg::ImageContainer* image = bimg::imageParse(get_tex_alloc(), texels.data(), static_cast<std::uint32_t>(texels.size()));
+        bimg::ImageContainer* image = bimg::imageParse(
+            get_tex_alloc(),
+            texels.data(),
+            static_cast<std::uint32_t>(texels.size())
+        );
         passert(image != nullptr);
 
         constexpr vk::ImageUsageFlags usage = vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eTransferSrc;
-        constexpr vk::ImageCreateFlags create_flags {};
         constexpr vk::ImageTiling tiling = vk::ImageTiling::eOptimal;
+        vk::ImageCreateFlags create_flags {};
+        const bool is_cubemap = image->m_cubeMap;
+        if (is_cubemap)
+            create_flags |= vk::ImageCreateFlagBits::eCubeCompatible;
 
         auto format = static_cast<vk::Format>(k_texture_format_map[image->m_format].fmt);
         log_info("Texture format: {}", string_VkFormat(static_cast<VkFormat>(format)));
@@ -268,7 +297,7 @@ namespace lu::graphics {
             is_format_mipgen_supported
         );
         bool conversion_required = !is_format_supported; // if the hardware doesn't support the format, we'll convert it to a supported format
-        if (!is_format_supported || (image->m_numMips <= 1 && !is_format_mipgen_supported)) {
+        if (!is_cubemap && (!is_format_supported || (image->m_numMips <= 1 && !is_format_mipgen_supported))) {
             const auto now = eastl::chrono::high_resolution_clock::now();
 
             bimg::ImageContainer* original = image;
@@ -281,10 +310,10 @@ namespace lu::graphics {
                     original->m_height,
                     original->m_depth,
                     original->m_numLayers,
-                    original->m_cubeMap,
+                    is_cubemap,
                     original->m_numMips > 1
                 );
-                const std::uint16_t sides = original->m_numLayers * (original->m_cubeMap ? 6 : 1);
+                const std::uint16_t sides = original->m_numLayers * (is_cubemap ? 6 : 1);
                 for (std::uint16_t side = 0; side < sides; ++side) {
                     for (std::uint8_t lod = 0, num = original->m_numMips; lod < num; ++lod) {
                         bimg::ImageMip src_mip {};
@@ -292,7 +321,7 @@ namespace lu::graphics {
                             bimg::ImageMip dst_mip {};
                             bimg::imageGetRawData(*image, side, lod, image->m_data, image->m_size, dst_mip);
                             const std::uint8_t* const src = src_mip.m_data;
-                            std::uint8_t* const dst = const_cast<std::uint8_t*>(dst_mip.m_data);
+                            auto* const dst = const_cast<std::uint8_t*>(dst_mip.m_data);
                             SimdRgbToBgra(
                                 src,
                                 src_mip.m_width,
@@ -338,7 +367,7 @@ namespace lu::graphics {
 
         create(
             image,
-            vk::ImageType::e2D, // TODO: Support for cubemap / volume texture (texture 3d)
+            vk::ImageType::e2D,
             image->m_width,
             image->m_height,
             image->m_depth,
@@ -352,7 +381,12 @@ namespace lu::graphics {
             image->m_data,
             image->m_size,
             create_flags,
-            tiling
+            tiling,
+            vk::Filter::eLinear,
+            vk::Filter::eLinear,
+            vk::SamplerMipmapMode::eLinear,
+            vk::SamplerAddressMode::eClampToEdge,
+            true
         );
 
         m_approx_byte_size = sizeof(*this) + image->m_size;
@@ -519,8 +553,8 @@ namespace lu::graphics {
                     dst_layout,
                     subresource_range
                 );
-                mip_w >>= (mip_w > 1);
-                mip_h >>= (mip_h > 1);
+                mip_w >>= !!(mip_w > 1);
+                mip_h >>= !!(mip_h > 1);
             }
         }
 
@@ -537,24 +571,30 @@ namespace lu::graphics {
         log_info("{} mip-chain with {} maps", transfer_only ? "Loaded" : "Generated", m_mip_levels);
     }
 
-    auto texture::create_sampler() -> void {
+    auto texture::create_sampler(
+        const vk::Filter mag_filter,
+        const vk::Filter min_filter,
+        const vk::SamplerMipmapMode mipmap_mode,
+        const vk::SamplerAddressMode address_mode,
+        const bool aniso_enable
+    ) -> void {
         const bool supports_anisotropy = vkb::dvc().get_physical_device_features().samplerAnisotropy;
 
         vk::SamplerCreateInfo sampler_info {};
-        sampler_info.magFilter = vk::Filter::eLinear;
-        sampler_info.minFilter = vk::Filter::eLinear;
-        sampler_info.mipmapMode = vk::SamplerMipmapMode::eLinear;
-        sampler_info.addressModeU = vk::SamplerAddressMode::eRepeat;
-        sampler_info.addressModeV = vk::SamplerAddressMode::eRepeat;
-        sampler_info.addressModeW = vk::SamplerAddressMode::eRepeat;
+        sampler_info.magFilter = mag_filter;
+        sampler_info.minFilter = min_filter;
+        sampler_info.mipmapMode = mipmap_mode;
+        sampler_info.addressModeU = address_mode;
+        sampler_info.addressModeV = address_mode;
+        sampler_info.addressModeW = address_mode;
         sampler_info.mipLodBias = 0.0f;
         sampler_info.compareOp = vk::CompareOp::eAlways;
         sampler_info.compareEnable = vk::False;
         sampler_info.minLod = 0.0f;
         sampler_info.maxLod = static_cast<float>(m_mip_levels);
-        sampler_info.maxAnisotropy = supports_anisotropy ? vkb::dvc().get_physical_device_props().limits.maxSamplerAnisotropy : 1.0f;
-        sampler_info.anisotropyEnable = supports_anisotropy ? vk::True : vk::False;
-        sampler_info.borderColor = vk::BorderColor::eFloatOpaqueBlack;
+        sampler_info.maxAnisotropy = aniso_enable && supports_anisotropy ? vkb::dvc().get_physical_device_props().limits.maxSamplerAnisotropy : 1.0f;
+        sampler_info.anisotropyEnable = aniso_enable && supports_anisotropy ? vk::True : vk::False;
+        sampler_info.borderColor = vk::BorderColor::eFloatOpaqueWhite;
         sampler_info.unnormalizedCoordinates = vk::False;
         vkcheck(vkb::vkdvc().createSampler(&sampler_info, vkb::get_alloc(), &m_sampler));
     }

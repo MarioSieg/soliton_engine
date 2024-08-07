@@ -72,6 +72,15 @@ namespace lu::vkb {
             vk::PipelineStageFlags dst_stage = vk::PipelineStageFlagBits::eAllCommands
         ) -> void;
 
+        auto set_image_layout_barrier(
+            vk::Image image,
+            vk::ImageAspectFlags aspect_mask,
+            vk::ImageLayout old_layout,
+            vk::ImageLayout new_layout,
+            vk::PipelineStageFlags src_stage = vk::PipelineStageFlagBits::eAllCommands,
+            vk::PipelineStageFlags dst_stage = vk::PipelineStageFlagBits::eAllCommands
+        ) -> void;
+
         auto copy_buffer_to_image(vk::Buffer buffer, vk::Image image, eastl::span<const vk::BufferImageCopy> regions) -> void;
 
         [[nodiscard]] auto command_pool() const noexcept -> vk::CommandPool { return m_pool; }

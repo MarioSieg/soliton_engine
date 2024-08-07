@@ -265,6 +265,23 @@ namespace lu::vkb {
         );
     }
 
+    auto command_buffer::set_image_layout_barrier(
+        const vk::Image image,
+        const vk::ImageAspectFlags aspect_mask,
+        const vk::ImageLayout old_layout,
+        const vk::ImageLayout new_layout,
+        const vk::PipelineStageFlags src_stage,
+        const vk::PipelineStageFlags dst_stage
+    ) -> void {
+        vk::ImageSubresourceRange range {};
+        range.aspectMask = aspect_mask;
+        range.baseMipLevel = 0;
+        range.levelCount = 1;
+        range.baseArrayLayer = 0;
+        range.layerCount = 1;
+        set_image_layout_barrier(image, old_layout, new_layout, range, src_stage, dst_stage);
+    }
+
     auto command_buffer::copy_buffer_to_image(const vk::Buffer buffer, const vk::Image image, const eastl::span<const vk::BufferImageCopy> regions) -> void {
         m_cmd.copyBufferToImage(
             buffer,
