@@ -33,13 +33,12 @@ namespace lu::graphics {
         auto on_resize() -> void override;
         auto on_start(scene& scene) -> void override;
 
-        [[nodiscard]] auto get_descriptor_pool() const noexcept -> vk::DescriptorPool { return m_descriptor_pool; }
         [[nodiscard]] auto get_render_thread_pool() const noexcept -> const render_thread_pool& { return *m_render_thread_pool; }
 
         [[nodiscard]] auto get_render_data() const noexcept -> const eastl::vector<eastl::pair<eastl::span<const com::transform>, eastl::span<const com::mesh_renderer>>>& { return m_render_data; }
         [[nodiscard]] auto get_debug_draw() -> debugdraw& {
             if (!m_debugdraw.has_value()) {
-                m_debugdraw.emplace(m_descriptor_pool);
+                m_debugdraw.emplace();
             }
             return *m_debugdraw;
         }
@@ -67,7 +66,6 @@ namespace lu::graphics {
     private:
         friend class graphics_pipeline;
         static auto reload_pipelines() -> void;
-        auto create_descriptor_pool() -> void;
         auto render_uis() -> void;
         static auto update_main_camera(float width, float height) -> void;
         HOTPROC auto render_scene_bucket(
@@ -84,7 +82,6 @@ namespace lu::graphics {
         static inline com::transform s_camera_transform;
         static inline constinit graphics_subsystem* s_instance;
         eastl::optional<vkb::command_buffer> m_cmd {};
-        vk::DescriptorPool m_descriptor_pool {};
         vk::CommandBufferInheritanceInfo m_inheritance_info {};
         eastl::optional<render_thread_pool> m_render_thread_pool {};
         eastl::vector<eastl::pair<eastl::span<const com::transform>, eastl::span<const com::mesh_renderer>>> m_render_data {};

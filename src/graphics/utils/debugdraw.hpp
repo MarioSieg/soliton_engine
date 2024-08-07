@@ -30,7 +30,7 @@ namespace lu::graphics {
             float fade_end = 0.0f;
         };
 
-        explicit debugdraw(vk::DescriptorPool pool);
+        debugdraw();
         ~debugdraw();
 
         // fuck me
@@ -60,8 +60,7 @@ namespace lu::graphics {
         auto render(vk::CommandBuffer cmd, DirectX::FXMMATRIX view_proj, DirectX::FXMVECTOR view_pos) -> void;
 
     private:
-        auto create_descriptor_set_layout(vk::Device device) -> void;
-        auto create_descriptor_set(vk::Device device, vk::DescriptorPool pool) -> void;
+        auto create_descriptor() -> void;
         auto create_uniform_buffer() -> void;
         auto create_vertex_buffer() -> void;
         auto create_pipeline_states(vk::Device device, vk::RenderPass pass) -> void;
@@ -69,12 +68,12 @@ namespace lu::graphics {
         const std::uint32_t k_max_vertices;
         eastl::vector<vertex> m_vertices {};
         eastl::vector<draw_command> m_draw_commands {};
-        bool m_depth_test = false;
         std::uint32_t m_batch_start = 0;
         std::uint32_t m_batch_end = 0;
-        bool m_batched_mode = false;
         float m_fade_start = 0.0f;
         float m_fade_end = 0.0f;
+        bool m_depth_test = false;
+        bool m_batched_mode = false;
         bool m_distance_fade = false;
         eastl::optional<vkb::buffer> m_vertex_buffer {};
         eastl::optional<vkb::buffer> m_uniform {};

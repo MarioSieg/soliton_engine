@@ -880,8 +880,8 @@ namespace lu::graphics {
 
     auto debugdraw::render(
         const vk::CommandBuffer cmd,
-        const FXMMATRIX view_proj,
-        const FXMVECTOR view_pos
+        FXMMATRIX view_proj,
+        FXMVECTOR view_pos
     ) -> void {
         if (!m_vertices.empty()) {
             const std::uint32_t frameidx = vkb::ctx().get_current_frame();
@@ -1038,39 +1038,14 @@ namespace lu::graphics {
         draw_line(p, z_end, XMFLOAT3(0.0f, 0.0f, 1.0f));
     }
 
-    auto debugdraw::create_descriptor_set_layout(const vk::Device device) -> void {
-        vk::DescriptorSetLayoutBinding binding {};
-        binding.binding = 0;
-        binding.descriptorType = vk::DescriptorType::eUniformBufferDynamic;
-        binding.descriptorCount = 1;
-        binding.stageFlags = vk::ShaderStageFlagBits::eVertex;
-        vk::DescriptorSetLayoutCreateInfo layout_info {};
-        layout_info.bindingCount = 1;
-        layout_info.pBindings = &binding;
-        vkcheck(device.createDescriptorSetLayout(&layout_info, vkb::get_alloc(), &m_descriptor_set_layout));
-    }
-
-    auto debugdraw::create_descriptor_set(const vk::Device device, const vk::DescriptorPool pool) -> void {
-        vk::DescriptorSetAllocateInfo alloc_info {};
-        alloc_info.descriptorPool = pool;
-        alloc_info.descriptorSetCount = 1;
-        alloc_info.pSetLayouts = &m_descriptor_set_layout;
-        vkcheck(device.allocateDescriptorSets(&alloc_info, &m_descriptor_set));
-
+    auto debugdraw::create_descriptor() -> void {
+        vkb::descriptor_factory factory {vkb::ctx().get_descriptor_layout_cache(), vkb::ctx().get_descriptor_allocator()};
         vk::DescriptorBufferInfo buffer_info {};
         buffer_info.buffer = m_uniform->get_buffer();
         buffer_info.offset = 0;
         buffer_info.range = sizeof(uniform);
-
-        vk::WriteDescriptorSet descriptor_write {};
-        descriptor_write.dstSet = m_descriptor_set;
-        descriptor_write.dstBinding = 0;
-        descriptor_write.dstArrayElement = 0;
-        descriptor_write.descriptorType = vk::DescriptorType::eUniformBufferDynamic;
-        descriptor_write.descriptorCount = 1;
-        descriptor_write.pBufferInfo = &buffer_info;
-
-        device.updateDescriptorSets(1, &descriptor_write, 0, nullptr);
+        factory.bind_buffers(0, 1, &buffer_info, vk::DescriptorType::eUniformBufferDynamic, vk::ShaderStageFlagBits::eVertex);
+        passert(factory.build(m_descriptor_set, m_descriptor_set_layout));
     }
 
     auto debugdraw::create_uniform_buffer() -> void {
@@ -1270,15 +1245,13 @@ namespace lu::graphics {
         device.destroyShaderModule(fs, vkb::get_alloc());
     }
 
-    debugdraw::debugdraw(const vk::DescriptorPool pool) : k_max_vertices{k_debug_draw_max_verts()} {
+    debugdraw::debugdraw() : k_max_vertices{k_debug_draw_max_verts()} {
         m_vertices.reserve(k_max_vertices);
-        m_draw_commands.reserve(k_max_vertices / 2);
-        const vk::Device device = vkb::ctx().get_device();
+        m_draw_commands.reserve(k_max_vertices>>1);
         create_uniform_buffer();
         create_vertex_buffer();
-        create_descriptor_set_layout(device);
-        create_descriptor_set(device, pool);
-        create_pipeline_states(device, vkb::ctx().get_scene_render_pass());
+        create_descriptor();
+        create_pipeline_states(vkb::ctx().get_device(), vkb::ctx().get_scene_render_pass());
         log_info("Created debug draw context");
     }
 

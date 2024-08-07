@@ -26,20 +26,23 @@ namespace lu::vkb {
         setup_render_pass();
         setup_frame_buffer();
         create_pipeline_cache();
+
+        m_descriptor_allocator.emplace();
+        m_descriptor_layout_cache.emplace();
     }
 
     context::~context() {
         vkcheck(m_device->get_logical_device().waitIdle());
 
         // Dump VMA Infos
-#if 0
         char* vma_stats_string = nullptr;
-        vmaBuildStatsString(m_device->get_allocator(), &vma_stats_string, true);
+        vmaBuildStatsString(m_device->get_allocator(), &vma_stats_string, false);
         spdlog::info("VMA Stats:\n{}", vma_stats_string);
         vmaFreeStatsString(m_device->get_allocator(), vma_stats_string);
-#endif
 
-        m_device->get_logical_device().destroyDescriptorPool(m_imgui_descriptor_pool, vkb::get_alloc());
+        m_descriptor_allocator.reset();
+        m_descriptor_layout_cache.reset();
+
         m_device->get_logical_device().destroyPipelineCache(m_pipeline_cache, vkb::get_alloc());
         m_device->get_logical_device().destroyRenderPass(m_ui_render_pass, vkb::get_alloc());
         m_device->get_logical_device().destroyRenderPass(m_scene_render_pass, vkb::get_alloc());
@@ -93,10 +96,6 @@ namespace lu::vkb {
         }
 
         const vk::CommandBuffer cmd_buf = m_command_buffers[m_current_frame];
-        vkcheck(cmd_buf.reset({}));
-        constexpr vk::CommandBufferBeginInfo command_buffer_begin_info {};
-        vkcheck(cmd_buf.begin(&command_buffer_begin_info));
-
         return command_buffer{m_graphics_command_pool, cmd_buf, dvc().get_graphics_queue(), vk::QueueFlagBits::eGraphics};
     }
 
@@ -485,12 +484,12 @@ namespace lu::vkb {
 
     static constinit std::atomic_bool s_init;
 
-    auto context::init(GLFWwindow* const window) -> void {
+    auto context::create(GLFWwindow *window) -> void {
         if (s_init.load(std::memory_order_relaxed)) {
             return;
         }
         passert(window != nullptr);
-        s_instance = eastl::make_unique<context>(window);
+        s_instance = new context{window};
         s_init.store(true, std::memory_order_relaxed);
     }
 
@@ -498,7 +497,8 @@ namespace lu::vkb {
         if (!s_init.load(std::memory_order_relaxed)) {
             return;
         }
-        s_instance.reset();
+        delete s_instance;
+        s_instance = nullptr;
         s_init.store(false, std::memory_order_relaxed);
     }
 }

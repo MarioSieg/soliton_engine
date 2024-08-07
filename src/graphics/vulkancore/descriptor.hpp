@@ -6,7 +6,7 @@
 
 #include <ankerl/unordered_dense.h>
 
-namespace lu::graphics {
+namespace lu::vkb {
     class descriptor_allocator final : public no_copy, public no_move {
     public:
         descriptor_allocator() = default;
@@ -77,14 +77,14 @@ namespace lu::graphics {
         auto bind_no_info_stage(vk::DescriptorType type, vk::ShaderStageFlagBits stage_flags, std::uint32_t binding, std::uint32_t count = 1) -> descriptor_factory&;
         auto bind_no_info_stage(vk::DescriptorType type, std::uint32_t binding, std::uint32_t count = 1) -> descriptor_factory&;
         auto bind_buffers(
-            std::uint32_t bindings,
+            std::uint32_t binding,
             std::uint32_t count,
             vk::DescriptorBufferInfo* buffer_info,
             vk::DescriptorType type,
             vk::ShaderStageFlagBits flags
         ) -> descriptor_factory&;
         auto bind_images(
-            std::uint32_t bindings,
+            std::uint32_t binding,
             std::uint32_t count,
             vk::DescriptorImageInfo* buffer_info,
             vk::DescriptorType type,

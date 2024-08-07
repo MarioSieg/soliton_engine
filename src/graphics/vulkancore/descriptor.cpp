@@ -3,7 +3,7 @@
 #include "descriptor.hpp"
 #include "context.hpp"
 
-namespace lu::graphics {
+namespace lu::vkb {
     auto descriptor_allocator::reset_all_pools() -> void {
         for (auto&& pool : m_used_pools) {
             vkb::vkdvc().resetDescriptorPool(pool, vk::DescriptorPoolResetFlags{});
@@ -93,7 +93,7 @@ namespace lu::graphics {
     }
 
     auto descriptor_layout_cache::descriptor_layout_info::get_hash() const noexcept -> std::size_t {
-        return crc32(reinterpret_cast<const std::byte*>(bindings.data()), bindings.size() * sizeof(std::decay_t<decltype(bindings[0])>));
+        return crc32(reinterpret_cast<const std::byte*>(bindings.data()), bindings.size() * sizeof(bindings[0]));
     }
 
     descriptor_layout_cache::~descriptor_layout_cache() {
@@ -203,7 +203,7 @@ namespace lu::graphics {
     }
 
     auto descriptor_factory::bind_buffers(
-        const std::uint32_t bindings,
+        const std::uint32_t binding,
         const std::uint32_t count,
         vk::DescriptorBufferInfo* const buffer_info,
         const vk::DescriptorType type,
@@ -211,7 +211,7 @@ namespace lu::graphics {
     ) -> descriptor_factory& {
 
         vk::DescriptorSetLayoutBinding binding_info {};
-        binding_info.binding = bindings;
+        binding_info.binding = binding;
         binding_info.descriptorCount = count;
         binding_info.descriptorType = type;
         binding_info.stageFlags = flags;
@@ -219,7 +219,7 @@ namespace lu::graphics {
 
         descriptor_write_container dc {};
         dc.buffer_info = buffer_info;
-        dc.binding = bindings;
+        dc.binding = binding;
         dc.count = count;
         dc.type = type;
         dc.is_image = false;
@@ -229,7 +229,7 @@ namespace lu::graphics {
     }
 
     auto descriptor_factory::bind_images(
-        const std::uint32_t bindings,
+        const std::uint32_t binding,
         const std::uint32_t count,
         vk::DescriptorImageInfo* const buffer_info,
         const vk::DescriptorType type,
@@ -237,7 +237,7 @@ namespace lu::graphics {
     ) -> descriptor_factory& {
 
         vk::DescriptorSetLayoutBinding binding_info {};
-        binding_info.binding = bindings;
+        binding_info.binding = binding;
         binding_info.descriptorCount = count;
         binding_info.descriptorType = type;
         binding_info.stageFlags = flags;
@@ -245,7 +245,7 @@ namespace lu::graphics {
 
         descriptor_write_container dc {};
         dc.image_info = buffer_info;
-        dc.binding = bindings;
+        dc.binding = binding;
         dc.count = count;
         dc.type = type;
         dc.is_image = true;

@@ -75,8 +75,8 @@ namespace lu::graphics {
 #endif
 
         for (;;) {
-            if (m_token.load(std::memory_order_relaxed)) [[unlikely]] break;
-            if (!begin_thread_frame()) [[unlikely]] break;
+            if (m_token.load(std::memory_order_relaxed) || !begin_thread_frame()) [[unlikely]]
+                break;
             eastl::invoke(m_shared_ctx.render_callback, *m_active_command_buffer, m_thread_id, m_num_threads);
             end_thread_frame();
         }

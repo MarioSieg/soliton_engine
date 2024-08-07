@@ -20,7 +20,6 @@ namespace lu::graphics {
     using vkb::context;
 
     static const system_variable<eastl::string> cv_shader_dir {"Renderer.shaderDir", eastl::monostate{}};
-    static const system_variable<bool> cv_enable_parallel_shader_compilation {"Renderer.enableParallelShaderCompilation", {true}};
     static const system_variable<std::uint32_t> cv_max_render_threads {
         "Threads.renderThreads",
         {2u}
@@ -33,12 +32,10 @@ namespace lu::graphics {
 
         s_instance = this;
 
-        GLFWwindow* window = platform_subsystem::get_glfw_window();
-        context::init(window);
+        GLFWwindow* const window = platform_subsystem::get_glfw_window();
+        context::create(window);
 
         material::init_static_resources();
-
-        create_descriptor_pool();
 
         shader_cache::init(cv_shader_dir());
 
@@ -180,7 +177,7 @@ namespace lu::graphics {
         }
         m_render_data.clear();
         scene.readonly_begin();
-        m_render_query.query.iter([this](const flecs::iter& i, const com::transform* transforms, const com::mesh_renderer* renderers) {
+        m_render_query.query.iter([this](const flecs::iter& i, const com::transform* const transforms, const com::mesh_renderer* const renderers) {
             const std::size_t n = i.count();
             m_render_data.emplace_back(eastl::span{transforms, n}, eastl::span{renderers, n});
         });
@@ -207,27 +204,6 @@ namespace lu::graphics {
 
     auto graphics_subsystem::on_start(scene& scene) -> void {
         
-    }
-
-    // Descriptors are allocated from a pool, that tells the implementation how many and what types of descriptors we are going to use (at maximum)
-    auto graphics_subsystem::create_descriptor_pool() -> void {
-        const vkb::device& dvc = vkb::dvc();
-        const vk::Device device = vkb::vkdvc();
-
-        const eastl::array<vk::DescriptorPoolSize, 1> sizes {
-            vk::DescriptorPoolSize {
-                .type = vk::DescriptorType::eUniformBufferDynamic,
-                .descriptorCount = 128u
-            },
-        };
-
-        // Create the global descriptor pool
-        // All descriptors used in this example are allocated from this pool
-        vk::DescriptorPoolCreateInfo descriptor_pool_ci {};
-        descriptor_pool_ci.poolSizeCount = static_cast<std::uint32_t>(sizes.size());
-        descriptor_pool_ci.pPoolSizes = sizes.data();
-        descriptor_pool_ci.maxSets = 32; // TODO max sets Allocate one set for each frame
-        vkcheck(device.createDescriptorPool(&descriptor_pool_ci, vkb::get_alloc(), &m_descriptor_pool));
     }
 
     auto graphics_subsystem::render_uis() -> void {

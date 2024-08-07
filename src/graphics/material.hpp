@@ -41,7 +41,6 @@ namespace lu::graphics {
             return s_descriptor_set_layout;
         }
 
-
     private:
         friend class graphics_subsystem;
         static auto init_static_resources() -> void;

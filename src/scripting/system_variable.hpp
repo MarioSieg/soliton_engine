@@ -84,7 +84,7 @@ namespace lu::scripting {
             if constexpr (std::is_same_v<T, eastl::string>) {
                 lu_convar_check(key.isString(), "Type mismatch, expected 'string'");
             } else if constexpr (std::is_same_v<T, bool>) {
-                lu_convar_check(key.isString(), "Type mismatch, expected 'boolean'");
+                lu_convar_check(key.isBool(), "Type mismatch, expected 'boolean'");
             } else if constexpr(std::is_integral_v<T> || std::is_floating_point_v<T>) {
                 lu_convar_check(key.isNumber(), "Type mismatch, expected 'number'");
             }
