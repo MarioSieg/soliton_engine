@@ -135,8 +135,8 @@ namespace lu::vkb {
         vk::DescriptorSetLayoutCreateInfo layout_info {};
         layout_info.bindingCount = static_cast<std::uint32_t>(m_bindings.size());
         layout_info.pBindings = m_bindings.data();
-        layout = m_cache.create_layout(layout_info);
-        passert(m_allocator.allocate(set, layout));
+        layout = m_cache->create_layout(layout_info);
+        passert(m_allocator->allocate(set, layout));
     }
 
     auto descriptor_factory::build_no_info(vk::DescriptorSet& set) -> void {
@@ -148,7 +148,7 @@ namespace lu::vkb {
         vk::DescriptorSetLayoutCreateInfo layout_info {};
         layout_info.bindingCount = static_cast<std::uint32_t>(m_bindings.size());
         layout_info.pBindings = m_bindings.data();
-        layout = m_cache.create_layout(layout_info);
+        layout = m_cache->create_layout(layout_info);
     }
 
     auto descriptor_factory::build(vk::DescriptorSet& set, vk::DescriptorSetLayout& layout) -> bool {
@@ -157,8 +157,8 @@ namespace lu::vkb {
         vk::DescriptorSetLayoutCreateInfo layout_info {};
         layout_info.bindingCount = static_cast<std::uint32_t>(m_bindings.size());
         layout_info.pBindings = m_bindings.data();
-        ret_layout = m_cache.create_layout(layout_info);
-        if (!m_allocator.allocate(ret_set, ret_layout)) [[unlikely]] {
+        ret_layout = m_cache->create_layout(layout_info);
+        if (!m_allocator->allocate(ret_set, ret_layout)) [[unlikely]] {
             return false;
         }
         eastl::vector<vk::WriteDescriptorSet> writes {};

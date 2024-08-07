@@ -47,6 +47,7 @@ namespace lu::vkb {
         auto bind_index_buffer(vk::Buffer buffer, bool index32, vk::DeviceSize offset = 0) -> void;
         auto bind_pipeline(const graphics::graphics_pipeline& pipeline) -> void;
         auto bind_material(const graphics::material& mat) -> void;
+        auto bind_graphics_descriptor_set(vk::DescriptorSet set, std::uint32_t idx) -> void;
         auto bind_mesh_buffers(const graphics::mesh& mesh) -> void;
 
         auto draw_mesh(const graphics::mesh& mesh) -> void;

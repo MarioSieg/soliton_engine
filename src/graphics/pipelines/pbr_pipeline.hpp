@@ -26,6 +26,8 @@ namespace lu::graphics::pipelines {
 
     private:
         pbr_filter_processor m_pbr_filter_processor {};
+        vk::DescriptorSetLayout m_pbr_descriptor_set_layout {};
+        vk::DescriptorSet m_pbr_descriptor_set {};
 
         virtual auto configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> void override;
         virtual auto configure_pipeline_layout(eastl::vector<vk::DescriptorSetLayout>& layouts, eastl::vector<vk::PushConstantRange>& ranges) -> void override;
@@ -39,5 +41,7 @@ namespace lu::graphics::pipelines {
             DirectX::FXMMATRIX view_proj_mtx,
             DirectX::CXMMATRIX model_mtx
         ) const noexcept -> void final override;
+
+        virtual auto on_bind(vkb::command_buffer& cmd) const -> void override;
     };
 }

@@ -32,11 +32,26 @@ namespace lu::graphics::pipelines {
         cmd.draw_mesh_with_materials(mesh, mats);
     }
 
-    pbr_pipeline::pbr_pipeline() : graphics_pipeline{"mat_pbr"} {
-
+    auto pbr_pipeline::on_bind(vkb::command_buffer& cmd) const -> void {
+        graphics_pipeline::on_bind(cmd);
+        cmd.bind_graphics_descriptor_set(m_pbr_descriptor_set, 1);
     }
 
-    pbr_pipeline::~pbr_pipeline() = default;
+    pbr_pipeline::pbr_pipeline() : graphics_pipeline{"mat_pbr"} {
+        vkb::descriptor_factory df {vkb::ctx().descriptor_factory_begin()};
+
+        vk::DescriptorImageInfo image_info {};
+        image_info.imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+        image_info.imageView = m_pbr_filter_processor.brdf_lut().get_view();
+        image_info.sampler = m_pbr_filter_processor.brdf_lut().get_sampler();
+
+        df.bind_images(0, 1, &image_info, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment);
+        passert(df.build(m_pbr_descriptor_set, m_pbr_descriptor_set_layout));
+    }
+
+    pbr_pipeline::~pbr_pipeline() {
+        vkb::vkdvc().destroyDescriptorSetLayout(m_pbr_descriptor_set_layout, vkb::get_alloc());
+    }
 
     auto pbr_pipeline::configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> void {
         shader_variant vs_variant {"/engine_assets/shaders/src/pbr_uber_surface.vert", shader_stage::vertex};
@@ -52,6 +67,7 @@ namespace lu::graphics::pipelines {
         eastl::vector<vk::PushConstantRange>& ranges
     ) -> void {
         layouts.emplace_back(material::get_static_resources().descriptor_layout);
+        layouts.emplace_back(m_pbr_descriptor_set_layout);
 
         vk::PushConstantRange push_constant_range {};
         push_constant_range.stageFlags = vk::ShaderStageFlagBits::eVertex;
@@ -69,7 +85,7 @@ namespace lu::graphics::pipelines {
         graphics_pipeline::configure_enable_color_blending(cfg);
     }
 
-    auto pbr_pipeline::configure_multisampling(vk::PipelineMultisampleStateCreateInfo &cfg) -> void {
+    auto pbr_pipeline::configure_multisampling(vk::PipelineMultisampleStateCreateInfo& cfg) -> void {
         passert(type == pipeline_type::graphics);
         cfg.rasterizationSamples = vkb::k_msaa_sample_count;
         cfg.alphaToCoverageEnable = vk::True;

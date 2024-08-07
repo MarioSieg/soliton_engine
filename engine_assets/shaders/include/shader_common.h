@@ -147,7 +147,6 @@ vec3 pbr_specular_contrib(
     return color;
 }
 
-
 vec2 hammersley2d(const uint i, const uint N) {
     // Radical inverse based on http://holger.dammertz.org/stuff/notes_HammersleyOnHemisphere.html
     uint bits = (i << 16u) | (i >> 16u);

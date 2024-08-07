@@ -9,6 +9,8 @@ layout (set = 0, binding = 1) uniform sampler2D samplerNormalMap;
 layout (set = 0, binding = 2) uniform sampler2D samplerRoughness;
 layout (set = 0, binding = 3) uniform sampler2D samplerAO;
 
+layout (set = 1, binding = 0) uniform sampler2D brdf_lut;
+
 layout (location = 0) in vec3 inWorldPos;
 layout (location = 1) in vec2 inUV;
 layout (location = 2) in vec3 inNormal;
@@ -21,6 +23,16 @@ layout (location = 0) out vec4 outFragColor;
 layout (push_constant, std430) uniform PushConstants { // TODO: move to per frame cb
   layout(offset = 128) vec4 camera_pos; // xyz: camera position, w: time
 } consts;
+
+vec3 prefiltered_reflection(const vec3 R, const float roughness) {
+  const float MAX_REFLECTION_LOD = 9.0;
+  float lod = roughness * MAX_REFLECTION_LOD;
+  float lodf = floor(lod);
+  float lodc = ceil(lod);
+  vec3 a = vec3(1.0);
+  vec3 b = vec3(1.0);
+  return mix(a, b, lod - lodf);
+}
 
 void main() {
   const vec3 N = normal_map(inTBN, texture(samplerNormalMap, inUV).xyz);

@@ -123,13 +123,17 @@ namespace lu::vkb {
     }
 
     auto command_buffer::bind_material(const graphics::material& mat) -> void {
+        bind_graphics_descriptor_set(mat.get_descriptor_set(), 0);
+    }
+
+    auto command_buffer::bind_graphics_descriptor_set(const vk::DescriptorSet set, const std::uint32_t idx) -> void {
         passert(m_bounded_pipeline != nullptr);
         m_cmd.bindDescriptorSets(
             vk::PipelineBindPoint::eGraphics,
             m_bounded_pipeline->get_layout(),
-            0,
+            idx,
             1,
-            &mat.get_descriptor_set(),
+            &set,
             0,
             nullptr
         );

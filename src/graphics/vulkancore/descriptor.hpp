@@ -64,11 +64,11 @@ namespace lu::vkb {
         layout_cache m_layout_cache {};
     };
 
-    class descriptor_factory final : public no_copy, public no_move {
+    class descriptor_factory final : public no_move {
     public:
         static constexpr vk::Flags<vk::ShaderStageFlagBits> k_common_stages = vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment | vk::ShaderStageFlagBits::eCompute;
 
-        inline descriptor_factory(descriptor_layout_cache& cache, descriptor_allocator& allocator) noexcept : m_cache{cache}, m_allocator{allocator} {};
+        inline descriptor_factory(descriptor_layout_cache& cache, descriptor_allocator& allocator) noexcept : m_cache{&cache}, m_allocator{&allocator} {};
         ~descriptor_factory() = default;
 
         [[nodiscard]] auto build(vk::DescriptorSet& set, vk::DescriptorSetLayout& layout) -> bool;
@@ -105,7 +105,7 @@ namespace lu::vkb {
 
         eastl::vector<descriptor_write_container> m_write_descriptors {};
         eastl::vector<vk::DescriptorSetLayoutBinding> m_bindings {};
-        descriptor_layout_cache& m_cache;
-        descriptor_allocator& m_allocator;
+        descriptor_layout_cache* m_cache;
+        descriptor_allocator* m_allocator;
     };
 }

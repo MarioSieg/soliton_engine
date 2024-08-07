@@ -74,7 +74,7 @@ namespace lu::graphics {
         descriptor_allocator.configured_pool_sizes.clear();
         descriptor_allocator.configured_pool_sizes.emplace_back(vk::DescriptorType::eCombinedImageSampler, 1.0f);
 
-        vkb::descriptor_factory factory {this->descriptor_layout_cache, this->descriptor_allocator};
+        vkb::descriptor_factory factory {vkb::ctx().descriptor_factory_begin()};
         for (std::uint32_t i = 0; i < 4; ++i)
             factory.bind_no_info_stage(vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, i);
 

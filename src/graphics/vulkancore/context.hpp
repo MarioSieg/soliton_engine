@@ -34,6 +34,7 @@ namespace lu::vkb {
 
         [[nodiscard]] auto get_descriptor_allocator() noexcept -> descriptor_allocator& { return *m_descriptor_allocator; }
         [[nodiscard]] auto get_descriptor_layout_cache() noexcept -> descriptor_layout_cache& { return *m_descriptor_layout_cache; }
+        [[nodiscard]] auto descriptor_factory_begin() -> descriptor_factory { return descriptor_factory{get_descriptor_layout_cache(), get_descriptor_allocator()}; }
         [[nodiscard]] auto get_window() const noexcept -> GLFWwindow* { return m_window; }
         [[nodiscard]] auto get_command_buffers() const noexcept -> eastl::span<const vk::CommandBuffer> { return m_command_buffers; }
         [[nodiscard]] auto get_current_frame() const noexcept -> std::uint32_t { return m_current_frame; }
