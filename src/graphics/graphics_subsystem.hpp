@@ -70,12 +70,11 @@ namespace lu::graphics {
         auto create_descriptor_pool() -> void;
         auto render_uis() -> void;
         static auto update_main_camera(float width, float height) -> void;
-        HOTPROC static auto render_scene_bucket(
+        HOTPROC auto render_scene_bucket(
             vkb::command_buffer& cmd,
             std::int32_t bucket_id,
-            std::int32_t num_threads,
-            void* usr
-        ) -> void;
+            std::int32_t num_threads
+        ) const -> void;
 
         static inline constinit DirectX::XMFLOAT4X4A s_view_mtx;
         static inline constinit DirectX::XMFLOAT4X4A s_proj_mtx;

@@ -77,7 +77,7 @@ namespace lu::graphics {
         for (;;) {
             if (m_token.load(std::memory_order_relaxed)) [[unlikely]] break;
             if (!begin_thread_frame()) [[unlikely]] break;
-            (*m_shared_ctx.render_callback)(*m_active_command_buffer, m_thread_id, m_num_threads, m_shared_ctx.usr);
+            eastl::invoke(m_shared_ctx.render_callback, *m_active_command_buffer, m_thread_id, m_num_threads);
             end_thread_frame();
         }
 
@@ -121,10 +121,9 @@ namespace lu::graphics {
         passert(!m_shared_ctx.m_sig_next_frame.is_triggered());
     }
 
-    render_thread_pool::render_thread_pool(render_bucket_callback* callback, void* usr, const std::int32_t num_threads) : m_num_threads{std::max(0, num_threads)} {
+    render_thread_pool::render_thread_pool(eastl::function<render_bucket_callback>&& callback,const std::int32_t num_threads) : m_num_threads{std::max(0, num_threads)} {
         passert(callback != nullptr);
-        m_shared_ctx.render_callback = callback;
-        m_shared_ctx.usr = usr;
+        m_shared_ctx.render_callback = std::move(callback);
         log_info("Creating render thread pool with {} threads", m_num_threads);
         m_threads = eastl::make_unique<eastl::optional<render_thread>[]>(m_num_threads);
         for (std::int32_t i = 0; i < m_num_threads; ++i) {

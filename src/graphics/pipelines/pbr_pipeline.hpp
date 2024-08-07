@@ -25,22 +25,20 @@ namespace lu::graphics::pipelines {
         };
         static_assert(sizeof(push_constants_fs) <= 128);
 
-        // WARNING! RENDER THREAD LOCAL
-        HOTPROC auto XM_CALLCONV render_mesh(
-            vkb::command_buffer& cmd_buf,
-            const com::transform& transform,
-            const com::mesh_renderer& renderer,
-            const DirectX::BoundingFrustum& frustum,
-            DirectX::FXMMATRIX vp
-        ) const -> void;
-
-    protected:
+    private:
         virtual auto configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> void override;
         virtual auto configure_pipeline_layout(eastl::vector<vk::DescriptorSetLayout>& layouts, eastl::vector<vk::PushConstantRange>& ranges) -> void override;
         virtual auto configure_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> void override;
         virtual auto configure_multisampling(vk::PipelineMultisampleStateCreateInfo& cfg) -> void override;
 
-    private:
+        HOTPROC virtual auto render_single_mesh(
+            vkb::command_buffer& cmd,
+            const mesh& mesh,
+            const com::mesh_renderer& renderer,
+            DirectX::FXMMATRIX view_proj_mtx,
+            DirectX::CXMMATRIX model_mtx
+        ) const noexcept -> void final override;
+
         // Generate a BRDF integration map used as a look-up-table (stores roughness / NdotV)
         auto generate_brdf_lut() -> void;
 

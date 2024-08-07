@@ -10,8 +10,7 @@ namespace lu::graphics {
     using render_bucket_callback = auto (
         vkb::command_buffer& cmd,
         const std::int32_t bucket_id,
-        const std::int32_t num_threads,
-        void* usr
+        const std::int32_t num_threads
     ) -> void;
 
     struct thread_shared_ctx final {
@@ -21,8 +20,7 @@ namespace lu::graphics {
         std::atomic_int32_t m_num_threads_completed {};
         std::atomic_int32_t m_num_threads_ready {};
         const vk::CommandBufferInheritanceInfo* inheritance_info {};
-        render_bucket_callback* render_callback {};
-        void* usr {};
+        eastl::function<render_bucket_callback> render_callback {};
     };
 
     class render_thread final : public no_copy, public no_move {
@@ -54,7 +52,7 @@ namespace lu::graphics {
 
     class render_thread_pool final : public no_copy, public no_move {
     public:
-        explicit render_thread_pool(render_bucket_callback* callback, void* usr, std::int32_t num_threads);
+        explicit render_thread_pool(eastl::function<render_bucket_callback>&& callback, std::int32_t num_threads);
         ~render_thread_pool();
 
         auto begin_frame(const vk::CommandBufferInheritanceInfo* inheritance_info) -> void;

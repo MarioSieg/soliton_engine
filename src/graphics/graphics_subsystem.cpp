@@ -45,9 +45,10 @@ namespace lu::graphics {
         pipeline_cache::init();
         auto& reg = pipeline_cache::get();
         reg.register_pipeline<pipelines::pbr_pipeline>();
-        reg.register_pipeline<pipelines::sky_pipeline>();
 
-        m_render_thread_pool.emplace(&render_scene_bucket, this, cv_max_render_threads());
+        m_render_thread_pool.emplace([this](vkb::command_buffer& cmd, const std::int32_t bucket_id, const std::int32_t num_threads) -> void {
+            render_scene_bucket(cmd, bucket_id, num_threads);
+        }, cv_max_render_threads());
         m_render_data.reserve(32);
 
         m_imgui_context.emplace();
@@ -118,35 +119,30 @@ namespace lu::graphics {
     HOTPROC auto graphics_subsystem::render_scene_bucket(
         vkb::command_buffer& cmd,
         const std::int32_t bucket_id,
-        const std::int32_t num_threads,
-        void* const usr
-    ) -> void {
-        passert(usr != nullptr);
-        auto& self = *static_cast<graphics_subsystem*>(usr);
+        const std::int32_t num_threads
+    ) const -> void {
+        const auto& pipeline = static_cast<const graphics_pipeline&>(pipeline_cache::get().get_pipeline("mat_pbr"));
+        pipeline.on_bind(cmd);
 
-        const auto& pbr_pipeline = dynamic_cast<const pipelines::pbr_pipeline&>(pipeline_cache::get().get_pipeline("mat_pbr"));
-
-        cmd.bind_pipeline(pbr_pipeline);
-        const DirectX::XMMATRIX vp = DirectX::XMLoadFloat4x4A(&graphics_subsystem::s_view_proj_mtx);
+        const DirectX::XMMATRIX view_proj_mtx = DirectX::XMLoadFloat4x4A(&graphics_subsystem::s_view_proj_mtx);
 
         // thread workload distribution
-        partitioned_draw(bucket_id, num_threads, self.get_render_data(), [&](
+        partitioned_draw(bucket_id, num_threads, get_render_data(), [&](
             const std::size_t i,
             const com::transform& transform,
             const com::mesh_renderer& renderer
         ) -> void {
-            pbr_pipeline.render_mesh(cmd, transform, renderer, s_frustum, vp);
+            pipeline.render_mesh(cmd, transform, renderer, s_frustum, view_proj_mtx);
         });
 
-        if (bucket_id == num_threads-1) { // Last thread
-            if (eastl::optional<debugdraw>& dd = self.get_debug_draw_opt(); dd) {
-                dd->render(
-                    cmd,
-                    DirectX::XMLoadFloat4x4A(&graphics_subsystem::s_view_proj_mtx),
-                    DirectX::XMLoadFloat4(&graphics_subsystem::s_camera_transform.position)
-                );
+        if (is_last_thread(bucket_id, num_threads)) { // Last thread
+            if (auto& dd = const_cast<eastl::optional<debugdraw>&>(m_debugdraw); dd.has_value()) {
+                const auto view_pos = DirectX::XMLoadFloat4(&graphics_subsystem::s_camera_transform.position);
+                dd->render(cmd, view_proj_mtx, view_pos);
             }
-            self.get_imgui_context().submit_imgui(cmd);
+            if (auto& imgui = const_cast<eastl::optional<imgui::context>&>(m_imgui_context); imgui.has_value()) {
+                imgui->submit_imgui(cmd);
+            }
         }
     }
 

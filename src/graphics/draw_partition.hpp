@@ -42,9 +42,13 @@ namespace lu::graphics {
             if (processed_entities + transforms.size() > global_end)
                 local_end = std::min(transforms.size(), global_end - processed_entities);
             for (std::size_t i = local_start; i < local_end; ++i) {
-                std::invoke(callback, i, transforms[i], renderers[i]);
+                eastl::invoke(callback, i, transforms[i], renderers[i]);
             }
             processed_entities += transforms.size();
         }
+    }
+
+    inline auto is_last_thread(const std::int32_t thread_id, const std::int32_t num_threads) noexcept -> bool {
+        return thread_id == num_threads - 1;
     }
 }

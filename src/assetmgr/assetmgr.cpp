@@ -54,6 +54,6 @@ namespace lu::assetmgr {
         std::unique_lock lock {s_mtx};
         if (!s_primary_accessor.has_value()) // Lazy init
             s_primary_accessor.emplace();
-        std::invoke(callback, *s_primary_accessor);
+        eastl::invoke(callback, *s_primary_accessor);
     }
 }
