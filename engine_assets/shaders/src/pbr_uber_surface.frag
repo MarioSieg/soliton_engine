@@ -9,26 +9,31 @@ layout (set = 0, binding = 1) uniform sampler2D samplerNormalMap;
 layout (set = 0, binding = 2) uniform sampler2D samplerRoughness;
 layout (set = 0, binding = 3) uniform sampler2D samplerAO;
 
-layout (location = 0) in vec2 outUV;
-layout (location = 1) in vec3 outNormal;
-layout (location = 2) in vec3 outTangent;
-layout (location = 3) in vec3 outBiTangent;
-layout (location = 4) in mat3 outTBN;
+layout (location = 0) in vec3 inWorldPos;
+layout (location = 1) in vec2 inUV;
+layout (location = 2) in vec3 inNormal;
+layout (location = 3) in vec3 inTangent;
+layout (location = 4) in vec3 inBiTangent;
+layout (location = 5) in mat3 inTBN;
 
 layout (location = 0) out vec4 outFragColor;
 
 layout (push_constant, std430) uniform PushConstants { // TODO: move to per frame cb
-  layout(offset = 128) float time;
-} pushConstants;
+  layout(offset = 128) vec4 camera_pos; // xyz: camera position, w: time
+} consts;
 
 void main() {
-  const vec4 tex_color = texture(samplerAlbedoMap, outUV);
-  const vec3 normal = normal_map(outTBN, texture(samplerNormalMap, outUV).xyz);
-  vec3 final = diffuse_lambert_lit(tex_color.rgb, normal);
-  //vec3 final = tex_color;
-  final = color_saturation(final, 1.25);
-  final = gamma_correct(final);
-  final += vec3(film_noise(pushConstants.time*outUV)) * 0.05;
-  outFragColor.rgb = final;
-  outFragColor.a = tex_color.a;
+  const vec3 N = normal_map(inTBN, texture(samplerNormalMap, inUV).xyz);
+  const vec3 V = normalize(consts.camera_pos.xyz - inWorldPos);
+  const vec3 R = reflect(-V, N);
+  const vec2 metallicRoughness = texture(samplerRoughness, inUV).rg;
+  const float metallic = metallicRoughness.r;
+  const float roughness = metallicRoughness.g;
+  const vec4 albedo = texture(samplerAlbedoMap, inUV);
+  vec3 F0 = mix(vec3(0.04), pow(albedo.rgb, VGAMMA), metallic);
+  vec3 Lo = vec3(0.0);
+  vec3 L = normalize(vec3(0.0) - inWorldPos);
+  Lo += pbr_specular_contrib(albedo.rgb, L, V, N, F0, metallic, roughness);
+  outFragColor.rgb = albedo.rgb;
+  outFragColor.a = albedo.a;
 }

@@ -38,7 +38,7 @@ namespace lu::graphics {
         }
 
         auto invalidate_all() -> void;
-        auto try_recreate_all() -> void;
+        auto recreate_all() -> void;
 
         [[nodiscard]] auto get_cache() const -> vk::PipelineCache { return m_cache; }
 

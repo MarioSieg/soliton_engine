@@ -15,17 +15,19 @@ layout (push_constant, std430) uniform PushConstants {
 	mat4 NormalMatrix;
 } pushConstants;
 
-layout (location = 0) out vec2 outUV;
-layout (location = 1) out vec3 outNormal;
-layout (location = 2) out vec3 outTangent;
-layout (location = 3) out vec3 outBiTangent;
-layout (location = 4) out mat3 outTBN;
+layout (location = 0) out vec3 outWorldPos;
+layout (location = 1) out vec2 outUV;
+layout (location = 2) out vec3 outNormal;
+layout (location = 3) out vec3 outTangent;
+layout (location = 4) out vec3 outBiTangent;
+layout (location = 5) out mat3 outTBN;
 
 out gl_PerVertex {
     vec4 gl_Position;
 };
 
 void main() {
+	outWorldPos = inPos;
 	gl_Position = pushConstants.ModelViewProj * vec4(inPos.xyz, 1.0);
 	mat3 nn = mat3(pushConstants.NormalMatrix);
 	outNormal = nn * inNormal;

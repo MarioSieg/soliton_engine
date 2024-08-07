@@ -87,6 +87,7 @@ namespace lu::graphics {
         explicit shader_cache(eastl::string&& shader_dir);
 
         [[nodiscard]] auto get_shader(shader_variant&& variant) -> eastl::shared_ptr<shader>;
+        auto invalidate_all() -> void;
 
         [[nodiscard]] static auto get() noexcept -> shader_cache&;
         static auto init(eastl::string&& shader_dir) -> void;

@@ -22,7 +22,10 @@ namespace lu::graphics::pipelines {
         cmd.push_consts(vk::ShaderStageFlagBits::eVertex, pc_vs);
 
         push_constants_fs pc_fs {};
-        pc_fs.time = static_cast<float>(kernel::get().get_time());
+        DirectX::XMFLOAT4A camera_pos {};
+        DirectX::XMStoreFloat4A(&camera_pos, DirectX::XMMatrixInverse(nullptr, view_proj_mtx).r[3]);
+        pc_fs.data = camera_pos;
+        pc_fs.data.w = static_cast<float>(kernel::get().get_time());
         cmd.push_consts(vk::ShaderStageFlagBits::eFragment, pc_fs);
 
         const eastl::span<material* const> mats {renderer.materials.data(), renderer.materials.size()};
@@ -30,15 +33,10 @@ namespace lu::graphics::pipelines {
     }
 
     pbr_pipeline::pbr_pipeline() : graphics_pipeline{"mat_pbr"} {
-        generate_brdf_lut();
+
     }
 
-    pbr_pipeline::~pbr_pipeline() {
-        const vk::Device device = vkb::ctx().get_device();
-        device.destroyImageView(m_brdf_lut.m_image_view, vkb::get_alloc());
-        device.destroyImage(m_brdf_lut.image, vkb::get_alloc());
-        device.freeMemory(m_brdf_lut.memory, vkb::get_alloc());
-    }
+    pbr_pipeline::~pbr_pipeline() = default;
 
     auto pbr_pipeline::configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> void {
         shader_variant vs_variant {"/engine_assets/shaders/src/pbr_uber_surface.vert", shader_stage::vertex};

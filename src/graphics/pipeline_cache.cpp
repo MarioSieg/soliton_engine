@@ -41,7 +41,8 @@ namespace lu::graphics {
         m_pipelines.clear();
     }
 
-    auto pipeline_cache::try_recreate_all() -> void {
+    auto pipeline_cache::recreate_all() -> void {
+        shader_cache::get().invalidate_all();
         for (const auto& [name, pipeline] : m_pipelines) {
             pipeline->create(m_cache);
         }

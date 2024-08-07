@@ -259,4 +259,8 @@ namespace lu::graphics {
         if (!s_instance) s_instance = eastl::make_unique<shader_cache>(std::move(shader_dir));
     }
     auto shader_cache::shutdown() noexcept -> void { s_instance.reset(); }
+
+    auto shader_cache::invalidate_all() -> void {
+        m_shaders.clear();
+    }
 }

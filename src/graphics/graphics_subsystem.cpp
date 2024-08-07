@@ -253,7 +253,7 @@ namespace lu::graphics {
         const auto now = eastl::chrono::high_resolution_clock::now();
         if (true) [[likely]] { // TODO
             auto& reg = pipeline_cache::get();
-            reg.try_recreate_all();
+            reg.recreate_all();
             log_info("Reloaded pipelines in {}ms", eastl::chrono::duration_cast<eastl::chrono::milliseconds>(eastl::chrono::high_resolution_clock::now() - now).count());
         } else {
             log_error("Failed to compile shaders");
