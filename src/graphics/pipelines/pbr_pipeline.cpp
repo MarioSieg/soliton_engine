@@ -51,7 +51,7 @@ namespace lu::graphics::pipelines {
         eastl::vector<vk::DescriptorSetLayout>& layouts,
         eastl::vector<vk::PushConstantRange>& ranges
     ) -> void {
-        layouts.emplace_back(material::get_descriptor_set_layout());
+        layouts.emplace_back(material::get_static_resources().descriptor_layout);
 
         vk::PushConstantRange push_constant_range {};
         push_constant_range.stageFlags = vk::ShaderStageFlagBits::eVertex;

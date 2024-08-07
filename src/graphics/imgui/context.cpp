@@ -10,6 +10,7 @@
 #include "text_editor.hpp"
 #include "implot.h"
 #include "../pipeline_cache.hpp"
+#include "../vulkancore/context.hpp"
 #include "../../platform/platform_subsystem.hpp"
 #include "../../scripting/system_variable.hpp"
 
@@ -42,31 +43,10 @@ namespace lu::imgui {
         GLFWwindow* window = platform::platform_subsystem::get_glfw_window();
         ImGui_ImplGlfw_InitForVulkan(window, true);
 
-        constexpr std::size_t k_num = 1024;
-        constexpr std::array<vk::DescriptorPoolSize, 11> k_pool_sizes {
-            vk::DescriptorPoolSize { vk::DescriptorType::eSampler, k_num },
-            vk::DescriptorPoolSize { vk::DescriptorType::eCombinedImageSampler, k_num },
-            vk::DescriptorPoolSize { vk::DescriptorType::eSampledImage, k_num },
-            vk::DescriptorPoolSize { vk::DescriptorType::eStorageImage, k_num },
-            vk::DescriptorPoolSize { vk::DescriptorType::eUniformTexelBuffer, k_num },
-            vk::DescriptorPoolSize { vk::DescriptorType::eStorageTexelBuffer, k_num },
-            vk::DescriptorPoolSize { vk::DescriptorType::eUniformBuffer, k_num },
-            vk::DescriptorPoolSize { vk::DescriptorType::eStorageBuffer, k_num },
-            vk::DescriptorPoolSize { vk::DescriptorType::eUniformBufferDynamic, k_num },
-            vk::DescriptorPoolSize { vk::DescriptorType::eStorageBufferDynamic, k_num },
-            vk::DescriptorPoolSize { vk::DescriptorType::eInputAttachment, k_num }
-        };
-
         auto& device = vkb::dvc();
         vk::Device vdevice = vkb::vkdvc();
 
-        vk::DescriptorPoolCreateInfo pool_info = {};
-        pool_info.flags = vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet;
-        pool_info.maxSets = k_num;
-        pool_info.poolSizeCount = k_pool_sizes.size();
-        pool_info.pPoolSizes = k_pool_sizes.data();
-
-        vkcheck(vdevice.createDescriptorPool(&pool_info, vkb::get_alloc(), &m_imgui_descriptor_pool));
+        m_imgui_descriptor_pool = vkb::ctx().get_descriptor_allocator().request_pool();
 
         ImGui_ImplVulkan_InitInfo init_info {};
         init_info.Instance = device.get_instance();

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "vulkancore/prelude.hpp"
+#include "vulkancore/descriptor.hpp"
 #include "../assetmgr/assetmgr.hpp"
 
 #include "texture.hpp"
@@ -10,6 +11,17 @@
 namespace lu::graphics {
     class material : public assetmgr::asset {
     public:
+        struct static_resources : public no_copy, public no_move {
+            static_resources();
+            ~static_resources();
+
+            texture error_texture;
+            texture flat_normal;
+            vkb::descriptor_allocator descriptor_allocator {};
+            vkb::descriptor_layout_cache descriptor_layout_cache {};
+            vk::DescriptorSetLayout descriptor_layout {};
+        };
+
         texture* albedo_map = nullptr;
         texture* normal_map = nullptr;
         texture* metallic_roughness_map = nullptr;
@@ -25,31 +37,15 @@ namespace lu::graphics {
 
         [[nodiscard]] auto get_descriptor_set() const noexcept -> const vk::DescriptorSet& { return m_descriptor_set; }
 
-        auto flush_property_updates() const -> void;
+        auto flush_property_updates() -> void;
 
-        [[nodiscard]] static auto get_error_texture() noexcept -> graphics::texture* {
-            assert(s_error_texture.has_value());
-            return &*s_error_texture;
-        }
-
-        [[nodiscard]] static auto get_flat_normal_map() noexcept -> graphics::texture* {
-            assert(s_flat_normal.has_value());
-            return &*s_flat_normal;
-        }
-
-        [[nodiscard]] static auto get_descriptor_set_layout() noexcept -> const vk::DescriptorSetLayout& {
-            return s_descriptor_set_layout;
-        }
+        [[nodiscard]] static auto get_static_resources() -> const static_resources&;
 
     private:
         friend class graphics_subsystem;
         static auto init_static_resources() -> void;
         static auto free_static_resources() -> void;
 
-        static inline eastl::optional<graphics::texture> s_error_texture {};
-        static inline eastl::optional<graphics::texture> s_flat_normal {};
-        static inline constinit vk::DescriptorPool s_descriptor_pool {};
-        static inline constinit vk::DescriptorSetLayout s_descriptor_set_layout {};
         vk::DescriptorSet m_descriptor_set {};
     };
 }

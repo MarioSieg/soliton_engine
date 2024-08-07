@@ -36,7 +36,7 @@ namespace lu {
         asset_root += "/";
 
         auto* missing_material = get_asset_registry<graphics::material>().load_from_memory();
-        missing_material->albedo_map = graphics::material::get_error_texture();
+        missing_material->albedo_map = const_cast<graphics::texture*>(&graphics::material::get_static_resources().error_texture);
         missing_material->flush_property_updates();
 
         ankerl::unordered_dense::map<eastl::string, std::uint32_t> resolved_names {};

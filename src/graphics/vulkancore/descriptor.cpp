@@ -13,7 +13,7 @@ namespace lu::vkb {
         m_current_pool = VK_NULL_HANDLE;
     }
 
-    auto descriptor_allocator::allocate(vk::DescriptorSet &set, vk::DescriptorSetLayout layout) -> bool {
+    auto descriptor_allocator::allocate(vk::DescriptorSet& set, vk::DescriptorSetLayout layout) -> bool {
         // when current working pool is null then request new
         if (m_current_pool == VK_NULL_HANDLE) {
             m_current_pool = request_pool();
@@ -58,25 +58,24 @@ namespace lu::vkb {
         }
     }
 
-    auto descriptor_allocator::request_pool() -> vk::DescriptorPool {
+    auto descriptor_allocator::request_pool(const std::uint32_t count) -> vk::DescriptorPool {
         if (!m_free_pools.empty()) {
             auto pool = m_free_pools.back();
             m_free_pools.pop_back();
             return pool;
         } else {
-            return create_pool(m_pool_sizes, 1000, {});
+            return create_pool(configured_pool_sizes, count ? count : alloc_granularity, {});
         }
     }
 
-    auto descriptor_allocator::create_pool(const pool_sizes& sizes, const std::int32_t count, const vk::DescriptorPoolCreateFlagBits flags) -> vk::DescriptorPool {
+    auto descriptor_allocator::create_pool(const pool_sizes& sizes, const std::uint32_t alloc_granularity, const vk::DescriptorPoolCreateFlagBits flags) -> vk::DescriptorPool {
         eastl::vector<vk::DescriptorPoolSize> pool_sizes {};
         pool_sizes.reserve(sizes.size());
-        for (auto&& [type, num] : sizes) {
-            pool_sizes.emplace_back(vk::DescriptorPoolSize{.type=type, .descriptorCount=static_cast<std::uint32_t>(num * static_cast<float>(count))});
-        }
+        for (auto&& [type, num] : sizes)
+            pool_sizes.emplace_back(vk::DescriptorPoolSize{.type=type, .descriptorCount=static_cast<std::uint32_t>(num * static_cast<float>(alloc_granularity))});
         vk::DescriptorPoolCreateInfo pool_info {};
         pool_info.flags = flags;
-        pool_info.maxSets = count;
+        pool_info.maxSets = alloc_granularity;
         pool_info.poolSizeCount = static_cast<std::uint32_t>(pool_sizes.size());
         pool_info.pPoolSizes = pool_sizes.data();
         vk::DescriptorPool pool {};
@@ -177,7 +176,8 @@ namespace lu::vkb {
             }
             writes.emplace_back(write);
         }
-        vkb::vkdvc().updateDescriptorSets(static_cast<std::uint32_t>(writes.size()), writes.data(), 0, nullptr);
+        if (!writes.empty())
+            vkb::vkdvc().updateDescriptorSets(static_cast<std::uint32_t>(writes.size()), writes.data(), 0, nullptr);
         set = ret_set;
         layout = ret_layout;
         return true;

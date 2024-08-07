@@ -9,15 +9,15 @@
 namespace lu::vkb {
     class descriptor_allocator final : public no_copy, public no_move {
     public:
-        descriptor_allocator() = default;
+        explicit descriptor_allocator(std::uint32_t alloc_granularity = 1024) noexcept : alloc_granularity{alloc_granularity} {}
         ~descriptor_allocator();
 
         auto reset_all_pools() -> void;
         [[nodiscard]] auto allocate(vk::DescriptorSet& set, vk::DescriptorSetLayout layout) -> bool;
+        [[nodiscard]] auto request_pool(std::uint32_t count = 0) -> vk::DescriptorPool;
 
-    private:
         using pool_sizes = eastl::vector<eastl::pair<vk::DescriptorType, float>>;
-        pool_sizes m_pool_sizes {
+        pool_sizes configured_pool_sizes {
             { vk::DescriptorType::eSampler, .5f },
             { vk::DescriptorType::eCombinedImageSampler, 4.f },
             { vk::DescriptorType::eSampledImage, 4.f },
@@ -32,12 +32,14 @@ namespace lu::vkb {
             { vk::DescriptorType::eAccelerationStructureKHR, .5f },
         };
 
+        std::uint32_t alloc_granularity {1024 };
+
+    private:
         vk::DescriptorPool m_current_pool {};
         eastl::vector<vk::DescriptorPool> m_used_pools {};
         eastl::vector<vk::DescriptorPool> m_free_pools {};
 
-        [[nodiscard]] auto request_pool() -> vk::DescriptorPool;
-        [[nodiscard]] static auto create_pool(const pool_sizes& sizes, std::int32_t count, vk::DescriptorPoolCreateFlagBits flags) -> vk::DescriptorPool;
+        [[nodiscard]] static auto create_pool(const pool_sizes& sizes, std::uint32_t alloc_granularity, vk::DescriptorPoolCreateFlagBits flags) -> vk::DescriptorPool;
     };
 
     class descriptor_layout_cache final : public no_copy, public no_move {
