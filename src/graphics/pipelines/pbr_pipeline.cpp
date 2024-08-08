@@ -42,8 +42,8 @@ namespace lu::graphics::pipelines {
 
         vk::DescriptorImageInfo image_info {};
         image_info.imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-        image_info.imageView = m_pbr_filter_processor.brdf_lut().get_view();
-        image_info.sampler = m_pbr_filter_processor.brdf_lut().get_sampler();
+        image_info.imageView = m_pbr_filter_processor.brdf_lut().image_view();
+        image_info.sampler = m_pbr_filter_processor.brdf_lut().sampler();
 
         df.bind_images(0, 1, &image_info, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment);
         passert(df.build(m_pbr_descriptor_set, m_pbr_descriptor_set_layout));

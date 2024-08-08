@@ -45,8 +45,8 @@ namespace lu::graphics::pipelines {
 
         vk::DescriptorImageInfo image_info {};
         image_info.imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-        image_info.imageView = m_skybox_texture->get_view();
-        image_info.sampler = m_skybox_texture->get_sampler();
+        image_info.imageView = m_skybox_texture->image_view();
+        image_info.sampler = m_skybox_texture->sampler();
 
         vk::WriteDescriptorSet write {};
         write.descriptorType = vk::DescriptorType::eCombinedImageSampler;

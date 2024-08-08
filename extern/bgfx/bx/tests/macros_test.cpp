@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2023 Branimir Karadzic. All rights reserved.
+ * Copyright 2010-2024 Branimir Karadzic. All rights reserved.
  * License: https://github.com/bkaradzic/bx/blob/master/LICENSE
  */
 
@@ -14,6 +14,7 @@ BX_STATIC_ASSERT(false
 	|| BX_CRT_MINGW
 	|| BX_CRT_MSVC
 	|| BX_CRT_NEWLIB
+	|| BX_CRT_NONE
 	);
 
 BX_STATIC_ASSERT(1 == BX_VA_ARGS_COUNT(1) );
@@ -30,7 +31,7 @@ BX_NO_INLINE void unusedFunction()
 
 void testAssert()
 {
-	BX_ASSERT(false, "Assert works!");
+	BX_ASSERT(false % 1, "Assert works!");
 }
 
 TEST_CASE("Macros", "")
@@ -51,7 +52,7 @@ TEST_CASE("Macros", "")
 	REQUIRE(5 == BX_VA_ARGS_COUNT(1, 2, 3, 4, 5) );
 	REQUIRE(6 == BX_VA_ARGS_COUNT(1, 2, 3, 4, 5, 6) );
 
-	REQUIRE(0 == bx::strCmp(BX_STRINGIZE(TEST 1234 %^&*), "TEST 1234 %^&*") );
+	REQUIRE(0 == bx::strCmp(BX_STRINGIZE(TEST 1234 % 1 ^&*), "TEST 1234 % 1 ^&*") );
 
 	{
 		struct PodStruct { int32_t x, y, z; };

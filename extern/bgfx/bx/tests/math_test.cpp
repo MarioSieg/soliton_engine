@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2023 Branimir Karadzic. All rights reserved.
+ * Copyright 2010-2024 Branimir Karadzic. All rights reserved.
  * License: https://github.com/bkaradzic/bx/blob/master/LICENSE
  */
 
@@ -441,6 +441,36 @@ TEST_CASE("sin", "[math][libm]")
 	}
 }
 
+TEST_CASE("sinCos", "[math][libm]")
+{
+	bx::WriterI* writer = bx::getNullOut();
+	bx::Error err;
+
+	for (float xx = -100.0f; xx < 100.0f; xx += 0.1f)
+	{
+		float ss, cc;
+		bx::sinCosApprox(ss, cc, xx);
+
+		bx::write(writer, &err, "sinCos(%f) == sin %f (expected: %f)\n", xx, ss, ::sinf(xx) );
+		bx::write(writer, &err, "sinCos(%f) == cos %f (expected: %f)\n", xx, cc, ::cosf(xx) );
+		REQUIRE(err.isOk() );
+		REQUIRE(bx::isEqual(ss, ::sinf(xx), 0.001f) );
+		REQUIRE(bx::isEqual(cc, ::cosf(xx), 0.00001f) );
+	}
+
+	for (float xx = -bx::kPi2; xx < bx::kPi2; xx += 0.0001f)
+	{
+		float ss, cc;
+		bx::sinCosApprox(ss, cc, xx);
+
+		bx::write(writer, &err, "sinCos(%f) == sin %f (expected: %f)\n", xx, ss, ::sinf(xx) );
+		bx::write(writer, &err, "sinCos(%f) == cos %f (expected: %f)\n", xx, cc, ::cosf(xx) );
+		REQUIRE(err.isOk() );
+		REQUIRE(bx::isEqual(ss, ::sinf(xx), 0.001f) );
+		REQUIRE(bx::isEqual(cc, ::cosf(xx), 0.00001f) );
+	}
+}
+
 TEST_CASE("sinh", "[math][libm]")
 {
 	bx::WriterI* writer = bx::getNullOut();
@@ -556,23 +586,23 @@ TEST_CASE("sign", "[math][libm]")
 	REQUIRE( 1 == bx::sign( bx::kFloatInfinity) );
 }
 
-TEST_CASE("signbit", "[math][libm]")
+TEST_CASE("signBit", "[math][libm]")
 {
-	STATIC_REQUIRE( bx::signbit(-0.1389f) );
-	STATIC_REQUIRE(!bx::signbit( 0.0000f) );
-	STATIC_REQUIRE(!bx::signbit( 0.1389f) );
+	STATIC_REQUIRE( bx::signBit(-0.1389f) );
+	STATIC_REQUIRE(!bx::signBit( 0.0000f) );
+	STATIC_REQUIRE(!bx::signBit( 0.1389f) );
 
-	REQUIRE( bx::signbit(-bx::kFloatInfinity) );
-	REQUIRE(!bx::signbit( bx::kFloatInfinity) );
+	REQUIRE( bx::signBit(-bx::kFloatInfinity) );
+	REQUIRE(!bx::signBit( bx::kFloatInfinity) );
 }
 
-TEST_CASE("copysign", "[math][libm]")
+TEST_CASE("copySign", "[math][libm]")
 {
-	STATIC_REQUIRE( 0.1389f == bx::copysign(-0.1389f, +1389) );
-	STATIC_REQUIRE(-0.0000f == bx::copysign( 0.0000f, -1389) );
-	STATIC_REQUIRE(-0.1389f == bx::copysign( 0.1389f, -1389) );
+	STATIC_REQUIRE( 0.1389f == bx::copySign(-0.1389f, +1389) );
+	STATIC_REQUIRE(-0.0000f == bx::copySign( 0.0000f, -1389) );
+	STATIC_REQUIRE(-0.1389f == bx::copySign( 0.1389f, -1389) );
 
-	REQUIRE(-bx::kFloatInfinity == bx::copysign(bx::kFloatInfinity, -1389) );
+	REQUIRE(-bx::kFloatInfinity == bx::copySign(bx::kFloatInfinity, -1389) );
 }
 
 TEST_CASE("bitsToFloat, floatToBits, bitsToDouble, doubleToBits", "[math]")

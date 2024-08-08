@@ -164,15 +164,15 @@ namespace lu::assetmgr {
     auto asset_accessor::dump_dir_tree(const char* const vpath, const int indent) -> void {
         for (int i = 0; i < assetsys_subdir_count(m_sys, vpath ); ++i) {
             char const* subdir_name = assetsys_subdir_name(m_sys, vpath, i );
-            for( int j = 0; j < indent; ++j ) std::printf( "  " );
-            std::printf( "%s/\n", subdir_name );
+            for(int j = 0; j < indent; ++j) std::printf( "  " );
+            std::printf("%s/\n", subdir_name);
             char const* subdir_path = assetsys_subdir_path(m_sys, vpath, i );
             dump_dir_tree(subdir_path, indent + 1);
         }
         for (int i = 0; i < assetsys_file_count(m_sys, vpath ); ++i){
             char const* file_name = assetsys_file_name(m_sys, vpath, i );
-            for( int j = 0; j < indent; ++j ) std::printf( "  " );
-            std::printf( "%s\n", file_name );
+            for(int j = 0; j < indent; ++j) std::printf( "  " );
+            std::printf("%s\n", file_name);
         }
     }
 }

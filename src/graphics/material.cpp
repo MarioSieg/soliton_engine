@@ -36,8 +36,8 @@ namespace lu::graphics {
         const auto make_write_tex_info = [](const texture* tex, const texture& fallback) {
             vk::DescriptorImageInfo info {};
             info.imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-            info.imageView = tex ? tex->get_view() : fallback.get_view();
-            info.sampler = tex ? tex->get_sampler() : fallback.get_sampler();
+            info.imageView = tex ? tex->image_view() : fallback.image_view();
+            info.sampler = tex ? tex->sampler() : fallback.sampler();
             return info;
         };
 

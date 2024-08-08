@@ -1,5 +1,5 @@
 --
--- Copyright 2010-2023 Branimir Karadzic. All rights reserved.
+-- Copyright 2010-2024 Branimir Karadzic. All rights reserved.
 -- License: https://github.com/bkaradzic/bx/blob/master/LICENSE
 --
 
@@ -82,8 +82,9 @@ function toolchain(_buildDir, _libDir)
 			{ "ios-arm",         "iOS - ARM"                  },
 			{ "ios-arm64",       "iOS - ARM64"                },
 			{ "ios-simulator",   "iOS - Simulator"            },
-			{ "ios-simulator64", "iOS - Simulator 64"         },
 			{ "tvos-arm64",      "tvOS - ARM64"               },
+			{ "xros-arm64",      "visionOS ARM64"             },
+			{ "xros-simulator",  "visionOS - Simulator"       },
 			{ "tvos-simulator",  "tvOS - Simulator"           },
 			{ "mingw-gcc",       "MinGW"                      },
 			{ "mingw-clang",     "MinGW (clang compiler)"     },
@@ -117,6 +118,7 @@ function toolchain(_buildDir, _libDir)
 			{ "osx", "OSX" },
 			{ "ios", "iOS" },
 			{ "tvos", "tvOS" },
+			{ "xros", "visionOS" },
 		}
 	}
 
@@ -129,19 +131,25 @@ function toolchain(_buildDir, _libDir)
 	newoption {
 		trigger     = "with-ios",
 		value       = "#",
-		description = "Set iOS target version (default: 8.0).",
+		description = "Set iOS target version (default: 13.0).",
 	}
 
 	newoption {
 		trigger     = "with-macos",
 		value       = "#",
-		description = "Set macOS target version (default 10.11).",
+		description = "Set macOS target version (default 13.0).",
 	}
 
 	newoption {
 		trigger     = "with-tvos",
 		value       = "#",
-		description = "Set tvOS target version (default: 9.0).",
+		description = "Set tvOS target version (default: 13.0).",
+	}
+
+	newoption {
+		trigger     = "with-visionos",
+		value       = "#",
+		description = "Set visionOS target version (default: 1.0).",
 	}
 
 	newoption {
@@ -194,6 +202,11 @@ function toolchain(_buildDir, _libDir)
 	local tvosPlatform = ""
 	if _OPTIONS["with-tvos"] then
 		tvosPlatform = _OPTIONS["with-tvos"]
+	end
+
+	local xrosPlatform = ""
+	if _OPTIONS["with-xros"] then
+		xrosPlatform = _OPTIONS["with-xros"]
 	end
 
 	local windowsPlatform = nil
@@ -256,17 +269,18 @@ function toolchain(_buildDir, _libDir)
 			premake.gcc.ar  = "ar"
 			location (path.join(_buildDir, "projects", _ACTION .. "-" .. _OPTIONS["gcc"]))
 
+		elseif "xros-arm64"     == _OPTIONS["gcc"]
+			or "xros-simulator" == _OPTIONS["gcc"] then
+			premake.gcc.cc  = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang"
+			premake.gcc.cxx = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++"
+			premake.gcc.ar  = "ar"
+			location (path.join(_buildDir, "projects", _ACTION .. "-" .. _OPTIONS["gcc"]))
+
 		elseif "ios-simulator" == _OPTIONS["gcc"] then
 			premake.gcc.cc  = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang"
 			premake.gcc.cxx = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++"
 			premake.gcc.ar  = "ar"
 			location (path.join(_buildDir, "projects", _ACTION .. "-ios-simulator"))
-
-		elseif "ios-simulator64" == _OPTIONS["gcc"] then
-			premake.gcc.cc  = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang"
-			premake.gcc.cxx = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++"
-			premake.gcc.ar  = "ar"
-			location (path.join(_buildDir, "projects", _ACTION .. "-ios-simulator64"))
 
 		elseif "tvos-arm64" == _OPTIONS["gcc"] then
 			premake.gcc.cc  = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang"
@@ -440,19 +454,24 @@ function toolchain(_buildDir, _libDir)
 		end
 
 		if "osx" == _OPTIONS["xcode"] then
-			action.xcode.macOSTargetPlatformVersion = str_or(macosPlatform, "10.11")
+			action.xcode.macOSTargetPlatformVersion = str_or(macosPlatform, "13.0")
 			premake.xcode.toolset = "macosx"
 			location (path.join(_buildDir, "projects", _ACTION .. "-osx"))
 
 		elseif "ios" == _OPTIONS["xcode"] then
-			action.xcode.iOSTargetPlatformVersion = str_or(iosPlatform, "8.0")
+			action.xcode.iOSTargetPlatformVersion = str_or(iosPlatform, "13.0")
 			premake.xcode.toolset = "iphoneos"
 			location (path.join(_buildDir, "projects", _ACTION .. "-ios"))
 
 		elseif "tvos" == _OPTIONS["xcode"] then
-			action.xcode.tvOSTargetPlatformVersion = str_or(tvosPlatform, "9.0")
+			action.xcode.tvOSTargetPlatformVersion = str_or(tvosPlatform, "13.0")
 			premake.xcode.toolset = "appletvos"
 			location (path.join(_buildDir, "projects", _ACTION .. "-tvos"))
+
+		elseif "xros" == _OPTIONS["xcode"] then
+			action.xcode.visionOSTargetPlatformVersion = str_or(xrosPlatform, "1.0")
+			premake.xcode.toolset = "xros"
+			location (path.join(_buildDir, "projects", _ACTION .. "-xros"))
 		end
 	end
 
@@ -526,7 +545,9 @@ function toolchain(_buildDir, _libDir)
 			"/wd4201", -- warning C4201: nonstandard extension used: nameless struct/union
 			"/wd4324", -- warning C4324: '': structure was padded due to alignment specifier
 			"/Ob2",    -- The Inline Function Expansion
-			"/Zc:__cplusplus", -- Enable updated __cplusplus macro
+
+			"/Zc:__cplusplus",  -- Enable updated __cplusplus macro.
+			"/Zc:preprocessor", -- Enable preprocessor conformance mode.
 		}
 		linkoptions {
 			"/ignore:4221", -- LNK4221: This object file does not define any previously undefined public symbols, so it will not be used by any link operation that consumes this library
@@ -941,7 +962,7 @@ function toolchain(_buildDir, _libDir)
 		buildoptions {
 			"-arch x86_64",
 			"-msse4.2",
-			"-target x86_64-apple-macos" .. (#macosPlatform > 0 and macosPlatform or "10.11"),
+			"-target x86_64-apple-macos" .. (#macosPlatform > 0 and macosPlatform or "13.0"),
 		}
 
 	configuration { "osx-arm64" }
@@ -1006,16 +1027,53 @@ function toolchain(_buildDir, _libDir)
 
 	configuration { "ios-arm*" }
 		linkoptions {
-			"-miphoneos-version-min=9.0",
 			"--sysroot=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS" ..iosPlatform .. ".sdk",
 			"-L/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS" ..iosPlatform .. ".sdk/usr/lib/system",
 			"-F/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS" ..iosPlatform .. ".sdk/System/Library/Frameworks",
 			"-F/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS" ..iosPlatform .. ".sdk/System/Library/PrivateFrameworks",
 		}
 		buildoptions {
-			"-miphoneos-version-min=9.0",
 			"--sysroot=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS" ..iosPlatform .. ".sdk",
 			"-fembed-bitcode",
+		}
+
+	configuration { "xros*" }
+		linkoptions {
+			"-lc++",
+		}
+		buildoptions {
+			"-Wfatal-errors",
+			"-Wunused-value",
+			"-Wundef",
+		}
+		includedirs { path.join(bxDir, "include/compat/ios") }
+
+	configuration { "xros-arm64" }
+		targetdir (path.join(_buildDir, "xros-arm64/bin"))
+		objdir (path.join(_buildDir, "xros-arm64/obj"))
+		libdirs { path.join(_libDir, "lib/xros-arm64") }
+		linkoptions {
+			"--sysroot=/Applications/Xcode.app/Contents/Developer/Platforms/XROS.platform/Developer/SDKs/XROS" ..xrosPlatform.. ".sdk",
+			"-L/Applications/Xcode.app/Contents/Developer/Platforms/XROS.platform/Developer/SDKs/XROS" ..xrosPlatform .. ".sdk/usr/lib/system",
+			"-F/Applications/Xcode.app/Contents/Developer/Platforms/XROS.platform/Developer/SDKs/XROS" ..xrosPlatform .. ".sdk/System/Library/Frameworks",
+			"-F/Applications/Xcode.app/Contents/Developer/Platforms/XROS.platform/Developer/SDKs/XROS" ..xrosPlatform .. ".sdk/System/Library/PrivateFrameworks",
+		}
+		buildoptions {
+			"--sysroot=/Applications/Xcode.app/Contents/Developer/Platforms/XROS.platform/Developer/SDKs/XROS" ..tvosPlatform .. ".sdk",
+		}
+
+	configuration { "xros-simulator" }
+		targetdir (path.join(_buildDir, "xros-simulator/bin"))
+		objdir (path.join(_buildDir, "xros-simulator/obj"))
+		libdirs { path.join(_libDir, "lib/xros-simulator") }
+
+		linkoptions {
+			"--sysroot=/Applications/Xcode.app/Contents/Developer/Platforms/XRSimulator.platform/Developer/SDKs/XRSimulator" ..xrosPlatform.. ".sdk",
+			"-L/Applications/Xcode.app/Contents/Developer/Platforms/XRSimulator.platform/Developer/SDKs/XRSimulator" ..xrosPlatform .. ".sdk/usr/lib/system",
+			"-F/Applications/Xcode.app/Contents/Developer/Platforms/XRSimulator.platform/Developer/SDKs/XRSimulator" ..xrosPlatform .. ".sdk/System/Library/Frameworks",
+		}
+		buildoptions {
+			"--sysroot=/Applications/Xcode.app/Contents/Developer/Platforms/XRSimulator.platform/Developer/SDKs/XRSimulator" ..xrosPlatform .. ".sdk",
 		}
 
 	configuration { "ios-simulator" }
@@ -1023,34 +1081,12 @@ function toolchain(_buildDir, _libDir)
 		objdir (path.join(_buildDir, "ios-simulator/obj"))
 		libdirs { path.join(_libDir, "lib/ios-simulator") }
 		linkoptions {
-			"-mios-simulator-version-min=9.0",
-			"-arch i386",
 			"--sysroot=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator" ..iosPlatform .. ".sdk",
 			"-L/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator" ..iosPlatform .. ".sdk/usr/lib/system",
 			"-F/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator" ..iosPlatform .. ".sdk/System/Library/Frameworks",
 			"-F/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator" ..iosPlatform .. ".sdk/System/Library/PrivateFrameworks",
 		}
 		buildoptions {
-			"-mios-simulator-version-min=9.0",
-			"-arch i386",
-			"--sysroot=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator" ..iosPlatform .. ".sdk",
-		}
-
-	configuration { "ios-simulator64" }
-		targetdir (path.join(_buildDir, "ios-simulator64/bin"))
-		objdir (path.join(_buildDir, "ios-simulator64/obj"))
-		libdirs { path.join(_libDir, "lib/ios-simulator64") }
-		linkoptions {
-			"-mios-simulator-version-min=9.0",
-			"-arch x86_64",
-			"--sysroot=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator" ..iosPlatform .. ".sdk",
-			"-L/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator" ..iosPlatform .. ".sdk/usr/lib/system",
-			"-F/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator" ..iosPlatform .. ".sdk/System/Library/Frameworks",
-			"-F/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator" ..iosPlatform .. ".sdk/System/Library/PrivateFrameworks",
-		}
-		buildoptions {
-			"-mios-simulator-version-min=9.0",
-			"-arch x86_64",
 			"--sysroot=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator" ..iosPlatform .. ".sdk",
 		}
 
@@ -1092,16 +1128,12 @@ function toolchain(_buildDir, _libDir)
 		objdir (path.join(_buildDir, "tvos-simulator/obj"))
 		libdirs { path.join(_libDir, "lib/tvos-simulator") }
 		linkoptions {
-			"-mtvos-simulator-version-min=9.0",
-			"-arch i386",
 			"--sysroot=/Applications/Xcode.app/Contents/Developer/Platforms/AppleTVSimulator.platform/Developer/SDKs/AppleTVSimulator" ..tvosPlatform .. ".sdk",
 			"-L/Applications/Xcode.app/Contents/Developer/Platforms/AppleTVSimulator.platform/Developer/SDKs/AppleTVSimulator" ..tvosPlatform .. ".sdk/usr/lib/system",
 			"-F/Applications/Xcode.app/Contents/Developer/Platforms/AppleTVSimulator.platform/Developer/SDKs/AppleTVSimulator" ..tvosPlatform .. ".sdk/System/Library/Frameworks",
 			"-F/Applications/Xcode.app/Contents/Developer/Platforms/AppleTVSimulator.platform/Developer/SDKs/AppleTVSimulator" ..tvosPlatform .. ".sdk/System/Library/PrivateFrameworks",
 		}
 		buildoptions {
-			"-mtvos-simulator-version-min=9.0",
-			"-arch i386",
 			"--sysroot=/Applications/Xcode.app/Contents/Developer/Platforms/AppleTVSimulator.platform/Developer/SDKs/AppleTVSimulator" ..tvosPlatform .. ".sdk",
 		}
 

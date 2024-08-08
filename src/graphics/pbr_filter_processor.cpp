@@ -17,7 +17,7 @@ namespace lu::graphics {
 
     pbr_filter_processor::pbr_filter_processor() {
         m_environ_cube.emplace("/engine_assets/textures/hdr/gcanyon_cube.ktx");
-        generate_irradiance_cube();
+        //generate_irradiance_cube();
         generate_brdf_lookup_table();
     }
 
@@ -29,29 +29,27 @@ namespace lu::graphics {
 
         const vk::Device dvc = vkb::vkdvc();
         const std::uint32_t dim = irradiance_cube_size();
-        const std::uint32_t num_mips = static_cast<std::uint32_t>(std::floor(std::log2(dim))) + 1;
+        const std::uint32_t num_mips = texture::get_mip_count(dim, dim);
 
         m_irradiance_cube.emplace(
-            vk::ImageType::e2D,
-            dim,
-            dim,
-            1,
-            num_mips,
-            6,
-            k_irradiance_cube_format,
-            VMA_MEMORY_USAGE_GPU_ONLY,
-            vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst,
-            vk::SampleCountFlagBits::e1,
-            vk::ImageLayout::eUndefined,
-            nullptr,
-            0,
-            vk::ImageCreateFlagBits::eCubeCompatible,
-            vk::ImageTiling::eOptimal,
-            vk::Filter::eLinear,
-            vk::Filter::eLinear,
-            vk::SamplerMipmapMode::eLinear,
-            vk::SamplerAddressMode::eClampToEdge,
-            false
+            texture_descriptor {
+                .width = dim,
+                .height = dim,
+                .depth = 1,
+                .miplevel_count = num_mips,
+                .array_size = 6,
+                .format = k_irradiance_cube_format,
+                .usage = vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst,
+                .flags = vk::ImageCreateFlagBits::eCubeCompatible,
+                .sampler = {
+                    .mag_filter = vk::Filter::eLinear,
+                    .min_filter = vk::Filter::eLinear,
+                    .mipmap_mode = vk::SamplerMipmapMode::eLinear,
+                    .address_mode = vk::SamplerAddressMode::eClampToEdge,
+                    .enable_anisotropy = false
+                }
+            },
+            eastl::nullopt
         );
 
         vk::AttachmentDescription attachment_desc {};
@@ -104,32 +102,30 @@ namespace lu::graphics {
         } offscreen {};
 
         offscreen.image.emplace(
-            vk::ImageType::e2D,
-            dim,
-            dim,
-            1,
-            1,
-            1,
-            k_irradiance_cube_format,
-            VMA_MEMORY_USAGE_GPU_ONLY,
-            vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eTransferSrc,
-            vk::SampleCountFlagBits::e1,
-            vk::ImageLayout::eUndefined,
-            nullptr,
-            0,
-            vk::ImageCreateFlagBits {},
-            vk::ImageTiling::eOptimal,
-            vk::Filter::eLinear,
-            vk::Filter::eLinear,
-            vk::SamplerMipmapMode::eLinear,
-            vk::SamplerAddressMode::eClampToEdge,
-            false
+            texture_descriptor {
+                .width = dim,
+                .height = dim,
+                .depth = 1,
+                .miplevel_count = 1,
+                .array_size = 1,
+                .format = k_irradiance_cube_format,
+                .usage = vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eTransferSrc,
+                .tiling = vk::ImageTiling::eOptimal,
+                .sampler = {
+                    .mag_filter = vk::Filter::eLinear,
+                    .min_filter = vk::Filter::eLinear,
+                    .mipmap_mode = vk::SamplerMipmapMode::eLinear,
+                    .address_mode = vk::SamplerAddressMode::eClampToEdge,
+                    .enable_anisotropy = false
+                }
+            },
+            eastl::nullopt
         );
 
         vk::FramebufferCreateInfo framebuffer_desc {};
         framebuffer_desc.renderPass = render_pass;
         framebuffer_desc.attachmentCount = 1;
-        framebuffer_desc.pAttachments = &offscreen.image->get_view();
+        framebuffer_desc.pAttachments = &offscreen.image->image_view();
         framebuffer_desc.width = dim;
         framebuffer_desc.height = dim;
         framebuffer_desc.layers = 1;
@@ -139,7 +135,7 @@ namespace lu::graphics {
             vkb::command_buffer layout_cmd {vk::QueueFlagBits::eGraphics, vk::CommandBufferLevel::ePrimary};
             layout_cmd.begin();
             layout_cmd.set_image_layout_barrier(
-                offscreen.image->get_image(),
+                    offscreen.image->image(),
                 vk::ImageAspectFlagBits::eColor,
                 vk::ImageLayout::eUndefined,
                 vk::ImageLayout::eColorAttachmentOptimal
@@ -190,8 +186,8 @@ namespace lu::graphics {
         write.descriptorType = vk::DescriptorType::eCombinedImageSampler;
         vk::DescriptorImageInfo image_info {};
         image_info.imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-        image_info.imageView = m_environ_cube->get_view();
-        image_info.sampler = m_environ_cube->get_sampler();
+        image_info.imageView = m_environ_cube->image_view();
+        image_info.sampler = m_environ_cube->sampler();
         write.pImageInfo = &image_info;
         dvc.updateDescriptorSets(1, &write, 0, nullptr);
 
@@ -327,7 +323,7 @@ namespace lu::graphics {
         subresource_range.layerCount = 6;
 
         cmd.set_image_layout_barrier(
-            m_irradiance_cube->get_image(),
+                m_irradiance_cube->image(),
             vk::ImageLayout::eUndefined,
             vk::ImageLayout::eTransferDstOptimal,
             subresource_range
@@ -359,7 +355,7 @@ namespace lu::graphics {
                 cmd.draw_mesh(skybox_mesh);
                 cmd.end_render_pass();
                 cmd.set_image_layout_barrier(
-                    offscreen.image->get_image(),
+                        offscreen.image->image(),
                     vk::ImageAspectFlagBits::eColor,
                     vk::ImageLayout::eColorAttachmentOptimal,
                     vk::ImageLayout::eTransferSrcOptimal
@@ -377,15 +373,15 @@ namespace lu::graphics {
                 copy.dstOffset = vk::Offset3D {0, 0, 0};
                 copy.extent = vk::Extent3D {w, h, 1};
                 (*cmd).copyImage(
-                    offscreen.image->get_image(),
+                        offscreen.image->image(),
                     vk::ImageLayout::eTransferSrcOptimal,
-                    m_irradiance_cube->get_image(),
+                    m_irradiance_cube->image(),
                     vk::ImageLayout::eTransferDstOptimal,
                     1,
                     &copy
                 );
                 cmd.set_image_layout_barrier(
-                    offscreen.image->get_image(),
+                        offscreen.image->image(),
                     vk::ImageAspectFlagBits::eColor,
                     vk::ImageLayout::eTransferSrcOptimal,
                     vk::ImageLayout::eColorAttachmentOptimal
@@ -394,7 +390,7 @@ namespace lu::graphics {
         }
 
         cmd.set_image_layout_barrier(
-            m_irradiance_cube->get_image(),
+                m_irradiance_cube->image(),
             vk::ImageLayout::eTransferDstOptimal,
             vk::ImageLayout::eShaderReadOnlyOptimal,
             subresource_range
@@ -423,26 +419,21 @@ namespace lu::graphics {
         const std::uint32_t dim = brdf_lut_size();
 
         m_brdf_lut.emplace(
-                vk::ImageType::e2D,
-                dim,
-                dim,
-                1,
-                1,
-                1,
-                k_brfd_lut_format,
-                VMA_MEMORY_USAGE_GPU_ONLY,
-                vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eColorAttachment,
-                vk::SampleCountFlagBits::e1,
-                vk::ImageLayout::eUndefined,
-                nullptr,
-                0,
-                vk::ImageCreateFlags {},
-                vk::ImageTiling::eOptimal,
-                vk::Filter::eLinear,
-                vk::Filter::eLinear,
-                vk::SamplerMipmapMode::eLinear,
-                vk::SamplerAddressMode::eClampToEdge,
-                false
+            texture_descriptor {
+                .width = dim,
+                .height = dim,
+                .format = k_brfd_lut_format,
+                .usage = vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eColorAttachment,
+                .tiling = vk::ImageTiling::eOptimal,
+                .sampler = {
+                    .mag_filter = vk::Filter::eLinear,
+                    .min_filter = vk::Filter::eLinear,
+                    .mipmap_mode = vk::SamplerMipmapMode::eLinear,
+                    .address_mode = vk::SamplerAddressMode::eClampToEdge,
+                    .enable_anisotropy = false
+                }
+            },
+            eastl::nullopt
         );
 
         vk::AttachmentDescription attachment {};
@@ -494,7 +485,7 @@ namespace lu::graphics {
         vk::FramebufferCreateInfo framebuffer_ci {};
         framebuffer_ci.renderPass = render_pass;
         framebuffer_ci.attachmentCount = 1;
-        framebuffer_ci.pAttachments = &m_brdf_lut->get_view();
+        framebuffer_ci.pAttachments = &m_brdf_lut->image_view();
         framebuffer_ci.width = dim;
         framebuffer_ci.height = dim;
         framebuffer_ci.layers = 1;
