@@ -6,8 +6,9 @@
 #include "../texture.hpp"
 
 namespace lu::graphics {
-    extern auto raw_parse_texture(
+    [[nodiscard]] extern auto raw_parse_texture(
         eastl::span<const std::byte> buf,
-        const eastl::function<auto(const texture_descriptor& info, const texture_data_supplier& data) -> void>& callback
+        const eastl::function<auto(const texture_descriptor& info, const texture_data_supplier& data) -> void>& callback,
+        bool is_ktx
     ) -> bool;
 }

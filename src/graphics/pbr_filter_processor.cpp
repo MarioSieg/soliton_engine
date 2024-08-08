@@ -17,7 +17,7 @@ namespace lu::graphics {
 
     pbr_filter_processor::pbr_filter_processor() {
         m_environ_cube.emplace("/engine_assets/textures/hdr/gcanyon_cube.ktx");
-        //generate_irradiance_cube();
+        generate_irradiance_cube();
         generate_brdf_lookup_table();
     }
 
@@ -565,8 +565,8 @@ namespace lu::graphics {
         vk::PipelineVertexInputStateCreateInfo vertex_input_ci {};
 
         eastl::array<vk::PipelineShaderStageCreateInfo, 2> shader_stages {
-                shader_cache::get().get_shader(shader_variant{"/engine_assets/shaders/src/gen_brdf_lut.vert", shader_stage::vertex})->get_stage_info(),
-                shader_cache::get().get_shader(shader_variant{"/engine_assets/shaders/src/gen_brdf_lut.frag", shader_stage::fragment})->get_stage_info()
+            shader_cache::get().get_shader(shader_variant{"/engine_assets/shaders/src/gen_brdf_lut.vert", shader_stage::vertex})->get_stage_info(),
+            shader_cache::get().get_shader(shader_variant{"/engine_assets/shaders/src/gen_brdf_lut.frag", shader_stage::fragment})->get_stage_info()
         };
 
         vk::Pipeline shader_pipeline {};

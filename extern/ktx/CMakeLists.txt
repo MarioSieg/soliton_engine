@@ -42,7 +42,7 @@ endif()
 option( KTX_FEATURE_DOC "Create KTX documentation." OFF )
 option( KTX_FEATURE_JNI "Create Java bindings for libktx." OFF )
 option( KTX_FEATURE_PY "Create Python source distribution." OFF )
-option( KTX_FEATURE_TESTS "Create unit tests." ON )
+option( KTX_FEATURE_TESTS "Create unit tests." OFF )
 option( KTX_FEATURE_TOOLS_CTS "Enable KTX CLI Tools CTS tests (requires CTS submodule)." OFF )
 option( KTX_FEATURE_ETC_UNPACK "ETC decoding support." ON )
 
@@ -71,7 +71,7 @@ CMAKE_DEPENDENT_OPTION( KTX_EMBED_BITCODE
 option( KTX_FEATURE_KTX1 "Enable KTX 1 support." ON )
 option( KTX_FEATURE_KTX2 "Enable KTX 2 support." ON )
 option( KTX_FEATURE_VK_UPLOAD "Enable Vulkan texture upload." ON )
-option( KTX_FEATURE_GL_UPLOAD "Enable OpenGL texture upload." ON )
+option( KTX_FEATURE_GL_UPLOAD "Enable OpenGL texture upload." OFF )
 # When a variable like this is set via CMakeUserPresets.json, it no longer
 # shows the selectable options provided by the STRINGS property.
 set( KTX_FEATURE_LOADTEST_APPS
@@ -264,7 +264,7 @@ else()
     set( LIB_TYPE_DEFAULT OFF )
 endif()
 
-option( KTX_FEATURE_STATIC_LIBRARY "Create static libraries (shared otherwise)." ${LIB_TYPE_DEFAULT} )
+option( KTX_FEATURE_STATIC_LIBRARY "Create static libraries (shared otherwise)." ON )
 
 CMAKE_DEPENDENT_OPTION( KTX_FEATURE_TOOLS
                         "Create KTX tools"

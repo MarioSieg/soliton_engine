@@ -50,7 +50,7 @@ namespace lu::graphics {
         }
 
         explicit texture(eastl::string&& asset_path); // Load from file
-        explicit texture(eastl::span<const std::byte> file_mem); // Parse file from memory
+        explicit texture(eastl::span<const std::byte> file_mem, bool is_ktx = false); // Parse file from memory
         explicit texture(const texture_descriptor& desc, const eastl::optional<texture_data_supplier>& data); // Create manually
         ~texture() override;
 
@@ -79,7 +79,7 @@ namespace lu::graphics {
 
     private:
         auto create(const texture_descriptor& desc, const eastl::optional<texture_data_supplier>& data) -> void;
-        auto parse_from_raw_memory(eastl::span<const std::byte> buf) -> void;
+        auto parse_from_raw_memory(eastl::span<const std::byte> buf, bool is_ktx) -> void;
 
         auto upload(
             std::size_t array_idx,

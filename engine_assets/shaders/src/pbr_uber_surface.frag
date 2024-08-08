@@ -10,6 +10,7 @@ layout (set = 0, binding = 2) uniform sampler2D samplerRoughness;
 layout (set = 0, binding = 3) uniform sampler2D samplerAO;
 
 layout (set = 1, binding = 0) uniform sampler2D brdf_lut;
+layout (set = 1, binding = 1) uniform samplerCube irradiance_cube;
 
 layout (location = 0) in vec3 inWorldPos;
 layout (location = 1) in vec2 inUV;
@@ -42,10 +43,11 @@ void main() {
   const float metallic = metallicRoughness.r;
   const float roughness = metallicRoughness.g;
   const vec4 albedo = texture(samplerAlbedoMap, inUV);
+  const vec4 sus = texture(irradiance_cube, normalize(inWorldPos));
   vec3 F0 = mix(vec3(0.04), pow(albedo.rgb, VGAMMA), metallic);
   vec3 Lo = vec3(0.0);
   vec3 L = normalize(vec3(0.0) - inWorldPos);
   Lo += pbr_specular_contrib(albedo.rgb, L, V, N, F0, metallic, roughness);
-  outFragColor.rgb = albedo.rgb;
+  outFragColor.rgb = sus.rgb;
   outFragColor.a = albedo.a;
 }

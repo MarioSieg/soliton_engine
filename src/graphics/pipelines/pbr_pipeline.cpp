@@ -40,12 +40,23 @@ namespace lu::graphics::pipelines {
     pbr_pipeline::pbr_pipeline() : graphics_pipeline{"mat_pbr"} {
         vkb::descriptor_factory df {vkb::ctx().descriptor_factory_begin()};
 
-        vk::DescriptorImageInfo image_info {};
-        image_info.imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-        image_info.imageView = m_pbr_filter_processor.brdf_lut().image_view();
-        image_info.sampler = m_pbr_filter_processor.brdf_lut().sampler();
+        eastl::vector<vk::DescriptorImageInfo> infos {
+            vk::DescriptorImageInfo {
+                .imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal,
+                .imageView = m_pbr_filter_processor.brdf_lut().image_view(),
+                .sampler = m_pbr_filter_processor.brdf_lut().sampler(),
+            },
+            vk::DescriptorImageInfo {
+                .imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal,
+                .imageView = m_pbr_filter_processor.environ_cube().image_view(),
+                .sampler = m_pbr_filter_processor.environ_cube().sampler(),
+            }
+        };
 
-        df.bind_images(0, 1, &image_info, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment);
+        for (std::size_t i = 0; i < infos.size(); ++i) {
+            df.bind_images(i, 1, &infos[i], vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment);
+        }
+
         passert(df.build(m_pbr_descriptor_set, m_pbr_descriptor_set_layout));
     }
 

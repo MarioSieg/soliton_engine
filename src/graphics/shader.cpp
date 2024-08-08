@@ -246,7 +246,9 @@ namespace lu::graphics {
             return m_shaders[hash];
         }
         auto shader = shader::compile(std::move(variant));
-        passert(shader != nullptr);
+        if (!shader) [[unlikely]] {
+            return nullptr;
+        }
         m_shaders[hash] = shader;
         return shader;
     }
