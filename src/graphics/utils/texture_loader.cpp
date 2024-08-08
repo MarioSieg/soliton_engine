@@ -7,11 +7,6 @@
 #include <bimg/decode.h>
 #include <Simd/SimdLib.hpp>
 
-extern "C" {
-    #include <ktx.h>
-    #include <ktxvulkan.h>
-}
-
 #include "../vulkancore/context.hpp"
 
 namespace lu::graphics {
@@ -290,28 +285,36 @@ namespace lu::graphics {
         const std::uint32_t height,
         const void* const data,
         const std::size_t size,
+        const bool is_cubemap,
         eastl::vector<vk::BufferImageCopy>& out_regions
     ) -> void {
         out_regions.reserve(mip_levels);
         std::size_t offset = 0;
-        for (std::uint32_t i = 0; i < mip_levels; ++i) {
-            bimg::ImageMip mip {};
-            if (!bimg::imageGetRawData(image, 0, i, data, size, mip)) [[unlikely]] {
-                log_warn("Failed to get raw data for mip level {}", i);
-                continue;
+        const auto fetch = [&](const std::uint32_t i, const std::uint32_t face, const bool cube) {
+            bimg::ImageMip mip{};
+            if (!bimg::imageGetRawData(image, cube ? face : 0, i, data, size, mip)) [[unlikely]] {
+                log_warn("Failed to fetch texture raw data for mip level: {}, face: {}", i, face);
+                return;
             }
-            vk::BufferImageCopy region {};
+            vk::BufferImageCopy region{};
             region.bufferOffset = offset;
             offset += mip.m_size;
             region.imageSubresource.aspectMask = vk::ImageAspectFlagBits::eColor;
             region.imageSubresource.mipLevel = i;
-            region.imageSubresource.baseArrayLayer = array_idx;
+            region.imageSubresource.baseArrayLayer = cube ? face : array_idx;
             region.imageSubresource.layerCount = 1;
             region.imageExtent.width = std::max(1u, width >> i);
             region.imageExtent.height = std::max(1u, height >> i);
             region.imageExtent.depth = 1;
             out_regions.emplace_back(region);
-        }
+        };
+        if (is_cubemap)
+            for (std::uint32_t face = 0; face < 6; ++face)
+                for (std::uint32_t i = 0; i < mip_levels; ++i)
+                    fetch(i, face, true);
+        else
+            for (std::uint32_t i = 0; i < mip_levels; ++i)
+                fetch(i, 0, false);
     }
 
     [[nodiscard]] static auto raw_parse_texture_generic(
@@ -360,7 +363,7 @@ namespace lu::graphics {
             .depth = image->m_depth,
             .miplevel_count = image->m_numMips <= 1 ? texture::get_mip_count(image->m_width, image->m_height) : image->m_numMips,
             .mipmap_mode = image->m_numMips <= 1 ? texture_descriptor::mipmap_creation_mode::generate : texture_descriptor::mipmap_creation_mode::present_in_data,
-            .array_size = image->m_numLayers,
+            .array_size = is_cubemap ? static_cast<std::uint32_t>(image->m_numMips) : image->m_numLayers,
             .format = format,
             .memory_usage = VMA_MEMORY_USAGE_GPU_ONLY,
             .usage = k_def_usage,
@@ -385,6 +388,7 @@ namespace lu::graphics {
             info.height,
             data.data,
             data.size,
+            is_cubemap,
             data.mip_copy_regions
         );
 
@@ -399,149 +403,10 @@ namespace lu::graphics {
         return true;
     }
 
-    static auto construct_image_copy_regions_ktx(
-        const std::uint32_t mip_levels,
-        ktxTexture* const image,
-        const std::size_t array_idx,
-        const std::uint32_t width,
-        const std::uint32_t height,
-        const bool is_cubemap,
-        eastl::vector<vk::BufferImageCopy>& out_regions
-    ) -> void {
-        out_regions.reserve(mip_levels);
-        if (is_cubemap) {
-            for (std::uint32_t face = 0; face < 6; ++face) {
-                for (std::uint32_t i = 0; i < mip_levels; ++i) {
-                    ktx_size_t offset;
-                    const KTX_error_code result = ktxTexture_GetImageOffset(image, i, 0, face, &offset);
-                    if (result != KTX_SUCCESS) [[unlikely]] {
-                        log_warn("Failed to get raw data for mip level {}", i);
-                        continue;
-                    }
-                    vk::BufferImageCopy region{};
-                    region.bufferOffset = offset;
-                    region.imageSubresource.aspectMask = vk::ImageAspectFlagBits::eColor;
-                    region.imageSubresource.mipLevel = i;
-                    region.imageSubresource.baseArrayLayer = face;
-                    region.imageSubresource.layerCount = 1;
-                    region.imageExtent.width = std::max(1u, width >> i);
-                    region.imageExtent.height = std::max(1u, height >> i);
-                    region.imageExtent.depth = 1;
-                    out_regions.emplace_back(region);
-                }
-            }
-        } else {
-            for (std::uint32_t i = 0; i < mip_levels; ++i) {
-                ktx_size_t offset;
-                const KTX_error_code result = ktxTexture_GetImageOffset(image, i, 0, 0, &offset);
-                if (result != KTX_SUCCESS) [[unlikely]] {
-                    log_warn("Failed to get raw data for mip level {}", i);
-                    continue;
-                }
-                vk::BufferImageCopy region {};
-                region.bufferOffset = offset;
-                region.imageSubresource.aspectMask = vk::ImageAspectFlagBits::eColor;
-                region.imageSubresource.mipLevel = i;
-                region.imageSubresource.baseArrayLayer = array_idx;
-                region.imageSubresource.layerCount = 1;
-                region.imageExtent.width = std::max(1u, width >> i);
-                region.imageExtent.height = std::max(1u, height >> i);
-                region.imageExtent.depth = 1;
-                out_regions.emplace_back(region);
-            }
-        }
-    }
-
-    // Custom KTX loader because BIMG fails to properly parse KTX files
-    [[nodiscard]] static auto raw_parse_texture_ktx(
+    auto raw_parse_texture(
         const eastl::span<const std::byte> buf,
         const eastl::function<auto (const texture_descriptor& info, const texture_data_supplier& data) -> void>& callback
     ) -> bool {
-        if (buf.empty() || buf.size() >= eastl::numeric_limits<std::uint32_t>::max()) [[unlikely]] {
-            log_error("Empty buffer, or buffer too large");
-            return false;
-        }
-
-        ktxTexture* tex = nullptr;
-        KTX_error_code r = ktxTexture_CreateFromMemory(
-            reinterpret_cast<const ktx_uint8_t*>(buf.data()),
-            static_cast<std::uint32_t>(buf.size()),
-            KTX_TEXTURE_CREATE_LOAD_IMAGE_DATA_BIT,
-            &tex
-        );
-        if (r != KTX_SUCCESS) [[unlikely]] {
-            log_error("Failed to parse KTX image: {}", ktxErrorString(r));
-            return false;
-        }
-        const ktx_uint8_t* t_data = ktxTexture_GetData(tex);
-        const ktx_size_t size = ktxTexture_GetDataSize(tex);
-        const bool is_cubemap = tex->isCubemap;
-        const vk::Format format = static_cast<vk::Format>(ktxTexture_GetVkFormat(tex));
-        vk::ImageCreateFlags create_flags {};
-        if (is_cubemap) create_flags |= vk::ImageCreateFlagBits::eCubeCompatible;
-
-        bool is_format_supported = false;
-        bool is_format_mipgen_supported = false;
-        vkb::dvc().is_image_format_supported(
-            vk::ImageType::e2D,
-            format,
-            create_flags,
-            k_def_usage,
-            k_def_tiling,
-            is_format_supported,
-            is_format_mipgen_supported
-        );
-        passert(is_format_supported);
-
-        const texture_descriptor info {
-            .width = tex->baseWidth,
-            .height = tex->baseHeight,
-            .depth = tex->baseDepth,
-            .miplevel_count = tex->numLevels,
-            .mipmap_mode = texture_descriptor::mipmap_creation_mode::present_in_data,
-            .array_size = is_cubemap ? tex->numFaces : tex->numLayers,
-            .format = format,
-            .memory_usage = VMA_MEMORY_USAGE_GPU_ONLY,
-            .usage = k_def_usage,
-            .sample_count = vk::SampleCountFlagBits::e1,
-            .initial_layout = vk::ImageLayout::eUndefined,
-            .tiling = k_def_tiling,
-            .type = vk::ImageType::e2D,
-            .flags = create_flags,
-            .is_cubemap = is_cubemap
-        };
-
-        texture_data_supplier data {
-            .data = t_data,
-            .size = size
-        };
-
-        construct_image_copy_regions_ktx(
-            info.miplevel_count,
-            tex,
-            0,
-            info.width,
-            info.height,
-            is_cubemap,
-            data.mip_copy_regions
-        );
-
-        eastl::invoke(callback, info, data);
-
-        const exit_guard img_free {
-            [&tex] () -> void {
-                ktxTexture_Destroy(tex);
-                tex = nullptr;
-            }
-        };
-        return true;
-    }
-
-    auto raw_parse_texture(
-        const eastl::span<const std::byte> buf,
-        const eastl::function<auto (const texture_descriptor& info, const texture_data_supplier& data) -> void>& callback,
-        const bool is_ktx
-    ) -> bool {
-        return is_ktx ? raw_parse_texture_ktx(buf, callback) : raw_parse_texture_generic(buf, callback);
+        return raw_parse_texture_generic(buf, callback);
     }
 }

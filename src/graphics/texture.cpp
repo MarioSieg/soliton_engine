@@ -17,12 +17,11 @@ namespace lu::graphics {
                 panic("Failed to load texture '{}'", get_asset_path());
             }
         });
-        const bool is_ktx = get_asset_path().size() > 4 && get_asset_path().substr(get_asset_path().size() - 4) == ".ktx";
-        parse_from_raw_memory(texels, is_ktx);
+        parse_from_raw_memory(texels);
     }
 
-    texture::texture(const eastl::span<const std::byte> file_mem, const bool is_ktx) : asset {assetmgr::asset_source::memory} {
-        parse_from_raw_memory(file_mem, is_ktx);
+    texture::texture(const eastl::span<const std::byte> file_mem) : asset {assetmgr::asset_source::memory} {
+        parse_from_raw_memory(file_mem);
     }
 
     texture::texture(const texture_descriptor& desc, const eastl::optional<texture_data_supplier>& data) : asset {assetmgr::asset_source::memory} {
@@ -142,10 +141,10 @@ namespace lu::graphics {
         );
     }
 
-    auto texture::parse_from_raw_memory(const eastl::span<const std::byte> buf, const bool is_ktx) -> void {
+    auto texture::parse_from_raw_memory(const eastl::span<const std::byte> buf) -> void {
         const bool result = raw_parse_texture(buf, [&](const texture_descriptor& info, const texture_data_supplier& data) {
             create(info, data);
-        }, is_ktx);
+        });
         if (!result) [[unlikely]] {
             panic("Failed to parse texture from raw memory");
         }
