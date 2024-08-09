@@ -17,7 +17,7 @@ namespace lu::vkb {
         std::is_standard_layout_v<T>;
         std::is_trivial_v<T>;
         sizeof(T) <= 128; // TODO: Some GPUs have a limit of 256 bytes
-        alignof(T) <= 16;
+        alignof(T) % 16 == 0;
     };
 
     class command_buffer final : public no_copy {
