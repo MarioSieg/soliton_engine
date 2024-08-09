@@ -131,7 +131,7 @@ static auto redirect_io() -> void {
         spdlog::set_default_logger(engine_ogger);
 
         log_info("-- ENGINE KERNEL BOOT --");
-        log_info("LunamEngine v.{}.{}", major_version(k_lunam_engine_v), minor_version(k_lunam_engine_v));
+        log_info("LunamEngine v.{}.{}", major_version(k_lunam_engine_version), minor_version(k_lunam_engine_version));
         log_info("Copyright (c) 2022-2024 Mario \"Neo\" Sieg. All Rights Reserved.");
         log_info("Booting Engine Kernel...");
         log_info("Build date: {}", __DATE__);

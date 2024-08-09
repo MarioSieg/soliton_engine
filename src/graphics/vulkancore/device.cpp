@@ -120,19 +120,23 @@ namespace lu::vkb {
     auto device::create_instance() -> void {
         log_info("Creating Vulkan instance...");
 
+        const auto [major, minor] = unpack_version(k_lunam_engine_version);
+
         // Create application info
         vk::ApplicationInfo app_info {};
         app_info.pApplicationName = "Lunam Engine";
-        app_info.applicationVersion = VK_MAKE_VERSION(0, 1, 0);
+        app_info.applicationVersion = VK_MAKE_VERSION(major, minor, 0);
         app_info.pEngineName = "Lunam Engine";
-        app_info.engineVersion = VK_MAKE_VERSION(0, 1, 0);
+        app_info.engineVersion = VK_MAKE_VERSION(major, minor, 0);
         app_info.apiVersion = m_api_version;
 
         ankerl::unordered_dense::set<eastl::string> instance_extensions = {
             VK_KHR_SURFACE_EXTENSION_NAME,
         };
 
-        passert(glfwVulkanSupported());
+        if (!glfwVulkanSupported()) [[unlikely]] {
+            panic("GLFW does not support Vulkan");
+        }
 
         std::uint32_t glfw_extension_count = 0;
         const char** glfw_extensions = glfwGetRequiredInstanceExtensions(&glfw_extension_count);
@@ -145,11 +149,11 @@ namespace lu::vkb {
         }
 
         // Enumerate supported instance extensions
-        uint32_t extCount = 0;
-        vkcheck(vk::enumerateInstanceExtensionProperties(nullptr, &extCount, nullptr));
-        if (extCount > 0) {
-            eastl::vector<vk::ExtensionProperties> extensions {extCount};
-            if (vk::enumerateInstanceExtensionProperties(nullptr, &extCount, extensions.data()) == vk::Result::eSuccess) {
+        std::uint32_t ext_count = 0;
+        vkcheck(vk::enumerateInstanceExtensionProperties(nullptr, &ext_count, nullptr));
+        if (ext_count) [[likely]] {
+            eastl::vector<vk::ExtensionProperties> extensions {ext_count};
+            if (vk::enumerateInstanceExtensionProperties(nullptr, &ext_count, extensions.data()) == vk::Result::eSuccess) {
                 for (vk::ExtensionProperties& extension : extensions) {
                     m_supported_instance_extensions.emplace_back(extension.extensionName);
                     log_info("Supported instance extension: {}", extension.extensionName);
@@ -158,14 +162,14 @@ namespace lu::vkb {
         }
 
 #if PLATFORM_OSX
-            // When running on iOS/macOS with MoltenVK and VK_KHR_portability_subset is defined and supported by the device, enable the extension
-            if (is_device_extension_supported(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME)) {
-                instance_extensions.insert(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
-            }
-            // When running on iOS/macOS with MoltenVK, enable VK_KHR_get_physical_device_properties2 if not already enabled by the example (required by VK_KHR_portability_subset)
-            if (is_device_extension_supported(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME)) {
-                instance_extensions.insert(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
-            }
+        // When running on iOS/macOS with MoltenVK and VK_KHR_portability_subset is defined and supported by the device, enable the extension
+        if (is_device_extension_supported(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME)) {
+            instance_extensions.insert(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
+        }
+        // When running on iOS/macOS with MoltenVK, enable VK_KHR_get_physical_device_properties2 if not already enabled by the example (required by VK_KHR_portability_subset)
+        if (is_device_extension_supported(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME)) {
+            instance_extensions.insert(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
+        }
 #endif
 
         // Setup instance create info
@@ -278,20 +282,20 @@ namespace lu::vkb {
         }
 
         // print physical device limits
-        log_info("Vulkan physical device limits:");
+        log_info("---- Physical Device Limits ----");
         dump_physical_device_props(m_device_properties);
 
         //print memory properties
-        log_info("Vulkan physical device memory properties:");
-        log_info("memoryTypeCount: {}", m_memory_properties.memoryTypeCount);
+        log_info("---- Physical GPU Memory Properties ----");
+        log_info("Memory Type Count: {}", m_memory_properties.memoryTypeCount);
         for (std::uint32_t i = 0; i < m_memory_properties.memoryTypeCount; i++) {
-            log_info("memoryTypes[{}].heapIndex: {}", i, m_memory_properties.memoryTypes[i].heapIndex);
-            log_info("memoryTypes[{}].propertyFlags: {:#x}", i, static_cast<std::uint32_t>(m_memory_properties.memoryTypes[i].propertyFlags));
+            log_info("Memory Types[{}] Heap Index: {}", i, m_memory_properties.memoryTypes[i].heapIndex);
+            log_info("Memory Types[{}] Property Flags: {:#x}", i, static_cast<std::uint32_t>(m_memory_properties.memoryTypes[i].propertyFlags));
         }
-        log_info("memoryHeapCount: {}", m_memory_properties.memoryHeapCount);
+        log_info("Memory Heap Count: {}", m_memory_properties.memoryHeapCount);
         for (std::uint32_t i = 0; i < m_memory_properties.memoryHeapCount; i++) {
-            log_info("memoryHeaps[{}].size: {}", i, m_memory_properties.memoryHeaps[i].size);
-            log_info("memoryHeaps[{}].flags: {:#x}", i, static_cast<std::uint32_t>(m_memory_properties.memoryHeaps[i].flags));
+            log_info("Memory Heaps[{}] Size: {}", i, m_memory_properties.memoryHeaps[i].size);
+            log_info("Memory Heaps[{}] Flags: {:#x}", i, static_cast<std::uint32_t>(m_memory_properties.memoryHeaps[i].flags));
         }
 
         // Find queue family indices
@@ -409,7 +413,7 @@ namespace lu::vkb {
         // Try to find a queue family index that supports compute but not graphics
         if ((flags & vk::QueueFlagBits::eCompute) == flags) {
             for (std::uint32_t i = 0; i < static_cast<std::uint32_t>(families.size()); ++i) {
-                if (families[i].queueFlags & vk::QueueFlagBits::eCompute
+                if ((families[i].queueFlags & vk::QueueFlagBits::eCompute)
                     && static_cast<std::uint32_t>(families[i].queueFlags & vk::QueueFlagBits::eGraphics) == 0) {
                     return i;
                 }
@@ -429,11 +433,9 @@ namespace lu::vkb {
         }
 
         // For other queue types or if no separate compute queue is present, return the first one to support the requested flags
-        for (std::uint32_t i = 0; i < static_cast<std::uint32_t>(families.size()); i++) {
-            if ((families[i].queueFlags & flags) == flags) {
+        for (std::uint32_t i = 0; i < static_cast<std::uint32_t>(families.size()); ++i)
+            if ((families[i].queueFlags & flags) == flags)
                 return i;
-            }
-        }
 
         panic("Could not find a matching queue family index");
     }
@@ -449,7 +451,7 @@ namespace lu::vkb {
     }
 
     auto device::find_supported_depth_format(const bool stencil_required, vk::Format& out_format) const -> bool {
-        eastl::vector<vk::Format> formats {};
+        eastl::fixed_vector<vk::Format, 16> formats {};
         if (stencil_required) {
             formats = {
                 vk::Format::eD24UnormS8Uint,

@@ -30,7 +30,7 @@ LUA_INTEROP_API auto __lu_ffi_cookie() -> std::uint32_t  {
 }
 
 LUA_INTEROP_API auto __lu_engine_version() -> std::uint32_t {
-    return k_lunam_engine_v;
+    return k_lunam_engine_version;
 }
 
 LUA_INTEROP_API auto __lu_app_is_focused() -> bool {
