@@ -26,10 +26,8 @@ namespace lu {
     // T: The type to be obfuscated (must be a multiple of 32 bits).
     // Mutate: If true, the class size doubles, and the memory layout changes with each read, making it harder to detect data changes with breakpoints.
     // This has a performance impact compared to non-mutated types.
-    template <typename T, bool Mutate=true>
+    template <typename T, bool Mutate=true> requires ((sizeof(T) & 3) == 0)
     class obfuscated final : public no_copy, public no_move {
-        static_assert((sizeof(T) & 3) == 0, "obfuscated<T> requires T to be a multiple of 32 bits");
-
         LU_FORCEINLINE obfuscated() noexcept {
             init();
         }
