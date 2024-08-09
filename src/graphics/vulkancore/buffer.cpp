@@ -106,7 +106,6 @@ namespace lu::vkb {
             copy_cmd.begin();
             copy_cmd.copy_buffer(staging_buffer.get_buffer(), m_buffer, size, offset);
             copy_cmd.end();
-            copy_cmd.flush();
         } else {
             if (!m_mapped) {
                 vkcheck(device.mapMemory(m_memory, 0, size, {}, &m_mapped));

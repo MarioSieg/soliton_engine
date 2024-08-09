@@ -8,6 +8,7 @@
 #include "shader.hpp"
 #include "../scripting/system_variable.hpp"
 
+#include <numbers>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -141,7 +142,6 @@ namespace lu::graphics {
                 vk::ImageLayout::eColorAttachmentOptimal
             );
             layout_cmd.end();
-            layout_cmd.flush();
         }
 
         vk::DescriptorSetLayout descriptor_set_layout {};
@@ -396,7 +396,6 @@ namespace lu::graphics {
             subresource_range
         );
         cmd.end();
-        cmd.flush();
 
         vkcheck(dvc.waitIdle());
         dvc.destroyPipeline(shader_pipeline, vkb::get_alloc());
@@ -608,7 +607,6 @@ namespace lu::graphics {
 
         cmd.end_render_pass();
         cmd.end();
-        cmd.flush();
 
         vkcheck(dvc.waitIdle());
         dvc.destroyPipeline(shader_pipeline, vkb::get_alloc());

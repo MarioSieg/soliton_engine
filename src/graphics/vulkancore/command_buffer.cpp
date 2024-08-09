@@ -59,12 +59,17 @@ namespace lu::vkb {
         const vk::CommandBufferUsageFlagBits usage,
         const vk::CommandBufferInheritanceInfo* const inheritance
     ) -> void {
+        passert(m_status == status::constructed);
         const vk::CommandBufferBeginInfo info {.flags = usage, .pInheritanceInfo = inheritance};
         vkcheck(m_cmd.begin(&info));
+        m_status = status::recording;
     }
 
     auto command_buffer::end() -> void {
+        passert(m_status == status::recording);
         vkcheck(m_cmd.end());
+        flush();
+        m_status = status::flushed;
     }
 
     auto command_buffer::flush() -> void {
