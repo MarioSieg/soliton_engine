@@ -97,15 +97,18 @@ namespace lu::vkb {
         bool& is_generally_supported,
         bool& is_mipgen_supported
     ) const -> void {
+        is_mipgen_supported = false;
+
         vk::PhysicalDeviceImageFormatInfo2 info {};
         info.type = type;
         info.format = format;
         info.flags = flags;
         info.usage = usage;
         info.tiling = tiling;
+
         vk::ImageFormatProperties2 props {};
-        // check if format is generally supported
         is_generally_supported = m_physical_device.getImageFormatProperties2(&info, &props) == vk::Result::eSuccess;
+
         // check if format supports color writing for mipmap generation
         if (is_generally_supported) [[likely]] {
             vk::FormatProperties format_props {};

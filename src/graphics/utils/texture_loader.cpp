@@ -278,43 +278,39 @@ namespace lu::graphics {
     }
 
     static auto construct_image_copy_regions_generic(
-        const std::uint32_t mip_levels,
         const bimg::ImageContainer& image,
-        const std::size_t array_idx,
-        const std::uint32_t width,
-        const std::uint32_t height,
-        const void* const data,
-        const std::size_t size,
-        const bool is_cubemap,
-        eastl::vector<vk::BufferImageCopy>& out_regions
+        const texture_descriptor& desc,
+        texture_data_supplier& data
     ) -> void {
-        out_regions.reserve(mip_levels);
+        data.mip_copy_regions.reserve(desc.miplevel_count);
         std::size_t offset = 0;
-        const auto fetch = [&](const std::uint32_t i, const std::uint32_t face, const bool cube) {
-            bimg::ImageMip mip{};
-            if (!bimg::imageGetRawData(image, cube ? face : 0, i, data, size, mip)) [[unlikely]] {
-                log_warn("Failed to fetch texture raw data for mip level: {}, face: {}", i, face);
+        const auto fetch = [&]<const bool is_cube>(const std::uint32_t lod, const std::uint32_t face) -> void {
+            bimg::ImageMip mip {};
+            if (!bimg::imageGetRawData(image, is_cube ? face : 0, lod, data.data, data.size, mip)) [[unlikely]] {
+                log_warn("Failed to fetch texture raw data for mip level: {}, face: {}", lod, face);
                 return;
             }
-            vk::BufferImageCopy region{};
-            region.bufferOffset = offset;
+            const std::size_t moff = offset;
             offset += mip.m_size;
+
+            vk::BufferImageCopy region {};
+            region.bufferOffset = moff;
             region.imageSubresource.aspectMask = vk::ImageAspectFlagBits::eColor;
-            region.imageSubresource.mipLevel = i;
-            region.imageSubresource.baseArrayLayer = cube ? face : array_idx;
+            region.imageSubresource.mipLevel = lod;
+            region.imageSubresource.baseArrayLayer = is_cube ? face : 0;
             region.imageSubresource.layerCount = 1;
-            region.imageExtent.width = std::max(1u, width >> i);
-            region.imageExtent.height = std::max(1u, height >> i);
+            region.imageExtent.width = std::max(1u, desc.width >> lod);
+            region.imageExtent.height = std::max(1u, desc.height >> lod);
             region.imageExtent.depth = 1;
-            out_regions.emplace_back(region);
+            data.mip_copy_regions.emplace_back(region);
         };
-        if (is_cubemap)
+        if (desc.is_cubemap)
             for (std::uint32_t face = 0; face < 6; ++face)
-                for (std::uint32_t i = 0; i < mip_levels; ++i)
-                    fetch(i, face, true);
+                for (std::uint32_t i = 0; i < desc.miplevel_count; ++i)
+                    fetch.operator()<true>(i, face);
         else
-            for (std::uint32_t i = 0; i < mip_levels; ++i)
-                fetch(i, 0, false);
+            for (std::uint32_t i = 0; i < desc.miplevel_count; ++i)
+                fetch.operator()<false>(i, 0);
     }
 
     [[nodiscard]] static auto raw_parse_texture_generic(
@@ -380,17 +376,7 @@ namespace lu::graphics {
             .size = image->m_size
         };
 
-        construct_image_copy_regions_generic(
-            info.miplevel_count,
-            *image,
-            0,
-            info.width,
-            info.height,
-            data.data,
-            data.size,
-            is_cubemap,
-            data.mip_copy_regions
-        );
+        construct_image_copy_regions_generic(*image, info, data);
 
         eastl::invoke(callback, info, data);
 
