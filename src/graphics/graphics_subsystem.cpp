@@ -19,9 +19,9 @@ namespace lu::graphics {
     using platform::platform_subsystem;
     using vkb::context;
 
-    static const system_variable<eastl::string> cv_shader_dir {"Renderer.shaderDir", eastl::monostate{}};
+    static const system_variable<eastl::string> cv_shader_dir {"renderer.shader_dir", eastl::monostate{}};
     static const system_variable<std::uint32_t> cv_max_render_threads {
-        "Threads.renderThreads",
+        "cpu.render_threads",
         {2u}
     };
     static constinit std::uint32_t s_num_draw_calls_prev = 0;

@@ -11,11 +11,11 @@ namespace NoesisApp
     using namespace lu;
 
     static const system_variable<std::int32_t> ui_render_flags {
-        "GameUI.renderFlags",
+        "ui.render_flags",
         {Noesis::RenderFlags_LCD | Noesis::RenderFlags_FlipY | Noesis::RenderFlags_PPAA}
     };
     static const system_variable<float> ui_tesselation_pixel_error {
-        "GameUI.tesselationPixelError",
+        "ui.tesselation_error",
         {Noesis::TessellationMaxPixelError::HighQuality().error}
     };
 

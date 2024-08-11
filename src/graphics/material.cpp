@@ -9,8 +9,8 @@
 namespace lu::graphics {
     using scripting::scripting_subsystem;
 
-    static const system_variable<eastl::string> cv_error_texture {"Renderer.fallbackTexture", eastl::monostate{}};
-    static const system_variable<eastl::string> cv_flat_normal {"Renderer.flatNormalTexture", eastl::monostate{}};
+    static const system_variable<eastl::string> cv_error_texture {"renderer.error_texture", eastl::monostate{}};
+    static const system_variable<eastl::string> cv_flat_normal {"renderer.flat_normal_texture", eastl::monostate{}};
     static eastl::optional<material::static_resources> s_resources {};
 
     material::material(

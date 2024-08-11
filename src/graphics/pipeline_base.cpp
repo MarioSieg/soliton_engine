@@ -39,12 +39,9 @@ namespace lu::graphics {
         }
     }
 
-    pipeline_base::pipeline_base(eastl::string&& name, const pipeline_type type) : name{std::move(name)}, type{type} {
-    }
+    pipeline_base::pipeline_base(eastl::string&& name, const pipeline_type type) : name{std::move(name)}, type{type} {}
 
-    auto pipeline_base::pre_configure() -> void {
-    }
+    auto pipeline_base::pre_configure() -> void {}
 
-    auto pipeline_base::post_configure() -> void {
-    }
+    auto pipeline_base::post_configure() -> void {}
 }

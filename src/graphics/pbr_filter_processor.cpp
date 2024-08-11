@@ -13,12 +13,12 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace lu::graphics {
-    static const system_variable<std::uint32_t> brdf_lut_size {"Renderer.brdfLutSize", {512u}};
-    static const system_variable<std::uint32_t> irradiance_cube_size {"Renderer.irradiance_cube_size", {64u}};
+    static const system_variable<std::uint32_t> brdf_lut_size {"renderer.brdf_lut_dim", {512u}};
+    static const system_variable<std::uint32_t> irradiance_cube_size {"renderer.irradiance_cube_size", {64u}};
 
     pbr_filter_processor::pbr_filter_processor() {
         m_environ_cube.emplace("/engine_assets/textures/hdr/gcanyon_cube.ktx");
-        generate_irradiance_cube();
+        //generate_irradiance_cube();
         generate_brdf_lookup_table();
     }
 

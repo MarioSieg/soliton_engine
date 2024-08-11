@@ -79,15 +79,15 @@ extern "C" void NsShutdownPackages_NoesisApp() {
 }
 
 namespace noesis {
-    static const system_variable<eastl::string> cv_license {"GameUI.license.userId", eastl::monostate{} };
-    static const system_variable<eastl::string> cv_key {"GameUI.license.key", eastl::monostate{} };
-    static const system_variable<eastl::string> cv_xaml_root {"GameUI.xamlRootPath", {"assets/ui"} };
-    static const system_variable<eastl::string> cv_font_root {"GameUI.fontRootPath", {"assets/ui"} };
-    static const system_variable<eastl::string> cv_texture_root {"GameUI.textureRootPath", {"assets/ui"} };
-    static const system_variable<eastl::string> cv_default_font {"GameUI.defaultFont.family", {"Fonts/#PT Root UI"} };
-    static const system_variable<float> cv_default_font_size {"GameUI.defaultFont.size", {15.0f} };
-    static const system_variable<std::int32_t> cv_default_font_weight {"GameUI.defaultFont.weight", {Noesis::FontWeight_Normal} };
-    static const system_variable<std::int32_t> cv_default_font_stretch {"GameUI.defaultFont.stretch", {Noesis::FontStretch_Normal} };
+    static const system_variable<eastl::string> cv_license {"ui.license.id", eastl::monostate{} };
+    static const system_variable<eastl::string> cv_key {"ui.license.key", eastl::monostate{} };
+    static const system_variable<eastl::string> cv_xaml_root {"ui.xaml_root_path", {"assets/ui"} };
+    static const system_variable<eastl::string> cv_font_root {"ui.font_root_path", {"assets/ui"} };
+    static const system_variable<eastl::string> cv_texture_root {"ui.texture_root_path", {"assets/ui"} };
+    static const system_variable<eastl::string> cv_default_font {"ui.default_font.family", {"Fonts/#PT Root UI"} };
+    static const system_variable<float> cv_default_font_size {"ui.default_font.size", {15.0f} };
+    static const system_variable<std::int32_t> cv_default_font_weight {"ui.default_font.weight", {Noesis::FontWeight_Normal} };
+    static const system_variable<std::int32_t> cv_default_font_stretch {"ui.default_font.stretch", {Noesis::FontStretch_Normal} };
 
     static constinit Noesis::IView* s_event_proxy;
 

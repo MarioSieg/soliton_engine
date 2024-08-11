@@ -7,11 +7,11 @@
 
 namespace lu::vkb {
     static const system_variable<bool> cv_enable_vulkan_validation_layers {
-        "Renderer.enableVulkanValidationLayers",
+        "renderer.enable_vulkan_validation_layers",
         {false}
     };
     static const system_variable<bool> cv_enable_vsync {
-        "Renderer.enableVSync",
+        "renderer.force_vsync",
         {false}
     };
 

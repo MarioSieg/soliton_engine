@@ -22,7 +22,7 @@ namespace lu::graphics {
     public:
         virtual ~pipeline_base();
 
-        const eastl::fixed_string<char, 16> name;
+        const eastl::string name;
         const pipeline_type type;
 
         auto create(vk::PipelineCache cache) -> void;

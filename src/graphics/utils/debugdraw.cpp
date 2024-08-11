@@ -7,8 +7,8 @@
 
 namespace lu::graphics {
     static const system_variable<std::uint32_t> k_debug_draw_max_verts {
-        "Renderer.maxDebugDrawVertices",
-        {100'000u}
+        "renderer.max_debug_draw_vertices",
+        {0x20000}
     };
 
     using namespace DirectX;

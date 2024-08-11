@@ -17,7 +17,7 @@
 #include <vk_mem_alloc.h>
 
 namespace lu::imgui {
-    static const system_variable<float> cv_font_size {"EditorUI.fontSize", {18.0f}};
+    static const system_variable<float> cv_font_size {"editor.font_size", {18.0f}};
 
     context::context() {
 #if USE_MIMALLOC
