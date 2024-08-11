@@ -16,7 +16,7 @@ namespace lu::vkb {
         [[nodiscard]] auto allocate(vk::DescriptorSet& set, vk::DescriptorSetLayout layout) -> bool;
         [[nodiscard]] auto request_pool(std::uint32_t count = 0) -> vk::DescriptorPool;
 
-        using pool_sizes = eastl::vector<eastl::pair<vk::DescriptorType, float>>;
+        using pool_sizes = eastl::fixed_vector<eastl::pair<vk::DescriptorType, float>, 16>;
         pool_sizes configured_pool_sizes {
             { vk::DescriptorType::eSampler, .5f },
             { vk::DescriptorType::eCombinedImageSampler, 4.f },
@@ -103,8 +103,8 @@ namespace lu::vkb {
             bool is_image {};
         };
 
-        eastl::vector<descriptor_write_container> m_write_descriptors {};
-        eastl::vector<vk::DescriptorSetLayoutBinding> m_bindings {};
+        eastl::fixed_vector<descriptor_write_container, 16> m_write_descriptors {};
+        eastl::fixed_vector<vk::DescriptorSetLayoutBinding, 16> m_bindings {};
         descriptor_layout_cache* m_cache;
         descriptor_allocator* m_allocator;
     };

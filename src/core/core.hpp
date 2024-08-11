@@ -7,6 +7,7 @@
 #include <EASTL/array.h>
 #include <EASTL/bit.h>
 #include <EASTL/fixed_vector.h>
+#include <EASTL/fixed_string.h>
 #include <EASTL/vector.h>
 #include <EASTL/string.h>
 #include <EASTL/string_view.h>

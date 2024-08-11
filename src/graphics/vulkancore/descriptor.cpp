@@ -161,7 +161,7 @@ namespace lu::vkb {
         if (!m_allocator->allocate(ret_set, ret_layout)) [[unlikely]] {
             return false;
         }
-        eastl::vector<vk::WriteDescriptorSet> writes {};
+        eastl::fixed_vector<vk::WriteDescriptorSet, 16> writes {};
         writes.reserve(m_write_descriptors.size());
         for (auto&& dc : m_write_descriptors) {
             vk::WriteDescriptorSet write {};

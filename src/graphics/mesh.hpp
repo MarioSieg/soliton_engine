@@ -47,7 +47,7 @@ namespace lu::graphics {
         std::uint32_t m_vertex_count = 0;
         std::uint32_t m_index_count = 0;
         bool m_index_32bit = false;
-        eastl::vector<primitive> m_primitives {};
+        eastl::fixed_vector<primitive, 8> m_primitives {};
         DirectX::BoundingBox m_aabb {};
         eastl::optional<physics::collider> m_collision_mesh {};
     };
