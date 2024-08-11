@@ -35,6 +35,7 @@ namespace lu::vkb {
             const vk::CommandBufferInheritanceInfo* inheritance = nullptr
         ) -> void;
         auto end() -> void;
+        auto flush() -> void;
 
         auto begin_render_pass(const vk::RenderPassBeginInfo& info, vk::SubpassContents contents) -> void;
         auto begin_render_pass(vk::RenderPass pass, vk::SubpassContents contents) -> void;
@@ -55,10 +56,9 @@ namespace lu::vkb {
 
         auto push_consts_start() -> void;
         auto push_consts_raw(vk::ShaderStageFlagBits stage, const void* buf, std::size_t size) -> void;
-
         template <typename T> requires is_push_constant_pod<T>
-        auto push_consts(const vk::ShaderStageFlagBits stage, const T& x) -> void {
-            push_consts_raw(stage, eastl::addressof(x), sizeof(T));
+        auto push_consts(const vk::ShaderStageFlagBits stage, const T& data) -> void {
+            push_consts_raw(stage, &data, sizeof(T));
         }
 
         auto execute_commands(eastl::span<const vk::CommandBuffer> cmds) -> void;
@@ -93,20 +93,13 @@ namespace lu::vkb {
         [[nodiscard]] static auto get_total_draw_verts() noexcept -> const std::atomic_uint32_t&;
 
     private:
-        enum class status {
-            constructed,
-            recording,
-            flushed
-        } m_status = status::constructed;
         vk::CommandPool m_pool {};
         vk::CommandBuffer m_cmd {};
         vk::Queue m_queue {};
         vk::QueueFlagBits m_queue_flags {};
-        const graphics::pipeline_base* m_bounded_pipeline = nullptr;
-        std::size_t m_push_constant_offset = 0;
-        bool m_is_owned = false;
-        bool m_push_consts_init = false;
-
-        auto flush() -> void;
+        const graphics::pipeline_base* m_bounded_pipeline {};
+        std::size_t m_push_constant_offset {};
+        bool m_is_owned {};
+        bool m_push_consts_init {};
     };
 }

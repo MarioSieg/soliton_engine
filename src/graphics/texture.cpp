@@ -110,6 +110,7 @@ namespace lu::graphics {
             );
 
             copy_cmd.end();
+            copy_cmd.flush();
 
             upload(0, 0, data->data, data->size, data->mip_copy_regions, vk::ImageLayout::eTransferDstOptimal);
 
@@ -202,6 +203,7 @@ namespace lu::graphics {
         }
 
         copy_cmd.end();
+        copy_cmd.flush();
     }
 
     auto texture::generate_mips(
@@ -299,6 +301,7 @@ namespace lu::graphics {
         );
 
         blit_cmd.end();
+        blit_cmd.flush();
         log_info("{} mip-chain with {} maps", transfer_only ? "Loaded" : "Generated", m_desc.miplevel_count);
     }
 
