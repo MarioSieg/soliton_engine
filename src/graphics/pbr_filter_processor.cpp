@@ -8,6 +8,7 @@
 #include "shader.hpp"
 #include "../scripting/system_variable.hpp"
 
+#include <numbers>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -17,7 +18,7 @@ namespace lu::graphics {
 
     pbr_filter_processor::pbr_filter_processor() {
         m_environ_cube.emplace("/engine_assets/textures/hdr/gcanyon_cube.ktx");
-        //generate_irradiance_cube();
+        generate_irradiance_cube();
         generate_brdf_lookup_table();
     }
 
