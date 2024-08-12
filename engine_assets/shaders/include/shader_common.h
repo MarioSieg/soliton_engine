@@ -121,6 +121,9 @@ float g_geometry_schlick_ggx(const float dotNL, const float dotNV, const float r
 vec3 fresnel_schlick(const float cos_theta, const vec3 F0) {
     return F0 + (1.0 - F0) * pow(1.0 - cos_theta, 5.0);
 }
+vec3 fresnel_schlick_roughness(const float cosTheta, const vec3 F0, const float roughness){
+    return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
+}
 
 vec3 pbr_specular_contrib(
     const vec3 albedo,
