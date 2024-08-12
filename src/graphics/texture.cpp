@@ -42,11 +42,9 @@ namespace lu::graphics {
         m_approx_byte_size = sizeof(*this);
         m_allocator = vkb::dvc().get_allocator();
 
-        using enum texture_descriptor::mipmap_creation_mode;
-
         switch (desc.mipmap_mode) {
-            case present_in_data: passert(data.has_value()); break;
-            case generate:
+            case texture_descriptor::mipmap_creation_mode::present_in_data: passert(data.has_value()); break;
+            case texture_descriptor::mipmap_creation_mode::generate:
                 if (m_desc.miplevel_count <= 1)
                     m_desc.miplevel_count = get_mip_count(m_desc.width, m_desc.height);
             break;
@@ -90,6 +88,7 @@ namespace lu::graphics {
             passert(data->data != nullptr && data->size != 0);
             m_buf_size = data->size;
             m_approx_byte_size += m_buf_size;
+
             vkb::command_buffer copy_cmd {vk::QueueFlagBits::eTransfer};
             copy_cmd.begin();
 
@@ -114,15 +113,14 @@ namespace lu::graphics {
 
             upload(0, 0, data->data, data->size, data->mip_copy_regions, vk::ImageLayout::eTransferDstOptimal);
 
-            if (m_desc.mipmap_mode != no_mips && m_desc.miplevel_count > 1) {
-                const bool transfer_only = m_desc.mipmap_mode == present_in_data; // if mips were loaded from file (! generated), we just copy them
-                generate_mips(transfer_only);
+            if (m_desc.mipmap_mode == texture_descriptor::mipmap_creation_mode::generate && m_desc.miplevel_count > 1) {
+                generate_mips();
             }
         }
 
         // image view:
         vk::ImageViewCreateInfo image_view_ci {};
-        image_view_ci.viewType = (m_desc.flags & vk::ImageCreateFlagBits::eCubeCompatible) ? vk::ImageViewType::eCube : vk::ImageViewType::e2D;
+        image_view_ci.viewType = m_desc.flags & vk::ImageCreateFlagBits::eCubeCompatible ? vk::ImageViewType::eCube : vk::ImageViewType::e2D;
         image_view_ci.format = m_desc.format;
         image_view_ci.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
         image_view_ci.subresourceRange.baseMipLevel = 0;
@@ -172,7 +170,7 @@ namespace lu::graphics {
         subresource_range.aspectMask = vk::ImageAspectFlagBits::eColor;
         subresource_range.baseMipLevel = mip_level;
         subresource_range.levelCount = m_desc.miplevel_count;
-        subresource_range.layerCount = 1;
+        subresource_range.layerCount = m_desc.array_size;
         subresource_range.baseArrayLayer = array_idx;
 
         vkb::command_buffer copy_cmd {vk::QueueFlagBits::eTransfer};
@@ -207,7 +205,6 @@ namespace lu::graphics {
     }
 
     auto texture::generate_mips(
-        const bool transfer_only,
         const vk::ImageLayout src_layout,
         const vk::ImageLayout dst_layout,
         const vk::ImageAspectFlags aspect_mask,
@@ -253,42 +250,40 @@ namespace lu::graphics {
                         subresource_range
                     );
                 }
-                if (!transfer_only) { // If we're only doing a transfer, we don't need to blit. TODO: refractor
-                    vk::ImageBlit blit {};
-                    blit.srcOffsets[0] = vk::Offset3D { 0, 0, 0 };
-                    blit.srcOffsets[1] = vk::Offset3D { static_cast<std::int32_t>(mip_w), static_cast<std::int32_t>(mip_h), 1 };
-                    blit.srcSubresource.aspectMask = aspect_mask;
-                    blit.srcSubresource.mipLevel = j - 1;
-                    blit.srcSubresource.baseArrayLayer = i;
-                    blit.srcSubresource.layerCount = 1;
-                    blit.dstOffsets[0] = vk::Offset3D { 0, 0, 0 };
-                    blit.dstOffsets[1] = vk::Offset3D {
-                        static_cast<std::int32_t>(mip_w > 1 ? mip_w >> 1 : 1),
-                        static_cast<std::int32_t>(mip_h > 1 ? mip_h >> 1 : 1),
-                        1
-                    };
-                    blit.dstSubresource.aspectMask = aspect_mask;
-                    blit.dstSubresource.mipLevel = j;
-                    blit.dstSubresource.baseArrayLayer = i;
-                    blit.dstSubresource.layerCount = 1;
-                    (*blit_cmd).blitImage(
-                        m_image,
-                        vk::ImageLayout::eTransferSrcOptimal,
-                        m_image,
-                        vk::ImageLayout::eTransferDstOptimal,
-                        1,
-                        &blit,
-                        filter
-                    );
-                }
+                vk::ImageBlit blit {};
+                blit.srcOffsets[0] = vk::Offset3D { 0, 0, 0 };
+                blit.srcOffsets[1] = vk::Offset3D { static_cast<std::int32_t>(mip_w), static_cast<std::int32_t>(mip_h), 1 };
+                blit.srcSubresource.aspectMask = aspect_mask;
+                blit.srcSubresource.mipLevel = j - 1;
+                blit.srcSubresource.baseArrayLayer = i;
+                blit.srcSubresource.layerCount = 1;
+                blit.dstOffsets[0] = vk::Offset3D {};
+                blit.dstOffsets[1] = vk::Offset3D {
+                    static_cast<std::int32_t>(mip_w > 1 ? mip_w >> 1 : 1),
+                    static_cast<std::int32_t>(mip_h > 1 ? mip_h >> 1 : 1),
+                    1
+                };
+                blit.dstSubresource.aspectMask = aspect_mask;
+                blit.dstSubresource.mipLevel = j;
+                blit.dstSubresource.baseArrayLayer = i;
+                blit.dstSubresource.layerCount = 1;
+                (*blit_cmd).blitImage(
+                    m_image,
+                    vk::ImageLayout::eTransferSrcOptimal,
+                    m_image,
+                    vk::ImageLayout::eTransferDstOptimal,
+                    1,
+                    &blit,
+                    filter
+                );
                 blit_cmd.set_image_layout_barrier(
                     m_image,
                     vk::ImageLayout::eTransferSrcOptimal,
                     dst_layout,
                     subresource_range
                 );
-                mip_w >>= !!(mip_w > 1);
-                mip_h >>= !!(mip_h > 1);
+                mip_w >>= mip_w > 1;
+                mip_h >>= mip_h > 1;
             }
         }
 
@@ -302,7 +297,7 @@ namespace lu::graphics {
 
         blit_cmd.end();
         blit_cmd.flush();
-        log_info("{} mip-chain with {} maps", transfer_only ? "Loaded" : "Generated", m_desc.miplevel_count);
+        log_info("Mipmap-chain with {} maps", m_desc.miplevel_count);
     }
 
     auto texture::create_sampler(

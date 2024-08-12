@@ -305,7 +305,7 @@ namespace lu::graphics {
             data.mip_copy_regions.emplace_back(region);
         };
         if (desc.is_cubemap)
-            for (std::uint32_t face = 0; face < 6; ++face)
+            for (std::uint32_t face = 0; face < desc.array_size; ++face)
                 for (std::uint32_t i = 0; i < desc.miplevel_count; ++i)
                     fetch.operator()<true>(i, face);
         else
@@ -358,8 +358,8 @@ namespace lu::graphics {
             .height = image->m_height,
             .depth = image->m_depth,
             .miplevel_count = image->m_numMips <= 1 ? texture::get_mip_count(image->m_width, image->m_height) : image->m_numMips,
-            .mipmap_mode = image->m_numMips <= 1 ? texture_descriptor::mipmap_creation_mode::generate : texture_descriptor::mipmap_creation_mode::present_in_data,
-            .array_size = is_cubemap ? static_cast<std::uint32_t>(image->m_numMips) : image->m_numLayers,
+            .mipmap_mode = !is_cubemap && image->m_numMips <= 1 ? texture_descriptor::mipmap_creation_mode::generate : texture_descriptor::mipmap_creation_mode::present_in_data,
+            .array_size = is_cubemap ? 6u : image->m_numLayers,
             .format = format,
             .memory_usage = VMA_MEMORY_USAGE_GPU_ONLY,
             .usage = k_def_usage,
