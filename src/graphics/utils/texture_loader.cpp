@@ -282,7 +282,10 @@ namespace lu::graphics {
         const texture_descriptor& desc,
         texture_data_supplier& data
     ) -> void {
-        data.mip_copy_regions.reserve(desc.miplevel_count);
+        const std::uint32_t n =
+            desc.mipmap_mode == texture_descriptor::mipmap_creation_mode::present_in_data
+            ? desc.miplevel_count : 1;
+        data.mip_copy_regions.reserve(n);
         std::size_t offset = 0;
         const auto fetch = [&]<const bool is_cube>(const std::uint32_t lod, const std::uint32_t face) -> void {
             bimg::ImageMip mip {};
@@ -306,10 +309,10 @@ namespace lu::graphics {
         };
         if (desc.is_cubemap)
             for (std::uint32_t face = 0; face < desc.array_size; ++face)
-                for (std::uint32_t i = 0; i < desc.miplevel_count; ++i)
+                for (std::uint32_t i = 0; i < n; ++i)
                     fetch.operator()<true>(i, face);
         else
-            for (std::uint32_t i = 0; i < desc.miplevel_count; ++i)
+            for (std::uint32_t i = 0; i < n; ++i)
                 fetch.operator()<false>(i, 0);
     }
 

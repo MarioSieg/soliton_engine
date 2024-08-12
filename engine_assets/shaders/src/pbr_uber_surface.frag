@@ -48,6 +48,6 @@ void main() {
   vec3 Lo = vec3(0.0);
   vec3 L = normalize(vec3(0.0) - inWorldPos);
   Lo += pbr_specular_contrib(albedo.rgb, L, V, N, F0, metallic, roughness);
-  outFragColor.rgb = sus.rgb;
+  outFragColor.rgb = albedo.rgb;
   outFragColor.a = albedo.a;
 }
