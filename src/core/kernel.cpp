@@ -50,7 +50,7 @@ namespace lu {
         eastl::vector<std::shared_ptr<spdlog::sinks::sink>> sinks {
             std::make_shared<buffered_sink>(k_log_queue_size),
             std::make_shared<spdlog::sinks::basic_file_sink_mt>(
-            fmt::format("{}/session {:%d-%m-%Y  %H-%M-%S}/{}.log", kernel::log_dir.c_str(), time, name.c_str())),
+            fmt::format("{}/session {:%d-%m-%Y  %H-%M-%S}/{}.log", kernel::log_dir, time, name)),
         };
         if (print_stdout) {
             sinks.emplace_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
@@ -131,7 +131,7 @@ static auto redirect_io() -> void {
         spdlog::set_default_logger(engine_ogger);
 
         log_info("-- ENGINE KERNEL BOOT --");
-        log_info("LunamEngine v.{}.{}", major_version(k_lunam_engine_v), minor_version(k_lunam_engine_v));
+        log_info("LunamEngine v.{}.{}", major_version(k_lunam_engine_version), minor_version(k_lunam_engine_version));
         log_info("Copyright (c) 2022-2024 Mario \"Neo\" Sieg. All Rights Reserved.");
         log_info("Booting Engine Kernel...");
         log_info("Build date: {}", __DATE__);
@@ -148,8 +148,8 @@ static auto redirect_io() -> void {
         for (int i = 0; $environ[i] != nullptr; ++i) {
             log_info("  {}: {}", i, $environ[i]);
         }
-        log_info("Engine config dir: {}", config_dir.c_str());
-        log_info("Engine log dir: {}", log_dir.c_str());
+        log_info("Engine config dir: {}", config_dir);
+        log_info("Engine log dir: {}", log_dir);
 
         assetmgr::init();
 

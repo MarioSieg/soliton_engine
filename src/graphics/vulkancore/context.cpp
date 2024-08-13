@@ -3,22 +3,29 @@
 #include "context.hpp"
 #include "../shader.hpp"
 
-#include "../../scripting/convar.hpp"
+#include "../../scripting/system_variable.hpp"
 
 namespace lu::vkb {
-    static convar<bool> cv_enable_vulkan_validation_layers {
-        "Renderer.enableVulkanValidationLayers",
-        {{false}},
-        convar_flags::read_only
+    static const system_variable<bool> cv_enable_vulkan_validation_layers {
+        "renderer.enable_vulkan_validation_layers",
+        {false}
     };
-    static convar<bool> cv_enable_vsync {
-        "Renderer.enableVSync",
-        {{false}},
-        convar_flags::read_only
+    static const system_variable<bool> cv_enable_vsync {
+        "renderer.force_vsync",
+        {false}
     };
 
-    context::context(GLFWwindow* window) : m_window{window} {
+    context::context(const context_desc& desc) : m_window{desc.window}, m_concurrent_frames{desc.concurrent_frames} {
         passert(m_window != nullptr);
+
+        switch (desc.msaa_samples) {
+            case 0: m_msaa_samples = vk::SampleCountFlagBits::e1; break;
+            case 2: m_msaa_samples = vk::SampleCountFlagBits::e2; break;
+            case 4: m_msaa_samples = vk::SampleCountFlagBits::e4; break;
+            case 8: m_msaa_samples = vk::SampleCountFlagBits::e8; break;
+            default: panic("Invalid MSAA sample count: {}", desc.msaa_samples);
+        }
+
         boot_vulkan_core();
         create_command_pools();
         create_command_buffers();
@@ -28,43 +35,37 @@ namespace lu::vkb {
         setup_render_pass();
         setup_frame_buffer();
         create_pipeline_cache();
+
+        m_descriptor_allocator.emplace();
+        m_descriptor_layout_cache.emplace();
+        m_shutdown_deletion_queue.push([this] {
+            m_descriptor_allocator.reset();
+            m_descriptor_layout_cache.reset();
+        });
     }
 
     context::~context() {
-        vkcheck(m_device->get_logical_device().waitIdle());
-
         // Dump VMA Infos
-#if 0
         char* vma_stats_string = nullptr;
         vmaBuildStatsString(m_device->get_allocator(), &vma_stats_string, true);
-        spdlog::info("VMA Stats:\n{}", vma_stats_string);
+        std::stringstream ss;
+        ss.str(vma_stats_string);
+        log_info("-------- VMA Stats --------");
+        for (std::string line; std::getline(ss, line); ) {
+            log_info("{}", line);
+        }
         vmaFreeStatsString(m_device->get_allocator(), vma_stats_string);
-#endif
 
-        m_device->get_logical_device().destroyDescriptorPool(m_imgui_descriptor_pool, vkb::get_alloc());
-        m_device->get_logical_device().destroyPipelineCache(m_pipeline_cache, vkb::get_alloc());
-        m_device->get_logical_device().destroyRenderPass(m_ui_render_pass, vkb::get_alloc());
-        m_device->get_logical_device().destroyRenderPass(m_scene_render_pass, vkb::get_alloc());
-
-        destroy_depth_stencil();
-        destroy_msaa_target();
-        destroy_frame_buffer();
-
-        destroy_command_buffers();
-
-        m_device->get_logical_device().destroyCommandPool(m_transfer_command_pool, vkb::get_alloc());
-        m_device->get_logical_device().destroyCommandPool(m_compute_command_pool, vkb::get_alloc());
-        m_device->get_logical_device().destroyCommandPool(m_graphics_command_pool, vkb::get_alloc());
-
-        destroy_sync_prims();
-
-        m_swapchain.reset();
-        m_device.reset();
+        vkcheck(m_device->get_logical_device().waitIdle());
+        m_shutdown_deletion_queue.flush();
     }
 
     // Set clear values for all framebuffer attachments with loadOp set to clear
     // We use two attachments (color and depth) that are cleared at the start of the subpass and as such we need to set clear values for both
-    auto context::begin_frame(const DirectX::XMFLOAT4A& clear_color, vk::CommandBufferInheritanceInfo* out_inheritance_info) -> vk::CommandBuffer {
+    auto context::begin_frame(
+        const DirectX::XMFLOAT4A& clear_color,
+        vk::CommandBufferInheritanceInfo* out_inheritance_info
+    ) -> eastl::optional<command_buffer> {
         m_clear_values[0].color = eastl::bit_cast<vk::ClearColorValue>(clear_color);
         m_clear_values[1].color = eastl::bit_cast<vk::ClearColorValue>(clear_color);
         m_clear_values[2].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
@@ -79,7 +80,7 @@ namespace lu::vkb {
         if (result == vk::Result::eErrorOutOfDateKHR || result == vk::Result::eSuboptimalKHR) [[unlikely]] {
             if (result == vk::Result::eErrorOutOfDateKHR) {
                 on_resize();
-                return nullptr; // Skip rendering this frame
+                return eastl::nullopt; // Skip rendering this frame
             }
         } else {
             vkcheck(result);
@@ -92,19 +93,15 @@ namespace lu::vkb {
         }
 
         const vk::CommandBuffer cmd_buf = m_command_buffers[m_current_frame];
-        vkcheck(cmd_buf.reset({}));
-        constexpr vk::CommandBufferBeginInfo command_buffer_begin_info {};
-        vkcheck(cmd_buf.begin(&command_buffer_begin_info));
-
-        return cmd_buf;
+        return command_buffer{m_graphics_command_pool, cmd_buf, dvc().get_graphics_queue(), vk::QueueFlagBits::eGraphics};
     }
 
-    auto context::end_frame(const vk::CommandBuffer cmd) -> void {
+    auto context::end_frame(command_buffer& cmd) -> void {
         vk::PipelineStageFlags wait_stage_mask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
         vk::SubmitInfo submit_info {};
         submit_info.pWaitDstStageMask = &wait_stage_mask;
         submit_info.commandBufferCount = 1;
-        submit_info.pCommandBuffers = &cmd;
+        submit_info.pCommandBuffers = &*cmd;
         // Semaphore to wait upon before the submitted command buffer starts executing
         submit_info.waitSemaphoreCount = 1;
         submit_info.pWaitSemaphores = &m_semaphores.present_complete[m_current_frame];
@@ -113,7 +110,7 @@ namespace lu::vkb {
         submit_info.pSignalSemaphores = &m_semaphores.render_complete[m_current_frame];
 
         // Submit to the graphics queue passing a wait fence
-        vkcheck(m_device->get_graphics_queue().submit(1, &submit_info, m_wait_fences[m_current_frame]));
+        vkcheck(cmd.queue().submit(1, &submit_info, m_wait_fences[m_current_frame]));
 
         // Present the current frame buffer to the swap chain
         // Pass the semaphore signaled by the command buffer submission from the submit info as the wait semaphore for swap chain presentation
@@ -132,7 +129,7 @@ namespace lu::vkb {
             vkcheck(result);
         }
 
-        m_current_frame = (m_current_frame + 1) % k_max_concurrent_frames;
+        m_current_frame = (m_current_frame + 1) % m_concurrent_frames; // Advance to the next frame
     }
 
     auto context::on_resize() -> void {
@@ -160,6 +157,7 @@ namespace lu::vkb {
         destroy_sync_prims();
         create_sync_prims();
 
+        m_shutdown_deletion_queue.flush();
         vkcheck(m_device->get_logical_device().waitIdle());
     }
 
@@ -168,17 +166,30 @@ namespace lu::vkb {
         m_swapchain.emplace(m_device->get_instance(), m_device->get_physical_device(), m_device->get_logical_device());
         m_swapchain->init_surface(m_window);
         recreate_swapchain();
+        m_shutdown_deletion_queue.push([this] {
+            m_swapchain.reset();
+            m_device.reset();
+        });
     }
 
     auto context::create_sync_prims() -> void {
         constexpr vk::SemaphoreCreateInfo semaphore_ci {};
         vk::FenceCreateInfo fence_ci {};
         fence_ci.flags = vk::FenceCreateFlagBits::eSignaled;
-        for (std::uint32_t i = 0; i < k_max_concurrent_frames; ++i) {
+
+        m_semaphores.present_complete.resize(m_concurrent_frames);
+        m_semaphores.render_complete.resize(m_concurrent_frames);
+        m_wait_fences.resize(m_concurrent_frames);
+
+        for (std::uint32_t i = 0; i < m_concurrent_frames; ++i) {
             vkcheck(m_device->get_logical_device().createSemaphore(&semaphore_ci, get_alloc(), &m_semaphores.present_complete[i]));
             vkcheck(m_device->get_logical_device().createSemaphore(&semaphore_ci, get_alloc(), &m_semaphores.render_complete[i]));
             vkcheck(m_device->get_logical_device().createFence(&fence_ci, get_alloc(), &m_wait_fences[i]));
         }
+
+        m_shutdown_deletion_queue.push([this] {
+            destroy_sync_prims();
+        });
     }
 
     auto context::create_command_pools() -> void {
@@ -191,14 +202,25 @@ namespace lu::vkb {
         create_cp(m_device->get_graphics_queue_idx(), m_graphics_command_pool);
         create_cp(m_device->get_compute_queue_idx(), m_compute_command_pool);
         create_cp(m_device->get_transfer_queue_idx(), m_transfer_command_pool);
+        m_shutdown_deletion_queue.push([this] {
+            m_device->get_logical_device().destroyCommandPool(m_graphics_command_pool, vkb::get_alloc());
+            m_device->get_logical_device().destroyCommandPool(m_compute_command_pool, vkb::get_alloc());
+            m_device->get_logical_device().destroyCommandPool(m_transfer_command_pool, vkb::get_alloc());
+        });
     }
 
     auto context::create_command_buffers() -> void {
+        m_command_buffers.resize(m_concurrent_frames);
+
         vk::CommandBufferAllocateInfo command_buffer_allocate_info {};
         command_buffer_allocate_info.commandPool = m_graphics_command_pool;
         command_buffer_allocate_info.level = vk::CommandBufferLevel::ePrimary;
         command_buffer_allocate_info.commandBufferCount = static_cast<std::uint32_t>(m_command_buffers.size());
         vkcheck(m_device->get_logical_device().allocateCommandBuffers(&command_buffer_allocate_info, m_command_buffers.data()));
+
+        m_shutdown_deletion_queue.push([this] {
+            destroy_command_buffers();
+        });
     }
 
     auto context::setup_depth_stencil() -> void {
@@ -245,6 +267,10 @@ namespace lu::vkb {
             image_view_ci.subresourceRange.aspectMask |= vk::ImageAspectFlagBits::eStencil;
         }
         vkcheck(m_device->get_logical_device().createImageView(&image_view_ci, get_alloc(), &m_depth_stencil.view));
+
+        m_shutdown_deletion_queue.push([this] {
+            destroy_depth_stencil();
+        });
     }
 
     // Render pass setup
@@ -256,7 +282,7 @@ namespace lu::vkb {
 
         // Multisampled attachment that we render to
         attachments[0].format = m_swapchain->get_format();
-        attachments[0].samples = k_msaa_sample_count;
+        attachments[0].samples = m_msaa_samples;
         attachments[0].loadOp = vk::AttachmentLoadOp::eClear;
         attachments[0].storeOp = vk::AttachmentStoreOp::eDontCare;
         attachments[0].stencilLoadOp = vk::AttachmentLoadOp::eDontCare;
@@ -277,7 +303,7 @@ namespace lu::vkb {
 
         // Multisampled depth attachment we render to
         attachments[2].format = m_device->get_depth_format();
-        attachments[2].samples = k_msaa_sample_count;
+        attachments[2].samples = m_msaa_samples;
         attachments[2].loadOp = vk::AttachmentLoadOp::eClear;
         attachments[2].storeOp = vk::AttachmentStoreOp::eDontCare;
         attachments[2].stencilLoadOp = vk::AttachmentLoadOp::eDontCare;
@@ -335,6 +361,11 @@ namespace lu::vkb {
 
         vkcheck(m_device->get_logical_device().createRenderPass(&render_pass_ci, get_alloc(), &m_scene_render_pass));
         vkcheck(m_device->get_logical_device().createRenderPass(&render_pass_ci, get_alloc(), &m_ui_render_pass));
+
+        m_shutdown_deletion_queue.push([this] {
+            m_device->get_logical_device().destroyRenderPass(m_scene_render_pass, vkb::get_alloc());
+            m_device->get_logical_device().destroyRenderPass(m_ui_render_pass, vkb::get_alloc());
+        });
     }
 
     auto context::setup_frame_buffer() -> void {
@@ -355,6 +386,10 @@ namespace lu::vkb {
             framebuffer_ci.layers = 1;
             vkcheck(m_device->get_logical_device().createFramebuffer(&framebuffer_ci, get_alloc(), &m_framebuffers[i]));
         }
+
+        m_shutdown_deletion_queue.push([this] {
+            destroy_frame_buffer();
+        });
     }
 
     auto context::create_pipeline_cache() -> void {
@@ -377,7 +412,7 @@ namespace lu::vkb {
         image_ci.extent.depth = 1;
         image_ci.mipLevels = 1;
         image_ci.arrayLayers = 1;
-        image_ci.samples = k_msaa_sample_count;
+        image_ci.samples = m_msaa_samples;
         image_ci.tiling = vk::ImageTiling::eOptimal;
         image_ci.sharingMode = vk::SharingMode::eExclusive;
         image_ci.initialLayout = vk::ImageLayout::eUndefined;
@@ -431,6 +466,10 @@ namespace lu::vkb {
         }
 
         vkcheck(m_device->get_logical_device().createImageView(&image_view_ci, get_alloc(), &m_msaa_target.depth.view));
+
+        m_shutdown_deletion_queue.push([this] {
+            destroy_msaa_target();
+        });
     }
 
     auto context::destroy_depth_stencil() const -> void {
@@ -452,7 +491,7 @@ namespace lu::vkb {
     }
 
     auto context::destroy_command_buffers() const -> void {
-        m_device->get_logical_device().freeCommandBuffers(m_graphics_command_pool, k_max_concurrent_frames, m_command_buffers.data());
+        m_device->get_logical_device().freeCommandBuffers(m_graphics_command_pool, m_concurrent_frames, m_command_buffers.data());
     }
 
     auto context::destroy_sync_prims() const -> void {
@@ -467,7 +506,7 @@ namespace lu::vkb {
         }
     }
 
-    auto context::begin_render_pass(vk::CommandBuffer cmd, vk::RenderPass pass, vk::SubpassContents contents) -> void {
+    auto context::begin_render_pass(command_buffer& cmd, vk::RenderPass pass, vk::SubpassContents contents) -> void {
         vk::RenderPassBeginInfo render_pass_begin_info {};
         render_pass_begin_info.renderPass = pass;
         render_pass_begin_info.framebuffer = m_framebuffers[m_image_index];
@@ -475,29 +514,25 @@ namespace lu::vkb {
         render_pass_begin_info.renderArea.extent.height = m_height;
         render_pass_begin_info.clearValueCount = static_cast<std::uint32_t>(m_clear_values.size());
         render_pass_begin_info.pClearValues = m_clear_values.data();
-        cmd.beginRenderPass(&render_pass_begin_info, contents);
+        (*cmd).beginRenderPass(&render_pass_begin_info, contents);
     }
 
-    auto context::end_render_pass(vk::CommandBuffer cmd) -> void {
-        cmd.endRenderPass();
+    auto context::end_render_pass(command_buffer& cmd) -> void {
+        (*cmd).endRenderPass();
     }
 
     static constinit std::atomic_bool s_init;
 
-    auto context::init(GLFWwindow* const window) -> void {
-        if (s_init.load(std::memory_order_relaxed)) {
-            return;
-        }
-        passert(window != nullptr);
-        s_instance = eastl::make_unique<context>(window);
-        s_init.store(true, std::memory_order_relaxed);
+    auto context::create(const context_desc& desc) -> void {
+        if (s_init.load()) return;
+        s_instance = new context{desc};
+        s_init.store(true);
     }
 
     auto context::shutdown() -> void {
-        if (!s_init.load(std::memory_order_relaxed)) {
-            return;
-        }
-        s_instance.reset();
-        s_init.store(false, std::memory_order_relaxed);
+        if (!s_init.load()) return;
+        delete s_instance;
+        s_instance = nullptr;
+        s_init.store(false);
     }
 }

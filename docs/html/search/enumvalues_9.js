@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['transient_0',['transient',['../structlu_1_1com_1_1entity__flags.html#a00bef51a1e4f55fad9950bb2504a700ba432686b056d2405043ed51136cf304ca',1,'lu::com::entity_flags']]]
+  ['vertex_0',['vertex',['../namespacelu_1_1graphics.html#afe291bd53b04c2209b1d194ccaa6d70da2b5bc093b09bd81f51de433bde9d202a',1,'lu::graphics']]]
 ];

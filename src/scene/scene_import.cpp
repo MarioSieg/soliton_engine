@@ -17,7 +17,7 @@
 
 namespace lu {
     auto scene::import_from_file(const eastl::string& path, const float scale, const std::uint32_t load_flags) -> void {
-        log_info("Importing scene from file '{}'", path.c_str());
+        log_info("Importing scene from file '{}'", path);
 
         Assimp::DefaultLogger::create("", Assimp::Logger::NORMAL);
         Assimp::DefaultLogger::get()->attachStream(new graphics::assimp_logger {}, Assimp::Logger::Info | Assimp::Logger::Err | Assimp::Logger::Warn);
@@ -25,18 +25,18 @@ namespace lu {
         const auto start = eastl::chrono::high_resolution_clock::now();
 
         Assimp::Importer importer {};
-        importer.SetIOHandler(new graphics::lunam_assimp_io_system {});
+        //importer.SetIOHandler(new graphics::lunam_assimp_io_system {});
         passert(importer.ValidateFlags(load_flags));
         const aiScene* scene = importer.ReadFile(path.c_str(), load_flags);
         if (!scene || !scene->mNumMeshes) [[unlikely]] {
-            panic("Failed to load scene from file '{}': {}", path.c_str(), importer.GetErrorString());
+            panic("Failed to load scene from file '{}': {}", path, importer.GetErrorString());
         }
 
-        eastl::string asset_root = std::filesystem::path {path.c_str()}.parent_path().string().c_str();
+        eastl::string asset_root = std::filesystem::path{path.c_str()}.parent_path().string().c_str();
         asset_root += "/";
 
         auto* missing_material = get_asset_registry<graphics::material>().load_from_memory();
-        missing_material->albedo_map = graphics::material::get_error_texture();
+        missing_material->albedo_map = const_cast<graphics::texture*>(&graphics::material::get_static_resources().error_texture);
         missing_material->flush_property_updates();
 
         ankerl::unordered_dense::map<eastl::string, std::uint32_t> resolved_names {};
@@ -81,9 +81,15 @@ namespace lu {
                         if (!mat->GetTextureCount(*textureType)) [[unlikely]] continue;
                         aiString name {};
                         mat->Get(AI_MATKEY_TEXTURE(*textureType, 0), name);
-                        eastl::string tex_path = "/";
+                        std::filesystem::path tex_path = "/";
                         tex_path += std::filesystem::relative((asset_root + name.C_Str()).c_str()).string().c_str();
-                        return get_asset_registry<graphics::texture>().load(std::move(tex_path));
+                        if (!tex_path.has_extension()) {
+                            return nullptr;
+                        }
+                        eastl::string path = tex_path.c_str();
+                        // replace backslashes with forward slashes
+                        eastl::replace(path.begin(), path.end(), '\\', '/');
+                        return get_asset_registry<graphics::texture>().load(std::move(path));
                     }
                     return nullptr;
                 };
@@ -92,7 +98,8 @@ namespace lu {
                 material->albedo_map = load_tex({aiTextureType_DIFFUSE, aiTextureType_BASE_COLOR});
                 material->normal_map = load_tex({aiTextureType_NORMALS, aiTextureType_NORMAL_CAMERA});
                 material->metallic_roughness_map = load_tex({aiTextureType_SPECULAR, aiTextureType_METALNESS, aiTextureType_DIFFUSE_ROUGHNESS, aiTextureType_SHININESS});
-                material->ambient_occlusion_map = load_tex({aiTextureType_AMBIENT_OCCLUSION});
+                material->height_map = load_tex({aiTextureType_HEIGHT, aiTextureType_DISPLACEMENT});
+                material->ambient_occlusion_map = load_tex({aiTextureType_AMBIENT_OCCLUSION, aiTextureType_AMBIENT, aiTextureType_LIGHTMAP});
                 material->flush_property_updates();
 
                 renderer->materials.emplace_back(material);
@@ -109,6 +116,6 @@ namespace lu {
 
         Assimp::DefaultLogger::kill();
 
-        log_info("Imported scene from file '{}', {} nodes in {:.03}s", path.c_str(), num_nodes, eastl::chrono::duration_cast<eastl::chrono::duration<double>>(eastl::chrono::high_resolution_clock::now() - start).count());
+        log_info("Imported scene from file '{}', {} nodes in {:.03}s", path, num_nodes, eastl::chrono::duration_cast<eastl::chrono::duration<double>>(eastl::chrono::high_resolution_clock::now() - start).count());
     }
 }

@@ -11,6 +11,6 @@ var texture_8cpp =
     [ "k_enable_simd_cvt", "texture_8cpp.html#ac43407c30cc9dabf85ae007221161236", null ],
     [ "k_fallback_format", "texture_8cpp.html#a9e57af2a5fe8eb55ab5ab7ba2b16f612", null ],
     [ "k_natural_align", "texture_8cpp.html#a9952cfa4298c4f895261c04d6eaf832f", null ],
-    [ "k_texture_format_map", "texture_8cpp.html#a926dafca66dff05f5755975a8168a6a2", null ],
+    [ "k_texture_format_map", "texture_8cpp.html#a3ec31bf5349202e04e95f8a23720ad28", null ],
     [ "s_texture_allocator", "texture_8cpp.html#a9d91dcb484144f7df8c78b6735fe3c86", null ]
 ];

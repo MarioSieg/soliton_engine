@@ -23,7 +23,7 @@ namespace lu {
         inline auto operator () (Args&&... args) noexcept(std::is_nothrow_invocable_v<T, Args...>) -> void {
             ++m_invocations;
             for (auto&& f : m_delegates)
-                std::invoke(f, std::forward<Args>(args)...);
+                eastl::invoke(f, std::forward<Args>(args)...);
         }
 
         inline auto clear() noexcept -> void {

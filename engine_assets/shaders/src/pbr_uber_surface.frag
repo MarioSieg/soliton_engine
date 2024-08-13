@@ -3,32 +3,146 @@
 #version 450
 
 #include "shader_common.h"
+#include "filmic_tonemapper.h"
 
-layout (set = 0, binding = 0) uniform sampler2D samplerAlbedoMap;
-layout (set = 0, binding = 1) uniform sampler2D samplerNormalMap;
-layout (set = 0, binding = 2) uniform sampler2D samplerRoughness;
-layout (set = 0, binding = 3) uniform sampler2D samplerAO;
+layout (set = 0, binding = 0) uniform sampler2D sAlbedoMap;
+layout (set = 0, binding = 1) uniform sampler2D sNormalMap;
+layout (set = 0, binding = 2) uniform sampler2D sRoughnessMap;
+layout (set = 0, binding = 3) uniform sampler2D sHeightMap;
+layout (set = 0, binding = 4) uniform sampler2D sOcclusionMap;
 
-layout (location = 0) in vec2 outUV;
-layout (location = 1) in vec3 outNormal;
-layout (location = 2) in vec3 outTangent;
-layout (location = 3) in vec3 outBiTangent;
-layout (location = 4) in mat3 outTBN;
+layout (set = 1, binding = 0) uniform sampler2D brdf_lut;
+layout (set = 1, binding = 1) uniform samplerCube irradiance_cube;
+layout (set = 1, binding = 2) uniform samplerCube prefilter_cube;
+
+layout (location = 0) in vec3 inWorldPos;
+layout (location = 1) in vec2 inUV;
+layout (location = 2) in vec3 inNormal;
+layout (location = 3) in vec3 inTangent;
+layout (location = 4) in vec3 inBiTangent;
+layout (location = 5) in vec3 inTangentViewPos;
+layout (location = 6) in vec3 inTangentFragPos;
+layout (location = 7) in mat3 inTBN;
 
 layout (location = 0) out vec4 outFragColor;
 
 layout (push_constant, std430) uniform PushConstants { // TODO: move to per frame cb
-  layout(offset = 128) float time;
-} pushConstants;
+     layout(offset = 208) vec4 camera_pos; // xyz: camera position, w: time
+} consts;
+
+const float MAX_REFLECTION_LOD = 9.0;
+
+const float NUM_LAYERS = 48.0;
+const float HEIGHT_SCALE = 0.1;
+
+vec2 parallaxOcclusionMapping(vec2 uv, vec3 viewDir) {
+  float layerDepth = 1.0 / NUM_LAYERS;
+  float currLayerDepth = 0.0;
+  vec2 deltaUV = viewDir.xy * HEIGHT_SCALE / (viewDir.z * NUM_LAYERS);
+  vec2 currUV = uv;
+  float height = 1.0 - textureLod(sHeightMap, currUV, 0.0).a;
+  for (int i = 0; i < NUM_LAYERS; ++i) {
+    currLayerDepth += layerDepth;
+    currUV -= deltaUV;
+    height = 1.0 - textureLod(sHeightMap, currUV, 0.0).a;
+    if (height < currLayerDepth) {
+      break;
+    }
+  }
+  vec2 prevUV = currUV + deltaUV;
+  float nextDepth = height - currLayerDepth;
+  float prevDepth = 1.0 - textureLod(sHeightMap, prevUV, 0.0).a - currLayerDepth + layerDepth;
+  return mix(currUV, prevUV, nextDepth / (nextDepth - prevDepth));
+}
+
+vec3 calculateNormal(vec2 uv)
+{
+  vec3 tangentNormal = texture(sNormalMap, uv).xyz * 2.0 - 1.0;
+  vec3 N = normalize(inNormal);
+  vec3 T = normalize(inTangent.xyz);
+  vec3 B = normalize(cross(N, T));
+  mat3 TBN = mat3(T, B, N);
+  return normalize(TBN * tangentNormal);
+}
+
 
 void main() {
-  const vec4 tex_color = texture(samplerAlbedoMap, outUV);
-  const vec3 normal = normal_map(outTBN, texture(samplerNormalMap, outUV).xyz);
-  vec3 final = diffuse_lambert_lit(tex_color.rgb, normal);
-  //vec3 final = tex_color;
-  final = color_saturation(final, 1.25);
-  final = gamma_correct(final);
-  final += vec3(film_noise(pushConstants.time*outUV)) * 0.05;
-  outFragColor.rgb = final;
-  outFragColor.a = tex_color.a;
+  //const vec3 VV = normalize(inTangentViewPos - inTangentFragPos);
+  //vec2 uv = parallaxOcclusionMapping(inUV, VV);
+
+  const vec2 uv = inUV;
+
+  const vec3 albedo = texture(sAlbedoMap, uv).rgb;
+  const vec2 metallic_roughness = texture(sRoughnessMap, uv).rg;
+  const float metallic = metallic_roughness.r;
+  const float roughness = metallic_roughness.g;
+  const float ao = texture(sOcclusionMap, inUV).r;
+
+  const vec3 V = normalize(inWorldPos - consts.camera_pos.xyz);
+  const vec3 N = normal_map(inTBN, texture(sNormalMap, uv).rgb);
+  const vec3 R = reflect(-V, N);
+
+  // of 0.04 and if it's a metal, use the albedo color as F0 (metallic workflow)
+  vec3 F0 = vec3(0.04);
+  F0 = mix(F0, albedo, metallic);
+
+  // reflectance equation
+  vec3 Lo = vec3(0.0);
+  {
+    // calculate per-light radiance
+    vec3 L = normalize(CB_PER_FRAME.sun_dir);
+    vec3 H = normalize(V + L);
+    vec3 radiance = CB_PER_FRAME.sun_color;
+
+    // Cook-Torrance BRDF
+    float NDF = DistributionGGX(N, H, roughness);
+    float G = GeometrySmith(N, V, L, roughness);
+    vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
+
+    vec3 numerator = NDF * G * F;
+    float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001; // + 0.0001 to prevent divide by zero
+    vec3 specular = numerator / denominator;
+
+    // kS is equal to Fresnel
+    vec3 kS = F;
+    // for energy conservation, the diffuse and specular light can't
+    // be above 1.0 (unless the surface emits light); to preserve this
+    // relationship the diffuse component (kD) should equal 1.0 - kS.
+    vec3 kD = vec3(1.0) - kS;
+    // multiply kD by the inverse metalness such that only non-metals
+    // have diffuse lighting, or a linear blend if partly metal (pure metals
+    // have no diffuse light).
+    kD *= 1.0 - metallic;
+
+    // scale light by NdotL
+    float NdotL = clamp(dot(N, L), 0.0, 1.0);
+
+    // add to outgoing radiance Lo
+    Lo = (kD * albedo / kPI + specular) * radiance * NdotL; // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
+  }
+
+  // ambient lighting (we now use IBL as the ambient term)
+  vec3 F = fresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
+
+  vec3 kS = F;
+  vec3 kD = 1.0 - kS;
+  kD *= 1.0 - metallic;
+
+  vec3 irradiance = texture(irradiance_cube, N).rgb;
+  vec3 diffuse = irradiance * albedo;
+
+  // sample both the pre-filter map and the BRDF lut and combine them together as per the Split-Sum approximation to get the IBL specular part.
+  vec3 prefilteredColor = textureLod(prefilter_cube, R, roughness * MAX_REFLECTION_LOD).rgb;
+  vec2 brdf = texture(brdf_lut, vec2(max(dot(N, V), 0.0), roughness)).rg;
+  vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
+
+  vec3 ambient = (kD * diffuse + specular) * ao;
+
+  vec3 color = ambient + Lo;
+
+  // Tone mapping
+  color = postToneMap(color);
+
+  outFragColor.rgb = color;
+  outFragColor.a = 1.0;
 }

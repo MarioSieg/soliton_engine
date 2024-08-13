@@ -4,7 +4,10 @@
 
 #include <DirectXMath.h>
 
+#include "../vulkancore/command_buffer.hpp"
 #include "../graphics_pipeline.hpp"
+#include "../pbr_filter_processor.hpp"
+#include "../temporal_blue_noise.hpp"
 #include "../../scene/components.hpp"
 
 namespace lu::graphics::pipelines {
@@ -14,40 +17,36 @@ namespace lu::graphics::pipelines {
         ~pbr_pipeline() override;
 
         struct push_constants_vs final {
+            DirectX::XMFLOAT4X4A model_matrix;
             DirectX::XMFLOAT4X4A model_view_proj;
             DirectX::XMFLOAT4X4A normal_matrix;
+            DirectX::XMFLOAT4 camera_pos;
         };
-        static_assert(sizeof(push_constants_vs) <= 128);
 
         struct push_constants_fs final {
-            float time;
+            DirectX::XMFLOAT4 data;
         };
-        static_assert(sizeof(push_constants_fs) <= 128);
 
-        // WARNING! RENDER THREAD LOCAL
-        HOTPROC auto XM_CALLCONV render_mesh(
-            vk::CommandBuffer cmd_buf,
-            vk::PipelineLayout layout,
-            const com::transform& transform,
-            const com::mesh_renderer& renderer,
-            const DirectX::BoundingFrustum& frustum,
-            DirectX::FXMMATRIX vp
-        ) const -> void;
+    private:
+        pbr_filter_processor m_pbr_filter_processor {};
+        temporal_blue_noise m_blue_noise {};
+        vk::DescriptorSetLayout m_pbr_descriptor_set_layout {};
+        vk::DescriptorSet m_pbr_descriptor_set {};
 
-    protected:
         virtual auto configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> void override;
         virtual auto configure_pipeline_layout(eastl::vector<vk::DescriptorSetLayout>& layouts, eastl::vector<vk::PushConstantRange>& ranges) -> void override;
         virtual auto configure_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> void override;
         virtual auto configure_multisampling(vk::PipelineMultisampleStateCreateInfo& cfg) -> void override;
 
-    private:
-        // Generate a BRDF integration map used as a look-up-table (stores roughness / NdotV)
-        auto generate_brdf_lut() -> void;
+        HOTPROC virtual auto render_single_mesh(
+            vkb::command_buffer& cmd,
+            const mesh& mesh,
+            const com::mesh_renderer& renderer,
+            DirectX::FXMMATRIX view_proj_mtx,
+            DirectX::CXMMATRIX model_mtx,
+            DirectX::CXMMATRIX view_mtx
+        ) const noexcept -> void final override;
 
-        struct {
-            vk::Image image {};
-            vk::ImageView m_image_view {};
-            vk::DeviceMemory memory {};
-        } m_brdf_lut {};
+        virtual auto on_bind(vkb::command_buffer& cmd) const -> void override;
     };
 }

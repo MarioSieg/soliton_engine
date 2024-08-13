@@ -87,7 +87,7 @@ namespace lu::graphics {
             status = accessor.load_bin_file(abs_path.c_str(), data);
         });
         if (!status) [[unlikely]] {
-            log_error("Failed to open file '{}'", abs_path.c_str());
+            log_error("Failed to open file '{}'", abs_path);
         }
         return status ? new lunam_io_stream{std::move(data)} : nullptr;
     }

@@ -5,74 +5,69 @@
 #include "../material.hpp"
 #include "../vulkancore/context.hpp"
 #include "../../core/kernel.hpp"
+#include "../graphics_subsystem.hpp"
 
 namespace lu::graphics::pipelines {
-    // WARNING! RENDER THREAD LOCAL
-    HOTPROC auto pbr_pipeline::render_mesh(
-        const vk::CommandBuffer cmd_buf,
-        const vk::PipelineLayout layout,
-        const com::transform& transform,
+    auto pbr_pipeline::render_single_mesh(     // WARNING! RENDER THREAD LOCAL
+        vkb::command_buffer& cmd,
+        const mesh& mesh,
         const com::mesh_renderer& renderer,
-        const DirectX::BoundingFrustum& frustum,
-        DirectX::FXMMATRIX vp
-    ) const -> void {
-        if (renderer.meshes.empty() || renderer.materials.empty()) [[unlikely]] {
-            return;
-        }
-        if (renderer.flags & com::render_flags::skip_rendering) [[unlikely]] {
-            return;
-        }
-        const DirectX::XMMATRIX model = transform.compute_matrix();
-        for (const mesh* mesh : renderer.meshes) {
-            if (!mesh) [[unlikely]] {
-                continue;
-            }
+        DirectX::FXMMATRIX view_proj_mtx,
+        DirectX::CXMMATRIX model_mtx,
+        DirectX::CXMMATRIX view_mtx
+    ) const noexcept -> void {
+        cmd.push_consts_start();
 
-            // Frustum Culling
-            DirectX::BoundingOrientedBox obb {};
-            obb.CreateFromBoundingBox(obb, mesh->get_aabb());
-            obb.Transform(obb, model);
-            if ((renderer.flags & com::render_flags::skip_frustum_culling) == 0) [[likely]] {
-                if (frustum.Contains(obb) == DirectX::ContainmentType::DISJOINT) { // Object is culled
-                    return;
-                }
-            }
+        push_constants_vs pc_vs {};
+        DirectX::XMStoreFloat4x4A(&pc_vs.model_matrix, model_mtx);
+        DirectX::XMStoreFloat4x4A(&pc_vs.model_view_proj, DirectX::XMMatrixMultiply(model_mtx, view_proj_mtx));
+        DirectX::XMStoreFloat4x4A(&pc_vs.normal_matrix, DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(nullptr, model_mtx)));
+        pc_vs.camera_pos = graphics_subsystem::get_camera_transform().position;
+        cmd.push_consts(vk::ShaderStageFlagBits::eVertex, pc_vs);
 
-            push_constants_vs pc_vs {};
-            DirectX::XMStoreFloat4x4A(&pc_vs.model_view_proj, DirectX::XMMatrixMultiply(model, vp));
-            DirectX::XMStoreFloat4x4A(&pc_vs.normal_matrix, DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(nullptr, model)));
-            cmd_buf.pushConstants(
-                layout,
-                vk::ShaderStageFlagBits::eVertex,
-                0,
-                sizeof(pc_vs),
-                &pc_vs
-            );
+        push_constants_fs pc_fs {};
+        pc_fs.data = graphics_subsystem::get_camera_transform().position;
+        cmd.push_consts(vk::ShaderStageFlagBits::eFragment, pc_fs);
 
-            push_constants_fs pc_fs {};
-            pc_fs.time = static_cast<float>(kernel::get().get_time());
-            cmd_buf.pushConstants(
-                layout,
-                vk::ShaderStageFlagBits::eFragment,
-                sizeof(pc_vs),
-                sizeof(pc_fs),
-                &pc_fs
-            );
+        const eastl::span<material* const> mats {renderer.materials.data(), renderer.materials.size()};
+        cmd.draw_mesh_with_materials(mesh, mats);
+    }
 
-            const eastl::span<material* const> mats {renderer.materials.data(), renderer.materials.size()};
-            graphics_pipeline::draw_mesh(*mesh, cmd_buf, mats, layout);
-        }
+    auto pbr_pipeline::on_bind(vkb::command_buffer& cmd) const -> void {
+        graphics_pipeline::on_bind(cmd);
+        cmd.bind_graphics_descriptor_set(m_pbr_descriptor_set, 1);
     }
 
     pbr_pipeline::pbr_pipeline() : graphics_pipeline{"mat_pbr"} {
-        generate_brdf_lut();
+        vkb::descriptor_factory df {vkb::ctx().descriptor_factory_begin()};
+
+        eastl::array<vk::DescriptorImageInfo, 3> infos {
+            vk::DescriptorImageInfo {
+                .imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal,
+                .imageView = m_pbr_filter_processor.brdf_lut().image_view(),
+                .sampler = m_pbr_filter_processor.brdf_lut().sampler(),
+            },
+            vk::DescriptorImageInfo {
+                .imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal,
+                .imageView = m_pbr_filter_processor.irradiance_cube().image_view(),
+                .sampler = m_pbr_filter_processor.irradiance_cube().sampler(),
+            },
+            vk::DescriptorImageInfo {
+                .imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal,
+                .imageView = m_pbr_filter_processor.prefiltered_cube().image_view(),
+                .sampler = m_pbr_filter_processor.prefiltered_cube().sampler(),
+            }
+        };
+
+        for (std::size_t i = 0; i < infos.size(); ++i) {
+            df.bind_images(i, 1, &infos[i], vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment);
+        }
+
+        passert(df.build(m_pbr_descriptor_set, m_pbr_descriptor_set_layout));
     }
 
     pbr_pipeline::~pbr_pipeline() {
-        const vk::Device device = vkb::ctx().get_device();
-        device.destroyImageView(m_brdf_lut.m_image_view, vkb::get_alloc());
-        device.destroyImage(m_brdf_lut.image, vkb::get_alloc());
-        device.freeMemory(m_brdf_lut.memory, vkb::get_alloc());
+        vkb::vkdvc().destroyDescriptorSetLayout(m_pbr_descriptor_set_layout, vkb::get_alloc());
     }
 
     auto pbr_pipeline::configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> void {
@@ -88,7 +83,8 @@ namespace lu::graphics::pipelines {
         eastl::vector<vk::DescriptorSetLayout>& layouts,
         eastl::vector<vk::PushConstantRange>& ranges
     ) -> void {
-        layouts.emplace_back(material::get_descriptor_set_layout());
+        layouts.emplace_back(material::get_static_resources().descriptor_layout);
+        layouts.emplace_back(m_pbr_descriptor_set_layout);
 
         vk::PushConstantRange push_constant_range {};
         push_constant_range.stageFlags = vk::ShaderStageFlagBits::eVertex;
@@ -106,9 +102,9 @@ namespace lu::graphics::pipelines {
         graphics_pipeline::configure_enable_color_blending(cfg);
     }
 
-    auto pbr_pipeline::configure_multisampling(vk::PipelineMultisampleStateCreateInfo &cfg) -> void {
+    auto pbr_pipeline::configure_multisampling(vk::PipelineMultisampleStateCreateInfo& cfg) -> void {
         passert(type == pipeline_type::graphics);
-        cfg.rasterizationSamples = vkb::k_msaa_sample_count;
-        cfg.alphaToCoverageEnable = vk::True;
+        cfg.rasterizationSamples = vkb::ctx().get_msaa_samples();
+        cfg.alphaToCoverageEnable = vk::False;
     }
 }

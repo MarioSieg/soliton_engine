@@ -1,5 +1,7 @@
 var NAVTREEINDEX6 =
 {
+"cimgui_8cpp.html#ac204bcff6a7d6633e2380571ffa25df7":[3,0,0,2,0,0,211],
+"cimgui_8cpp.html#ac27ac5f4ca963a631cc4bbb0f563ef35":[3,0,0,2,0,0,535],
 "cimgui_8cpp.html#ac32e49e4d624715ea6fc0fb41925bedd":[3,0,0,2,0,0,269],
 "cimgui_8cpp.html#ac3363c4f32ccc0139e5754772629d3f3":[3,0,0,2,0,0,533],
 "cimgui_8cpp.html#ac34310cd5c8daca029417db3e68dcf41":[3,0,0,2,0,0,557],
@@ -247,7 +249,5 @@ var NAVTREEINDEX6 =
 "cimgui_8hpp.html#a071af102fcef57a54c15611d58485a41":[3,0,0,2,0,1,771],
 "cimgui_8hpp.html#a0752996d7b04bbaeb13aac9695f89c2e":[3,0,0,2,0,1,870],
 "cimgui_8hpp.html#a07c6aef243ab07c76603a420d50d9423":[3,0,0,2,0,1,376],
-"cimgui_8hpp.html#a08051cac3b44b74d5fc2e610e1feec29":[3,0,0,2,0,1,157],
-"cimgui_8hpp.html#a083f9a6bb5dc50db1b2c6cd8aea97630":[3,0,0,2,0,1,880],
-"cimgui_8hpp.html#a085e8409936f8c6667927d0c45bf432c":[3,0,0,2,0,1,26]
+"cimgui_8hpp.html#a08051cac3b44b74d5fc2e610e1feec29":[3,0,0,2,0,1,157]
 };

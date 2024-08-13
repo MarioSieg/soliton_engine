@@ -1,0 +1,28 @@
+var struct_mem_page =
+[
+    [ "aCellIdx", "struct_mem_page.html#a6f391f110e68ede6e5234b4e9f678f99", null ],
+    [ "aData", "struct_mem_page.html#a2d873eff563d2208be0c24959140a4b0", null ],
+    [ "aDataEnd", "struct_mem_page.html#ab5d2ecb95a84eaf4bd0ccef536bac6d7", null ],
+    [ "aDataOfst", "struct_mem_page.html#a0af9fdf5075be66cd5a4932b81072185", null ],
+    [ "aiOvfl", "struct_mem_page.html#a4301e48076cae9e898a93d89c252a1d7", null ],
+    [ "apOvfl", "struct_mem_page.html#a056ebeebc2fd0995e5aff71feee72a68", null ],
+    [ "cellOffset", "struct_mem_page.html#a324ed834d93c3ae72994fb5730940521", null ],
+    [ "childPtrSize", "struct_mem_page.html#aeba10281fc255d9bbc0e31486f8fbd48", null ],
+    [ "hdrOffset", "struct_mem_page.html#a01967a1a593980fb71c8ccf3393ae156", null ],
+    [ "intKey", "struct_mem_page.html#a46784c3c4708c7a582cff81a29c55323", null ],
+    [ "intKeyLeaf", "struct_mem_page.html#a7c30c56237c38e0b81842ae2a6bae9d7", null ],
+    [ "isInit", "struct_mem_page.html#a3ab4ace46245be0fb2fb19eaa2862019", null ],
+    [ "leaf", "struct_mem_page.html#af18504bd0a2e7d39d9b485d434af0447", null ],
+    [ "maskPage", "struct_mem_page.html#aa3d64e8755cc9f431bbc8423a2b506ec", null ],
+    [ "max1bytePayload", "struct_mem_page.html#a79548547cafb0e6d8549006bdc553f0a", null ],
+    [ "maxLocal", "struct_mem_page.html#a36394b7c3abf4652e7a24be4ab314f13", null ],
+    [ "minLocal", "struct_mem_page.html#a95cab31aa57bf8b478be273557c5c807", null ],
+    [ "nCell", "struct_mem_page.html#a35d1d8f836201b82b1eb778ce0e324f4", null ],
+    [ "nFree", "struct_mem_page.html#a900d41f1005b685817a49e9ff2f8337a", null ],
+    [ "nOverflow", "struct_mem_page.html#a3f7fa1a1eba3af840ef887e8ddd6d2cc", null ],
+    [ "pBt", "struct_mem_page.html#a949df1156f7392592eaeb64389068f99", null ],
+    [ "pDbPage", "struct_mem_page.html#add322c1aed91e95d8dfe3ac3535d65b4", null ],
+    [ "pgno", "struct_mem_page.html#ad2b0c532abc799bbcf3b43df4f0b0546", null ],
+    [ "xCellSize", "struct_mem_page.html#aecb022d01630da5a48681f8a7e32a419", null ],
+    [ "xParseCell", "struct_mem_page.html#ac401be6009d535d9fef9cc48af734039", null ]
+];

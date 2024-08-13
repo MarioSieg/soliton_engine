@@ -8,7 +8,7 @@ var searchData=
   ['always_5',['ALWAYS',['../sqlite3_8c.html#a68d1f09d0baf7bc12a51d34a5c18fcfb',1,'sqlite3.c']]],
   ['analyzevdbecommentindexwithcolumnname_6',['analyzeVdbeCommentIndexWithColumnName',['../sqlite3_8c.html#a3127796612e15646243d1541ac907873',1,'sqlite3.c']]],
   ['applycostmultiplier_7',['ApplyCostMultiplier',['../sqlite3_8c.html#a1c77ef8a5ead69262c7fa70b075adc85',1,'sqlite3.c']]],
-  ['arch_5f32bit_8',['ARCH_32BIT',['../platform_8hpp.html#ae608116471163f74936fea51bbcd01b3',1,'ARCH_32BIT():&#160;platform.hpp'],['../platform_8hpp.html#ae608116471163f74936fea51bbcd01b3',1,'ARCH_32BIT():&#160;platform.hpp']]],
+  ['arch_5f32bit_8',['ARCH_32BIT',['../platform_8hpp.html#ae608116471163f74936fea51bbcd01b3',1,'ARCH_32BIT:&#160;platform.hpp'],['../platform_8hpp.html#ae608116471163f74936fea51bbcd01b3',1,'ARCH_32BIT:&#160;platform.hpp']]],
   ['arch_5f64bit_9',['ARCH_64BIT',['../platform_8hpp.html#a82b632eaf343c66d39f5fa28441afbaa',1,'platform.hpp']]],
   ['arch_5fname_10',['ARCH_NAME',['../platform_8hpp.html#aa241f94fb14a067550ddaa93a6e59309',1,'platform.hpp']]],
   ['arraysize_11',['ArraySize',['../sqlite3_8c.html#a4654592395032f4996615903e6dbc81d',1,'sqlite3.c']]],

@@ -20,4 +20,4 @@ Lunam is also very lightweight and fast, and is designed to be cross-platform, w
 * Easy to use Lua scripting API using LuaJIT
 * Simple and powerful editor
 
-![screenshot](screenshots/editor.jpeg)
+![screenshot](screenshots/3.png)

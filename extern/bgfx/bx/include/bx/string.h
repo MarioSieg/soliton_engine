@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2023 Branimir Karadzic. All rights reserved.
+ * Copyright 2010-2024 Branimir Karadzic. All rights reserved.
  * License: https://github.com/bkaradzic/bx/blob/master/LICENSE
  */
 
@@ -41,6 +41,13 @@ namespace bx
 		/// Returns zero-terminated C string pointer to string literal.
 		///
 		constexpr const char* getCPtr() const;
+
+		///
+		void clear();
+
+		/// Returns `true` if string is empty.
+		///
+		bool isEmpty() const;
 
 	private:
 		const char* m_ptr;

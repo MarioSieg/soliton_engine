@@ -14,6 +14,10 @@ editor_components = {
         [components.camera._id] = {
             full_name = icons.i_camera .. ' Camera',
             component = components.camera
+        },
+        [components.camera._id + 1] = {
+            full_name = icons.i_code .. ' Script',
+            component = components.camera
         }
     },
     [icons.i_paint_brush .. ' Rendering'] = {
@@ -21,10 +25,30 @@ editor_components = {
             full_name = icons.i_cube .. ' Mesh Renderer',
             component = components.mesh_renderer
         },
+        [components.mesh_renderer._id + 1] = {
+            full_name = icons.i_lightbulb_on .. ' Light',
+            component = components.mesh_renderer
+        },
+        [components.mesh_renderer._id + 2] = {
+            full_name = icons.i_star_shooting .. ' Particle System',
+            component = components.mesh_renderer
+        },
+        [components.mesh_renderer._id + 3] = {
+            full_name = icons.i_skeleton .. ' Animator',
+            component = components.mesh_renderer
+        },
     },
     [icons.i_basketball_ball .. ' Physics'] = {
         [components.character_controller._id] = {
             full_name = icons.i_person_sign .. ' Character Controller',
+            component = components.character_controller
+        },
+        [components.character_controller._id + 1] = {
+            full_name = icons.i_box_fragile .. ' Collider',
+            component = components.character_controller
+        },
+        [components.character_controller._id + 2] = {
+            full_name = icons.i_truck_moving .. ' Rigid Body',
             component = components.character_controller
         }
     }

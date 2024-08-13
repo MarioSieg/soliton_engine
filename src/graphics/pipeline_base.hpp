@@ -3,6 +3,7 @@
 #pragma once
 
 #include "vulkancore/prelude.hpp"
+#include "vulkancore/command_buffer.hpp"
 
 #include <ankerl/unordered_dense.h>
 

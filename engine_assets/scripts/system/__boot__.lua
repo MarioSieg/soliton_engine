@@ -53,10 +53,10 @@ assert(engine_cfg ~= nil) -- Ensure the engine config was loaded
 function __on_prepare__()
     engine_ctx:inject_hooks() -- Load all start/tick hooks
 
-    if engine_cfg.General.enableJit then
+    if engine_cfg.system.enable_jit then
         jit.on() -- Enable JIT
         jit.opt.start('+fma') -- enable FMA for better performance
-        if engine_cfg.General.enableJitAssemblyDump then
+        if engine_cfg.system.enable_jit_disasm then
             require('jit.dump').on('m', 'jit.log')
         end
     else
@@ -74,7 +74,7 @@ end
 
 local clock = os.clock
 local gc_clock = clock()
-local cfg = engine_cfg.General
+local cfg = engine_cfg.system
 
 -- DO NOT Rename - Invoked from native code
 function __on_tick__()

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2023 Branimir Karadzic. All rights reserved.
+ * Copyright 2011-2024 Branimir Karadzic. All rights reserved.
  * License: https://github.com/bkaradzic/bx/blob/master/LICENSE
  */
 
@@ -184,7 +184,7 @@ namespace bx
 	///
 	/// @returns `true` if `_a` is less than zero, otherwise returns `false`.
 	///
-	BX_CONSTEXPR_FUNC bool signbit(float _a);
+	BX_CONSTEXPR_FUNC bool signBit(float _a);
 
 	/// Returns value with the magnitude `_value`, and the sign of `_sign`.
 	///
@@ -193,7 +193,7 @@ namespace bx
 	///
 	/// @returns Value with the magnitude `_value`, and the sign of `_sign`.
 	///
-	BX_CONSTEXPR_FUNC float copysign(float _value, float _sign);
+	BX_CONSTEXPR_FUNC float copySign(float _value, float _sign);
 
 	/// Returns the absolute of _a.
 	///
@@ -202,6 +202,13 @@ namespace bx
 	/// Returns the square of _a.
 	///
 	BX_CONSTEXPR_FUNC float square(float _a);
+
+	/// Returns the both sine and cosine of the argument _a.
+	///
+	/// @remarks The function calculates cosine, and then approximates sine based on the cosine
+	///   result. Therefore calculation of sine is less accurate than calling `bx::sin` function.
+	///
+	void sinCosApprox(float& _outSinApprox, float& _outCos, float _a);
 
 	/// Returns the sine of the argument _a.
 	///

@@ -14,7 +14,7 @@ namespace lu {
         auto operator = (const exit_guard&) -> exit_guard& = delete;
         auto operator = (exit_guard&&) -> exit_guard& = delete;
         ~exit_guard() {
-            std::invoke(m_f);
+            eastl::invoke(m_f);
         }
 
     private:

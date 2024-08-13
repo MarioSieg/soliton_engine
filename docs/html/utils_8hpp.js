@@ -7,6 +7,6 @@ var utils_8hpp =
     [ "log_warn", "utils_8hpp.html#afd32891494579f4d9319e2839ddf4c4c", null ],
     [ "passert", "utils_8hpp.html#a3a3368fccf3ab044d115cbee4ddd58c2", null ],
     [ "print_sep", "utils_8hpp.html#abf06da51423fd8e311bafbc7eb39b045", null ],
-    [ "panic", "utils_8hpp.html#a1457aa0c7f295baf3a35b1c933295e59", null ],
+    [ "panic", "utils_8hpp.html#a2b1a9979d0cc119e047cc63b666536da", null ],
     [ "panic_impl", "utils_8hpp.html#aa1f2f91d900e4efd1c3b65427c1a9e40", null ]
 ];
