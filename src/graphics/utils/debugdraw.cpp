@@ -1050,7 +1050,7 @@ namespace lu::graphics {
 
     auto debugdraw::create_uniform_buffer() -> void {
         m_uniform.emplace(
-            sizeof(uniform) * vkb::context::k_max_concurrent_frames,
+            sizeof(uniform) * vkb::ctx().get_concurrent_frames(),
             0,
             vk::BufferUsageFlagBits::eUniformBuffer,
             VMA_MEMORY_USAGE_CPU_TO_GPU,
@@ -1060,7 +1060,7 @@ namespace lu::graphics {
 
     auto debugdraw::create_vertex_buffer() -> void {
         m_vertex_buffer.emplace(
-           sizeof(vertex) * k_max_vertices * vkb::context::k_max_concurrent_frames,
+           sizeof(vertex) * k_max_vertices * vkb::ctx().get_concurrent_frames(),
            0,
            vk::BufferUsageFlagBits::eVertexBuffer,
            VMA_MEMORY_USAGE_CPU_TO_GPU,
@@ -1163,7 +1163,7 @@ namespace lu::graphics {
         pipeline_info.pDynamicState = &dynamic_state;
 
         vk::PipelineMultisampleStateCreateInfo multisample_state {};
-        multisample_state.rasterizationSamples = vkb::k_msaa_sample_count;
+        multisample_state.rasterizationSamples = vkb::ctx().get_msaa_samples();
         multisample_state.alphaToCoverageEnable = vk::True;
         multisample_state.pSampleMask = nullptr;
         pipeline_info.pMultisampleState = &multisample_state;

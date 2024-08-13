@@ -104,7 +104,7 @@ namespace lu::graphics::pipelines {
 
     auto pbr_pipeline::configure_multisampling(vk::PipelineMultisampleStateCreateInfo& cfg) -> void {
         passert(type == pipeline_type::graphics);
-        cfg.rasterizationSamples = vkb::k_msaa_sample_count;
-        cfg.alphaToCoverageEnable = vk::True;
+        cfg.rasterizationSamples = vkb::ctx().get_msaa_samples();
+        cfg.alphaToCoverageEnable = vk::False;
     }
 }

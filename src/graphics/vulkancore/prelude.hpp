@@ -23,8 +23,6 @@
 #endif
 
 namespace lu::vkb {
-    constexpr vk::SampleCountFlagBits k_msaa_sample_count = vk::SampleCountFlagBits::e2;
-
     extern auto dump_physical_device_props(const vk::PhysicalDeviceProperties& props) -> void;
 
 #if USE_MIMALLOC

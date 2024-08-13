@@ -97,7 +97,7 @@ namespace lu::vkb {
 
     descriptor_layout_cache::~descriptor_layout_cache() {
         for (auto&& [_, layout] : m_layout_cache) {
-            vkb::vkdvc().destroyDescriptorSetLayout(layout, vkb::get_alloc());
+            //vkb::vkdvc().destroyDescriptorSetLayout(layout, vkb::get_alloc()); TODO
         }
         m_layout_cache.clear();
     }

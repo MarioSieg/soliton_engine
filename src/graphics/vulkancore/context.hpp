@@ -2,12 +2,11 @@
 
 #pragma once
 
-#include <optional>
-
 #include "device.hpp"
 #include "swapchain.hpp"
 #include "command_buffer.hpp"
 #include "descriptor.hpp"
+#include "deletion_queue.hpp"
 
 #include <DirectXMath.h>
 
@@ -16,12 +15,15 @@ namespace lu::graphics {
 }
 
 namespace lu::vkb {
+    struct context_desc final {
+        GLFWwindow* window = nullptr;
+        std::uint32_t concurrent_frames = 3;
+        std::uint32_t msaa_samples = 4;
+    };
+
     class context final : public no_copy, public no_move {
     public:
-        static constexpr std::uint32_t k_max_concurrent_frames = 3;
-        explicit context(
-            GLFWwindow* window
-        );
+        explicit context(const context_desc& desc);
         ~context();
 
         [[nodiscard]] auto get_width() const noexcept -> std::uint32_t { return m_width; }
@@ -36,6 +38,8 @@ namespace lu::vkb {
         [[nodiscard]] auto get_descriptor_layout_cache() noexcept -> descriptor_layout_cache& { return *m_descriptor_layout_cache; }
         [[nodiscard]] auto descriptor_factory_begin() -> descriptor_factory { return descriptor_factory{get_descriptor_layout_cache(), get_descriptor_allocator()}; }
         [[nodiscard]] auto get_window() const noexcept -> GLFWwindow* { return m_window; }
+        [[nodiscard]] auto get_concurrent_frames() const noexcept -> std::uint32_t { return m_concurrent_frames; }
+        [[nodiscard]] auto get_msaa_samples() const noexcept -> vk::SampleCountFlagBits { return m_msaa_samples; }
         [[nodiscard]] auto get_command_buffers() const noexcept -> eastl::span<const vk::CommandBuffer> { return m_command_buffers; }
         [[nodiscard]] auto get_current_frame() const noexcept -> std::uint32_t { return m_current_frame; }
         [[nodiscard]] auto get_image_index() const noexcept -> std::uint32_t { return m_image_index; }
@@ -43,6 +47,7 @@ namespace lu::vkb {
         [[nodiscard]] auto get_scene_render_pass() const noexcept -> vk::RenderPass { return m_scene_render_pass; }
         [[nodiscard]] auto get_ui_render_pass() const noexcept -> vk::RenderPass { return m_ui_render_pass; }
         [[nodiscard]] auto get_framebuffers() const noexcept -> eastl::span<const vk::Framebuffer> { return m_framebuffers; }
+        [[nodiscard]] auto get_deferred_deletion_queue() noexcept -> deletion_queue& { return m_shutdown_deletion_queue; }
 
         [[nodiscard]] HOTPROC auto begin_frame(
             const DirectX::XMFLOAT4A& clear_color,
@@ -54,7 +59,7 @@ namespace lu::vkb {
         auto end_render_pass(command_buffer& cmd) -> void;
         auto on_resize() -> void;
 
-        static auto create(GLFWwindow *window) -> void;
+        static auto create(const context_desc& desc) -> void;
         static auto shutdown() -> void;
 
     private:
@@ -80,24 +85,28 @@ namespace lu::vkb {
         auto destroy_sync_prims() const -> void;
 
         GLFWwindow* m_window = nullptr;
+        std::uint32_t m_concurrent_frames = 3;
+        vk::SampleCountFlagBits m_msaa_samples = vk::SampleCountFlagBits::e4;
         std::uint32_t m_width = 0;
         std::uint32_t m_height = 0;
+        deletion_queue m_shutdown_deletion_queue {};
+
         eastl::optional<device> m_device;
         eastl::optional<swapchain> m_swapchain;
         eastl::optional<descriptor_allocator> m_descriptor_allocator {};
         eastl::optional<descriptor_layout_cache> m_descriptor_layout_cache {};
 
         struct {
-            eastl::array<vk::Semaphore, k_max_concurrent_frames> present_complete {}; // Swap chain image presentation
-            eastl::array<vk::Semaphore, k_max_concurrent_frames> render_complete {}; // Command buffer submission and execution
+            eastl::fixed_vector<vk::Semaphore, 4> present_complete {}; // Swap chain image presentation
+            eastl::fixed_vector<vk::Semaphore, 4> render_complete {}; // Command buffer submission and execution
         } m_semaphores {}; // Semaphores are used to coordinate operations within the graphics queue and ensure correct command ordering
 
         vk::CommandPool m_graphics_command_pool {};
         vk::CommandPool m_compute_command_pool {};
         vk::CommandPool m_transfer_command_pool {};
 
-        eastl::array<vk::CommandBuffer, k_max_concurrent_frames> m_command_buffers {}; // Command buffers used for rendering
-        eastl::array<vk::Fence, k_max_concurrent_frames> m_wait_fences {}; // Wait fences to sync command buffer access
+        eastl::fixed_vector<vk::CommandBuffer, 4> m_command_buffers {}; // Command buffers used for rendering
+        eastl::fixed_vector<vk::Fence, 4> m_wait_fences {}; // Wait fences to sync command buffer access
         struct {
             vk::Image image {};
             vk::ImageView view {};
@@ -106,7 +115,7 @@ namespace lu::vkb {
 
         vk::RenderPass m_scene_render_pass {};
         vk::RenderPass m_ui_render_pass {};
-        eastl::vector<vk::Framebuffer> m_framebuffers {};
+        eastl::fixed_vector<vk::Framebuffer, 4> m_framebuffers {};
         vk::PipelineCache m_pipeline_cache {};
         std::uint32_t m_current_frame = 0; // To select the correct sync objects, we need to keep track of the current frame
         std::uint32_t m_image_index = 0; // The current swap chain image index

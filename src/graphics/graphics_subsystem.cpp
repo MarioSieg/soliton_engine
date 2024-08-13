@@ -20,10 +20,10 @@ namespace lu::graphics {
     using vkb::context;
 
     static const system_variable<eastl::string> cv_shader_dir {"renderer.shader_dir", eastl::monostate{}};
-    static const system_variable<std::uint32_t> cv_max_render_threads {
-        "cpu.render_threads",
-        {2u}
-    };
+    static const system_variable<std::uint32_t> cv_concurrent_frames {"renderer.concurrent_frames", {3}};
+    static const system_variable<std::uint32_t> cv_msaa_samples {"renderer.msaa_samples", {4}};
+    static const system_variable<std::uint32_t> cv_max_render_threads {"cpu.render_threads", {2}};
+
     static constinit std::uint32_t s_num_draw_calls_prev = 0;
     static constinit std::uint32_t s_num_draw_verts_prev = 0;
 
@@ -33,7 +33,11 @@ namespace lu::graphics {
         s_instance = this;
 
         GLFWwindow* const window = platform_subsystem::get_glfw_window();
-        context::create(window);
+        context::create(vkb::context_desc {
+            .window = window,
+            .concurrent_frames = cv_concurrent_frames(),
+            .msaa_samples = cv_msaa_samples()
+        });
 
         material::init_static_resources();
 

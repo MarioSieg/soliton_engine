@@ -56,9 +56,9 @@ namespace lu::imgui {
         init_info.Queue = device.get_graphics_queue();
         init_info.PipelineCache = graphics::pipeline_cache::get().get_cache();
         init_info.DescriptorPool = m_imgui_descriptor_pool;
-        init_info.ImageCount = vkb::context::k_max_concurrent_frames;
-        init_info.MinImageCount = vkb::context::k_max_concurrent_frames;
-        init_info.MSAASamples = static_cast<VkSampleCountFlagBits>(vkb::k_msaa_sample_count);
+        init_info.ImageCount = vkb::ctx().get_concurrent_frames();
+        init_info.MinImageCount = vkb::ctx().get_concurrent_frames();
+        init_info.MSAASamples = static_cast<VkSampleCountFlagBits>(vkb::ctx().get_msaa_samples());
         init_info.Allocator = reinterpret_cast<const VkAllocationCallbacks*>(vkb::get_alloc());
         init_info.CheckVkResultFn = [](const VkResult result) {
             vkccheck(result);

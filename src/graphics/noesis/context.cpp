@@ -343,7 +343,7 @@ namespace noesis {
     auto context::render_onscreen(const vk::RenderPass pass) -> void {
         if (!m_app) [[unlikely]]
             return;
-        NoesisApp::VKFactory::SetRenderPass(m_device, pass, static_cast<std::uint32_t>(lu::vkb::k_msaa_sample_count));
+        NoesisApp::VKFactory::SetRenderPass(m_device, pass, static_cast<std::uint32_t>(lu::vkb::ctx().get_msaa_samples()));
         m_app->GetMainWindow()->GetView()->GetRenderer()->Render();
     }
 

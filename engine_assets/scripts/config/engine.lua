@@ -76,6 +76,7 @@ engine_cfg = {
         irradiance_cube_size = 64,
         prefiltered_cube_size = 512,
         prefiltered_cube_samples = 32,
+        concurrent_frames = 3,
         force_vsync = false, -- Enable vertical synchronization.
     },
     ui = { -- In-Game UI settings.

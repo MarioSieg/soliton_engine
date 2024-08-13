@@ -29,11 +29,11 @@ namespace lu::graphics {
         const vk::CommandBufferAllocateInfo alloc_info {
             .commandPool = m_command_pool,
             .level = vk::CommandBufferLevel::eSecondary,
-            .commandBufferCount = vkb::context::k_max_concurrent_frames
+            .commandBufferCount = vkb::ctx().get_concurrent_frames()
         };
 
-        eastl::vector<vk::CommandBuffer> command_buffers {};
-        command_buffers.resize(vkb::context::k_max_concurrent_frames);
+        eastl::fixed_vector<vk::CommandBuffer, 4> command_buffers {};
+        command_buffers.resize(vkb::ctx().get_concurrent_frames());
         vkcheck(device.allocateCommandBuffers(&alloc_info, command_buffers.data()));
 
         m_command_buffers.reserve(command_buffers.size());
