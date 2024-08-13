@@ -100,6 +100,6 @@ void main() {
 
   vec3 color = ambient + Lo;
 
-  outFragColor.rgb = texture(irradiance_cube, normalize(-inWorldPos)).rgb;
+  outFragColor.rgb = color;
   outFragColor.a = 1.0;
 }

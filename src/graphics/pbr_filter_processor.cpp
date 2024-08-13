@@ -135,7 +135,6 @@ namespace lu::graphics {
                 .format = k_irradiance_cube_format,
                 .usage = vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eTransferSrc,
                 .tiling = vk::ImageTiling::eOptimal,
-                .is_cubemap = false,
                 .sampler = {
                     .mag_filter = vk::Filter::eLinear,
                     .min_filter = vk::Filter::eLinear,
@@ -431,12 +430,13 @@ namespace lu::graphics {
                 .format = k_irradiance_cube_format,
                 .usage = vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst,
                 .flags = vk::ImageCreateFlagBits::eCubeCompatible,
+                .is_cubemap = true,
                 .sampler = {
-                        .mag_filter = vk::Filter::eLinear,
-                        .min_filter = vk::Filter::eLinear,
-                        .mipmap_mode = vk::SamplerMipmapMode::eLinear,
-                        .address_mode = vk::SamplerAddressMode::eClampToEdge,
-                        .enable_anisotropy = false
+                    .mag_filter = vk::Filter::eLinear,
+                    .min_filter = vk::Filter::eLinear,
+                    .mipmap_mode = vk::SamplerMipmapMode::eLinear,
+                    .address_mode = vk::SamplerAddressMode::eClampToEdge,
+                    .enable_anisotropy = false
                 }
             },
             eastl::nullopt
@@ -501,7 +501,6 @@ namespace lu::graphics {
                 .format = k_irradiance_cube_format,
                 .usage = vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eTransferSrc,
                 .tiling = vk::ImageTiling::eOptimal,
-                .is_cubemap = true,
                 .sampler = {
                     .mag_filter = vk::Filter::eLinear,
                     .min_filter = vk::Filter::eLinear,

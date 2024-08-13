@@ -1,8 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
-
 #version 450
-
-#include "shader_common.h"
 
 layout (location = 0) in vec3 inPos;
 
@@ -16,7 +12,8 @@ out gl_PerVertex {
 	vec4 gl_Position;
 };
 
-void main() {
+void main()
+{
 	outUVW = inPos;
 	gl_Position = pushConsts.mvp * vec4(inPos.xyz, 1.0);
 }

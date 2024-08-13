@@ -17,6 +17,7 @@ namespace lu::graphics::pipelines {
         cmd.push_consts_start();
 
         push_constants_vs pc_vs {};
+        DirectX::XMStoreFloat4x4A(&pc_vs.model_matrix, model_mtx);
         DirectX::XMStoreFloat4x4A(&pc_vs.model_view_proj, DirectX::XMMatrixMultiply(model_mtx, view_proj_mtx));
         DirectX::XMStoreFloat4x4A(&pc_vs.normal_matrix, DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(nullptr, model_mtx)));
         cmd.push_consts(vk::ShaderStageFlagBits::eVertex, pc_vs);
@@ -48,8 +49,8 @@ namespace lu::graphics::pipelines {
             },
             vk::DescriptorImageInfo {
                 .imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal,
-                .imageView = m_pbr_filter_processor.environ_cube().image_view(),
-                .sampler = m_pbr_filter_processor.environ_cube().sampler(),
+                .imageView = m_pbr_filter_processor.irradiance_cube().image_view(),
+                .sampler = m_pbr_filter_processor.irradiance_cube().sampler(),
             },
             vk::DescriptorImageInfo {
                 .imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal,

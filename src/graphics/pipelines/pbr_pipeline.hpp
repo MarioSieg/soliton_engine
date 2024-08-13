@@ -16,6 +16,7 @@ namespace lu::graphics::pipelines {
         ~pbr_pipeline() override;
 
         struct push_constants_vs final {
+            DirectX::XMFLOAT4X4A model_matrix;
             DirectX::XMFLOAT4X4A model_view_proj;
             DirectX::XMFLOAT4X4A normal_matrix;
         };

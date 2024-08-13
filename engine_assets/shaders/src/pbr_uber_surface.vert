@@ -11,6 +11,7 @@ layout (location = 3) in vec3 inTangent;
 layout (location = 4) in vec3 inBiTangent;
 
 layout (push_constant, std430) uniform PushConstants {
+	mat4 ModelMatrix;
 	mat4 ModelViewProj;
 	mat4 NormalMatrix;
 } pushConstants;
@@ -27,7 +28,7 @@ out gl_PerVertex {
 };
 
 void main() {
-	outWorldPos = inPos;
+	outWorldPos = vec3(pushConstants.ModelMatrix * vec4(inPos, 1.0));
 	gl_Position = pushConstants.ModelViewProj * vec4(inPos.xyz, 1.0);
 	mat3 nn = mat3(pushConstants.NormalMatrix);
 	outNormal = nn * inNormal;
