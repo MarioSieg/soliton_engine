@@ -32,7 +32,8 @@ namespace lu::graphics {
             const mesh& mesh,
             const com::mesh_renderer& renderer,
             DirectX::FXMMATRIX view_proj_mtx,
-            DirectX::CXMMATRIX model_mtx
+            DirectX::CXMMATRIX model_mtx,
+            DirectX::CXMMATRIX view_mtx
         ) const noexcept -> void = 0;
         virtual auto on_bind(vkb::command_buffer& cmd) const -> void;
 
@@ -44,7 +45,8 @@ namespace lu::graphics {
             const com::transform& transform,
             const com::mesh_renderer& renderer,
             const DirectX::BoundingFrustum& frustum,
-            DirectX::FXMMATRIX view_proj_mtx
+            DirectX::FXMMATRIX view_proj_mtx,
+            DirectX::CXMMATRIX view_mtx
         ) const noexcept -> void;
 
         auto create(vk::PipelineLayout& out_layout, vk::Pipeline& out_pipeline, vk::PipelineCache cache) -> void override final;

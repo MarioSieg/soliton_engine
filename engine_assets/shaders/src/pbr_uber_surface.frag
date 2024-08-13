@@ -23,7 +23,7 @@ layout (location = 5) in mat3 inTBN;
 layout (location = 0) out vec4 outFragColor;
 
 layout (push_constant, std430) uniform PushConstants { // TODO: move to per frame cb
-     layout(offset = 128) vec4 camera_pos; // xyz: camera position, w: time
+     layout(offset = 192) vec4 camera_pos; // xyz: camera position, w: time
      //layout(offset = 144) vec4 light_dir;  // xyz: normalized light direction, w: unused
      //layout(offset = 160) vec4 light_color; // xyz: light color, w: intensity
 } consts;
@@ -92,7 +92,7 @@ void main() {
   vec3 diffuse = irradiance * albedo;
 
   // sample both the pre-filter map and the BRDF lut and combine them together as per the Split-Sum approximation to get the IBL specular part.
-  vec3 prefilteredColor = textureLod(prefilter_cube, R,  roughness * MAX_REFLECTION_LOD).rgb;
+  vec3 prefilteredColor = textureLod(prefilter_cube, R, roughness * MAX_REFLECTION_LOD).rgb;
   vec2 brdf  = texture(brdf_lut, vec2(max(dot(N, V), 0.0), roughness)).rg;
   vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
 

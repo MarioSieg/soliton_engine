@@ -179,7 +179,8 @@ namespace lu::graphics {
         const com::transform& transform,
         const com::mesh_renderer& renderer,
         const DirectX::BoundingFrustum& frustum,
-        DirectX::FXMMATRIX view_proj_mtx
+        DirectX::FXMMATRIX view_proj_mtx,
+        DirectX::CXMMATRIX view_mtx
     ) const noexcept -> void {
         if (renderer.meshes.empty() || renderer.materials.empty()) [[unlikely]] // No mesh or material
             return;
@@ -203,11 +204,12 @@ namespace lu::graphics {
                     continue;
 
             render_single_mesh(
-                    cmd,
-                    *mesh,
-                    renderer,
-                    view_proj_mtx,
-                    model_mtx
+                cmd,
+                *mesh,
+                renderer,
+                view_proj_mtx,
+                model_mtx,
+                view_mtx
             );
         }
     }

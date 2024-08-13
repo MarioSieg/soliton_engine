@@ -121,6 +121,7 @@ namespace lu::graphics {
         const auto& pipeline = static_cast<const graphics_pipeline&>(pipeline_cache::get().get_pipeline("mat_pbr"));
         pipeline.on_bind(cmd);
 
+        const DirectX::XMMATRIX view_mtx = DirectX::XMLoadFloat4x4A(&s_view_mtx);
         const DirectX::XMMATRIX view_proj_mtx = DirectX::XMLoadFloat4x4A(&graphics_subsystem::s_view_proj_mtx);
 
         // thread workload distribution
@@ -129,7 +130,7 @@ namespace lu::graphics {
             const com::transform& transform,
             const com::mesh_renderer& renderer
         ) -> void {
-            pipeline.render_mesh(cmd, transform, renderer, s_frustum, view_proj_mtx);
+            pipeline.render_mesh(cmd, transform, renderer, s_frustum, view_proj_mtx, view_mtx);
         });
 
         if (is_last_thread(bucket_id, num_threads)) { // Last thread

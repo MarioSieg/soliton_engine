@@ -40,7 +40,8 @@ namespace lu::graphics::pipelines {
             const mesh& mesh,
             const com::mesh_renderer& renderer,
             DirectX::FXMMATRIX view_proj_mtx,
-            DirectX::CXMMATRIX model_mtx
+            DirectX::CXMMATRIX model_mtx,
+            DirectX::CXMMATRIX view_mtx
         ) const noexcept -> void final override;
 
         virtual auto on_bind(vkb::command_buffer& cmd) const -> void override;

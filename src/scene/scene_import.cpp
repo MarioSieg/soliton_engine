@@ -81,9 +81,15 @@ namespace lu {
                         if (!mat->GetTextureCount(*textureType)) [[unlikely]] continue;
                         aiString name {};
                         mat->Get(AI_MATKEY_TEXTURE(*textureType, 0), name);
-                        eastl::string tex_path = "/";
+                        std::filesystem::path tex_path = "/";
                         tex_path += std::filesystem::relative((asset_root + name.C_Str()).c_str()).string().c_str();
-                        return get_asset_registry<graphics::texture>().load(std::move(tex_path));
+                        if (!tex_path.has_extension()) {
+                            return nullptr;
+                        }
+                        eastl::string path = tex_path.c_str();
+                        // replace backslashes with forward slashes
+                        eastl::replace(path.begin(), path.end(), '\\', '/');
+                        return get_asset_registry<graphics::texture>().load(std::move(path));
                     }
                     return nullptr;
                 };

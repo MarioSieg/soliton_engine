@@ -12,7 +12,8 @@ namespace lu::graphics::pipelines {
         const mesh& mesh,
         const com::mesh_renderer& renderer,
         DirectX::FXMMATRIX view_proj_mtx,
-        DirectX::CXMMATRIX model_mtx
+        DirectX::CXMMATRIX model_mtx,
+        DirectX::CXMMATRIX view_mtx
     ) const noexcept -> void {
         cmd.push_consts_start();
 
@@ -24,7 +25,7 @@ namespace lu::graphics::pipelines {
 
         push_constants_fs pc_fs {};
         DirectX::XMFLOAT4A camera_pos {};
-        DirectX::XMStoreFloat4A(&camera_pos, DirectX::XMMatrixInverse(nullptr, view_proj_mtx).r[3]);
+        DirectX::XMStoreFloat4A(&camera_pos, DirectX::XMMatrixInverse(nullptr, view_mtx).r[3]);
         pc_fs.data = camera_pos;
         pc_fs.data.w = static_cast<float>(kernel::get().get_time());
         cmd.push_consts(vk::ShaderStageFlagBits::eFragment, pc_fs);
