@@ -17,7 +17,8 @@ namespace lu::graphics {
         texture* const metallic_roughness_map,
         texture* const normal_map,
         texture* const height_map,
-        texture* const ambient_occlusion_map
+        texture* const ambient_occlusion_map,
+        texture* const emission_map
     ) : asset{assetmgr::asset_source::memory} {
 
         this->albedo_map = albedo_map;
@@ -25,6 +26,7 @@ namespace lu::graphics {
         this->normal_map = normal_map;
         this->height_map = height_map;
         this->ambient_occlusion_map = ambient_occlusion_map;
+        this->emission_map = emission_map;
 
         flush_property_updates();
     }
@@ -47,6 +49,7 @@ namespace lu::graphics {
         image_infos.emplace_back(make_write_tex_info(metallic_roughness_map, s_resources->fallback_image_white));
         image_infos.emplace_back(make_write_tex_info(height_map, s_resources->fallback_image_white));
         image_infos.emplace_back(make_write_tex_info(ambient_occlusion_map, s_resources->fallback_image_white));
+        image_infos.emplace_back(make_write_tex_info(emission_map, s_resources->fallback_image_black));
 
         vkb::descriptor_factory factory {s_resources->descriptor_layout_cache, s_resources->descriptor_allocator};
         for (std::uint32_t i = 0; auto&& info : image_infos)
@@ -70,6 +73,7 @@ namespace lu::graphics {
     material::static_resources::static_resources() :
         error_texture{cv_error_texture()},
         fallback_image_white{"/engine_assets/textures/system/fallback_white.png"},
+        fallback_image_black{"/engine_assets/textures/system/fallback_black.png"},
         descriptor_allocator {},
         descriptor_layout_cache {} {
 
@@ -77,7 +81,7 @@ namespace lu::graphics {
         descriptor_allocator.configured_pool_sizes.emplace_back(vk::DescriptorType::eCombinedImageSampler, 1.0f);
 
         vkb::descriptor_factory factory {vkb::ctx().descriptor_factory_begin()};
-        for (std::uint32_t i = 0; i < 5; ++i)
+        for (std::uint32_t i = 0; i < 6; ++i)
             factory.bind_no_info_stage(vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, i);
 
         vk::DescriptorSet set {};

@@ -10,6 +10,7 @@ layout (set = 0, binding = 1) uniform sampler2D sNormalMap;
 layout (set = 0, binding = 2) uniform sampler2D sRoughnessMap;
 layout (set = 0, binding = 3) uniform sampler2D sHeightMap;
 layout (set = 0, binding = 4) uniform sampler2D sOcclusionMap;
+layout (set = 0, binding = 5) uniform sampler2D sEmissionMap;
 
 layout (set = 1, binding = 0) uniform sampler2D brdf_lut;
 layout (set = 1, binding = 1) uniform samplerCube irradiance_cube;
@@ -77,6 +78,7 @@ void main() {
   const float metallic = metallic_roughness.r;
   const float roughness = metallic_roughness.g;
   const float ao = texture(sOcclusionMap, inUV).r;
+  const vec3 emissive = texture(sEmissionMap, inUV).rgb;
 
   const vec3 V = normalize(inWorldPos - consts.camera_pos.xyz);
   const vec3 N = normal_map(inTBN, texture(sNormalMap, uv).rgb);
@@ -138,7 +140,7 @@ void main() {
 
   vec3 ambient = (kD * diffuse + specular) * ao;
 
-  vec3 color = ambient + Lo;
+  vec3 color = ambient + Lo + emissive;
 
   // Tone mapping
   color = postToneMap(color);

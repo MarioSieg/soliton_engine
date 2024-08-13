@@ -100,6 +100,7 @@ namespace lu {
                 material->metallic_roughness_map = load_tex({aiTextureType_SPECULAR, aiTextureType_METALNESS, aiTextureType_DIFFUSE_ROUGHNESS, aiTextureType_SHININESS});
                 material->height_map = load_tex({aiTextureType_HEIGHT, aiTextureType_DISPLACEMENT});
                 material->ambient_occlusion_map = load_tex({aiTextureType_AMBIENT_OCCLUSION, aiTextureType_AMBIENT, aiTextureType_LIGHTMAP});
+                material->emission_map = load_tex({aiTextureType_EMISSION_COLOR, aiTextureType_EMISSIVE});
                 material->flush_property_updates();
 
                 renderer->materials.emplace_back(material);
