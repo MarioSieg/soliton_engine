@@ -11,6 +11,7 @@ layout (set = 0, binding = 3) uniform sampler2D samplerAO;
 
 layout (set = 1, binding = 0) uniform sampler2D brdf_lut;
 layout (set = 1, binding = 1) uniform samplerCube irradiance_cube;
+layout (set = 1, binding = 2) uniform samplerCube prefilter_cube;
 
 layout (location = 0) in vec3 inWorldPos;
 layout (location = 1) in vec2 inUV;
@@ -22,7 +23,9 @@ layout (location = 5) in mat3 inTBN;
 layout (location = 0) out vec4 outFragColor;
 
 layout (push_constant, std430) uniform PushConstants { // TODO: move to per frame cb
-  layout(offset = 128) vec4 camera_pos; // xyz: camera position, w: time
+     layout(offset = 128) vec4 camera_pos; // xyz: camera position, w: time
+     //layout(offset = 144) vec4 light_dir;  // xyz: normalized light direction, w: unused
+     //layout(offset = 160) vec4 light_color; // xyz: light color, w: intensity
 } consts;
 
 vec3 prefiltered_reflection(const vec3 R, const float roughness) {
@@ -30,8 +33,8 @@ vec3 prefiltered_reflection(const vec3 R, const float roughness) {
   float lod = roughness * MAX_REFLECTION_LOD;
   float lodf = floor(lod);
   float lodc = ceil(lod);
-  vec3 a = textureLod(irradiance_cube, R, lodf).rgb;
-  vec3 b = textureLod(irradiance_cube, R, lodc).rgb;
+  vec3 a = textureLod(prefilter_cube, R, lodf).rgb;
+  vec3 b = textureLod(prefilter_cube, R, lodc).rgb;
   return mix(a, b, lod - lodf);
 }
 
@@ -46,8 +49,13 @@ void main() {
 
   vec3 F0 = mix(vec3(0.04), pow(albedo.rgb, VGAMMA), metallic);
   vec3 Lo = vec3(0.0);
-  vec3 L = normalize(vec3(0.0) - inWorldPos);
-  Lo += pbr_specular_contrib(albedo.rgb, L, V, N, F0, metallic, roughness);
+
+  // Use light direction from push constants
+  vec3 L = normalize(-CB_PER_FRAME.sun_dir); // Normalize in case it's not
+
+  // Calculate PBR specular contribution for the directional light
+  Lo += pbr_specular_contrib(albedo.rgb, L, V, N, F0, metallic, roughness); //* consts.light_color.a;
+
   vec2 brdf = texture(brdf_lut, vec2(max(dot(N, V), 0.0), roughness)).rg;
   vec3 reflection = prefiltered_reflection(R, roughness).rgb;
   vec3 irradiance = texture(irradiance_cube, N).rgb;

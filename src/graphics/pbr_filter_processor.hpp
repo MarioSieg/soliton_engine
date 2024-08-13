@@ -18,14 +18,17 @@ namespace lu::graphics {
 
         [[nodiscard]] inline auto environ_cube() const -> const texture& { return *m_environ_cube; }
         [[nodiscard]] inline auto irradiance_cube() const -> const texture& { return *m_irradiance_cube; }
+        [[nodiscard]] inline auto prefiltered_cube() const -> const texture& { return *m_prefiltered_cube; }
         [[nodiscard]] inline auto brdf_lut() const -> const texture& { return *m_brdf_lut; }
 
     private:
         auto generate_irradiance_cube() -> void;
+        auto generate_prefilter_cube() -> void;
         auto generate_brdf_lookup_table() -> void;
 
         eastl::optional<texture> m_environ_cube {};
         eastl::optional<texture> m_irradiance_cube {};
+        eastl::optional<texture> m_prefiltered_cube {};
         eastl::optional<texture> m_brdf_lut {};
     };
 }

@@ -40,7 +40,7 @@ namespace lu::graphics::pipelines {
     pbr_pipeline::pbr_pipeline() : graphics_pipeline{"mat_pbr"} {
         vkb::descriptor_factory df {vkb::ctx().descriptor_factory_begin()};
 
-        eastl::array<vk::DescriptorImageInfo, 2> infos {
+        eastl::array<vk::DescriptorImageInfo, 3> infos {
             vk::DescriptorImageInfo {
                 .imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal,
                 .imageView = m_pbr_filter_processor.brdf_lut().image_view(),
@@ -48,8 +48,13 @@ namespace lu::graphics::pipelines {
             },
             vk::DescriptorImageInfo {
                 .imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal,
-                .imageView = m_pbr_filter_processor.environ_cube().image_view(),
-                .sampler = m_pbr_filter_processor.environ_cube().sampler(),
+                .imageView = m_pbr_filter_processor.irradiance_cube().image_view(),
+                .sampler = m_pbr_filter_processor.irradiance_cube().sampler(),
+            },
+            vk::DescriptorImageInfo {
+                .imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal,
+                .imageView = m_pbr_filter_processor.prefiltered_cube().image_view(),
+                .sampler = m_pbr_filter_processor.prefiltered_cube().sampler(),
             }
         };
 

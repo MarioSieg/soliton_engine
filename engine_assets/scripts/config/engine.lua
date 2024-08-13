@@ -74,6 +74,8 @@ engine_cfg = {
         flat_normal_texture = '/engine_assets/textures/system/flatnormal.png', -- Fallback texture when a texture is not found.
         brdf_lut_dim = 512, -- Width and height of the PBR BRDF integration LUT texture: LUT x LUT.
         irradiance_cube_size = 64,
+        prefiltered_cube_size = 512,
+        prefiltered_cube_samples = 32,
         force_vsync = true, -- Enable vertical synchronization.
     },
     ui = { -- In-Game UI settings.
