@@ -25,8 +25,8 @@ namespace lu::graphics::pipelines {
         cmd.push_consts(vk::ShaderStageFlagBits::eVertex, pc_vs);
 
         push_constants_fs pc_fs {};
-        pc_fs.data = graphics_subsystem::get_camera_transform().position;
-        pc_fs.data.w = static_cast<float>(kernel::get().get_time());
+        DirectX::XMStoreFloat3(&pc_fs.data, DirectX::XMLoadFloat4(&graphics_subsystem::get_camera_transform().position));
+        pc_fs.frame_idx = vkb::ctx().get_current_frame();
         cmd.push_consts(vk::ShaderStageFlagBits::eFragment, pc_fs);
 
         const eastl::span<material* const> mats {renderer.materials.data(), renderer.materials.size()};

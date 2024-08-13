@@ -1,3 +1,5 @@
+// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+
 #ifndef FILMIC_TONEMAPPER_H
 #define FILMIC_TONEMAPPER_H
 
@@ -13,8 +15,7 @@ vec3 filmToneMap(
     float filmPreDesaturate,
     float filmPostDesaturate,
     float filmRedModifier,
-    float filmGlowScale)
-{
+    float filmGlowScale) {
     vec3 colorAP0 = colorAP1 *  AP1_2_XYZ_MAT * XYZ_2_AP0_MAT;
 
     // "Glow" module constants
@@ -51,13 +52,11 @@ vec3 filmToneMap(
     const float outMatch = 0.18;
 
     float toeMatch;
-    if(filmToe > 0.8)
-    {
+    if(filmToe > 0.8) {
         // 0.18 will be on straight segment
         toeMatch = (1 - filmToe  - outMatch) / filmSlope + log10(inMatch);
     }
-    else
-    {
+    else {
         // 0.18 will be on toe segment
 
         // Solve for toeMatch such that input of inMatch gives output of outMatch.
@@ -155,21 +154,6 @@ vec3 postToneMap(vec3 hdrColor)
     // Encode to fit monitor gamma curve, current default use Rec.709 gamma encode.
     vec3 encodeColor = encodeSRGB(srgbColor);
     return encodeColor;
-
-    // Dither RGB.
-    //{
-    //    // Offset retarget for new seeds each frame
-    //    uvec2 offsetId = jitterSequence(frameData.frameIndex.x, uvec2(colorSize), dispatchId);
-//
-    //    // Display is 8bit, so jitter with blue noise with [-1, 1] / 255.0.
-    //    // Current also looks good in hdr display even it under 11bit.
-    //    encodeColor.x += 1.0 / 255.0 * (-1.0 + 2.0 * samplerBlueNoiseErrorDistribution_128x128_OptimizedFor_2d2d2d2d(offsetId.x, offsetId.y, 0, 0u));
-    //    encodeColor.y += 1.0 / 255.0 * (-1.0 + 2.0 * samplerBlueNoiseErrorDistribution_128x128_OptimizedFor_2d2d2d2d(offsetId.x, offsetId.y, 0, 1u));
-    //    encodeColor.z += 1.0 / 255.0 * (-1.0 + 2.0 * samplerBlueNoiseErrorDistribution_128x128_OptimizedFor_2d2d2d2d(offsetId.x, offsetId.y, 0, 2u));
-//
-    //    // Safe color.
-    //    encodeColor.xyz = max(encodeColor.xyz, vec3(0.0));
-    //}
 }
 
 #endif

@@ -24,9 +24,8 @@ layout (location = 5) in mat3 inTBN;
 layout (location = 0) out vec4 outFragColor;
 
 layout (push_constant, std430) uniform PushConstants { // TODO: move to per frame cb
-     layout(offset = 192) vec4 camera_pos; // xyz: camera position, w: time
-     //layout(offset = 144) vec4 light_dir;  // xyz: normalized light direction, w: unused
-     //layout(offset = 160) vec4 light_color; // xyz: light color, w: intensity
+     layout(offset = 192) vec3 camera_pos; // xyz: camera position, w: time
+     layout(offset = 192+4*3) uint frame_idx;
 } consts;
 
 const float MAX_REFLECTION_LOD = 4.0;

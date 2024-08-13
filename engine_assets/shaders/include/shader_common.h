@@ -249,4 +249,15 @@ vec3 ImportanceSampleGGX(vec2 Xi, vec3 N, float roughness)
     return normalize(sampleVec);
 }
 
+
+uvec2 jitterSequence(uint index, uvec2 dimension, uvec2 dispatchId)
+{
+    uvec2 offset = uvec2(vec2(0.754877669, 0.569840296) * index * dimension);
+    uvec2 offsetId = dispatchId + offset;
+    offsetId.x = offsetId.x % dimension.x;
+    offsetId.y = offsetId.y % dimension.y;
+
+    return offsetId;
+}
+
 #endif

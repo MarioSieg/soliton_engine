@@ -93,15 +93,30 @@ namespace lu::vkb {
         // We want to get a format that best suits our needs, so we try to get one from a set of preferred formats
         // Initialize the format to the first one returned by the implementation in case we can't find one of the preffered formats
         vk::SurfaceFormatKHR selected_format = formats[0];
-        eastl::vector<vk::Format> preferred_image_formats = {
+        constexpr eastl::array<vk::Format, 4> preferred_image_formats_ldr = {
+            vk::Format::eR16G16B16A16Sfloat,
             vk::Format::eR8G8B8A8Unorm,
             vk::Format::eB8G8R8A8Unorm,
             vk::Format::eA8B8G8R8UnormPack32
         };
+        constexpr eastl::array<vk::Format, 3> preferred_image_formats_hdr = {
+            vk::Format::eR16G16B16A16Sfloat,
+            vk::Format::eR32G32B32A32Sfloat,
+            vk::Format::eR16G16B16A16Sfloat,
+        };
 
-        for (const vk::SurfaceFormatKHR& available : formats) {
-            if (std::ranges::find(preferred_image_formats, available.format) != preferred_image_formats.end()) {
-                selected_format = available;
+        for (const vk::SurfaceFormatKHR& format : formats) {
+            if (std::ranges::find(preferred_image_formats_hdr, format.format) != preferred_image_formats_hdr.end()) {
+                selected_format = format;
+                log_info("HDR swapchain surface initialized: {}", string_VkFormat(static_cast<VkFormat>(selected_format.format)));
+                break;
+            }
+        }
+
+        for (const vk::SurfaceFormatKHR& format : formats) {
+            if (std::ranges::find(preferred_image_formats_ldr, format.format) != preferred_image_formats_ldr.end()) {
+                selected_format = format;
+                log_info("LDR swapchain surface initialized: {}", string_VkFormat(static_cast<VkFormat>(selected_format.format)));
                 break;
             }
         }

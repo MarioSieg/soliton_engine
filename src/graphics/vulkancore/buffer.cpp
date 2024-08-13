@@ -14,6 +14,7 @@ namespace lu::vkb {
         const void* data
     ) {
         m_allocator = vkb::dvc().get_allocator();
+        m_size = size;
         vk::BufferCreateInfo buffer_create_info {};
         buffer_create_info.size = size;
         buffer_create_info.sharingMode = vk::SharingMode::eExclusive;

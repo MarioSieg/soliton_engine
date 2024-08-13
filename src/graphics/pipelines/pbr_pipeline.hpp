@@ -7,6 +7,7 @@
 #include "../vulkancore/command_buffer.hpp"
 #include "../graphics_pipeline.hpp"
 #include "../pbr_filter_processor.hpp"
+#include "../temporal_blue_noise.hpp"
 #include "../../scene/components.hpp"
 
 namespace lu::graphics::pipelines {
@@ -22,11 +23,13 @@ namespace lu::graphics::pipelines {
         };
 
         struct push_constants_fs final {
-            DirectX::XMFLOAT4 data; // xyz: camera position, w: time
+            DirectX::XMFLOAT3 data;
+            std::uint32_t frame_idx;
         };
 
     private:
         pbr_filter_processor m_pbr_filter_processor {};
+        temporal_blue_noise m_blue_noise {};
         vk::DescriptorSetLayout m_pbr_descriptor_set_layout {};
         vk::DescriptorSet m_pbr_descriptor_set {};
 
