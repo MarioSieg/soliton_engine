@@ -14,15 +14,17 @@ namespace lu::graphics {
     static eastl::optional<material::static_resources> s_resources {};
 
     material::material(
-        texture* albedo_map,
-        texture* metallic_roughness_map,
-        texture* normal_map,
-        texture* ambient_occlusion_map
+        texture* const albedo_map,
+        texture* const metallic_roughness_map,
+        texture* const normal_map,
+        texture* const height_map,
+        texture* const ambient_occlusion_map
     ) : asset{assetmgr::asset_source::memory} {
 
         this->albedo_map = albedo_map;
         this->metallic_roughness_map = metallic_roughness_map;
         this->normal_map = normal_map;
+        this->height_map = height_map;
         this->ambient_occlusion_map = ambient_occlusion_map;
 
         flush_property_updates();
@@ -44,6 +46,7 @@ namespace lu::graphics {
         image_infos.emplace_back(make_write_tex_info(albedo_map, s_resources->error_texture));
         image_infos.emplace_back(make_write_tex_info(normal_map, s_resources->flat_normal));
         image_infos.emplace_back(make_write_tex_info(metallic_roughness_map, s_resources->error_texture));
+        image_infos.emplace_back(make_write_tex_info(height_map, s_resources->flat_heightmap));
         image_infos.emplace_back(make_write_tex_info(ambient_occlusion_map, s_resources->error_texture));
 
         vkb::descriptor_factory factory {s_resources->descriptor_layout_cache, s_resources->descriptor_allocator};
@@ -68,6 +71,7 @@ namespace lu::graphics {
     material::static_resources::static_resources() :
         error_texture{cv_error_texture()},
         flat_normal{cv_flat_normal()},
+        flat_heightmap{"/engine_assets/textures/system/flatheight.ktx"},
         descriptor_allocator {},
         descriptor_layout_cache {} {
 
@@ -75,7 +79,7 @@ namespace lu::graphics {
         descriptor_allocator.configured_pool_sizes.emplace_back(vk::DescriptorType::eCombinedImageSampler, 1.0f);
 
         vkb::descriptor_factory factory {vkb::ctx().descriptor_factory_begin()};
-        for (std::uint32_t i = 0; i < 4; ++i)
+        for (std::uint32_t i = 0; i < 5; ++i)
             factory.bind_no_info_stage(vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, i);
 
         vk::DescriptorSet set {};

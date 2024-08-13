@@ -14,26 +14,31 @@ layout (push_constant, std430) uniform PushConstants {
 	mat4 ModelMatrix;
 	mat4 ModelViewProj;
 	mat4 NormalMatrix;
-} pushConstants;
+	vec4 camPos;
+} consts;
 
 layout (location = 0) out vec3 outWorldPos;
 layout (location = 1) out vec2 outUV;
 layout (location = 2) out vec3 outNormal;
 layout (location = 3) out vec3 outTangent;
 layout (location = 4) out vec3 outBiTangent;
-layout (location = 5) out mat3 outTBN;
+layout (location = 5) out vec3 outTangentViewPos;
+layout (location = 6) out vec3 outTangentFragPos;
+layout (location = 7) out mat3 outTBN;
 
 out gl_PerVertex {
     vec4 gl_Position;
 };
 
 void main() {
-	outWorldPos = vec3(pushConstants.ModelMatrix * vec4(inPos, 1.0));
-	gl_Position = pushConstants.ModelViewProj * vec4(inPos.xyz, 1.0);
-	mat3 nn = mat3(pushConstants.NormalMatrix);
-	outNormal = nn * inNormal;
-	outTangent = nn * inTangent;
-	outBiTangent = nn * inBiTangent;
-	outTBN = mat3(normalize(outTangent), normalize(outBiTangent), normalize(outNormal));
+	outWorldPos = vec3(consts.ModelMatrix * vec4(inPos, 1.0));
+	mat3 nn = mat3(consts.ModelMatrix);
+	outNormal = nn * normalize(inNormal);
+	outTangent = nn * normalize(inTangent);
+	outBiTangent = nn * normalize(inBiTangent);
+	outTBN = (mat3(outTangent, outBiTangent, outNormal));
+	outTangentViewPos = outTBN * consts.camPos.rgb;
+	outTangentFragPos = outTBN * outWorldPos;
 	outUV = inUV;
+	gl_Position = consts.ModelViewProj * vec4(inPos.xyz, 1.0);
 }

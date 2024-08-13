@@ -5,10 +5,11 @@
 #include "shader_common.h"
 #include "filmic_tonemapper.h"
 
-layout (set = 0, binding = 0) uniform sampler2D samplerAlbedoMap;
-layout (set = 0, binding = 1) uniform sampler2D samplerNormalMap;
-layout (set = 0, binding = 2) uniform sampler2D samplerRoughness;
-layout (set = 0, binding = 3) uniform sampler2D samplerAO;
+layout (set = 0, binding = 0) uniform sampler2D sAlbedoMap;
+layout (set = 0, binding = 1) uniform sampler2D sNormalMap;
+layout (set = 0, binding = 2) uniform sampler2D sRoughnessMap;
+layout (set = 0, binding = 3) uniform sampler2D sHeightMap;
+layout (set = 0, binding = 4) uniform sampler2D sOcclusionMap;
 
 layout (set = 1, binding = 0) uniform sampler2D brdf_lut;
 layout (set = 1, binding = 1) uniform samplerCube irradiance_cube;
@@ -19,26 +20,66 @@ layout (location = 1) in vec2 inUV;
 layout (location = 2) in vec3 inNormal;
 layout (location = 3) in vec3 inTangent;
 layout (location = 4) in vec3 inBiTangent;
-layout (location = 5) in mat3 inTBN;
+layout (location = 5) in vec3 inTangentViewPos;
+layout (location = 6) in vec3 inTangentFragPos;
+layout (location = 7) in mat3 inTBN;
 
 layout (location = 0) out vec4 outFragColor;
 
 layout (push_constant, std430) uniform PushConstants { // TODO: move to per frame cb
-     layout(offset = 192) vec3 camera_pos; // xyz: camera position, w: time
-     layout(offset = 192+4*3) uint frame_idx;
+     layout(offset = 208) vec4 camera_pos; // xyz: camera position, w: time
 } consts;
 
 const float MAX_REFLECTION_LOD = 9.0;
 
+const float NUM_LAYERS = 48.0;
+const float HEIGHT_SCALE = 0.1;
+
+vec2 parallaxOcclusionMapping(vec2 uv, vec3 viewDir) {
+  float layerDepth = 1.0 / NUM_LAYERS;
+  float currLayerDepth = 0.0;
+  vec2 deltaUV = viewDir.xy * HEIGHT_SCALE / (viewDir.z * NUM_LAYERS);
+  vec2 currUV = uv;
+  float height = 1.0 - textureLod(sHeightMap, currUV, 0.0).a;
+  for (int i = 0; i < NUM_LAYERS; ++i) {
+    currLayerDepth += layerDepth;
+    currUV -= deltaUV;
+    height = 1.0 - textureLod(sHeightMap, currUV, 0.0).a;
+    if (height < currLayerDepth) {
+      break;
+    }
+  }
+  vec2 prevUV = currUV + deltaUV;
+  float nextDepth = height - currLayerDepth;
+  float prevDepth = 1.0 - textureLod(sHeightMap, prevUV, 0.0).a - currLayerDepth + layerDepth;
+  return mix(currUV, prevUV, nextDepth / (nextDepth - prevDepth));
+}
+
+vec3 calculateNormal(vec2 uv)
+{
+  vec3 tangentNormal = texture(sNormalMap, uv).xyz * 2.0 - 1.0;
+  vec3 N = normalize(inNormal);
+  vec3 T = normalize(inTangent.xyz);
+  vec3 B = normalize(cross(N, T));
+  mat3 TBN = mat3(T, B, N);
+  return normalize(TBN * tangentNormal);
+}
+
+
 void main() {
-  const vec3 albedo = texture(samplerAlbedoMap, inUV).rgb;
-  const vec2 metallic_roughness = texture(samplerRoughness, inUV).rg;
+  //const vec3 VV = normalize(inTangentViewPos - inTangentFragPos);
+  //vec2 uv = parallaxOcclusionMapping(inUV, VV);
+
+  const vec2 uv = inUV;
+
+  const vec3 albedo = texture(sAlbedoMap, uv).rgb;
+  const vec2 metallic_roughness = texture(sRoughnessMap, uv).rg;
   const float metallic = metallic_roughness.r;
   const float roughness = metallic_roughness.g;
-  const float ao = 1.0; //texture(samplerAO, inUV).r;
+  const float ao = 1.0; //texture(sOcclusionMap, inUV).r;
 
-  const vec3 N = normal_map(inTBN, texture(samplerNormalMap, inUV).xyz);
   const vec3 V = normalize(consts.camera_pos.xyz - inWorldPos);
+  const vec3 N = normal_map(inTBN, texture(sNormalMap, uv).rgb);
   const vec3 R = reflect(-V, N);
 
   // of 0.04 and if it's a metal, use the albedo color as F0 (metallic workflow)

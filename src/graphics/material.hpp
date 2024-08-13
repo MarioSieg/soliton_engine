@@ -17,6 +17,7 @@ namespace lu::graphics {
 
             texture error_texture;
             texture flat_normal;
+            texture flat_heightmap;
             vkb::descriptor_allocator descriptor_allocator {};
             vkb::descriptor_layout_cache descriptor_layout_cache {};
             vk::DescriptorSetLayout descriptor_layout {};
@@ -25,12 +26,14 @@ namespace lu::graphics {
         texture* albedo_map = nullptr;
         texture* normal_map = nullptr;
         texture* metallic_roughness_map = nullptr;
+        texture* height_map = nullptr;
         texture* ambient_occlusion_map = nullptr;
 
         explicit material(
             texture* albedo_map = nullptr,
             texture* metallic_roughness_map = nullptr,
             texture* normal_map = nullptr,
+            texture* height_map = nullptr,
             texture* ambient_occlusion_map = nullptr
         );
         ~material() override;

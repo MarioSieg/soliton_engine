@@ -20,11 +20,11 @@ namespace lu::graphics::pipelines {
             DirectX::XMFLOAT4X4A model_matrix;
             DirectX::XMFLOAT4X4A model_view_proj;
             DirectX::XMFLOAT4X4A normal_matrix;
+            DirectX::XMFLOAT4 camera_pos;
         };
 
         struct push_constants_fs final {
-            DirectX::XMFLOAT3 data;
-            std::uint32_t frame_idx;
+            DirectX::XMFLOAT4 data;
         };
 
     private:

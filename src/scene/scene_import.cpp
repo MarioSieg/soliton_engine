@@ -98,6 +98,7 @@ namespace lu {
                 material->albedo_map = load_tex({aiTextureType_DIFFUSE, aiTextureType_BASE_COLOR});
                 material->normal_map = load_tex({aiTextureType_NORMALS, aiTextureType_NORMAL_CAMERA});
                 material->metallic_roughness_map = load_tex({aiTextureType_SPECULAR, aiTextureType_METALNESS, aiTextureType_DIFFUSE_ROUGHNESS, aiTextureType_SHININESS});
+                material->height_map = load_tex({aiTextureType_HEIGHT, aiTextureType_DISPLACEMENT});
                 material->ambient_occlusion_map = load_tex({aiTextureType_AMBIENT_OCCLUSION});
                 material->flush_property_updates();
 

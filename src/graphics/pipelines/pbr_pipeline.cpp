@@ -22,11 +22,11 @@ namespace lu::graphics::pipelines {
         DirectX::XMStoreFloat4x4A(&pc_vs.model_matrix, model_mtx);
         DirectX::XMStoreFloat4x4A(&pc_vs.model_view_proj, DirectX::XMMatrixMultiply(model_mtx, view_proj_mtx));
         DirectX::XMStoreFloat4x4A(&pc_vs.normal_matrix, DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(nullptr, model_mtx)));
+        pc_vs.camera_pos = graphics_subsystem::get_camera_transform().position;
         cmd.push_consts(vk::ShaderStageFlagBits::eVertex, pc_vs);
 
         push_constants_fs pc_fs {};
-        DirectX::XMStoreFloat3(&pc_fs.data, DirectX::XMLoadFloat4(&graphics_subsystem::get_camera_transform().position));
-        pc_fs.frame_idx = vkb::ctx().get_current_frame();
+        pc_fs.data = graphics_subsystem::get_camera_transform().position;
         cmd.push_consts(vk::ShaderStageFlagBits::eFragment, pc_fs);
 
         const eastl::span<material* const> mats {renderer.materials.data(), renderer.materials.size()};
