@@ -120,7 +120,9 @@ namespace lu::graphics {
 
         // image view:
         vk::ImageViewCreateInfo image_view_ci {};
-        image_view_ci.viewType = m_desc.flags & vk::ImageCreateFlagBits::eCubeCompatible ? vk::ImageViewType::eCube : vk::ImageViewType::e2D;
+        image_view_ci.viewType = m_desc.is_cubemap || m_desc.flags
+                & vk::ImageCreateFlagBits::eCubeCompatible
+                ? vk::ImageViewType::eCube : vk::ImageViewType::e2D;
         image_view_ci.format = m_desc.format;
         image_view_ci.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
         image_view_ci.subresourceRange.baseMipLevel = 0;
@@ -297,7 +299,7 @@ namespace lu::graphics {
 
         blit_cmd.end();
         blit_cmd.flush();
-        log_info("Mipmap-chain with {} maps", m_desc.miplevel_count);
+        log_info("Generated mipmap-chain with {} maps", m_desc.miplevel_count);
     }
 
     auto texture::create_sampler(
@@ -317,7 +319,7 @@ namespace lu::graphics {
         sampler_info.addressModeV = address_mode;
         sampler_info.addressModeW = address_mode;
         sampler_info.mipLodBias = 0.0f;
-        sampler_info.compareOp = vk::CompareOp::eAlways;
+        sampler_info.compareOp = vk::CompareOp::eNever;
         sampler_info.compareEnable = vk::False;
         sampler_info.minLod = 0.0f;
         sampler_info.maxLod = static_cast<float>(m_desc.miplevel_count);

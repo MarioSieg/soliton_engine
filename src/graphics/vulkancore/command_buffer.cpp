@@ -187,6 +187,7 @@ namespace lu::vkb {
 
     auto command_buffer::set_scissor(const std::uint32_t width, const std::uint32_t height) -> void {
         vk::Rect2D scissor {};
+        scissor.offset = {0, 0};
         scissor.extent.width = width;
         scissor.extent.height = height;
         m_cmd.setScissor(0, 1, &scissor);

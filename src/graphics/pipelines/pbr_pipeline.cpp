@@ -48,8 +48,8 @@ namespace lu::graphics::pipelines {
             },
             vk::DescriptorImageInfo {
                 .imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal,
-                .imageView = m_pbr_filter_processor.irradiance_cube().image_view(),
-                .sampler = m_pbr_filter_processor.irradiance_cube().sampler(),
+                .imageView = m_pbr_filter_processor.environ_cube().image_view(),
+                .sampler = m_pbr_filter_processor.environ_cube().sampler(),
             },
             vk::DescriptorImageInfo {
                 .imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal,

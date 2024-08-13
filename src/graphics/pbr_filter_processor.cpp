@@ -9,6 +9,10 @@
 #include "../scripting/system_variable.hpp"
 
 #include <numbers>
+
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -18,8 +22,22 @@ namespace lu::graphics {
     static const system_variable<std::uint32_t> prefiltered_cube_size {"renderer.prefiltered_cube_size", {512u}};
     static const system_variable<std::uint32_t> prefiltered_cube_samples {"renderer.prefiltered_cube_samples", {32u}};
 
+    static const eastl::array<glm::mat4, 6> k_cube_matrices {
+        // POSITIVE_X
+        glm::rotate(glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
+        // NEGATIVE_X
+        glm::rotate(glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f)), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
+        // POSITIVE_Y
+        glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
+        // NEGATIVE_Y
+        glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
+        // POSITIVE_Z
+        glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
+        // NEGATIVE_Z
+        glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f))
+    };
 
-    pbr_filter_processor::pbr_filter_processor() {
+    pbr_filter_processor::pbr_filter_processor() : m_cube_mesh{"/engine_assets/meshes/skybox.gltf"} {
         m_environ_cube.emplace("/engine_assets/textures/hdr/gcanyon_cube.ktx");
         generate_irradiance_cube();
         generate_prefilter_cube();
@@ -46,6 +64,7 @@ namespace lu::graphics {
                 .format = k_irradiance_cube_format,
                 .usage = vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst,
                 .flags = vk::ImageCreateFlagBits::eCubeCompatible,
+                .is_cubemap = true,
                 .sampler = {
                     .mag_filter = vk::Filter::eLinear,
                     .min_filter = vk::Filter::eLinear,
@@ -116,6 +135,7 @@ namespace lu::graphics {
                 .format = k_irradiance_cube_format,
                 .usage = vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eTransferSrc,
                 .tiling = vk::ImageTiling::eOptimal,
+                .is_cubemap = false,
                 .sampler = {
                     .mag_filter = vk::Filter::eLinear,
                     .min_filter = vk::Filter::eLinear,
@@ -140,7 +160,7 @@ namespace lu::graphics {
             vkb::command_buffer layout_cmd {vk::QueueFlagBits::eGraphics, vk::CommandBufferLevel::ePrimary};
             layout_cmd.begin();
             layout_cmd.set_image_layout_barrier(
-                    offscreen.image->image(),
+                offscreen.image->image(),
                 vk::ImageAspectFlagBits::eColor,
                 vk::ImageLayout::eUndefined,
                 vk::ImageLayout::eColorAttachmentOptimal
@@ -169,7 +189,7 @@ namespace lu::graphics {
         pool_size.type = vk::DescriptorType::eCombinedImageSampler;
         pool_size.descriptorCount = 1;
         vk::DescriptorPoolCreateInfo descriptor_pool_ci {};
-        descriptor_pool_ci.maxSets = 2;
+        descriptor_pool_ci.maxSets = 1;
         descriptor_pool_ci.poolSizeCount = 1;
         descriptor_pool_ci.pPoolSizes = &pool_size;
         vkcheck(dvc.createDescriptorPool(
@@ -201,6 +221,7 @@ namespace lu::graphics {
             float delta_phi = (2.0f * std::numbers::pi_v<float>) / 180.0f;
             float delta_theta = (0.5f * std::numbers::pi_v<float>) / 64.0f;
         } push_block {};
+        static_assert(sizeof(push_block) == sizeof(float)*(16+2));
         vk::PushConstantRange range { vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0, sizeof(push_block) };
 
         vk::PipelineLayout pipeline_layout {};
@@ -250,19 +271,11 @@ namespace lu::graphics {
         dynamic_state_ci.dynamicStateCount = static_cast<std::uint32_t>(dynamic_states.size());
         dynamic_state_ci.pDynamicStates = dynamic_states.data();
 
-        // vec3 position only
-        constexpr eastl::array<vk::VertexInputAttributeDescription, 1> vertex_input_attributes {
-            vk::VertexInputAttributeDescription {0, 0, vk::Format::eR32G32B32Sfloat, 0}
-        };
         vk::PipelineVertexInputStateCreateInfo vertex_input_ci {};
-        vk::VertexInputBindingDescription vertex_binding {};
-        vertex_binding.binding = 0;
-        vertex_binding.stride = sizeof(glm::vec3);
-        vertex_binding.inputRate = vk::VertexInputRate::eVertex;
-        vertex_input_ci.vertexBindingDescriptionCount = 1;
-        vertex_input_ci.pVertexBindingDescriptions = &vertex_binding;
-        vertex_input_ci.pVertexAttributeDescriptions = vertex_input_attributes.data();
-        vertex_input_ci.vertexAttributeDescriptionCount = static_cast<std::uint32_t>(vertex_input_attributes.size());
+        vertex_input_ci.pVertexBindingDescriptions = k_vertex_binding_desc.data();
+        vertex_input_ci.vertexBindingDescriptionCount = static_cast<std::uint32_t>(k_vertex_binding_desc.size());
+        vertex_input_ci.pVertexAttributeDescriptions = k_vertex_attrib_desc.data();
+        vertex_input_ci.vertexAttributeDescriptionCount = static_cast<std::uint32_t>(k_vertex_attrib_desc.size());
 
         eastl::array<vk::PipelineShaderStageCreateInfo, 2> shader_stages {
             shader_cache::get().get_shader(shader_variant{"/engine_assets/shaders/src/filter_env_cube.vert", shader_stage::vertex})->get_stage_info(),
@@ -298,23 +311,6 @@ namespace lu::graphics {
         render_pass_bi.clearValueCount = 1;
         render_pass_bi.pClearValues = &clear_value;
 
-        mesh skybox_mesh {"/engine_assets/meshes/skybox.gltf"};
-
-        const eastl::array<glm::mat4, 6> matrices {
-            // POSITIVE_X
-            glm::rotate(glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
-            // NEGATIVE_X
-            glm::rotate(glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f)), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
-            // POSITIVE_Y
-            glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
-            // NEGATIVE_Y
-            glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
-            // POSITIVE_Z
-            glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
-            // NEGATIVE_Z
-            glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f))
-        };
-
         vkb::command_buffer cmd {vk::QueueFlagBits::eGraphics, vk::CommandBufferLevel::ePrimary};
         cmd.begin();
 
@@ -328,7 +324,7 @@ namespace lu::graphics {
         subresource_range.layerCount = 6;
 
         cmd.set_image_layout_barrier(
-                m_irradiance_cube->image(),
+            m_irradiance_cube->image(),
             vk::ImageLayout::eUndefined,
             vk::ImageLayout::eTransferDstOptimal,
             subresource_range
@@ -336,8 +332,9 @@ namespace lu::graphics {
 
         for (std::uint32_t m = 0; m < num_mips; ++m) {
             for (std::uint32_t f = 0; f < 6; ++f) {
-                const auto w = static_cast<std::uint32_t>(static_cast<float>(dim) * std::pow(0.5f, m));
-                const auto h = static_cast<std::uint32_t>(static_cast<float>(dim) * std::pow(0.5f, m));
+                const float w = static_cast<float>(dim) * std::pow(0.5f, m);
+                const float h = static_cast<float>(dim) * std::pow(0.5f, m);
+                log_info("Rendering face {} mip {} ({}x{})", f, m, w, h);
                 cmd.set_viewport(
                     0.0f,
                     0.0f,
@@ -345,7 +342,7 @@ namespace lu::graphics {
                     h
                 );
                 cmd.begin_render_pass(render_pass_bi, vk::SubpassContents::eInline);
-                push_block.mvp = glm::perspective(std::numbers::pi_v<float> / 2.0f, 1.0f, 0.1f, 512.0f) * matrices[f];
+                push_block.mvp = glm::perspective(std::numbers::pi_v<float> / 2.0f, 1.0f, 0.1f, 512.0f) * k_cube_matrices[f];
                 (*cmd).pushConstants(pipeline_layout, vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0, sizeof(push_block), &push_block);
                 (*cmd).bindPipeline(vk::PipelineBindPoint::eGraphics, shader_pipeline);
                 (*cmd).bindDescriptorSets(
@@ -357,10 +354,10 @@ namespace lu::graphics {
                     0,
                     nullptr
                 );
-                cmd.draw_mesh(skybox_mesh);
+                cmd.draw_mesh(m_cube_mesh);
                 cmd.end_render_pass();
                 cmd.set_image_layout_barrier(
-                        offscreen.image->image(),
+                    offscreen.image->image(),
                     vk::ImageAspectFlagBits::eColor,
                     vk::ImageLayout::eColorAttachmentOptimal,
                     vk::ImageLayout::eTransferSrcOptimal
@@ -376,9 +373,9 @@ namespace lu::graphics {
                 copy.dstSubresource.mipLevel = m;
                 copy.dstSubresource.layerCount = 1;
                 copy.dstOffset = vk::Offset3D {0, 0, 0};
-                copy.extent = vk::Extent3D {w, h, 1};
+                copy.extent = vk::Extent3D {static_cast<std::uint32_t>(w), static_cast<std::uint32_t>(h), 1};
                 (*cmd).copyImage(
-                        offscreen.image->image(),
+                    offscreen.image->image(),
                     vk::ImageLayout::eTransferSrcOptimal,
                     m_irradiance_cube->image(),
                     vk::ImageLayout::eTransferDstOptimal,
@@ -386,7 +383,7 @@ namespace lu::graphics {
                     &copy
                 );
                 cmd.set_image_layout_barrier(
-                        offscreen.image->image(),
+                    offscreen.image->image(),
                     vk::ImageAspectFlagBits::eColor,
                     vk::ImageLayout::eTransferSrcOptimal,
                     vk::ImageLayout::eColorAttachmentOptimal
@@ -395,7 +392,7 @@ namespace lu::graphics {
         }
 
         cmd.set_image_layout_barrier(
-                m_irradiance_cube->image(),
+            m_irradiance_cube->image(),
             vk::ImageLayout::eTransferDstOptimal,
             vk::ImageLayout::eShaderReadOnlyOptimal,
             subresource_range
@@ -504,12 +501,13 @@ namespace lu::graphics {
                 .format = k_irradiance_cube_format,
                 .usage = vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eTransferSrc,
                 .tiling = vk::ImageTiling::eOptimal,
+                .is_cubemap = true,
                 .sampler = {
-                        .mag_filter = vk::Filter::eLinear,
-                        .min_filter = vk::Filter::eLinear,
-                        .mipmap_mode = vk::SamplerMipmapMode::eLinear,
-                        .address_mode = vk::SamplerAddressMode::eClampToEdge,
-                        .enable_anisotropy = false
+                    .mag_filter = vk::Filter::eLinear,
+                    .min_filter = vk::Filter::eLinear,
+                    .mipmap_mode = vk::SamplerMipmapMode::eLinear,
+                    .address_mode = vk::SamplerAddressMode::eClampToEdge,
+                    .enable_anisotropy = false
                 }
             },
             eastl::nullopt
@@ -630,27 +628,19 @@ namespace lu::graphics {
         multisample_ci.rasterizationSamples = vk::SampleCountFlagBits::e1;
 
         constexpr eastl::array<vk::DynamicState, 2> dynamic_states {
-                vk::DynamicState::eViewport,
-                vk::DynamicState::eScissor
+            vk::DynamicState::eViewport,
+            vk::DynamicState::eScissor
         };
 
         vk::PipelineDynamicStateCreateInfo dynamic_state_ci {};
         dynamic_state_ci.dynamicStateCount = static_cast<std::uint32_t>(dynamic_states.size());
         dynamic_state_ci.pDynamicStates = dynamic_states.data();
 
-        // vec3 position only
-        constexpr eastl::array<vk::VertexInputAttributeDescription, 1> vertex_input_attributes {
-            vk::VertexInputAttributeDescription {0, 0, vk::Format::eR32G32B32Sfloat, 0}
-        };
         vk::PipelineVertexInputStateCreateInfo vertex_input_ci {};
-        vk::VertexInputBindingDescription vertex_binding {};
-        vertex_binding.binding = 0;
-        vertex_binding.stride = sizeof(glm::vec3);
-        vertex_binding.inputRate = vk::VertexInputRate::eVertex;
-        vertex_input_ci.vertexBindingDescriptionCount = 1;
-        vertex_input_ci.pVertexBindingDescriptions = &vertex_binding;
-        vertex_input_ci.pVertexAttributeDescriptions = vertex_input_attributes.data();
-        vertex_input_ci.vertexAttributeDescriptionCount = static_cast<std::uint32_t>(vertex_input_attributes.size());
+        vertex_input_ci.pVertexBindingDescriptions = k_vertex_binding_desc.data();
+        vertex_input_ci.vertexBindingDescriptionCount = static_cast<std::uint32_t>(k_vertex_binding_desc.size());
+        vertex_input_ci.pVertexAttributeDescriptions = k_vertex_attrib_desc.data();
+        vertex_input_ci.vertexAttributeDescriptionCount = static_cast<std::uint32_t>(k_vertex_attrib_desc.size());
 
         eastl::array<vk::PipelineShaderStageCreateInfo, 2> shader_stages {
             shader_cache::get().get_shader(shader_variant{"/engine_assets/shaders/src/filter_env_cube.vert", shader_stage::vertex})->get_stage_info(),
@@ -686,23 +676,6 @@ namespace lu::graphics {
         render_pass_bi.clearValueCount = 1;
         render_pass_bi.pClearValues = &clear_value;
 
-        mesh skybox_mesh {"/engine_assets/meshes/skybox.gltf"};
-
-        const eastl::array<glm::mat4, 6> matrices {
-            // POSITIVE_X
-            glm::rotate(glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
-            // NEGATIVE_X
-            glm::rotate(glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f)), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
-            // POSITIVE_Y
-            glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
-            // NEGATIVE_Y
-            glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
-            // POSITIVE_Z
-            glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
-            // NEGATIVE_Z
-            glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f))
-        };
-
         vkb::command_buffer cmd {vk::QueueFlagBits::eGraphics, vk::CommandBufferLevel::ePrimary};
         cmd.begin();
 
@@ -727,6 +700,7 @@ namespace lu::graphics {
             for (std::uint32_t f = 0; f < 6; ++f) {
                 const auto w = static_cast<std::uint32_t>(static_cast<float>(dim) * std::pow(0.5f, m));
                 const auto h = static_cast<std::uint32_t>(static_cast<float>(dim) * std::pow(0.5f, m));
+                log_info("Rendering face {} mip {} ({}x{}), R={}", f, m, w, h, push_block.roughness);
                 cmd.set_viewport(
                     0.0f,
                     0.0f,
@@ -734,7 +708,7 @@ namespace lu::graphics {
                     h
                 );
                 cmd.begin_render_pass(render_pass_bi, vk::SubpassContents::eInline);
-                push_block.mvp = glm::perspective(std::numbers::pi_v<float> / 2.0f, 1.0f, 0.1f, 512.0f) * matrices[f];
+                push_block.mvp = glm::perspective(std::numbers::pi_v<float> / 2.0f, 1.0f, 0.1f, 512.0f) * k_cube_matrices[f];
                 (*cmd).pushConstants(pipeline_layout, vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0, sizeof(push_block), &push_block);
                 (*cmd).bindPipeline(vk::PipelineBindPoint::eGraphics, shader_pipeline);
                 (*cmd).bindDescriptorSets(
@@ -746,7 +720,7 @@ namespace lu::graphics {
                     0,
                     nullptr
                 );
-                cmd.draw_mesh(skybox_mesh);
+                cmd.draw_mesh(m_cube_mesh);
                 cmd.end_render_pass();
                 cmd.set_image_layout_barrier(
                     offscreen.image->image(),

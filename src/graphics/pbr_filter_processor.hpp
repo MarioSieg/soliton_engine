@@ -26,6 +26,7 @@ namespace lu::graphics {
         auto generate_prefilter_cube() -> void;
         auto generate_brdf_lookup_table() -> void;
 
+        const mesh m_cube_mesh;
         eastl::optional<texture> m_environ_cube {};
         eastl::optional<texture> m_irradiance_cube {};
         eastl::optional<texture> m_prefiltered_cube {};

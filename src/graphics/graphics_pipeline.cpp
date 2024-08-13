@@ -158,24 +158,8 @@ namespace lu::graphics {
     }
 
     auto graphics_pipeline::configure_vertex_info(eastl::vector<vk::VertexInputBindingDescription>& cfg, eastl::vector<vk::VertexInputAttributeDescription>& bindings) -> void {
-        cfg.emplace_back(vk::VertexInputBindingDescription {
-            .binding = 0,
-            .stride = sizeof(vertex),
-            .inputRate = vk::VertexInputRate::eVertex
-        });
-
-        auto push_attribute = [&](const vk::Format format, const std::uint32_t offset) mutable  {
-            vk::VertexInputAttributeDescription& desc = bindings.emplace_back();
-            desc.location = bindings.size() - 1;
-            desc.binding = 0;
-            desc.format = format;
-            desc.offset = offset;
-        };
-        push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(vertex, position));
-        push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(vertex, normal));
-        push_attribute(vk::Format::eR32G32Sfloat, offsetof(vertex, uv));
-        push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(vertex, tangent));
-        push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(vertex, bitangent));
+        cfg.insert(cfg.end(), k_vertex_binding_desc.begin(), k_vertex_binding_desc.end());
+        bindings.insert(bindings.end(), k_vertex_attrib_desc.begin(), k_vertex_attrib_desc.end());
     }
 
     auto graphics_pipeline::configure_enable_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> void {
