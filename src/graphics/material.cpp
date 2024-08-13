@@ -34,7 +34,7 @@ namespace lu::graphics {
     auto material::flush_property_updates() -> void {
         eastl::fixed_vector<vk::DescriptorImageInfo, 8> image_infos {};
 
-        const auto make_write_tex_info = [](const texture* tex, const texture& fallback) {
+        constexpr auto make_write_tex_info = [](const texture* tex, const texture& fallback) {
             vk::DescriptorImageInfo info {};
             info.imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
             info.imageView = tex ? tex->image_view() : fallback.image_view();
@@ -67,23 +67,9 @@ namespace lu::graphics {
         return *s_resources;
     }
 
-    static constexpr eastl::array<std::uint8_t, 4> k_fallback_image_pixel_white {0xff, 0xff, 0xff, 0xff};
-
     material::static_resources::static_resources() :
         error_texture{cv_error_texture()},
-        fallback_image_white{texture_descriptor {
-                .width = 1,
-                .height = 1,
-                .miplevel_count = 1,
-                .array_size = 1,
-                .format = vk::Format::eR8G8B8A8Unorm,
-                .sampler = {
-                    .enable_anisotropy = false
-                }
-            }, texture_data_supplier {
-            .data = k_fallback_image_pixel_white.data(),
-            .size = k_fallback_image_pixel_white.size()
-        }},
+        fallback_image_white{"/engine_assets/textures/system/fallback_white.png"},
         descriptor_allocator {},
         descriptor_layout_cache {} {
 

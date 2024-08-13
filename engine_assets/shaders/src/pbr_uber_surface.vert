@@ -36,7 +36,7 @@ void main() {
 	outNormal = nn * normalize(inNormal);
 	outTangent = nn * normalize(inTangent);
 	outBiTangent = nn * normalize(inBiTangent);
-	outTBN = (mat3(outTangent, outBiTangent, outNormal));
+	outTBN = mat3(outTangent, outBiTangent, outNormal);
 	outTangentViewPos = outTBN * consts.camPos.rgb;
 	outTangentFragPos = outTBN * outWorldPos;
 	outUV = inUV;
