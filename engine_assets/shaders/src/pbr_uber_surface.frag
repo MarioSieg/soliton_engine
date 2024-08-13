@@ -78,7 +78,7 @@ void main() {
   const float roughness = metallic_roughness.g;
   const float ao = texture(sOcclusionMap, inUV).r;
 
-  const vec3 V = normalize(consts.camera_pos.xyz - inWorldPos);
+  const vec3 V = normalize(inWorldPos - consts.camera_pos.xyz);
   const vec3 N = normal_map(inTBN, texture(sNormalMap, uv).rgb);
   const vec3 R = reflect(-V, N);
 
@@ -128,12 +128,12 @@ void main() {
   vec3 kD = 1.0 - kS;
   kD *= 1.0 - metallic;
 
-  vec3 irradiance = texture(irradiance_cube, -N).rgb;
+  vec3 irradiance = texture(irradiance_cube, N).rgb;
   vec3 diffuse = irradiance * albedo;
 
   // sample both the pre-filter map and the BRDF lut and combine them together as per the Split-Sum approximation to get the IBL specular part.
-  vec3 prefilteredColor = textureLod(prefilter_cube, -R, roughness * MAX_REFLECTION_LOD).rgb;
-  vec2 brdf  = texture(brdf_lut, vec2(max(dot(N, V), 0.0), roughness)).rg;
+  vec3 prefilteredColor = textureLod(prefilter_cube, R, roughness * MAX_REFLECTION_LOD).rgb;
+  vec2 brdf = texture(brdf_lut, vec2(max(dot(N, V), 0.0), roughness)).rg;
   vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
 
   vec3 ambient = (kD * diffuse + specular) * ao;
