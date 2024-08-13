@@ -28,7 +28,7 @@ layout (push_constant, std430) uniform PushConstants { // TODO: move to per fram
      layout(offset = 192+4*3) uint frame_idx;
 } consts;
 
-const float MAX_REFLECTION_LOD = 4.0;
+const float MAX_REFLECTION_LOD = 9.0;
 
 void main() {
   const vec3 albedo = texture(samplerAlbedoMap, inUV).rgb;
