@@ -10,7 +10,6 @@ namespace lu::graphics {
     using scripting::scripting_subsystem;
 
     static const system_variable<eastl::string> cv_error_texture {"renderer.error_texture", eastl::monostate{}};
-    static const system_variable<eastl::string> cv_flat_normal {"renderer.flat_normal_texture", eastl::monostate{}};
     static eastl::optional<material::static_resources> s_resources {};
 
     material::material(
@@ -44,10 +43,10 @@ namespace lu::graphics {
         };
 
         image_infos.emplace_back(make_write_tex_info(albedo_map, s_resources->error_texture));
-        image_infos.emplace_back(make_write_tex_info(normal_map, s_resources->flat_normal));
-        image_infos.emplace_back(make_write_tex_info(metallic_roughness_map, s_resources->error_texture));
-        image_infos.emplace_back(make_write_tex_info(height_map, s_resources->flat_heightmap));
-        image_infos.emplace_back(make_write_tex_info(ambient_occlusion_map, s_resources->error_texture));
+        image_infos.emplace_back(make_write_tex_info(normal_map, s_resources->fallback_image_white));
+        image_infos.emplace_back(make_write_tex_info(metallic_roughness_map, s_resources->fallback_image_white));
+        image_infos.emplace_back(make_write_tex_info(height_map, s_resources->fallback_image_white));
+        image_infos.emplace_back(make_write_tex_info(ambient_occlusion_map, s_resources->fallback_image_white));
 
         vkb::descriptor_factory factory {s_resources->descriptor_layout_cache, s_resources->descriptor_allocator};
         for (std::uint32_t i = 0; auto&& info : image_infos)
@@ -68,10 +67,23 @@ namespace lu::graphics {
         return *s_resources;
     }
 
+    static constexpr eastl::array<std::uint8_t, 4> k_fallback_image_pixel_white {0xff, 0xff, 0xff, 0xff};
+
     material::static_resources::static_resources() :
         error_texture{cv_error_texture()},
-        flat_normal{cv_flat_normal()},
-        flat_heightmap{"/engine_assets/textures/system/flatheight.ktx"},
+        fallback_image_white{texture_descriptor {
+                .width = 1,
+                .height = 1,
+                .miplevel_count = 1,
+                .array_size = 1,
+                .format = vk::Format::eR8G8B8A8Unorm,
+                .sampler = {
+                    .enable_anisotropy = false
+                }
+            }, texture_data_supplier {
+            .data = k_fallback_image_pixel_white.data(),
+            .size = k_fallback_image_pixel_white.size()
+        }},
         descriptor_allocator {},
         descriptor_layout_cache {} {
 

@@ -16,8 +16,7 @@ namespace lu::graphics {
             ~static_resources();
 
             texture error_texture;
-            texture flat_normal;
-            texture flat_heightmap;
+            texture fallback_image_white;
             vkb::descriptor_allocator descriptor_allocator {};
             vkb::descriptor_layout_cache descriptor_layout_cache {};
             vk::DescriptorSetLayout descriptor_layout {};

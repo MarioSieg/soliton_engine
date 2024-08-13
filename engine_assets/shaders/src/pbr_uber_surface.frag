@@ -76,7 +76,7 @@ void main() {
   const vec2 metallic_roughness = texture(sRoughnessMap, uv).rg;
   const float metallic = metallic_roughness.r;
   const float roughness = metallic_roughness.g;
-  const float ao = 1.0; //texture(sOcclusionMap, inUV).r;
+  const float ao = texture(sOcclusionMap, inUV).r;
 
   const vec3 V = normalize(consts.camera_pos.xyz - inWorldPos);
   const vec3 N = normal_map(inTBN, texture(sNormalMap, uv).rgb);
