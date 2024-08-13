@@ -41,7 +41,6 @@ void main() {
   const vec3 V = normalize(consts.camera_pos.xyz - inWorldPos);
   const vec3 R = reflect(-V, N);
 
-
   // of 0.04 and if it's a metal, use the albedo color as F0 (metallic workflow)
   vec3 F0 = vec3(0.04);
   F0 = mix(F0, albedo, metallic);
@@ -52,7 +51,7 @@ void main() {
     // calculate per-light radiance
     vec3 L = normalize(CB_PER_FRAME.sun_dir);
     vec3 H = normalize(V + L);
-    vec3 radiance = CB_PER_FRAME.sun_color;
+    vec3 radiance = CB_PER_FRAME.sun_color * 4;
 
     // Cook-Torrance BRDF
     float NDF = DistributionGGX(N, H, roughness);
@@ -88,11 +87,11 @@ void main() {
   vec3 kD = 1.0 - kS;
   kD *= 1.0 - metallic;
 
-  vec3 irradiance = texture(irradiance_cube, N).rgb;
+  vec3 irradiance = texture(irradiance_cube, -N).rgb;
   vec3 diffuse = irradiance * albedo;
 
   // sample both the pre-filter map and the BRDF lut and combine them together as per the Split-Sum approximation to get the IBL specular part.
-  vec3 prefilteredColor = textureLod(prefilter_cube, R, roughness * MAX_REFLECTION_LOD).rgb;
+  vec3 prefilteredColor = textureLod(prefilter_cube, -R, roughness * MAX_REFLECTION_LOD).rgb;
   vec2 brdf  = texture(brdf_lut, vec2(max(dot(N, V), 0.0), roughness)).rg;
   vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
 
