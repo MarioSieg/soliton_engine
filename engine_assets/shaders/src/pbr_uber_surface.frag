@@ -51,7 +51,7 @@ void main() {
     // calculate per-light radiance
     vec3 L = normalize(CB_PER_FRAME.sun_dir);
     vec3 H = normalize(V + L);
-    vec3 radiance = CB_PER_FRAME.sun_color * 4;
+    vec3 radiance = CB_PER_FRAME.sun_color * 1;
 
     // Cook-Torrance BRDF
     float NDF = DistributionGGX(N, H, roughness);
@@ -77,7 +77,7 @@ void main() {
     float NdotL = max(dot(N, L), 0.0);
 
     // add to outgoing radiance Lo
-    Lo += (kD * albedo / kPI + specular) * radiance * NdotL; // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
+    Lo = (kD * albedo / kPI + specular) * radiance * NdotL; // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
   }
 
   // ambient lighting (we now use IBL as the ambient term)

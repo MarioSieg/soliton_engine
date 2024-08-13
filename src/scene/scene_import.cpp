@@ -25,7 +25,7 @@ namespace lu {
         const auto start = eastl::chrono::high_resolution_clock::now();
 
         Assimp::Importer importer {};
-        importer.SetIOHandler(new graphics::lunam_assimp_io_system {});
+        //importer.SetIOHandler(new graphics::lunam_assimp_io_system {});
         passert(importer.ValidateFlags(load_flags));
         const aiScene* scene = importer.ReadFile(path.c_str(), load_flags);
         if (!scene || !scene->mNumMeshes) [[unlikely]] {

@@ -5,6 +5,7 @@
 #include "../material.hpp"
 #include "../vulkancore/context.hpp"
 #include "../../core/kernel.hpp"
+#include "../graphics_subsystem.hpp"
 
 namespace lu::graphics::pipelines {
     auto pbr_pipeline::render_single_mesh(     // WARNING! RENDER THREAD LOCAL
@@ -24,9 +25,7 @@ namespace lu::graphics::pipelines {
         cmd.push_consts(vk::ShaderStageFlagBits::eVertex, pc_vs);
 
         push_constants_fs pc_fs {};
-        DirectX::XMFLOAT4A camera_pos {};
-        DirectX::XMStoreFloat4A(&camera_pos, DirectX::XMMatrixInverse(nullptr, view_mtx).r[3]);
-        pc_fs.data = camera_pos;
+        pc_fs.data = graphics_subsystem::get_camera_transform().position;
         pc_fs.data.w = static_cast<float>(kernel::get().get_time());
         cmd.push_consts(vk::ShaderStageFlagBits::eFragment, pc_fs);
 

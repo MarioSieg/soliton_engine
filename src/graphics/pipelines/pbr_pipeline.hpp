@@ -22,7 +22,7 @@ namespace lu::graphics::pipelines {
         };
 
         struct push_constants_fs final {
-            DirectX::XMFLOAT4A data; // xyz: camera position, w: time
+            DirectX::XMFLOAT4 data; // xyz: camera position, w: time
         };
 
     private:
