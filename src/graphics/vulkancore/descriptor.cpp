@@ -3,7 +3,7 @@
 #include "descriptor.hpp"
 #include "context.hpp"
 
-namespace lu::graphics {
+namespace lu::vkb {
     auto descriptor_allocator::reset_all_pools() -> void {
         for (auto&& pool : m_used_pools) {
             vkb::vkdvc().resetDescriptorPool(pool, vk::DescriptorPoolResetFlags{});
@@ -13,7 +13,7 @@ namespace lu::graphics {
         m_current_pool = VK_NULL_HANDLE;
     }
 
-    auto descriptor_allocator::allocate(vk::DescriptorSet &set, vk::DescriptorSetLayout layout) -> bool {
+    auto descriptor_allocator::allocate(vk::DescriptorSet& set, vk::DescriptorSetLayout layout) -> bool {
         // when current working pool is null then request new
         if (m_current_pool == VK_NULL_HANDLE) {
             m_current_pool = request_pool();
@@ -58,25 +58,24 @@ namespace lu::graphics {
         }
     }
 
-    auto descriptor_allocator::request_pool() -> vk::DescriptorPool {
+    auto descriptor_allocator::request_pool(const std::uint32_t count) -> vk::DescriptorPool {
         if (!m_free_pools.empty()) {
             auto pool = m_free_pools.back();
             m_free_pools.pop_back();
             return pool;
         } else {
-            return create_pool(m_pool_sizes, 1000, {});
+            return create_pool(configured_pool_sizes, count ? count : alloc_granularity, {});
         }
     }
 
-    auto descriptor_allocator::create_pool(const pool_sizes& sizes, const std::int32_t count, const vk::DescriptorPoolCreateFlagBits flags) -> vk::DescriptorPool {
+    auto descriptor_allocator::create_pool(const pool_sizes& sizes, const std::uint32_t alloc_granularity, const vk::DescriptorPoolCreateFlagBits flags) -> vk::DescriptorPool {
         eastl::vector<vk::DescriptorPoolSize> pool_sizes {};
         pool_sizes.reserve(sizes.size());
-        for (auto&& [type, num] : sizes) {
-            pool_sizes.emplace_back(vk::DescriptorPoolSize{.type=type, .descriptorCount=static_cast<std::uint32_t>(num * static_cast<float>(count))});
-        }
+        for (auto&& [type, num] : sizes)
+            pool_sizes.emplace_back(vk::DescriptorPoolSize{.type=type, .descriptorCount=static_cast<std::uint32_t>(num * static_cast<float>(alloc_granularity))});
         vk::DescriptorPoolCreateInfo pool_info {};
         pool_info.flags = flags;
-        pool_info.maxSets = count;
+        pool_info.maxSets = alloc_granularity;
         pool_info.poolSizeCount = static_cast<std::uint32_t>(pool_sizes.size());
         pool_info.pPoolSizes = pool_sizes.data();
         vk::DescriptorPool pool {};
@@ -93,12 +92,12 @@ namespace lu::graphics {
     }
 
     auto descriptor_layout_cache::descriptor_layout_info::get_hash() const noexcept -> std::size_t {
-        return crc32(reinterpret_cast<const std::byte*>(bindings.data()), bindings.size() * sizeof(std::decay_t<decltype(bindings[0])>));
+        return crc32(reinterpret_cast<const std::byte*>(bindings.data()), bindings.size() * sizeof(bindings[0]));
     }
 
     descriptor_layout_cache::~descriptor_layout_cache() {
         for (auto&& [_, layout] : m_layout_cache) {
-            vkb::vkdvc().destroyDescriptorSetLayout(layout, vkb::get_alloc());
+            //vkb::vkdvc().destroyDescriptorSetLayout(layout, vkb::get_alloc()); TODO
         }
         m_layout_cache.clear();
     }
@@ -136,8 +135,8 @@ namespace lu::graphics {
         vk::DescriptorSetLayoutCreateInfo layout_info {};
         layout_info.bindingCount = static_cast<std::uint32_t>(m_bindings.size());
         layout_info.pBindings = m_bindings.data();
-        layout = m_cache.create_layout(layout_info);
-        passert(m_allocator.allocate(set, layout));
+        layout = m_cache->create_layout(layout_info);
+        passert(m_allocator->allocate(set, layout));
     }
 
     auto descriptor_factory::build_no_info(vk::DescriptorSet& set) -> void {
@@ -149,7 +148,7 @@ namespace lu::graphics {
         vk::DescriptorSetLayoutCreateInfo layout_info {};
         layout_info.bindingCount = static_cast<std::uint32_t>(m_bindings.size());
         layout_info.pBindings = m_bindings.data();
-        layout = m_cache.create_layout(layout_info);
+        layout = m_cache->create_layout(layout_info);
     }
 
     auto descriptor_factory::build(vk::DescriptorSet& set, vk::DescriptorSetLayout& layout) -> bool {
@@ -158,11 +157,11 @@ namespace lu::graphics {
         vk::DescriptorSetLayoutCreateInfo layout_info {};
         layout_info.bindingCount = static_cast<std::uint32_t>(m_bindings.size());
         layout_info.pBindings = m_bindings.data();
-        ret_layout = m_cache.create_layout(layout_info);
-        if (!m_allocator.allocate(ret_set, ret_layout)) [[unlikely]] {
+        ret_layout = m_cache->create_layout(layout_info);
+        if (!m_allocator->allocate(ret_set, ret_layout)) [[unlikely]] {
             return false;
         }
-        eastl::vector<vk::WriteDescriptorSet> writes {};
+        eastl::fixed_vector<vk::WriteDescriptorSet, 16> writes {};
         writes.reserve(m_write_descriptors.size());
         for (auto&& dc : m_write_descriptors) {
             vk::WriteDescriptorSet write {};
@@ -177,7 +176,8 @@ namespace lu::graphics {
             }
             writes.emplace_back(write);
         }
-        vkb::vkdvc().updateDescriptorSets(static_cast<std::uint32_t>(writes.size()), writes.data(), 0, nullptr);
+        if (!writes.empty())
+            vkb::vkdvc().updateDescriptorSets(static_cast<std::uint32_t>(writes.size()), writes.data(), 0, nullptr);
         set = ret_set;
         layout = ret_layout;
         return true;
@@ -203,7 +203,7 @@ namespace lu::graphics {
     }
 
     auto descriptor_factory::bind_buffers(
-        const std::uint32_t bindings,
+        const std::uint32_t binding,
         const std::uint32_t count,
         vk::DescriptorBufferInfo* const buffer_info,
         const vk::DescriptorType type,
@@ -211,7 +211,7 @@ namespace lu::graphics {
     ) -> descriptor_factory& {
 
         vk::DescriptorSetLayoutBinding binding_info {};
-        binding_info.binding = bindings;
+        binding_info.binding = binding;
         binding_info.descriptorCount = count;
         binding_info.descriptorType = type;
         binding_info.stageFlags = flags;
@@ -219,7 +219,7 @@ namespace lu::graphics {
 
         descriptor_write_container dc {};
         dc.buffer_info = buffer_info;
-        dc.binding = bindings;
+        dc.binding = binding;
         dc.count = count;
         dc.type = type;
         dc.is_image = false;
@@ -229,7 +229,7 @@ namespace lu::graphics {
     }
 
     auto descriptor_factory::bind_images(
-        const std::uint32_t bindings,
+        const std::uint32_t binding,
         const std::uint32_t count,
         vk::DescriptorImageInfo* const buffer_info,
         const vk::DescriptorType type,
@@ -237,7 +237,7 @@ namespace lu::graphics {
     ) -> descriptor_factory& {
 
         vk::DescriptorSetLayoutBinding binding_info {};
-        binding_info.binding = bindings;
+        binding_info.binding = binding;
         binding_info.descriptorCount = count;
         binding_info.descriptorType = type;
         binding_info.stageFlags = flags;
@@ -245,7 +245,7 @@ namespace lu::graphics {
 
         descriptor_write_container dc {};
         dc.image_info = buffer_info;
-        dc.binding = bindings;
+        dc.binding = binding;
         dc.count = count;
         dc.type = type;
         dc.is_image = true;

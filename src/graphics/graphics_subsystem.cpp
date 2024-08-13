@@ -3,15 +3,15 @@
 #include "graphics_subsystem.hpp"
 
 #include "../platform/platform_subsystem.hpp"
-#include "../scripting/convar.hpp"
+#include "../scripting/system_variable.hpp"
 
 #if USE_MIMALLOC
 #include <mimalloc.h>
 #endif
 
 #include "material.hpp"
+#include "draw_partition.hpp"
 #include "pipeline_cache.hpp"
-
 #include "pipelines/pbr_pipeline.hpp"
 #include "pipelines/sky.hpp"
 
@@ -19,36 +19,37 @@ namespace lu::graphics {
     using platform::platform_subsystem;
     using vkb::context;
 
-    static convar<eastl::string> cv_shader_dir {"Renderer.shaderDir", eastl::nullopt, scripting::convar_flags::read_only};
-    static convar<bool> cv_enable_parallel_shader_compilation {"Renderer.enableParallelShaderCompilation", {{true}}, scripting::convar_flags::read_only};
-    static convar<std::uint32_t> cv_max_render_threads {
-        "Threads.renderThreads",
-        {{2u}},
-        scripting::convar_flags::read_only,
-        1u,
-        std::max(1u, std::thread::hardware_concurrency())
-    };
+    static const system_variable<eastl::string> cv_shader_dir {"renderer.shader_dir", eastl::monostate{}};
+    static const system_variable<std::uint32_t> cv_concurrent_frames {"renderer.concurrent_frames", {3}};
+    static const system_variable<std::uint32_t> cv_msaa_samples {"renderer.msaa_samples", {4}};
+    static const system_variable<std::uint32_t> cv_max_render_threads {"cpu.render_threads", {2}};
+
+    static constinit std::uint32_t s_num_draw_calls_prev = 0;
+    static constinit std::uint32_t s_num_draw_verts_prev = 0;
 
     graphics_subsystem::graphics_subsystem() : subsystem{"Graphics"} {
         log_info("Initializing graphics subsystem");
 
         s_instance = this;
 
-        GLFWwindow* window = platform_subsystem::get_glfw_window();
-        context::init(window);
+        GLFWwindow* const window = platform_subsystem::get_glfw_window();
+        context::create(vkb::context_desc {
+            .window = window,
+            .concurrent_frames = cv_concurrent_frames(),
+            .msaa_samples = cv_msaa_samples()
+        });
 
         material::init_static_resources();
-
-        create_descriptor_pool();
 
         shader_cache::init(cv_shader_dir());
 
         pipeline_cache::init();
         auto& reg = pipeline_cache::get();
         reg.register_pipeline<pipelines::pbr_pipeline>();
-        reg.register_pipeline<pipelines::sky_pipeline>();
 
-        m_render_thread_pool.emplace(&render_scene_bucket, this, cv_max_render_threads());
+        m_render_thread_pool.emplace([this](vkb::command_buffer& cmd, const std::int32_t bucket_id, const std::int32_t num_threads) -> void {
+            render_scene_bucket(cmd, bucket_id, num_threads);
+        }, cv_max_render_threads());
         m_render_data.reserve(32);
 
         m_imgui_context.emplace();
@@ -73,15 +74,6 @@ namespace lu::graphics {
         material::free_static_resources();
         context::shutdown();
         s_instance = nullptr;
-    }
-
-    [[nodiscard]] static auto compute_render_bucket_range(const std::size_t id, const std::size_t num_entities, const std::size_t num_threads) noexcept -> eastl::array<std::size_t, 2> {
-        const std::size_t base_bucket_size = num_entities/num_threads;
-        const std::size_t num_extra_entities = num_entities%num_threads;
-        const std::size_t begin = base_bucket_size*id + std::min(id, num_extra_entities);
-        const std::size_t end = begin + base_bucket_size + (id < num_extra_entities ? 1 : 0);
-        passert(begin <= end && end <= num_entities);
-        return {begin, end};
     }
 
     [[nodiscard]] static auto find_main_camera() -> flecs::entity {
@@ -126,59 +118,41 @@ namespace lu::graphics {
 
     // WARNING! RENDER THREAD LOCAL
     HOTPROC auto graphics_subsystem::render_scene_bucket(
-        const vk::CommandBuffer cmd,
+        vkb::command_buffer& cmd,
         const std::int32_t bucket_id,
-        const std::int32_t num_threads,
-        void* const usr
-    ) -> void {
-        passert(usr != nullptr);
-        auto& self = *static_cast<graphics_subsystem*>(usr);
+        const std::int32_t num_threads
+    ) const -> void {
+        const auto& pipeline = static_cast<const graphics_pipeline&>(pipeline_cache::get().get_pipeline("mat_pbr"));
+        pipeline.on_bind(cmd);
 
-        const auto& pbr_pipeline = dynamic_cast<const pipelines::pbr_pipeline&>(pipeline_cache::get().get_pipeline("mat_pbr"));
-
-        cmd.bindPipeline(vk::PipelineBindPoint::eGraphics, pbr_pipeline.get_pipeline());
-        const DirectX::XMMATRIX vp = DirectX::XMLoadFloat4x4A(&graphics_subsystem::s_view_proj_mtx);
+        const DirectX::XMMATRIX view_mtx = DirectX::XMLoadFloat4x4A(&s_view_mtx);
+        const DirectX::XMMATRIX view_proj_mtx = DirectX::XMLoadFloat4x4A(&graphics_subsystem::s_view_proj_mtx);
 
         // thread workload distribution
-        const eastl::vector<eastl::pair<eastl::span<const com::transform>, eastl::span<const com::mesh_renderer>>>& render_data = self.get_render_data();
-        const std::size_t total_entities = std::accumulate(render_data.cbegin(), render_data.cend(), 0, [](const std::size_t acc, const auto& pair) noexcept {
-            passert(pair.first.size() == pair.second.size());
-            return acc + pair.first.size();
+        partitioned_draw(bucket_id, num_threads, get_render_data(), [&](
+            const std::size_t i,
+            const com::transform& transform,
+            const com::mesh_renderer& renderer
+        ) -> void {
+            pipeline.render_mesh(cmd, transform, renderer, s_frustum, view_proj_mtx, view_mtx);
         });
 
-        // Compute start and end for this thread across all entities
-        const auto [global_start, global_end] = compute_render_bucket_range(bucket_id, total_entities, num_threads);
-        std::size_t processed_entities = 0;
-        for (const auto& [transforms, renderers] : render_data) {
-            if (processed_entities >= global_end) break; // Already processed all entities this thread is responsible for
-            std::size_t local_start = 0;
-            std::size_t local_end = transforms.size();
-            if (processed_entities < global_start)
-                local_start = std::min(transforms.size(), global_start - processed_entities);
-            if (processed_entities + transforms.size() > global_end)
-                local_end = std::min(transforms.size(), global_end - processed_entities);
-            for (std::size_t i = local_start; i < local_end; ++i)
-                pbr_pipeline.render_mesh(cmd, pbr_pipeline.get_layout(), transforms[i], renderers[i], s_frustum, vp);
-            processed_entities += transforms.size();
-        }
-
-        if (bucket_id == num_threads - 1) { // Last thread
-            if (eastl::optional<debugdraw>& dd = self.get_debug_draw_opt(); dd) {
-                dd->render(
-                    cmd,
-                    DirectX::XMLoadFloat4x4A(&graphics_subsystem::s_view_proj_mtx),
-                    DirectX::XMLoadFloat4(&graphics_subsystem::s_camera_transform.position)
-                );
+        if (is_last_thread(bucket_id, num_threads)) { // Last thread
+            if (auto& dd = const_cast<eastl::optional<debugdraw>&>(m_debugdraw); dd.has_value()) {
+                const auto view_pos = DirectX::XMLoadFloat4(&graphics_subsystem::s_camera_transform.position);
+                dd->render(cmd, view_proj_mtx, view_pos);
             }
-            self.get_imgui_context().submit_imgui(cmd);
+            if (auto& imgui = const_cast<eastl::optional<imgui::context>&>(m_imgui_context); imgui.has_value()) {
+                imgui->submit_imgui(cmd);
+            }
         }
     }
 
     HOTPROC auto graphics_subsystem::on_pre_tick() -> bool {
-        s_num_draw_verts_prev = s_num_draw_verts.load(std::memory_order_relaxed);
-        s_num_draw_calls_prev = s_num_draw_calls.load(std::memory_order_relaxed);
-        s_num_draw_calls.store(0, std::memory_order_relaxed);
-        s_num_draw_verts.store(0, std::memory_order_relaxed);
+        auto& num_draw_calls = const_cast<std::atomic_uint32_t&>(vkb::command_buffer::get_total_draw_calls());
+        auto& num_draw_verts = const_cast<std::atomic_uint32_t&>(vkb::command_buffer::get_total_draw_verts());
+        s_num_draw_verts_prev = num_draw_calls.exchange(0, std::memory_order_relaxed);
+        s_num_draw_calls_prev = num_draw_verts.exchange(0, std::memory_order_relaxed);
         if (m_reload_pipelines_next_frame) [[unlikely]] {
             vkcheck(vkb::vkdvc().waitIdle());
             reload_pipelines();
@@ -189,8 +163,11 @@ namespace lu::graphics {
         const auto h = static_cast<float>(vkb::ctx().get_height());
         m_imgui_context->begin_frame();
         update_main_camera(w, h);
+
+        m_cmd.reset();
         m_cmd = vkb::ctx().begin_frame(s_clear_color, &m_inheritance_info);
-        vkb::ctx().begin_render_pass(m_cmd, vkb::ctx().get_scene_render_pass(), vk::SubpassContents::eSecondaryCommandBuffers);
+        m_cmd->begin(vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
+        vkb::ctx().begin_render_pass(*m_cmd, vkb::ctx().get_scene_render_pass(), vk::SubpassContents::eSecondaryCommandBuffers);
         return true;
     }
 
@@ -205,21 +182,21 @@ namespace lu::graphics {
         }
         m_render_data.clear();
         scene.readonly_begin();
-        m_render_query.query.iter([this](const flecs::iter& i, const com::transform* transforms, const com::mesh_renderer* renderers) {
+        m_render_query.query.iter([this](const flecs::iter& i, const com::transform* const transforms, const com::mesh_renderer* const renderers) {
             const std::size_t n = i.count();
             m_render_data.emplace_back(eastl::span{transforms, n}, eastl::span{renderers, n});
         });
         if (m_cmd) [[likely]] { // TODO: refractor
             m_render_thread_pool->begin_frame(&m_inheritance_info);
-            m_render_thread_pool->process_frame(m_cmd);
+            m_render_thread_pool->process_frame(*m_cmd);
             scene.readonly_end();
-            vkb::ctx().end_render_pass(m_cmd);
-            vkcheck(m_cmd.end());
+            m_cmd->end_render_pass();
+            m_cmd->end();
             m_render_data.clear();
 
             //render_uis(); TODO
 
-            vkb::ctx().end_frame(m_cmd);
+            vkb::ctx().end_frame(*m_cmd);
         } else {
             scene.readonly_end();
         }
@@ -234,59 +211,22 @@ namespace lu::graphics {
         
     }
 
-    // Descriptors are allocated from a pool, that tells the implementation how many and what types of descriptors we are going to use (at maximum)
-    auto graphics_subsystem::create_descriptor_pool() -> void {
-        const vkb::device& dvc = vkb::dvc();
-        const vk::Device device = vkb::vkdvc();
-
-        const eastl::array<vk::DescriptorPoolSize, 1> sizes {
-            vk::DescriptorPoolSize {
-                .type = vk::DescriptorType::eUniformBufferDynamic,
-                .descriptorCount = 128u
-            },
-        };
-
-        // Create the global descriptor pool
-        // All descriptors used in this example are allocated from this pool
-        vk::DescriptorPoolCreateInfo descriptor_pool_ci {};
-        descriptor_pool_ci.poolSizeCount = static_cast<std::uint32_t>(sizes.size());
-        descriptor_pool_ci.pPoolSizes = sizes.data();
-        descriptor_pool_ci.maxSets = 32; // TODO max sets Allocate one set for each frame
-        vkcheck(device.createDescriptorPool(&descriptor_pool_ci, vkb::get_alloc(), &m_descriptor_pool));
-    }
-
     auto graphics_subsystem::render_uis() -> void {
-        constexpr vk::CommandBufferBeginInfo begin_info {};
-        vkcheck(m_cmd.begin(&begin_info));
-        m_noesis_context->render_offscreen(m_cmd);
+        m_cmd->begin();
+        m_noesis_context->render_offscreen(*m_cmd);
 
         auto w = static_cast<float>(vkb::ctx().get_width());
         auto h = static_cast<float>(vkb::ctx().get_height());
 
         // Update dynamic viewport state
-        vk::Viewport viewport {};
-        viewport.width = w;
-        viewport.height = -h;
-        viewport.x = 0.0f;
-        viewport.y = h;
-        viewport.minDepth = 0.0f;
-        viewport.maxDepth = 1.0f;
-        m_cmd.setViewport(0, 1, &viewport);
+        m_cmd->set_viewport(0.0f, h, w, -h);
+        m_cmd->set_scissor(w, h);
 
-        // Update dynamic scissor state
-        vk::Rect2D scissor {};
-        scissor.extent.width = w;
-        scissor.extent.height = h;
-        scissor.offset.x = 0.0f;
-        scissor.offset.y = 0.0f;
-        m_cmd.setScissor(0, 1, &scissor);
-
-        vkb::ctx().begin_render_pass(m_cmd, vkb::ctx().get_ui_render_pass(), vk::SubpassContents::eInline);
+        vkb::ctx().begin_render_pass(*m_cmd, vkb::ctx().get_ui_render_pass(), vk::SubpassContents::eInline);
         m_noesis_context->render_onscreen(vkb::ctx().get_ui_render_pass());
-        m_imgui_context->submit_imgui(m_cmd);
-        vkb::ctx().end_render_pass(m_cmd);
-
-        vkcheck(m_cmd.end());
+        m_imgui_context->submit_imgui(*m_cmd);
+        m_cmd->end_render_pass();
+        m_cmd->end();
     }
 
     auto graphics_subsystem::reload_pipelines() -> void {
@@ -294,10 +234,18 @@ namespace lu::graphics {
         const auto now = eastl::chrono::high_resolution_clock::now();
         if (true) [[likely]] { // TODO
             auto& reg = pipeline_cache::get();
-            reg.try_recreate_all();
+            reg.recreate_all();
             log_info("Reloaded pipelines in {}ms", eastl::chrono::duration_cast<eastl::chrono::milliseconds>(eastl::chrono::high_resolution_clock::now() - now).count());
         } else {
             log_error("Failed to compile shaders");
         }
+    }
+
+    auto graphics_subsystem::get_num_draw_calls() noexcept -> std::uint32_t {
+        return s_num_draw_calls_prev;
+    }
+
+    auto graphics_subsystem::get_num_draw_verts() noexcept -> std::uint32_t {
+        return s_num_draw_verts_prev;
     }
 }

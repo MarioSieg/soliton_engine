@@ -1,6 +1,6 @@
 var structsqlite3 =
 [
-    [ "sqlite3InitInfo", "structsqlite3_1_1sqlite3InitInfo.html", "structsqlite3_1_1sqlite3InitInfo" ],
+    [ "sqlite3InitInfo", "structsqlite3_1_1sqlite3_init_info.html", "structsqlite3_1_1sqlite3_init_info" ],
     [ "aCollSeq", "structsqlite3.html#a259afda236b21b947f6dc7e0b3e605c3", null ],
     [ "aDb", "structsqlite3.html#a0abe1dccdea5f43e6c49360b42749697", null ],
     [ "aDbStatic", "structsqlite3.html#ad99069213dff7fede71447b97d22d710", null ],

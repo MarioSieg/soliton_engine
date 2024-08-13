@@ -4,6 +4,8 @@
 
 #include "pipeline_base.hpp"
 
+#include "../scene/components.hpp"
+
 namespace lu::graphics {
     class graphics_pipeline : public pipeline_base {
     public:
@@ -11,18 +13,6 @@ namespace lu::graphics {
 
     protected:
         explicit graphics_pipeline(eastl::string&& name) : pipeline_base{std::move(name), pipeline_type::graphics} {}
-
-        HOTPROC static auto draw_mesh(
-            const mesh& mesh,
-            vk::CommandBuffer cmd,
-            eastl::span<material* const> mats,
-            vk::PipelineLayout layout
-        ) -> void;
-
-        HOTPROC static auto draw_mesh(
-            const mesh& mesh,
-            vk::CommandBuffer cmd
-        ) -> void;
 
         virtual auto configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> void = 0;
         virtual auto configure_pipeline_layout(eastl::vector<vk::DescriptorSetLayout>& layouts, eastl::vector<vk::PushConstantRange>& ranges) -> void = 0;
@@ -37,7 +27,28 @@ namespace lu::graphics {
         virtual auto configure_render_pass(vk::RenderPass& pass) -> void;
         auto configure_enable_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> void;
 
+        HOTPROC virtual auto render_single_mesh(
+            vkb::command_buffer& cmd,
+            const mesh& mesh,
+            const com::mesh_renderer& renderer,
+            DirectX::FXMMATRIX view_proj_mtx,
+            DirectX::CXMMATRIX model_mtx,
+            DirectX::CXMMATRIX view_mtx
+        ) const noexcept -> void = 0;
+        virtual auto on_bind(vkb::command_buffer& cmd) const -> void;
+
     private:
+        friend class graphics_subsystem;
+
+        HOTPROC auto render_mesh(
+            vkb::command_buffer& cmd,
+            const com::transform& transform,
+            const com::mesh_renderer& renderer,
+            const DirectX::BoundingFrustum& frustum,
+            DirectX::FXMMATRIX view_proj_mtx,
+            DirectX::CXMMATRIX view_mtx
+        ) const noexcept -> void;
+
         auto create(vk::PipelineLayout& out_layout, vk::Pipeline& out_pipeline, vk::PipelineCache cache) -> void override final;
     };
 }

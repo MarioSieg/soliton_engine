@@ -6,30 +6,6 @@
 #include <array>
 #include <bit>
 
-#if CPU_X86
-#   include <emmintrin.h>
-#   include <smmintrin.h>
-#   include <wmmintrin.h>
-#   define TARGET_ARMV8_WITH_CRC
-#elif CPU_ARM
-#   if COMPILER_CLANG
-#       define __crc32b __builtin_arm_crc32b
-#       define __crc32d __builtin_arm_crc32d
-#       define __crc32w __builtin_arm_crc32w
-#       define __crc32cw __builtin_arm_crc32cw
-#       ifdef __aarch64__
-#           define TARGET_ARMV8_WITH_CRC __attribute__((target("crc")))
-#       else
-#           define TARGET_ARMV8_WITH_CRC __attribute__((target("armv8-a,crc")))
-#       endif
-#   elif COMPILER_GCC
-#       include <arm_acle.h>
-#       define TARGET_ARMV8_WITH_CRC
-#   else
-#       error ARM CRC32 SIMD extensions only supported for Clang and GCC
-#   endif
-#endif
-
 namespace lu {
     static constexpr eastl::array<eastl::array<std::uint32_t, 256>, 8> k_crc_lut {
             eastl::array<std::uint32_t, 256> {
@@ -178,132 +154,7 @@ namespace lu {
             }
     };
 
-    auto TARGET_ARMV8_WITH_CRC crc32(const void* buf, std::size_t len, std::uint32_t crc) noexcept -> std::uint32_t {
-#if CPU_X86 && defined(__SSE4_2__) && defined(__PCLMUL__)
-        // Definitions of the bit-reflected domain constants k1,k2,k3, etc and
-        // the CRC32+Barrett polynomials given at the end of the paper.
-        static constexpr std::uint64_t k1k2 alignas(16)[] = { 0x0154442bd4, 0x01c6e41596 };
-        static constexpr std::uint64_t k3k4 alignas(16)[] = { 0x01751997d0, 0x00ccaa009e };
-        static constexpr std::uint64_t k5k0 alignas(16)[] = { 0x0163cd6124, 0x0000000000 };
-        static constexpr std::uint64_t poly alignas(16)[] = { 0x01db710641, 0x01f7011641 };
-
-        __m128i x0, x1, x2, x3, x4, x5, x6, x7, x8, y5, y6, y7, y8;
-
-        // There's at least one block of 64.
-        x1 = _mm_loadu_si128(reinterpret_cast<const __m128i*>((static_cast<const std::byte*>(buf)+0x00)));
-        x2 = _mm_loadu_si128(reinterpret_cast<const __m128i*>((static_cast<const std::byte*>(buf)+0x10)));
-        x3 = _mm_loadu_si128(reinterpret_cast<const __m128i*>((static_cast<const std::byte*>(buf)+0x20)));
-        x4 = _mm_loadu_si128(reinterpret_cast<const __m128i*>((static_cast<const std::byte*>(buf)+0x30)));
-
-        x1 = _mm_xor_si128(x1, _mm_cvtsi32_si128(crc));
-        x0 = _mm_load_si128(reinterpret_cast<const __m128i*>(k1k2));
-
-        buf = static_cast<const std::byte*>(buf) + 64;
-        len -= 64;
-
-        // Parallel fold blocks of 64, if any.
-        while (len >= 64) {
-            x5 = _mm_clmulepi64_si128(x1, x0, 0x00);
-            x6 = _mm_clmulepi64_si128(x2, x0, 0x00);
-            x7 = _mm_clmulepi64_si128(x3, x0, 0x00);
-            x8 = _mm_clmulepi64_si128(x4, x0, 0x00);
-            x1 = _mm_clmulepi64_si128(x1, x0, 0x11);
-            x2 = _mm_clmulepi64_si128(x2, x0, 0x11);
-            x3 = _mm_clmulepi64_si128(x3, x0, 0x11);
-            x4 = _mm_clmulepi64_si128(x4, x0, 0x11);
-            y5 = _mm_loadu_si128(reinterpret_cast<const __m128i*>(static_cast<const std::byte*>(buf)+0x00));
-            y6 = _mm_loadu_si128(reinterpret_cast<const __m128i*>(static_cast<const std::byte*>(buf)+0x10));
-            y7 = _mm_loadu_si128(reinterpret_cast<const __m128i*>(static_cast<const std::byte*>(buf)+0x20));
-            y8 = _mm_loadu_si128(reinterpret_cast<const __m128i*>(static_cast<const std::byte*>(buf)+0x30));
-            x1 = _mm_xor_si128(x1, x5);
-            x2 = _mm_xor_si128(x2, x6);
-            x3 = _mm_xor_si128(x3, x7);
-            x4 = _mm_xor_si128(x4, x8);
-            x1 = _mm_xor_si128(x1, y5);
-            x2 = _mm_xor_si128(x2, y6);
-            x3 = _mm_xor_si128(x3, y7);
-            x4 = _mm_xor_si128(x4, y8);
-            buf = static_cast<const std::byte*>(buf) + 64;
-            len -= 64;
-        }
-
-        // Fold into 128-bits.
-        x0 = _mm_load_si128(reinterpret_cast<const __m128i*>(k3k4));
-        x5 = _mm_clmulepi64_si128(x1, x0, 0x00);
-        x1 = _mm_clmulepi64_si128(x1, x0, 0x11);
-        x1 = _mm_xor_si128(x1, x2);
-        x1 = _mm_xor_si128(x1, x5);
-        x5 = _mm_clmulepi64_si128(x1, x0, 0x00);
-        x1 = _mm_clmulepi64_si128(x1, x0, 0x11);
-        x1 = _mm_xor_si128(x1, x3);
-        x1 = _mm_xor_si128(x1, x5);
-        x5 = _mm_clmulepi64_si128(x1, x0, 0x00);
-        x1 = _mm_clmulepi64_si128(x1, x0, 0x11);
-        x1 = _mm_xor_si128(x1, x4);
-        x1 = _mm_xor_si128(x1, x5);
-
-        // Single fold blocks of 16, if any.
-        while (len >= 16) {
-            x2 = _mm_loadu_si128(reinterpret_cast<const __m128i*>(buf));
-            x5 = _mm_clmulepi64_si128(x1, x0, 0x00);
-            x1 = _mm_clmulepi64_si128(x1, x0, 0x11);
-            x1 = _mm_xor_si128(x1, x2);
-            x1 = _mm_xor_si128(x1, x5);
-            buf = static_cast<const std::byte*>(buf) + 16;
-            len -= 16;
-        }
-
-        // Fold 128-bits to 64-bits.
-        x2 = _mm_clmulepi64_si128(x1, x0, 0x10);
-        x3 = _mm_setr_epi32(~0, 0, ~0, 0);
-        x1 = _mm_srli_si128(x1, 8);
-        x1 = _mm_xor_si128(x1, x2);
-        x0 = _mm_loadl_epi64(reinterpret_cast<const __m128i*>(k5k0));
-        x2 = _mm_srli_si128(x1, 4);
-        x1 = _mm_and_si128(x1, x3);
-        x1 = _mm_clmulepi64_si128(x1, x0, 0x00);
-        x1 = _mm_xor_si128(x1, x2);
-
-        // Barret reduce to 32-bits.
-        x0 = _mm_load_si128(reinterpret_cast<const __m128i*>(poly));
-        x2 = _mm_and_si128(x1, x3);
-        x2 = _mm_clmulepi64_si128(x2, x0, 0x10);
-        x2 = _mm_and_si128(x2, x3);
-        x2 = _mm_clmulepi64_si128(x2, x0, 0x00);
-        x1 = _mm_xor_si128(x1, x2);
-
-        // Return the crc32.
-        return _mm_extract_epi32(x1, 1);
-#elif CPU_ARM && defined(__ARM_NEON) && defined(__ARM_FEATURE_CRC32)
-    std::uint32_t c = ~crc;
-    while (len && (eastl::bit_cast<std::uintptr_t>(buf) & 7)) {
-        c = __crc32b(c, *static_cast<const std::uint8_t*>(buf));
-        buf = static_cast<const std::byte*>(buf) + 1;
-        --len;
-    }
-    const auto* buf8 = reinterpret_cast<const std::uint64_t*>(buf);
-    while (len >= 64) {
-        c = __crc32d(c, *buf8++);
-        c = __crc32d(c, *buf8++);
-        c = __crc32d(c, *buf8++);
-        c = __crc32d(c, *buf8++);
-        c = __crc32d(c, *buf8++);
-        c = __crc32d(c, *buf8++);
-        c = __crc32d(c, *buf8++);
-        c = __crc32d(c, *buf8++);
-        len -= 64;
-    }
-    while (len >= 8) {
-        c = __crc32d(c, *buf8++);
-        len -= 8;
-    }
-    buf = reinterpret_cast<const std::byte*>(buf8);
-    while (len--) {
-        c = __crc32b(c, *static_cast<const std::uint8_t*>(buf));
-        buf = static_cast<const std::byte*>(buf) + 1;
-    }
-    return ~c;
-#else
+    auto crc32(const void* buf, std::size_t len, std::uint32_t crc) noexcept -> std::uint32_t {
         crc = ~crc;
         const auto* __restrict__ data = static_cast<const std::byte*>(buf);
         auto init = static_cast<std::int32_t>((eastl::bit_cast<const std::byte*>((eastl::bit_cast<std::uintptr_t>(data) + 4 - 1) & ~(4 - 1))) - data);
@@ -333,6 +184,5 @@ namespace lu {
             crc = (crc >> 8) ^ k_crc_lut[0][(crc & 255) ^ static_cast<std::uint32_t>(*data++)];
         }
         return ~crc;
-#endif
     }
 }

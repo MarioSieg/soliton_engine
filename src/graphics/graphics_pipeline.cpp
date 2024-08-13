@@ -136,7 +136,7 @@ namespace lu::graphics {
 
     auto graphics_pipeline::configure_multisampling(vk::PipelineMultisampleStateCreateInfo& cfg) -> void {
         passert(type == pipeline_type::graphics);
-        cfg.rasterizationSamples = vkb::k_msaa_sample_count;
+        cfg.rasterizationSamples = vkb::ctx().get_msaa_samples();
         cfg.alphaToCoverageEnable = vk::False;
     }
 
@@ -158,75 +158,8 @@ namespace lu::graphics {
     }
 
     auto graphics_pipeline::configure_vertex_info(eastl::vector<vk::VertexInputBindingDescription>& cfg, eastl::vector<vk::VertexInputAttributeDescription>& bindings) -> void {
-        cfg.emplace_back(vk::VertexInputBindingDescription {
-                .binding = 0,
-                .stride = sizeof(mesh::vertex),
-                .inputRate = vk::VertexInputRate::eVertex
-        });
-
-        auto push_attribute = [&](const vk::Format format, const std::uint32_t offset) mutable  {
-            vk::VertexInputAttributeDescription& desc = bindings.emplace_back();
-            desc.location = bindings.size() - 1;
-            desc.binding = 0;
-            desc.format = format;
-            desc.offset = offset;
-        };
-        push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(mesh::vertex, position));
-        push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(mesh::vertex, normal));
-        push_attribute(vk::Format::eR32G32Sfloat, offsetof(mesh::vertex, uv));
-        push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(mesh::vertex, tangent));
-        push_attribute(vk::Format::eR32G32B32Sfloat, offsetof(mesh::vertex, bitangent));
-    }
-
-    // graphics_pipeline! MIGHT BE RENDER THREAD LOCAL
-    auto graphics_pipeline::draw_mesh(const mesh& mesh, const vk::CommandBuffer cmd) -> void {
-        constexpr vk::DeviceSize offsets = 0;
-        cmd.bindIndexBuffer(mesh.get_index_buffer().get_buffer(), 0, mesh.is_index_32bit() ? vk::IndexType::eUint32 : vk::IndexType::eUint16);
-        cmd.bindVertexBuffers(0, 1, &mesh.get_vertex_buffer().get_buffer(), &offsets);
-        for (const mesh::primitive& prim : mesh.get_primitives()) {
-            cmd.drawIndexed(prim.index_count, 1, prim.index_start, 0, 1);
-        }
-    }
-
-    // WARNING! MIGHT BE RENDER THREAD LOCAL
-    auto graphics_pipeline::draw_mesh(
-        const mesh& mesh,
-        const vk::CommandBuffer cmd,
-        const eastl::span<material* const> mats,
-        const vk::PipelineLayout layout
-    ) -> void {
-        constexpr vk::DeviceSize offsets = 0;
-        cmd.bindIndexBuffer(mesh.get_index_buffer().get_buffer(), 0, mesh.is_index_32bit() ? vk::IndexType::eUint32 : vk::IndexType::eUint16);
-        cmd.bindVertexBuffers(0, 1, &mesh.get_vertex_buffer().get_buffer(), &offsets);
-        if (mesh.get_primitives().size() <= mats.size()) { // we have at least one material for each primitive
-            for (std::size_t idx = 0; const mesh::primitive& prim : mesh.get_primitives()) {
-                cmd.bindDescriptorSets(
-                    vk::PipelineBindPoint::eGraphics,
-                    layout,
-                    0,
-                    1,
-                    &mats[idx++]->get_descriptor_set(),
-                    0,
-                    nullptr
-                );
-                cmd.drawIndexed(prim.index_count, 1, prim.index_start, 0, 1);
-                graphics_subsystem::s_num_draw_calls.fetch_add(1, std::memory_order_relaxed);
-                graphics_subsystem::s_num_draw_verts.fetch_add(prim.vertex_count, std::memory_order_relaxed);
-            }
-        } else {
-            cmd.bindDescriptorSets(
-                    vk::PipelineBindPoint::eGraphics,
-                    layout,
-                    0,
-                    1,
-                    &mats[0]->get_descriptor_set(),
-                    0,
-                    nullptr
-            );
-            cmd.drawIndexed(mesh.get_index_count(), 1, 0, 0, 0);
-            graphics_subsystem::s_num_draw_calls.fetch_add(1, std::memory_order_relaxed);
-            graphics_subsystem::s_num_draw_verts.fetch_add(mesh.get_vertex_count(), std::memory_order_relaxed);
-        }
+        cfg.insert(cfg.end(), k_vertex_binding_desc.begin(), k_vertex_binding_desc.end());
+        bindings.insert(bindings.end(), k_vertex_attrib_desc.begin(), k_vertex_attrib_desc.end());
     }
 
     auto graphics_pipeline::configure_enable_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> void {
@@ -239,5 +172,49 @@ namespace lu::graphics {
         cfg.srcAlphaBlendFactor = vk::BlendFactor::eOne;
         cfg.dstAlphaBlendFactor = vk::BlendFactor::eZero;
         cfg.alphaBlendOp = vk::BlendOp::eAdd;
+    }
+
+    HOTPROC auto graphics_pipeline::render_mesh(     // WARNING! RENDER THREAD LOCAL
+        vkb::command_buffer& cmd,
+        const com::transform& transform,
+        const com::mesh_renderer& renderer,
+        const DirectX::BoundingFrustum& frustum,
+        DirectX::FXMMATRIX view_proj_mtx,
+        DirectX::CXMMATRIX view_mtx
+    ) const noexcept -> void {
+        if (renderer.meshes.empty() || renderer.materials.empty()) [[unlikely]] // No mesh or material
+            return;
+
+        if (renderer.flags & com::render_flags::skip_rendering) [[unlikely]] // Skip rendering
+            return;
+
+        const DirectX::XMMATRIX model_mtx = transform.compute_matrix();
+
+        for (const mesh* const mesh : renderer.meshes) {
+            // Skip mesh if it's null
+            if (mesh == nullptr) [[unlikely]]
+                continue;
+
+            // Perform CPU frustum culling
+            DirectX::BoundingOrientedBox obb {};
+            obb.CreateFromBoundingBox(obb, mesh->get_aabb());
+            obb.Transform(obb, model_mtx);
+            if ((renderer.flags & com::render_flags::skip_frustum_culling) == 0) [[likely]]
+                if (frustum.Contains(obb) == DirectX::ContainmentType::DISJOINT) // Object is culled
+                    continue;
+
+            render_single_mesh(
+                cmd,
+                *mesh,
+                renderer,
+                view_proj_mtx,
+                model_mtx,
+                view_mtx
+            );
+        }
+    }
+
+    auto graphics_pipeline::on_bind(vkb::command_buffer& cmd) const -> void {
+        cmd.bind_pipeline(*this);
     }
 }

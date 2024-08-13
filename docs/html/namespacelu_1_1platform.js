@@ -17,10 +17,10 @@ var namespacelu_1_1platform =
     [ "glfw_scroll_callback", "namespacelu_1_1platform.html#ad2ba38238135fe6e9c796ad7d0cbf533", null ],
     [ "kernel_variant_name", "namespacelu_1_1platform.html#ab3d6720314691db51b5209bf4be3e47c", null ],
     [ "proxy_resize_hook", "namespacelu_1_1platform.html#a95f5a0d2f037f63bef992d5e478207c5", null ],
-    [ "cv_default_height", "namespacelu_1_1platform.html#a97dfc2ec6d945e453939f58bd844065e", null ],
-    [ "cv_default_width", "namespacelu_1_1platform.html#af6849a035c107b295222eb735865b901", null ],
-    [ "cv_min_height", "namespacelu_1_1platform.html#a40760bd5b3000f6458ba4f170c36729c", null ],
-    [ "cv_min_width", "namespacelu_1_1platform.html#a6edd4755d61f9f03cc56c5ca458a2a8c", null ],
-    [ "cv_window_icon", "namespacelu_1_1platform.html#a4639122ae1e7cbf1d9abc1c2afc8116b", null ],
+    [ "cv_default_height", "namespacelu_1_1platform.html#a67ae78b44df99053455d6c7f2fe3b3ae", null ],
+    [ "cv_default_width", "namespacelu_1_1platform.html#aad32982ac86dc1c368ceff9775cbdc89", null ],
+    [ "cv_min_height", "namespacelu_1_1platform.html#a221a43c4bd5e235d6d66676241691737", null ],
+    [ "cv_min_width", "namespacelu_1_1platform.html#a9d0977459b9508006c3c3c4be4f8f546", null ],
+    [ "cv_window_icon", "namespacelu_1_1platform.html#a0b479b8c05ec80d57936a550292ff8c5", null ],
     [ "s_window", "namespacelu_1_1platform.html#af49f3b7d57ca26ff5abfcc9876fe6a20", null ]
 ];

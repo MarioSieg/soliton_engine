@@ -2,14 +2,13 @@
 
 #include "debugdraw.hpp"
 
-#include "../../scripting/convar.hpp"
+#include "../../scripting/system_variable.hpp"
 #include "../vulkancore/context.hpp"
 
 namespace lu::graphics {
-    static convar<std::uint32_t> k_debug_draw_max_verts {
-        "Renderer.maxDebugDrawVertices",
-        {{100'000u}},
-        scripting::convar_flags::read_only
+    static const system_variable<std::uint32_t> k_debug_draw_max_verts {
+        "renderer.max_debug_draw_vertices",
+        {0x20000}
     };
 
     using namespace DirectX;
@@ -881,25 +880,25 @@ namespace lu::graphics {
 
     auto debugdraw::render(
         const vk::CommandBuffer cmd,
-        const FXMMATRIX view_proj,
-        const FXMVECTOR view_pos
+        FXMMATRIX view_proj,
+        FXMVECTOR view_pos
     ) -> void {
         if (!m_vertices.empty()) {
             const std::uint32_t frameidx = vkb::ctx().get_current_frame();
             uniform uniform_data {};
             XMStoreFloat4x4A(&uniform_data.view_proj, view_proj);
-            auto* uptr = static_cast<std::uint8_t*>(m_uniform.get_mapped_ptr());
+            auto* uptr = static_cast<std::uint8_t*>(m_uniform->get_mapped_ptr());
             std::memcpy(uptr + sizeof(uniform_data) * frameidx, &uniform_data, sizeof(uniform_data));
             if (m_vertices.size() > k_max_vertices) [[unlikely]] {
                 log_error("Too many vertices: {}, max: {}", m_vertices.size(), k_max_vertices);
             } else {
-                auto* vptr = static_cast<std::uint8_t*>(m_vertex_buffer.get_mapped_ptr());
+                auto* vptr = static_cast<std::uint8_t*>(m_vertex_buffer->get_mapped_ptr());
                 std::memcpy(vptr + sizeof(vertex) * k_max_vertices * frameidx, m_vertices.data(), sizeof(vertex) * m_vertices.size());
             }
             std::uint32_t dynamic_offset = sizeof(uniform) * frameidx;
             cmd.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, m_pipeline_layout, 0, 1, &m_descriptor_set, 1, &dynamic_offset);
             const vk::DeviceSize vbo_offset = sizeof(vertex) * k_max_vertices * frameidx;
-            cmd.bindVertexBuffers(0, 1, &m_vertex_buffer.get_buffer(), &vbo_offset);
+            cmd.bindVertexBuffers(0, 1, &m_vertex_buffer->get_buffer(), &vbo_offset);
             for (std::size_t v = 0; const draw_command& draw_cmd : m_draw_commands) {
                 vk::Pipeline pipe {};
                 if (draw_cmd.is_line_list) {
@@ -1039,44 +1038,19 @@ namespace lu::graphics {
         draw_line(p, z_end, XMFLOAT3(0.0f, 0.0f, 1.0f));
     }
 
-    auto debugdraw::create_descriptor_set_layout(const vk::Device device) -> void {
-        vk::DescriptorSetLayoutBinding binding {};
-        binding.binding = 0;
-        binding.descriptorType = vk::DescriptorType::eUniformBufferDynamic;
-        binding.descriptorCount = 1;
-        binding.stageFlags = vk::ShaderStageFlagBits::eVertex;
-        vk::DescriptorSetLayoutCreateInfo layout_info {};
-        layout_info.bindingCount = 1;
-        layout_info.pBindings = &binding;
-        vkcheck(device.createDescriptorSetLayout(&layout_info, vkb::get_alloc(), &m_descriptor_set_layout));
-    }
-
-    auto debugdraw::create_descriptor_set(const vk::Device device, const vk::DescriptorPool pool) -> void {
-        vk::DescriptorSetAllocateInfo alloc_info {};
-        alloc_info.descriptorPool = pool;
-        alloc_info.descriptorSetCount = 1;
-        alloc_info.pSetLayouts = &m_descriptor_set_layout;
-        vkcheck(device.allocateDescriptorSets(&alloc_info, &m_descriptor_set));
-
+    auto debugdraw::create_descriptor() -> void {
+        vkb::descriptor_factory factory {vkb::ctx().get_descriptor_layout_cache(), vkb::ctx().get_descriptor_allocator()};
         vk::DescriptorBufferInfo buffer_info {};
-        buffer_info.buffer = m_uniform.get_buffer();
+        buffer_info.buffer = m_uniform->get_buffer();
         buffer_info.offset = 0;
         buffer_info.range = sizeof(uniform);
-
-        vk::WriteDescriptorSet descriptor_write {};
-        descriptor_write.dstSet = m_descriptor_set;
-        descriptor_write.dstBinding = 0;
-        descriptor_write.dstArrayElement = 0;
-        descriptor_write.descriptorType = vk::DescriptorType::eUniformBufferDynamic;
-        descriptor_write.descriptorCount = 1;
-        descriptor_write.pBufferInfo = &buffer_info;
-
-        device.updateDescriptorSets(1, &descriptor_write, 0, nullptr);
+        factory.bind_buffers(0, 1, &buffer_info, vk::DescriptorType::eUniformBufferDynamic, vk::ShaderStageFlagBits::eVertex);
+        passert(factory.build(m_descriptor_set, m_descriptor_set_layout));
     }
 
     auto debugdraw::create_uniform_buffer() -> void {
-        m_uniform.create(
-            sizeof(uniform) * vkb::context::k_max_concurrent_frames,
+        m_uniform.emplace(
+            sizeof(uniform) * vkb::ctx().get_concurrent_frames(),
             0,
             vk::BufferUsageFlagBits::eUniformBuffer,
             VMA_MEMORY_USAGE_CPU_TO_GPU,
@@ -1085,8 +1059,8 @@ namespace lu::graphics {
     }
 
     auto debugdraw::create_vertex_buffer() -> void {
-        m_vertex_buffer.create(
-           sizeof(vertex) * k_max_vertices * vkb::context::k_max_concurrent_frames,
+        m_vertex_buffer.emplace(
+           sizeof(vertex) * k_max_vertices * vkb::ctx().get_concurrent_frames(),
            0,
            vk::BufferUsageFlagBits::eVertexBuffer,
            VMA_MEMORY_USAGE_CPU_TO_GPU,
@@ -1189,7 +1163,7 @@ namespace lu::graphics {
         pipeline_info.pDynamicState = &dynamic_state;
 
         vk::PipelineMultisampleStateCreateInfo multisample_state {};
-        multisample_state.rasterizationSamples = vkb::k_msaa_sample_count;
+        multisample_state.rasterizationSamples = vkb::ctx().get_msaa_samples();
         multisample_state.alphaToCoverageEnable = vk::True;
         multisample_state.pSampleMask = nullptr;
         pipeline_info.pMultisampleState = &multisample_state;
@@ -1271,15 +1245,13 @@ namespace lu::graphics {
         device.destroyShaderModule(fs, vkb::get_alloc());
     }
 
-    debugdraw::debugdraw(const vk::DescriptorPool pool) : k_max_vertices{k_debug_draw_max_verts()} {
+    debugdraw::debugdraw() : k_max_vertices{k_debug_draw_max_verts()} {
         m_vertices.reserve(k_max_vertices);
-        m_draw_commands.reserve(k_max_vertices / 2);
-        const vk::Device device = vkb::ctx().get_device();
+        m_draw_commands.reserve(k_max_vertices>>1);
         create_uniform_buffer();
         create_vertex_buffer();
-        create_descriptor_set_layout(device);
-        create_descriptor_set(device, pool);
-        create_pipeline_states(device, vkb::ctx().get_scene_render_pass());
+        create_descriptor();
+        create_pipeline_states(vkb::ctx().get_device(), vkb::ctx().get_scene_render_pass());
         log_info("Created debug draw context");
     }
 

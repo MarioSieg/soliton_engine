@@ -9,14 +9,14 @@
 namespace lu::vkb {
     class buffer final : public no_copy, public no_move {
     public:
-        auto create(
+        buffer(
             std::size_t size,
             std::size_t alignment,
             vk::BufferUsageFlags buffer_usage,
             VmaMemoryUsage memory_usage,
             VmaAllocationCreateFlags create_flags = 0,
             const void* data = nullptr
-        ) -> void;
+        );
         ~buffer();
         [[nodiscard]] auto get_size() const noexcept -> std::size_t { return m_size; }
         [[nodiscard]] auto get_mapped_ptr() const noexcept -> void* { return m_mapped; }

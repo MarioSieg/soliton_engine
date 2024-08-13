@@ -8,7 +8,7 @@ var indexSectionsWithContent =
   5: "abcdefghijklmnopqrstuvwxyz",
   6: "abcdefhijklmnoprstuvwy",
   7: "$agps",
-  8: "cfghmnprstv",
+  8: "cfghmnpstv",
   9: "cgkps",
   10: "abcdefghijklmnopqrstuvwxy",
   11: "l"

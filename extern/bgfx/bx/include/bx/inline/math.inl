@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2023 Branimir Karadzic. All rights reserved.
+ * Copyright 2011-2024 Branimir Karadzic. All rights reserved.
  * License: https://github.com/bkaradzic/bx/blob/master/LICENSE
  */
 
@@ -138,15 +138,15 @@ namespace bx
 		return float( (0.0f < _a) - (0.0f > _a) );
 	}
 
-	inline BX_CONSTEXPR_FUNC bool signbit(float _a)
+	inline BX_CONSTEXPR_FUNC bool signBit(float _a)
 	{
 		return -0.0f == _a ? 0.0f != _a : 0.0f > _a;
 	}
 
-	inline BX_CONSTEXPR_FUNC float copysign(float _value, float _sign)
+	inline BX_CONSTEXPR_FUNC float copySign(float _value, float _sign)
 	{
 #if BX_COMPILER_MSVC
-		return signbit(_value) != signbit(_sign) ? -_value : _value;
+		return signBit(_value) != signBit(_sign) ? -_value : _value;
 #else
 		return __builtin_copysign(_value, _sign);
 #endif // BX_COMPILER_MSVC
@@ -160,6 +160,20 @@ namespace bx
 	inline BX_CONSTEXPR_FUNC float square(float _a)
 	{
 		return _a * _a;
+	}
+
+	inline void sinCosApprox(float& _outSinApprox, float& _outCos, float _a)
+	{
+		const float aa     = _a - floor(_a*kInvPi2)*kPi2;
+		const float absA   = abs(aa);
+		const float cosA   = cos(absA);
+		const float cosASq = square(cosA);
+		const float tmp0   = sqrt(1.0f - cosASq);
+		const float tmp1   = aa > 0.0f && aa < kPi ? 1.0f : -1.0f;
+		const float sinA   = mul(tmp0, tmp1);
+
+		_outSinApprox = sinA;
+		_outCos = cosA;
 	}
 
 	inline BX_CONST_FUNC float sin(float _a)

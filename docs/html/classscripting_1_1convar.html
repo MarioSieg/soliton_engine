@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.11.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lunam Engine: scripting::convar&lt; T &gt; Class Template Reference</title>
+<title>Lunam Engine: scripting::system_variable&lt; T &gt; Class Template Reference</title>
 <link rel="icon" href="logo_small.png" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
@@ -107,15 +107,15 @@ $(function(){initNavTree('classscripting_1_1convar.html',''); initResizable(true
 <a href="#pri-static-methods">Static Private Member Functions</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classscripting_1_1convar-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">scripting::convar&lt; T &gt; Class Template Reference<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+  <div class="headertitle"><div class="title">scripting::system_variable&lt; T &gt; Class Template Reference<span class="mlabels"><span class="mlabel">final</span></span></div></div>
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;<a class="el" href="convar_8hpp_source.html">convar.hpp</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="convar_8hpp_source.html">system_variable.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ae8c9113583ed14008fc7f55d8149d58f" id="r_ae8c9113583ed14008fc7f55d8149d58f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae8c9113583ed14008fc7f55d8149d58f">convar</a> (std::string &amp;&amp;name, std::optional&lt; std::variant&lt; T, std::function&lt; auto() -&gt; T &gt; &gt; &gt; &amp;&amp;<a class="el" href="#a047f14c41a85f44bd05392fd44de5b68">fallback</a>, std::underlying_type_t&lt; <a class="el" href="structscripting_1_1convar__flags.html#a0e2176f512913e6f2d507f8a9ed49413">convar_flags::$</a> &gt; flags, const T min={}, const T max={}) noexcept</td></tr>
+<tr class="memitem:ae8c9113583ed14008fc7f55d8149d58f" id="r_ae8c9113583ed14008fc7f55d8149d58f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae8c9113583ed14008fc7f55d8149d58f">system_variable</a> (std::string &amp;&amp;name, std::optional&lt; std::variant&lt; T, std::function&lt; auto() -&gt; T &gt; &gt; &gt; &amp;&amp;<a class="el" href="#a047f14c41a85f44bd05392fd44de5b68">fallback</a>, std::underlying_type_t&lt; <a class="el" href="structscripting_1_1convar__flags.html#a0e2176f512913e6f2d507f8a9ed49413">convar_flags::$</a> &gt; flags, const T min={}, const T max={}) noexcept</td></tr>
 <tr class="separator:ae8c9113583ed14008fc7f55d8149d58f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2cb5c4a4d86de791598a8646d14db54f" id="r_a2cb5c4a4d86de791598a8646d14db54f"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2cb5c4a4d86de791598a8646d14db54f">operator()</a> () -&gt; T</td></tr>
 <tr class="separator:a2cb5c4a4d86de791598a8646d14db54f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -157,7 +157,7 @@ Private Attributes</h2></td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ae8c9113583ed14008fc7f55d8149d58f" name="ae8c9113583ed14008fc7f55d8149d58f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae8c9113583ed14008fc7f55d8149d58f">&#9670;&#160;</a></span>convar()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8c9113583ed14008fc7f55d8149d58f">&#9670;&#160;</a></span>system_variable()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -168,7 +168,7 @@ template&lt;typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classscripting_1_1convar.html">scripting::convar</a>&lt; T &gt;<a class="el" href="classscripting_1_1convar.html">::convar</a> </td>
+          <td class="memname"><a class="el" href="classscripting_1_1convar.html">scripting::system_variable</a>&lt; T &gt;<a class="el" href="classscripting_1_1convar.html">::system_variable</a> </td>
           <td>(</td>
           <td class="paramtype">std::string &amp;&amp;</td>          <td class="paramname"><span class="paramname"><em>name</em></span>, </td>
         </tr>
@@ -220,7 +220,7 @@ template&lt;typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">auto <a class="el" href="classscripting_1_1convar.html">scripting::convar</a>&lt; T &gt;::fallback </td>
+          <td class="memname">auto <a class="el" href="classscripting_1_1convar.html">scripting::system_variable</a>&lt; T &gt;::fallback </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const -&gt; T </td>
@@ -247,7 +247,7 @@ template&lt;typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">auto <a class="el" href="classscripting_1_1convar.html">scripting::convar</a>&lt; T &gt;::full_name </td>
+          <td class="memname">auto <a class="el" href="classscripting_1_1convar.html">scripting::system_variable</a>&lt; T &gt;::full_name </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const -&gt; std::string_view </td>
@@ -274,7 +274,7 @@ template&lt;typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">auto <a class="el" href="classscripting_1_1convar.html">scripting::convar</a>&lt; T &gt;::operator() </td>
+          <td class="memname">auto <a class="el" href="classscripting_1_1convar.html">scripting::system_variable</a>&lt; T &gt;::operator() </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> -&gt; T </td>
@@ -301,7 +301,7 @@ template&lt;typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">auto <a class="el" href="classscripting_1_1convar.html">scripting::convar</a>&lt; T &gt;::register_var </td>
+          <td class="memname">auto <a class="el" href="classscripting_1_1convar.html">scripting::system_variable</a>&lt; T &gt;::register_var </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
@@ -328,7 +328,7 @@ template&lt;typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static constexpr auto <a class="el" href="classscripting_1_1convar.html">scripting::convar</a>&lt; T &gt;::type_name </td>
+          <td class="memname">static constexpr auto <a class="el" href="classscripting_1_1convar.html">scripting::system_variable</a>&lt; T &gt;::type_name </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> -&gt; std::string_view </td>
@@ -356,7 +356,7 @@ template&lt;typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const std::optional&lt;std::variant&lt;T, std::function&lt;auto() -&gt; T&gt; &gt; <a class="el" href="classscripting_1_1convar.html">scripting::convar</a>&lt; T &gt;::m_fallback</td>
+          <td class="memname">const std::optional&lt;std::variant&lt;T, std::function&lt;auto() -&gt; T&gt; &gt; <a class="el" href="classscripting_1_1convar.html">scripting::system_variable</a>&lt; T &gt;::m_fallback</td>
         </tr>
       </table>
   </td>
@@ -380,7 +380,7 @@ template&lt;typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const std::underlying_type_t&lt;<a class="el" href="structscripting_1_1convar__flags.html#a0e2176f512913e6f2d507f8a9ed49413">convar_flags::$</a>&gt; <a class="el" href="classscripting_1_1convar.html">scripting::convar</a>&lt; T &gt;::m_flags</td>
+          <td class="memname">const std::underlying_type_t&lt;<a class="el" href="structscripting_1_1convar__flags.html#a0e2176f512913e6f2d507f8a9ed49413">convar_flags::$</a>&gt; <a class="el" href="classscripting_1_1convar.html">scripting::system_variable</a>&lt; T &gt;::m_flags</td>
         </tr>
       </table>
   </td>
@@ -404,7 +404,7 @@ template&lt;typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::uint32_t <a class="el" href="classscripting_1_1convar.html">scripting::convar</a>&lt; T &gt;::m_gets {}</td>
+          <td class="memname">std::uint32_t <a class="el" href="classscripting_1_1convar.html">scripting::system_variable</a>&lt; T &gt;::m_gets {}</td>
         </tr>
       </table>
   </td>
@@ -428,7 +428,7 @@ template&lt;typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool <a class="el" href="classscripting_1_1convar.html">scripting::convar</a>&lt; T &gt;::m_is_locked {}</td>
+          <td class="memname">bool <a class="el" href="classscripting_1_1convar.html">scripting::system_variable</a>&lt; T &gt;::m_is_locked {}</td>
         </tr>
       </table>
   </td>
@@ -452,7 +452,7 @@ template&lt;typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">T <a class="el" href="classscripting_1_1convar.html">scripting::convar</a>&lt; T &gt;::m_max {}</td>
+          <td class="memname">T <a class="el" href="classscripting_1_1convar.html">scripting::system_variable</a>&lt; T &gt;::m_max {}</td>
         </tr>
       </table>
   </td>
@@ -476,7 +476,7 @@ template&lt;typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">T <a class="el" href="classscripting_1_1convar.html">scripting::convar</a>&lt; T &gt;::m_min {}</td>
+          <td class="memname">T <a class="el" href="classscripting_1_1convar.html">scripting::system_variable</a>&lt; T &gt;::m_min {}</td>
         </tr>
       </table>
   </td>
@@ -500,7 +500,7 @@ template&lt;typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const std::string <a class="el" href="classscripting_1_1convar.html">scripting::convar</a>&lt; T &gt;::m_name</td>
+          <td class="memname">const std::string <a class="el" href="classscripting_1_1convar.html">scripting::system_variable</a>&lt; T &gt;::m_name</td>
         </tr>
       </table>
   </td>
@@ -524,7 +524,7 @@ template&lt;typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::optional&lt;luabridge::LuaRef&gt; <a class="el" href="classscripting_1_1convar.html">scripting::convar</a>&lt; T &gt;::m_ref {}</td>
+          <td class="memname">std::optional&lt;luabridge::LuaRef&gt; <a class="el" href="classscripting_1_1convar.html">scripting::system_variable</a>&lt; T &gt;::m_ref {}</td>
         </tr>
       </table>
   </td>
@@ -548,7 +548,7 @@ template&lt;typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::uint32_t <a class="el" href="classscripting_1_1convar.html">scripting::convar</a>&lt; T &gt;::m_sets {}</td>
+          <td class="memname">std::uint32_t <a class="el" href="classscripting_1_1convar.html">scripting::system_variable</a>&lt; T &gt;::m_sets {}</td>
         </tr>
       </table>
   </td>
@@ -561,14 +561,14 @@ template&lt;typename T &gt; </div>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>src/scripting/<a class="el" href="convar_8hpp_source.html">convar.hpp</a></li>
+<li>src/scripting/<a class="el" href="convar_8hpp_source.html">system_variable.hpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="namespacescripting.html">scripting</a></li><li class="navelem"><a class="el" href="classscripting_1_1convar.html">convar</a></li>
+    <li class="navelem"><a class="el" href="namespacescripting.html">scripting</a></li><li class="navelem"><a class="el" href="classscripting_1_1convar.html">system_variable</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.11.0 </li>
   </ul>
 </div>

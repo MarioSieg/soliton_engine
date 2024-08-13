@@ -6,18 +6,18 @@
 
 #include <ankerl/unordered_dense.h>
 
-namespace lu::graphics {
+namespace lu::vkb {
     class descriptor_allocator final : public no_copy, public no_move {
     public:
-        descriptor_allocator() = default;
+        explicit descriptor_allocator(std::uint32_t alloc_granularity = 1024) noexcept : alloc_granularity{alloc_granularity} {}
         ~descriptor_allocator();
 
         auto reset_all_pools() -> void;
         [[nodiscard]] auto allocate(vk::DescriptorSet& set, vk::DescriptorSetLayout layout) -> bool;
+        [[nodiscard]] auto request_pool(std::uint32_t count = 0) -> vk::DescriptorPool;
 
-    private:
-        using pool_sizes = eastl::vector<eastl::pair<vk::DescriptorType, float>>;
-        pool_sizes m_pool_sizes {
+        using pool_sizes = eastl::fixed_vector<eastl::pair<vk::DescriptorType, float>, 16>;
+        pool_sizes configured_pool_sizes {
             { vk::DescriptorType::eSampler, .5f },
             { vk::DescriptorType::eCombinedImageSampler, 4.f },
             { vk::DescriptorType::eSampledImage, 4.f },
@@ -28,16 +28,18 @@ namespace lu::graphics {
             { vk::DescriptorType::eStorageBuffer, 2.f },
             { vk::DescriptorType::eUniformBufferDynamic, 1.f },
             { vk::DescriptorType::eStorageBufferDynamic, 1.f },
-            { vk::DescriptorType::eInputAttachment, .5f },
-            { vk::DescriptorType::eAccelerationStructureKHR, .5f },
+            { vk::DescriptorType::eInputAttachment, .5f }
+            //{ vk::DescriptorType::eAccelerationStructureKHR, .5f },
         };
 
+        std::uint32_t alloc_granularity {1024 };
+
+    private:
         vk::DescriptorPool m_current_pool {};
         eastl::vector<vk::DescriptorPool> m_used_pools {};
         eastl::vector<vk::DescriptorPool> m_free_pools {};
 
-        [[nodiscard]] auto request_pool() -> vk::DescriptorPool;
-        [[nodiscard]] static auto create_pool(const pool_sizes& sizes, std::int32_t count, vk::DescriptorPoolCreateFlagBits flags) -> vk::DescriptorPool;
+        [[nodiscard]] static auto create_pool(const pool_sizes& sizes, std::uint32_t alloc_granularity, vk::DescriptorPoolCreateFlagBits flags) -> vk::DescriptorPool;
     };
 
     class descriptor_layout_cache final : public no_copy, public no_move {
@@ -62,11 +64,11 @@ namespace lu::graphics {
         layout_cache m_layout_cache {};
     };
 
-    class descriptor_factory final : public no_copy, public no_move {
+    class descriptor_factory final : public no_move {
     public:
         static constexpr vk::Flags<vk::ShaderStageFlagBits> k_common_stages = vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment | vk::ShaderStageFlagBits::eCompute;
 
-        inline descriptor_factory(descriptor_layout_cache& cache, descriptor_allocator& allocator) noexcept : m_cache{cache}, m_allocator{allocator} {};
+        inline descriptor_factory(descriptor_layout_cache& cache, descriptor_allocator& allocator) noexcept : m_cache{&cache}, m_allocator{&allocator} {};
         ~descriptor_factory() = default;
 
         [[nodiscard]] auto build(vk::DescriptorSet& set, vk::DescriptorSetLayout& layout) -> bool;
@@ -77,14 +79,14 @@ namespace lu::graphics {
         auto bind_no_info_stage(vk::DescriptorType type, vk::ShaderStageFlagBits stage_flags, std::uint32_t binding, std::uint32_t count = 1) -> descriptor_factory&;
         auto bind_no_info_stage(vk::DescriptorType type, std::uint32_t binding, std::uint32_t count = 1) -> descriptor_factory&;
         auto bind_buffers(
-            std::uint32_t bindings,
+            std::uint32_t binding,
             std::uint32_t count,
             vk::DescriptorBufferInfo* buffer_info,
             vk::DescriptorType type,
             vk::ShaderStageFlagBits flags
         ) -> descriptor_factory&;
         auto bind_images(
-            std::uint32_t bindings,
+            std::uint32_t binding,
             std::uint32_t count,
             vk::DescriptorImageInfo* buffer_info,
             vk::DescriptorType type,
@@ -101,9 +103,9 @@ namespace lu::graphics {
             bool is_image {};
         };
 
-        eastl::vector<descriptor_write_container> m_write_descriptors {};
-        eastl::vector<vk::DescriptorSetLayoutBinding> m_bindings {};
-        descriptor_layout_cache& m_cache;
-        descriptor_allocator& m_allocator;
+        eastl::fixed_vector<descriptor_write_container, 16> m_write_descriptors {};
+        eastl::fixed_vector<vk::DescriptorSetLayoutBinding, 16> m_bindings {};
+        descriptor_layout_cache* m_cache;
+        descriptor_allocator* m_allocator;
     };
 }

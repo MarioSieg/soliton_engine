@@ -35,7 +35,7 @@ var classlu_1_1graphics_1_1debugdraw =
     [ "m_descriptor_set", "classlu_1_1graphics_1_1debugdraw.html#a6d84b237737a001ef2a8b486c08954da", null ],
     [ "m_descriptor_set_layout", "classlu_1_1graphics_1_1debugdraw.html#ace23de886204551ee15bc8d09e1d3572", null ],
     [ "m_distance_fade", "classlu_1_1graphics_1_1debugdraw.html#af77f02111b6d43432029a85fed346509", null ],
-    [ "m_draw_commands", "classlu_1_1graphics_1_1debugdraw.html#a9d22b96639a4fd180244df4dd7c302e6", null ],
+    [ "m_draw_commands", "classlu_1_1graphics_1_1debugdraw.html#a6a9bfd7f4d40572233338ce36872d48a", null ],
     [ "m_fade_end", "classlu_1_1graphics_1_1debugdraw.html#ac3f2aa99af753fa0107b0b6c05de6b1e", null ],
     [ "m_fade_start", "classlu_1_1graphics_1_1debugdraw.html#acba960d14dbe4f279f1b889d8e78f5e0", null ],
     [ "m_line_depth_pipeline", "classlu_1_1graphics_1_1debugdraw.html#a83e3f8c5704889cc01c40ca1cad9d0b2", null ],
@@ -45,5 +45,5 @@ var classlu_1_1graphics_1_1debugdraw =
     [ "m_pipeline_layout", "classlu_1_1graphics_1_1debugdraw.html#a41015e1dd5cd86284c8111c23c51a698", null ],
     [ "m_uniform", "classlu_1_1graphics_1_1debugdraw.html#a5ea73503aea939d1982ef5d2dea2e41c", null ],
     [ "m_vertex_buffer", "classlu_1_1graphics_1_1debugdraw.html#a9be2db5a682be3b85480ce75a9947a81", null ],
-    [ "m_vertices", "classlu_1_1graphics_1_1debugdraw.html#a13a56521885106bebfe8e2919c9fc696", null ]
+    [ "m_vertices", "classlu_1_1graphics_1_1debugdraw.html#a8aca0d1216b015564dfd2cf64e1a60b4", null ]
 ];

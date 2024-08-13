@@ -17,6 +17,6 @@ var classlu_1_1graphics_1_1material =
     [ "normal_map", "classlu_1_1graphics_1_1material.html#a27c67a6e4449c6f1a39f71f0368bc95e", null ],
     [ "s_descriptor_pool", "classlu_1_1graphics_1_1material.html#af4175c4f5e670010c6c20d12873919f4", null ],
     [ "s_descriptor_set_layout", "classlu_1_1graphics_1_1material.html#ac34e4be998331167d2b942c9fbd814d8", null ],
-    [ "s_error_texture", "classlu_1_1graphics_1_1material.html#a126d14bbe2866b6f8595d1b2f0072a18", null ],
-    [ "s_flat_normal", "classlu_1_1graphics_1_1material.html#a29acf7dc7b52c9cb3745b0722091413d", null ]
+    [ "s_error_texture", "classlu_1_1graphics_1_1material.html#a126639281ac24a8b6ac7275cb5c77c5d", null ],
+    [ "s_flat_normal", "classlu_1_1graphics_1_1material.html#a8a1063c334c222c4fa3dd44ca80b4f9c", null ]
 ];

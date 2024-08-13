@@ -1,6 +1,8 @@
 #ifndef SHARED_ACES_GLSL
 #define SHARED_ACES_GLSL
 
+#include "shader_common.h"
+
 /****************************************************************************************
 
 	ACES: Academy Color Encoding System
@@ -594,5 +596,8 @@ vec3 ACESOutputTransformsAP1(vec3 ap1)
     vec3 OutputReferredLinearsRGBColor =  ODT_sRGB_D65(oces);
     return OutputReferredLinearsRGBColor;
 }
+
+const mat3 sRGB_2_AP1_MAT = (sRGB_2_XYZ_MAT * D65_2_D60_CAT) * XYZ_2_AP1_MAT;
+const mat3 AP1_2_sRGB_MAT = (AP1_2_XYZ_MAT  * D60_2_D65_CAT) * XYZ_2_sRGB_MAT;
 
 #endif

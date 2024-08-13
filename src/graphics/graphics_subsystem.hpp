@@ -8,10 +8,12 @@
 #include "../scene/scene.hpp"
 
 #include "vulkancore/context.hpp"
-#include "shader.hpp"
 #include "vulkancore/buffer.hpp"
+#include "vulkancore/command_buffer.hpp"
 
 #include "render_thread_pool.hpp"
+
+#include "shader.hpp"
 
 #include "mesh.hpp"
 #include "texture.hpp"
@@ -31,13 +33,12 @@ namespace lu::graphics {
         auto on_resize() -> void override;
         auto on_start(scene& scene) -> void override;
 
-        [[nodiscard]] auto get_descriptor_pool() const noexcept -> vk::DescriptorPool { return m_descriptor_pool; }
         [[nodiscard]] auto get_render_thread_pool() const noexcept -> const render_thread_pool& { return *m_render_thread_pool; }
 
         [[nodiscard]] auto get_render_data() const noexcept -> const eastl::vector<eastl::pair<eastl::span<const com::transform>, eastl::span<const com::mesh_renderer>>>& { return m_render_data; }
         [[nodiscard]] auto get_debug_draw() -> debugdraw& {
             if (!m_debugdraw.has_value()) {
-                m_debugdraw.emplace(m_descriptor_pool);
+                m_debugdraw.emplace();
             }
             return *m_debugdraw;
         }
@@ -49,8 +50,8 @@ namespace lu::graphics {
             passert(s_instance != nullptr);
             return *s_instance;
         }
-        [[nodiscard]] static auto get_num_draw_calls() noexcept -> std::uint32_t { return s_num_draw_calls_prev; }
-        [[nodiscard]] static auto get_num_draw_verts() noexcept -> std::uint32_t { return s_num_draw_verts_prev; }
+        [[nodiscard]] static auto get_num_draw_calls() noexcept -> std::uint32_t;
+        [[nodiscard]] static auto get_num_draw_verts() noexcept -> std::uint32_t;
         [[nodiscard]] static auto get_view_mtx() noexcept -> const DirectX::XMFLOAT4X4A& { return s_view_mtx; }
         [[nodiscard]] static auto get_proj_mtx() noexcept -> const DirectX::XMFLOAT4X4A& { return s_proj_mtx; }
         [[nodiscard]] static auto get_view_proj_mtx() noexcept -> const DirectX::XMFLOAT4X4A& { return s_view_proj_mtx; }
@@ -65,20 +66,14 @@ namespace lu::graphics {
     private:
         friend class graphics_pipeline;
         static auto reload_pipelines() -> void;
-        auto create_descriptor_pool() -> void;
         auto render_uis() -> void;
         static auto update_main_camera(float width, float height) -> void;
-        HOTPROC static auto render_scene_bucket(
-            vk::CommandBuffer cmd,
+        HOTPROC auto render_scene_bucket(
+            vkb::command_buffer& cmd,
             std::int32_t bucket_id,
-            std::int32_t num_threads,
-            void* usr
-        ) -> void;
+            std::int32_t num_threads
+        ) const -> void;
 
-        static inline constinit std::uint32_t s_num_draw_calls_prev; // accumulated result from previous frame
-        static inline constinit std::uint32_t s_num_draw_verts_prev; // accumulated result from previous frame
-        static inline constinit std::atomic_uint32_t s_num_draw_calls; // accumulator
-        static inline constinit std::atomic_uint32_t s_num_draw_verts; // accumulator
         static inline constinit DirectX::XMFLOAT4X4A s_view_mtx;
         static inline constinit DirectX::XMFLOAT4X4A s_proj_mtx;
         static inline constinit DirectX::XMFLOAT4X4A s_view_proj_mtx;
@@ -86,8 +81,7 @@ namespace lu::graphics {
         static inline DirectX::BoundingFrustum s_frustum;
         static inline com::transform s_camera_transform;
         static inline constinit graphics_subsystem* s_instance;
-        vk::CommandBuffer m_cmd = nullptr;
-        vk::DescriptorPool m_descriptor_pool {};
+        eastl::optional<vkb::command_buffer> m_cmd {};
         vk::CommandBufferInheritanceInfo m_inheritance_info {};
         eastl::optional<render_thread_pool> m_render_thread_pool {};
         eastl::vector<eastl::pair<eastl::span<const com::transform>, eastl::span<const com::mesh_renderer>>> m_render_data {};

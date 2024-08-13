@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2023 Branimir Karadzic. All rights reserved.
+ * Copyright 2010-2024 Branimir Karadzic. All rights reserved.
  * License: https://github.com/bkaradzic/bx/blob/master/LICENSE
  */
 
@@ -308,7 +308,7 @@ namespace bx
 		memSet(temp, _byte, blockSize);
 
 		int32_t size = 0;
-		while (0 < _size)
+		while (0 < _size && _err->isOk() )
 		{
 			int32_t bytes = write(_writer, temp, uint32_min(blockSize, _size), _err);
 			size  += bytes;

@@ -5,6 +5,7 @@
 #include "../graphics_pipeline.hpp"
 #include "../texture.hpp"
 #include "../mesh.hpp"
+#include "../vulkancore/command_buffer.hpp"
 #include "../../scene/components.hpp"
 
 namespace lu::graphics::pipelines {
@@ -18,7 +19,7 @@ namespace lu::graphics::pipelines {
         };
         static_assert(sizeof(gpu_vertex_push_constants) <= 128);
 
-        auto render(vk::CommandBuffer cmd) const -> void;
+        auto render(vkb::command_buffer& cmd) const -> void;
 
     protected:
         virtual auto configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> void override;

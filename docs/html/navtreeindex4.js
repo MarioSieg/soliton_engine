@@ -1,5 +1,7 @@
 var NAVTREEINDEX4 =
 {
+"cimgui_8cpp.html#a3cbf038b49c4ebdbbdaebb1361880704":[3,0,0,2,0,0,223],
+"cimgui_8cpp.html#a3cff8f35a98ca018ad1c1e9329358bc7":[3,0,0,2,0,0,659],
 "cimgui_8cpp.html#a3d09383adffd028c7c103f5cea41d137":[3,0,0,2,0,0,857],
 "cimgui_8cpp.html#a3d3462739fa6f03071ae56bd98d1838f":[3,0,0,2,0,0,255],
 "cimgui_8cpp.html#a3d583d849b7d242e409ec82a9b4a38da":[3,0,0,2,0,0,363],
@@ -247,7 +249,5 @@ var NAVTREEINDEX4 =
 "cimgui_8cpp.html#a7cab64f86b44fbe7e98326548091ee15":[3,0,0,2,0,0,26],
 "cimgui_8cpp.html#a7d08ba0b6f8437ead31aca7354ab002b":[3,0,0,2,0,0,577],
 "cimgui_8cpp.html#a7da776531212045288fbe8fa402a3489":[3,0,0,2,0,0,336],
-"cimgui_8cpp.html#a7df3bb647e6bb2da0dcb26b220fb8db2":[3,0,0,2,0,0,647],
-"cimgui_8cpp.html#a7dfe6c106c11e8637bf86e5fcf8b0689":[3,0,0,2,0,0,25],
-"cimgui_8cpp.html#a7e18d719568622e9ffdecd3ce3795320":[3,0,0,2,0,0,335]
+"cimgui_8cpp.html#a7df3bb647e6bb2da0dcb26b220fb8db2":[3,0,0,2,0,0,647]
 };

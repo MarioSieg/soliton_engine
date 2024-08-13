@@ -2,17 +2,19 @@
 
 #include "buffer.hpp"
 #include "context.hpp"
+#include "command_buffer.hpp"
 
 namespace lu::vkb {
-    auto buffer::create(
+    buffer::buffer(
         const std::size_t size,
         const std::size_t alignment,
         vk::BufferUsageFlags buffer_usage,
         const VmaMemoryUsage memory_usage,
         const VmaAllocationCreateFlags create_flags,
         const void* data
-    ) -> void {
+    ) {
         m_allocator = vkb::dvc().get_allocator();
+        m_size = size;
         vk::BufferCreateInfo buffer_create_info {};
         buffer_create_info.size = size;
         buffer_create_info.sharingMode = vk::SharingMode::eExclusive;
@@ -92,24 +94,20 @@ namespace lu::vkb {
     auto buffer::upload_data(const void* data, const std::size_t size, const std::size_t offset) -> void {
         const vk::Device device = vkb::vkdvc();
         if (m_memory_usage == VMA_MEMORY_USAGE_GPU_ONLY) {
-            buffer staging_buffer {};
-            staging_buffer.create(
+            buffer staging_buffer {
                 size,
                 0,
                 vk::BufferUsageFlagBits::eTransferSrc,
                 VMA_MEMORY_USAGE_CPU_ONLY,
                 VMA_ALLOCATION_CREATE_MAPPED_BIT,
                 data
-            );
+            };
 
-            const vk::CommandBuffer copy_cmd = vkb::ctx().start_command_buffer<vk::QueueFlagBits::eTransfer>();
-
-            vk::BufferCopy copy_region {};
-            copy_region.size = size;
-            copy_region.dstOffset = offset;
-            copy_cmd.copyBuffer(staging_buffer.get_buffer(), m_buffer, 1, &copy_region);
-
-            vkb::ctx().flush_command_buffer<vk::QueueFlagBits::eTransfer>(copy_cmd);
+            command_buffer copy_cmd {vk::QueueFlagBits::eTransfer};
+            copy_cmd.begin();
+            copy_cmd.copy_buffer(staging_buffer.get_buffer(), m_buffer, size, offset);
+            copy_cmd.end();
+            copy_cmd.flush();
         } else {
             if (!m_mapped) {
                 vkcheck(device.mapMemory(m_memory, 0, size, {}, &m_mapped));

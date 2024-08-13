@@ -1,12 +1,14 @@
 var dir_aebb8dcc11953d78e620bbef0b9e2183 =
 [
     [ "boot.cpp", "boot_8cpp.html", "boot_8cpp" ],
+    [ "buffered_sink.cpp", "buffered__sink_8cpp.html", null ],
     [ "buffered_sink.hpp", "buffered__sink_8hpp.html", "buffered__sink_8hpp" ],
     [ "core.cpp", "core_8cpp.html", "core_8cpp" ],
     [ "core.hpp", "core_8hpp.html", "core_8hpp" ],
     [ "crc32.cpp", "crc32_8cpp.html", "crc32_8cpp" ],
     [ "crc32.hpp", "crc32_8hpp.html", "crc32_8hpp" ],
     [ "delegate.hpp", "delegate_8hpp.html", "delegate_8hpp" ],
+    [ "eastl_alloc.cpp", "eastl__alloc_8cpp.html", "eastl__alloc_8cpp" ],
     [ "exit_guard.hpp", "exit__guard_8hpp.html", "exit__guard_8hpp" ],
     [ "fixed_ring_scalar_buffer.hpp", "fixed__ring__scalar__buffer_8hpp.html", "fixed__ring__scalar__buffer_8hpp" ],
     [ "hash.hpp", "hash_8hpp.html", "hash_8hpp" ],
@@ -17,6 +19,7 @@ var dir_aebb8dcc11953d78e620bbef0b9e2183 =
     [ "move_copy_base.hpp", "move__copy__base_8hpp.html", "move__copy__base_8hpp" ],
     [ "obfuscated.hpp", "obfuscated_8hpp.html", "obfuscated_8hpp" ],
     [ "platform.hpp", "platform_8hpp.html", "platform_8hpp" ],
+    [ "specializations.hpp", "specializations_8hpp.html", "specializations_8hpp" ],
     [ "spsc_queue.hpp", "spsc__queue_8hpp.html", "spsc__queue_8hpp" ],
     [ "stopwatch.hpp", "stopwatch_8hpp.html", "stopwatch_8hpp" ],
     [ "subsystem.hpp", "subsystem_8hpp.html", "subsystem_8hpp" ],

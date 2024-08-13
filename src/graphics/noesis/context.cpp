@@ -29,7 +29,7 @@
 #include "../vulkancore/context.hpp"
 #include "../imgui/imgui.h"
 
-#include "../../scripting/convar.hpp"
+#include "../../scripting/system_variable.hpp"
 #include "../../platform/platform_subsystem.hpp"
 
 using lu::scripting::scripting_subsystem;
@@ -79,15 +79,15 @@ extern "C" void NsShutdownPackages_NoesisApp() {
 }
 
 namespace noesis {
-    static convar<eastl::string> cv_license { "GameUI.license.userId", eastl::nullopt, convar_flags::read_only };
-    static convar<eastl::string> cv_key { "GameUI.license.key", eastl::nullopt, convar_flags::read_only };
-    static convar<eastl::string> cv_xaml_root { "GameUI.xamlRootPath", {{"assets/ui"}}, convar_flags::read_only };
-    static convar<eastl::string> cv_font_root { "GameUI.fontRootPath", {{"assets/ui"}}, convar_flags::read_only };
-    static convar<eastl::string> cv_texture_root { "GameUI.textureRootPath", {{"assets/ui"}}, convar_flags::read_only };
-    static convar<eastl::string> cv_default_font { "GameUI.defaultFont.family", {{"Fonts/#PT Root UI"}}, convar_flags::read_only };
-    static convar<float> cv_default_font_size { "GameUI.defaultFont.size", {{15.0f}}, convar_flags::read_only };
-    static convar<std::int32_t> cv_default_font_weight { "GameUI.defaultFont.weight", {{Noesis::FontWeight_Normal}}, convar_flags::read_only };
-    static convar<std::int32_t> cv_default_font_stretch { "GameUI.defaultFont.stretch", {{Noesis::FontStretch_Normal}}, convar_flags::read_only };
+    static const system_variable<eastl::string> cv_license {"ui.license.id", eastl::monostate{} };
+    static const system_variable<eastl::string> cv_key {"ui.license.key", eastl::monostate{} };
+    static const system_variable<eastl::string> cv_xaml_root {"ui.xaml_root_path", {"assets/ui"} };
+    static const system_variable<eastl::string> cv_font_root {"ui.font_root_path", {"assets/ui"} };
+    static const system_variable<eastl::string> cv_texture_root {"ui.texture_root_path", {"assets/ui"} };
+    static const system_variable<eastl::string> cv_default_font {"ui.default_font.family", {"Fonts/#PT Root UI"} };
+    static const system_variable<float> cv_default_font_size {"ui.default_font.size", {15.0f} };
+    static const system_variable<std::int32_t> cv_default_font_weight {"ui.default_font.weight", {Noesis::FontWeight_Normal} };
+    static const system_variable<std::int32_t> cv_default_font_stretch {"ui.default_font.stretch", {Noesis::FontStretch_Normal} };
 
     static constinit Noesis::IView* s_event_proxy;
 
@@ -296,7 +296,7 @@ namespace noesis {
             .vkGetInstanceProcAddr = &vkGetInstanceProcAddr,
             .stereoSupport = false,
             .QueueSubmit = +[](const VkCommandBuffer cmd) noexcept -> void {
-                lu::vkb::ctx().flush_command_buffer<vk::QueueFlagBits::eGraphics, false>(cmd);
+                //lu::vkb::ctx().flush_command_buffer<vk::QueueFlagBits::eGraphics, false>(cmd);
             }
         };
         m_device = NoesisApp::VKFactory::CreateDevice(false, instance_info);
@@ -343,7 +343,7 @@ namespace noesis {
     auto context::render_onscreen(const vk::RenderPass pass) -> void {
         if (!m_app) [[unlikely]]
             return;
-        NoesisApp::VKFactory::SetRenderPass(m_device, pass, static_cast<std::uint32_t>(lu::vkb::k_msaa_sample_count));
+        NoesisApp::VKFactory::SetRenderPass(m_device, pass, static_cast<std::uint32_t>(lu::vkb::ctx().get_msaa_samples()));
         m_app->GetMainWindow()->GetView()->GetRenderer()->Render();
     }
 

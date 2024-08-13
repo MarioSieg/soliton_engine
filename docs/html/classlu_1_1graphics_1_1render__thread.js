@@ -7,7 +7,7 @@ var classlu_1_1graphics_1_1render__thread =
     [ "get_active_command_buffer", "classlu_1_1graphics_1_1render__thread.html#a37ed5fae339db011a75a6ee7de931838", null ],
     [ "thread_routine", "classlu_1_1graphics_1_1render__thread.html#ab2a863b4f03aa3c3b9dd15ee5f4515a7", null ],
     [ "m_active_command_buffer", "classlu_1_1graphics_1_1render__thread.html#a4839e1d15de43b76040efba9fd68e25d", null ],
-    [ "m_command_buffers", "classlu_1_1graphics_1_1render__thread.html#aa2315d3d661f5d25644ab31e7e7f1342", null ],
+    [ "m_command_buffers", "classlu_1_1graphics_1_1render__thread.html#a2ef08977b017b25585681035cc53f68b", null ],
     [ "m_command_pool", "classlu_1_1graphics_1_1render__thread.html#ad43f795611cda53c527e5bf4926012f2", null ],
     [ "m_num_threads", "classlu_1_1graphics_1_1render__thread.html#a2752c3793bc85b1c427d35537e6ed8df", null ],
     [ "m_shared_ctx", "classlu_1_1graphics_1_1render__thread.html#a49feeaab9ab0944616150ec4b5cc892b", null ],

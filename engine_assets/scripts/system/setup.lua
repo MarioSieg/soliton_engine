@@ -12,7 +12,7 @@ for _, path in ipairs(lua_include_dirs) do
 end
 
 -- Verify filesystem
-if engine_cfg.General.enableFilesystemValidation then
+if engine_cfg.system.enable_fs_validation then
     print('Verifying filesystem...')
     local numchecks = 0
     local function check_fs_entry(path)

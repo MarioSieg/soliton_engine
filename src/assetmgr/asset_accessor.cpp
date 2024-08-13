@@ -55,7 +55,7 @@ namespace lu::assetmgr {
             if (assetsys_error_t err = assetsys_mount(m_sys, fs.data(), vfs.data()); err != ASSETSYS_SUCCESS) { // Attempt to mount dir first
                 const auto lupack_file = fmt::format("{}.lupack", fs.data());
                 if (err = assetsys_mount(m_sys, lupack_file.c_str(), vfs.data()); err != ASSETSYS_SUCCESS) [[unlikely]] { // Attempt to mount LUPACK file now
-                    panic("Failed to mount asset root (PFS or VFS) '{}' / '{} to '{}: {}", fs.data(), lupack_file.c_str(), vfs.data(), asset_sys_err_info(err)); // Panic if both failed
+                    panic("Failed to mount asset root (PFS or VFS) '{}' / '{} to '{}: {}", fs, lupack_file, vfs, asset_sys_err_info(err)); // Panic if both failed
                 }
             }
         }
@@ -164,15 +164,15 @@ namespace lu::assetmgr {
     auto asset_accessor::dump_dir_tree(const char* const vpath, const int indent) -> void {
         for (int i = 0; i < assetsys_subdir_count(m_sys, vpath ); ++i) {
             char const* subdir_name = assetsys_subdir_name(m_sys, vpath, i );
-            for( int j = 0; j < indent; ++j ) std::printf( "  " );
-            std::printf( "%s/\n", subdir_name );
+            for(int j = 0; j < indent; ++j) std::printf( "  " );
+            std::printf("%s/\n", subdir_name);
             char const* subdir_path = assetsys_subdir_path(m_sys, vpath, i );
             dump_dir_tree(subdir_path, indent + 1);
         }
         for (int i = 0; i < assetsys_file_count(m_sys, vpath ); ++i){
             char const* file_name = assetsys_file_name(m_sys, vpath, i );
-            for( int j = 0; j < indent; ++j ) std::printf( "  " );
-            std::printf( "%s\n", file_name );
+            for(int j = 0; j < indent; ++j) std::printf( "  " );
+            std::printf("%s\n", file_name);
         }
     }
 }

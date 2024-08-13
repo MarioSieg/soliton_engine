@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2023 Branimir Karadzic. All rights reserved.
+ * Copyright 2010-2024 Branimir Karadzic. All rights reserved.
  * License: https://github.com/bkaradzic/bx/blob/master/LICENSE
  */
 
@@ -8,9 +8,9 @@
 
 #include <alloca.h> // alloca
 #include <stdarg.h> // va_list
+#include <stddef.h> // ptrdiff_t
 #include <stdint.h> // uint32_t
 #include <stdlib.h> // size_t
-#include <stddef.h> // ptrdiff_t
 
 #include "platform.h"
 #include "config.h"
@@ -117,7 +117,7 @@ namespace bx
 	///
 	/// @param[in] _location Source code location where function is called.
 	/// @param[in] _format Printf style format.
-	/// @param[in] ... Arguments for `_format` specification.
+	/// @param[in] _argList Arguments for `_format` specification.
 	///
 	/// @returns True if assert should stop code execution, otherwise returns false.
 	///
@@ -126,6 +126,8 @@ namespace bx
 	/// Set assert handler function.
 	///
 	/// @param[in] _assertHandlerFn Pointer to AssertHandlerFn function.
+	///
+	/// @remarks It can be set only once. This is usually done on application startup.
 	///
 	void setAssertHandler(AssertHandlerFn _assertHandlerFn);
 
@@ -213,6 +215,15 @@ namespace bx
 	/// Returns true if value `_a` is power of 2.
 	template<typename Ty>
 	constexpr bool isPowerOf2(Ty _a);
+
+	/// Returns a value of type `Ty` by reinterpreting the object representation of `FromT`.
+	template <typename Ty, typename FromT>
+	constexpr Ty bitCast(const FromT& _from);
+
+	/// Performs `static_cast` of value `_from`, and in debug build runtime verifies/asserts
+	/// that the value didn't change.
+	template<typename Ty, typename FromT>
+	constexpr Ty narrowCast(const FromT& _from, Location _location = Location::current() );
 
 	/// Copy memory block.
 	///

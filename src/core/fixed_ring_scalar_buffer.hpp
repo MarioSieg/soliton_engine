@@ -2,27 +2,26 @@
 
 #pragma once
 
-#include <array>
-#include <cstddef>
-#include <type_traits>
-#include <limits>
+#include <EASTL/array.h>
+#include <EASTL/numeric_limits.h>
+#include <EASTL/algorithm.h>
 
 namespace lu {
-    template <typename Scalar, const std::size_t Size> requires std::is_arithmetic_v<Scalar>
+    template <typename T, const std::size_t N> requires std::is_arithmetic_v<T>
     struct fixed_ring_scalar_buffer final {
-        auto submit(Scalar value) noexcept -> void;
+        auto submit(T value) noexcept -> void;
         [[nodiscard]] auto offset() const noexcept -> std::size_t;
-        [[nodiscard]] auto data() const noexcept -> const eastl::array<Scalar, Size>&;
-        [[nodiscard]] auto min() const noexcept -> Scalar;
-        [[nodiscard]] auto max() const noexcept -> Scalar;
-        [[nodiscard]] auto avg() const noexcept -> Scalar;
+        [[nodiscard]] auto data() const noexcept -> const eastl::array<T, N>&;
+        [[nodiscard]] auto min() const noexcept -> T;
+        [[nodiscard]] auto max() const noexcept -> T;
+        [[nodiscard]] auto avg() const noexcept -> T;
 
     private:
-        eastl::array<Scalar, Size> m_buf {};
+        eastl::array<T, N> m_buf {};
         std::size_t m_offs {};
-        Scalar m_min {};
-        Scalar m_max {};
-        Scalar m_avg {};
+        T m_min {};
+        T m_max {};
+        T m_avg {};
     };
 
     template <typename Scalar, const std::size_t Size> requires std::is_arithmetic_v<Scalar>
@@ -57,8 +56,7 @@ namespace lu {
         Scalar min = eastl::numeric_limits<Scalar>::max();
         Scalar max = eastl::numeric_limits<Scalar>::min();
         Scalar avg {};
-        for (const Scalar* __restrict__ i { this->m_buf.begin() }, *const __restrict__ e = i + this->m_buf.size(); i < e; ++i)
-        {
+        for (const Scalar* __restrict__ i { this->m_buf.begin() }, *const __restrict__ e = i + this->m_buf.size(); i < e; ++i) {
             min = std::min(min, *i);
             max = std::max(max, *i);
             avg += *i;

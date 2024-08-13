@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2023 Branimir Karadzic. All rights reserved.
+ * Copyright 2010-2024 Branimir Karadzic. All rights reserved.
  * License: https://github.com/bkaradzic/bx/blob/master/LICENSE
  */
 
@@ -9,14 +9,14 @@
 #include <inttypes.h>        // PRIx*
 
 #if BX_CRT_NONE
-#	include "crt0.h"
+#	include <bx/crt0.h>
 #elif BX_PLATFORM_ANDROID
 #	include <android/log.h>
 #elif  BX_PLATFORM_WINDOWS \
 	|| BX_PLATFORM_WINRT   \
 	|| BX_PLATFORM_XBOXONE
 extern "C" __declspec(dllimport) void __stdcall OutputDebugStringA(const char* _str);
-#elif BX_PLATFORM_IOS || BX_PLATFORM_OSX
+#elif BX_PLATFORM_IOS || BX_PLATFORM_OSX || BX_PLATFORM_VISIONOS
 #	if defined(__OBJC__)
 #		import <Foundation/NSObjCRuntime.h>
 #	else
@@ -73,7 +73,8 @@ namespace bx
 	|| BX_PLATFORM_XBOXONE
 		OutputDebugStringA(_out);
 #elif  BX_PLATFORM_IOS \
-	|| BX_PLATFORM_OSX
+	|| BX_PLATFORM_OSX   \
+	|| BX_PLATFORM_VISIONOS
 #	if defined(__OBJC__)
 		NSLog(@"%s", _out);
 #	else
