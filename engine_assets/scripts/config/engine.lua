@@ -68,7 +68,7 @@ engine_cfg = {
     renderer = {
         shader_dir = 'engine_assets/shaders/src', -- Shader directory.
         enable_parallel_shader_compilation = true, -- Enable shader compilation using multiple threads.
-        enable_vulkan_validation_layers = true, -- Enable Vulkan validation layers, if available.
+        enable_vulkan_validation_layers = false, -- Enable Vulkan validation layers, if available.
         max_debug_draw_vertices = 0x20000, -- Maximum amount of debugdraw draw vertices.
         error_texture = '/engine_assets/textures/system/error.png', -- Fallback texture when a texture is not found.
         flat_normal_texture = '/engine_assets/textures/system/flatnormal.png', -- Fallback texture when a texture is not found.
@@ -76,7 +76,7 @@ engine_cfg = {
         irradiance_cube_size = 64,
         prefiltered_cube_size = 512,
         prefiltered_cube_samples = 32,
-        force_vsync = true, -- Enable vertical synchronization.
+        force_vsync = false, -- Enable vertical synchronization.
     },
     ui = { -- In-Game UI settings.
         render_flags = ui_render_flags.lcd + ui_render_flags.flip_y + ui_render_flags.ppaa, -- In-Game UI default render flags.

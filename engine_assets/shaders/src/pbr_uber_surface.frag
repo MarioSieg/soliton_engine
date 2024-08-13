@@ -3,6 +3,7 @@
 #version 450
 
 #include "shader_common.h"
+#include "filmic_tonemapper.h"
 
 layout (set = 0, binding = 0) uniform sampler2D samplerAlbedoMap;
 layout (set = 0, binding = 1) uniform sampler2D samplerNormalMap;
@@ -98,6 +99,9 @@ void main() {
   vec3 ambient = (kD * diffuse + specular) * ao;
 
   vec3 color = ambient + Lo;
+
+  // Tone mapping
+  color = postToneMap(color);
 
   outFragColor.rgb = color;
   outFragColor.a = 1.0;
