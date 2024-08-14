@@ -46,7 +46,7 @@ vec3 gamma_correct(const vec3 color) {
 }
 
 vec3 normal_map(const mat3 tbn, const vec3 n) {
-    const vec3 n_map = normalize((n * 2.0 - 1.0) * CB_PER_MAT.normal_scale);
+    const vec3 n_map = normalize((n * 2.0 - 1.0));
     return normalize(tbn * n_map);
 }
 
