@@ -34,7 +34,7 @@ layout (push_constant, std430) uniform PushConstants { // TODO: move to per fram
 const float MAX_REFLECTION_LOD = 9.0;
 
 const float NUM_LAYERS = 48.0;
-const float HEIGHT_SCALE = 0.1;
+const float HEIGHT_SCALE = 0.3;
 
 vec2 parallaxOcclusionMapping(vec2 uv, vec3 viewDir) {
   float layerDepth = 1.0 / NUM_LAYERS;
@@ -65,7 +65,6 @@ vec3 calculateNormal(vec2 uv)
   mat3 TBN = mat3(T, B, N);
   return normalize(TBN * tangentNormal);
 }
-
 
 void main() {
   //const vec3 VV = normalize(inTangentViewPos - inTangentFragPos);

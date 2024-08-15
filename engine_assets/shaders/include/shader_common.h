@@ -24,7 +24,7 @@ struct cb_per_material {
 };
 
 const cb_per_frame CB_PER_FRAME = cb_per_frame(
-    vec3(0.0, -0.3, -0.2),
+    vec3(0.0, -0.8, 0.2),
     vec3(1.0, 1.0, 1.0),
     vec3(0.1, 0.1, 0.2)
 );
