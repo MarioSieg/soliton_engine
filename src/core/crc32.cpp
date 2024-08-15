@@ -157,32 +157,34 @@ namespace lu {
     auto crc32(const void* buf, std::size_t len, std::uint32_t crc) noexcept -> std::uint32_t {
         crc = ~crc;
         const auto* __restrict__ data = static_cast<const std::byte*>(buf);
-        auto init = static_cast<std::int32_t>((eastl::bit_cast<const std::byte*>((eastl::bit_cast<std::uintptr_t>(data) + 4 - 1) & ~(4 - 1))) - data);
+        std::int32_t init = static_cast<std::int32_t>((
+            eastl::bit_cast<const std::byte*>((
+                eastl::bit_cast<std::uintptr_t>(data) + 4 - 1) & ~(4 - 1))
+            ) - data
+        );
         if (len > init) {
             len -= init;
-            for (; init; --init) {
-                crc = (crc >> 8) ^ k_crc_lut[0][(crc & 255) ^ static_cast<std::uint32_t>(*data++)];
-            }
+            for (; init; --init)
+                crc = (crc >> 8) ^ k_crc_lut[0][(crc & 0xff) ^ static_cast<std::uint32_t>(*data++)];
             const auto* data4 = reinterpret_cast<const std::uint32_t*>(data);
-            for (std::uint32_t rep = len / 8; rep; --rep) {
+            for (std::uint32_t rep = len >> 3; rep; --rep) {
                 std::uint32_t v0 = *data4++ ^ crc;
                 std::uint32_t v1 = *data4++;
                 crc =
-                    k_crc_lut[7][v0 & 0xFF] ^
-                    k_crc_lut[6][(v0 >> 8) & 255] ^
-                    k_crc_lut[5][(v0 >> 16) & 255] ^
+                    k_crc_lut[7][v0 & 0xff] ^
+                    k_crc_lut[6][(v0 >> 8) & 0xff] ^
+                    k_crc_lut[5][(v0 >> 16) & 0xff] ^
                     k_crc_lut[4][v0 >> 24] ^
-                    k_crc_lut[3][v1 & 255] ^
-                    k_crc_lut[2][(v1 >> 8) & 255] ^
-                    k_crc_lut[1][(v1 >> 16) & 255] ^
+                    k_crc_lut[3][v1 & 0xff] ^
+                    k_crc_lut[2][(v1 >> 8) & 0xff] ^
+                    k_crc_lut[1][(v1 >> 16) & 0xff] ^
                     k_crc_lut[0][v1 >> 24];
             }
             data = reinterpret_cast<const std::byte*>(data4);
             len %= 8;
         }
-        for (; len; --len) {
-            crc = (crc >> 8) ^ k_crc_lut[0][(crc & 255) ^ static_cast<std::uint32_t>(*data++)];
-        }
+        for (; len; --len)
+            crc = (crc >> 8) ^ k_crc_lut[0][(crc & 0xff) ^ static_cast<std::uint32_t>(*data++)];
         return ~crc;
     }
 }

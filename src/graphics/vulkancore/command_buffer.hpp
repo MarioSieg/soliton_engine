@@ -36,6 +36,7 @@ namespace lu::vkb {
         ) -> void;
         auto end() -> void;
         auto flush() -> void;
+        auto reset() -> void;
 
         auto begin_render_pass(const vk::RenderPassBeginInfo& info, vk::SubpassContents contents) -> void;
         auto begin_render_pass(vk::RenderPass pass, vk::SubpassContents contents) -> void;
