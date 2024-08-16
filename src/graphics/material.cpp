@@ -72,8 +72,8 @@ namespace lu::graphics {
 
     material::static_resources::static_resources() :
         error_texture{cv_error_texture()},
-        fallback_image_white{"/engine_assets/textures/system/fallback_white.png"},
-        fallback_image_black{"/engine_assets/textures/system/fallback_black.png"},
+        fallback_image_white{"/RES/textures/system/fallback_white.png"},
+        fallback_image_black{"/RES/textures/system/fallback_black.png"},
         descriptor_allocator {},
         descriptor_layout_cache {} {
 

@@ -53,7 +53,7 @@ namespace lu::scripting {
     auto scripting_subsystem::exec_file(const eastl::string& file) -> bool {
         // this file must be loaded without asset mgr, as asset mgr is not yet initialized and
         // assetmgr needs access to the engine config which is stored in a lua script
-        eastl::string full_path {"/engine_assets/scripts/" + file};
+        eastl::string full_path {"/RES/scripts/" + file};
         eastl::string lua_source_code {};
         assetmgr::with_primary_accessor_lock([&](assetmgr::asset_accessor &acc) {
             if (!acc.load_txt_file(full_path.c_str(), lua_source_code)) {

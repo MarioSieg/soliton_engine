@@ -6,8 +6,8 @@
 
 namespace lu::graphics::pipelines {
     sky_pipeline::sky_pipeline() : graphics_pipeline{"sky_composite"} {
-        m_skybox_texture.emplace("/engine_assets/textures/hdr/gcanyon_cube.ktx");
-        m_skydome.emplace("/engine_assets/meshes/skydome.fbx");
+        m_skybox_texture.emplace("/RES/textures/hdr/gcanyon_cube.ktx");
+        m_skydome.emplace("/RES/meshes/skydome.fbx");
 
         const vk::Device device = vkb::vkdvc();
 
@@ -64,8 +64,8 @@ namespace lu::graphics::pipelines {
     }
 
     auto sky_pipeline::configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> void {
-        auto vs = shader_cache::get().get_shader(shader_variant{"/engine_assets/shaders/src/skybox.vert", shader_stage::vertex});
-        auto fs = shader_cache::get().get_shader(shader_variant{"/engine_assets/shaders/src/skybox.frag", shader_stage::fragment});
+        auto vs = shader_cache::get().get_shader(shader_variant{"/RES/shaders/src/skybox.vert", shader_stage::vertex});
+        auto fs = shader_cache::get().get_shader(shader_variant{"/RES/shaders/src/skybox.frag", shader_stage::fragment});
         cfg.emplace_back(vs);
         cfg.emplace_back(fs);
     }

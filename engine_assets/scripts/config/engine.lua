@@ -63,14 +63,14 @@ engine_cfg = {
         default_height = 1080, -- Default window height.
         min_width = 640, -- Minimum window width.
         min_height = 480, -- Minimum window height.
-        icon = '/engine_assets/icons/logo.png' -- window icon image file.
+        icon = '/RES/icons/logo.png' -- window icon image file.
     },
     renderer = {
         shader_dir = 'engine_assets/shaders/src', -- Shader directory.
         enable_parallel_shader_compilation = true, -- Enable shader compilation using multiple threads.
         enable_vulkan_validation_layers = true, -- Enable Vulkan validation layers, if available.
         max_debug_draw_vertices = 0x20000, -- Maximum amount of debugdraw draw vertices.
-        error_texture = '/engine_assets/textures/system/error.png', -- Fallback texture when a texture is not found.
+        error_texture = '/RES/textures/system/error.png', -- Fallback texture when a texture is not found.
         brdf_lut_dim = 512, -- Width and height of the PBR BRDF integration LUT texture: LUT x LUT.
         irradiance_cube_size = 64,
         prefiltered_cube_size = 512,

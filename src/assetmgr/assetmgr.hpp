@@ -13,7 +13,7 @@
 namespace lu::assetmgr {
     // Virtual file system mounts: {physical path, virtual path}, physical path can either be a directory or a LUPACK archive
     constexpr eastl::array<eastl::pair<eastl::string_view, eastl::string_view>, 1> k_vfs_mounts {
-        eastl::make_pair("./engine_assets", "/engine_assets")
+        eastl::make_pair("./engine_assets", "/RES")
     };
 
     extern auto init() -> void;
