@@ -22,8 +22,16 @@ namespace lu::vkb {
 
     class command_buffer final : public no_copy {
     public:
-        explicit command_buffer(vk::CommandPool pool, vk::CommandBuffer cmd, vk::Queue queue, vk::QueueFlagBits queue_flags);
-        explicit command_buffer(vk::QueueFlagBits queue_flags, vk::CommandBufferLevel level = vk::CommandBufferLevel::ePrimary);
+        explicit command_buffer(
+            vk::CommandPool pool,
+            vk::CommandBuffer cmd,
+            vk::Queue queue,
+            vk::QueueFlagBits queue_flags
+        );
+        explicit command_buffer(
+            vk::QueueFlagBits queue_flags,
+            vk::CommandBufferLevel level = vk::CommandBufferLevel::ePrimary
+        );
         command_buffer(command_buffer&& other) noexcept;
         auto operator = (command_buffer&& other) noexcept -> command_buffer&;
         ~command_buffer();
