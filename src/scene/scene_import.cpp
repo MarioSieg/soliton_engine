@@ -33,6 +33,7 @@ namespace lu {
         }
 
         eastl::string asset_root = std::filesystem::path{path.c_str()}.parent_path().string().c_str();
+        str_replace(asset_root, "engine_assets", "RES");
         asset_root += "/";
 
         auto* missing_material = get_asset_registry<graphics::material>().load_from_memory();
