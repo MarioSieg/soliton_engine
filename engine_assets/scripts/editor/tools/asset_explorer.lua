@@ -8,7 +8,8 @@ local icons = require 'imgui.icons'
 local asset_explorer = {
     name = icons.i_folder_tree .. ' Asset View',
     is_visible = ffi.new('bool[1]', true),
-    target_scan_dir = 'engine_assets',
+    root_asset_dir = 'engine_assets',
+    current_working_dir = '',
     asset_list = {},
     dir_tree = {},
     columns = ffi.new('int[1]', 12),
@@ -18,91 +19,96 @@ local asset_explorer = {
     _padding = 8
 }
 
-function asset_explorer:build_asset_dir_recursive(path, parent)
-    path = path or self.target_scan_dir
+asset_explorer.current_working_dir = asset_explorer.root_asset_dir -- We start at the asset root
+
+function asset_explorer:populate_asset_tree_list_recursive(path, parent)
+    path = path or self.root_asset_dir
     parent = parent or self.dir_tree
     for entry in lfs.dir(path) do
-        if entry ~= '.' and entry ~= '..' then
-            local fullPath = path .. '/' .. entry
-            local attr = lfs.attributes(fullPath)
+        if entry ~= '.' and entry ~= '..' and not entry:match("^%.") then
+            local full_path = path .. '/' .. entry
+            local attr = lfs.attributes(full_path)
             if attr and (attr.mode == 'directory' or attr.mode == 'file') then
                 local node = {
                     name = entry,
                     is_file = attr.mode == 'file',
+                    path = full_path,
                     children = {}
                 }
                 table.insert(parent, node)
                 if not node.is_file then
-                    self:build_asset_dir_recursive(fullPath, node.children)
+                    self:populate_asset_tree_list_recursive(full_path, node.children)
                 end
             end
         end
+    end
+end
+
+function asset_explorer:build_asset_list_in_working_dir_impl(path)
+    for entry in lfs.dir(path) do
+        if entry ~= '.' and entry ~= '..' and not path:match("^%.") then
+            local full_path = path .. '/' .. entry
+            local attr = lfs.attributes(full_path)
+            local is_dir = attr.mode == 'directory'
+            local ext = nil
+            if not is_dir then
+                ext = string.match(entry, '[^.]+$')
+                if not ext then
+                    ext = 'unknown'
+                end
+            end
+            table.insert(self.asset_list, {
+                path = full_path,
+                name = entry,
+                size = is_dir and 0 or attr.size,
+                date = is_dir and 0 or attr.modification,
+                type = determine_asset_type(ext)
+            })
+        end
+    end
+end
+
+function asset_explorer:build_asset_list_in_working_dir()
+    self.asset_list = {}
+    if not lfs.attributes(self.current_working_dir) then
+        eprint('asset_explorer failed to scan directory: ' .. self.current_working_dir)
+        return
+    end
+    self:build_asset_list_in_working_dir_impl(self.current_working_dir)
+end
+
+local dir_color = 0xffaaaaaa
+local file_color = 0xffcccccc
+
+function asset_explorer:_tree_node_action_recursive(node)
+    local flags = node.is_file and ffi.C.ImGuiTreeNodeFlags_Leaf or 0
+    local name = node.name
+    local node_open = ui.TreeNodeEx(name, flags)
+    if ui.IsItemClicked() and not node.is_file then
+        print("Selected path: " .. node.path)
+        self.current_working_dir = node.path
+        self:build_asset_list_in_working_dir()
+    end
+    if node_open then
+        for j = 1, #node.children do
+            local child = node.children[j]
+            self:_tree_node_action_recursive(child)
+        end
+
+        ui.TreePop()
     end
 end
 
 function asset_explorer:draw_asset_tree_structure(ratio)
-    local DIR_COLOR = 0xffaaaaaa
-    local FILE_COLOR = 0xffcccccc
-    ui.PushStyleColor(ffi.C.ImGuiCol_Text, DIR_COLOR)
+    ui.PushStyleColor(ffi.C.ImGuiCol_Text, dir_color)
     if ui.BeginChild('AssetTree', ui.ImVec2(ratio * ui.GetWindowSize().x, 0)) then
         for i = 1, #self.dir_tree do
             local node = self.dir_tree[i]
-            if ui.TreeNode(node.name) then
-                for j = 1, #node.children do
-                    local child = node.children[j]
-                    if child.is_file then
-                        ui.PushStyleColor(ffi.C.ImGuiCol_Text, FILE_COLOR)
-                        ui.Indent()
-                        ui.TextUnformatted(child.name)
-                        ui.Unindent()
-                        ui.PopStyleColor()
-                    else
-                        if ui.TreeNode(child.name) then
-                            ui.TreePop()
-                        end
-                    end
-                end
-                ui.TreePop()
-            end
+            self:_tree_node_action_recursive(node)
         end
     end
     ui.EndChild()
     ui.PopStyleColor()
-end
-
-function asset_explorer:expand_asst_list_recursive_within_dir(path) -- TODO: Only do for top directory and expand on demand
-    path = path or self.target_scan_dir
-    for entry in lfs.dir(path) do
-        if entry ~= '.' and entry ~= '..' then
-            local fullPath = path .. '/' .. entry
-            local attr = lfs.attributes(fullPath)
-            if attr.mode == 'directory' then
-                self:expand_asst_list_recursive_within_dir(fullPath)
-            else
-                local ext = string.match(entry, '[^.]+$')
-                if not ext then
-                    ext = 'unknown'
-                end
-                
-                table.insert(self.asset_list, {
-                    path = fullPath,
-                    name = entry,
-                    size = attr.size,
-                    date = attr.modification,
-                    type = determine_asset_type(ext)
-                })
-            end
-        end
-    end
-end
-
-function asset_explorer:build_asset_list_in_dir()
-    self.asset_list = {}
-    if not lfs.attributes(self.target_scan_dir) then
-        eprint('asset_explorer failed to scan directory: ' .. self.target_scan_dir)
-        return
-    end
-    self:expand_asst_list_recursive_within_dir()
 end
 
 function asset_explorer:render()
@@ -146,7 +152,7 @@ function asset_explorer:render()
     ui.End()
 end
 
-asset_explorer:build_asset_dir_recursive() -- Build directory tree once on start
-asset_explorer:build_asset_list_in_dir() -- Build asset list once on start
+asset_explorer:populate_asset_tree_list_recursive() -- Build directory tree once on start
+asset_explorer:build_asset_list_in_working_dir() -- Build asset list once on start
 
 return asset_explorer

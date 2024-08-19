@@ -183,17 +183,19 @@ xaml_file_exts = {
 xaml_file_exts = set_identity(xaml_file_exts)
 
 asset_type = {
-    MESH = 0,
-    TEXTURE = 1,
-    SCRIPT = 2,
-    FONT = 3,
-    MATERIAL = 4,
-    SOUND = 5,
-    ICON = 6,
-    UI_XAML_SHEET = 7,
-    UNKNOWN = 8
+    DIR = 0,
+    MESH = 1,
+    TEXTURE = 2,
+    SCRIPT = 3,
+    FONT = 4,
+    MATERIAL = 5,
+    SOUND = 6,
+    ICON = 7,
+    UI_XAML_SHEET = 8,
+    UNKNOWN = 9
 }
 asset_type_names = {
+    [asset_type.DIR] = 'Directory',
     [asset_type.MESH] = 'Mesh',
     [asset_type.TEXTURE] = 'Texture',
     [asset_type.SCRIPT] = 'Lua Script',
@@ -206,6 +208,7 @@ asset_type_names = {
 }
 
 function determine_asset_type(ext)
+    if ext == nil then return asset_type.DIR end
     if texture_file_exts[ext] then return asset_type.TEXTURE end
     if mesh_file_exts[ext] then return asset_type.MESH end
     if script_file_exts[ext] then return asset_type.SCRIPT end
