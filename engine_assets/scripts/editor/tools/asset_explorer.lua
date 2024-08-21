@@ -5,6 +5,7 @@ local bit = require 'bit'
 local ui = require 'imgui.imgui'
 local icons = require 'imgui.icons'
 local utils = require 'editor.utils'
+local time = require 'time'
 local bor = bit.bor
 require 'table.clear'
 
@@ -20,6 +21,7 @@ local asset_explorer = {
     _prettified_current_working_dir = '',
     _asset_list = {},
     _dir_tree = {},
+    _num_assets_indexed = 0,
     _columns = ffi.new('int[1]', 12),
     _history = {},
     _history_idx = 1
@@ -56,11 +58,13 @@ end
 function asset_explorer:populate_asset_tree_list_recursive(path, parent)
     path = path or self.root_asset_dir
     parent = parent or self._dir_tree
+    self._num_assets_indexed = self._num_assets_indexed + 1
     for entry in lfs.dir(path) do
         if is_asset_path_visible_in_editor(entry) then
-            local full_path = path .. '/' .. entry
+            local full_path = string.format('%s/%s', path, entry)
             local attr = lfs.attributes(full_path)
             if attr and (attr.mode == 'directory' or attr.mode == 'file') then
+                self._num_assets_indexed = self._num_assets_indexed + 1
                 local ext = nil
                 if attr.mode == 'file' then
                     ext = get_file_ext_or_fallback(entry)
@@ -134,9 +138,12 @@ function asset_explorer:_change_asset_list_working_dir(path)
 end
 
 function asset_explorer:refresh()
+    local now = time.hpc_clock_now()
     table.clear(self._dir_tree)
+    self._num_assets_indexed = 0
     self:populate_asset_tree_list_recursive() -- Build directory tree once on start
     self:build_asset_list_in_working_dir() -- Build asset list once on start
+    print(string.format('%d Assets indexed in %g ms', self._num_assets_indexed, time.hpc_clock_elapsed_ms(now)))
 end
 
 function asset_explorer:_tree_node_action_recursive(node)
