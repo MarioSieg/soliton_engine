@@ -189,7 +189,7 @@ function asset_explorer:render()
                     end
                 end
                 if ui.IsItemHovered() then
-                    ui.SetTooltip(string.format('%s - %s', label, asset_type_names[asset.type]))
+                    ui.SetTooltip(string.format('%s - %s', label, utils.asset_type_names[asset.type]))
                 end
                 ui.NextColumn()
             end
