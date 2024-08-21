@@ -4,6 +4,26 @@ local components = require 'components'
 local icons = require 'imgui.icons'
 local ui = require 'imgui.imgui'
 
+local function new_identity_map(list)
+    local set = {}
+    for _, l in ipairs(list) do
+        set[l] = true
+    end
+    return set
+end
+
+local function map_len(T)
+    local count = 0
+    for _ in pairs(T) do count = count + 1 end
+    return count
+end
+
+local _enumerator = 0
+local function next_enum()
+    _enumerator = _enumerator + 1
+    return _enumerator
+end
+
 local utils = {}
 
 -- Components that can be added to entities sorted by category
@@ -61,15 +81,7 @@ utils.default_window_size = ui.ImVec2(800, 600)
 utils.popupid_new_project = 1
 utils.popupid_add_component = 2
 
-local function set_identity(list)
-    local set = {}
-    for _, l in ipairs(list) do
-        set[l] = true
-    end
-    return set
-end
-
-utils.mesh_file_exts = {
+utils.mesh_file_exts = new_identity_map({
     '3d',
     '3ds',
     '3mf',
@@ -127,10 +139,9 @@ utils.mesh_file_exts = {
     'x3d',
     'xgl',
     'zgl'
-}
-utils.mesh_file_exts = set_identity(utils.mesh_file_exts)
+})
 
-utils.texture_file_exts = {
+utils.texture_file_exts = new_identity_map({
     'bmp',
     'dds',
     'exr',
@@ -141,61 +152,108 @@ utils.texture_file_exts = {
     'psd',
     'tga',
     'tiff',
-    'webp'
-}
-utils.texture_file_exts = set_identity(utils.texture_file_exts)
+    'webp',
+    'ktx'
+})
 
-utils.script_file_exts = {
+utils.script_file_exts = new_identity_map({
     'lua'
-}
-utils.script_file_exts = set_identity(utils.script_file_exts)
+})
 
-utils.sound_file_exts = {
+utils.sound_file_exts = new_identity_map({
     'wav',
     'mp3',
     'ogg',
     'flac',
     'aiff',
     'wma'
-}
-utils.sound_file_exts = set_identity(utils.sound_file_exts)
+})
 
-utils.font_file_exts = {
+utils.font_file_exts = new_identity_map({
     'ttf',
     'otf',
     'woff',
     'woff2'
-}
-utils.font_file_exts = set_identity(utils.font_file_exts)
+})
 
-utils.material_file_exts = {
+utils.material_file_exts = new_identity_map({
     'mat'
-}
-utils.material_file_exts = set_identity(utils.material_file_exts)
+})
 
-utils.icons_file_exts = {
+utils.icons_file_exts = new_identity_map({
     'ico',
     'icns'
-}
-utils.icons_file_exts = set_identity(utils.icons_file_exts)
+})
 
-utils.xaml_file_exts = {
+utils.xaml_file_exts = new_identity_map({
     'xaml'
-}
-utils.xaml_file_exts = set_identity(utils.xaml_file_exts)
+})
+
+utils.shader_file_exts = new_identity_map({
+    'h', -- We assume that the header file is a GLSL shader header file
+    'frag',
+    'vert',
+    'geom',
+    'tesc',
+    'tese',
+    'comp',
+    'rgen',
+    'rint',
+    'rahit',
+    'rchit',
+    'rmiss',
+    'rcall',
+    'rclose',
+    'anyhit',
+    'closesthit',
+    'intersection',
+    'miss',
+    'callable',
+    'mesh'
+})
+
+utils.text_file_exts = new_identity_map({
+    'txt',
+    'md',
+    'xml',
+    'json',
+    'csv',
+    'yml',
+    'yaml',
+    'ini',
+    'cfg',
+    'conf',
+    'log',
+    'bat',
+    'sh'
+})
+
+utils.binary_file_exts = new_identity_map({
+    'bin',
+    'dat',
+    'db',
+    'blob',
+    'zip',
+    'lupack',
+    'pak'
+})
 
 utils.asset_type = {
-    DIR = 0,
-    MESH = 1,
-    TEXTURE = 2,
-    SCRIPT = 3,
-    FONT = 4,
-    MATERIAL = 5,
-    SOUND = 6,
-    ICON = 7,
-    UI_XAML_SHEET = 8,
-    UNKNOWN = 9
+    DIR = next_enum(),
+    MESH = next_enum(),
+    TEXTURE = next_enum(),
+    SCRIPT = next_enum(),
+    FONT = next_enum(),
+    MATERIAL = next_enum(),
+    SOUND = next_enum(),
+    ICON = next_enum(),
+    UI_XAML_SHEET = next_enum(),
+    SHADER = next_enum(),
+    TEXT_FILE = next_enum(),
+    BINARY_FILE = next_enum(),
+    UNKNOWN = next_enum()
 }
+
 utils.asset_type_names = {
     [utils.asset_type.DIR] = 'Directory',
     [utils.asset_type.MESH] = 'Mesh',
@@ -205,9 +263,47 @@ utils.asset_type_names = {
     [utils.asset_type.MATERIAL] = 'Material',
     [utils.asset_type.SOUND] = 'Sound',
     [utils.asset_type.ICON] = 'Icon',
-    [utils.asset_type.UI_XAML_SHEET] = 'ui XAML Sheet',
+    [utils.asset_type.UI_XAML_SHEET] = 'UI XAML Sheet',
+    [utils.asset_type.SHADER] = 'GLSL Shader',
+    [utils.asset_type.TEXT_FILE] = 'Text Data File',
+    [utils.asset_type.BINARY_FILE] = 'Binary Data File',
     [utils.asset_type.UNKNOWN] = 'Unknown'
 }
+assert(#utils.asset_type_names == map_len(utils.asset_type))
+
+utils.asset_type_icons = {
+    [utils.asset_type.DIR] = icons.i_folder,
+    [utils.asset_type.MESH] = icons.i_cube,
+    [utils.asset_type.TEXTURE] = icons.i_image,
+    [utils.asset_type.SCRIPT] = icons.i_code,
+    [utils.asset_type.FONT] = icons.i_font,
+    [utils.asset_type.MATERIAL] = icons.i_paint_brush,
+    [utils.asset_type.SOUND] = icons.i_volume_up,
+    [utils.asset_type.ICON] = icons.i_icons,
+    [utils.asset_type.UI_XAML_SHEET] = icons.i_window,
+    [utils.asset_type.SHADER] = icons.i_fan,
+    [utils.asset_type.TEXT_FILE] = icons.i_text,
+    [utils.asset_type.BINARY_FILE] = icons.i_database,
+    [utils.asset_type.UNKNOWN] = icons.i_question
+}
+assert(#utils.asset_type_icons == map_len(utils.asset_type))
+
+utils.asset_type_colors = {
+    [utils.asset_type.DIR] = 0xffffe4e4,       -- Light Pink: Folder/Directory
+    [utils.asset_type.MESH] = 0xffadd8ff,      -- Pastel Blue: Mesh
+    [utils.asset_type.TEXTURE] = 0xffffe7a9,   -- Light Yellow: Texture
+    [utils.asset_type.SCRIPT] = 0xffbaffc9,    -- Pastel Green: Script
+    [utils.asset_type.FONT] = 0xffd8b9ff,      -- Light Purple: Font
+    [utils.asset_type.MATERIAL] = 0xffdab6ff,  -- Pastel Violet: Material
+    [utils.asset_type.SOUND] = 0xffffb3b3,     -- Pastel Red: Sound
+    [utils.asset_type.ICON] = 0xffffe5a9,      -- Light Gold: Icon
+    [utils.asset_type.UI_XAML_SHEET] = 0xffa9ffff, -- Pastel Cyan: UI/XAML Sheet
+    [utils.asset_type.SHADER] = 0xffb3a9ff,    -- Light Indigo: Shader
+    [utils.asset_type.TEXT_FILE] = 0xffe5e5e5, -- Light Grey: Text File
+    [utils.asset_type.BINARY_FILE] = 0xffe5e5e5, -- Light Grey: Binary File
+    [utils.asset_type.UNKNOWN] = 0xffcccccc    -- Light Grey: Unknown
+}
+assert(#utils.asset_type_colors == map_len(utils.asset_type))
 
 function utils.determine_asset_type(ext)
     if ext == nil then return utils.asset_type.DIR end
@@ -219,7 +315,19 @@ function utils.determine_asset_type(ext)
     if utils.sound_file_exts[ext] then return utils.asset_type.SOUND end
     if utils.icons_file_exts[ext] then return utils.asset_type.ICON end
     if utils.xaml_file_exts[ext] then return utils.asset_type.UI_XAML_SHEET end
+    if utils.shader_file_exts[ext] then return utils.asset_type.SHADER end
+    if utils.text_file_exts[ext] then return utils.asset_type.TEXT_FILE end
+    if utils.binary_file_exts[ext] then return utils.asset_type.BINARY_FILE end
     return utils.asset_type.UNKNOWN
+end
+
+function utils.prettify_name(name, lim)
+    lim = lim or 20
+    local pretty_name = name
+    if string.len(name) > lim then
+        pretty_name = string.sub(name, 1, lim) .. '...'
+    end
+    return pretty_name
 end
 
 function utils.build_filter_string(items)
