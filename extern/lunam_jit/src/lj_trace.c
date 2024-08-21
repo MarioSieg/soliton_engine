@@ -154,7 +154,7 @@ static void trace_save(jit_State *J, GCtrace *T)
   T->gct = ~LJ_TTRACE;
   T->ir = (IRIns *)p - J->cur.nk;  /* The IR has already been copied above. */
 #if LJ_ABI_PAUTH
-  T->mcauth = lj_ptr_sign((ASMFunction)T->mcode, T);
+  T->mcauth = lj_ptr_sign((ASMFunction)T->mcode, J2G(J));
 #endif
   p += szins;
   TRACE_APPENDVEC(snap, nsnap, SnapShot)
@@ -349,6 +349,18 @@ void lj_trace_initstate(global_State *g)
   J->k32[LJ_K32_2P63] = 0x5f000000;
   J->k32[LJ_K32_M2P64] = 0xdf800000;
 #endif
+#endif
+#if LJ_TARGET_ARM64
+  J->k64[LJ_K64_VM_EXIT_HANDLER].u64 = (uintptr_t)lj_ptr_sign((ASMFunction)(lj_vm_exit_handler - 4), 0);
+#endif
+
+#if LJ_TARGET_MIPS
+  /* Use the middle of the 256MB-aligned region. */
+  J->mchub = ((uintptr_t)(void *)lj_vm_exit_handler &
+		          ~(uintptr_t)0x0fffffffu) + 0x08000000u;
+#else
+  /* Target an address in the static assembler code (64K aligned). */
+  J->mchub = (uintptr_t)(void *)lj_vm_exit_handler & ~(uintptr_t)0xffff;
 #endif
 }
 
@@ -644,10 +656,16 @@ static int trace_abort(jit_State *J)
     J->cur.traceno = 0;
   }
   L->top--;  /* Remove error object */
-  if (e == LJ_TRERR_DOWNREC)
+  if (e == LJ_TRERR_DOWNREC) {
     return trace_downrec(J);
-  else if (e == LJ_TRERR_MCODEAL)
+  } else if (e == LJ_TRERR_MCODEAL) {
+    if (!J->mcarea) {
+      /* Failed to allocate even the first trace. Disable JIT. */
+      J->flags &= ~(uint32_t)JIT_F_ON;
+      lj_dispatch_update(J2G(J));
+    }
     lj_trace_flushall(L);
+  }
   return 0;
 }
 

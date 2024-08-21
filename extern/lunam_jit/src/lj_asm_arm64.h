@@ -52,22 +52,35 @@ static void asm_exitstub_setup(ASMState *as, ExitNo nexits)
 {
   ExitNo i;
   MCode *mxp = as->mctop;
-  if (mxp - (nexits + 3 + MCLIM_REDZONE) < as->mclim)
+  ptrdiff_t delta;
+  if (mxp - (nexits * 2ull + 4 + MCLIM_REDZONE) < as->mclim)
     asm_mclimit(as);
-  /* 1: str lr,[sp]; bl ->vm_exit_handler; movz w0,traceno; bl <1; bl <1; ... */
-  for (i = nexits-1; (int32_t)i >= 0; i--)
-    *--mxp = A64I_LE(A64I_BL | A64F_S26(-3-i));
-  *--mxp = A64I_LE(A64I_MOVZw | A64F_U16(as->T->traceno));
-  mxp--;
-  *mxp = A64I_LE(A64I_BL | A64F_S26(((MCode *)(void *)lj_vm_exit_handler-mxp)));
-  *--mxp = A64I_LE(A64I_STRx | A64F_D(RID_LR) | A64F_N(RID_SP));
+  for (i = nexits-1; (int32_t)i >= 0; i--) {
+    /* movz lr, #exitno, lsl #32; b <1 */
+    *--mxp = A64I_LE(A64I_B | A64F_S26(-5-i*2));
+    *--mxp = A64I_LE(A64I_MOVZx | A64F_U16(i) | A64F_LSL16(32) | A64F_D(RID_LR));
+  }
+  /* 1: movk lr, #traceno; str lr, [J->parent,J->exitno]; b ->vm_exit_handler */
+  delta = (MCode *)(void *)lj_vm_exit_handler - (mxp-2);
+  if (A64F_S_OK(delta, 26)) {
+    *--mxp = A64I_LE(A64I_NOP);
+    *--mxp = A64I_LE(A64I_B | A64F_S26(delta));
+  } else {
+    *--mxp = A64I_LE(A64I_BR_AUTH | A64F_N(RID_LR));
+    *--mxp = A64I_LE(A64I_LDRx | A64F_D(RID_LR) | A64F_N(RID_GL) |
+                A64F_U12(glofs(as, &as->J->k64[LJ_K64_VM_EXIT_HANDLER]) >> 3));
+  }
+  LJ_STATIC_ASSERT((offsetof(jit_State, parent) | 4) == offsetof(jit_State, exitno));
+  *--mxp = A64I_LE(A64I_STRx | A64F_D(RID_LR) | A64F_N(RID_GL) |
+                   A64F_U12(glofs(as, &as->J->parent) >> 3));
+  *--mxp = A64I_LE(A64I_MOVKx | A64F_U16(as->T->traceno) | A64F_D(RID_LR));
   as->mctop = mxp;
 }
 
 static MCode *asm_exitstub_addr(ASMState *as, ExitNo exitno)
 {
   /* Keep this in-sync with exitstub_trace_addr(). */
-  return as->mctop + exitno + 3;
+  return as->mctop + exitno * 2ull + 4;
 }
 
 /* Emit conditional branch to exit for guard. */
@@ -1932,7 +1945,13 @@ static void asm_tail_fixup(ASMState *as, TraceNo lnk)
   }
   /* Patch exit branch. */
   target = lnk ? traceref(as->J, lnk)->mcode : (MCode *)lj_vm_exit_interp;
-  p[-1] = A64I_B | A64F_S26((target-p)+1);
+  --p;
+  if (A64F_S_OK(target-p, 26)) {
+    *p = A64I_B | A64F_S26(target-p);
+  } else {
+    *p = A64I_MOVNx | A64F_U16(lnk ^ 0xffff) | A64F_LSL16(32) | A64F_D(RID_LR);
+    /* Subsequent instructions are common part of exit stub. */
+  }
 }
 
 /* Prepare tail of code. */
@@ -2041,9 +2060,10 @@ void lj_asm_patchexit(jit_State *J, GCtrace *T, ExitNo exitno, MCode *target)
     } else if ((ins & 0xfc000000u) == 0x14000000u &&
 	       ((ins ^ (px-p)) & 0x03ffffffu) == 0) {
       /* Patch b. */
-      lj_assertJ(A64F_S_OK(delta, 26), "branch target out of range");
-      *p = A64I_LE((ins & 0xfc000000u) | A64F_S26(delta));
-      if (!cstart) cstart = p;
+      if (A64F_S_OK(delta, 26)) {
+        *p = A64I_LE((ins & 0xfc000000u) | A64F_S26(delta));
+        if (!cstart) cstart = p;
+      }
     } else if ((ins & 0x7e000000u) == 0x34000000u &&
 	       ((ins ^ ((px-p)<<5)) & 0x00ffffe0u) == 0) {
       /* Patch cbz/cbnz, if within range. */
@@ -2065,11 +2085,35 @@ void lj_asm_patchexit(jit_State *J, GCtrace *T, ExitNo exitno, MCode *target)
   /* Always patch long-range branch in exit stub itself. Except, if we can't. */
   if (patchlong) {
     ptrdiff_t delta = target - px;
-    lj_assertJ(A64F_S_OK(delta, 26), "branch target out of range");
-    *px = A64I_B | A64F_S26(delta);
+    if (A64F_S_OK(delta, 26)) {
+      *px = A64I_LE(A64I_B | A64F_S26(delta));
+    } else if (target == J->cur.mcode) {
+      MCode* addr;
+#if LJ_ABI_PAUTH
+      addr = (MCode*)&J->curfinal->mcauth;
+#else
+      addr = (MCode*)&J->curfinal->mcode;
+#endif
+      if (A64F_S_OK(addr-px, 19)) {
+        /* Load from the mcode pointer then do an indirect branch. */
+        *px = A64I_LE(A64I_LDRLx | A64F_S19(addr-px) | A64F_D(RID_LR));
+#if LJ_ABI_PAUTH
+        px[1] = A64I_LE(A64I_BRAA | A64F_N(RID_LR) | A64F_D(RID_GL));
+#else
+        px[1] = A64I_LE(A64I_BR | A64F_N(RID_LR));
+#endif
+      } else {
+        /* Pass the target trace number to vm_exit_handler. */
+        *px = A64I_LE(A64I_MOVNx | A64F_U16(J->cur.traceno ^ 0xffff) | A64F_LSL16(32) | A64F_D(RID_LR));
+        delta = (MCode *)(void *)lj_vm_exit_handler - (px+1);
+        if (A64F_S_OK(delta, 26)) {
+          px[1] = A64I_LE(A64I_B | A64F_S26(delta));
+        }
+      }
+    }
     if (!cstart) cstart = px;
   }
-  if (cstart) lj_mcode_sync(cstart, px+1);
+  if (cstart) lj_mcode_sync(cstart, px+2);
   lj_mcode_patch(J, mcarea, 1);
 }
 

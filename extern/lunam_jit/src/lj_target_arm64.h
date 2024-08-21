@@ -110,7 +110,7 @@ typedef struct {
 static LJ_AINLINE uint32_t *exitstub_trace_addr_(uint32_t *p, uint32_t exitno)
 {
   while (*p == (LJ_LE ? 0xd503201f : 0x1f2003d5)) p++;  /* Skip A64I_NOP. */
-  return p + 3 + exitno;
+  return p + 4 + exitno * 2ull;
 }
 /* Avoid dependence on lj_jit.h if only including lj_target.h. */
 #define exitstub_trace_addr(T, exitno) \
@@ -262,6 +262,7 @@ typedef enum A64Ins {
   A64I_CBZ = 0x34000000,
   A64I_CBNZ = 0x35000000,
 
+  A64I_BRAA = 0xd71f0800,
   A64I_BRAAZ = 0xd61f081f,
   A64I_BLRAAZ = 0xd63f081f,
 
@@ -281,6 +282,7 @@ typedef enum A64Ins {
   A64I_FSQRTd = 0x1e61c000,
   A64I_LDRs = 0xbd400000,
   A64I_LDRd = 0xfd400000,
+  A64I_LDRLd = 0x5c000000,
   A64I_STRs = 0xbd000000,
   A64I_STRd = 0xfd000000,
   A64I_LDPs = 0x2d400000,
@@ -320,6 +322,7 @@ typedef enum A64Ins {
   A64I_FMOV_R_D = 0x9e660000,
   A64I_FMOV_D_R = 0x9e670000,
   A64I_FMOV_DI = 0x1e601000,
+  A64I_MOVI_DI = 0x2f000400,
 } A64Ins;
 
 #define A64I_BR_AUTH	(LJ_ABI_PAUTH ? A64I_BRAAZ : A64I_BR)
