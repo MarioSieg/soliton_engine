@@ -27,9 +27,9 @@ ffi.cdef[[
     lua_entity_id __lu_scene_get_active_camera_entity(void);
 ]]
 
-local function combine_flags(flags)
+local function bit_flag_union(flags)
     local result = 0
-    for i=1, #flags do
+    for i = 1, #flags do
         result = bor(result, flags[i])
     end
     return band(result, 0xffffffff)
@@ -73,7 +73,7 @@ scene_import_flags = {
     gen_bounding_boxes = 0x80000000,
 }
 
-scene_import_flags.preset_realtime_quality = combine_flags({
+scene_import_flags.preset_realtime_quality = bit_flag_union({
     scene_import_flags.calc_tangent_space,
     scene_import_flags.gen_smooth_normals,
     scene_import_flags.join_identical_vertices,
@@ -90,13 +90,13 @@ scene_import_flags.preset_realtime_quality = combine_flags({
     -- scene_import_flags.optimize_graph
 })
 
-scene_import_flags.preset_convert_to_lh = combine_flags({
+scene_import_flags.preset_convert_to_lh = bit_flag_union({
     scene_import_flags.make_left_handed,
     scene_import_flags.flip_uvs,
     scene_import_flags.flip_winding_order
 })
 
-scene_import_flags.default = combine_flags({
+scene_import_flags.default = bit_flag_union({
     scene_import_flags.preset_realtime_quality ,
     scene_import_flags.preset_convert_to_lh
 })
