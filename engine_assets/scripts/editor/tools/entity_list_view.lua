@@ -47,7 +47,7 @@ function entity_list_view:build_entity_list()
             if is_anonymous then
                 name = 'Unnamed'
             end
-            name = icons.i_cube .. ' ' .. name
+            name = string.format('%s %s', icons.i_cube, name)
             local entity_info = {
                 entity = entity,
                 name = name,

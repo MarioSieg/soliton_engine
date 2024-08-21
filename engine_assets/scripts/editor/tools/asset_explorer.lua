@@ -1,31 +1,46 @@
 -- Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 local ffi = require 'ffi'
-
 local ui = require 'imgui.imgui'
 local icons = require 'imgui.icons'
+require 'table.clear'
 
 local asset_explorer = {
     name = icons.i_folder_tree .. ' Asset View',
     is_visible = ffi.new('bool[1]', true),
     root_asset_dir = 'engine_assets',
-    current_working_dir = '',
-    asset_list = {},
-    dir_tree = {},
-    columns = ffi.new('int[1]', 12),
     columns_range = { min = 4, max = 15 },
 
     _tree_ratio = 0.2,
-    _padding = 8
+    _padding = 8,
+    _current_working_dir = '',
+    _asset_list = {},
+    _dir_tree = {},
+    _columns = ffi.new('int[1]', 12),
+    _history = {},
+    _history_idx = 1
 }
 
-asset_explorer.current_working_dir = asset_explorer.root_asset_dir -- We start at the asset root
+asset_explorer._current_working_dir = asset_explorer.root_asset_dir -- We start at the asset root
+table.insert(asset_explorer._history, asset_explorer.root_asset_dir)
+
+local dir_color = 0xffaaaaaa
+local file_color = 0xffcccccc
+
+local function is_asset_path_visible_in_editor(path)
+    return path ~= '.' and path ~= '..' and not path:match("^%.") -- Ignore hidden files
+end
+
+local function get_directory_from_path(file_path)
+    local last_separator = file_path:match('.*[\\/]')
+    return last_separator or ''
+end
 
 function asset_explorer:populate_asset_tree_list_recursive(path, parent)
     path = path or self.root_asset_dir
-    parent = parent or self.dir_tree
+    parent = parent or self._dir_tree
     for entry in lfs.dir(path) do
-        if entry ~= '.' and entry ~= '..' and not entry:match("^%.") then
+        if is_asset_path_visible_in_editor(entry) then
             local full_path = path .. '/' .. entry
             local attr = lfs.attributes(full_path)
             if attr and (attr.mode == 'directory' or attr.mode == 'file') then
@@ -46,7 +61,7 @@ end
 
 function asset_explorer:build_asset_list_in_working_dir_impl(path)
     for entry in lfs.dir(path) do
-        if entry ~= '.' and entry ~= '..' and not path:match("^%.") then
+        if is_asset_path_visible_in_editor(entry) then
             local full_path = path .. '/' .. entry
             local attr = lfs.attributes(full_path)
             local is_dir = attr.mode == 'directory'
@@ -57,11 +72,12 @@ function asset_explorer:build_asset_list_in_working_dir_impl(path)
                     ext = 'unknown'
                 end
             end
-            table.insert(self.asset_list, {
+            table.insert(self._asset_list, {
                 path = full_path,
                 name = entry,
-                size = is_dir and 0 or attr.size,
-                date = is_dir and 0 or attr.modification,
+                is_dir = is_dir,
+                size = attr.size,
+                date = attr.modification,
                 type = determine_asset_type(ext)
             })
         end
@@ -69,16 +85,36 @@ function asset_explorer:build_asset_list_in_working_dir_impl(path)
 end
 
 function asset_explorer:build_asset_list_in_working_dir()
-    self.asset_list = {}
-    if not lfs.attributes(self.current_working_dir) then
-        eprint('asset_explorer failed to scan directory: ' .. self.current_working_dir)
+    table.clear(self._asset_list)
+    local attribs = lfs.attributes(self._current_working_dir)
+    if attribs == nil or attribs.mode ~= 'directory' then
+        eprint('asset_explorer failed to scan directory: ' .. self._current_working_dir)
         return
     end
-    self:build_asset_list_in_working_dir_impl(self.current_working_dir)
+    self:build_asset_list_in_working_dir_impl(self._current_working_dir)
 end
 
-local dir_color = 0xffaaaaaa
-local file_color = 0xffcccccc
+function asset_explorer:_change_asset_list_working_dir(path)
+    if path == nil or type(path) ~= 'string' then
+        eprint('invalid path')
+        return
+    end
+    if path == self.root_asset_dir then -- reset history if root is reached
+        table.clear(self._history)
+        table.insert(self._history, self.root_asset_dir)
+        self._history_idx = 1
+    end
+    self._current_working_dir = path
+    self:build_asset_list_in_working_dir()
+    table.insert(self._history, path)
+    self._history_idx = #self._history
+end
+
+function asset_explorer:refresh()
+    table.clear(self._dir_tree)
+    self:populate_asset_tree_list_recursive() -- Build directory tree once on start
+    self:build_asset_list_in_working_dir() -- Build asset list once on start
+end
 
 function asset_explorer:_tree_node_action_recursive(node)
     local flags = node.is_file and ffi.C.ImGuiTreeNodeFlags_Leaf or 0
@@ -86,8 +122,7 @@ function asset_explorer:_tree_node_action_recursive(node)
     local node_open = ui.TreeNodeEx(name, flags)
     if ui.IsItemClicked() and not node.is_file then
         print("Selected path: " .. node.path)
-        self.current_working_dir = node.path
-        self:build_asset_list_in_working_dir()
+        self:_change_asset_list_working_dir(node.path)
     end
     if node_open then
         for j = 1, #node.children do
@@ -102,8 +137,8 @@ end
 function asset_explorer:draw_asset_tree_structure(ratio)
     ui.PushStyleColor(ffi.C.ImGuiCol_Text, dir_color)
     if ui.BeginChild('AssetTree', ui.ImVec2(ratio * ui.GetWindowSize().x, 0)) then
-        for i = 1, #self.dir_tree do
-            local node = self.dir_tree[i]
+        for i = 1, #self._dir_tree do
+            local node = self._dir_tree[i]
             self:_tree_node_action_recursive(node)
         end
     end
@@ -111,48 +146,61 @@ function asset_explorer:draw_asset_tree_structure(ratio)
     ui.PopStyleColor()
 end
 
+function asset_explorer:go_back_in_history()
+    if self._history_idx > 1 then
+        self._history_idx = self._history_idx - 1
+        self:_change_asset_list_working_dir(self._history[self._history_idx])
+    end
+end
+
 function asset_explorer:render()
     ui.SetNextWindowSize(default_window_size, ffi.C.ImGuiCond_FirstUseEver)
     if ui.Begin(self.name, self.is_visible, ffi.C.ImGuiWindowFlags_MenuBar) then
         if ui.BeginMenuBar() then
+            if ui.SmallButton(icons.i_arrow_left) then
+                self:go_back_in_history()
+            end
             if ui.SmallButton(icons.i_redo_alt .. ' Refresh') then
-                
+                self:refresh()
             end
             ui.PushItemWidth(75)
-            ui.SliderInt('##AssetExplorerColumns', self.columns, self.columns_range.min, self.columns_range.max, '%d Cols')
+            ui.SliderInt('##AssetExplorerColumns', self._columns, self.columns_range.min, self.columns_range.max, '%d Cols')
             ui.PopItemWidth()
             ui.EndMenuBar()
         end
-        local cols = self.columns[0]
+        local cols = self._columns[0]
         local win_size_x = (1 - self._tree_ratio) * ui.GetWindowSize().x
         local tile = (win_size_x / cols) - self._padding
         local grid_size = ui.ImVec2(tile, tile)
         self:draw_asset_tree_structure(self._tree_ratio)
         ui.SameLine()
+        local rebuild_asset_list = nil
         if ui.BeginChild('AssetScrollingRegion', ui.ImVec2(win_size_x, 0), false) then
             ui.Columns(cols, 'AssetColumns', false)
-            local r = math.random()
-            for i = 1, #self.asset_list do
-                local asset = self.asset_list[i]
+            for i = 1, #self._asset_list do
+                local asset = self._asset_list[i]
                 local label = asset.name
-                ui.PushID(i * r)
                 -- Render icon with file name in a grid:
-                if ui.Button(label, grid_size) then
-                    print('Clicked on asset: ' .. label)
+                local selected = ui.Button(label, grid_size)
+                if ui.IsItemHovered() and ui.IsMouseDoubleClicked(0) then -- If double click, enter directory
+                    if asset.is_dir then
+                        rebuild_asset_list = asset.path
+                    end
                 end
                 if ui.IsItemHovered() then
-                    ui.SetTooltip(label .. ' - ' .. asset_type_names[asset.type])
+                    ui.SetTooltip(string.format('%s - %s', label, asset_type_names[asset.type]))
                 end
-                ui.PopID()
                 ui.NextColumn()
             end
             ui.EndChild()
+        end
+        if rebuild_asset_list ~= nil and type(rebuild_asset_list) == 'string' then
+            self:_change_asset_list_working_dir(rebuild_asset_list)
         end
     end
     ui.End()
 end
 
-asset_explorer:populate_asset_tree_list_recursive() -- Build directory tree once on start
-asset_explorer:build_asset_list_in_working_dir() -- Build asset list once on start
+asset_explorer:refresh()
 
 return asset_explorer
