@@ -6,6 +6,7 @@ local ui = require 'imgui.imgui'
 local icons = require 'imgui.icons'
 local scene = require 'scene'
 local gmath = require 'gmath'
+local utils = require 'editor.utils'
 local entity_flags = entity_flags
 
 require 'table.clear'
@@ -69,7 +70,7 @@ function entity_list_view:build_entity_list()
 end
 
 function entity_list_view:render()
-    ui.SetNextWindowSize(default_window_size, ffi.C.ImGuiCond_FirstUseEver)
+    ui.SetNextWindowSize(utils.default_window_size, ffi.C.ImGuiCond_FirstUseEver)
     if ui.Begin(self.name, self.is_visible) then
         if ui.Button(icons.i_plus) then
             self._entity_acc = self._entity_acc + 1

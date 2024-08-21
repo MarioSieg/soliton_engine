@@ -97,7 +97,7 @@ scene_import_flags.preset_convert_to_lh = bit_flag_union({
 })
 
 scene_import_flags.default = bit_flag_union({
-    scene_import_flags.preset_realtime_quality ,
+    scene_import_flags.preset_realtime_quality,
     scene_import_flags.preset_convert_to_lh
 })
 

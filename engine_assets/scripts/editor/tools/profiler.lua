@@ -2,6 +2,7 @@
 
 local ffi = require 'ffi'
 local profile = require 'jit.p'
+local utils = require 'editor.utils'
 
 local ui = require 'imgui.imgui'
 local icons = require 'imgui.icons'
@@ -36,10 +37,11 @@ end
 function file_proxy:close() end
 
 function profiler:render()
+    ui.SetNextWindowSize(utils.default_window_size, ffi.C.ImGuiCond_FirstUseEver)
     if ui.Begin(self.name, self.is_visible) then
         if ui.BeginTabBar('##profiler_tabs') then
             if ui.BeginTabItem(icons.i_bezier_curve .. ' Histogram') then
-                local plot_size = ui.ImVec2(default_window_size.x, 200.0)
+                local plot_size = ui.ImVec2(utils.default_window_size.x, 200.0)
                 ui.PlotHistogram_FloatPtr(
                     '##frame_times',
                     time.fps_histogram,

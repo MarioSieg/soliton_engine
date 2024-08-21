@@ -12,6 +12,7 @@ local quat = require 'quat'
 local rad, deg = math.rad, math.deg
 local entity_flags = entity_flags
 local render_flags = render_flags
+local utils = require 'editor.utils'
 
 local max_name_text_len = 256
 local header_buttons_offset = 60.0 -- TODO: calculate from button sizes
@@ -246,7 +247,7 @@ end
 function inspector:render()
     self.properties_changed = false
     self.name_changed = false
-    ui.SetNextWindowSize(default_window_size, ffi.C.ImGuiCond_FirstUseEver)
+    ui.SetNextWindowSize(utils.default_window_size, ffi.C.ImGuiCond_FirstUseEver)
     if ui.Begin(self.name, self.is_visible) then
         local entity = self.selected_entity
         if not entity or not entity:is_valid() then
@@ -266,7 +267,7 @@ function inspector:render()
             ui.Separator()
             ui.Spacing()
             if ui.Button(icons.i_plus_circle .. ' Add Component') then
-                ui.PushOverrideID(popupid_add_component)
+                ui.PushOverrideID(utils.popupid_add_component)
                 ui.OpenPopup(icons.i_database .. ' Component Library')
                 ui.PopID()
             end

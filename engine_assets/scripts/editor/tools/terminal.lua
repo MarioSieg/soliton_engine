@@ -4,6 +4,7 @@ local ffi = require 'ffi'
 
 local icons = require 'imgui.icons'
 local ui = require 'imgui.imgui'
+local utils = require 'editor.utils'
 
 local commands = {}
 
@@ -24,7 +25,7 @@ local terminal = {
 }
 
 function terminal:render()
-    ui.SetNextWindowSize(default_window_size, ffi.C.ImGuiCond_FirstUseEver)
+    ui.SetNextWindowSize(utils.default_window_size, ffi.C.ImGuiCond_FirstUseEver)
     local isLuaLogTab = false
     local protocol = protocol
     if ui.Begin(self.name, self.is_visible, ffi.C.ImGuiWindowFlags_NoScrollbar) then

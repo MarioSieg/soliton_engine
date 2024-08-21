@@ -2,8 +2,6 @@
 -- This file implements the editor GUI.
 -- The ImGui LuaJIT bindings are useable but somewhat dirty, which makes this file a bit messy - but hey it works!
 
-require 'editor.const'
-
 local ffi = require 'ffi'
 local bit = require 'bit'
 local band = bit.band
@@ -18,6 +16,7 @@ local input = require 'input'
 local components = require 'components'
 local json = require 'json'
 local icons = require 'imgui.icons'
+local utils = require 'editor.utils'
 local project = require 'editor.project'
 local terminal = require 'editor.tools.terminal'
 local profiler = require 'editor.tools.profiler'
@@ -55,16 +54,16 @@ local entity_flags = entity_flags
 local overlay_location = 1 -- Top right is default
 local restore_layout_guard = true
 local default_project_location = ''
-local texture_filter = build_filter_string(texture_file_exts)
-local mesh_filter = build_filter_string(mesh_file_exts)
-local script_filter = build_filter_string(script_file_exts)
-local font_filter = build_filter_string(font_file_exts)
-local material_filter = build_filter_string(material_file_exts)
-local sound_filter = build_filter_string(sound_file_exts)
-local icons_filter = build_filter_string(icons_file_exts)
-local xaml_filter = build_filter_string(xaml_file_exts)
+local texture_filter = utils.build_filter_string(utils.texture_file_exts)
+local mesh_filter = utils.build_filter_string(utils.mesh_file_exts)
+local script_filter = utils.build_filter_string(utils.script_file_exts)
+local font_filter = utils.build_filter_string(utils.font_file_exts)
+local material_filter = utils.build_filter_string(utils.material_file_exts)
+local sound_filter = utils.build_filter_string(utils.sound_file_exts)
+local icons_filter = utils.build_filter_string(utils.icons_file_exts)
+local xaml_filter = utils.build_filter_string(utils.xaml_file_exts)
 local config_file_name = 'config/editor.json'
-local component_window_size = ui.ImVec2(default_window_size.x * 0.5, default_window_size.y * 0.5)
+local component_window_size = ui.ImVec2(utils.default_window_size.x * 0.5, utils.default_window_size.y * 0.5)
 local selected_component = nil
 local overlay_flags = ffi.C.ImGuiWindowFlags_NoDecoration
     + ffi.C.ImGuiWindowFlags_AlwaysAutoResize
@@ -241,7 +240,7 @@ function editor:draw_main_menu_bar()
         ui.PopStyleVar(1)
         if ui.BeginMenu('File') then
             if ui.MenuItem(icons.i_folder_plus .. ' Create project...') then
-                ui.PushOverrideID(popupid_new_project)
+                ui.PushOverrideID(utils.popupid_new_project)
                 ui.OpenPopup(icons.i_folder_plus .. ' New project')
                 ui.PopID()
             end
@@ -429,7 +428,7 @@ end
 
 function editor:draw_pending_popups()
     -- new project popup
-    ui.PushOverrideID(popupid_new_project)
+    ui.PushOverrideID(utils.popupid_new_project)
     if ui.BeginPopupModal(icons.i_folder_plus .. ' New project') then
         if not new_project_tmp then
             new_project_tmp = ffi.new('char[?]', new_project_max_math)
@@ -483,10 +482,10 @@ function editor:draw_pending_popups()
     ui.PopID()
 
     -- component library popup
-    ui.PushOverrideID(popupid_add_component)
+    ui.PushOverrideID(utils.popupid_add_component)
     if ui.BeginPopupModal(icons.i_database .. ' Component Library') then
         if ui.BeginTabBar('##components_tabs') then
-            for category, components in pairs(editor_components) do
+            for category, components in pairs(utils.editor_components) do
                 if ui.BeginTabItem(category) then
                     if ui.BeginChild('##components_child', component_window_size, true) then
                         for _, comp in pairs(components) do

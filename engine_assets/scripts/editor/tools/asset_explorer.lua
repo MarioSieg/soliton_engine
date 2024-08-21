@@ -3,6 +3,7 @@
 local ffi = require 'ffi'
 local ui = require 'imgui.imgui'
 local icons = require 'imgui.icons'
+local utils = require 'editor.utils'
 require 'table.clear'
 
 local asset_explorer = {
@@ -78,7 +79,7 @@ function asset_explorer:build_asset_list_in_working_dir_impl(path)
                 is_dir = is_dir,
                 size = attr.size,
                 date = attr.modification,
-                type = determine_asset_type(ext)
+                type = utils.determine_asset_type(ext)
             })
         end
     end
@@ -154,7 +155,7 @@ function asset_explorer:go_back_in_history()
 end
 
 function asset_explorer:render()
-    ui.SetNextWindowSize(default_window_size, ffi.C.ImGuiCond_FirstUseEver)
+    ui.SetNextWindowSize(utils.default_window_size, ffi.C.ImGuiCond_FirstUseEver)
     if ui.Begin(self.name, self.is_visible, ffi.C.ImGuiWindowFlags_MenuBar) then
         if ui.BeginMenuBar() then
             if ui.SmallButton(icons.i_arrow_left) then
