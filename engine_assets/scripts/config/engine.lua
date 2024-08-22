@@ -196,7 +196,6 @@ engine_cfg = {
 function engine_cfg:adjust_config_for_local_machine()
     if jit.os == 'OSX' then
         self.editor.font_size = 2 * self.editor.font_size
-        self.system.enable_jit = false -- Disable JIT on OSX for now, see: https://github.com/LuaJIT/LuaJIT/issues/285
     end
 
     if self.cpu.auto_thread_partitioning then

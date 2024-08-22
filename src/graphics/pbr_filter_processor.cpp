@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 // TODO (not that important): shorten code a lot by converting to derived class using new pipeline builder
 // TODO (not that important): Port old GLM math code to DXM

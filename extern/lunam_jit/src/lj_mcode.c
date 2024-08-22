@@ -208,17 +208,10 @@ static void mcode_protect(jit_State *J, int prot)
 /* Get memory within relative jump distance of our code in 64 bit mode. */
 static void *mcode_alloc(jit_State *J, size_t sz)
 {
-  /* Target an address in the static assembler code (64K aligned).
-  ** Try addresses within a distance of target-range/2+1MB..target+range/2-1MB.
+  /* Try addresses within a distance of target-range/2+1MB..target+range/2-1MB.
   ** Use half the jump range so every address in the range can reach any other.
   */
-#if LJ_TARGET_MIPS
-  /* Use the middle of the 256MB-aligned region. */
-  uintptr_t target = ((uintptr_t)(void *)lj_vm_exit_handler &
-		      ~(uintptr_t)0x0fffffffu) + 0x08000000u;
-#else
-  uintptr_t target = (uintptr_t)(void *)lj_vm_exit_handler & ~(uintptr_t)0xffff;
-#endif
+  uintptr_t target = J->mchub;
   const uintptr_t range = (1u << (LJ_TARGET_JUMPRANGE-1)) - (1u << 21);
   /* First try a contiguous area below the last one. */
   uintptr_t hint = J->mcarea ? (uintptr_t)J->mcarea - sz : 0;
@@ -227,7 +220,6 @@ static void *mcode_alloc(jit_State *J, size_t sz)
   for (i = 0; i < LJ_TARGET_JUMPRANGE; i++) {
     if (mcode_validptr(hint)) {
       void *p = mcode_alloc_at(J, hint, sz, MCPROT_GEN);
-
       if (mcode_validptr(p) &&
 	  ((uintptr_t)p + sz - target < range || target - (uintptr_t)p < range))
 	return p;
@@ -238,6 +230,14 @@ static void *mcode_alloc(jit_State *J, size_t sz)
       hint = lj_prng_u64(&J2G(J)->prng) & ((1u<<LJ_TARGET_JUMPRANGE)-0x10000);
     } while (!(hint + sz < range+range));
     hint = target + hint - range;
+  }
+  if (LJ_TARGET_ARM64) {
+    /* Start a new hub anywhere in the address space. */
+    void *p = mcode_alloc_at(J, 0, sz, MCPROT_GEN);
+    if (mcode_validptr(p)) {
+      J->mchub = (uintptr_t)p & ~(uintptr_t)0xffff;
+      return p;
+    }
   }
   lj_trace_err(J, LJ_TRERR_MCODEAL);  /* Give up. OS probably ignores hints? */
   return NULL;

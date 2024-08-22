@@ -5,6 +5,7 @@ local ffi = require 'ffi'
 local icons = require 'imgui.icons'
 local ui = require 'imgui.imgui'
 local utils = require 'editor.utils'
+require 'table.clear'
 
 local commands = {}
 
@@ -26,21 +27,22 @@ local terminal = {
 
 function terminal:render()
     ui.SetNextWindowSize(utils.default_window_size, ffi.C.ImGuiCond_FirstUseEver)
-    local isLuaLogTab = false
+    local is_lua_logger = false
     local protocol = protocol
     if ui.Begin(self.name, self.is_visible, ffi.C.ImGuiWindowFlags_NoScrollbar) then
         if ui.BeginTabBar('TerminalTabBar', ffi.C.ImGuiTabBarFlags_None) then
             if ui.BeginTabItem(icons.i_code .. ' Lua') then
-                isLuaLogTab = true
+                is_lua_logger = true
                 local footer = ui.GetStyle().ItemSpacing.y + ui.GetFrameHeightWithSpacing()
-                if ui.BeginChild('TerminalScrollingRegion', ui.ImVec2(0, -footer), false, ffi.C.ImGuiWindowFlags_HorizontalScrollbar) then
+                local flags = self.scroll_flags[0] and (ffi.C.ImGuiWindowFlags_NoScrollbar + ffi.C.ImGuiWindowFlags_NoScrollWithMouse) or ffi.C.ImGuiWindowFlags_HorizontalScrollbar
+                if ui.BeginChild('TerminalScrollingRegion', ui.ImVec2(0, -footer), false, flags) then
                     ui.PushStyleVar(ffi.C.ImGuiStyleVar_ItemSpacing, ui.ImVec2(4.0, 1.0))
                     local clipper = ui.ImGuiListClipper()
                     clipper:Begin(#protocol, ui.GetTextLineHeightWithSpacing())
                     while clipper:Step() do -- HOT LOOP
-                        for i=clipper.DisplayStart+1, clipper.DisplayEnd do
-                            local isError = protocol[i][2]
-                            ui.PushStyleColor_U32(ffi.C.ImGuiCol_Text, isError and 0xff4444ff or 0xffffffff)
+                        for i = clipper.DisplayStart + 1, clipper.DisplayEnd do
+                            local is_err = protocol[i][2]
+                            ui.PushStyleColor_U32(ffi.C.ImGuiCol_Text, is_err and 0xff4444ff or 0xffffffff)
                             ui.Separator()
                             ui.TextUnformatted(protocol[i][1])
                             ui.PopStyleColor()
@@ -49,7 +51,7 @@ function terminal:render()
                     clipper:End()
                     ui.PopStyleVar()
                     if self.scroll_flags[1] then
-                        ui.SetScrollHereY(1.0)
+                        ui.SetScrollHereY(0.5)
                         self.scroll_flags[1] = false
                     end
                     ui.EndChild()
@@ -84,14 +86,15 @@ function terminal:render()
                 end
             end
             ui.SameLine()
-            ui.Checkbox(icons.i_mouse .. ' Scroll', self.scroll_flags)
+            ui.Checkbox(icons.i_mouse .. ' Auto', self.scroll_flags)
             if self.scroll_flags[0] then
                 self.scroll_flags[1] = true
             end
-            if isLuaLogTab then
+            if is_lua_logger then
                 ui.SameLine()
                 if ui.Button(icons.i_trash .. ' Clear') then
-                    PROTOCOL = {}
+                    table.clear(protocol)
+                    protocol_errs = 0
                 end
             end
             ui.EndTabBar()

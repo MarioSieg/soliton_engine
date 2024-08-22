@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "_prelude.hpp"
 #include "../../core/buffered_sink.hpp"
@@ -126,7 +126,8 @@ LUA_INTEROP_API auto __lu_dd_draw_native_log(const bool scroll) -> void {
     using namespace ImGui;
     const float footer = GetStyle().ItemSpacing.y + GetFrameHeightWithSpacing();
     const auto id = static_cast<ImGuiID>(eastl::bit_cast<std::uintptr_t>(logs.data()) ^ 0xfefefefe);
-    if (BeginChild(id, { .0F, -footer }, false)) {
+    const auto flags = scroll ? ImGuiWindowFlags_NoScrollbar + ImGuiWindowFlags_NoScrollWithMouse : ImGuiWindowFlags_HorizontalScrollbar;
+    if (BeginChild(id, { .0F, -footer }, false, flags)) {
         PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2 { 4.F, 1.F });
         ImGuiListClipper clipper {};
         clipper.Begin(static_cast<int>(logs.size()), GetTextLineHeightWithSpacing());
@@ -147,9 +148,8 @@ LUA_INTEROP_API auto __lu_dd_draw_native_log(const bool scroll) -> void {
             }
         }
         clipper.End();
-        if (scroll) {
-            SetScrollHereY(1.0);
-        }
+        if (scroll)
+            SetScrollHereY(0.5);
         PopStyleVar();
     }
     EndChild();

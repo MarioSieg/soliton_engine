@@ -1,26 +1,27 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "platform_subsystem.hpp"
 
 #include <iostream>
-#include <filesystem>
 
 #include "../graphics/graphics_subsystem.hpp"
 
 #include <GLFW/glfw3.h>
 #if PLATFORM_WINDOWS // TODO: OSX, Linux
-#include <Windows.h>
-#include <Lmcons.h>
-#include <processthreadsapi.h>
-#include <cstdlib>
-#include <fcntl.h>
-#include <io.h>
-#include <psapi.h>
+#   include <Windows.h>
+#   include <Lmcons.h>
+#   include <processthreadsapi.h>
+#   include <cstdlib>
+#   include <fcntl.h>
+#   include <io.h>
+#   include <psapi.h>
 #elif PLATFORM_LINUX
-#include <link.h>
+#   include <link.h>
+#elif PLATFORM_OSX
+#   include <mach-o/dyld.h>
 #endif
 #if USE_MIMALLOC
-#include <mimalloc.h>
+#   include <mimalloc.h>
 #endif
 #include <infoware/infoware.hpp>
 #define STB_IMAGE_IMPLEMENTATION
@@ -274,15 +275,21 @@ namespace lu::platform {
             for (UINT i = 0; i < cbNeeded / sizeof(HMODULE); ++i) {
                 eastl::array<TCHAR, MAX_PATH> szModName {};
                 if (GetModuleFileNameEx(hProcess, hMods[i], szModName.data(), sizeof(szModName) / sizeof(TCHAR))) {
-                    log_info("{}", szModName.data());
+                    log_info("Loaded module '{}'", szModName.data());
                 }
             }
         }
     #elif PLATFORM_LINUX
         dl_iterate_phdr(+[](dl_phdr_info* info, std::size_t, void*) -> int {
-            log_info("{}", info->dlpi_name);
+            log_info("Loaded module '{}'", info->dlpi_name);
             return 0;
         }, nullptr);
+    #elif PLATFORM_OSX
+        const std::uint32_t num_images = _dyld_image_count();
+        for (std::uint32_t i = 0; i < num_images; ++i) {
+            const char* const name = _dyld_get_image_name(i);
+            if (name && *name) log_info("Loaded module '{}'", name);
+        }
     #endif
     }
 
@@ -326,10 +333,10 @@ namespace lu::platform {
         platform_subsystem::s_framebuffer_size_callbacks(window, w, h);
     }
 
-    static const system_variable<int> cv_default_width {"window.default_width", {1280}};
-    static const system_variable<int> cv_default_height {"window.default_height", {720}};
-    static const system_variable<int> cv_min_width {"window.min_width", {640}};
-    static const system_variable<int> cv_min_height {"window.min_height", {480}};
+    static const system_variable<std::uint32_t> cv_default_width {"window.default_width", {1280}};
+    static const system_variable<std::uint32_t> cv_default_height {"window.default_height", {720}};
+    static const system_variable<std::uint32_t> cv_min_width {"window.min_width", {640}};
+    static const system_variable<std::uint32_t> cv_min_height {"window.min_height", {480}};
     static const system_variable<eastl::string> cv_window_icon {"window.icon", {"assets/icons/logo.png"}};
 
     platform_subsystem::platform_subsystem() : subsystem{"Platform"} {
@@ -398,7 +405,7 @@ namespace lu::platform {
         s_framebuffer_size_callbacks += &proxy_resize_hook;
 
         // query monitor and print some info
-        constexpr auto print_mon_info = [](GLFWmonitor* mon) {
+        constexpr auto print_mon_info = [](GLFWmonitor* const mon) -> void {
             if (const char* name = glfwGetMonitorName(mon); name) {
                 log_info("Monitor name: {}", name);
             }
@@ -407,11 +414,17 @@ namespace lu::platform {
             }
             int n;
             if (const GLFWvidmode* modes = glfwGetVideoModes(mon, &n); modes) {
-                log_info("Available modes:");
+                log_info("-------- Available Video Modes --------");
                 for (int i = 0; i < n; ++i) {
                     const GLFWvidmode& mode = modes[i];
                     log_info("    {}x{}@{}Hz", mode.width, mode.height, mode.refreshRate);
                 }
+            }
+            const GLFWgammaramp* const ramp = glfwGetGammaRamp(mon);
+            log_info("-------- Gamma Ramp --------");
+            for (int i = 0; i < ramp->size; ++i) {
+                const std::uint32_t merged = (ramp->red[i]<<16) | (ramp->green[i]<<8) | ramp->blue[i];
+                log_info("{}: {:06x}", i, merged);
             }
         };
         GLFWmonitor* mon = glfwGetPrimaryMonitor();
