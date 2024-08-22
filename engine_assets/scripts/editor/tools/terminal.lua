@@ -5,6 +5,7 @@ local ffi = require 'ffi'
 local icons = require 'imgui.icons'
 local ui = require 'imgui.imgui'
 local utils = require 'editor.utils'
+require 'table.clear'
 
 local commands = {}
 
@@ -92,7 +93,8 @@ function terminal:render()
             if is_lua_logger then
                 ui.SameLine()
                 if ui.Button(icons.i_trash .. ' Clear') then
-                    PROTOCOL = {}
+                    table.clear(protocol)
+                    protocol_errs = 0
                 end
             end
             ui.EndTabBar()
