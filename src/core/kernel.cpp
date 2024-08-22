@@ -22,15 +22,11 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
-extern "C" { // Ensure that the application uses the dedicated GPU instead of the integrated GPU. Drivers searches for these variables.
-#if COMPILER_MSVC
-    __declspec(dllexport) unsigned __int32 NvOptimusEnablement = 0x00000001;
-    __declspec(dllexport) unsigned __int32 AmdPowerXpressRequestHighPerformance = 0x00000001;
-#else
-    __attribute__((visibility("default"))) std::uint32_t NvOptimusEnablement = 0x00000001;
-    __attribute__((visibility("default"))) std::uint32_t AmdPowerXpressRequestHighPerformance = 0x00000001;
+// Ensure that the application uses the dedicated GPU instead of the integrated GPU. Drivers searches for these variables.
+#if PLATFORM_WINDOWS
+extern "C" __declspec(dllexport) unsigned __int32 NvOptimusEnablement = 0x00000001;
+extern "C" __declspec(dllexport) unsigned __int32 AmdPowerXpressRequestHighPerformance = 0x00000001;
 #endif
-}
 
 namespace lu {
     using namespace std::filesystem;
@@ -112,6 +108,7 @@ static auto redirect_io() -> void {
         redirect_io();
         SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
         SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
+        SetConsoleTitleA("Lunam Engine Main Thread");
 #elif PLATFORM_LINUX
         pthread_t cthr_id = pthread_self();
         pthread_setname_np(cthr_id, "Lunam Engine Main Thread");
@@ -123,14 +120,29 @@ static auto redirect_io() -> void {
         max_prio_for_policy = sched_get_priority_max(policy);
         pthread_setschedprio(cthr_id, max_prio_for_policy);
         pthread_attr_destroy(&thr_attr);
+#elif PLATFORM_OSX
+        setpriority(PRIO_PROCESS, 0, -10);  // Use -5 to -10 instead of -20 for a better balance
+        pthread_t cthr_id = pthread_self();
+        pthread_setname_np("Lunam Engine Main Thread");
+        pthread_attr_t thr_attr {};
+        int policy = 0;
+        int max_prio_for_policy = 0;
+        pthread_attr_init(&thr_attr);
+        pthread_attr_getschedpolicy(&thr_attr, &policy);
+        max_prio_for_policy = sched_get_priority_max(policy);
+        sched_param param;
+        param.sched_priority = max_prio_for_policy - 5;  // Set it to a reasonable level
+        pthread_setschedparam(cthr_id, policy, &param);
+        pthread_attr_destroy(&thr_attr);
 #endif
         std::ostream::sync_with_stdio(false);
         spdlog::init_thread_pool(k_log_queue_size, k_log_threads);
-        std::shared_ptr<spdlog::logger> engine_ogger = create_logger("engine", "%H:%M:%S:%e %s:%# %^[%l]%$ T:%t %v");
-        std::shared_ptr<spdlog::logger> script_ogger = create_logger("app", "%H:%M:%S:%e %v");
-        spdlog::set_default_logger(engine_ogger);
+        std::shared_ptr<spdlog::logger> engine_logger = create_logger("engine", "%H:%M:%S:%e %s:%# %^[%l]%$ T:%t %v");
+        std::shared_ptr<spdlog::logger> script_logger = create_logger("app", "%H:%M:%S:%e %v");
+        spdlog::set_default_logger(engine_logger);
 
         log_info("-- ENGINE KERNEL BOOT --");
+        log_info("Log start date: {:%F %T}", fmt::localtime(std::time(nullptr)));
         log_info("LunamEngine v.{}.{}", major_version(k_lunam_engine_version), minor_version(k_lunam_engine_version));
         log_info("Copyright (c) 2022-2024 Mario \"Neo\" Sieg. All Rights Reserved.");
         log_info("Booting Engine Kernel...");
@@ -227,8 +239,7 @@ static auto redirect_io() -> void {
     }
 
     auto kernel::resize() -> void {
-        for (auto&& sys : m_subsystems) {
+        for (auto&& sys : m_subsystems)
             sys->on_resize();
-        }
     }
 }
