@@ -231,14 +231,14 @@ static void *mcode_alloc(jit_State *J, size_t sz)
     } while (!(hint + sz < range+range));
     hint = target + hint - range;
   }
-  if (LJ_TARGET_ARM64) {
+  #if LJ_TARGET_ARM64
     /* Start a new hub anywhere in the address space. */
     void *p = mcode_alloc_at(J, 0, sz, MCPROT_GEN);
     if (mcode_validptr(p)) {
       J->mchub = (uintptr_t)p & ~(uintptr_t)0xffff;
       return p;
     }
-  }
+  #endif
   lj_trace_err(J, LJ_TRERR_MCODEAL);  /* Give up. OS probably ignores hints? */
   return NULL;
 }
