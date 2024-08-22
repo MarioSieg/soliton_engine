@@ -85,7 +85,7 @@ function terminal:render()
                 end
             end
             ui.SameLine()
-            ui.Checkbox(icons.i_mouse .. ' Scroll', self.scroll_flags)
+            ui.Checkbox(icons.i_mouse .. ' Auto', self.scroll_flags)
             if self.scroll_flags[0] then
                 self.scroll_flags[1] = true
             end
