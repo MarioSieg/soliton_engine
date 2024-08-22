@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "platform_subsystem.hpp"
 
@@ -326,10 +326,10 @@ namespace lu::platform {
         platform_subsystem::s_framebuffer_size_callbacks(window, w, h);
     }
 
-    static const system_variable<int> cv_default_width {"window.default_width", {1280}};
-    static const system_variable<int> cv_default_height {"window.default_height", {720}};
-    static const system_variable<int> cv_min_width {"window.min_width", {640}};
-    static const system_variable<int> cv_min_height {"window.min_height", {480}};
+    static const system_variable<std::uint32_t> cv_default_width {"window.default_width", {1280}};
+    static const system_variable<std::uint32_t> cv_default_height {"window.default_height", {720}};
+    static const system_variable<std::uint32_t> cv_min_width {"window.min_width", {640}};
+    static const system_variable<std::uint32_t> cv_min_height {"window.min_height", {480}};
     static const system_variable<eastl::string> cv_window_icon {"window.icon", {"assets/icons/logo.png"}};
 
     platform_subsystem::platform_subsystem() : subsystem{"Platform"} {
