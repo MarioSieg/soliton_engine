@@ -405,7 +405,7 @@ namespace lu::platform {
         s_framebuffer_size_callbacks += &proxy_resize_hook;
 
         // query monitor and print some info
-        constexpr auto print_mon_info = [](GLFWmonitor* mon) -> void {
+        constexpr auto print_mon_info = [](GLFWmonitor* const mon) -> void {
             if (const char* name = glfwGetMonitorName(mon); name) {
                 log_info("Monitor name: {}", name);
             }
@@ -414,11 +414,17 @@ namespace lu::platform {
             }
             int n;
             if (const GLFWvidmode* modes = glfwGetVideoModes(mon, &n); modes) {
-                log_info("Available modes:");
+                log_info("-------- Available Video Modes --------");
                 for (int i = 0; i < n; ++i) {
                     const GLFWvidmode& mode = modes[i];
                     log_info("    {}x{}@{}Hz", mode.width, mode.height, mode.refreshRate);
                 }
+            }
+            const GLFWgammaramp* const ramp = glfwGetGammaRamp(mon);
+            log_info("-------- Gamma Ramp --------");
+            for (int i = 0; i < ramp->size; ++i) {
+                const std::uint32_t merged = (ramp->red[i]<<16) | (ramp->green[i]<<8) | ramp->blue[i];
+                log_info("{}: {:06x}", i, merged);
             }
         };
         GLFWmonitor* mon = glfwGetPrimaryMonitor();

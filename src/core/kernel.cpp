@@ -32,7 +32,7 @@ namespace lu {
     using namespace std::filesystem;
     using namespace eastl::chrono;
 
-    static constexpr std::size_t k_log_threads = 1;
+    static constexpr std::size_t k_log_threads = 2;
     static constexpr std::size_t k_log_queue_size = 8192;
     static constinit double g_delta_time, g_time;
     static constinit bool g_kernel_online = true;
@@ -183,7 +183,9 @@ static auto redirect_io() -> void {
         mi_stats_print_out(+[](const char* msg, void* ud) {
             *static_cast<std::stringstream*>(ud) << msg;
         }, &ss);
-        log_info("Allocator Stats:\n{}", ss.str());
+        log_info("--------- Engine Memory Allocator Stats ---------");
+        for (std::string line; std::getline(ss, line); )
+            log_info("\t{}", line);
 #endif
         log_info("System offline");
         spdlog::shutdown();
