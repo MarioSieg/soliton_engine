@@ -3,9 +3,7 @@
 #include "_prelude.hpp"
 #include "../../core/kernel.hpp"
 
-#include <chrono>
-
-using namespace std::chrono;
+using namespace eastl::chrono;
 
 LUA_INTEROP_API auto __lu_get_delta_time() -> double {
     return kernel::get().get_delta_time();

@@ -2,16 +2,42 @@
 
 #pragma once
 
-#include <random>
-
 #include "core.hpp"
 
 namespace lu {
     class scene;
+
+    // Base class for all engine kernel subsystems
     class subsystem : public no_copy, public no_move {
-    private:
-        friend class kernel;
-        static inline constinit std::atomic_uint64_t s_id_gen = 1;
+    public:
+        eastl::function<auto() -> void> resize_hook {};
+        const eastl::string name;
+        const std::uint32_t id;
+
+        // time spent on this subsystem to construct instance of subsystem and initialize it (constructor call)
+        [[nodiscard]] auto boot_time() const noexcept -> eastl::chrono::nanoseconds {
+            return m_boot_time;
+        }
+
+        // time spent on this subsystem within on_prepare()
+        [[nodiscard]] auto prepare_time() const noexcept -> eastl::chrono::nanoseconds {
+            return m_prepare_time;
+        }
+
+        // time spent on this subsystem for total initialization (boot time + prepare time)
+        [[nodiscard]] auto total_startup_time() const noexcept -> eastl::chrono::nanoseconds {
+            return m_boot_time + m_prepare_time;
+        }
+
+        // time spent on this subsystem last time window was resized
+        [[nodiscard]] auto last_resize_time() const noexcept -> eastl::chrono::nanoseconds {
+            return m_last_resize_time;
+        }
+
+        // time spent on this subsystem last time start() was called for a new scene
+        [[nodiscard]] auto last_on_start_time() const noexcept -> eastl::chrono::nanoseconds {
+            return m_last_on_start_time;
+        }
 
     protected:
         explicit subsystem(eastl::string&& name) noexcept
@@ -25,9 +51,12 @@ namespace lu {
         virtual auto on_tick() -> void {} // called each frame
         virtual auto on_post_tick() -> void {} // called each frame in reverse
 
-    public:
-        const eastl::string name;
-        eastl::function<auto() -> void> resize_hook {};
-        const std::uint64_t id;
+    private:
+        friend class kernel;
+        static inline constinit std::atomic_uint32_t s_id_gen = 1;
+        eastl::chrono::nanoseconds m_boot_time {};
+        eastl::chrono::nanoseconds m_prepare_time {};
+        eastl::chrono::nanoseconds m_last_resize_time {};
+        eastl::chrono::nanoseconds m_last_on_start_time {};
     };
 }

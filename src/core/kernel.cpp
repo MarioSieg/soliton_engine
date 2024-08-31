@@ -212,14 +212,32 @@ static auto redirect_io() -> void {
     }
 
     auto kernel::on_new_scene_start(scene& scene) -> void {
-        for (auto&& sys : m_subsystems)
+        stopwatch clock_total {};
+        log_info("Starting new scene...");
+        for (auto&& sys : m_subsystems) {
+            const stopwatch clock {};
             sys->on_start(scene);
+            sys->m_last_on_start_time = clock.elapsed<nanoseconds>();
+            log_info("Scene start time of subsystem '{}': {:.03f} s", sys->name, duration_cast<duration<double>>(sys->m_last_on_start_time).count());
+        }
+        log_info("Scene start time of engine: {:.03f} s", clock_total.elapsed_secs());
     }
 
     HOTPROC auto kernel::run() -> void {
-        for (auto&& sys : m_subsystems)
+        for (auto&& sys : m_subsystems) {
+            const stopwatch clock {};
             sys->on_prepare();
-        log_info("Total boot time: {}ms", duration_cast<milliseconds>(high_resolution_clock::now() - m_boot_stamp).count());
+            sys->m_prepare_time = clock.elapsed<nanoseconds>();
+        }
+        for (auto&& sys : m_subsystems) {
+            const double boot_time = eastl::chrono::duration_cast<eastl::chrono::duration<double>>(sys->total_startup_time()).count();
+            log_info("Startup time of subsystem '{}' (boot + prepare): {:.03f} s", sys->name, boot_time);
+            constexpr double startup_time_lim = 3.0;
+            if (boot_time > startup_time_lim) {
+                log_warn("Startup time of subsystem '{}' (boot + prepare): {:.03f} s exceeds recommended startup time: {} s. Optimize startup routines to ensure fast boot time!", sys->name, boot_time, startup_time_lim);
+            }
+        }
+        log_info("Total boot time: {:.03f} s", duration_cast<duration<double>>(high_resolution_clock::now() - m_boot_stamp).count());
         while (tick()) [[likely]]; // simulation loop
     }
 
@@ -241,7 +259,13 @@ static auto redirect_io() -> void {
     }
 
     auto kernel::resize() -> void {
-        for (auto&& sys : m_subsystems)
+        stopwatch clock_total {};
+        for (auto&& sys : m_subsystems) {
+            stopwatch clock {};
             sys->on_resize();
+            sys->m_last_resize_time = clock.elapsed<nanoseconds>();
+            log_info("Resize time of subsystem '{}': {:.03f} s", sys->name, duration_cast<duration<double>>(sys->m_last_resize_time).count());
+        }
+        log_info("Resize time of engine: {:.03f} s", clock_total.elapsed_secs());
     }
 }
