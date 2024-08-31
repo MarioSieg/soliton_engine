@@ -48,7 +48,11 @@ namespace lu::graphics {
         }
     }
 
-    inline auto is_last_thread(const std::int32_t thread_id, const std::int32_t num_threads) noexcept -> bool {
+    constexpr auto is_first_thread(const std::int32_t thread_id, [[maybe_unused]] const std::int32_t num_threads) noexcept -> bool {
+        return thread_id == 0;
+    }
+
+    constexpr auto is_last_thread(const std::int32_t thread_id, const std::int32_t num_threads) noexcept -> bool {
         return thread_id == num_threads - 1;
     }
 }

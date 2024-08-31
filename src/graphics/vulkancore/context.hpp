@@ -45,6 +45,7 @@ namespace lu::vkb {
         [[nodiscard]] auto get_image_index() const noexcept -> std::uint32_t { return m_image_index; }
         [[nodiscard]] auto get_pipeline_cache() const noexcept -> vk::PipelineCache { return m_pipeline_cache; }
         [[nodiscard]] auto get_scene_render_pass() const noexcept -> vk::RenderPass { return m_scene_render_pass; }
+        [[nodiscard]] auto get_skybox_render_pass() const noexcept -> vk::RenderPass { return m_skybox_render_pass; }
         [[nodiscard]] auto get_ui_render_pass() const noexcept -> vk::RenderPass { return m_ui_render_pass; }
         [[nodiscard]] auto get_framebuffers() const noexcept -> eastl::span<const vk::Framebuffer> { return m_framebuffers; }
         [[nodiscard]] auto get_deferred_deletion_queue() noexcept -> deletion_queue& { return m_shutdown_deletion_queue; }
@@ -114,6 +115,7 @@ namespace lu::vkb {
         } m_depth_stencil {};
 
         vk::RenderPass m_scene_render_pass {};
+        vk::RenderPass m_skybox_render_pass {};
         vk::RenderPass m_ui_render_pass {};
         eastl::fixed_vector<vk::Framebuffer, 4> m_framebuffers {};
         vk::PipelineCache m_pipeline_cache {};

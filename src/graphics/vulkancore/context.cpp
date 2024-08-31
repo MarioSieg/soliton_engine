@@ -360,6 +360,7 @@ namespace lu::vkb {
         render_pass_ci.pDependencies = dependencies.data();
 
         vkcheck(m_device->get_logical_device().createRenderPass(&render_pass_ci, get_alloc(), &m_scene_render_pass));
+        vkcheck(m_device->get_logical_device().createRenderPass(&render_pass_ci, get_alloc(), &m_skybox_render_pass));
         vkcheck(m_device->get_logical_device().createRenderPass(&render_pass_ci, get_alloc(), &m_ui_render_pass));
 
         m_shutdown_deletion_queue.push([this] {

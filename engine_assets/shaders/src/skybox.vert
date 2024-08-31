@@ -5,22 +5,21 @@
 #include "shader_common.h"
 
 layout (location = 0) in vec3 inPos;
-layout (location = 1) in vec3 inNormal;
-layout (location = 2) in vec2 inUV;
-layout (location = 3) in vec3 inTangent;
-layout (location = 4) in vec3 inBiTangent;
 
-layout (location = 0) out vec2 outUV;
+layout (location = 0) out vec3 outUVW;
 
 layout (push_constant) uniform PushConstants {
-	mat4 ModelViewProj;
-} pushConstants;
+	mat4 view;
+	mat4 proj;
+} push_consts;
 
 out gl_PerVertex {
 	vec4 gl_Position;
 };
 
 void main() {
-	gl_Position = pushConstants.ModelViewProj * vec4(inPos.xyz, 1.0);
-	outUV = inUV;
+	outUVW = inPos;
+	outUVW.xy *= -1.0; // Convert cubemap coordinates into Vulkan coordinate space
+	const mat4 viewMat = mat4(mat3(push_consts.view));
+	gl_Position = (push_consts.proj * viewMat * vec4(inPos.xyz, 1.0)).xyww;
 }

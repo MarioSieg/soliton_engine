@@ -42,6 +42,7 @@ namespace lu::graphics {
         shader_cache::init(cv_shader_dir()); // 1. init shader cache (must be first)
         pipeline_cache::init();
         pipeline_cache::get().register_pipeline_async<pipelines::pbr_pipeline>();
+        pipeline_cache::get().register_pipeline_async<pipelines::sky_pipeline>();
 
         material::init_static_resources();
 
@@ -123,8 +124,13 @@ namespace lu::graphics {
         const std::int32_t bucket_id,
         const std::int32_t num_threads
     ) const -> void {
-        const auto& pipeline = static_cast<const graphics_pipeline&>(pipeline_cache::get().get_pipeline("mat_pbr"));
-        pipeline.on_bind(cmd);
+        if (is_first_thread(bucket_id, num_threads)) {
+            const auto& sky_pipeline = dynamic_cast<const pipelines::sky_pipeline&>(pipeline_cache::get().get_pipeline("sky"));
+            sky_pipeline.render_sky(cmd);
+        }
+
+        const auto& pbr_pipeline = static_cast<const graphics_pipeline&>(pipeline_cache::get().get_pipeline("mat_pbr"));
+        pbr_pipeline.on_bind(cmd);
 
         const DirectX::XMMATRIX view_mtx = DirectX::XMLoadFloat4x4A(&s_view_mtx);
         const DirectX::XMMATRIX view_proj_mtx = DirectX::XMLoadFloat4x4A(&graphics_subsystem::s_view_proj_mtx);
@@ -135,7 +141,7 @@ namespace lu::graphics {
             const com::transform& transform,
             const com::mesh_renderer& renderer
         ) -> void {
-            pipeline.render_mesh(cmd, transform, renderer, s_frustum, view_proj_mtx, view_mtx);
+            pbr_pipeline.render_mesh(cmd, transform, renderer, s_frustum, view_proj_mtx, view_mtx);
         });
 
         if (is_last_thread(bucket_id, num_threads)) { // Last thread
@@ -192,11 +198,11 @@ namespace lu::graphics {
             m_render_thread_pool->process_frame(*m_cmd);
             scene.readonly_end();
             m_cmd->end_render_pass();
-            m_cmd->end();
             m_render_data.clear();
 
             //render_uis(); TODO
 
+            m_cmd->end();
             vkb::ctx().end_frame(*m_cmd);
         } else {
             scene.readonly_end();
@@ -223,7 +229,7 @@ namespace lu::graphics {
         m_cmd->set_viewport(0.0f, h, w, -h);
         m_cmd->set_scissor(w, h);
 
-        vkb::ctx().begin_render_pass(*m_cmd, vkb::ctx().get_ui_render_pass(), vk::SubpassContents::eInline);
+        vkb::ctx().begin_render_pass(*m_cmd, vkb::ctx().get_ui_render_pass(), vk::SubpassContents::eInline); // TODO refractor
         m_noesis_context->render_onscreen(vkb::ctx().get_ui_render_pass());
         m_imgui_context->submit_imgui(*m_cmd);
         m_cmd->end_render_pass();

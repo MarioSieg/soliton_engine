@@ -25,6 +25,7 @@ namespace lu::graphics {
         virtual auto configure_multisampling(vk::PipelineMultisampleStateCreateInfo& cfg) -> void;
         virtual auto configure_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> void;
         virtual auto configure_render_pass(vk::RenderPass& pass) -> void;
+
         auto configure_enable_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> void;
 
         HOTPROC virtual auto render_single_mesh(
