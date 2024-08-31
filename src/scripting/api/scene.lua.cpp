@@ -50,8 +50,6 @@ LUA_INTEROP_API auto __lu_scene_get_active_camera_entity() -> lua_entity_id {
     return eastl::bit_cast<lua_entity_id>(scene::get_active().active_camera.raw_id());
 }
 
-// TODO: Convert to FLECS C++ API
-
 struct scene_iter_context final {
     flecs::query<const com::metadata> query {};
     scene* ref {};
