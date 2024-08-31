@@ -31,6 +31,7 @@ namespace lu::graphics {
         HOTPROC auto on_pre_tick() -> bool override;
         HOTPROC auto on_post_tick() -> void override;
         auto on_resize() -> void override;
+        auto on_prepare() -> void override;
         auto on_start(scene& scene) -> void override;
 
         [[nodiscard]] auto get_render_thread_pool() const noexcept -> const render_thread_pool& { return *m_render_thread_pool; }

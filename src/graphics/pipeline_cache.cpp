@@ -19,22 +19,14 @@ namespace lu::graphics {
         }
     }
 
-    static inline constinit std::atomic_bool s_init;
-
     auto pipeline_cache::init() -> void {
-        if (s_init.load(std::memory_order_relaxed)) {
-            return;
-        }
+        [[maybe_unused]] volatile shader_cache& _ensure_init = shader_cache::get(); // ensure shader cache is init
+        passert(s_instance == nullptr);
         s_instance = eastl::make_unique<pipeline_cache>(vkb::vkdvc());
-        s_init.store(true, std::memory_order_relaxed);
     }
 
     auto pipeline_cache::shutdown() -> void {
-        if (!s_init.load(std::memory_order_relaxed)) {
-            return;
-        }
         s_instance.reset();
-        s_init.store(false, std::memory_order_relaxed);
     }
 
     auto pipeline_cache::invalidate_all() -> void {
@@ -46,5 +38,13 @@ namespace lu::graphics {
         for (const auto& [name, pipeline] : m_pipelines) {
             pipeline->create(m_cache);
         }
+    }
+
+    auto pipeline_cache::await_all_pipelines_async() -> void {
+        for (auto&& pipe : m_async_load_queue) {
+            auto [name, instance] = pipe.get();
+            m_pipelines[name] = std::move(instance);
+        }
+        m_async_load_queue.clear();
     }
 }

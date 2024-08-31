@@ -29,7 +29,6 @@ namespace lu::graphics::pipelines {
 
     private:
         pbr_filter_processor m_pbr_filter_processor {};
-        temporal_blue_noise m_blue_noise {};
         vk::DescriptorSetLayout m_pbr_descriptor_set_layout {};
         vk::DescriptorSet m_pbr_descriptor_set {};
 

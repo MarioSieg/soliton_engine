@@ -39,13 +39,11 @@ namespace lu::graphics {
             .msaa_samples = cv_msaa_samples()
         });
 
-        material::init_static_resources();
-
-        shader_cache::init(cv_shader_dir());
-
+        shader_cache::init(cv_shader_dir()); // 1. init shader cache (must be first)
         pipeline_cache::init();
-        auto& reg = pipeline_cache::get();
-        reg.register_pipeline<pipelines::pbr_pipeline>();
+        pipeline_cache::get().register_pipeline_async<pipelines::pbr_pipeline>();
+
+        material::init_static_resources();
 
         m_render_thread_pool.emplace([this](vkb::command_buffer& cmd, const std::int32_t bucket_id, const std::int32_t num_threads) -> void {
             render_scene_bucket(cmd, bucket_id, num_threads);
@@ -53,10 +51,13 @@ namespace lu::graphics {
         m_render_data.reserve(32);
 
         m_imgui_context.emplace();
-
         m_noesis_context.emplace();
 
         //m_noesis_context->load_ui_from_xaml("App.xaml");
+    }
+
+    auto graphics_subsystem::on_prepare() -> void {
+        pipeline_cache::get().await_all_pipelines_async();
     }
 
     graphics_subsystem::~graphics_subsystem() {

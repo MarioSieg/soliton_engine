@@ -241,15 +241,21 @@ namespace lu::graphics {
 
     [[nodiscard]] auto shader_cache::get_shader(shader_variant&& variant) -> eastl::shared_ptr<shader> {
         const std::size_t hash = variant.get_hash();
-        const bool exists = m_shaders.find(hash) != m_shaders.end();
-        if (exists) {
-            return m_shaders[hash];
+        {
+            std::unique_lock lock {m_mtx};
+            const bool exists = m_shaders.find(hash) != m_shaders.end();
+            if (exists) {
+                return m_shaders[hash];
+            }
         }
         auto shader = shader::compile(std::move(variant));
         if (!shader) [[unlikely]] {
             return nullptr;
         }
-        m_shaders[hash] = shader;
+        {
+            std::unique_lock lock {m_mtx};
+            m_shaders[hash] = shader;
+        }
         return shader;
     }
 
