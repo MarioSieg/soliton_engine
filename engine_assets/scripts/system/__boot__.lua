@@ -7,6 +7,7 @@
 local jit = require 'jit'
 local ffi = require 'ffi'
 local cpp = ffi.C
+local max = math.max
 
 lua_include_dirs = {
     'engine_assets/scripts',
@@ -53,10 +54,10 @@ assert(engine_cfg ~= nil) -- Ensure the engine config was loaded
 function __on_prepare__()
     engine_ctx:inject_hooks() -- Load all start/tick hooks
 
-    if engine_cfg.system.enable_jit then
+    if engine_cfg['system']['enable_jit'] == true then
         jit.on() -- Enable JIT
         jit.opt.start('+fma') -- enable FMA for better performance
-        if engine_cfg.system.enable_jit_disasm then
+        if engine_cfg['system']['enable_jit_disasm'] then
             require('jit.dump').on('m', 'jit.log')
         end
     else
@@ -74,16 +75,16 @@ end
 
 local clock = os.clock
 local gc_clock = clock()
-local cfg = engine_cfg.system
+local cfg = engine_cfg['system']
 
 -- DO NOT Rename - Invoked from native code
 function __on_tick__()
     engine_ctx:tick()
-    if cfg.smartFramerateDependentGCStepping then
+    if cfg['auto_gc_time_stepping'] then
         local diff = clock() - gc_clock
-        local target = 1.0 / cfg.targetFramerate
+        local target = 1.0 / max(cfg['target_fps'], 1.0)
         local delta = target - diff
-        local lim = cfg.smartFramerateDependentGCSteppingCollectionLimit
+        local lim = cfg['auto_gc_time_stepping_step_limit']
         if delta > lim then
             local done = false
             -- -- until garbage is all collected or further collection would exceed the threshold

@@ -6,13 +6,13 @@ require 'system.extensions'
 require 'config.engine'
 
 -- Print package paths
-print('Working dir: '..lfs.currentdir())
+print('Working dir: ' .. lfs.currentdir())
 for _, path in ipairs(lua_include_dirs) do
     print('Additional script dir: ' .. path)
 end
 
 -- Verify filesystem
-if engine_cfg.system.enable_fs_validation then
+if engine_cfg['system']['enable_fs_validation'] then
     print('Verifying filesystem...')
     local numchecks = 0
     local function check_fs_entry(path)
