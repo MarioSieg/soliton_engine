@@ -20,6 +20,6 @@ out gl_PerVertex {
 void main() {
 	outUVW = inPos;
 	outUVW.xy *= -1.0; // Convert cubemap coordinates into Vulkan coordinate space
-	const mat4 viewMat = mat4(mat3(push_consts.view));
+	const mat4 viewMat = mat4(mat3(push_consts.view)); // Remove translation from view matrix
 	gl_Position = (push_consts.proj * viewMat * vec4(inPos.xyz, 1.0)).xyww;
 }
