@@ -20,15 +20,6 @@ namespace lu::graphics::pipelines {
         };
         static_assert(sizeof(gpu_vertex_push_constants) <= 128);
 
-        HOTPROC virtual auto render_single_mesh(
-            vkb::command_buffer& cmd,
-            const mesh& mesh,
-            const com::mesh_renderer& renderer,
-            DirectX::FXMMATRIX view_proj_mtx,
-            DirectX::CXMMATRIX model_mtx,
-            DirectX::CXMMATRIX view_mtx
-        ) const noexcept -> void final override;
-
         virtual auto on_bind(vkb::command_buffer& cmd) const -> void override;
 
         auto render_sky(vkb::command_buffer& cmd) const -> void;

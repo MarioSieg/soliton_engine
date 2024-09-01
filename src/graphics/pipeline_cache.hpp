@@ -16,7 +16,9 @@ namespace lu::graphics {
         ~pipeline_cache();
 
         [[nodiscard]] auto get_pipelines() const -> const ankerl::unordered_dense::map<eastl::string, eastl::unique_ptr<pipeline_base>>& { return m_pipelines; }
-        [[nodiscard]] auto get_pipeline(eastl::string&& name) -> pipeline_base& {
+
+        template <typename T> requires std::is_base_of_v<pipeline_base, T>
+        [[nodiscard]] auto get_pipeline(eastl::string&& name) -> T& {
             if (!m_pipelines.contains(name)) [[unlikely]] {
                 log_error("Pipeline not found in registry: '{}'", name);
                 for (const auto& [key, value] : m_pipelines) {
@@ -24,7 +26,13 @@ namespace lu::graphics {
                 }
                 panic("Pipeline not found in registry: '{}'", name);
             }
-            return *m_pipelines.at(name);
+            if constexpr (DEBUG) {
+                auto* const ptr = dynamic_cast<T*>(&*m_pipelines.at(name));
+                passert(ptr != nullptr);
+                return *ptr;
+            } else {
+                return static_cast<T&>(*m_pipelines.at(name));
+            }
         }
 
         template <typename T> requires std::is_base_of_v<pipeline_base, T>

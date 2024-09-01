@@ -45,17 +45,6 @@ namespace lu::graphics::pipelines {
         cfg.cullMode = vk::CullModeFlagBits::eBack;
     }
 
-    auto sky_pipeline::render_single_mesh(
-        vkb::command_buffer& cmd,
-        const mesh& mesh,
-        const com::mesh_renderer& renderer,
-        DirectX::FXMMATRIX view_proj_mtx,
-        DirectX::CXMMATRIX model_mtx,
-        DirectX::CXMMATRIX view_mtx
-    ) const noexcept -> void {
-
-    }
-
     auto sky_pipeline::on_bind(vkb::command_buffer& cmd) const -> void {
         graphics_pipeline::on_bind(cmd);
     }

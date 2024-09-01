@@ -125,11 +125,13 @@ namespace lu::graphics {
         const std::int32_t num_threads
     ) const -> void {
         if (is_first_thread(bucket_id, num_threads)) {
-            const auto& sky_pipeline = dynamic_cast<const pipelines::sky_pipeline&>(pipeline_cache::get().get_pipeline("sky"));
+            const auto& sky_pipeline
+                = pipeline_cache::get().get_pipeline<pipelines::sky_pipeline>("sky");
             sky_pipeline.render_sky(cmd);
         }
 
-        const auto& pbr_pipeline = static_cast<const graphics_pipeline&>(pipeline_cache::get().get_pipeline("mat_pbr"));
+        const auto& pbr_pipeline
+            = pipeline_cache::get().get_pipeline<pipelines::pbr_pipeline>("mat_pbr");
         pbr_pipeline.on_bind(cmd);
 
         const DirectX::XMMATRIX view_mtx = DirectX::XMLoadFloat4x4A(&s_view_mtx);
@@ -141,7 +143,7 @@ namespace lu::graphics {
             const com::transform& transform,
             const com::mesh_renderer& renderer
         ) -> void {
-            pbr_pipeline.render_mesh(cmd, transform, renderer, s_frustum, view_proj_mtx, view_mtx);
+            pbr_pipeline.render_mesh_renderer(cmd, transform, renderer, s_frustum, view_proj_mtx, view_mtx);
         });
 
         if (is_last_thread(bucket_id, num_threads)) { // Last thread

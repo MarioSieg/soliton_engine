@@ -27,6 +27,17 @@ namespace lu::graphics::pipelines {
             DirectX::XMFLOAT4 data;
         };
 
+        HOTPROC auto render_mesh_renderer(
+            vkb::command_buffer& cmd,
+            const com::transform& transform,
+            const com::mesh_renderer& renderer,
+            const DirectX::BoundingFrustum& frustum,
+            DirectX::FXMMATRIX view_proj_mtx,
+            DirectX::CXMMATRIX view_mtx
+        ) const noexcept -> void;
+
+        virtual auto on_bind(vkb::command_buffer& cmd) const -> void override;
+
     private:
         pbr_filter_processor m_pbr_filter_processor {};
         vk::DescriptorSetLayout m_pbr_descriptor_set_layout {};
@@ -37,15 +48,13 @@ namespace lu::graphics::pipelines {
         virtual auto configure_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> void override;
         virtual auto configure_multisampling(vk::PipelineMultisampleStateCreateInfo& cfg) -> void override;
 
-        HOTPROC virtual auto render_single_mesh(
+        HOTPROC auto render_single_mesh(
             vkb::command_buffer& cmd,
             const mesh& mesh,
             const com::mesh_renderer& renderer,
             DirectX::FXMMATRIX view_proj_mtx,
             DirectX::CXMMATRIX model_mtx,
             DirectX::CXMMATRIX view_mtx
-        ) const noexcept -> void final override;
-
-        virtual auto on_bind(vkb::command_buffer& cmd) const -> void override;
+        ) const noexcept -> void;
     };
 }

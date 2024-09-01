@@ -174,46 +174,6 @@ namespace lu::graphics {
         cfg.alphaBlendOp = vk::BlendOp::eAdd;
     }
 
-    HOTPROC auto graphics_pipeline::render_mesh(     // WARNING! RENDER THREAD LOCAL
-        vkb::command_buffer& cmd,
-        const com::transform& transform,
-        const com::mesh_renderer& renderer,
-        const DirectX::BoundingFrustum& frustum,
-        DirectX::FXMMATRIX view_proj_mtx,
-        DirectX::CXMMATRIX view_mtx
-    ) const noexcept -> void {
-        if (renderer.meshes.empty() || renderer.materials.empty()) [[unlikely]] // No mesh or material
-            return;
-
-        if (renderer.flags & com::render_flags::skip_rendering) [[unlikely]] // Skip rendering
-            return;
-
-        const DirectX::XMMATRIX model_mtx = transform.compute_matrix();
-
-        for (const mesh* const mesh : renderer.meshes) {
-            // Skip mesh if it's null
-            if (mesh == nullptr) [[unlikely]]
-                continue;
-
-            // Perform CPU frustum culling
-            DirectX::BoundingOrientedBox obb {};
-            obb.CreateFromBoundingBox(obb, mesh->get_aabb());
-            obb.Transform(obb, model_mtx);
-            if ((renderer.flags & com::render_flags::skip_frustum_culling) == 0) [[likely]]
-                if (frustum.Contains(obb) == DirectX::ContainmentType::DISJOINT) // Object is culled
-                    continue;
-
-            render_single_mesh(
-                cmd,
-                *mesh,
-                renderer,
-                view_proj_mtx,
-                model_mtx,
-                view_mtx
-            );
-        }
-    }
-
     auto graphics_pipeline::on_bind(vkb::command_buffer& cmd) const -> void {
         cmd.bind_pipeline(*this);
     }
