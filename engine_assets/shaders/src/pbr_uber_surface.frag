@@ -6,7 +6,7 @@
 #include "filmic_tonemapper.h"
 #include "cpp_shared_structures.h"
 
-layout (set = LU_GLSL_DESCRIPTOR_SET_IDX_PER_FRAME, binding = 0) uniform uniformPerFrameUBO {
+layout (std140, set = LU_GLSL_DESCRIPTOR_SET_IDX_PER_FRAME, binding = 0) uniform uniformPerFrameUBO {
   perFrameData uboPerFrame;
 };
 
@@ -53,7 +53,7 @@ void main() {
   const float ao = texture(sOcclusionMap, inUV).r;
   const vec3 emissive = texture(sEmissionMap, inUV).rgb;
 
-  const vec3 V = normalize(inWorldPos - uboPerFrame.camPos);
+  const vec3 V = normalize(inWorldPos - uboPerFrame.camPos.xyz);
   const vec3 N = normalMap(inTBN, texture(sNormalMap, uv).rgb);
   const vec3 R = reflect(-V, N);
 
@@ -65,9 +65,9 @@ void main() {
   vec3 Lo = vec3(0.0);
   {
     // calculate per-light radiance
-    vec3 L = normalize(uboPerFrame.sunDir);
+    vec3 L = normalize(uboPerFrame.sunDir.xyz);
     vec3 H = normalize(V + L);
-    vec3 radiance = uboPerFrame.sunColor;
+    vec3 radiance = uboPerFrame.sunColor.rgb;
 
     // Cook-Torrance BRDF
     float NDF = distributionGGX(N, H, roughness);

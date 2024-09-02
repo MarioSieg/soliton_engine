@@ -266,7 +266,7 @@ namespace lu::graphics {
         const auto& scene = scene::get_active();
 
         glsl::perFrameData per_frame_data {};
-        DirectX::XMStoreFloat3(&per_frame_data.camPos, DirectX::XMLoadFloat4(&s_camera_transform.position));
+        DirectX::XMStoreFloat4(&per_frame_data.camPos, DirectX::XMLoadFloat4(&s_camera_transform.position));
         per_frame_data.sunDir = scene.properties.environment.sun_dir;
         per_frame_data.sunColor = scene.properties.environment.sun_color;
         m_shared_buffers->per_frame_ubo.set(per_frame_data);

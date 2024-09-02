@@ -884,7 +884,7 @@ namespace lu::graphics {
         FXMVECTOR view_pos
     ) -> void {
         if (!m_vertices.empty()) {
-            const std::uint32_t frameidx = vkb::ctx().get_current_frame();
+            const std::uint32_t frameidx = vkb::ctx().get_current_concurrent_frame_idx();
             uniform uniform_data {};
             XMStoreFloat4x4A(&uniform_data.view_proj, view_proj);
             auto* uptr = static_cast<std::uint8_t*>(m_uniform->get_mapped_ptr());
@@ -1050,7 +1050,7 @@ namespace lu::graphics {
 
     auto debugdraw::create_uniform_buffer() -> void {
         m_uniform.emplace(
-            sizeof(uniform) * vkb::ctx().get_concurrent_frames(),
+            sizeof(uniform) * vkb::ctx().get_concurrent_frame_count(),
             0,
             vk::BufferUsageFlagBits::eUniformBuffer,
             VMA_MEMORY_USAGE_CPU_TO_GPU,
@@ -1060,7 +1060,7 @@ namespace lu::graphics {
 
     auto debugdraw::create_vertex_buffer() -> void {
         m_vertex_buffer.emplace(
-           sizeof(vertex) * k_max_vertices * vkb::ctx().get_concurrent_frames(),
+           sizeof(vertex) * k_max_vertices * vkb::ctx().get_concurrent_frame_count(),
            0,
            vk::BufferUsageFlagBits::eVertexBuffer,
            VMA_MEMORY_USAGE_CPU_TO_GPU,

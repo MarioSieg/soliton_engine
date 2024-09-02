@@ -29,11 +29,11 @@ namespace lu::graphics {
         const vk::CommandBufferAllocateInfo alloc_info {
             .commandPool = m_command_pool,
             .level = vk::CommandBufferLevel::eSecondary,
-            .commandBufferCount = vkb::ctx().get_concurrent_frames()
+            .commandBufferCount = vkb::ctx().get_concurrent_frame_count()
         };
 
         eastl::fixed_vector<vk::CommandBuffer, 4> command_buffers {};
-        command_buffers.resize(vkb::ctx().get_concurrent_frames());
+        command_buffers.resize(vkb::ctx().get_concurrent_frame_count());
         vkcheck(device.allocateCommandBuffers(&alloc_info, command_buffers.data()));
 
         m_command_buffers.reserve(command_buffers.size());
@@ -88,7 +88,7 @@ namespace lu::graphics {
         const std::int32_t signaled = m_shared_ctx.m_sig_render_subset.wait(true, m_num_threads);
         if (signaled < 0) [[unlikely]] return false;
 
-        m_active_command_buffer = &m_command_buffers[vkb::ctx().get_current_frame()];
+        m_active_command_buffer = &m_command_buffers[vkb::ctx().get_current_concurrent_frame_idx()];
         m_active_command_buffer->begin(vk::CommandBufferUsageFlagBits::eRenderPassContinue, m_shared_ctx.inheritance_info);
 
         const auto w = static_cast<float>(vkb::ctx().get_width());

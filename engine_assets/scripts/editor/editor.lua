@@ -84,10 +84,10 @@ local debug_mode_names = {
 }
 
 if jit.os == 'Windows' then
-    default_project_location = os.getenv('USERPROFILE') .. '/Documents/'
+    default_project_location = (os.getenv('USERPROFILE') or '') .. '/Documents/'
     default_project_location = string.gsub(default_project_location, '\\', '/')
 else -- Linux, MacOS
-    default_project_location = os.getenv('HOME') .. '/Documents/'
+    default_project_location = (os.getenv('HOME') or '') .. '/Documents/'
 end
 if not lfs.attributes(default_project_location) then
     default_project_location = ''

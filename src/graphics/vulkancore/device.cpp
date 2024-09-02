@@ -208,16 +208,21 @@ namespace lu::vkb {
             instance_create_info.ppEnabledExtensionNames = vk_instance_extensions.data();
         }
 
+        std::uint32_t layer_count = 0;
+        vkcheck(vk::enumerateInstanceLayerProperties(&layer_count, nullptr));
+        eastl::vector<vk::LayerProperties> layers {layer_count};
+        vkcheck(vk::enumerateInstanceLayerProperties(&layer_count, layers.data()));
+
+        for (const vk::LayerProperties& layer : layers) {
+            log_info("Layer present: '{}'", layer.layerName);
+        }
+
         // Setup VK_LAYER_KHRONOS_validation layer
         if (m_enable_validation) {
             const char* k_validation_layer = "VK_LAYER_KHRONOS_validation";
             // Check if this layer is available at instance level
-            std::uint32_t layer_count;
-            vkcheck(vk::enumerateInstanceLayerProperties(&layer_count, nullptr));
-            eastl::vector<vk::LayerProperties> layer_propertieses{layer_count};
-            vkcheck(vk::enumerateInstanceLayerProperties(&layer_count, layer_propertieses.data()));
             bool validationLayerPresent = false;
-            for (vk::LayerProperties& layer : layer_propertieses) {
+            for (vk::LayerProperties& layer : layers) {
                 if (std::strcmp(layer.layerName, k_validation_layer) == 0) {
                     validationLayerPresent = true;
                     break;

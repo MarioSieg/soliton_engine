@@ -71,12 +71,12 @@ namespace lu::vkb {
         m_clear_values[2].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
 
         // Use a fence to wait until the command buffer has finished execution before using it again
-        vkcheck(m_device->get_logical_device().waitForFences(1, &m_wait_fences[m_current_frame], vk::True, eastl::numeric_limits<std::uint64_t>::max()));
-        vkcheck(m_device->get_logical_device().resetFences(1, &m_wait_fences[m_current_frame]));
+        vkcheck(m_device->get_logical_device().waitForFences(1, &m_wait_fences[m_current_concurrent_frame_idx], vk::True, eastl::numeric_limits<std::uint64_t>::max()));
+        vkcheck(m_device->get_logical_device().resetFences(1, &m_wait_fences[m_current_concurrent_frame_idx]));
 
         // Get the next swap chain image from the implementation
         // Note that the implementation is free to return the images in any order, so we must use the acquire function and can't just cycle through the images/imageIndex on our own
-        vk::Result result = m_swapchain->acquire_next_image(m_semaphores.present_complete[m_current_frame], m_image_index);
+        vk::Result result = m_swapchain->acquire_next_image(m_semaphores.present_complete[m_current_concurrent_frame_idx], m_image_index);
         if (result == vk::Result::eErrorOutOfDateKHR || result == vk::Result::eSuboptimalKHR) [[unlikely]] {
             if (result == vk::Result::eErrorOutOfDateKHR) {
                 on_resize();
@@ -92,7 +92,7 @@ namespace lu::vkb {
             out_inheritance_info->framebuffer = m_framebuffers[m_image_index];
         }
 
-        const vk::CommandBuffer cmd_buf = m_command_buffers[m_current_frame];
+        const vk::CommandBuffer cmd_buf = m_command_buffers[m_current_concurrent_frame_idx];
         return command_buffer{m_graphics_command_pool, cmd_buf, dvc().get_graphics_queue(), vk::QueueFlagBits::eGraphics};
     }
 
@@ -104,13 +104,13 @@ namespace lu::vkb {
         submit_info.pCommandBuffers = &*cmd;
         // Semaphore to wait upon before the submitted command buffer starts executing
         submit_info.waitSemaphoreCount = 1;
-        submit_info.pWaitSemaphores = &m_semaphores.present_complete[m_current_frame];
+        submit_info.pWaitSemaphores = &m_semaphores.present_complete[m_current_concurrent_frame_idx];
         // Semaphore to be signaled when command buffers have completed
         submit_info.signalSemaphoreCount = 1;
-        submit_info.pSignalSemaphores = &m_semaphores.render_complete[m_current_frame];
+        submit_info.pSignalSemaphores = &m_semaphores.render_complete[m_current_concurrent_frame_idx];
 
         // Submit to the graphics queue passing a wait fence
-        vkcheck(cmd.queue().submit(1, &submit_info, m_wait_fences[m_current_frame]));
+        vkcheck(cmd.queue().submit(1, &submit_info, m_wait_fences[m_current_concurrent_frame_idx]));
 
         // Present the current frame buffer to the swap chain
         // Pass the semaphore signaled by the command buffer submission from the submit info as the wait semaphore for swap chain presentation
@@ -121,7 +121,7 @@ namespace lu::vkb {
         present_info.pSwapchains = &swapchain;
         present_info.pImageIndices = &m_image_index;
         present_info.waitSemaphoreCount = 1;
-        present_info.pWaitSemaphores = &m_semaphores.render_complete[m_current_frame];
+        present_info.pWaitSemaphores = &m_semaphores.render_complete[m_current_concurrent_frame_idx];
         vk::Result result = m_device->get_graphics_queue().presentKHR(&present_info);
         if (result == vk::Result::eErrorOutOfDateKHR || result == vk::Result::eSuboptimalKHR) [[unlikely]] {
             on_resize();
@@ -129,7 +129,7 @@ namespace lu::vkb {
             vkcheck(result);
         }
 
-        m_current_frame = (m_current_frame + 1) % m_concurrent_frames; // Advance to the next frame
+        m_current_concurrent_frame_idx = (m_current_concurrent_frame_idx + 1) % m_concurrent_frames; // Advance to the next frame
     }
 
     auto context::on_resize() -> void {
@@ -535,5 +535,14 @@ namespace lu::vkb {
         delete s_instance;
         s_instance = nullptr;
         s_init.store(false);
+    }
+
+    auto context::compute_aligned_ubu_size(std::size_t size) noexcept -> std::size_t {
+        const std::size_t min_align = m_device->get_physical_device_props().limits.minUniformBufferOffsetAlignment;
+        std::size_t aligned_size = size;
+        if (min_align) {
+            aligned_size = (aligned_size + min_align - 1) & ~(min_align - 1);
+        }
+        return aligned_size;
     }
 }

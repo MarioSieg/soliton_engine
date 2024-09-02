@@ -26,10 +26,9 @@ namespace lu::graphics::glsl {
 
 // Sun and scene lighting properties. Updated once per frame.
 struct perFrameData {
-    vec3 camPos;
-    vec3 sunDir;
-    vec3 sunColor;
-    vec3 _pad;
+    vec4 camPos;
+    vec4 sunDir;
+    vec4 sunColor;
 };
 gpu_check(perFrameData)
 

@@ -156,7 +156,7 @@ requires is_queue_type&lt;QueueType&gt;</td></tr>
 <tr class="separator:a16c75b1ce513c1822927bbc50dd8dc91"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8aa610eb2805c498ea6fea9f312989c7" id="r_a8aa610eb2805c498ea6fea9f312989c7"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8aa610eb2805c498ea6fea9f312989c7">get_command_buffers</a> () const noexcept -&gt; std::span&lt; const vk::CommandBuffer &gt;</td></tr>
 <tr class="separator:a8aa610eb2805c498ea6fea9f312989c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a81399ae96b22fc57950430ca3b716358" id="r_a81399ae96b22fc57950430ca3b716358"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a81399ae96b22fc57950430ca3b716358">get_current_frame</a> () const noexcept -&gt; std::uint32_t</td></tr>
+<tr class="memitem:a81399ae96b22fc57950430ca3b716358" id="r_a81399ae96b22fc57950430ca3b716358"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a81399ae96b22fc57950430ca3b716358">get_current_concurrent_frame_idx</a> () const noexcept -&gt; std::uint32_t</td></tr>
 <tr class="separator:a81399ae96b22fc57950430ca3b716358"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab55ad435060ed1f9f270c9fa850b7825" id="r_ab55ad435060ed1f9f270c9fa850b7825"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab55ad435060ed1f9f270c9fa850b7825">get_image_index</a> () const noexcept -&gt; std::uint32_t</td></tr>
 <tr class="separator:ab55ad435060ed1f9f270c9fa850b7825"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -320,7 +320,7 @@ Private Attributes</h2></td></tr>
 <tr class="separator:a349e5e0355f365325829b2f21c6ef940"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae559a15a5654a24138c22f51ebe8dae0" id="r_ae559a15a5654a24138c22f51ebe8dae0"><td class="memItemLeft" align="right" valign="top">vk::PipelineCache&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae559a15a5654a24138c22f51ebe8dae0">m_pipeline_cache</a> {}</td></tr>
 <tr class="separator:ae559a15a5654a24138c22f51ebe8dae0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acfe6f96883c33e1285c06ac958694776" id="r_acfe6f96883c33e1285c06ac958694776"><td class="memItemLeft" align="right" valign="top">std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acfe6f96883c33e1285c06ac958694776">m_current_frame</a> = 0</td></tr>
+<tr class="memitem:acfe6f96883c33e1285c06ac958694776" id="r_acfe6f96883c33e1285c06ac958694776"><td class="memItemLeft" align="right" valign="top">std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acfe6f96883c33e1285c06ac958694776">m_current_concurrent_frame_idx</a> = 0</td></tr>
 <tr class="separator:acfe6f96883c33e1285c06ac958694776"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af3aba8115cc05c79d58bdc9827aaddf8" id="r_af3aba8115cc05c79d58bdc9827aaddf8"><td class="memItemLeft" align="right" valign="top">std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af3aba8115cc05c79d58bdc9827aaddf8">m_image_index</a> = 0</td></tr>
 <tr class="separator:af3aba8115cc05c79d58bdc9827aaddf8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -842,7 +842,7 @@ requires is_queue_type&lt;QueueType&gt;</div>
 </div>
 </div>
 <a id="a81399ae96b22fc57950430ca3b716358" name="a81399ae96b22fc57950430ca3b716358"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a81399ae96b22fc57950430ca3b716358">&#9670;&#160;</a></span>get_current_frame()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a81399ae96b22fc57950430ca3b716358">&#9670;&#160;</a></span>get_current_concurrent_frame_idx()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -851,7 +851,7 @@ requires is_queue_type&lt;QueueType&gt;</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">auto vkb::context::get_current_frame </td>
+          <td class="memname">auto vkb::context::get_current_concurrent_frame_idx </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const -&gt; std::uint32_t </td>
@@ -1769,7 +1769,7 @@ requires is_queue_type&lt;QueueType&gt;</div>
 </div>
 </div>
 <a id="acfe6f96883c33e1285c06ac958694776" name="acfe6f96883c33e1285c06ac958694776"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acfe6f96883c33e1285c06ac958694776">&#9670;&#160;</a></span>m_current_frame</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#acfe6f96883c33e1285c06ac958694776">&#9670;&#160;</a></span>m_current_concurrent_frame_idx</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1778,7 +1778,7 @@ requires is_queue_type&lt;QueueType&gt;</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::uint32_t vkb::context::m_current_frame = 0</td>
+          <td class="memname">std::uint32_t vkb::context::m_current_concurrent_frame_idx = 0</td>
         </tr>
       </table>
   </td>

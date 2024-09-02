@@ -9,9 +9,9 @@ namespace lu::graphics {
         vk::DescriptorBufferInfo info {
             .buffer = per_frame_ubo.get_buffer(),
             .offset = 0,
-            .range = 0
+            .range = sizeof(glsl::perFrameData)
         };
-        factory.bind_buffers(0, 1, &info, vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eFragment);
+        factory.bind_buffers(0, 1, &info, vk::DescriptorType::eUniformBufferDynamic, vk::ShaderStageFlagBits::eFragment);
         passert(factory.build(m_set, m_layout));
     }
 

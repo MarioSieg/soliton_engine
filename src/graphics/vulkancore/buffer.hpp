@@ -56,16 +56,16 @@ namespace lu::vkb {
             const VmaMemoryUsage memory_usage = VMA_MEMORY_USAGE_CPU_TO_GPU,
             const VmaAllocationCreateFlags create_flags = VMA_ALLOCATION_CREATE_MAPPED_BIT
         ) : buffer {
-            sizeof(T) * vkb::ctx().get_concurrent_frames(),
-            0, // TODO?
+            vkb::ctx().compute_aligned_ubu_size(sizeof(T)) * vkb::ctx().get_concurrent_frame_count(),
+            0,
             buffer_usage,
             memory_usage,
-            create_flags // TODO: sequencial bit?
+            create_flags // TODO: host-write sequencial memory bit?
         } {}
         virtual ~uniform_buffer() override = default;
 
         auto set(const T& data) noexcept -> void {
-            const std::uint32_t idx = vkb::ctx().get_concurrent_frames();
+            const std::uint32_t idx = vkb::ctx().get_current_concurrent_frame_idx();
             auto* const dst = static_cast<std::byte*>(get_mapped_ptr());
             std::memcpy(dst + sizeof(T)*idx, &data, sizeof(T));
         }

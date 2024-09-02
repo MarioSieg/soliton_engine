@@ -130,7 +130,7 @@ namespace lu::vkb {
         bind_graphics_descriptor_set(mat.get_descriptor_set(), LU_GLSL_DESCRIPTOR_SET_IDX_PER_MATERIAL);
     }
 
-    auto command_buffer::bind_graphics_descriptor_set(const vk::DescriptorSet set, const std::uint32_t idx) -> void {
+    auto command_buffer::bind_graphics_descriptor_set(const vk::DescriptorSet set, const std::uint32_t idx, const std::uint32_t* dynamic_off) -> void {
         passert(m_bounded_pipeline != nullptr);
         m_cmd.bindDescriptorSets(
             vk::PipelineBindPoint::eGraphics,
@@ -138,8 +138,8 @@ namespace lu::vkb {
             idx,
             1,
             &set,
-            0,
-            nullptr
+            dynamic_off ? 1 : 0,
+            dynamic_off
         );
     }
 
