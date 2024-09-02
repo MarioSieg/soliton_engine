@@ -22,12 +22,7 @@ namespace lu::graphics::pipelines {
         DirectX::XMStoreFloat4x4A(&pc_vs.model_matrix, model_mtx);
         DirectX::XMStoreFloat4x4A(&pc_vs.model_view_proj, DirectX::XMMatrixMultiply(model_mtx, view_proj_mtx));
         DirectX::XMStoreFloat4x4A(&pc_vs.normal_matrix, DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(nullptr, model_mtx)));
-        pc_vs.camera_pos = graphics_subsystem::get_camera_transform().position;
         cmd.push_consts(vk::ShaderStageFlagBits::eVertex, pc_vs);
-
-        push_constants_fs pc_fs {};
-        pc_fs.data = graphics_subsystem::get_camera_transform().position;
-        cmd.push_consts(vk::ShaderStageFlagBits::eFragment, pc_fs);
 
         const eastl::span<material* const> mats {renderer.materials.data(), renderer.materials.size()};
         cmd.draw_mesh_with_materials(mesh, mats);
@@ -63,19 +58,20 @@ namespace lu::graphics::pipelines {
                     continue;
 
             render_single_mesh(
-                    cmd,
-                    *mesh,
-                    renderer,
-                    view_proj_mtx,
-                    model_mtx,
-                    view_mtx
+                cmd,
+                *mesh,
+                renderer,
+                view_proj_mtx,
+                model_mtx,
+                view_mtx
             );
         }
     }
 
     auto pbr_pipeline::on_bind(vkb::command_buffer& cmd) const -> void {
         graphics_pipeline::on_bind(cmd);
-        cmd.bind_graphics_descriptor_set(m_pbr_descriptor_set, 1);
+        cmd.bind_graphics_descriptor_set(shared_buffers::get().get_set(), LU_GLSL_DESCRIPTOR_SET_IDX_PER_FRAME);
+        cmd.bind_graphics_descriptor_set(m_pbr_descriptor_set, LU_GLSL_DESCRIPTOR_SET_IDX_CUSTOM);
     }
 
     pbr_pipeline::pbr_pipeline() : graphics_pipeline{"mat_pbr"} {
@@ -123,6 +119,7 @@ namespace lu::graphics::pipelines {
         eastl::vector<vk::DescriptorSetLayout>& layouts,
         eastl::vector<vk::PushConstantRange>& ranges
     ) -> void {
+        layouts.emplace_back(shared_buffers::get().get_layout());
         layouts.emplace_back(material::get_static_resources().descriptor_layout);
         layouts.emplace_back(m_pbr_descriptor_set_layout);
 
@@ -130,11 +127,6 @@ namespace lu::graphics::pipelines {
         push_constant_range.stageFlags = vk::ShaderStageFlagBits::eVertex;
         push_constant_range.offset = 0;
         push_constant_range.size = sizeof(push_constants_vs);
-        ranges.emplace_back(push_constant_range);
-
-        push_constant_range.stageFlags = vk::ShaderStageFlagBits::eFragment;
-        push_constant_range.offset = sizeof(push_constants_vs);
-        push_constant_range.size = sizeof(push_constants_fs);
         ranges.emplace_back(push_constant_range);
     }
 

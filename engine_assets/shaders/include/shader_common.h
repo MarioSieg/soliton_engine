@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #ifndef SHADER_COMMON_H
 #define SHADER_COMMON_H
@@ -6,34 +6,6 @@
 const float kPI = 3.1415926535897932384626433832795;
 const float kTWO_PI = kPI * 2.0;
 const float kHALF_PI = kPI * 0.5;
-
-// Sun and scene lighting properties. Updated once per frame.
-struct cb_per_frame {
-    vec3 sun_dir;
-    vec3 sun_color;
-    vec3 const_ambient;
-};
-
-// PBR per-material properties. Updated once per material.
-struct cb_per_material {
-    vec3 albedo;
-    float normal_scale;
-    float metallic;
-    float roughness;
-};
-
-const cb_per_frame CB_PER_FRAME = cb_per_frame(
-    vec3(0.0, -0.8, 0.2),
-    vec3(1.0, 1.0, 1.0),
-    vec3(0.1, 0.1, 0.2)
-);
-
-const cb_per_material CB_PER_MAT = cb_per_material(
-    vec3(0.5, 0.5, 0.9),
-    1.0,
-    0.0,
-    0.5
-);
 
 vec3 normalMap(const mat3 tbn, const vec3 n) {
     const vec3 n_map = normalize((n * 2.0 - 1.0));

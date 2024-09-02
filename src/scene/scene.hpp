@@ -4,6 +4,7 @@
 
 #include "base.hpp"
 #include "components.hpp"
+#include "scene_properties.hpp"
 
 #include "../assetmgr/assetmgr.hpp"
 
@@ -15,7 +16,8 @@ namespace lu {
     class scene : public flecs::world, public no_copy, public no_move {
     public:
         const int id;
-        eastl::string name = {};
+        eastl::string name {};
+        scene_properties properties {};
         virtual ~scene() override;
 
         static auto new_active(eastl::string&& name, eastl::string&& file, float scale, std::uint32_t load_flags) -> void;

@@ -1,3 +1,5 @@
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
+
 #ifndef PARALLAX_OCCLUSION_MAPPING_H
 #define PARALLAX_OCCLUSION_MAPPING_H
 

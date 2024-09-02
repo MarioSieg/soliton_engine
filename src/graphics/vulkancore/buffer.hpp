@@ -2,12 +2,10 @@
 
 #pragma once
 
-#include "prelude.hpp"
-
-// TODO: RAII
+#include "context.hpp"
 
 namespace lu::vkb {
-    class buffer final : public no_copy, public no_move {
+    class buffer : public no_copy, public no_move {
     public:
         buffer(
             std::size_t size,
@@ -17,7 +15,7 @@ namespace lu::vkb {
             VmaAllocationCreateFlags create_flags = 0,
             const void* data = nullptr
         );
-        ~buffer();
+        virtual ~buffer();
         [[nodiscard]] auto get_size() const noexcept -> std::size_t { return m_size; }
         [[nodiscard]] auto get_mapped_ptr() const noexcept -> void* { return m_mapped; }
         [[nodiscard]] auto get_buffer() const noexcept -> const vk::Buffer& { return m_buffer; }
@@ -31,7 +29,7 @@ namespace lu::vkb {
 
         auto upload_data(const void* data, std::size_t size, std::size_t offset) -> void;
 
-    private:
+    protected:
         std::size_t m_size {};
         void* m_mapped {};
         vk::Buffer m_buffer {};
@@ -42,5 +40,34 @@ namespace lu::vkb {
         VmaMemoryUsage m_memory_usage {};
         vk::MemoryPropertyFlags m_memory_properties {};
         vk::BufferUsageFlags m_usage {};
+    };
+
+    template <typename T>
+    concept is_uniform_buffer = requires {
+        std::is_standard_layout_v<T>;
+        sizeof(T) % (4 * sizeof(float)) == 0;
+    };
+
+    template <typename T> requires is_uniform_buffer<T>
+    class uniform_buffer : public buffer {
+    public:
+        explicit uniform_buffer(
+            const vk::BufferUsageFlags buffer_usage = vk::BufferUsageFlagBits::eUniformBuffer,
+            const VmaMemoryUsage memory_usage = VMA_MEMORY_USAGE_CPU_TO_GPU,
+            const VmaAllocationCreateFlags create_flags = VMA_ALLOCATION_CREATE_MAPPED_BIT
+        ) : buffer {
+            sizeof(T) * vkb::ctx().get_concurrent_frames(),
+            0, // TODO?
+            buffer_usage,
+            memory_usage,
+            create_flags // TODO: sequencial bit?
+        } {}
+        virtual ~uniform_buffer() override = default;
+
+        auto set(const T& data) noexcept -> void {
+            const std::uint32_t idx = vkb::ctx().get_concurrent_frames();
+            auto* const dst = static_cast<std::byte*>(get_mapped_ptr());
+            std::memcpy(dst + sizeof(T)*idx, &data, sizeof(T));
+        }
     };
 }

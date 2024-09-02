@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #ifndef PBR_COMMON_H
 #define PBR_COMMON_H

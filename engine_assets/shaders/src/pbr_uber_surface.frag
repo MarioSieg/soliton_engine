@@ -1,20 +1,25 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #version 450
 
 #include "pbr_common.h"
 #include "filmic_tonemapper.h"
+#include "cpp_shared_structures.h"
 
-layout (set = 0, binding = 0) uniform sampler2D sAlbedoMap;
-layout (set = 0, binding = 1) uniform sampler2D sNormalMap;
-layout (set = 0, binding = 2) uniform sampler2D sRoughnessMap;
-layout (set = 0, binding = 3) uniform sampler2D sHeightMap;
-layout (set = 0, binding = 4) uniform sampler2D sOcclusionMap;
-layout (set = 0, binding = 5) uniform sampler2D sEmissionMap;
+layout (set = LU_GLSL_DESCRIPTOR_SET_IDX_PER_FRAME, binding = 0) uniform uniformPerFrameUBO {
+  perFrameData uboPerFrame;
+};
 
-layout (set = 1, binding = 0) uniform sampler2D brdf_lut;
-layout (set = 1, binding = 1) uniform samplerCube irradiance_cube;
-layout (set = 1, binding = 2) uniform samplerCube prefilter_cube;
+layout (set = LU_GLSL_DESCRIPTOR_SET_IDX_PER_MATERIAL, binding = 0) uniform sampler2D sAlbedoMap;
+layout (set = LU_GLSL_DESCRIPTOR_SET_IDX_PER_MATERIAL, binding = 1) uniform sampler2D sNormalMap;
+layout (set = LU_GLSL_DESCRIPTOR_SET_IDX_PER_MATERIAL, binding = 2) uniform sampler2D sRoughnessMap;
+layout (set = LU_GLSL_DESCRIPTOR_SET_IDX_PER_MATERIAL, binding = 3) uniform sampler2D sHeightMap;
+layout (set = LU_GLSL_DESCRIPTOR_SET_IDX_PER_MATERIAL, binding = 4) uniform sampler2D sOcclusionMap;
+layout (set = LU_GLSL_DESCRIPTOR_SET_IDX_PER_MATERIAL, binding = 5) uniform sampler2D sEmissionMap;
+
+layout (set = LU_GLSL_DESCRIPTOR_SET_IDX_CUSTOM, binding = 0) uniform sampler2D brdf_lut;
+layout (set = LU_GLSL_DESCRIPTOR_SET_IDX_CUSTOM, binding = 1) uniform samplerCube irradiance_cube;
+layout (set = LU_GLSL_DESCRIPTOR_SET_IDX_CUSTOM, binding = 2) uniform samplerCube prefilter_cube;
 
 layout (location = 0) in vec3 inWorldPos;
 layout (location = 1) in vec2 inUV;
@@ -26,10 +31,6 @@ layout (location = 6) in vec3 inTangentFragPos;
 layout (location = 7) in mat3 inTBN;
 
 layout (location = 0) out vec4 outFragColor;
-
-layout (push_constant, std430) uniform PushConstants { // TODO: move to per frame cb
-     layout(offset = 208) vec4 camera_pos; // xyz: camera position, w: time
-} consts;
 
 const float MAX_REFLECTION_LOD = 9.0;
 
@@ -52,7 +53,7 @@ void main() {
   const float ao = texture(sOcclusionMap, inUV).r;
   const vec3 emissive = texture(sEmissionMap, inUV).rgb;
 
-  const vec3 V = normalize(inWorldPos - consts.camera_pos.xyz);
+  const vec3 V = normalize(inWorldPos - uboPerFrame.camPos);
   const vec3 N = normalMap(inTBN, texture(sNormalMap, uv).rgb);
   const vec3 R = reflect(-V, N);
 
@@ -64,9 +65,9 @@ void main() {
   vec3 Lo = vec3(0.0);
   {
     // calculate per-light radiance
-    vec3 L = normalize(CB_PER_FRAME.sun_dir);
+    vec3 L = normalize(uboPerFrame.sunDir);
     vec3 H = normalize(V + L);
-    vec3 radiance = CB_PER_FRAME.sun_color;
+    vec3 radiance = uboPerFrame.sunColor;
 
     // Cook-Torrance BRDF
     float NDF = distributionGGX(N, H, roughness);

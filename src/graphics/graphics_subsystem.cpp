@@ -54,6 +54,8 @@ namespace lu::graphics {
         m_imgui_context.emplace();
         m_noesis_context.emplace();
 
+        m_shared_buffers.emplace();
+
         //m_noesis_context->load_ui_from_xaml("App.xaml");
     }
 
@@ -63,6 +65,8 @@ namespace lu::graphics {
 
     graphics_subsystem::~graphics_subsystem() {
         vkcheck(vkb::vkdvc().waitIdle()); // must be first
+
+        m_shared_buffers.reset();
 
         m_imgui_context.reset();
         m_noesis_context.reset();
@@ -172,7 +176,7 @@ namespace lu::graphics {
         const auto h = static_cast<float>(vkb::ctx().get_height());
         m_imgui_context->begin_frame();
         update_main_camera(w, h);
-
+        update_shared_buffers_per_frame();
         m_cmd.reset();
         m_cmd = vkb::ctx().begin_frame(s_clear_color, &m_inheritance_info);
         m_cmd->begin(vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
@@ -256,5 +260,15 @@ namespace lu::graphics {
 
     auto graphics_subsystem::get_num_draw_verts() noexcept -> std::uint32_t {
         return s_num_draw_verts_prev;
+    }
+
+    auto graphics_subsystem::update_shared_buffers_per_frame() -> void {
+        const auto& scene = scene::get_active();
+
+        glsl::perFrameData per_frame_data {};
+        DirectX::XMStoreFloat3(&per_frame_data.camPos, DirectX::XMLoadFloat4(&s_camera_transform.position));
+        per_frame_data.sunDir = scene.properties.environment.sun_dir;
+        per_frame_data.sunColor = scene.properties.environment.sun_color;
+        m_shared_buffers->per_frame_ubo.set(per_frame_data);
     }
 }

@@ -127,7 +127,7 @@ namespace lu::vkb {
     }
 
     auto command_buffer::bind_material(const graphics::material& mat) -> void {
-        bind_graphics_descriptor_set(mat.get_descriptor_set(), 0);
+        bind_graphics_descriptor_set(mat.get_descriptor_set(), LU_GLSL_DESCRIPTOR_SET_IDX_PER_MATERIAL);
     }
 
     auto command_buffer::bind_graphics_descriptor_set(const vk::DescriptorSet set, const std::uint32_t idx) -> void {
