@@ -2,7 +2,7 @@
 
 #version 450
 
-#include "shader_common.h"
+#include "pbr_common.h"
 #include "filmic_tonemapper.h"
 
 layout (set = 0, binding = 0) uniform sampler2D sAlbedoMap;
@@ -33,29 +33,6 @@ layout (push_constant, std430) uniform PushConstants { // TODO: move to per fram
 
 const float MAX_REFLECTION_LOD = 9.0;
 
-const float NUM_LAYERS = 48.0;
-const float HEIGHT_SCALE = 0.3;
-
-vec2 parallaxOcclusionMapping(vec2 uv, vec3 viewDir) {
-  float layerDepth = 1.0 / NUM_LAYERS;
-  float currLayerDepth = 0.0;
-  vec2 deltaUV = viewDir.xy * HEIGHT_SCALE / (viewDir.z * NUM_LAYERS);
-  vec2 currUV = uv;
-  float height = 1.0 - textureLod(sHeightMap, currUV, 0.0).a;
-  for (int i = 0; i < NUM_LAYERS; ++i) {
-    currLayerDepth += layerDepth;
-    currUV -= deltaUV;
-    height = 1.0 - textureLod(sHeightMap, currUV, 0.0).a;
-    if (height < currLayerDepth) {
-      break;
-    }
-  }
-  vec2 prevUV = currUV + deltaUV;
-  float nextDepth = height - currLayerDepth;
-  float prevDepth = 1.0 - textureLod(sHeightMap, prevUV, 0.0).a - currLayerDepth + layerDepth;
-  return mix(currUV, prevUV, nextDepth / (nextDepth - prevDepth));
-}
-
 vec3 calculateNormal(vec2 uv)
 {
   vec3 tangentNormal = texture(sNormalMap, uv).xyz * 2.0 - 1.0;
@@ -67,11 +44,7 @@ vec3 calculateNormal(vec2 uv)
 }
 
 void main() {
-  //const vec3 VV = normalize(inTangentViewPos - inTangentFragPos);
-  //vec2 uv = parallaxOcclusionMapping(inUV, VV);
-
   const vec2 uv = inUV;
-
   const vec3 albedo = texture(sAlbedoMap, uv).rgb;
   const vec2 metallic_roughness = texture(sRoughnessMap, uv).rg;
   const float metallic = metallic_roughness.r;
@@ -80,7 +53,7 @@ void main() {
   const vec3 emissive = texture(sEmissionMap, inUV).rgb;
 
   const vec3 V = normalize(inWorldPos - consts.camera_pos.xyz);
-  const vec3 N = normal_map(inTBN, texture(sNormalMap, uv).rgb);
+  const vec3 N = normalMap(inTBN, texture(sNormalMap, uv).rgb);
   const vec3 R = reflect(-V, N);
 
   // of 0.04 and if it's a metal, use the albedo color as F0 (metallic workflow)
@@ -96,8 +69,8 @@ void main() {
     vec3 radiance = CB_PER_FRAME.sun_color;
 
     // Cook-Torrance BRDF
-    float NDF = DistributionGGX(N, H, roughness);
-    float G = GeometrySmith(N, V, L, roughness);
+    float NDF = distributionGGX(N, H, roughness);
+    float G = geometrySmith(N, V, L, roughness);
     vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
 
     vec3 numerator = NDF * G * F;
