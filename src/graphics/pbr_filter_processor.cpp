@@ -38,8 +38,9 @@ namespace lu::graphics {
         glm::rotate(glm::mat4(1.0f), glm::radians(-180.0f), glm::vec3(0.0f, 0.0f, 1.0f))
     };
 
+
     pbr_filter_processor::pbr_filter_processor() : m_cube_mesh{"/RES/meshes/skybox.gltf"} {
-        m_environ_cube.emplace("/RES/textures/skybox/cubemap_yokohama_rgba.ktx");
+        m_environ_cube.emplace("/RES/textures/hdr/gcanyon_cube.ktx");
         generate_irradiance_cube();
         generate_prefilter_cube();
         generate_brdf_lookup_table();
