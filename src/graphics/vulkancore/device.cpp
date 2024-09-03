@@ -130,7 +130,7 @@ namespace lu::vkb {
         app_info.engineVersion = VK_MAKE_VERSION(major, minor, 0);
         app_info.apiVersion = m_api_version;
 
-        ankerl::unordered_dense::set<eastl::string> instance_extensions {
+        ankerl::unordered_dense::set<eastl::string> requested_instance_extensions {
             VK_KHR_SURFACE_EXTENSION_NAME,
         };
 
@@ -145,7 +145,7 @@ namespace lu::vkb {
         }
         for (std::uint32_t i = 0; i < glfw_extension_count; ++i) {
             log_info("GLFW required instance extension: {}", glfw_extensions[i]);
-            instance_extensions.insert(glfw_extensions[i]);
+            requested_instance_extensions.insert(glfw_extensions[i]);
         }
 
         // Enumerate supported instance extensions
@@ -161,11 +161,10 @@ namespace lu::vkb {
             }
         }
 
-#if PLATFORM_OSX
-        instance_extensions.insert(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
-        //instance_extensions.insert(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
-        instance_extensions.insert(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
-#endif
+        if constexpr (PLATFORM_OSX) {
+            requested_instance_extensions.insert(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+            requested_instance_extensions.insert(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
+        }
 
         // Setup instance create info
         vk::InstanceCreateInfo instance_create_info {};
@@ -186,25 +185,25 @@ namespace lu::vkb {
                 m_debug_utils_messenger_ci.pfnUserCallback = &vulkan_debug_message_callback;
                 m_debug_utils_messenger_ci.pNext = instance_create_info.pNext;
                 instance_create_info.pNext = &m_debug_utils_messenger_ci;
-                instance_extensions.insert(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+                requested_instance_extensions.insert(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
             } else {
                 log_warn("Vulkan debug utils extension not supported");
             }
         }
 
         // Setup enabled instance extensions
-        eastl::vector<const char*> vk_instance_extensions {};
-        if (!instance_extensions.empty()) [[likely]] {
-            vk_instance_extensions.reserve(instance_extensions.size());
-            for (const auto& ext : instance_extensions) {
+        eastl::vector<const char*> enabled_instance_extensions {};
+        if (!requested_instance_extensions.empty()) [[likely]] {
+            enabled_instance_extensions.reserve(requested_instance_extensions.size());
+            for (const auto& ext : requested_instance_extensions) {
                 log_info("Enabling instance extension: {}", ext);
                 if (std::ranges::find(m_supported_instance_extensions, ext) == m_supported_instance_extensions.end()) [[unlikely]] {
                     panic("Instance extension {} not supported", ext);
                 }
-                vk_instance_extensions.emplace_back(ext.c_str());
+                enabled_instance_extensions.emplace_back(ext.c_str());
             }
-            instance_create_info.enabledExtensionCount = static_cast<std::uint32_t>(vk_instance_extensions.size());
-            instance_create_info.ppEnabledExtensionNames = vk_instance_extensions.data();
+            instance_create_info.enabledExtensionCount = static_cast<std::uint32_t>(enabled_instance_extensions.size());
+            instance_create_info.ppEnabledExtensionNames = enabled_instance_extensions.data();
         }
 
         log_info("Fetching instance layers...");
@@ -313,7 +312,7 @@ namespace lu::vkb {
 
     auto device::create_logical_device(
         const vk::PhysicalDeviceFeatures& enabled_features,
-        const eastl::span<const char*> enabled_extensions,
+        const eastl::span<const char* const> enabled_extensions,
         void* next_chain,
         vk::QueueFlags requested_queue_types
     ) -> void {

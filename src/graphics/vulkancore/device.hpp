@@ -54,10 +54,15 @@ namespace lu::vkb {
         ) const -> void;
 
     private:
-        static inline constinit eastl::array<const char*, 2> k_device_extensions {
-            VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-            VK_KHR_MAINTENANCE1_EXTENSION_NAME
-        };
+        static inline const eastl::vector<const char*> k_device_extensions {[] {
+            eastl::vector<const char*> extensions {};
+            extensions.emplace_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+            extensions.emplace_back(VK_KHR_MAINTENANCE1_EXTENSION_NAME);
+            if constexpr (PLATFORM_OSX) {
+                extensions.emplace_back(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
+            }
+            return extensions;
+        }()};
         static constexpr vk::PhysicalDeviceFeatures k_enabled_features = [] {
             vk::PhysicalDeviceFeatures enabled_features {};
             enabled_features.samplerAnisotropy = vk::True;
@@ -69,7 +74,7 @@ namespace lu::vkb {
         auto find_physical_device() -> void;
         auto create_logical_device(
             const vk::PhysicalDeviceFeatures& enabled_features,
-            eastl::span<const char*> enabled_extensions,
+            eastl::span<const char* const> enabled_extensions,
             void* next_chain,
             vk::QueueFlags requested_queue_types = vk::QueueFlagBits::eGraphics | vk::QueueFlagBits::eCompute | vk::QueueFlagBits::eTransfer
         ) -> void;

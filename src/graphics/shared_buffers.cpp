@@ -11,7 +11,16 @@ namespace lu::graphics {
             .offset = 0,
             .range = sizeof(glsl::perFrameData)
         };
-        factory.bind_buffers(0, 1, &info, vk::DescriptorType::eUniformBufferDynamic, vk::ShaderStageFlagBits::eFragment);
+        constexpr auto stages {
+            vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment
+        };
+        factory.bind_buffers(
+            0,
+            1,
+            &info,
+            vk::DescriptorType::eUniformBufferDynamic,
+            static_cast<vk::ShaderStageFlagBits>(static_cast<std::underlying_type_t<vk::ShaderStageFlagBits>>(stages))
+        );
         passert(factory.build(m_set, m_layout));
     }
 
