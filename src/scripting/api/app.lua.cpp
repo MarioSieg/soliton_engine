@@ -34,7 +34,7 @@ LUA_INTEROP_API auto __lu_engine_version() -> std::uint32_t {
 }
 
 LUA_INTEROP_API auto __lu_app_is_focused() -> bool {
-    return glfwGetWindowAttrib(platform_subsystem::get_glfw_window(), GLFW_FOCUSED) == GLFW_TRUE;
+    return platform_subsystem::get_main_window().is_maximized()
 }
 
 LUA_INTEROP_API auto __lu_app_is_ui_hovered() -> bool {
@@ -50,11 +50,11 @@ LUA_INTEROP_API auto __lu_app_hot_reload_shaders() -> void {
 }
 
 LUA_INTEROP_API auto __lu_window_maximize() -> void {
-    glfwMaximizeWindow(platform_subsystem::get_glfw_window());
+    platform_subsystem::get_main_window().maximize();
 }
 
 LUA_INTEROP_API auto __lu_window_minimize() -> void {
-    glfwIconifyWindow(platform_subsystem::get_glfw_window());
+    platform_subsystem::get_main_window().minimize();
 }
 
 LUA_INTEROP_API auto __lu_window_enter_fullscreen() -> void {

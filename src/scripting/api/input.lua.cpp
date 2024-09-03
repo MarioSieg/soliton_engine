@@ -8,45 +8,23 @@ using platform::platform_subsystem;
 #include <GLFW/glfw3.h>
 
 LUA_INTEROP_API auto __lu_input_is_key_pressed(const int key_code) -> bool {
-    GLFWwindow* window = platform_subsystem::get_glfw_window();
-    if (!window) [[unlikely]] {
-        return false;
-    }
-    return glfwGetKey(window, key_code) == GLFW_PRESS;
+    return platform_subsystem::get_main_window().is_key_pressed(key_code);
 }
 
 LUA_INTEROP_API auto __lu_input_is_key_released(const int key_code) -> bool {
-    GLFWwindow* window = platform_subsystem::get_glfw_window();
-    if (!window) [[unlikely]] {
-        return false;
-    }
-    return glfwGetKey(window, key_code) == GLFW_RELEASE;
+    return platform_subsystem::get_main_window().is_key_released(key_code);
 }
 
 LUA_INTEROP_API auto __lu_input_is_mouse_button_pressed(const int mb_code) -> bool {
-    GLFWwindow* window = platform_subsystem::get_glfw_window();
-    if (!window) [[unlikely]] {
-        return false;
-    }
-    return glfwGetMouseButton(window, mb_code) == GLFW_PRESS;
+    return platform_subsystem::get_main_window().is_mouse_button_pressed(mb_code);
 }
 
 LUA_INTEROP_API auto __lu_input_is_mouse_button_released(const int mb_code) -> bool {
-    GLFWwindow* window = platform_subsystem::get_glfw_window();
-    if (!window) [[unlikely]] {
-        return false;
-    }
-    return glfwGetMouseButton(window, mb_code) == GLFW_RELEASE;
+    return platform_subsystem::get_main_window().is_mouse_button_released(mb_code);
 }
 
 LUA_INTEROP_API auto __lu_input_get_mouse_pos() -> lua_vec2 {
-    GLFWwindow* window = platform_subsystem::get_glfw_window();
-    if (!window) [[unlikely]] {
-        return lua_vec2{};
-    }
-    double x, y;
-    glfwGetCursorPos(window, &x, &y);
-    return lua_vec2{x, y};
-
+    const XMFLOAT2 pos = platform_subsystem::get_main_window().get_cursor_pos();
+    return { pos.x, pos.y };
 }
 

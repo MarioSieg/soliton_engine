@@ -40,7 +40,7 @@ namespace lu::imgui {
         io.IniFilename = nullptr;
 
 
-        GLFWwindow* window = platform::platform_subsystem::get_glfw_window();
+        GLFWwindow* const window = *platform::platform_subsystem::get_main_window();
         ImGui_ImplGlfw_InitForVulkan(window, true);
 
         auto& device = vkb::dvc();

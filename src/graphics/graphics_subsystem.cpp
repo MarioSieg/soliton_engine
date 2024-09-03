@@ -32,7 +32,7 @@ namespace lu::graphics {
 
         s_instance = this;
 
-        GLFWwindow* const window = platform_subsystem::get_glfw_window();
+        GLFWwindow* const window = *platform_subsystem::get_main_window();
         context::create(vkb::context_desc {
             .window = window,
             .concurrent_frames = cv_concurrent_frames(),

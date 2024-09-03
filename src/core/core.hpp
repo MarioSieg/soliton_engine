@@ -59,6 +59,11 @@ namespace lu {
 
     constexpr std::uint32_t k_lunam_engine_version = make_version(0, 4); // current engine version (must be known at compile time and we don't use patches yet)
 
+    [[nodiscard]] auto get_version_string() -> eastl::string {
+        const auto v = unpack_version(k_lunam_engine_version);
+        return fmt::format("{}.{}", v[0], v[1]).c_str();
+    }
+
     using namespace DirectX; // Re-export DirectX namespace
 }
 

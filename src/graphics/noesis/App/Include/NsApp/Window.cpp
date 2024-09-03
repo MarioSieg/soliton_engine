@@ -60,10 +60,8 @@ namespace NoesisApp
         this->m_view->SetFlags(flags);
         this->m_view->GetRenderer()->Init(device);
         this->m_view->SetTessellationMaxPixelError(ui_tesselation_pixel_error());
-        float xscale;
-        float yscale;
-        glfwGetWindowContentScale(platform::platform_subsystem::get_glfw_window(), &xscale, &yscale);
-        this->m_view->SetScale((xscale + yscale) * 0.5f);
+        const XMFLOAT2 scale = platform::platform_subsystem::get_main_window().get_content_scale();
+        this->m_view->SetScale((scale.x+scale.y) * 0.5f);
     }
 
     Window::~Window()
