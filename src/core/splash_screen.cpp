@@ -44,6 +44,9 @@ namespace lu {
         DrawTexture(m_logo, logoPosX, logoPosY, WHITE);
 
         eastl::string version = "Lunam Engine v." + get_version_string();
+        if constexpr (DEBUG) {
+            version += " (DEBUG MODE)";
+        }
         DrawText(version.c_str(), 20, 20, 20, WHITE);
 
         EndDrawing();
