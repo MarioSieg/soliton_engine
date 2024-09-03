@@ -35,10 +35,17 @@ namespace lu {
     auto splash_screen::show() -> void {
         BeginDrawing();
         ClearBackground(RAYWHITE);
+
+        // Calculate logo position
         int logoPosX = (m_screen_width - m_logo.width) / 2;
         int logoPosY = (m_screen_height - m_logo.height) / 2;
+
+        // Draw the logo at the calculated position
         DrawTexture(m_logo, logoPosX, logoPosY, WHITE);
-        DrawText("Press ENTER to continue", m_screen_width / 2 - 150, m_screen_height / 2 + m_logo.height / 2 + 20, 20, GRAY);
+
+        eastl::string version = "Lunam Engine v." + get_version_string();
+        DrawText(version.c_str(), 20, 20, 20, WHITE);
+
         EndDrawing();
     }
 }

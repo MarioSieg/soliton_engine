@@ -12,7 +12,7 @@
 static auto lunam_entry(const int argc, const char** argv, const char** $environ) -> void {
     using namespace lu;
 
-    auto splash = eastl::make_unique<splash_screen>("media/logo.png");
+    auto splash = eastl::make_unique<splash_screen>("media/splash.png");
     splash->show();
 
     kernel kernel {argc, argv, $environ};
