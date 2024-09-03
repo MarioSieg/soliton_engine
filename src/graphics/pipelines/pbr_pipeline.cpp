@@ -70,7 +70,7 @@ namespace lu::graphics::pipelines {
 
     auto pbr_pipeline::on_bind(vkb::command_buffer& cmd) const -> void {
         graphics_pipeline::on_bind(cmd);
-        const std::uint32_t dynamic_offset = sizeof(glsl::perFrameData) * vkb::ctx().get_current_concurrent_frame_idx();
+        const std::uint32_t dynamic_offset = vkb::ctx().compute_aligned_ubu_size(sizeof(glsl::perFrameData)) * vkb::ctx().get_current_concurrent_frame_idx();
         cmd.bind_graphics_descriptor_set(shared_buffers::get().get_set(), LU_GLSL_DESCRIPTOR_SET_IDX_PER_FRAME, &dynamic_offset);
         cmd.bind_graphics_descriptor_set(m_pbr_descriptor_set, LU_GLSL_DESCRIPTOR_SET_IDX_CUSTOM);
     }

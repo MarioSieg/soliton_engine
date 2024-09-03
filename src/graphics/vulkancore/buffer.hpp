@@ -66,8 +66,7 @@ namespace lu::vkb {
 
         auto set(const T& data) noexcept -> void {
             const std::uint32_t idx = vkb::ctx().get_current_concurrent_frame_idx();
-            auto* const dst = static_cast<std::byte*>(get_mapped_ptr());
-            std::memcpy(dst + sizeof(T)*idx, &data, sizeof(T));
+            reinterpret_cast<T*>(get_mapped_ptr())[idx] = data;
         }
     };
 }
