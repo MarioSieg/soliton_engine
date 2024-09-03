@@ -54,8 +54,8 @@ namespace lu::graphics::pipelines {
         const vk::PipelineLayout layout = get_layout();
         (*cmd).bindDescriptorSets(vk::PipelineBindPoint::eGraphics, layout, 0, 1, &m_descriptor_set, 0, nullptr);
         gpu_vertex_push_constants push_constants {};
-        DirectX::XMStoreFloat4x4A(&push_constants.view, DirectX::XMLoadFloat4x4A(&graphics_subsystem::get_view_mtx()));
-        DirectX::XMStoreFloat4x4A(&push_constants.proj, DirectX::XMLoadFloat4x4A(&graphics_subsystem::get_proj_mtx()));
+        XMStoreFloat4x4A(&push_constants.view, XMLoadFloat4x4A(&graphics_subsystem::get_view_mtx()));
+        XMStoreFloat4x4A(&push_constants.proj, XMLoadFloat4x4A(&graphics_subsystem::get_proj_mtx()));
         cmd.push_consts_start();
         cmd.push_consts(vk::ShaderStageFlagBits::eVertex, push_constants);
         cmd.draw_mesh(*m_skydome);

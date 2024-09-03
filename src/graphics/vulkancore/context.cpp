@@ -63,7 +63,7 @@ namespace lu::vkb {
     // Set clear values for all framebuffer attachments with loadOp set to clear
     // We use two attachments (color and depth) that are cleared at the start of the subpass and as such we need to set clear values for both
     auto context::begin_frame(
-        const DirectX::XMFLOAT4A& clear_color,
+        const XMFLOAT4A& clear_color,
         vk::CommandBufferInheritanceInfo* out_inheritance_info
     ) -> eastl::optional<command_buffer> {
         m_clear_values[0].color = eastl::bit_cast<vk::ClearColorValue>(clear_color);

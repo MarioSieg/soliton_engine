@@ -52,7 +52,7 @@ namespace lu::vkb {
         [[nodiscard]] auto compute_aligned_dynamic_ubo_size(std::size_t size) noexcept -> std::size_t;
 
         [[nodiscard]] HOTPROC auto begin_frame(
-            const DirectX::XMFLOAT4A& clear_color,
+            const XMFLOAT4A& clear_color,
             vk::CommandBufferInheritanceInfo* out_inheritance_info = nullptr
         ) -> eastl::optional<command_buffer>;
 

@@ -23,7 +23,7 @@ namespace lu::graphics {
         ~mesh() override = default;
 
         [[nodiscard]] auto get_primitives() const noexcept -> eastl::span<const primitive> { return m_primitives; }
-        [[nodiscard]] auto get_aabb() const noexcept -> const DirectX::BoundingBox& { return m_aabb; }
+        [[nodiscard]] auto get_aabb() const noexcept -> const BoundingBox& { return m_aabb; }
         [[nodiscard]] auto get_vertex_buffer() const noexcept -> const vkb::buffer& { return *m_vertex_buffer; }
         [[nodiscard]] auto get_index_buffer() const noexcept -> const vkb::buffer& { return *m_index_buffer; }
         [[nodiscard]] auto get_vertex_count() const noexcept -> std::uint32_t { return m_vertex_count; }
@@ -48,7 +48,7 @@ namespace lu::graphics {
         std::uint32_t m_index_count = 0;
         bool m_index_32bit = false;
         eastl::fixed_vector<primitive, 8> m_primitives {};
-        DirectX::BoundingBox m_aabb {};
+        BoundingBox m_aabb {};
         eastl::optional<physics::collider> m_collision_mesh {};
     };
 }

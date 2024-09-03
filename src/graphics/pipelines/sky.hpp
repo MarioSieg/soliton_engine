@@ -15,8 +15,8 @@ namespace lu::graphics::pipelines {
         ~sky_pipeline() override;
 
         struct gpu_vertex_push_constants final {
-            DirectX::XMFLOAT4X4A view;
-            DirectX::XMFLOAT4X4A proj;
+            XMFLOAT4X4A view;
+            XMFLOAT4X4A proj;
         };
         static_assert(sizeof(gpu_vertex_push_constants) <= 128);
 

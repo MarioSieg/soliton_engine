@@ -29,44 +29,44 @@ namespace lu::com {
     };
 
     struct transform final {
-        DirectX::XMFLOAT4 position; // only xyz is used, w is padding for SIMD
-        DirectX::XMFLOAT4 rotation;
-        DirectX::XMFLOAT4 scale; // only xyz is used, w is padding for SIMD
+        XMFLOAT4 position; // only xyz is used, w is padding for SIMD
+        XMFLOAT4 rotation;
+        XMFLOAT4 scale; // only xyz is used, w is padding for SIMD
 
         transform() noexcept {
-            XMStoreFloat4(&this->position, DirectX::XMVectorZero());
-            XMStoreFloat4(&this->rotation, DirectX::XMQuaternionIdentity());
-            XMStoreFloat4(&this->scale, DirectX::XMVectorSplatOne());
+            XMStoreFloat4(&this->position, XMVectorZero());
+            XMStoreFloat4(&this->rotation, XMQuaternionIdentity());
+            XMStoreFloat4(&this->scale, XMVectorSplatOne());
         }
 
-        [[nodiscard]] auto XM_CALLCONV compute_matrix() const noexcept -> DirectX::XMMATRIX {
-            const DirectX::XMVECTOR zero { DirectX::XMVectorZero() };
-            return DirectX::XMMatrixTransformation(
+        [[nodiscard]] auto XM_CALLCONV compute_matrix() const noexcept -> XMMATRIX {
+            const XMVECTOR zero { XMVectorZero() };
+            return XMMatrixTransformation(
                 zero,
-                DirectX::XMQuaternionIdentity(),
+                XMQuaternionIdentity(),
                 XMLoadFloat4(&this->scale),
                 zero,
                 XMLoadFloat4(&this->rotation),
                 XMLoadFloat4(&this->position)
             );
         }
-        [[nodiscard]] auto XM_CALLCONV forward_vec() const noexcept -> DirectX::XMVECTOR {
-            return DirectX::XMVector3Transform(DirectX::XMVectorSet(.0F, .0F, 1.F, .0F), DirectX::XMMatrixRotationQuaternion(XMLoadFloat4(&this->rotation)));
+        [[nodiscard]] auto XM_CALLCONV forward_vec() const noexcept -> XMVECTOR {
+            return XMVector3Transform(XMVectorSet(.0F, .0F, 1.F, .0F), XMMatrixRotationQuaternion(XMLoadFloat4(&this->rotation)));
         }
-        [[nodiscard]] auto XM_CALLCONV backward_vec() const noexcept -> DirectX::XMVECTOR {
-            return DirectX::XMVector3Transform(DirectX::XMVectorSet(.0F, .0F, -1.F, .0F), DirectX::XMMatrixRotationQuaternion(XMLoadFloat4(&this->rotation)));
+        [[nodiscard]] auto XM_CALLCONV backward_vec() const noexcept -> XMVECTOR {
+            return XMVector3Transform(XMVectorSet(.0F, .0F, -1.F, .0F), XMMatrixRotationQuaternion(XMLoadFloat4(&this->rotation)));
         }
-        [[nodiscard]] auto XM_CALLCONV up_vec() const noexcept -> DirectX::XMVECTOR {
-            return XMVector3Transform(DirectX::XMVectorSet(.0F, 1.F, 0.F, .0F), DirectX::XMMatrixRotationQuaternion(XMLoadFloat4(&this->rotation)));
+        [[nodiscard]] auto XM_CALLCONV up_vec() const noexcept -> XMVECTOR {
+            return XMVector3Transform(XMVectorSet(.0F, 1.F, 0.F, .0F), XMMatrixRotationQuaternion(XMLoadFloat4(&this->rotation)));
         }
-        [[nodiscard]] auto XM_CALLCONV down_vec() const noexcept -> DirectX::XMVECTOR {
-            return DirectX::XMVector3Transform(DirectX::XMVectorSet(.0F, -1.F, 0.F, .0F), DirectX::XMMatrixRotationQuaternion(XMLoadFloat4(&this->rotation)));
+        [[nodiscard]] auto XM_CALLCONV down_vec() const noexcept -> XMVECTOR {
+            return XMVector3Transform(XMVectorSet(.0F, -1.F, 0.F, .0F), XMMatrixRotationQuaternion(XMLoadFloat4(&this->rotation)));
         }
-        [[nodiscard]] auto XM_CALLCONV left_vec() const noexcept -> DirectX::XMVECTOR {
-            return XMVector3Transform(DirectX::XMVectorSet(-1.0F, 0.F, 0.F, .0F), DirectX::XMMatrixRotationQuaternion(XMLoadFloat4(&this->rotation)));
+        [[nodiscard]] auto XM_CALLCONV left_vec() const noexcept -> XMVECTOR {
+            return XMVector3Transform(XMVectorSet(-1.0F, 0.F, 0.F, .0F), XMMatrixRotationQuaternion(XMLoadFloat4(&this->rotation)));
         }
-        [[nodiscard]] auto XM_CALLCONV right_vec() const noexcept -> DirectX::XMVECTOR {
-            return XMVector3Transform(DirectX::XMVectorSet(1.0F, 0.F, 0.F, .0F), DirectX::XMMatrixRotationQuaternion(XMLoadFloat4(&this->rotation)));
+        [[nodiscard]] auto XM_CALLCONV right_vec() const noexcept -> XMVECTOR {
+            return XMVector3Transform(XMVectorSet(1.0F, 0.F, 0.F, .0F), XMMatrixRotationQuaternion(XMLoadFloat4(&this->rotation)));
         }
     };
 
@@ -75,23 +75,23 @@ namespace lu::com {
         float z_clip_near = 0.1f;
         float z_clip_far = 1000.0f;
         bool auto_viewport = true;
-        DirectX::XMFLOAT2 viewport;
-        DirectX::XMFLOAT3 clear_color;
+        XMFLOAT2 viewport;
+        XMFLOAT3 clear_color;
 
         camera() noexcept {
-            DirectX::XMStoreFloat2(&viewport, DirectX::XMVectorZero());
-            DirectX::XMStoreFloat3(&clear_color, DirectX::XMVectorReplicate(0.05f));
+            XMStoreFloat2(&viewport, XMVectorZero());
+            XMStoreFloat3(&clear_color, XMVectorReplicate(0.05f));
         }
 
-       [[nodiscard]] static auto XM_CALLCONV compute_view(const transform& transform) noexcept -> DirectX::XMMATRIX {
-           const DirectX::XMVECTOR eye {DirectX::XMLoadFloat4(&transform.position) };
-           const DirectX::XMVECTOR focal {DirectX::XMVectorAdd(eye, transform.forward_vec()) };
-           return DirectX::XMMatrixLookAtLH(eye, focal, DirectX::XMVectorSet(.0F, 1.F, .0F, .0F));
+       [[nodiscard]] static auto XM_CALLCONV compute_view(const transform& transform) noexcept -> XMMATRIX {
+           const XMVECTOR eye {XMLoadFloat4(&transform.position) };
+           const XMVECTOR focal {XMVectorAdd(eye, transform.forward_vec()) };
+           return XMMatrixLookAtLH(eye, focal, XMVectorSet(.0F, 1.F, .0F, .0F));
        }
 
-       [[nodiscard]] auto XM_CALLCONV compute_projection() const noexcept -> DirectX::XMMATRIX {
+       [[nodiscard]] auto XM_CALLCONV compute_projection() const noexcept -> XMMATRIX {
            const float aspect = viewport.x / viewport.y;
-           return DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(this->fov), aspect, this->z_clip_near, this->z_clip_far);
+           return XMMatrixPerspectiveFovLH(XMConvertToRadians(this->fov), aspect, this->z_clip_near, this->z_clip_far);
        }
     };
 

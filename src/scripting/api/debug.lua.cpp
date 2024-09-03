@@ -35,10 +35,10 @@ LUA_INTEROP_API auto __lu_dd_gizmo_manipulator(const lua_entity_id id, const int
     auto* transform = ent.get_mut<com::transform>();
     const auto* view = reinterpret_cast<const float*>(&graphics_subsystem::get_view_mtx());
     const auto* proj = reinterpret_cast<const float*>(&graphics_subsystem::get_proj_mtx());
-    DirectX::XMFLOAT4X4A model_mtx;
-    DirectX::XMStoreFloat4x4A(&model_mtx, transform->compute_matrix());
-    DirectX::XMFLOAT3A snap;
-    DirectX::XMStoreFloat3A(&snap, DirectX::XMVectorReplicate(static_cast<float>(snap_x)));
+    XMFLOAT4X4A model_mtx;
+    XMStoreFloat4x4A(&model_mtx, transform->compute_matrix());
+    XMFLOAT3A snap;
+    XMStoreFloat3A(&snap, XMVectorReplicate(static_cast<float>(snap_x)));
     ImGuizmo::Manipulate(
         view,
         proj,
@@ -48,17 +48,17 @@ LUA_INTEROP_API auto __lu_dd_gizmo_manipulator(const lua_entity_id id, const int
         nullptr,
         enable_snap ? reinterpret_cast<const float*>(&snap) : nullptr
     );
-    DirectX::XMVECTOR pos {}, rot {}, scale {};
-    DirectX::XMMatrixDecompose(&scale, &rot, &pos, DirectX::XMLoadFloat4x4A(&model_mtx));
-    DirectX::XMStoreFloat4(&transform->position, pos);
-    DirectX::XMStoreFloat4(&transform->rotation, rot);
-    DirectX::XMStoreFloat4(&transform->scale, scale);
+    XMVECTOR pos {}, rot {}, scale {};
+    XMMatrixDecompose(&scale, &rot, &pos, XMLoadFloat4x4A(&model_mtx));
+    XMStoreFloat4(&transform->position, pos);
+    XMStoreFloat4(&transform->rotation, rot);
+    XMStoreFloat4(&transform->scale, scale);
     if (const auto* const renderer = ent.get<com::mesh_renderer>(); renderer) {
         for (const auto* const mesh : renderer->meshes) {
             if (mesh) [[likely]] {
-                DirectX::BoundingOrientedBox obb {};
-                DirectX::BoundingOrientedBox::CreateFromBoundingBox(obb, mesh->get_aabb());
-                const DirectX::XMMATRIX model = DirectX::XMLoadFloat4x4A(&model_mtx);
+                BoundingOrientedBox obb {};
+                BoundingOrientedBox::CreateFromBoundingBox(obb, mesh->get_aabb());
+                const XMMATRIX model = XMLoadFloat4x4A(&model_mtx);
                 dd().draw_obb(obb, model, color);
             }
         }
@@ -79,14 +79,14 @@ LUA_INTEROP_API auto __lu_dd_set_fade_distance(const double $near, const double 
 }
 
 LUA_INTEROP_API auto __lu_dd_draw_scene_with_aabbs(const lua_vec3 color) -> void {
-    const DirectX::XMFLOAT3 ccolor = color;
+    const XMFLOAT3 ccolor = color;
     dd().begin_batch();
     scene::get_active().filter<const com::transform, const com::mesh_renderer>().each([&ccolor](const com::transform& transform, const com::mesh_renderer& renderer) {
         for (const auto* mesh : renderer.meshes) {
            if (mesh) [[likely]] {
-               DirectX::BoundingOrientedBox obb {};
-               DirectX::BoundingOrientedBox::CreateFromBoundingBox(obb, mesh->get_aabb());
-               const DirectX::XMMATRIX model = transform.compute_matrix();
+               BoundingOrientedBox obb {};
+               BoundingOrientedBox::CreateFromBoundingBox(obb, mesh->get_aabb());
+               const XMMATRIX model = transform.compute_matrix();
                dd().draw_obb(obb, model, ccolor);
                dd().draw_transform(model, 1.0f);
            }

@@ -193,15 +193,15 @@ namespace lu::physics {
     	// sync loop 1 rigidbody => transform
     	active.filter<const com::rigidbody, com::transform>().each([&](const com::rigidbody& rb, com::transform& transform) {
 			const JPH::BodyID body_id = rb.phys_body;
-			transform.position = eastl::bit_cast<DirectX::XMFLOAT4>(bi.GetPosition(body_id));
-			transform.rotation = eastl::bit_cast<DirectX::XMFLOAT4>(bi.GetRotation(body_id));
+			transform.position = eastl::bit_cast<XMFLOAT4>(bi.GetPosition(body_id));
+			transform.rotation = eastl::bit_cast<XMFLOAT4>(bi.GetRotation(body_id));
 		});
 
     	// sync loop 2 character controller => transform
     	active.filter<const com::character_controller, com::transform>().each([&](const com::character_controller& cc, com::transform& transform) {
 			cc.phys_character->PostSimulation(0.05f);
-    		transform.position = eastl::bit_cast<DirectX::XMFLOAT4>(cc.phys_character->GetPosition());
-			transform.rotation = eastl::bit_cast<DirectX::XMFLOAT4>(cc.phys_character->GetPosition());
+    		transform.position = eastl::bit_cast<XMFLOAT4>(cc.phys_character->GetPosition());
+			transform.rotation = eastl::bit_cast<XMFLOAT4>(cc.phys_character->GetPosition());
 		});
     }
 
@@ -217,13 +217,13 @@ namespace lu::physics {
         }
         JPH::Shape::ShapeResult result {};
         JPH::Vec3 pos;
-        static_assert(sizeof(pos) == sizeof(DirectX::XMFLOAT3A));
-        DirectX::XMStoreFloat3(reinterpret_cast<DirectX::XMFLOAT3A*>(&pos), DirectX::XMLoadFloat4(&transform.position));
+        static_assert(sizeof(pos) == sizeof(XMFLOAT3A));
+        XMStoreFloat3(reinterpret_cast<XMFLOAT3A*>(&pos), XMLoadFloat4(&transform.position));
         JPH::Quat rot;
-        static_assert(sizeof(rot) == sizeof(DirectX::XMFLOAT4));
-        DirectX::XMStoreFloat4(reinterpret_cast<DirectX::XMFLOAT4*>(&rot), DirectX::XMQuaternionNormalize(DirectX::XMLoadFloat4(&transform.rotation)));
-        DirectX::XMFLOAT3A scale {};
-        DirectX::XMStoreFloat3A(&scale, DirectX::XMLoadFloat4(&transform.scale));
+        static_assert(sizeof(rot) == sizeof(XMFLOAT4));
+        XMStoreFloat4(reinterpret_cast<XMFLOAT4*>(&rot), XMQuaternionNormalize(XMLoadFloat4(&transform.rotation)));
+        XMFLOAT3A scale {};
+        XMStoreFloat3A(&scale, XMLoadFloat4(&transform.scale));
         ci = {
             new JPH::ScaledShape{mesh->get_collision_mesh()->data(), eastl::bit_cast<JPH::Vec3>(scale)},
             pos,

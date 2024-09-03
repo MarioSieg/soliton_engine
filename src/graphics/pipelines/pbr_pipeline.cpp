@@ -12,16 +12,16 @@ namespace lu::graphics::pipelines {
         vkb::command_buffer& cmd,
         const mesh& mesh,
         const com::mesh_renderer& renderer,
-        DirectX::FXMMATRIX view_proj_mtx,
-        DirectX::CXMMATRIX model_mtx,
-        DirectX::CXMMATRIX view_mtx
+        FXMMATRIX view_proj_mtx,
+        CXMMATRIX model_mtx,
+        CXMMATRIX view_mtx
     ) const noexcept -> void {
         cmd.push_consts_start();
 
         push_constants_vs pc_vs {};
-        DirectX::XMStoreFloat4x4A(&pc_vs.model_matrix, model_mtx);
-        DirectX::XMStoreFloat4x4A(&pc_vs.model_view_proj, DirectX::XMMatrixMultiply(model_mtx, view_proj_mtx));
-        DirectX::XMStoreFloat4x4A(&pc_vs.normal_matrix, DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(nullptr, model_mtx)));
+        XMStoreFloat4x4A(&pc_vs.model_matrix, model_mtx);
+        XMStoreFloat4x4A(&pc_vs.model_view_proj, XMMatrixMultiply(model_mtx, view_proj_mtx));
+        XMStoreFloat4x4A(&pc_vs.normal_matrix, XMMatrixTranspose(XMMatrixInverse(nullptr, model_mtx)));
         cmd.push_consts(vk::ShaderStageFlagBits::eVertex, pc_vs);
 
         const eastl::span<material* const> mats {renderer.materials.data(), renderer.materials.size()};
@@ -32,9 +32,9 @@ namespace lu::graphics::pipelines {
         vkb::command_buffer& cmd,
         const com::transform& transform,
         const com::mesh_renderer& renderer,
-        const DirectX::BoundingFrustum& frustum,
-        DirectX::FXMMATRIX view_proj_mtx,
-        DirectX::CXMMATRIX view_mtx
+        const BoundingFrustum& frustum,
+        FXMMATRIX view_proj_mtx,
+        CXMMATRIX view_mtx
     ) const noexcept -> void {
         if (renderer.meshes.empty() || renderer.materials.empty()) [[unlikely]] // No mesh or material
             return;
@@ -42,7 +42,7 @@ namespace lu::graphics::pipelines {
         if (renderer.flags & com::render_flags::skip_rendering) [[unlikely]] // Skip rendering
             return;
 
-        const DirectX::XMMATRIX model_mtx = transform.compute_matrix();
+        const XMMATRIX model_mtx = transform.compute_matrix();
 
         for (const mesh* const mesh : renderer.meshes) {
             // Skip mesh if it's null
@@ -50,11 +50,11 @@ namespace lu::graphics::pipelines {
                 continue;
 
             // Perform CPU frustum culling
-            DirectX::BoundingOrientedBox obb {};
+            BoundingOrientedBox obb {};
             obb.CreateFromBoundingBox(obb, mesh->get_aabb());
             obb.Transform(obb, model_mtx);
             if ((renderer.flags & com::render_flags::skip_frustum_culling) == 0) [[likely]]
-                if (frustum.Contains(obb) == DirectX::ContainmentType::DISJOINT) // Object is culled
+                if (frustum.Contains(obb) == ContainmentType::DISJOINT) // Object is culled
                     continue;
 
             render_single_mesh(

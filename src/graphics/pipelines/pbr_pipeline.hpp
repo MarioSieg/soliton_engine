@@ -17,18 +17,18 @@ namespace lu::graphics::pipelines {
         ~pbr_pipeline() override;
 
         struct push_constants_vs final {
-            DirectX::XMFLOAT4X4A model_matrix;
-            DirectX::XMFLOAT4X4A model_view_proj;
-            DirectX::XMFLOAT4X4A normal_matrix;
+            XMFLOAT4X4A model_matrix;
+            XMFLOAT4X4A model_view_proj;
+            XMFLOAT4X4A normal_matrix;
         };
 
         HOTPROC auto render_mesh_renderer(
             vkb::command_buffer& cmd,
             const com::transform& transform,
             const com::mesh_renderer& renderer,
-            const DirectX::BoundingFrustum& frustum,
-            DirectX::FXMMATRIX view_proj_mtx,
-            DirectX::CXMMATRIX view_mtx
+            const BoundingFrustum& frustum,
+            FXMMATRIX view_proj_mtx,
+            CXMMATRIX view_mtx
         ) const noexcept -> void;
 
         virtual auto on_bind(vkb::command_buffer& cmd) const -> void override;
@@ -47,9 +47,9 @@ namespace lu::graphics::pipelines {
             vkb::command_buffer& cmd,
             const mesh& mesh,
             const com::mesh_renderer& renderer,
-            DirectX::FXMMATRIX view_proj_mtx,
-            DirectX::CXMMATRIX model_mtx,
-            DirectX::CXMMATRIX view_mtx
+            FXMMATRIX view_proj_mtx,
+            CXMMATRIX model_mtx,
+            CXMMATRIX view_mtx
         ) const noexcept -> void;
     };
 }

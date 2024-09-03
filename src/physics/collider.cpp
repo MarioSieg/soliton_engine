@@ -2,7 +2,7 @@
 #include "collider.hpp"
 
 namespace lu::physics {
-    auto collider::new_box(const DirectX::XMFLOAT3A& half_extent) -> collider {
+    auto collider::new_box(const XMFLOAT3A& half_extent) -> collider {
         return collider{
             shape_type::box,
             new JPH::BoxShape(eastl::bit_cast<JPH::Vec3>(half_extent))

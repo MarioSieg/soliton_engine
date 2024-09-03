@@ -89,8 +89,8 @@ LUA_INTEROP_API auto __lu_com_transform_get_forward(const lua_entity_id id) -> l
     eastl::optional<flecs::entity> ent {resolve_entity(id)};
     if (!ent) [[unlikely]] { return {}; }
     if (const auto* transform = ent->get_mut<const com::transform>(); transform) [[likely]] {
-        DirectX::XMFLOAT3A tmp;
-        DirectX::XMStoreFloat3A(&tmp, transform->forward_vec());
+        XMFLOAT3A tmp;
+        XMStoreFloat3A(&tmp, transform->forward_vec());
         return tmp;
     }
     return {};
@@ -100,8 +100,8 @@ LUA_INTEROP_API auto __lu_com_transform_get_backward(const lua_entity_id id) -> 
     eastl::optional<flecs::entity> ent {resolve_entity(id)};
     if (!ent) [[unlikely]] { return {}; }
     if (const auto* transform = ent->get_mut<const com::transform>(); transform) [[likely]] {
-        DirectX::XMFLOAT3A tmp;
-        DirectX::XMStoreFloat3A(&tmp, transform->backward_vec());
+        XMFLOAT3A tmp;
+        XMStoreFloat3A(&tmp, transform->backward_vec());
         return tmp;
     }
     return {};
@@ -111,8 +111,8 @@ LUA_INTEROP_API auto __lu_com_transform_get_up(const lua_entity_id id) -> lua_ve
     eastl::optional<flecs::entity> ent {resolve_entity(id)};
     if (!ent) [[unlikely]] { return {}; }
     if (const auto* transform = ent->get_mut<const com::transform>(); transform) [[likely]] {
-        DirectX::XMFLOAT3A tmp;
-        DirectX::XMStoreFloat3A(&tmp, transform->up_vec());
+        XMFLOAT3A tmp;
+        XMStoreFloat3A(&tmp, transform->up_vec());
         return tmp;
     }
     return {};
@@ -122,8 +122,8 @@ LUA_INTEROP_API auto __lu_com_transform_get_down(const lua_entity_id id) -> lua_
     eastl::optional<flecs::entity> ent {resolve_entity(id)};
     if (!ent) [[unlikely]] { return {}; }
     if (const auto* transform = ent->get_mut<const com::transform>(); transform) [[likely]] {
-        DirectX::XMFLOAT3A tmp;
-        DirectX::XMStoreFloat3A(&tmp, transform->down_vec());
+        XMFLOAT3A tmp;
+        XMStoreFloat3A(&tmp, transform->down_vec());
         return tmp;
     }
     return {};
@@ -133,8 +133,8 @@ LUA_INTEROP_API auto __lu_com_transform_get_right(const lua_entity_id id) -> lua
     eastl::optional<flecs::entity> ent {resolve_entity(id)};
     if (!ent) [[unlikely]] { return {}; }
     if (const auto* transform = ent->get_mut<const com::transform>(); transform) [[likely]] {
-        DirectX::XMFLOAT3A tmp;
-        DirectX::XMStoreFloat3A(&tmp, transform->right_vec());
+        XMFLOAT3A tmp;
+        XMStoreFloat3A(&tmp, transform->right_vec());
         return tmp;
     }
     return {};
@@ -144,8 +144,8 @@ LUA_INTEROP_API auto __lu_com_transform_get_left(const lua_entity_id id) -> lua_
     eastl::optional<flecs::entity> ent {resolve_entity(id)};
     if (!ent) [[unlikely]] { return {}; }
     if (const auto* transform = ent->get_mut<const com::transform>(); transform) [[likely]] {
-        DirectX::XMFLOAT3A tmp;
-        DirectX::XMStoreFloat3A(&tmp, transform->left_vec());
+        XMFLOAT3A tmp;
+        XMStoreFloat3A(&tmp, transform->left_vec());
         return tmp;
     }
     return {};

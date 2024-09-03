@@ -52,11 +52,11 @@ namespace lu::graphics {
         }
         [[nodiscard]] static auto get_num_draw_calls() noexcept -> std::uint32_t;
         [[nodiscard]] static auto get_num_draw_verts() noexcept -> std::uint32_t;
-        [[nodiscard]] static auto get_view_mtx() noexcept -> const DirectX::XMFLOAT4X4A& { return s_view_mtx; }
-        [[nodiscard]] static auto get_proj_mtx() noexcept -> const DirectX::XMFLOAT4X4A& { return s_proj_mtx; }
-        [[nodiscard]] static auto get_view_proj_mtx() noexcept -> const DirectX::XMFLOAT4X4A& { return s_view_proj_mtx; }
-        [[nodiscard]] static auto get_frustum() noexcept -> const DirectX::BoundingFrustum& { return s_frustum; }
-        [[nodiscard]] static auto get_clear_color() noexcept -> DirectX::XMFLOAT4A& { return s_clear_color; }
+        [[nodiscard]] static auto get_view_mtx() noexcept -> const XMFLOAT4X4A& { return s_view_mtx; }
+        [[nodiscard]] static auto get_proj_mtx() noexcept -> const XMFLOAT4X4A& { return s_proj_mtx; }
+        [[nodiscard]] static auto get_view_proj_mtx() noexcept -> const XMFLOAT4X4A& { return s_view_proj_mtx; }
+        [[nodiscard]] static auto get_frustum() noexcept -> const BoundingFrustum& { return s_frustum; }
+        [[nodiscard]] static auto get_clear_color() noexcept -> XMFLOAT4A& { return s_clear_color; }
         [[nodiscard]] static auto get_camera_transform() noexcept -> com::transform& { return s_camera_transform; }
 
         auto hot_reload_pipelines() noexcept -> void {
@@ -75,11 +75,11 @@ namespace lu::graphics {
             std::int32_t num_threads
         ) const -> void;
 
-        static inline constinit DirectX::XMFLOAT4X4A s_view_mtx;
-        static inline constinit DirectX::XMFLOAT4X4A s_proj_mtx;
-        static inline constinit DirectX::XMFLOAT4X4A s_view_proj_mtx;
-        static inline DirectX::XMFLOAT4A s_clear_color;
-        static inline DirectX::BoundingFrustum s_frustum;
+        static inline constinit XMFLOAT4X4A s_view_mtx;
+        static inline constinit XMFLOAT4X4A s_proj_mtx;
+        static inline constinit XMFLOAT4X4A s_view_proj_mtx;
+        static inline XMFLOAT4A s_clear_color;
+        static inline BoundingFrustum s_frustum;
         static inline com::transform s_camera_transform;
         static inline constinit graphics_subsystem* s_instance;
         eastl::optional<vkb::command_buffer> m_cmd {};

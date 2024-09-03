@@ -14,8 +14,8 @@ namespace lu::graphics {
 	using namespace DirectX;
 
 	static auto compute_aabb(BoundingBox& aabb, const eastl::span<const vertex> vertices) noexcept -> void {
-		DirectX::XMVECTOR min = XMVectorReplicate(1e10f);
-        DirectX::XMVECTOR max = XMVectorReplicate(-1e10f);
+		XMVECTOR min = XMVectorReplicate(1e10f);
+        XMVECTOR max = XMVectorReplicate(-1e10f);
 		for (const auto& v : vertices) {
 			const auto pos = XMLoadFloat3(&v.position);
 			min = XMVectorMin(min, pos);

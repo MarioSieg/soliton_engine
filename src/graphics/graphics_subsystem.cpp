@@ -112,14 +112,14 @@ namespace lu::graphics {
             cam.viewport.x = width;
             cam.viewport.y = height;
         }
-        DirectX::XMStoreFloat4A(&s_clear_color, DirectX::XMVectorSetW(DirectX::XMLoadFloat3(&cam.clear_color), 1.0f));
-        const DirectX::XMMATRIX view = cam.compute_view(s_camera_transform);
-        const DirectX::XMMATRIX proj = cam.compute_projection();
-        DirectX::XMStoreFloat4x4A(&s_view_mtx, view);
-        DirectX::XMStoreFloat4x4A(&s_proj_mtx, proj);
-        DirectX::XMStoreFloat4x4A(&s_view_proj_mtx, DirectX::XMMatrixMultiply(view, proj));
-        DirectX::BoundingFrustum::CreateFromMatrix(s_frustum, proj);
-        s_frustum.Transform(s_frustum, DirectX::XMMatrixInverse(nullptr, view));
+        XMStoreFloat4A(&s_clear_color, XMVectorSetW(XMLoadFloat3(&cam.clear_color), 1.0f));
+        const XMMATRIX view = cam.compute_view(s_camera_transform);
+        const XMMATRIX proj = cam.compute_projection();
+        XMStoreFloat4x4A(&s_view_mtx, view);
+        XMStoreFloat4x4A(&s_proj_mtx, proj);
+        XMStoreFloat4x4A(&s_view_proj_mtx, XMMatrixMultiply(view, proj));
+        BoundingFrustum::CreateFromMatrix(s_frustum, proj);
+        s_frustum.Transform(s_frustum, XMMatrixInverse(nullptr, view));
     }
 
     // WARNING! RENDER THREAD LOCAL
@@ -138,8 +138,8 @@ namespace lu::graphics {
             = pipeline_cache::get().get_pipeline<pipelines::pbr_pipeline>("mat_pbr");
         pbr_pipeline.on_bind(cmd);
 
-        const DirectX::XMMATRIX view_mtx = DirectX::XMLoadFloat4x4A(&s_view_mtx);
-        const DirectX::XMMATRIX view_proj_mtx = DirectX::XMLoadFloat4x4A(&graphics_subsystem::s_view_proj_mtx);
+        const XMMATRIX view_mtx = XMLoadFloat4x4A(&s_view_mtx);
+        const XMMATRIX view_proj_mtx = XMLoadFloat4x4A(&graphics_subsystem::s_view_proj_mtx);
 
         // thread workload distribution
         partitioned_draw(bucket_id, num_threads, get_render_data(), [&](
@@ -152,7 +152,7 @@ namespace lu::graphics {
 
         if (is_last_thread(bucket_id, num_threads)) { // Last thread
             if (auto& dd = const_cast<eastl::optional<debugdraw>&>(m_debugdraw); dd.has_value()) {
-                const auto view_pos = DirectX::XMLoadFloat4(&graphics_subsystem::s_camera_transform.position);
+                const auto view_pos = XMLoadFloat4(&graphics_subsystem::s_camera_transform.position);
                 dd->render(cmd, view_proj_mtx, view_pos);
             }
             if (auto& imgui = const_cast<eastl::optional<imgui::context>&>(m_imgui_context); imgui.has_value()) {
@@ -265,10 +265,8 @@ namespace lu::graphics {
     auto graphics_subsystem::update_shared_buffers_per_frame() const -> void {
         const auto& scene = scene::get_active();
 
-        const auto kk = vkb::ctx().compute_aligned_dynamic_ubo_size(sizeof(glsl::perFrameData));
-
         glsl::perFrameData per_frame_data {};
-        DirectX::XMStoreFloat4(&per_frame_data.camPos, DirectX::XMLoadFloat4(&s_camera_transform.position));
+        XMStoreFloat4(&per_frame_data.camPos, XMLoadFloat4(&s_camera_transform.position));
         per_frame_data.sunDir = scene.properties.environment.sun_dir;
         per_frame_data.sunColor = scene.properties.environment.sun_color;
         m_shared_buffers->per_frame_ubo.set(per_frame_data);

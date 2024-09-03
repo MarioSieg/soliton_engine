@@ -58,6 +58,8 @@ namespace lu {
     [[nodiscard]] consteval auto unpack_version(const std::uint32_t v) -> eastl::array<std::uint8_t, 2> { return {major_version(v), minor_version(v)}; }
 
     constexpr std::uint32_t k_lunam_engine_version = make_version(0, 4); // current engine version (must be known at compile time and we don't use patches yet)
+
+    using namespace DirectX; // Re-export DirectX namespace
 }
 
 #endif

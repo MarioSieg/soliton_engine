@@ -6,11 +6,11 @@
 
 namespace lu::graphics {
     struct vertex final {
-        DirectX::XMFLOAT3 position;
-        DirectX::XMFLOAT3 normal;
-        DirectX::XMFLOAT2 uv;
-        DirectX::XMFLOAT3 tangent;
-        DirectX::XMFLOAT3 bitangent;
+        XMFLOAT3 position;
+        XMFLOAT3 normal;
+        XMFLOAT2 uv;
+        XMFLOAT3 tangent;
+        XMFLOAT3 bitangent;
     };
     static_assert(sizeof(vertex) % 4 == 0);
 
@@ -62,6 +62,6 @@ namespace lu::graphics {
         std::uint32_t index_count = 0;
         std::uint32_t vertex_start = 0;
         std::uint32_t vertex_count = 0;
-        DirectX::BoundingBox aabb {};
+        BoundingBox aabb {};
     };
 }
