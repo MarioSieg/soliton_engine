@@ -11,6 +11,9 @@
 
 #ifdef __cplusplus // If included from C++
 namespace lu::graphics::glsl {
+    using ivec2 = DirectX::XMINT2;
+    using ivec3 = DirectX::XMINT3;
+    using ivec4 = DirectX::XMINT4;
     using vec2 = DirectX::XMFLOAT2;
     using vec3 = DirectX::XMFLOAT3;
     using vec4 = DirectX::XMFLOAT4;

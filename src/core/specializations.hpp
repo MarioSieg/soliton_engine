@@ -22,83 +22,83 @@ struct fmt::formatter<eastl::string_view> {
 };
 
 template <>
-struct fmt::formatter<XMFLOAT2> {
+struct fmt::formatter<DirectX::XMFLOAT2> {
     constexpr auto parse (format_parse_context& ctx) { return ctx.begin(); }
     template <typename Context>
-    constexpr auto format (const XMFLOAT2& v, Context& ctx) const {
-        return format_to(ctx.out(), "({}, {})", v.x, v.y);
+    constexpr auto format (const DirectX::XMFLOAT2& v, Context& ctx) const {
+        return format_to(ctx.out(), "Vec2({}, {})", v.x, v.y);
     }
 };
 
 template <>
-struct fmt::formatter<XMFLOAT2A> {
+struct fmt::formatter<DirectX::XMFLOAT2A> {
     constexpr auto parse (format_parse_context& ctx) { return ctx.begin(); }
     template <typename Context>
-    constexpr auto format (const XMFLOAT2A& v, Context& ctx) const {
-        return format_to(ctx.out(), "({}, {})", v.x, v.y);
+    constexpr auto format (const DirectX::XMFLOAT2A& v, Context& ctx) const {
+        return format_to(ctx.out(), "Vec2({}, {})", v.x, v.y);
     }
 };
 
 template <>
-struct fmt::formatter<XMFLOAT3> {
+struct fmt::formatter<DirectX::XMFLOAT3> {
     constexpr auto parse (format_parse_context& ctx) { return ctx.begin(); }
     template <typename Context>
-    constexpr auto format (const XMFLOAT3& v, Context& ctx) const {
-        return format_to(ctx.out(), "({}, {}, {})", v.x, v.y, v.z);
+    constexpr auto format (const DirectX::XMFLOAT3& v, Context& ctx) const {
+        return format_to(ctx.out(), "Vec3({}, {}, {})", v.x, v.y, v.z);
     }
 };
 
 template <>
-struct fmt::formatter<XMFLOAT3A> {
+struct fmt::formatter<DirectX::XMFLOAT3A> {
     constexpr auto parse (format_parse_context& ctx) { return ctx.begin(); }
     template <typename Context>
-    constexpr auto format (const XMFLOAT3A& v, Context& ctx) const {
-        return format_to(ctx.out(), "({}, {}, {})", v.x, v.y, v.z);
+    constexpr auto format (const DirectX::XMFLOAT3A& v, Context& ctx) const {
+        return format_to(ctx.out(), "Vec3({}, {}, {})", v.x, v.y, v.z);
     }
 };
 
 template <>
-struct fmt::formatter<XMFLOAT4> {
+struct fmt::formatter<DirectX::XMFLOAT4> {
     constexpr auto parse (format_parse_context& ctx) { return ctx.begin(); }
     template <typename Context>
-    constexpr auto format (const XMFLOAT4& v, Context& ctx) const {
-        return format_to(ctx.out(), "({}, {}, {}, {})", v.x, v.y, v.z, v.w);
+    constexpr auto format (const DirectX::XMFLOAT4& v, Context& ctx) const {
+        return format_to(ctx.out(), "Vec4({}, {}, {}, {})", v.x, v.y, v.z, v.w);
     }
 };
 
 template <>
-struct fmt::formatter<XMFLOAT4A> {
+struct fmt::formatter<DirectX::XMFLOAT4A> {
     constexpr auto parse (format_parse_context& ctx) { return ctx.begin(); }
     template <typename Context>
-    constexpr auto format (const XMFLOAT4A& v, Context& ctx) const {
-        return format_to(ctx.out(), "({}, {}, {}, {})", v.x, v.y, v.z, v.w);
+    constexpr auto format (const DirectX::XMFLOAT4A& v, Context& ctx) const {
+        return format_to(ctx.out(), "Vec4({}, {}, {}, {})", v.x, v.y, v.z, v.w);
     }
 };
 
 template <>
-struct fmt::formatter<XMINT2> {
+struct fmt::formatter<DirectX::XMINT2> {
     constexpr auto parse (format_parse_context& ctx) { return ctx.begin(); }
     template <typename Context>
-    constexpr auto format (const XMINT2& v, Context& ctx) const {
-        return format_to(ctx.out(), "({}, {})", v.x, v.y);
+    constexpr auto format (const DirectX::XMINT2& v, Context& ctx) const {
+        return format_to(ctx.out(), "IVec2({}, {})", v.x, v.y);
     }
 };
 
 template <>
-struct fmt::formatter<XMINT3> {
+struct fmt::formatter<DirectX::XMINT3> {
     constexpr auto parse (format_parse_context& ctx) { return ctx.begin(); }
     template <typename Context>
-    constexpr auto format (const XMINT3& v, Context& ctx) const {
-        return format_to(ctx.out(), "({}, {}, {})", v.x, v.y, v.z);
+    constexpr auto format (const DirectX::XMINT3& v, Context& ctx) const {
+        return format_to(ctx.out(), "IVec3({}, {}, {})", v.x, v.y, v.z);
     }
 };
 
 template <>
-struct fmt::formatter<XMINT4> {
+struct fmt::formatter<DirectX::XMINT4> {
     constexpr auto parse (format_parse_context& ctx) { return ctx.begin(); }
     template <typename Context>
-    constexpr auto format (const XMINT4& v, Context& ctx) const {
-        return format_to(ctx.out(), "({}, {}, {}, {})", v.x, v.y, v.z, v.w);
+    constexpr auto format (const DirectX::XMINT4& v, Context& ctx) const {
+        return format_to(ctx.out(), "IVec4({}, {}, {}, {})", v.x, v.y, v.z, v.w);
     }
 };
 
