@@ -11,7 +11,7 @@ namespace lu::vkb {
         vk::BufferUsageFlags buffer_usage,
         const VmaMemoryUsage memory_usage,
         const VmaAllocationCreateFlags create_flags,
-        const void* data
+        const void* const data
     ) {
         m_allocator = vkb::dvc().get_allocator();
         m_size = size;

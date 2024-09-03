@@ -6,7 +6,7 @@
 #include "filmic_tonemapper.h"
 #include "cpp_shared_structures.h"
 
-layout (std140, set = LU_GLSL_DESCRIPTOR_SET_IDX_PER_FRAME, binding = 0) uniform uniformPerFrameUBO {
+layout (set = LU_GLSL_DESCRIPTOR_SET_IDX_PER_FRAME, binding = 0) uniform uniformPerFrameUBO {
   perFrameData uboPerFrame;
 };
 
