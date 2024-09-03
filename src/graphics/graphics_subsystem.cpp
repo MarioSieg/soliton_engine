@@ -137,6 +137,7 @@ namespace lu::graphics {
         const auto& pbr_pipeline
             = pipeline_cache::get().get_pipeline<pipelines::pbr_pipeline>("mat_pbr");
         pbr_pipeline.on_bind(cmd);
+        update_shared_buffers_per_frame();
 
         const DirectX::XMMATRIX view_mtx = DirectX::XMLoadFloat4x4A(&s_view_mtx);
         const DirectX::XMMATRIX view_proj_mtx = DirectX::XMLoadFloat4x4A(&graphics_subsystem::s_view_proj_mtx);
@@ -180,7 +181,6 @@ namespace lu::graphics {
         m_cmd = vkb::ctx().begin_frame(s_clear_color, &m_inheritance_info);
         m_cmd->begin(vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
         vkb::ctx().begin_render_pass(*m_cmd, vkb::ctx().get_scene_render_pass(), vk::SubpassContents::eSecondaryCommandBuffers);
-        update_shared_buffers_per_frame();
         return true;
     }
 
@@ -262,7 +262,7 @@ namespace lu::graphics {
         return s_num_draw_verts_prev;
     }
 
-    auto graphics_subsystem::update_shared_buffers_per_frame() -> void {
+    auto graphics_subsystem::update_shared_buffers_per_frame() const -> void {
         const auto& scene = scene::get_active();
 
         glsl::perFrameData per_frame_data {};

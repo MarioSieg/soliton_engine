@@ -130,7 +130,7 @@ namespace lu::vkb {
         app_info.engineVersion = VK_MAKE_VERSION(major, minor, 0);
         app_info.apiVersion = m_api_version;
 
-        ankerl::unordered_dense::set<eastl::string> instance_extensions = {
+        ankerl::unordered_dense::set<eastl::string> instance_extensions {
             VK_KHR_SURFACE_EXTENSION_NAME,
         };
 
@@ -162,20 +162,19 @@ namespace lu::vkb {
         }
 
 #if PLATFORM_OSX
-        // When running on iOS/macOS with MoltenVK and VK_KHR_portability_subset is defined and supported by the device, enable the extension
-        if (is_device_extension_supported(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME)) {
-            instance_extensions.insert(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
-        }
-        // When running on iOS/macOS with MoltenVK, enable VK_KHR_get_physical_device_properties2 if not already enabled by the example (required by VK_KHR_portability_subset)
-        if (is_device_extension_supported(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME)) {
-            instance_extensions.insert(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
-        }
+        instance_extensions.insert(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+        //instance_extensions.insert(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
+        instance_extensions.insert(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
 #endif
 
         // Setup instance create info
         vk::InstanceCreateInfo instance_create_info {};
         instance_create_info.pNext = nullptr;
         instance_create_info.pApplicationInfo = &app_info;
+
+        if constexpr (PLATFORM_OSX) { // macOS/iOS - enable MoltenVK portability extension
+            instance_create_info.flags = vk::InstanceCreateFlagBits::eEnumeratePortabilityKHR;
+        }
 
         // Setup debug utils messenger create info
         if (m_enable_validation) {
@@ -208,6 +207,8 @@ namespace lu::vkb {
             instance_create_info.ppEnabledExtensionNames = vk_instance_extensions.data();
         }
 
+        log_info("Fetching instance layers...");
+
         std::uint32_t layer_count = 0;
         vkcheck(vk::enumerateInstanceLayerProperties(&layer_count, nullptr));
         eastl::vector<vk::LayerProperties> layers {layer_count};
@@ -219,7 +220,7 @@ namespace lu::vkb {
 
         // Setup VK_LAYER_KHRONOS_validation layer
         if (m_enable_validation) {
-            const char* k_validation_layer = "VK_LAYER_KHRONOS_validation";
+            const char* const k_validation_layer = "VK_LAYER_KHRONOS_validation";
             // Check if this layer is available at instance level
             bool validationLayerPresent = false;
             for (vk::LayerProperties& layer : layers) {

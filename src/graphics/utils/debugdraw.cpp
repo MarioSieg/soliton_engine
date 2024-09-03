@@ -885,17 +885,16 @@ namespace lu::graphics {
     ) -> void {
         if (!m_vertices.empty()) {
             const std::uint32_t frameidx = vkb::ctx().get_current_concurrent_frame_idx();
-            uniform uniform_data {};
+            uniform_data uniform_data {};
             XMStoreFloat4x4A(&uniform_data.view_proj, view_proj);
-            auto* uptr = static_cast<std::uint8_t*>(m_uniform->get_mapped_ptr());
-            std::memcpy(uptr + sizeof(uniform_data) * frameidx, &uniform_data, sizeof(uniform_data));
+            m_uniform->set(uniform_data);
             if (m_vertices.size() > k_max_vertices) [[unlikely]] {
                 log_error("Too many vertices: {}, max: {}", m_vertices.size(), k_max_vertices);
             } else {
                 auto* vptr = static_cast<std::uint8_t*>(m_vertex_buffer->get_mapped_ptr());
                 std::memcpy(vptr + sizeof(vertex) * k_max_vertices * frameidx, m_vertices.data(), sizeof(vertex) * m_vertices.size());
             }
-            std::uint32_t dynamic_offset = sizeof(uniform) * frameidx;
+            std::uint32_t dynamic_offset = sizeof(uniform_data) * frameidx;
             cmd.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, m_pipeline_layout, 0, 1, &m_descriptor_set, 1, &dynamic_offset);
             const vk::DeviceSize vbo_offset = sizeof(vertex) * k_max_vertices * frameidx;
             cmd.bindVertexBuffers(0, 1, &m_vertex_buffer->get_buffer(), &vbo_offset);
@@ -1043,19 +1042,13 @@ namespace lu::graphics {
         vk::DescriptorBufferInfo buffer_info {};
         buffer_info.buffer = m_uniform->get_buffer();
         buffer_info.offset = 0;
-        buffer_info.range = sizeof(uniform);
+        buffer_info.range = sizeof(uniform_data);
         factory.bind_buffers(0, 1, &buffer_info, vk::DescriptorType::eUniformBufferDynamic, vk::ShaderStageFlagBits::eVertex);
         passert(factory.build(m_descriptor_set, m_descriptor_set_layout));
     }
 
     auto debugdraw::create_uniform_buffer() -> void {
-        m_uniform.emplace(
-            sizeof(uniform) * vkb::ctx().get_concurrent_frame_count(),
-            0,
-            vk::BufferUsageFlagBits::eUniformBuffer,
-            VMA_MEMORY_USAGE_CPU_TO_GPU,
-            VMA_ALLOCATION_CREATE_MAPPED_BIT
-        );
+        m_uniform.emplace();
     }
 
     auto debugdraw::create_vertex_buffer() -> void {

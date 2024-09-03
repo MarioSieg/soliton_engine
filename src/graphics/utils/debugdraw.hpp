@@ -11,7 +11,7 @@
 namespace lu::graphics {
     class debugdraw final : public no_copy, public no_move {
     public:
-        struct uniform final {
+        struct uniform_data final {
             DirectX::XMFLOAT4X4A view_proj {};
         };
 
@@ -76,7 +76,7 @@ namespace lu::graphics {
         bool m_batched_mode = false;
         bool m_distance_fade = false;
         eastl::optional<vkb::buffer> m_vertex_buffer {};
-        eastl::optional<vkb::buffer> m_uniform {};
+        eastl::optional<vkb::uniform_buffer<uniform_data>> m_uniform {};
         vk::PipelineLayout m_pipeline_layout {};
         vk::DescriptorSetLayout m_descriptor_set_layout {};
         vk::DescriptorSet m_descriptor_set {};

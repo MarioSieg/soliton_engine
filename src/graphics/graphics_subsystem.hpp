@@ -67,7 +67,7 @@ namespace lu::graphics {
         friend class graphics_pipeline;
         static auto reload_pipelines() -> void;
         auto render_uis() -> void;
-        auto update_shared_buffers_per_frame() -> void;
+        auto update_shared_buffers_per_frame() const -> void;
         static auto update_main_camera(float width, float height) -> void;
         HOTPROC auto render_scene_bucket(
             vkb::command_buffer& cmd,

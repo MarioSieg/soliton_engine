@@ -64,9 +64,8 @@ namespace lu::vkb {
         } {}
         virtual ~uniform_buffer() override = default;
 
-        auto set(const T& data) noexcept -> void {
-            const std::uint32_t idx = vkb::ctx().get_current_concurrent_frame_idx();
-            reinterpret_cast<T*>(get_mapped_ptr())[idx] = data;
+        auto set(const T& data) const noexcept -> void {
+            reinterpret_cast<T*>(get_mapped_ptr())[vkb::ctx().get_current_concurrent_frame_idx()] = data;
         }
     };
 }
