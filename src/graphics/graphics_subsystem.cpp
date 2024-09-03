@@ -137,7 +137,6 @@ namespace lu::graphics {
         const auto& pbr_pipeline
             = pipeline_cache::get().get_pipeline<pipelines::pbr_pipeline>("mat_pbr");
         pbr_pipeline.on_bind(cmd);
-        update_shared_buffers_per_frame();
 
         const DirectX::XMMATRIX view_mtx = DirectX::XMLoadFloat4x4A(&s_view_mtx);
         const DirectX::XMMATRIX view_proj_mtx = DirectX::XMLoadFloat4x4A(&graphics_subsystem::s_view_proj_mtx);
@@ -177,6 +176,7 @@ namespace lu::graphics {
         const auto h = static_cast<float>(vkb::ctx().get_height());
         m_imgui_context->begin_frame();
         update_main_camera(w, h);
+        update_shared_buffers_per_frame();
         m_cmd.reset();
         m_cmd = vkb::ctx().begin_frame(s_clear_color, &m_inheritance_info);
         m_cmd->begin(vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
@@ -264,6 +264,8 @@ namespace lu::graphics {
 
     auto graphics_subsystem::update_shared_buffers_per_frame() const -> void {
         const auto& scene = scene::get_active();
+
+        const auto kk = vkb::ctx().compute_aligned_dynamic_ubo_size(sizeof(glsl::perFrameData));
 
         glsl::perFrameData per_frame_data {};
         DirectX::XMStoreFloat4(&per_frame_data.camPos, DirectX::XMLoadFloat4(&s_camera_transform.position));

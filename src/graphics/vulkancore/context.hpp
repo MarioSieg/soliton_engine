@@ -49,7 +49,7 @@ namespace lu::vkb {
         [[nodiscard]] auto get_ui_render_pass() const noexcept -> vk::RenderPass { return m_ui_render_pass; }
         [[nodiscard]] auto get_framebuffers() const noexcept -> eastl::span<const vk::Framebuffer> { return m_framebuffers; }
         [[nodiscard]] auto get_deferred_deletion_queue() noexcept -> deletion_queue& { return m_shutdown_deletion_queue; }
-        [[nodiscard]] auto compute_aligned_ubu_size(std::size_t size) noexcept -> std::size_t;
+        [[nodiscard]] auto compute_aligned_dynamic_ubo_size(std::size_t size) noexcept -> std::size_t;
 
         [[nodiscard]] HOTPROC auto begin_frame(
             const DirectX::XMFLOAT4A& clear_color,
@@ -88,6 +88,8 @@ namespace lu::vkb {
 
         GLFWwindow* m_window = nullptr;
         std::uint32_t m_concurrent_frames = 3;
+        std::uint32_t m_current_concurrent_frame_idx = 0; // To select the correct sync objects, we need to keep track of the current frame
+        std::uint32_t m_image_index = 0; // The current swap chain image index
         vk::SampleCountFlagBits m_msaa_samples = vk::SampleCountFlagBits::e4;
         std::uint32_t m_width = 0;
         std::uint32_t m_height = 0;
@@ -120,8 +122,6 @@ namespace lu::vkb {
         vk::RenderPass m_ui_render_pass {};
         eastl::fixed_vector<vk::Framebuffer, 4> m_framebuffers {};
         vk::PipelineCache m_pipeline_cache {};
-        std::uint32_t m_current_concurrent_frame_idx = 0; // To select the correct sync objects, we need to keep track of the current frame
-        std::uint32_t m_image_index = 0; // The current swap chain image index
 
         struct {
             struct {

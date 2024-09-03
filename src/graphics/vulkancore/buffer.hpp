@@ -27,11 +27,11 @@ namespace lu::vkb {
         [[nodiscard]] auto get_memory_properties() const noexcept -> vk::MemoryPropertyFlags { return m_memory_properties; }
         [[nodiscard]] auto get_usage() const noexcept -> vk::BufferUsageFlags { return m_usage; }
 
-        auto upload_data(const void* data, std::size_t size, std::size_t offset) -> void;
+        auto upload_data(const void* data, std::size_t size, std::size_t offset) const -> void;
 
     protected:
         std::size_t m_size {};
-        void* m_mapped {};
+        mutable void* m_mapped {};
         vk::Buffer m_buffer {};
         vk::DeviceMemory m_memory {};
         vk::DeviceAddress m_device_address {};
@@ -54,18 +54,24 @@ namespace lu::vkb {
         explicit uniform_buffer(
             const vk::BufferUsageFlags buffer_usage = vk::BufferUsageFlagBits::eUniformBuffer,
             const VmaMemoryUsage memory_usage = VMA_MEMORY_USAGE_CPU_TO_GPU,
-            const VmaAllocationCreateFlags create_flags = VMA_ALLOCATION_CREATE_MAPPED_BIT
+            const VmaAllocationCreateFlags create_flags = VMA_ALLOCATION_CREATE_MAPPED_BIT | VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT
         ) : buffer {
-            vkb::ctx().compute_aligned_ubu_size(sizeof(T)) * vkb::ctx().get_concurrent_frame_count(),
+            vkb::ctx().compute_aligned_dynamic_ubo_size(sizeof(T)) * vkb::ctx().get_concurrent_frame_count(),
             0,
             buffer_usage,
             memory_usage,
             create_flags // TODO: host-write sequencial memory bit?
-        } {}
+        }, m_aligned_size{vkb::ctx().compute_aligned_dynamic_ubo_size(sizeof(T))} {}
         virtual ~uniform_buffer() override = default;
 
         auto set(const T& data) const noexcept -> void {
-            reinterpret_cast<T*>(get_mapped_ptr())[vkb::ctx().get_current_concurrent_frame_idx()] = data;
+            const std::uint32_t idx = vkb::ctx().get_current_concurrent_frame_idx();
+            upload_data(&data, m_aligned_size, idx * m_aligned_size);
         }
+
+        [[nodiscard]] inline auto get_dynamic_aligned_size() const noexcept -> std::size_t { return m_aligned_size; }
+
+    private:
+        std::size_t m_aligned_size {};
     };
 }

@@ -537,12 +537,10 @@ namespace lu::vkb {
         s_init.store(false);
     }
 
-    auto context::compute_aligned_ubu_size(const std::size_t size) noexcept -> std::size_t {
+    auto context::compute_aligned_dynamic_ubo_size(const std::size_t size) noexcept -> std::size_t {
         const std::size_t min_align = m_device->get_physical_device_props().limits.minUniformBufferOffsetAlignment;
-        std::size_t aligned_size = size;
-        if (min_align) {
-            aligned_size = (aligned_size + min_align - 1) & ~(min_align - 1);
-        }
-        return aligned_size;
+        if (!min_align) return size;
+        const std::size_t mask = min_align-1;
+        return (size+mask) & ~mask;
     }
 }

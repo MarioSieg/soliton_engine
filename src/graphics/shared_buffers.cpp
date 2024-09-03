@@ -9,7 +9,7 @@ namespace lu::graphics {
         vk::DescriptorBufferInfo info {
             .buffer = per_frame_ubo.get_buffer(),
             .offset = 0,
-            .range = sizeof(glsl::perFrameData)
+            .range = per_frame_ubo.get_dynamic_aligned_size()
         };
         constexpr auto stages {
             vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment

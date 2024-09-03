@@ -6,7 +6,18 @@
 #include "filmic_tonemapper.h"
 #include "cpp_shared_structures.h"
 
-layout (set = LU_GLSL_DESCRIPTOR_SET_IDX_PER_FRAME, binding = 0) uniform uniformPerFrameUBO {
+layout (location = 0) in vec3 inWorldPos;
+layout (location = 1) in vec2 inUV;
+layout (location = 2) in vec3 inNormal;
+layout (location = 3) in vec3 inTangent;
+layout (location = 4) in vec3 inBiTangent;
+layout (location = 5) in vec3 inTangentViewPos;
+layout (location = 6) in vec3 inTangentFragPos;
+layout (location = 7) in mat3 inTBN;
+
+layout (location = 0) out vec4 outFragColor;
+
+layout (std140, set = LU_GLSL_DESCRIPTOR_SET_IDX_PER_FRAME, binding = 0) uniform uniformPerFrameUBO {
   perFrameData uboPerFrame;
 };
 
@@ -20,17 +31,6 @@ layout (set = LU_GLSL_DESCRIPTOR_SET_IDX_PER_MATERIAL, binding = 5) uniform samp
 layout (set = LU_GLSL_DESCRIPTOR_SET_IDX_CUSTOM, binding = 0) uniform sampler2D brdf_lut;
 layout (set = LU_GLSL_DESCRIPTOR_SET_IDX_CUSTOM, binding = 1) uniform samplerCube irradiance_cube;
 layout (set = LU_GLSL_DESCRIPTOR_SET_IDX_CUSTOM, binding = 2) uniform samplerCube prefilter_cube;
-
-layout (location = 0) in vec3 inWorldPos;
-layout (location = 1) in vec2 inUV;
-layout (location = 2) in vec3 inNormal;
-layout (location = 3) in vec3 inTangent;
-layout (location = 4) in vec3 inBiTangent;
-layout (location = 5) in vec3 inTangentViewPos;
-layout (location = 6) in vec3 inTangentFragPos;
-layout (location = 7) in mat3 inTBN;
-
-layout (location = 0) out vec4 outFragColor;
 
 const float MAX_REFLECTION_LOD = 9.0;
 

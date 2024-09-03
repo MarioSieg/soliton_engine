@@ -91,7 +91,7 @@ namespace lu::vkb {
         }
     }
 
-    auto buffer::upload_data(const void* data, const std::size_t size, const std::size_t offset) -> void {
+    auto buffer::upload_data(const void* const data, const std::size_t size, const std::size_t offset) const -> void {
         const vk::Device device = vkb::vkdvc();
         if (m_memory_usage == VMA_MEMORY_USAGE_GPU_ONLY) {
             buffer staging_buffer {
@@ -103,22 +103,22 @@ namespace lu::vkb {
                 data
             };
 
-            command_buffer copy_cmd {vk::QueueFlagBits::eTransfer};
+            command_buffer copy_cmd {vk::QueueFlagBits::eTransfer}; // TODO thread safety
             copy_cmd.begin();
             copy_cmd.copy_buffer(staging_buffer.get_buffer(), m_buffer, size, offset);
             copy_cmd.end();
             copy_cmd.flush();
+
         } else {
             if (!m_mapped) {
-                vkcheck(device.mapMemory(m_memory, 0, size, {}, &m_mapped));
+                vkcheck(device.mapMemory(m_memory, 0, m_size, {}, &m_mapped));
             }
-            std::memcpy(m_mapped, data, size);
-            // If host coherency hasn't been requested, do a manual flush to make writes visible
-            if (m_memory_properties & vk::MemoryPropertyFlagBits::eHostCoherent) {
+            std::memcpy(static_cast<std::byte*>(m_mapped) + offset, data, size);
+            if (!(m_memory_properties & vk::MemoryPropertyFlagBits::eHostCoherent)) { // If host coherency hasn't been requested, do a manual flush to make writes visible
                 vk::MappedMemoryRange mapped_range {};
                 mapped_range.memory = m_memory;
-                mapped_range.offset = 0;
-                mapped_range.size = vk::WholeSize;
+                mapped_range.offset = offset;
+                mapped_range.size = size;
                 vkcheck(device.flushMappedMemoryRanges(1, &mapped_range));
             }
         }

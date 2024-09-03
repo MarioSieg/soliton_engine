@@ -5,21 +5,11 @@
 #include "shader_common.h"
 #include "cpp_shared_structures.h"
 
-layout (std140, set = LU_GLSL_DESCRIPTOR_SET_IDX_PER_FRAME, binding = 0) uniform uniformPerFrameUBO {
-	perFrameData uboPerFrame;
-};
-
 layout (location = 0) in vec3 inPos;
 layout (location = 1) in vec3 inNormal;
 layout (location = 2) in vec2 inUV;
 layout (location = 3) in vec3 inTangent;
 layout (location = 4) in vec3 inBiTangent;
-
-layout (push_constant, std430) uniform PushConstants {
-	mat4 ModelMatrix;
-	mat4 ModelViewProj;
-	mat4 NormalMatrix;
-} consts;
 
 layout (location = 0) out vec3 outWorldPos;
 layout (location = 1) out vec2 outUV;
@@ -33,6 +23,16 @@ layout (location = 7) out mat3 outTBN;
 out gl_PerVertex {
     vec4 gl_Position;
 };
+
+layout (std140, set = LU_GLSL_DESCRIPTOR_SET_IDX_PER_FRAME, binding = 0) uniform uniformPerFrameUBO {
+	perFrameData uboPerFrame;
+};
+
+layout (std140, push_constant, std430) uniform PushConstants {
+	mat4 ModelMatrix;
+	mat4 ModelViewProj;
+	mat4 NormalMatrix;
+} consts;
 
 void main() {
 	outWorldPos = vec3(consts.ModelMatrix * vec4(inPos, 1.0));
