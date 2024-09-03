@@ -14,4 +14,9 @@ namespace lu {
         std::cerr << message << std::endl;
         std::abort();
     }
+
+    auto get_version_string() -> eastl::string {
+        const auto v = unpack_version(k_lunam_engine_version);
+        return fmt::format("{}.{}", v[0], v[1]).c_str();
+    }
 }

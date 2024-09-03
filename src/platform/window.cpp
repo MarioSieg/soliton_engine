@@ -243,4 +243,52 @@ namespace lu::platform {
     auto window::is_mouse_button_released(const std::int32_t mb_code) const -> bool {
         return glfwGetMouseButton(m_window, mb_code) == GLFW_RELEASE;
     }
+
+    auto window::is_fullscreen() -> bool {
+        return m_is_fullscreen;
+    }
+
+    auto window::enter_fullscreen() -> void {
+        if (m_is_fullscreen) return;
+
+        GLFWmonitor* const primary_mon = glfwGetPrimaryMonitor();
+        if (!primary_mon) [[unlikely]] {
+            log_warn("Failed to fetch primary monitor");
+            return;
+        }
+
+        const GLFWvidmode* primary_mode = glfwGetVideoMode(primary_mon);
+        if (!primary_mode) [[unlikely]] {
+            log_warn("Failed to fetch primary video mode");
+            return;
+        }
+
+        m_fullscreen_prev_pos = get_pos();
+        m_fullscreen_prev_size = get_size();
+
+        glfwSetWindowMonitor(m_window, primary_mon, 0, 0, primary_mode->width, primary_mode->height, GLFW_DONT_CARE);
+
+        m_is_fullscreen = true;
+    }
+
+    auto window::exit_fullscreen() -> void {
+        if (!m_is_fullscreen) return;
+
+        glfwSetWindowMonitor(m_window, nullptr, m_fullscreen_prev_pos.x, m_fullscreen_prev_pos.y, m_fullscreen_prev_size.x, m_fullscreen_prev_size.y, GLFW_DONT_CARE);
+
+        m_is_fullscreen = false;
+    }
+
+    auto window::toggle_fullscreen() -> void {
+        if (m_is_fullscreen) exit_fullscreen();
+        else enter_fullscreen();
+    }
+
+    auto window::set_resizeable(const bool is_resizable) -> void {
+        glfwSetWindowAttrib(m_window, GLFW_RESIZABLE, is_resizable ? GLFW_TRUE : GLFW_FALSE);
+    }
+
+    auto window::set_cursor_mode(const bool enabled) -> void {
+        glfwSetInputMode(m_window, GLFW_CURSOR, enabled ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+    }
 }

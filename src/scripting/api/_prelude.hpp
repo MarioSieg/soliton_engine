@@ -48,6 +48,8 @@ struct lua_vec2 {
     constexpr lua_vec2(const double x, const double y) noexcept : x{x}, y{y} {}
     constexpr lua_vec2(const XMFLOAT2& vec) noexcept
         : x{static_cast<float>(vec.x)}, y{static_cast<float>(vec.y)} {}
+    constexpr lua_vec2(const XMINT2& vec) noexcept
+            : x{static_cast<float>(vec.x)}, y{static_cast<float>(vec.y)} {}
 
     [[nodiscard]] constexpr operator XMFLOAT2 () const noexcept {
         return {
@@ -77,6 +79,10 @@ struct lua_vec3 {
         : x{static_cast<float>(vec.x)}
         , y{static_cast<float>(vec.y)}
         , z{static_cast<float>(vec.z)} {}
+    constexpr lua_vec3(const XMINT3& vec) noexcept
+            : x{static_cast<float>(vec.x)}
+            , y{static_cast<float>(vec.y)}
+            , z{static_cast<float>(vec.z)} {}
     constexpr lua_vec3(const XMFLOAT4& vec) noexcept
        : x{static_cast<float>(vec.x)}
     , y{static_cast<float>(vec.y)}

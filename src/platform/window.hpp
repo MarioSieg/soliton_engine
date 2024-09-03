@@ -26,15 +26,21 @@ namespace lu::platform {
 
         auto maximize() -> void;
         auto minimize() -> void;
+        auto enter_fullscreen() -> void;
+        auto exit_fullscreen() -> void;
+        auto toggle_fullscreen() -> void;
         [[nodiscard]] auto is_maximized() -> bool;
         [[nodiscard]] auto is_minimized() -> bool;
         [[nodiscard]] auto is_focused() -> bool;
+        [[nodiscard]] auto is_fullscreen() -> bool;
         auto set_size(XMINT2 size) -> void;
         auto set_pos(XMINT2 pos) -> void;
         auto set_title(const eastl::string& title) -> void;
         auto set_size_limits(XMINT2 min, XMINT2 max) -> void;
         auto set_size_limits(XMINT2 min) -> void;
         auto set_icon(const eastl::string& texture_path) -> void;
+        auto set_resizeable(bool is_resizable) -> void;
+        auto set_cursor_mode(bool enabled) -> void;
         auto focus() -> void;
         auto show() -> void;
         auto hide() -> void;
@@ -53,5 +59,8 @@ namespace lu::platform {
 
     private:
         GLFWwindow* m_window = nullptr;
+        bool m_is_fullscreen = false;
+        XMINT2 m_fullscreen_prev_pos {};
+        XMINT2 m_fullscreen_prev_size {};
     };
 }

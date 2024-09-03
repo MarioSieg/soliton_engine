@@ -15,10 +15,6 @@
 using graphics::graphics_subsystem;
 using platform::platform_subsystem;
 
-static constinit int s_window_pos_x = 0;
-static constinit int s_window_pos_y = 0;
-static constinit int s_window_width = 1280;
-static constinit int s_window_height = 720;
 static eastl::string s_tmp_proxy;
 
 LUA_INTEROP_API auto __lu_panic(const char* const msg) -> void {
@@ -34,7 +30,7 @@ LUA_INTEROP_API auto __lu_engine_version() -> std::uint32_t {
 }
 
 LUA_INTEROP_API auto __lu_app_is_focused() -> bool {
-    return platform_subsystem::get_main_window().is_maximized()
+    return platform_subsystem::get_main_window().is_focused();
 }
 
 LUA_INTEROP_API auto __lu_app_is_ui_hovered() -> bool {
@@ -58,66 +54,51 @@ LUA_INTEROP_API auto __lu_window_minimize() -> void {
 }
 
 LUA_INTEROP_API auto __lu_window_enter_fullscreen() -> void {
-    GLFWmonitor* mon = glfwGetPrimaryMonitor();
-    if (!mon) [[unlikely]] { return; }
-    const GLFWvidmode* mode = glfwGetVideoMode(mon);
-    if (!mode) [[unlikely]] { return; }
-    glfwGetWindowPos(platform_subsystem::get_glfw_window(), &s_window_pos_x, &s_window_pos_y);
-    glfwGetWindowSize(platform_subsystem::get_glfw_window(), &s_window_width, &s_window_height);
-    glfwSetWindowMonitor(platform_subsystem::get_glfw_window(), mon, 0, 0, mode->width, mode->height, GLFW_DONT_CARE);
+    platform_subsystem::get_main_window().enter_fullscreen();
 }
 
 LUA_INTEROP_API auto __lu_window_leave_fullscreen() -> void {
-    s_window_width = std::max(s_window_width, 1280);
-    s_window_height = std::max(s_window_height, 720);
-    glfwSetWindowMonitor(platform_subsystem::get_glfw_window(), nullptr,
-        s_window_pos_x, s_window_pos_y, s_window_width, s_window_height, GLFW_DONT_CARE);
+    platform_subsystem::get_main_window().exit_fullscreen();
 }
 
 LUA_INTEROP_API auto __lu_window_set_title(const char* const title) -> void {
-    glfwSetWindowTitle(platform_subsystem::get_glfw_window(), title);
+    platform_subsystem::get_main_window().set_title(title);
 }
 
 LUA_INTEROP_API auto __lu_window_set_size(const int width, const int height) -> void {
-    glfwSetWindowSize(platform_subsystem::get_glfw_window(), width, height);
+    platform_subsystem::get_main_window().set_size({width, height});
 }
 
 LUA_INTEROP_API auto __lu_window_set_pos(const int x, const int y) -> void {
-    glfwSetWindowPos(platform_subsystem::get_glfw_window(), x, y);
+    platform_subsystem::get_main_window().set_pos({x, y});
 }
 
 LUA_INTEROP_API auto __lu_window_show() -> void {
-    glfwShowWindow(platform_subsystem::get_glfw_window());
+    platform_subsystem::get_main_window().show();
 }
 
 LUA_INTEROP_API auto __lu_window_hide() -> void {
-    glfwHideWindow(platform_subsystem::get_glfw_window());
+    platform_subsystem::get_main_window().hide();
 }
 
 LUA_INTEROP_API auto __lu_window_allow_resize(const bool allow) -> void {
-    glfwSetWindowAttrib(platform_subsystem::get_glfw_window(), GLFW_RESIZABLE, allow);
+    platform_subsystem::get_main_window().set_resizeable(allow);
 }
 
 LUA_INTEROP_API auto __lu_window_get_size() -> lua_vec2 {
-    int width, height;
-    glfwGetWindowSize(platform_subsystem::get_glfw_window(), &width, &height);
-    return lua_vec2 { static_cast<float>(width), static_cast<float>(height) };
+    return lua_vec2{platform_subsystem::get_main_window().get_size()};
 }
 
 LUA_INTEROP_API auto __lu_window_get_framebuf_size() -> lua_vec2 {
-    int width, height;
-    glfwGetFramebufferSize(platform_subsystem::get_glfw_window(), &width, &height);
-    return lua_vec2 { static_cast<float>(width), static_cast<float>(height) };
+    return lua_vec2{platform_subsystem::get_main_window().get_framebuffer_size()};
 }
 
 LUA_INTEROP_API auto __lu_window_get_pos() -> lua_vec2 {
-    int x, y;
-    glfwGetWindowPos(platform_subsystem::get_glfw_window(), &x, &y);
-    return lua_vec2 { static_cast<float>(x), static_cast<float>(y) };
+   return lua_vec2{platform_subsystem::get_main_window().get_pos()};
 }
 
 LUA_INTEROP_API auto __lu_window_enable_cursor(const bool enable) -> void {
-    glfwSetInputMode(platform_subsystem::get_glfw_window(), GLFW_CURSOR, enable ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+    platform_subsystem::get_main_window().set_cursor_mode(enable);
 }
 
 LUA_INTEROP_API auto __lu_app_exit() -> void {
