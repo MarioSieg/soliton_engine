@@ -30,6 +30,7 @@ namespace lu {
         auto request_exit() noexcept -> void;
         auto on_new_scene_start(scene& scene) -> void;
 
+        auto prepare() -> void;
         HOTPROC auto run() -> void;
         auto resize() -> void;
 
@@ -44,5 +45,6 @@ namespace lu {
         const eastl::chrono::high_resolution_clock::time_point m_boot_stamp = eastl::chrono::high_resolution_clock::now();
         eastl::vector<eastl::shared_ptr<subsystem>> m_subsystems {};
         std::uint64_t m_frame = 0;
+        bool m_is_prepared = false;
     };
 }

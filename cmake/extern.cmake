@@ -139,6 +139,11 @@ add_subdirectory(extern/SPIRV-Reflect)
 target_include_directories(lunam PRIVATE extern/SPIRV-Reflect/include)
 target_link_libraries(lunam spirv-reflect-static)
 
+# Used for the splash-screen only
+add_subdirectory(extern/raylib)
+target_include_directories(lunam PRIVATE extern/raylib/src)
+target_link_libraries(lunam raylib_static)
+
 ##################################################################################################
 # Libraries, which sadly requires C++ exceptions and have no way to disable them
 ##################################################################################################

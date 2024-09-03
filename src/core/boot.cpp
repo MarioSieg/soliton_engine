@@ -7,13 +7,23 @@
 #include "../scripting/scripting_subsystem.hpp"
 #include "../physics/physics_subsystem.hpp"
 
+#include "splash_screen.hpp"
+
 static auto lunam_entry(const int argc, const char** argv, const char** $environ) -> void {
     using namespace lu;
+
+    auto splash = eastl::make_unique<splash_screen>("media/logo.png");
+    splash->show();
+
     kernel kernel {argc, argv, $environ};
     kernel.install<scripting::scripting_subsystem>();
     kernel.install<platform::platform_subsystem>();
     kernel.install<physics::physics_subsystem>();
     kernel.install<graphics::graphics_subsystem>();
+
+    // engine kernel is booted, destroy splash screen and run show window
+    kernel.prepare();
+    splash.reset();
     kernel.run();
 }
 

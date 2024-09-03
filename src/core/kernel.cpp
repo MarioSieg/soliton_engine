@@ -223,7 +223,7 @@ static auto redirect_io() -> void {
         log_info("Scene start time of engine: {:.03f} s", clock_total.elapsed_secs());
     }
 
-    HOTPROC auto kernel::run() -> void {
+    HOTPROC auto kernel::prepare() -> void {
         for (auto&& sys : m_subsystems) {
             const stopwatch clock {};
             sys->on_prepare();
@@ -237,7 +237,12 @@ static auto redirect_io() -> void {
                 log_warn("Startup time of subsystem '{}' (boot + prepare): {:.03f} s exceeds recommended startup time: {} s. Optimize startup routines to ensure fast boot time!", sys->name, boot_time, startup_time_lim);
             }
         }
+        m_is_prepared = true;
         log_info("Total boot time: {:.03f} s", duration_cast<duration<double>>(high_resolution_clock::now() - m_boot_stamp).count());
+    }
+
+    HOTPROC auto kernel::run() -> void {
+        passert(m_is_prepared);
         while (tick()) [[likely]]; // simulation loop
     }
 
