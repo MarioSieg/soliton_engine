@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------
 -- Lunam Engine time Module
 --
--- Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+-- Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 ------------------------------------------------------------------------------
 
 local ffi = require 'ffi'

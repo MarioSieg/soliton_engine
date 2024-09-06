@@ -1,14 +1,21 @@
 ----------------------------------------------------------------------------
 -- Lunam Engine scene Module
 --
--- Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+-- Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 ------------------------------------------------------------------------------
 
 local ffi = require 'ffi'
 local cpp = ffi.C
 local bit = require 'bit'
-local bor, band = bit.bor, bit.band
 local entity = require 'entity'
+local vec3 = require 'vec3'
+local quat = require 'quat'
+local gmath = require 'gmath'
+local time = require 'time'
+local debugdraw = require 'debugdraw'
+
+local bor, band = bit.bor, bit.band
+local rad, sin, cos, tan, atan2, asin, pi = math.rad, math.sin, math.cos, math.tan, math.atan2, math.asin, math.pi
 
 ffi.cdef[[
     typedef int lua_scene_id;
@@ -26,6 +33,166 @@ ffi.cdef[[
     void __lu_scene_set_active_camera_entity(lua_entity_id id);
     lua_entity_id __lu_scene_get_active_camera_entity(void);
 ]]
+
+-- Simplified time cycle system:
+-- 24 hour day
+-- 30 days per month (12 months)
+-- 30 * 12 = 360 days per year
+local time_cycle = {
+    seasons = {
+        spring = 1,
+        summer = 2,
+        autumn = 3,
+        winter = 4
+    },
+    months = {
+        january = 1,
+        february = 2,
+        march = 3,
+        april = 4,
+        may = 5,
+        june = 6,
+        july = 7,
+        august = 8,
+        september = 9,
+        october = 10,
+        november = 11,
+        december = 12
+    },
+    freeze_time = false,
+    freeze_date = false,
+    debug_draw = true,
+    time_cycle_scale = 1.0, -- Time cycle speed multiplier
+    date = {
+        day = 29,
+        month = 12,
+        year = 2024,
+        time = 12,
+    },
+    current_season = 1,
+    _north_dir = vec3.unit_x,
+    _sun_dir = -vec3.unit_y,
+    _sun_dir_quat = quat.identity,
+    _latitude = 50.0,
+    _delta = 0.0,
+    _ecliptic_obliquity = rad(23.44),
+}
+
+function time_cycle:get_date_string()
+    return string.format('%02d.%02d.%04d', self.date.day, self.date.month, self.date.year)
+end
+
+function time_cycle:get_time_string()
+    return string.format('%02d:%02d', math.floor(self.date.time), (self.date.time % 1) * 60)
+end
+
+function time_cycle:get_date_time_string()
+    return string.format('%s %s', self:get_date_string(), self:get_time_string())
+end
+
+function time_cycle:get_season_string()
+    if self.current_season == self.seasons.spring then
+        return 'Spring'
+    elseif self.current_season == self.seasons.summer then
+        return 'Summer'
+    elseif self.current_season == self.seasons.autumn then
+        return 'Autumn'
+    else
+        return 'Winter'
+    end
+end
+
+function time_cycle:_advance()
+    if self.debug_draw then
+        debugdraw.draw_arrow_dir(vec3.zero, -self._sun_dir * 5.0, colors.yellow)
+    end
+    if not self.freeze_time then
+        self.date.time = self.date.time + time.delta_time * self.time_cycle_scale
+        if self.freeze_date then
+            self.date.time = self.date.time % 24.0 -- Wrap time around 24 hour day if date is frozen
+        end
+        self:update_with_time(self.date.time)
+    end
+    if not self.freeze_date then
+        self:_advance_date()
+    end
+end
+
+function time_cycle:is_hour_passed(hour)
+    return self.date.time >= hour
+end
+
+function time_cycle:is_day_passed(day)
+    return self.date.day >= day
+end
+
+function time_cycle:is_month_passed(month)
+    return self.date.month >= month
+end
+
+function time_cycle:is_year_passed(year)
+    return self.date.year >= year
+end
+
+function time_cycle:update_with_time(time_hour_24)
+    self:_compute_sun_orbit()
+    self:_compute_sun_dir(gmath.clamp(time_hour_24, 0, 24) - 12)
+end
+
+function time_cycle:_advance_date()
+    if self.date.time >= 24.0 then -- Day has passed
+        self.date.time = 0.0
+        self.date.day = self.date.day + 1
+        if self.date.day > 30 then -- Month has passed
+            self.date.day = 1
+            self.date.month = self.date.month + 1
+            if self.date.month > 12 then -- Year has passed
+                self.date.month = 1
+                self.date.year = self.date.year + 1
+                self:_update_season()
+            end
+        end
+    end
+end
+
+function time_cycle:_update_season()
+    if self.date.month >= 3 and self.date.month <= 5 then
+        self.current_season = self.seasons.spring
+    elseif self.date.month >= 6 and self.date.month <= 8 then
+        self.current_season = self.seasons.summer
+    elseif self.date.month >= 9 and self.date.month <= 11 then
+        self.current_season = self.seasons.autumn
+    else
+        self.current_season = self.seasons.winter
+    end
+end
+
+function time_cycle:_compute_sun_orbit()
+    local day = 30 * self.date.month - 1 + 15
+    local lambda = rad(280.46 + 0.9856474 * day) -- Ecliptic longitude
+    self._delta = asin(sin(self._ecliptic_obliquity) * sin(lambda))
+end
+
+function time_cycle:_compute_sun_dir(hour)
+    local latitude = rad(self._latitude)
+    local latitude_cos = cos(latitude)
+    local latitude_sin = sin(latitude)
+    local hh = hour * pi / 12
+    local hh_cos = cos(hh)
+    local azimuth = atan2(
+        sin(hh),
+        hh_cos * latitude_sin - tan(self._delta) * latitude_cos
+    )
+    local altitude = asin(
+        latitude_sin * sin(self._delta) + latitude_cos * cos(self._delta) * hh_cos
+    )
+    local rot0 = quat.from_axis_angle(vec3.up, azimuth)
+    local dir = self._north_dir * rot0
+    local udx = vec3.cross(vec3.up, dir)
+    local rot1 = quat.from_axis_angle(udx, altitude)
+    self._sun_dir_quat = rot0 * rot1
+    self._sun_dir = dir * rot1
+end
 
 local function bit_flag_union(flags)
     local result = 0
@@ -103,7 +270,8 @@ scene_import_flags.default = bit_flag_union({
 
 local scene = {
     name = 'Untitled',
-    id = 0
+    id = 0,
+    time_cycle = time_cycle,
 }
 
 function scene._start()
@@ -111,6 +279,8 @@ function scene._start()
 end
 
 function scene._update()
+    scene.time_cycle:_advance()
+    print(scene.time_cycle:get_date_time_string())
     cpp.__lu_scene_tick()
 end
 

@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------
 -- Lunam Engine Quaternion gmath Module
 --
--- Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+-- Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 ------------------------------------------------------------------------------
 
 local ffi = require 'ffi'
@@ -38,14 +38,10 @@ local function normalize(q)
     return q / magnitude(q)
 end
 
-local function from_axis_angle(vec)
-    local angle = #vec
-    if angle == 0 then
-        return identity
-    end
-    local axis = vec / angle
-    local s, c = sin(angle * 0.5), cos(angle * 0.5)
-    return normalize(new(axis.x * s, axis.y * s, axis.z * s, c))
+local function from_axis_angle(axis, angle)
+    local ha = angle * 0.5
+    local sa = sin(ha)
+    return rawnew(axis.x * sa, axis.y * sa, axis.z * sa, cos(ha))
 end
 
 local function from_euler(x, y, z)
@@ -58,24 +54,33 @@ local function from_euler(x, y, z)
     local sp = sin(hy)
     local cy = cos(hz)
     local sy = sin(hz)
-    local rw = cr*cp*cy + sr*sp*sy
-    local rx = sr*cp*cy - cr*sp*sy
-    local ry = cr*sp*cy + sr*cp*sy
-    local rz = cr*cp*sy - sr*sp*cy
+    local rw = (cr * cp * cy) + (sr * sp *sy)
+    local rx = (sr * cp * cy) - (cr * sp *sy)
+    local ry = (cr * sp * cy) + (sr * cp *sy)
+    local rz = (cr * cp * sy) - (sr * sp *cy)
     return rawnew(rx, ry, rz, rw)
 end
 
 local function to_euler(q)
-    local sinr_cosp = 2 * (q.w*q.x + q.y*q.z)
-    local cosr_cosp = 1 - 2 * (q.x*q.x + q.y*q.y)
-    local sinp = sqrt(1 + 2*(q.w*q.y - q.x*q.z))
-    local cosp = sqrt(1 - 2*(q.w*q.y - q.x*q.z))
-    local siny_cosp = 2 * (q.w*q.z + q.x*q.y)
-    local cosy_cosp = 1 - 2*(q.y*q.y + q.z*q.z)
+    local sinr_cosp = 2 * (q.w * q.x + q.y * q.z)
+    local cosr_cosp = 1 - 2 * (q.x * q.x + q.y * q.y)
+    local sinp = sqrt(1 + 2 * (q.w * q.y - q.x * q.z))
+    local cosp = sqrt(1 - 2 * (q.w * q.y - q.x * q.z))
+    local siny_cosp = 2 * (q.w * q.z + q.x * q.y)
+    local cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z)
     local x = atan2(sinr_cosp, cosr_cosp)
     local y = 2 * atan2(sinp, cosp) - inv_pi
     local z = atan2(siny_cosp, cosy_cosp)
     return x, y, z
+end
+
+local function from_direction(dir)
+    local angle = atan2(dir.z, dir.x) * 0.5
+    local qx = 0
+    local qy = sin(angle)
+    local qz = 0
+    local qw = cos(angle)
+    return rawnew(qx, qy, qz, qw)
 end
 
 local function dot(q, other)
@@ -176,6 +181,7 @@ local quat = setmetatable({
     from_axis_angle = from_axis_angle,
     from_euler = from_euler,
     to_euler = to_euler,
+    from_direction = from_direction,
     magnitude = magnitude,
     sqr_magnitude = sqr_magnitude,
     dot = dot,

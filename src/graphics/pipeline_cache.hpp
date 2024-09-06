@@ -8,8 +8,11 @@
 
 #include "shader.hpp"
 #include "pipeline_base.hpp"
+#include "../scripting/system_variable.hpp"
 
 namespace lu::graphics {
+    inline const system_variable<bool> sv_parallel_pipeline_creation { "renderer.parallel_pipeline_creation", true };
+
     class pipeline_cache final : public no_copy, public no_move {
     public:
         explicit pipeline_cache(vk::Device device);
@@ -34,10 +37,10 @@ namespace lu::graphics {
                 return static_cast<T&>(*m_pipelines.at(name));
             }
         }
-
+s
         template <typename T> requires std::is_base_of_v<pipeline_base, T>
         auto register_pipeline_async() -> void {
-            m_async_load_queue.emplace_back(std::async(std::launch::async, [this] () -> eastl::pair<eastl::string, eastl::unique_ptr<pipeline_base>> {
+            m_async_load_queue.emplace_back(std::async(sv_parallel_pipeline_creation() ? std::launch::async : std::launch::deferred, [this] () -> eastl::pair<eastl::string, eastl::unique_ptr<pipeline_base>> {
                 auto instance = eastl::make_unique<T>();
                 auto name = instance->name;
                 static_cast<pipeline_base&>(*instance).create(m_cache);

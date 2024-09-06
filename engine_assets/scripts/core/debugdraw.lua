@@ -1,4 +1,4 @@
--- Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+-- Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 ----------------------------------------------------------------------------
 --- debugdraw Module - Functions for debugging drawing and visualization.
@@ -10,12 +10,17 @@ local cpp = ffi.C
 
 ffi.cdef [[
     void __lu_dd_begin(void);
+    void __lu_dd_draw_line(lua_vec3 from, lua_vec3 to, lua_vec3 color);
+    void __lu_dd_draw_arrow(lua_vec3 from, lua_vec3 to, lua_vec3 color, double arrowhead_length);
+    void __lu_dd_draw_arrow_dir(lua_vec3 from, lua_vec3 dir, lua_vec3 color, double arrowhead_length);
+    void __lu_dd_draw_transform(lua_vec3 pos, lua_vec4 rot, double axis_len);
     void __lu_dd_grid(lua_vec3 dims, double step, lua_vec3 color);
     void __lu_dd_gizmo_enable(bool enable);
     void __lu_dd_gizmo_manipulator(lua_entity_id id, int op, int mode, bool enable_snap, double snap_x, lua_vec3 color);
     void __lu_dd_enable_depth_test(bool enable);
     void __lu_dd_enable_fade(bool enable);
     void __lu_dd_set_fade_distance(double near, double far);
+
     void __lu_dd_draw_scene_with_aabbs(lua_vec3 color);
     void __lu_dd_draw_physics_debug(void);
     void __lu_dd_draw_native_log(bool scroll);
@@ -61,6 +66,38 @@ debugdraw.gizmo_operation.universal = debugdraw.gizmo_operation.translate + debu
 --- Starts the debugdraw drawing. This function should be called at the beginning of the frame.
 function debugdraw.start()
     cpp.__lu_dd_begin()
+end
+
+--- Draws a transform gizmo.
+-- @tparam gmath.vec3 pos The position of the transform.
+-- @tparam gmath.vec4 rot The rotation quaternion of the transform.
+-- @tparam number axis_len The length of the axis.
+function debugdraw.draw_transform(pos, rot, axis_len)
+    cpp.__lu_dd_draw_transform(pos, rot, axis_len)
+end
+
+--- Draws a line in the scene.
+-- @tparam gmath.vec3 start The start position of the line.
+-- @tparam gmath.vec3 end The end position of the line.
+-- @tparam gmath.vec3 color The color of the line.
+function debugdraw.draw_line(from, to, color)
+    cpp.__lu_dd_draw_line(from, to, color)
+end
+
+--- Draws an arrow in the scene.
+-- @tparam gmath.vec3 start The start position of the arrow.
+-- @tparam gmath.vec3 end The end position of the arrow.
+-- @tparam gmath.vec3 color The color of the arrow.
+function debugdraw.draw_arrow(from, to, color, arrowhead_length)
+    cpp.__lu_dd_draw_arrow(from, to, color, arrowhead_length or 0.5)
+end
+
+--- Draws an arrow in the scene.
+-- @tparam gmath.vec3 from The start position of the arrow.
+-- @tparam gmath.vec3 dir The direction of the arrow.
+-- @tparam gmath.vec3 color The color of the arrow.
+function debugdraw.draw_arrow_dir(from, dir, color, arrowhead_length)
+    cpp.__lu_dd_draw_arrow_dir(from, dir, color, arrowhead_length or 0.5)
 end
 
 --- Draws a grid in the scene.

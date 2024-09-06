@@ -79,6 +79,7 @@ engine_cfg = {
         ['prefiltered_cube_samples'] = 32,
         ['concurrent_frames'] = 3,
         ['force_vsync'] = false, -- Enable vertical synchronization.
+        ['parallel_pipeline_creation'] = false
     },
     ['ui'] = { -- In-Game UI settings.
         ['render_flags'] = ui_render_flags.lcd + ui_render_flags.flip_y + ui_render_flags.ppaa, -- In-Game UI default render flags.

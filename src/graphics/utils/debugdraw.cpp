@@ -949,6 +949,38 @@ namespace lu::graphics {
         }
     }
 
+    auto debugdraw::draw_arrow(const XMFLOAT3& from, const XMFLOAT3& to, const XMFLOAT3& color, const float arrowhead_length) -> void {
+        draw_line(from, to, color);
+        XMVECTOR fromVec = XMLoadFloat3(&from);
+        XMVECTOR toVec = XMLoadFloat3(&to);
+        XMVECTOR dir = XMVectorSubtract(toVec, fromVec);
+        XMVECTOR dirNormalized = XMVector3Normalize(dir);
+        XMVECTOR arrowheadDir = XMVectorScale(dirNormalized, arrowhead_length);
+        XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+        XMVECTOR perp1 = XMVector3Cross(dirNormalized, up);
+        perp1 = XMVector3Normalize(perp1);
+        float angle_step = XM_PIDIV4;  // 45 degrees in radians
+        for (int i = 0; i < 16; ++i) {
+            XMVECTOR rotation = XMQuaternionRotationAxis(dirNormalized, angle_step * static_cast<float>(i));
+            XMVECTOR rotatedPerp = XMVector3Rotate(perp1, rotation);
+            XMVECTOR perpScaled = XMVectorScale(rotatedPerp, 0.1f);  // Adjust width of the arrowhead
+            XMVECTOR arrowheadPoint = XMVectorSubtract(toVec, arrowheadDir);
+            arrowheadPoint = XMVectorAdd(arrowheadPoint, perpScaled);
+            XMFLOAT3 arrowheadPointFloat;
+            XMStoreFloat3(&arrowheadPointFloat, arrowheadPoint);
+            draw_line(to, arrowheadPointFloat, color);
+        }
+    }
+
+    auto debugdraw::draw_arrow_dir(const XMFLOAT3& from, const XMFLOAT3& dir, const XMFLOAT3& color, const float arrowhead_length) -> void {
+        XMVECTOR fromVec = XMLoadFloat3(&from);
+        XMVECTOR dirVec = XMLoadFloat3(&dir);
+        XMVECTOR toVec = XMVectorAdd(fromVec, dirVec);
+        XMFLOAT3 to;
+        XMStoreFloat3(&to, toVec);
+        draw_arrow(from, to, color, arrowhead_length);
+    }
+
     auto debugdraw::draw_grid(const XMFLOAT3& pos, const float step, const XMFLOAT3& color) -> void {
         begin_batch();
         const float offset_x = std::floor(pos.x * step / 2.0f);

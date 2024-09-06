@@ -1,4 +1,4 @@
---- Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+--- Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 ----------------------------------------------------------------------------
 --- entity Module - entity class for the entity-component-system and entity management.

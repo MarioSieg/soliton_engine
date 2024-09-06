@@ -19,6 +19,32 @@ LUA_INTEROP_API auto __lu_dd_begin() -> void {
     ImGuizmo::SetDrawlist(ImGui::GetBackgroundDrawList());
 }
 
+LUA_INTEROP_API auto __lu_dd_draw_transform(const lua_vec3 pos, const lua_vec4 rot, const double axis_len) -> void {
+    const XMFLOAT3 position = pos;
+    const XMFLOAT4 rotation = rot;
+    const XMMATRIX transform = XMMatrixTransformation(
+            g_XMZero,
+            XMQuaternionIdentity(),
+            g_XMOne,
+            g_XMZero,
+            XMLoadFloat4(&rotation),
+            XMLoadFloat3(&position)
+    );
+    dd().draw_transform(transform, static_cast<float>(axis_len));
+}
+
+LUA_INTEROP_API auto __lu_dd_draw_line(const lua_vec3 from, const lua_vec3 to, const lua_vec3 color) -> void {
+    dd().draw_line(from, to, color);
+}
+
+LUA_INTEROP_API auto __lu_dd_draw_arrow(const lua_vec3 from, const lua_vec3 to, const lua_vec3 color, const double arrowhead_length) -> void {
+    dd().draw_arrow(from, to, color, static_cast<float>(arrowhead_length));
+}
+
+LUA_INTEROP_API auto __lu_dd_draw_arrow_dir(const lua_vec3 from, const lua_vec3 rot, const lua_vec3 color, const double arrowhead_length) -> void {
+    dd().draw_arrow_dir(from, rot, color, static_cast<float>(arrowhead_length));
+}
+
 LUA_INTEROP_API auto __lu_dd_grid(const lua_vec3 pos, const double step, const lua_vec3 color) -> void {
     dd().draw_grid(pos, static_cast<float>(step), color);
 }

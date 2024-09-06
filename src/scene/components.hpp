@@ -40,12 +40,11 @@ namespace lu::com {
         }
 
         [[nodiscard]] auto XM_CALLCONV compute_matrix() const noexcept -> XMMATRIX {
-            const XMVECTOR zero { XMVectorZero() };
             return XMMatrixTransformation(
-                zero,
+                g_XMZero,
                 XMQuaternionIdentity(),
                 XMLoadFloat4(&this->scale),
-                zero,
+                g_XMZero,
                 XMLoadFloat4(&this->rotation),
                 XMLoadFloat4(&this->position)
             );

@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------
 -- Lunam Engine Vector3 gmath Module
 --
--- Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+-- Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 ------------------------------------------------------------------------------
 -- Vector3 which is also used RGB color.
 ------------------------------------------------------------------------------
@@ -324,7 +324,7 @@ local function smooth_damp(current, target, velocity, smooth_t, max_speed, delta
     smooth_t = max(0.0001, smooth_t)
     local omega = 2.0 / smooth_t
     local x = omega * delta_t
-    local exp = 1.0 / (1.0 + x + 0.48*x*x + 0.235*x*x*x)
+    local exp = 1.0 / (1.0 + x + 0.48 * x * x + 0.235 * x * x *x)
     local change_x = current.x - target.x
     local change_y = current.y - target.y
     local change_z = current.z - target.z
@@ -334,35 +334,35 @@ local function smooth_damp(current, target, velocity, smooth_t, max_speed, delta
     local sqr_mag = change_x * change_x + change_y * change_y + change_z * change_z
     if sqr_mag > max_delta_sq then
         local mag = sqrt(sqr_mag)
-        change_x = change_x/mag*max_delta
-        change_y = change_y/mag*max_delta
-        change_z = change_z/mag*max_delta
+        change_x = change_x / mag * max_delta
+        change_y = change_y / mag * max_delta
+        change_z = change_z / mag * max_delta
     end
     target.x = current.x - change_x
     target.y = current.y - change_y
     target.z = current.z - change_z
-    local temp_x = (velocity.x + omega*change_x)*delta_t
-    local temp_y = (velocity.y + omega*change_y)*delta_t
-    local temp_z = (velocity.z + omega*change_z)*delta_t
-    velocity.x = (velocity.x - omega*temp_x)*exp
-    velocity.y = (velocity.y - omega*temp_y)*exp
-    velocity.z = (velocity.z - omega*temp_z)*exp
-    out_x = target.x + (change_x + temp_x)*exp
-    out_y = target.y + (change_y + temp_y)*exp
-    out_z = target.z + (change_z + temp_z)*exp
+    local temp_x = (velocity.x + omega * change_x) * delta_t
+    local temp_y = (velocity.y + omega * change_y) * delta_t
+    local temp_z = (velocity.z + omega * change_z) * delta_t
+    velocity.x = (velocity.x - omega * temp_x) * exp
+    velocity.y = (velocity.y - omega * temp_y) * exp
+    velocity.z = (velocity.z - omega * temp_z) * exp
+    out_x = target.x + (change_x + temp_x) * exp
+    out_y = target.y + (change_y + temp_y) * exp
+    out_z = target.z + (change_z + temp_z) * exp
     local orig_delta_x = origin.x - current.x
     local orig_delta_y = origin.y - current.y
     local orig_delta_z = origin.z - current.z
     local out_delta_x = out_x - origin.x
     local out_delta_y = out_y - origin.y
     local out_delta_z = out_z - origin.z
-    if orig_delta_x*out_delta_x + orig_delta_y*out_delta_y + orig_delta_z*out_delta_z > 0 then
+    if orig_delta_x * out_delta_x + orig_delta_y * out_delta_y + orig_delta_z * out_delta_z > 0 then
         out_x = origin.x
         out_y = origin.y
         out_z = origin.z
-        velocity.x = (out_x - origin.x)/delta_t
-        velocity.y = (out_y - origin.y)/delta_t
-        velocity.z = (out_z - origin.z)/delta_t
+        velocity.x = (out_x - origin.x) / delta_t
+        velocity.y = (out_y - origin.y) / delta_t
+        velocity.z = (out_z - origin.z) / delta_t
     end
     return rawnew(out_x, out_y, out_z), velocity
 end

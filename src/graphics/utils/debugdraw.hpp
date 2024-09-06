@@ -52,6 +52,8 @@ namespace lu::graphics {
         }
 
         auto draw_line(const XMFLOAT3& from, const XMFLOAT3& to, const XMFLOAT3& color) -> void;
+        auto draw_arrow(const XMFLOAT3& from, const XMFLOAT3& to, const XMFLOAT3& color, float arrowhead_length) -> void;
+        auto draw_arrow_dir(const XMFLOAT3& from, const XMFLOAT3& dir, const XMFLOAT3& color, float arrowhead_length) -> void;
         auto draw_grid(const XMFLOAT3& pos, float step, const XMFLOAT3& color) -> void;
         auto draw_aabb(const XMFLOAT3& min, const XMFLOAT3& max, const XMFLOAT3& color) -> void;
         auto draw_aabb(const BoundingBox& aabb, const XMFLOAT3& color) -> void;

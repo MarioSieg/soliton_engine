@@ -11,6 +11,7 @@ local app = require 'app'
 local time = require 'time'
 local debugdraw = require 'debugdraw'
 local vec3 = require 'vec3'
+local quat = require 'quat'
 local scene = require 'scene'
 local input = require 'input'
 local components = require 'components'
@@ -113,6 +114,7 @@ local editor = {
     },
     gizmos = {
         show_grid = true,
+        show_center_axis = true,
         grid_step = 1.0,
         grid_dims = vec3(256, 0, 256),
         grid_color = vec3(0.7, 0.7, 0.7),
@@ -161,6 +163,9 @@ function editor.gizmos:draw_gizmos()
         debugdraw.set_fade_range(self.grid_fade_start, self.grid_fade_start+self.grid_fade_end)
         debugdraw.draw_grid(self.grid_dims, self.grid_step, self.grid_color)
         debugdraw.enable_fade(false)
+    end
+    if self.show_center_axis then
+        debugdraw.draw_transform(vec3.zero, quat.identity, 1.0)
     end
 end
 
@@ -294,8 +299,8 @@ function editor:draw_main_menu_bar()
             if ui.MenuItem(icons.i_ruler_triangle .. ' Show Grid', nil, self.gizmos.show_grid) then
                 self.gizmos.show_grid = not self.gizmos.show_grid
             end
-            if ui.MenuItem(icons.i_arrow_up .. ' Show Center Axis', nil, self.gizmos.showCenterAxis) then
-                self.gizmos.showCenterAxis = not self.gizmos.showCenterAxis
+            if ui.MenuItem(icons.i_arrow_up .. ' Show Center Axis', nil, self.gizmos.show_center_axis) then
+                self.gizmos.show_center_axis = not self.gizmos.show_center_axis
             end
             ui.EndMenu()
         end

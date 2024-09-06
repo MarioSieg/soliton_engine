@@ -61,8 +61,8 @@ function camera:_update()
 end
 
 function camera:_compute_rotation()
-    local sens = gmath.abs(self.sensitivity) * 0.01
-    local clamp_y_rad = gmath.rad(gmath.abs(self.clamp_y))
+    local sens = math.abs(self.sensitivity) * 0.01
+    local clamp_y_rad = math.rad(math.abs(self.clamp_y))
     local mouse_pos = input.get_mouse_position()
 
     local delta = mouse_pos
@@ -89,11 +89,11 @@ end
 
 function camera:_compute_position()
     local delta = time.delta_time
-    local speed = gmath.abs(self.default_movement_speed)
+    local speed = math.abs(self.default_movement_speed)
 
     if self.enable_fast_movement then
         if input.is_key_pressed(input.keys.left_shift) then -- are we moving fast (sprinting?)
-            speed = gmath.abs(self.fast_movement_speed)
+            speed = math.abs(self.fast_movement_speed)
         end
     end
 
@@ -123,7 +123,7 @@ function camera:_compute_position()
     end
 
     if self.enable_smooth_movement then -- smooth movement
-        local _position, _velocity = vec3.smooth_damp(self._position, target, self._velocity, self.smooth_movement_time, gmath.infinity, delta) -- smooth damp and apply delta time
+        local _position, _velocity = vec3.smooth_damp(self._position, target, self._velocity, self.smooth_movement_time, math.huge, delta) -- smooth damp and apply delta time
         self._position = _position
         -- self._velocity = vec3.clamp(self._velocity, -speed, speed)
     else -- raw movement
