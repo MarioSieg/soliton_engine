@@ -25,7 +25,7 @@ namespace lu::graphics {
     }
 
     shared_buffers::~shared_buffers() {
-        vkb::vkdvc().destroyDescriptorSetLayout(m_layout, vkb::get_alloc());
+        vkb::vkdvc().destroy(m_layout, vkb::get_alloc());
     }
 
     auto shared_buffers::get() -> shared_buffers& {
