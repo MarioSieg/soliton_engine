@@ -6,23 +6,11 @@ local utils = require 'editor.utils'
 local app = require 'app'
 local ui = require 'imgui.imgui'
 local icons = require 'imgui.icons'
-local time = require('time')
+local time = require 'time'
 
 local max_subsystem_count = 16
-
-local profiler = {
-    name = icons.i_clock .. ' Profiler',
-    is_visible = ffi.new('bool[1]', true),
-    is_profiler_running = false,
-    _subsystem_count = 0,
-    _subsystem_names = ffi.new('const char*[?]', max_subsystem_count),
-    _pre_tick_times = ffi.new('double[?]', max_subsystem_count),
-    _tick_times = ffi.new('double[?]', max_subsystem_count),
-    _post_tick_times = ffi.new('double[?]', max_subsystem_count),
-}
-
-profiler._subsystem_count = app._get_subsystem_names(profiler._subsystem_names, max_subsystem_count)
-
+local plot_samples = 128
+local per_subsystem_sample_idx = 0
 local profiled_callstack = {}
 local timings = {
     [15]    = '15 Seconds',
@@ -33,11 +21,27 @@ local timings = {
     [60 ^ 2]  = '1 Hour'
 }
 local width = #timings[30] * 12.0
-
 local time_limit = 30
 local start_time = 0.0
 local fps_plot = {}
 local fps_avg = 0.0
+
+local profiler = {
+    name = icons.i_clock .. ' Profiler',
+    is_visible = ffi.new('bool[1]', true),
+    is_profiler_running = false,
+    _subsystem_count = 0,
+    _subsystem_names = ffi.new('const char*[?]', max_subsystem_count),
+    _pre_tick_times = ffi.new('double[?]', max_subsystem_count),
+    _tick_times = ffi.new('double[?]', max_subsystem_count),
+    _post_tick_times = ffi.new('double[?]', max_subsystem_count),
+    _total_tick_time_per_subsystem = {},
+}
+
+profiler._subsystem_count = app._get_subsystem_names(profiler._subsystem_names, max_subsystem_count)
+for i = 0, profiler._subsystem_count - 1 do
+    profiler._total_tick_time_per_subsystem[ffi.string(profiler._subsystem_names[i])] = ffi.new('double[?]', plot_samples)
+end
 
 function profiler:_render_histogram_tab()
     if ui.BeginTabItem(icons.i_bezier_curve .. ' Histogram') then
@@ -71,6 +75,7 @@ function profiler:_render_general_tab()
 end
 
 function profiler:_render_subsystems_tab()
+    per_subsystem_sample_idx = (per_subsystem_sample_idx + 1) % plot_samples
     if ui.BeginTabItem(icons.i_cogs .. ' Subsystems') then
         app._get_subsystem_pre_tick_times(self._pre_tick_times, max_subsystem_count)
         app._get_subsystem_tick_times(self._tick_times, max_subsystem_count)
@@ -91,6 +96,7 @@ function profiler:_render_subsystems_tab()
                 local post_tick_ms = self._post_tick_times[i]
                 local total_ms = pre_tick_ms + tick_ms + post_tick_ms
                 total_ms_all_subsystems = total_ms_all_subsystems + total_ms
+                self._total_tick_time_per_subsystem[name][per_subsystem_sample_idx] = total_ms
             end
             for i = 0, self._subsystem_count - 1 do
                 local name = ffi.string(self._subsystem_names[i])
@@ -115,6 +121,22 @@ function profiler:_render_subsystems_tab()
             end
         end
         ui.EndTable()
+        ui.Separator()
+        ui.Separator()
+        if ui.ImPlot_BeginPlot("Subsystem Total Times") then
+            ui.ImPlot_SetupAxes("Subsystems", "Total Time (ms)", ImPlotAxisFlags_NoTickLabels, ImPlotAxisFlags_NoTickLabels)
+            for i = 0, self._subsystem_count - 1 do
+                local name = ffi.string(self._subsystem_names[i])
+                ui.ImPlot_PlotLine(
+                    name,
+                    self._total_tick_time_per_subsystem[name],
+                    plot_samples,
+                    per_subsystem_sample_idx,
+                    0
+                )
+            end
+            ui.ImPlot_EndPlot()
+        end
         ui.EndTabItem()
     end
 end
