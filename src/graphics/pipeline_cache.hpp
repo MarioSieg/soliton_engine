@@ -37,7 +37,7 @@ namespace lu::graphics {
                 return static_cast<T&>(*m_pipelines.at(name));
             }
         }
-s
+
         template <typename T> requires std::is_base_of_v<pipeline_base, T>
         auto register_pipeline_async() -> void {
             m_async_load_queue.emplace_back(std::async(sv_parallel_pipeline_creation() ? std::launch::async : std::launch::deferred, [this] () -> eastl::pair<eastl::string, eastl::unique_ptr<pipeline_base>> {
