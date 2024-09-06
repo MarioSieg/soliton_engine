@@ -180,7 +180,3 @@ LUA_INTEROP_API auto __lu_dd_draw_native_log(const bool scroll) -> void {
     }
     EndChild();
 }
-
-LUA_INTEROP_API auto __lu_dd_draw_native_profiler() -> void {
-    panic("not implemented");
-}

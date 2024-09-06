@@ -30,13 +30,33 @@ namespace lu {
         }
 
         // time spent on this subsystem last time window was resized
-        [[nodiscard]] auto last_resize_time() const noexcept -> eastl::chrono::nanoseconds {
-            return m_last_resize_time;
+        [[nodiscard]] auto prev_resize_time() const noexcept -> eastl::chrono::nanoseconds {
+            return m_prev_resize_time;
         }
 
         // time spent on this subsystem last time start() was called for a new scene
-        [[nodiscard]] auto last_on_start_time() const noexcept -> eastl::chrono::nanoseconds {
-            return m_last_on_start_time;
+        [[nodiscard]] auto prev_on_start_time() const noexcept -> eastl::chrono::nanoseconds {
+            return m_prev_on_start_time;
+        }
+
+        // time spent on this subsystem last time pre_tick() was called
+        [[nodiscard]] auto prev_pre_tick_time() const noexcept -> eastl::chrono::nanoseconds {
+            return m_prev_pre_tick_time;
+        }
+
+        // time spent on this subsystem last time tick() was called
+        [[nodiscard]] auto prev_tick_time() const noexcept -> eastl::chrono::nanoseconds {
+            return m_prev_tick_time;
+        }
+
+        // time spent on this subsystem last time post_tick() was called
+        [[nodiscard]] auto prev_post_tick_time() const noexcept -> eastl::chrono::nanoseconds {
+            return m_prev_post_tick_time;
+        }
+
+        // time spent on this subsystem last time any of the tick functions was called
+        [[nodiscard]] auto prev_tick_time_total() const noexcept -> eastl::chrono::nanoseconds {
+            return m_prev_pre_tick_time + m_prev_tick_time + m_prev_post_tick_time;
         }
 
     protected:
@@ -56,7 +76,10 @@ namespace lu {
         static inline constinit std::atomic_uint32_t s_id_gen = 1;
         eastl::chrono::nanoseconds m_boot_time {};
         eastl::chrono::nanoseconds m_prepare_time {};
-        eastl::chrono::nanoseconds m_last_resize_time {};
-        eastl::chrono::nanoseconds m_last_on_start_time {};
+        eastl::chrono::nanoseconds m_prev_resize_time {};
+        eastl::chrono::nanoseconds m_prev_on_start_time {};
+        eastl::chrono::nanoseconds m_prev_pre_tick_time {};
+        eastl::chrono::nanoseconds m_prev_tick_time {};
+        eastl::chrono::nanoseconds m_prev_post_tick_time {};
     };
 }

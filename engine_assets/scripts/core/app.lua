@@ -41,6 +41,10 @@ ffi.cdef [[
     const char* __lu_app_open_file_dialog(const char *file_type, const char* filters, const char* default_path);
     const char* __lu_app_open_folder_dialog(const char* default_path);
     uint32_t __lu_app_host_get_num_cpus(void);
+    uint32_t __lu_app_get_subsystem_names(const char **data, int size);
+    void __lu_app_get_subsystem_pre_tick_times(double *data, int size);
+    void __lu_app_get_subsystem_tick_times(double *data, int size);
+    void __lu_app_get_subsystem_post_tick_times(double *data, int size);
 ]]
 
 --- app Module
@@ -251,6 +255,26 @@ end
 -- @tparam string default_path Default path to open the folder dialog
 function app.utils.open_folder_dialog(default_path)
     return ffi.string(cpp.__lu_app_open_folder_dialog(default_path or ''))
+end
+
+--- Internal use only
+function app._get_subsystem_names(buf, size)
+    return cpp.__lu_app_get_subsystem_names(buf, size)
+end
+
+--- Internal use only
+function app._get_subsystem_pre_tick_times(buf, size)
+    cpp.__lu_app_get_subsystem_pre_tick_times(buf, size)
+end
+
+--- Internal use only
+function app._get_subsystem_tick_times(buf, size)
+    cpp.__lu_app_get_subsystem_tick_times(buf, size)
+end
+
+--- Internal use only
+function app._get_subsystem_post_tick_times(buf, size)
+    cpp.__lu_app_get_subsystem_post_tick_times(buf, size)
 end
 
 app.window.set_platform_title()

@@ -59,7 +59,7 @@ function terminal:render()
                 ui.EndTabItem()
             end
             if ui.BeginTabItem(icons.i_cogs .. ' System') then
-                ffi.C.__lu_dd_draw_native_log(self.scroll_flags[1])
+                ffi.C.__lu_dd__draw_native_log(self.scroll_flags[1])
                 if self.scroll_flags[1] then
                     self.scroll_flags[1] = false
                 end

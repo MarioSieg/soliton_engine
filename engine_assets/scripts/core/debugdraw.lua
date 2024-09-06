@@ -156,13 +156,8 @@ function debugdraw.draw_all_physics_shapes()
 end
 
 --- Draws the native log. (Internally Used by the editor, do NOT call this function directly!)
-function debugdraw.draw_native_log(scroll)
+function debugdraw._draw_native_log(scroll)
     cpp.__lu_dd_draw_native_log(scroll)
-end
-
---- Draws the native profiler. (Internally Used by the editor, do NOT call this function directly!)
-function debugdraw.draw_native_profiler()
-    cpp.__lu_dd_draw_native_profiler()
 end
 
 return debugdraw

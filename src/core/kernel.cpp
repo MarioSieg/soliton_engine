@@ -217,8 +217,8 @@ static auto redirect_io() -> void {
         for (auto&& sys : m_subsystems) {
             const stopwatch clock {};
             sys->on_start(scene);
-            sys->m_last_on_start_time = clock.elapsed<nanoseconds>();
-            log_info("Scene start time of subsystem '{}': {:.03f} s", sys->name, duration_cast<duration<double>>(sys->m_last_on_start_time).count());
+            sys->m_prev_on_start_time = clock.elapsed<nanoseconds>();
+            log_info("Scene start time of subsystem '{}': {:.03f} s", sys->name, duration_cast<duration<double>>(sys->m_prev_on_start_time).count());
         }
         log_info("Scene start time of engine: {:.03f} s", clock_total.elapsed_secs());
     }
@@ -247,13 +247,22 @@ static auto redirect_io() -> void {
         g_delta_time = duration_cast<duration<double>>(duration_cast<high_resolution_clock::duration>(now - prev)).count();
         prev = now;
         g_time += g_delta_time;
-        for (auto&& sys : m_subsystems)
-            if (!sys->on_pre_tick()) [[unlikely]]
-                return false;
-        for (auto&& sys : m_subsystems)
+        for (auto&& sys : m_subsystems) {
+            const stopwatch clock {};
+            if (!sys->on_pre_tick()) [[unlikely]] return false;
+            sys->m_prev_pre_tick_time = clock.elapsed<nanoseconds>();
+        }
+        for (auto&& sys : m_subsystems) {
+            const stopwatch clock {};
             sys->on_tick();
-        for (auto&& i = m_subsystems.rbegin(); i != m_subsystems.rend(); ++i)
-            (**i).on_post_tick();
+            sys->m_prev_tick_time = clock.elapsed<nanoseconds>();
+        }
+        for (auto&& i = m_subsystems.rbegin(); i != m_subsystems.rend(); ++i) {
+            const auto& sys = *i;
+            const stopwatch clock {};
+            sys->on_post_tick();
+            sys->m_prev_post_tick_time = clock.elapsed<nanoseconds>();
+        }
         ++m_frame;
         return g_kernel_online;
     }
@@ -263,8 +272,8 @@ static auto redirect_io() -> void {
         for (auto&& sys : m_subsystems) {
             stopwatch clock {};
             sys->on_resize();
-            sys->m_last_resize_time = clock.elapsed<nanoseconds>();
-            log_info("Resize time of subsystem '{}': {:.03f} s", sys->name, duration_cast<duration<double>>(sys->m_last_resize_time).count());
+            sys->m_prev_resize_time = clock.elapsed<nanoseconds>();
+            log_info("Resize time of subsystem '{}': {:.03f} s", sys->name, duration_cast<duration<double>>(sys->m_prev_resize_time).count());
         }
         log_info("Resize time of engine: {:.03f} s", clock_total.elapsed_secs());
     }
