@@ -102,22 +102,6 @@ function time_cycle:get_season_string()
     end
 end
 
-function time_cycle:_advance()
-    if self.debug_draw then
-        debugdraw.draw_arrow_dir(vec3.zero, -self._sun_dir * 5.0, colors.yellow)
-    end
-    if not self.freeze_time then
-        self.date.time = self.date.time + time.delta_time * self.time_cycle_scale
-        if self.freeze_date then
-            self.date.time = self.date.time % 24.0 -- Wrap time around 24 hour day if date is frozen
-        end
-        self:update_with_time(self.date.time)
-    end
-    if not self.freeze_date then
-        self:_advance_date()
-    end
-end
-
 function time_cycle:is_hour_passed(hour)
     return self.date.time >= hour
 end
@@ -137,6 +121,22 @@ end
 function time_cycle:update_with_time(time_hour_24)
     self:_compute_sun_orbit()
     self:_compute_sun_dir(gmath.clamp(time_hour_24, 0, 24) - 12)
+end
+
+function time_cycle:_advance()
+    if self.debug_draw then
+        debugdraw.draw_arrow_dir(vec3.zero, -self._sun_dir * 5.0, colors.yellow)
+    end
+    if not self.freeze_time then
+        self.date.time = self.date.time + time.delta_time * self.time_cycle_scale
+        if self.freeze_date then
+            self.date.time = self.date.time % 24.0 -- Wrap time around 24 hour day if date is frozen
+        end
+        self:update_with_time(self.date.time)
+    end
+    if not self.freeze_date then
+        self:_advance_date()
+    end
 end
 
 function time_cycle:_advance_date()
@@ -280,7 +280,6 @@ end
 
 function scene._update()
     scene.time_cycle:_advance()
-    print(scene.time_cycle:get_date_time_string())
     cpp.__lu_scene_tick()
 end
 
