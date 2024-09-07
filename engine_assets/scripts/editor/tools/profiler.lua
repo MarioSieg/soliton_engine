@@ -1,15 +1,19 @@
 -- Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
 
 local ffi = require 'ffi'
+local bit = require 'bit'
 local profile = require 'jit.p'
 local utils = require 'editor.utils'
 local app = require 'app'
 local ui = require 'imgui.imgui'
 local icons = require 'imgui.icons'
 local time = require 'time'
+local utility = require 'utility'
 
-local max_subsystem_count = 16
-local plot_samples = 128
+local max = math.max
+local lshift = bit.lshift
+
+local plot_samples = 1024
 local per_subsystem_sample_idx = 0
 local profiled_callstack = {}
 local timings = {
@@ -25,22 +29,37 @@ local time_limit = 30
 local start_time = 0.0
 local fps_plot = {}
 local fps_avg = 0.0
+local subsys_count = 0
+local subsys_ring_buffer_size = 32
+local subsys_max_count = 16
+local subsys_show_avg_times = ffi.new('bool[1]', true)
+local subsys_show_us_times = ffi.new('bool[1]', false)
+local subsys_names = ffi.new('const char*[?]', subsys_max_count)
+local subsys_pretick_times = ffi.new('double[?]', subsys_max_count)
+local subsys_tick_times = ffi.new('double[?]', subsys_max_count)
+local subsys_post_tick_times = ffi.new('double[?]', subsys_max_count)
+local subsys_pre_tick_times_avg = {}
+local subsys_tick_times_avg = {}
+local subsys_post_tick_times_avg = {}
+local subsys_percent_avg = {}
+local subsys_total_tick_times = {}
+local subsys_all_systems_total = utility.ring_buffer:new(subsys_ring_buffer_size)
+local autofit_flags = lshift(1, 5) + lshift(1, 3) -- ui.ImPlotFlags_NoBoxSelect | ui.ImPlotFlags_NoInput, these are not defined for some reason. TODO: fix
 
 local profiler = {
     name = icons.i_clock .. ' Profiler',
     is_visible = ffi.new('bool[1]', true),
-    is_profiler_running = false,
-    _subsystem_count = 0,
-    _subsystem_names = ffi.new('const char*[?]', max_subsystem_count),
-    _pre_tick_times = ffi.new('double[?]', max_subsystem_count),
-    _tick_times = ffi.new('double[?]', max_subsystem_count),
-    _post_tick_times = ffi.new('double[?]', max_subsystem_count),
-    _total_tick_time_per_subsystem = {},
+    is_profiler_running = false
 }
 
-profiler._subsystem_count = app._get_subsystem_names(profiler._subsystem_names, max_subsystem_count)
-for i = 0, profiler._subsystem_count - 1 do
-    profiler._total_tick_time_per_subsystem[ffi.string(profiler._subsystem_names[i])] = ffi.new('double[?]', plot_samples)
+subsys_count = app._get_subsystem_names(subsys_names, subsys_max_count)
+for i = 0, subsys_count - 1 do
+    local name = ffi.string(subsys_names[i])
+    subsys_pre_tick_times_avg[name] = utility.ring_buffer:new(subsys_ring_buffer_size)
+    subsys_tick_times_avg[name] = utility.ring_buffer:new(subsys_ring_buffer_size)
+    subsys_post_tick_times_avg[name] = utility.ring_buffer:new(subsys_ring_buffer_size)
+    subsys_percent_avg[name] = utility.ring_buffer:new(subsys_ring_buffer_size)
+    subsys_total_tick_times[name] = ffi.new('double[?]', plot_samples)
 end
 
 function profiler:_render_histogram_tab()
@@ -77,62 +96,84 @@ end
 function profiler:_render_subsystems_tab()
     per_subsystem_sample_idx = (per_subsystem_sample_idx + 1) % plot_samples
     if ui.BeginTabItem(icons.i_cogs .. ' Subsystems') then
-        app._get_subsystem_pre_tick_times(self._pre_tick_times, max_subsystem_count)
-        app._get_subsystem_tick_times(self._tick_times, max_subsystem_count)
-        app._get_subsystem_post_tick_times(self._post_tick_times, max_subsystem_count)
+        app._get_subsystem_pre_tick_times(subsys_pretick_times, subsys_max_count)
+        app._get_subsystem_tick_times(subsys_tick_times, subsys_max_count)
+        app._get_subsystem_post_tick_times(subsys_post_tick_times, subsys_max_count)
+        ui.Checkbox(string.format('Avg. Timings (%d Samples)', subsys_ring_buffer_size), subsys_show_avg_times)
+        ui.SameLine()
+        ui.Checkbox('Use Microseconds', subsys_show_us_times)
+        ui.SameLine()
+        ui.Separator()
+        ui.TextUnformatted(string.format('All Subsystems Avg. Total: %.03f ms', subsys_all_systems_total:avg()))
+        local avg_times = subsys_show_avg_times[0]
+        local max_time_needed = 0
         if ui.BeginTable('##subsystems_table', 6, ffi.C.ImGuiTableFlags_Borders) then
             ui.TableSetupColumn('Subsystem')
             ui.TableSetupColumn('Pre-Tick')
             ui.TableSetupColumn('Tick')
             ui.TableSetupColumn('Post-Tick')
-            ui.TableSetupColumn('Total of Subsystem')
-            ui.TableSetupColumn('Percent of All')
+            ui.TableSetupColumn('Subsystem Total Time')
+            ui.TableSetupColumn('Frame Total Percent')
             ui.TableHeadersRow()
-            local total_ms_all_subsystems = 0.0
-            for i = 0, self._subsystem_count - 1 do
-                local name = ffi.string(self._subsystem_names[i])
-                local pre_tick_ms = self._pre_tick_times[i]
-                local tick_ms = self._tick_times[i]
-                local post_tick_ms = self._post_tick_times[i]
+            local total_ms_all_subsystems = 0
+            local unit = subsys_show_us_times[0] and 'us' or 'ms'
+            local unit_div = subsys_show_us_times[0] and 1000 or 1
+            for i = 0, subsys_count - 1 do
+                local name = ffi.string(subsys_names[i])
+                local pre_tick_ms = subsys_pretick_times[i]
+                local tick_ms = subsys_tick_times[i]
+                local post_tick_ms = subsys_post_tick_times[i]
                 local total_ms = pre_tick_ms + tick_ms + post_tick_ms
+                max_time_needed = max(max_time_needed, total_ms)
+                subsys_pre_tick_times_avg[name]:push(pre_tick_ms)
+                subsys_tick_times_avg[name]:push(tick_ms)
+                subsys_post_tick_times_avg[name]:push(post_tick_ms)
                 total_ms_all_subsystems = total_ms_all_subsystems + total_ms
-                self._total_tick_time_per_subsystem[name][per_subsystem_sample_idx] = total_ms
+                subsys_total_tick_times[name][per_subsystem_sample_idx] = total_ms
             end
-            for i = 0, self._subsystem_count - 1 do
-                local name = ffi.string(self._subsystem_names[i])
-                local pre_tick_ms = self._pre_tick_times[i]
-                local tick_ms = self._tick_times[i]
-                local post_tick_ms = self._post_tick_times[i]
+            subsys_all_systems_total:push(total_ms_all_subsystems)
+            for i = 0, subsys_count - 1 do
+                local name = ffi.string(subsys_names[i])
+                local pre_tick_ms = avg_times and subsys_pre_tick_times_avg[name]:avg() or subsys_pretick_times[i]
+                local tick_ms = avg_times and subsys_tick_times_avg[name]:avg() or subsys_tick_times[i]
+                local post_tick_ms = avg_times and subsys_post_tick_times_avg[name]:avg() or subsys_post_tick_times[i]
                 local total_ms = pre_tick_ms + tick_ms + post_tick_ms
-                local percent_of_all = total_ms / total_ms_all_subsystems * 100.0
+                local percent_of_all = subsys_total_tick_times[name][per_subsystem_sample_idx] / total_ms_all_subsystems * 100.0
                 ui.TableNextRow()
                 ui.TableSetColumnIndex(0)
-                ui.Text(name)
+                ui.TextUnformatted(name)
                 ui.TableSetColumnIndex(1)
-                ui.Text(string.format('%.3f ms', pre_tick_ms))
+                ui.TextUnformatted(string.format('%.03f %s', pre_tick_ms * unit_div, unit))
                 ui.TableSetColumnIndex(2)
-                ui.Text(string.format('%.3f ms', tick_ms))
+                ui.TextUnformatted(string.format('%.03f %s', tick_ms * unit_div, unit))
                 ui.TableSetColumnIndex(3)
-                ui.Text(string.format('%.3f ms', post_tick_ms))
+                ui.TextUnformatted(string.format('%.03f %s', post_tick_ms * unit_div, unit))
                 ui.TableSetColumnIndex(4)
-                ui.Text(string.format('%.3f ms', total_ms))
+                ui.TextUnformatted(string.format('%.03f %s', total_ms * unit_div, unit))
                 ui.TableSetColumnIndex(5)
-                ui.Text(string.format('%.2f%%', percent_of_all))
+                ui.TextUnformatted(string.format('%.2f%%', percent_of_all))
             end
         end
         ui.EndTable()
         ui.Separator()
         ui.Separator()
-        if ui.ImPlot_BeginPlot("Subsystem Total Times") then
-            ui.ImPlot_SetupAxes("Subsystems", "Total Time (ms)", ImPlotAxisFlags_NoTickLabels, ImPlotAxisFlags_NoTickLabels)
-            for i = 0, self._subsystem_count - 1 do
-                local name = ffi.string(self._subsystem_names[i])
-                ui.ImPlot_PlotLine(
+        if ui.ImPlot_BeginPlot("Subsystem Total Times", nil, autofit_flags) then
+            ui.ImPlot_SetNextAxesToFit()
+            ui.ImPlot_SetupAxes("Subsystems", "Total Time (ms)", ui.ImPlotAxisFlags_NoTickLabels, ui.ImPlotAxisFlags_NoTickLabels)
+            local indices = {}
+            for i = 0, subsys_count - 1 do
+                table.insert(indices, i)
+            end
+            table.sort(indices, function(a, b)
+                return subsys_total_tick_times[ffi.string(subsys_names[a])][per_subsystem_sample_idx]
+                    > subsys_total_tick_times[ffi.string(subsys_names[b])][per_subsystem_sample_idx]
+            end)
+            for i = 1, #indices do
+                local name = ffi.string(subsys_names[indices[i]])
+                ui.ImPlot_PlotBars(
                     name,
-                    self._total_tick_time_per_subsystem[name],
-                    plot_samples,
-                    per_subsystem_sample_idx,
-                    0
+                    subsys_total_tick_times[name],
+                    plot_samples
                 )
             end
             ui.ImPlot_EndPlot()
