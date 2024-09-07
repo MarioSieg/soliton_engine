@@ -112,6 +112,9 @@ engine_cfg = {
         -- number then these contacts will be ignored and bodies will start interpenetrating / fall through the world.
         ['max_contacts'] = 2 ^ 16,
     },
+    ['audio'] = {
+        ['max_channels'] = 1024
+    },
     ['editor'] = { -- Editor UI settings.
         ['font_size'] = 18, -- Font size
         ['style'] = {
