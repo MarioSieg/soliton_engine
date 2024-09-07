@@ -65,7 +65,14 @@ namespace lu::vkb {
         virtual ~uniform_buffer() override = default;
 
         auto set(const T& data) const noexcept -> void {
-            upload_data(&data, sizeof(data), m_aligned_size * vkb::ctx().get_current_concurrent_frame_idx());
+            const auto offset = m_aligned_size * vkb::ctx().get_current_concurrent_frame_idx();
+            upload_data(&data, sizeof(T), offset);
+            if constexpr (DEBUG) {
+                passert(
+                    (std::bit_cast<std::uintptr_t>(m_mapped) + offset)
+                    % vkb::dvc().get_physical_device_props().limits.minUniformBufferOffsetAlignment == 0
+                );
+            }
         }
 
         [[nodiscard]] inline auto get_dynamic_aligned_size() const noexcept -> std::size_t { return m_aligned_size; }
