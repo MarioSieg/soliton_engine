@@ -8,7 +8,7 @@ namespace lu::graphics {
         vkb::descriptor_factory factory {vkb::ctx().descriptor_factory_begin()};
         vk::DescriptorBufferInfo info {
             .buffer = per_frame_ubo.get_buffer(),
-            .offset = 0,
+            .offset = per_frame_ubo.get_dynamic_aligned_size() * vkb::ctx().get_current_concurrent_frame_idx(),
             .range = per_frame_ubo.get_dynamic_aligned_size()
         };
         constexpr auto stages {

@@ -538,6 +538,7 @@ namespace lu::vkb {
     }
 
     auto context::compute_aligned_dynamic_ubo_size(const std::size_t size) noexcept -> std::size_t {
+        return size;
         const std::size_t min_align = m_device->get_physical_device_props().limits.minUniformBufferOffsetAlignment;
         if (!min_align) return size;
         const std::size_t mask = min_align-1;

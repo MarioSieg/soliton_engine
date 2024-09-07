@@ -60,13 +60,12 @@ namespace lu::vkb {
             0,
             buffer_usage,
             memory_usage,
-            create_flags // TODO: host-write sequencial memory bit?
+            create_flags
         }, m_aligned_size{vkb::ctx().compute_aligned_dynamic_ubo_size(sizeof(T))} {}
         virtual ~uniform_buffer() override = default;
 
         auto set(const T& data) const noexcept -> void {
-            const std::uint32_t idx = vkb::ctx().get_current_concurrent_frame_idx();
-            upload_data(&data, m_aligned_size, idx * m_aligned_size);
+            upload_data(&data, sizeof(data), m_aligned_size * vkb::ctx().get_current_concurrent_frame_idx());
         }
 
         [[nodiscard]] inline auto get_dynamic_aligned_size() const noexcept -> std::size_t { return m_aligned_size; }

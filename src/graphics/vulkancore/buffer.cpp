@@ -111,15 +111,11 @@ namespace lu::vkb {
 
         } else {
             if (!m_mapped) {
-                vkcheck(device.mapMemory(m_memory, 0, m_size, {}, &m_mapped));
+                vkccheck(vmaMapMemory(m_allocator, m_allocation, &m_mapped));
             }
             std::memcpy(static_cast<std::byte*>(m_mapped) + offset, data, size);
             if (!(m_memory_properties & vk::MemoryPropertyFlagBits::eHostCoherent)) { // If host coherency hasn't been requested, do a manual flush to make writes visible
-                vk::MappedMemoryRange mapped_range {};
-                mapped_range.memory = m_memory;
-                mapped_range.offset = offset;
-                mapped_range.size = size;
-                vkcheck(device.flushMappedMemoryRanges(1, &mapped_range));
+                vmaFlushAllocation(m_allocator, m_allocation, offset, size);
             }
         }
     }
