@@ -202,6 +202,7 @@ end
 
 local function adjust_config_for_local_machine()
     if jit.os == 'OSX' then
+        engine_cfg['system']['enable_jit'] = false
         engine_cfg['editor']['font_size'] = 2 * engine_cfg['editor']['font_size']
     end
 

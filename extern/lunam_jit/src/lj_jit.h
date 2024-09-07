@@ -375,12 +375,9 @@ enum {
   LJ_K64_M2P64,		/* -2^64 */
 #endif
 #endif
-#if LJ_TARGET_ARM64
-  LJ_K64_VM_EXIT_HANDLER,
-#endif
   LJ_K64__MAX,
 };
-#define LJ_K64__USED	(LJ_TARGET_X86ORX64 || LJ_TARGET_MIPS || LJ_TARGET_ARM64)
+#define LJ_K64__USED	(LJ_TARGET_X86ORX64 || LJ_TARGET_MIPS)
 
 enum {
 #if LJ_TARGET_X86ORX64
@@ -516,7 +513,6 @@ typedef struct jit_State {
   MCode *mcbot;		/* Bottom of current mcode area. */
   size_t szmcarea;	/* Size of current mcode area. */
   size_t szallmcarea;	/* Total size of all allocated mcode areas. */
-  uintptr_t mchub;	/* Somewhere in the middle of all mcode areas. */
 
   TValue errinfo;	/* Additional info element for trace errors. */
 

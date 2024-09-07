@@ -110,7 +110,7 @@ typedef struct {
 static LJ_AINLINE uint32_t *exitstub_trace_addr_(uint32_t *p, uint32_t exitno)
 {
   while (*p == (LJ_LE ? 0xd503201f : 0x1f2003d5)) p++;  /* Skip A64I_NOP. */
-  return p + 4 + exitno * 2ull;
+  return p + 3 + exitno;
 }
 /* Avoid dependence on lj_jit.h if only including lj_target.h. */
 #define exitstub_trace_addr(T, exitno) \
@@ -262,7 +262,6 @@ typedef enum A64Ins {
   A64I_CBZ = 0x34000000,
   A64I_CBNZ = 0x35000000,
 
-  A64I_BRAA = 0xd71f0800,
   A64I_BRAAZ = 0xd61f081f,
   A64I_BLRAAZ = 0xd63f081f,
 

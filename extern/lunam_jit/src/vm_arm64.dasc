@@ -1977,34 +1977,8 @@ static void build_subroutines(BuildCtx *ctx)
   |  stp x..a, x..b, [sp, #32*8+a*8]
   |.endmacro
   |
-  |
-  |.if JIT
-  |  // Prelude to vm_exit_handler, used when the exit stub had to trash lr
-  |  // so that it could form the address of ->vm_exit_handler.
-  |  ldr lr, [GL, #GL_J(parent)]
-  |.endif
   |->vm_exit_handler:
-  |  // If doing a regular side exit, then low 32 bits of lr contain J->parent,
-  |  // and high 32 bits contain J->exitno. Both fields only contain 16 bits of
-  |  // data, so high 16 bits of each are zero. If instead doing a jump to a
-  |  // side trace, the high 16 bits of each are 0xffff, and exitno contains
-  |  // the target trace number (or 0 for vm_exit_interp).
   |.if JIT
-  |  tbz lr, #16, >1  // Regular side exit?
-  |  ubfx lr, lr, #32, #16
-  |  cbz lr, ->vm_exit_interp
-  |  str CARG1, [sp]  // Spill
-  |  ldr CARG1, [GL, #GL_J(trace)]
-  |  ldr TRACE:lr, [CARG1, w30, uxtw #3]
-  |  ldr CARG1, [sp]  // Reload
-  |.if PAUTH
-  |  ldr lr, TRACE:lr->mcauth
-  |  braa lr, GL
-  |.else
-  |  ldr lr, TRACE:lr->mcode
-  |  br lr
-  |.endif
-  |1:
   |  sub     sp, sp, #(64*8)
   |  savex_, 0, 1
   |  savex_, 2, 3
@@ -2022,13 +1996,24 @@ static void build_subroutines(BuildCtx *ctx)
   |  savex_, 26, 27
   |  savex_, 28, 29
   |  stp d30, d31, [sp, #30*8]
+  |  ldr CARG1, [sp, #64*8]	// Load original value of lr.
   |   add CARG3, sp, #64*8	// Recompute original value of sp.
   |    mv_vmstate CARG4w, EXIT
   |   stp xzr, CARG3, [sp, #62*8]	// Store 0/sp in RID_LR/RID_SP.
+  |  sub CARG1, CARG1, lr
   |   ldr L, GL->cur_L
+  |  lsr CARG1, CARG1, #2
   |   ldr BASE, GL->jit_base
+  |  sub CARG1, CARG1, #2
+  |   ldr CARG2w, [lr]		// Load trace number.
   |    st_vmstate CARG4w
+  |.if ENDIAN_BE
+  |   rev32 CARG2, CARG2
+  |.endif
   |   str BASE, L->base
+  |  ubfx CARG2w, CARG2w, #5, #16
+  |  str CARG1w, [GL, #GL_J(exitno)]
+  |   str CARG2w, [GL, #GL_J(parent)]
   |   str L, [GL, #GL_J(L)]
   |  str xzr, GL->jit_base
   |  add CARG1, GL, #GG_G2J
@@ -3864,7 +3849,7 @@ static void build_ins(BuildCtx *ctx, BCOp op, int defop)
     |   str L, GL->tmpbuf.L
     |  sub sp, sp, #16	// See SPS_FIXED. Avoids sp adjust in every root trace.
     |.if PAUTH
-    |  braa RA, GL
+    |  braa RA, RC
     |.else
     |  br RA
     |.endif
