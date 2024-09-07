@@ -3,6 +3,7 @@
 #pragma once
 
 #include "../core/subsystem.hpp"
+#include "../scene/components.hpp"
 
 #include <fmod.hpp>
 #include <fmod_errors.h>
@@ -20,6 +21,7 @@ namespace lu::audio {
 
     private:
         virtual auto on_post_tick() -> void override;
+        auto set_audio_listener_transform(const com::transform& transform) noexcept -> void;
 
         FMOD::System* m_system = nullptr;
     };
