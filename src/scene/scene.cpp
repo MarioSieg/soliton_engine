@@ -46,10 +46,9 @@ namespace lu {
         kernel::get().on_new_scene_start(*this);
     }
 
-    auto scene::spawn(const char* name) const -> flecs::entity {
+    auto scene::spawn(const char* const name) const -> flecs::entity {
         flecs::entity ent = this->entity(name);
         ent.add<com::metadata>();
         return ent;
     }
-
 }
