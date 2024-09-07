@@ -53,6 +53,6 @@ namespace lu::graphics {
     }
 
     constexpr auto is_last_thread(const std::int32_t thread_id, const std::int32_t num_threads) noexcept -> bool {
-        return thread_id == num_threads - 1;
+        return thread_id == std::max(num_threads - 1, 0);
     }
 }
