@@ -8,3 +8,5 @@
 #include "components/metadata.hpp"
 #include "components/rigidbody.hpp"
 #include "components/transform.hpp"
+#include "components/audio_listener.hpp"
+#include "components/audio_source.hpp"

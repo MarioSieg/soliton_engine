@@ -1,6 +1,7 @@
 // Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "audio_subsystem.hpp"
+#include "../scene/scene.hpp"
 #include "../scripting/system_variable.hpp"
 
 #include <mimalloc.h>
@@ -41,6 +42,9 @@ namespace lu::audio {
     }
 
     auto audio_subsystem::on_post_tick() -> void {
+        scene::get_active().each([&](const com::transform& transform, const com::audio_listener&) {
+            set_audio_listener_transform(transform);
+        });
         fmod_check(m_system->update());
     }
 

@@ -2,7 +2,25 @@
 
 #include "../_prelude.hpp"
 
-impl_component_core(camera)
+LUA_INTEROP_API auto __lu_com_camera_exists(const lua_entity_id id) -> bool {
+    const eastl::optional<flecs::entity> ent {resolve_entity(id)};
+    if (!ent) [[unlikely]] { return false; }
+    return ent->has<com::camera>();
+}
+
+LUA_INTEROP_API auto __lu_com_camera_add(const lua_entity_id id) -> void {
+    eastl::optional<flecs::entity> ent {resolve_entity(id)};
+    if (!ent) [[unlikely]] { return; }
+    ent->add<com::camera>();
+    ent->add<com::audio_listener>();
+}
+
+LUA_INTEROP_API auto __lu_com_camera_remove(const lua_entity_id id) -> void {
+    eastl::optional<flecs::entity> ent {resolve_entity(id)};
+    if (!ent) [[unlikely]] { return; }
+    ent->remove<com::audio_listener>();
+    ent->remove<com::camera>();
+}
 
 LUA_INTEROP_API auto __lu_com_camera_get_fov(const lua_entity_id id) -> double {
     eastl::optional<flecs::entity> ent {resolve_entity(id)};
