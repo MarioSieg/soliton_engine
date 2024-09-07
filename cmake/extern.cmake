@@ -1,12 +1,12 @@
 if (WIN32)
-    target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/win_amd64/libluajit.lib)
+    target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/amd64/windows/libluajit.lib)
 elseif(APPLE)
-    target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/mac_aarch64/libluajit.a)
-    #target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/mac_aarch64/libMoltenVK.dylib)
-    target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/mac_aarch64/Noesis.dylib)
+    target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/arm64/osx/libluajit.a)
+    target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/arm64/osx/Noesis.dylib)
+    target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/arm64/osx/libfmod.dylib)
 else()
-    target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/linux_amd64/libluajit.a)
-    target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/linux_amd64/libNoesis.so)
+    target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/amd64/linux/libluajit.a)
+    target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/amd64/linux/libNoesis.so)
     target_link_libraries(lunam tbb)
 endif()
 
@@ -138,6 +138,8 @@ target_link_libraries(lunam libluv_a)
 add_subdirectory(extern/SPIRV-Reflect)
 target_include_directories(lunam PRIVATE extern/SPIRV-Reflect/include)
 target_link_libraries(lunam spirv-reflect-static)
+
+target_include_directories(lunam PRIVATE extern/fmod/osx/api/core/inc)
 
 ##################################################################################################
 # Libraries, which sadly requires C++ exceptions and have no way to disable them
