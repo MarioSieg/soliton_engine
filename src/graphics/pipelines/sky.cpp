@@ -47,12 +47,10 @@ namespace lu::graphics::pipelines {
 
     auto sky_pipeline::on_bind(vkb::command_buffer& cmd) const -> void {
         graphics_pipeline::on_bind(cmd);
+        cmd.bind_graphics_descriptor_set(m_descriptor_set, 0, nullptr);
     }
 
     auto sky_pipeline::render_sky(vkb::command_buffer& cmd) const -> void {
-        on_bind(cmd);
-        const vk::PipelineLayout layout = get_layout();
-        (*cmd).bindDescriptorSets(vk::PipelineBindPoint::eGraphics, layout, 0, 1, &m_descriptor_set, 0, nullptr);
         gpu_vertex_push_constants push_constants {};
         XMStoreFloat4x4A(&push_constants.view, XMLoadFloat4x4A(&graphics_subsystem::get_view_mtx()));
         XMStoreFloat4x4A(&push_constants.proj, XMLoadFloat4x4A(&graphics_subsystem::get_proj_mtx()));

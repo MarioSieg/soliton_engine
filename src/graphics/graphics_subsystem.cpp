@@ -131,6 +131,7 @@ namespace lu::graphics {
         if (is_first_thread(bucket_id, num_threads)) {
             const auto& sky_pipeline
                 = pipeline_cache::get().get_pipeline<pipelines::sky_pipeline>("sky");
+            sky_pipeline.on_bind(cmd);
             sky_pipeline.render_sky(cmd);
         }
 
