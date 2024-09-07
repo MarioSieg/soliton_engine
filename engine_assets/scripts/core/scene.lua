@@ -32,6 +32,7 @@ ffi.cdef[[
     void __lu_scene_full_entity_query_end(void);
     void __lu_scene_set_active_camera_entity(lua_entity_id id);
     lua_entity_id __lu_scene_get_active_camera_entity(void);
+    void __lu_scene_set_sun_dir(lua_vec3 sun_dir);
 ]]
 
 -- Simplified time cycle system:
@@ -280,6 +281,7 @@ end
 
 function scene._update()
     scene.time_cycle:_advance()
+    cpp.__lu_scene_set_sun_dir(scene.time_cycle._sun_dir)
     cpp.__lu_scene_tick()
 end
 
