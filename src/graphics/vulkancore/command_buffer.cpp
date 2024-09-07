@@ -85,6 +85,10 @@ namespace lu::vkb {
 
     auto command_buffer::reset() -> void {
         vkcheck(m_cmd.reset({}));
+        m_bounded_pipeline = nullptr;
+        m_push_consts_init = false;
+        m_push_constant_offset = 0;
+        m_was_used = false;
     }
 
     auto command_buffer::bind_vertex_buffer(const vk::Buffer buffer, const vk::DeviceSize offset) -> void {

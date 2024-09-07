@@ -89,6 +89,7 @@ namespace lu::graphics {
         if (signaled < 0) [[unlikely]] return false;
 
         m_active_command_buffer = &m_command_buffers[vkb::ctx().get_current_concurrent_frame_idx()];
+        m_active_command_buffer->reset();
         m_active_command_buffer->begin(vk::CommandBufferUsageFlagBits::eRenderPassContinue, m_shared_ctx.inheritance_info);
 
         const auto w = static_cast<float>(vkb::ctx().get_width());
