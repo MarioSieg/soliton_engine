@@ -115,7 +115,7 @@ namespace lu::vkb {
             }
             std::memcpy(static_cast<std::byte*>(m_mapped) + offset, data, size);
             if (!(m_memory_properties & vk::MemoryPropertyFlagBits::eHostCoherent)) { // If host coherency hasn't been requested, do a manual flush to make writes visible
-                vmaFlushAllocation(m_allocator, m_allocation, offset, size);
+                vkccheck(vmaFlushAllocation(m_allocator, m_allocation, offset, size));
             }
         }
     }

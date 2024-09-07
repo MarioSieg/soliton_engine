@@ -176,11 +176,11 @@ namespace lu::graphics {
         const auto h = static_cast<float>(vkb::ctx().get_height());
         m_imgui_context->begin_frame();
         update_main_camera(w, h);
-        update_shared_buffers_per_frame();
         m_cmd.reset();
         m_cmd = vkb::ctx().begin_frame(s_clear_color, &m_inheritance_info);
         m_cmd->begin(vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
         vkb::ctx().begin_render_pass(*m_cmd, vkb::ctx().get_scene_render_pass(), vk::SubpassContents::eSecondaryCommandBuffers);
+        update_shared_buffers_per_frame();
         return true;
     }
 
