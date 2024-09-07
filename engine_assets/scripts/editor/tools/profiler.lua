@@ -157,8 +157,8 @@ function profiler:_render_subsystems_tab()
         ui.EndTable()
         ui.Separator()
         ui.Separator()
+        ui.ImPlot_SetNextAxesToFit()
         if ui.ImPlot_BeginPlot("Subsystem Total Times", nil, autofit_flags) then
-            ui.ImPlot_SetNextAxesToFit()
             ui.ImPlot_SetupAxes("Subsystems", "Total Time (ms)", ui.ImPlotAxisFlags_NoTickLabels, ui.ImPlotAxisFlags_NoTickLabels)
             local indices = {}
             for i = 0, subsys_count - 1 do
