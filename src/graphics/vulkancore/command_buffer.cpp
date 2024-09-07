@@ -59,6 +59,8 @@ namespace lu::vkb {
         const vk::CommandBufferUsageFlagBits usage,
         const vk::CommandBufferInheritanceInfo* const inheritance
     ) -> void {
+        passert(!m_was_used);
+        m_was_used = true;
         const vk::CommandBufferBeginInfo info {.flags = usage, .pInheritanceInfo = inheritance};
         vkcheck(m_cmd.begin(&info));
     }
