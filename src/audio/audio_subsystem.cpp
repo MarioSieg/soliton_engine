@@ -47,21 +47,21 @@ namespace lu::audio {
     auto audio_subsystem::set_audio_listener_transform(const com::transform& transform) noexcept -> void {
         static_assert(sizeof(FMOD_VECTOR) == sizeof(XMFLOAT3));
         static constinit XMVECTOR prev_position {};
-        FMOD_VECTOR fPosition, fVelocity, fForward, fUp;
+        FMOD_VECTOR f_pos, f_vel, f_for, f_up;
         XMVECTOR position { XMLoadFloat4(&transform.position) };
-        XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&fPosition), position);
+        XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&f_pos), position);
         XMVECTOR velocity_delta = prev_position;
         velocity_delta = XMVectorSubtract(position, velocity_delta);
-        XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&fVelocity), velocity_delta);
+        XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&f_vel), velocity_delta);
         prev_position = position;
-        XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&fForward), transform.forward_vec());
-        XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&fUp), transform.up_vec());
+        XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&f_for), transform.forward_vec());
+        XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&f_up), transform.up_vec());
         fmod_check(m_system->set3DListenerAttributes(
             0,
-            &fPosition,
-            &fVelocity,
-            &fForward,
-            &fUp
+            &f_pos,
+            &f_vel,
+            &f_for,
+            &f_up
         ));
     }
 
@@ -84,8 +84,7 @@ namespace lu::audio {
         if(result != FMOD_RESULT::FMOD_OK) [[unlikely]] return;
         log_info("Audio device: {}", name_buf.data());
         static_assert(sizeof(FMOD_GUID) == 16);
-        eastl::array<std::uint64_t, 2> buf {};
-        std::memcpy(buf.data(), &guid, sizeof(FMOD_GUID));
+        auto buf {eastl::bit_cast<eastl::array<std::uint64_t, 2>>(guid)};
         log_info("UUID: {:X}{:X}", buf[0], buf[1]);
         log_info("Rate: {} KHz", static_cast<double>(rate) / 1000.0);
         print_speaker_mode_info(mode);
@@ -109,7 +108,7 @@ namespace lu::audio {
         log_info("Speaker mode: {}", msg);
     }
 
-    static auto print_audio_interface_info(FMOD_OUTPUTTYPE type) -> void {
+    static auto print_audio_interface_info(const FMOD_OUTPUTTYPE type) -> void {
         const char* msg = "Unknown";
         switch (type) {
             case FMOD_OUTPUTTYPE_AUTODETECT:    msg = "AutoDetect";     break;
@@ -131,6 +130,7 @@ namespace lu::audio {
             case FMOD_OUTPUTTYPE_NNAUDIO:       msg = "NNAUDIO";        break;
             case FMOD_OUTPUTTYPE_WINSONIC:      msg = "WINSONIC";       break;
             case FMOD_OUTPUTTYPE_AAUDIO:        msg = "AAUDIO";         break;
+            default: break;
         }
         log_info("Output interface: {}", msg);
     }
