@@ -11,6 +11,8 @@ local vec2 = require 'vec2'
 local vec3 = require 'vec3'
 local components = require 'components'
 
+local abs, rad = math.abs, math.rad
+
 local camera = {
     target_entity = nil,
     sensitivity = 0.5, -- mouse look sensitivity
@@ -61,8 +63,8 @@ function camera:_update()
 end
 
 function camera:_compute_rotation()
-    local sens = math.abs(self.sensitivity) * 0.01
-    local clamp_y_rad = math.rad(math.abs(self.clamp_y))
+    local sens = abs(self.sensitivity) * 0.01
+    local clamp_y_rad = rad(abs(self.clamp_y))
     local mouse_pos = input.get_mouse_position()
 
     local delta = mouse_pos
@@ -89,22 +91,22 @@ end
 
 function camera:_compute_position()
     local delta = time.delta_time
-    local speed = math.abs(self.default_movement_speed)
+    local speed = abs(self.default_movement_speed)
 
     if self.enable_fast_movement then
         if input.is_key_pressed(input.keys.left_shift) then -- are we moving fast (sprinting?)
-            speed = math.abs(self.fast_movement_speed)
+            speed = abs(self.fast_movement_speed)
         end
     end
 
     local target = self._position
 
     local function update_pos(dir)
-        local movSpeed = speed
+        local move_speed = speed
         if not self.enable_smooth_movement then -- if we use raw movement, we have to apply the delta time here
-            movSpeed = movSpeed * delta
+            move_speed = move_speed * delta
         end
-        target = target + (dir * self._rotation) * movSpeed
+        target = target + (dir * self._rotation) * move_speed
     end
 
     if self._is_focused then

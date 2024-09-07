@@ -573,6 +573,8 @@ function editor:draw_ingame_overlay()
             ui.TextUnformatted(string.format('Dir: %s', transform:get_forward_dir()))
         end
         ui.Separator()
+        ui.TextUnformatted(string.format('Scene Date: %s', scene.time_cycle:get_date_time_string()))
+        ui.Separator()
         ui.TextUnformatted(host_info)
         ui.TextUnformatted(cpu_name)
         ui.TextUnformatted(gpu_name)
