@@ -19,6 +19,8 @@ using lua_entity_id = std::uint64_t;
 static_assert(sizeof(flecs::id_t) == sizeof(lua_entity_id));
 static_assert(alignof(flecs::id_t) == alignof(lua_entity_id));
 
+using lua_asset_id = assetmgr::asset_ref;
+
 [[nodiscard]] inline __attribute__((always_inline)) auto resolve_entity(const lua_entity_id id) noexcept -> eastl::optional<flecs::entity> {
     const auto f_id = eastl::bit_cast<flecs::id_t>(id);
     if (f_id == 0) [[unlikely]] {

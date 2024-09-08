@@ -7,6 +7,7 @@ local ffi = require 'ffi'
 -- Must match the C++ struct definitions
 ffi.cdef [[
     typedef uint64_t lua_entity_id;
+    typedef int32_t lua_asset_id;
 
     typedef struct {
         double x;

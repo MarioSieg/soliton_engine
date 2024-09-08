@@ -36,7 +36,9 @@ namespace lu {
         str_replace(asset_root, "engine_assets", "RES");
         asset_root += "/";
 
-        auto* missing_material = get_asset_registry<graphics::material>().load_from_memory();
+        auto& registry = get_asset_registry<graphics::material>();
+        auto* const missing_material = registry[registry.insert(eastl::make_unique<graphics::material>())];
+        passert(missing_material != nullptr);
         missing_material->albedo_map = const_cast<graphics::texture*>(&graphics::material::get_static_resources().error_texture);
         missing_material->flush_property_updates();
 
@@ -90,12 +92,14 @@ namespace lu {
                         eastl::string path = tex_path.c_str();
                         // replace backslashes with forward slashes
                         eastl::replace(path.begin(), path.end(), '\\', '/');
-                        return get_asset_registry<graphics::texture>().load(std::move(path));
+                        auto& registry = get_asset_registry<graphics::texture>();
+                        return registry[registry.load(std::move(path))];
                     }
                     return nullptr;
                 };
 
-                auto* material = get_asset_registry<graphics::material>().load_from_memory();
+                auto& registry = get_asset_registry<graphics::material>();
+                auto* material = registry[registry.insert(eastl::make_unique<graphics::material>())];
                 material->albedo_map = load_tex({aiTextureType_DIFFUSE, aiTextureType_BASE_COLOR});
                 material->normal_map = load_tex({aiTextureType_NORMALS, aiTextureType_NORMAL_CAMERA});
                 material->metallic_roughness_map = load_tex({aiTextureType_SPECULAR, aiTextureType_METALNESS, aiTextureType_DIFFUSE_ROUGHNESS, aiTextureType_SHININESS});
@@ -107,7 +111,8 @@ namespace lu {
                 renderer->materials.emplace_back(material);
 
                 eastl::span span {&mesh, 1};
-                renderer->meshes.emplace_back(get_asset_registry<graphics::mesh>().load_from_memory(span));
+                auto& mesh_registry = get_asset_registry<graphics::mesh>();
+                renderer->meshes.emplace_back(mesh_registry[mesh_registry.insert(eastl::make_unique<graphics::mesh>(span))]);
             }
             for (unsigned i = 0; i < node->mNumChildren; ++i) {
                 visitor(node->mChildren[i]);

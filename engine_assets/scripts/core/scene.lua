@@ -13,6 +13,7 @@ local quat = require 'quat'
 local gmath = require 'gmath'
 local time = require 'time'
 local debugdraw = require 'debugdraw'
+local assets = require 'assets'
 
 local bor, band = bit.bor, bit.band
 local rad, sin, cos, tan, atan2, asin, pi = math.rad, math.sin, math.cos, math.tan, math.atan2, math.asin, math.pi
@@ -272,7 +273,7 @@ scene_import_flags.default = bit_flag_union({
 local scene = {
     name = 'Untitled',
     id = 0,
-    time_cycle = time_cycle,
+    time_cycle = time_cycle
 }
 
 function scene._start()

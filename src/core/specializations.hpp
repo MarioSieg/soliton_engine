@@ -109,3 +109,11 @@ struct ankerl::unordered_dense::hash<eastl::string> {
         return detail::wyhash::hash(x.data(), x.size());
     }
 };
+
+template <>
+struct ankerl::unordered_dense::hash<eastl::string_view> {
+    using is_avalanching = void;
+    [[nodiscard]] auto operator()(const eastl::string_view& x) const noexcept -> std::uint64_t {
+        return detail::wyhash::hash(x.data(), x.size());
+    }
+};
