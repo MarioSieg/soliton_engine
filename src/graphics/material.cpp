@@ -4,56 +4,57 @@
 
 #include "vulkancore/context.hpp"
 #include "graphics_subsystem.hpp"
-#include "../scripting/system_variable.hpp"
 
 namespace lu::graphics {
-    using scripting::scripting_subsystem;
-
-    static const system_variable<eastl::string> cv_error_texture {"renderer.error_texture", eastl::monostate{}};
     static eastl::optional<material::static_resources> s_resources {};
 
     material::material(
-        texture* const albedo_map,
-        texture* const metallic_roughness_map,
-        texture* const normal_map,
-        texture* const height_map,
-        texture* const ambient_occlusion_map,
-        texture* const emission_map
-    ) : asset{assetmgr::asset_source::memory} {
-
-        this->albedo_map = albedo_map;
-        this->metallic_roughness_map = metallic_roughness_map;
-        this->normal_map = normal_map;
-        this->height_map = height_map;
-        this->ambient_occlusion_map = ambient_occlusion_map;
-        this->emission_map = emission_map;
-
-        flush_property_updates();
+        ankerl::unordered_dense::map<material_key, material_property>&& properties
+    ) : asset{assetmgr::asset_source::memory}, properties{eastl::move(properties)} {
+        if (!properties.empty()) {
+            flush_property_updates();
+        }
     }
 
     material::~material() = default;
 
     auto material::flush_property_updates() -> void {
-        eastl::fixed_vector<vk::DescriptorImageInfo, 8> image_infos {};
+        auto& reg = scene::get_active().get_asset_registry<graphics::texture>();
+        const assetmgr::asset_ref error_texture = reg.load(sv_error_texture());
 
-        constexpr auto make_write_tex_info = [](const texture* tex, const texture& fallback) {
+        const auto make_write_tex_info = [&reg](
+            const assetmgr::asset_ref texture,
+            const assetmgr::asset_ref fallback
+        ) {
+            auto* texture_ptr = reg[texture];
+            auto* fallback_ptr = reg[fallback];
+            passert(fallback_ptr != nullptr);
             vk::DescriptorImageInfo info {};
             info.imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-            info.imageView = tex ? tex->image_view() : fallback.image_view();
-            info.sampler = tex ? tex->sampler() : fallback.sampler();
+            info.imageView = texture_ptr ? texture_ptr->image_view() : fallback_ptr->image_view();
+            info.sampler = texture_ptr ? texture_ptr->sampler() : fallback_ptr->sampler();
             return info;
         };
 
-        image_infos.emplace_back(make_write_tex_info(albedo_map, s_resources->error_texture));
-        image_infos.emplace_back(make_write_tex_info(normal_map, s_resources->fallback_image_white));
-        image_infos.emplace_back(make_write_tex_info(metallic_roughness_map, s_resources->fallback_image_white));
-        image_infos.emplace_back(make_write_tex_info(height_map, s_resources->fallback_image_white));
-        image_infos.emplace_back(make_write_tex_info(ambient_occlusion_map, s_resources->fallback_image_white));
-        image_infos.emplace_back(make_write_tex_info(emission_map, s_resources->fallback_image_black));
-
+        eastl::vector<vk::DescriptorImageInfo> image_infos {};
         vkb::descriptor_factory factory {s_resources->descriptor_layout_cache, s_resources->descriptor_allocator};
-        for (std::uint32_t i = 0; auto&& info : image_infos)
-            factory.bind_images(i++, 1, &info, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment);
+
+        for (auto&& [key, prop] : properties) {
+            image_infos.emplace_back(make_write_tex_info(
+                prop.value,
+                error_texture
+            ));
+        }
+
+        for (std::size_t i = 0; auto&& [_, prop] : properties) {
+            factory.bind_images(
+                prop.shader_binding,
+                1,
+                &image_infos[i++],
+                vk::DescriptorType::eCombinedImageSampler,
+                vk::ShaderStageFlagBits::eFragment
+            );
+        }
 
         passert(factory.build(m_descriptor_set));
     }
@@ -70,10 +71,14 @@ namespace lu::graphics {
         return *s_resources;
     }
 
+    auto material::print_properties() const -> void {
+        log_info("Name | Shader Binding | Value");
+        for (auto&& [key, prop] : properties) {
+            log_info("'{}' : {} -> {:#x}", key, prop.shader_binding, static_cast<std::underlying_type_t<assetmgr::asset_ref>>(prop.value));
+        }
+    }
+
     material::static_resources::static_resources() :
-        error_texture{cv_error_texture()},
-        fallback_image_white{"/RES/textures/system/fallback_white.png"},
-        fallback_image_black{"/RES/textures/system/fallback_black.png"},
         descriptor_allocator {},
         descriptor_layout_cache {} {
 

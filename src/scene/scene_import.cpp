@@ -3,6 +3,7 @@
 #include "scene.hpp"
 #include "../core/kernel.hpp"
 #include "../graphics/mesh.hpp"
+#include "../graphics/material.hpp"
 #include "../graphics/utils/assimp_utils.hpp"
 #include "../graphics/vulkancore/context.hpp"
 
@@ -35,12 +36,6 @@ namespace lu {
         eastl::string asset_root = std::filesystem::path{path.c_str()}.parent_path().string().c_str();
         str_replace(asset_root, "engine_assets", "RES");
         asset_root += "/";
-
-        auto& registry = get_asset_registry<graphics::material>();
-        auto* const missing_material = registry[registry.insert(eastl::make_unique<graphics::material>())];
-        passert(missing_material != nullptr);
-        missing_material->albedo_map = const_cast<graphics::texture*>(&graphics::material::get_static_resources().error_texture);
-        missing_material->flush_property_updates();
 
         ankerl::unordered_dense::map<eastl::string, std::uint32_t> resolved_names {};
 
@@ -79,40 +74,49 @@ namespace lu {
                 const aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
                 const aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
 
-                const auto load_tex = [&](const std::initializer_list<aiTextureType> types) -> graphics::texture* {
+                auto load_tex = [&, binding = 0u](const std::initializer_list<aiTextureType> types) mutable -> graphics::material_property {
                     for (auto textureType = types.begin(); textureType != types.end(); std::advance(textureType, 1)) {
                         if (!mat->GetTextureCount(*textureType)) [[unlikely]] continue;
                         aiString name {};
-                        mat->Get(AI_MATKEY_TEXTURE(*textureType, 0), name);
+                        if (mat->Get(AI_MATKEY_TEXTURE(*textureType, 0), name) != AI_SUCCESS) {
+                            continue;
+                        }
                         std::filesystem::path tex_path = "/";
                         tex_path += std::filesystem::relative((asset_root + name.C_Str()).c_str()).string().c_str();
-                        if (!tex_path.has_extension()) {
-                            return nullptr;
+                        if (!tex_path.has_extension()) [[unlikely]] {
+                            continue;
                         }
                         eastl::string path = tex_path.c_str();
                         // replace backslashes with forward slashes
                         eastl::replace(path.begin(), path.end(), '\\', '/');
-                        auto& registry = get_asset_registry<graphics::texture>();
-                        return registry[registry.load(std::move(path))];
+                        return graphics::material_property {
+                            binding++,
+                            get_asset_registry<graphics::texture>().load(eastl::move(path))
+                        };
                     }
-                    return nullptr;
+                    log_warn("No texture found for material");
+                    return graphics::material_property {
+                        binding++,
+                        get_asset_registry<graphics::texture>().load(graphics::sv_error_texture())
+                    };
                 };
 
                 auto& registry = get_asset_registry<graphics::material>();
-                auto* material = registry[registry.insert(eastl::make_unique<graphics::material>())];
-                material->albedo_map = load_tex({aiTextureType_DIFFUSE, aiTextureType_BASE_COLOR});
-                material->normal_map = load_tex({aiTextureType_NORMALS, aiTextureType_NORMAL_CAMERA});
-                material->metallic_roughness_map = load_tex({aiTextureType_SPECULAR, aiTextureType_METALNESS, aiTextureType_DIFFUSE_ROUGHNESS, aiTextureType_SHININESS});
-                material->height_map = load_tex({aiTextureType_HEIGHT, aiTextureType_DISPLACEMENT});
-                material->ambient_occlusion_map = load_tex({aiTextureType_AMBIENT_OCCLUSION, aiTextureType_AMBIENT, aiTextureType_LIGHTMAP});
-                material->emission_map = load_tex({aiTextureType_EMISSION_COLOR, aiTextureType_EMISSIVE});
+                auto [material_ref, material] = get_asset_registry<graphics::material>().insert();
+                material->properties["tex_albedo"]      = load_tex({aiTextureType_DIFFUSE, aiTextureType_BASE_COLOR});
+                material->properties["tex_normal"]      = load_tex({aiTextureType_NORMALS, aiTextureType_NORMAL_CAMERA});
+                material->properties["tex_roughness"]   = load_tex({aiTextureType_SPECULAR, aiTextureType_METALNESS, aiTextureType_DIFFUSE_ROUGHNESS, aiTextureType_SHININESS});
+                material->properties["tex_height"]      = load_tex({aiTextureType_DIFFUSE, aiTextureType_BASE_COLOR});
+                material->properties["tex_ao"]          = load_tex({aiTextureType_DIFFUSE, aiTextureType_BASE_COLOR});
+                material->properties["tex_emission"]    = load_tex({aiTextureType_EMISSION_COLOR, aiTextureType_EMISSIVE});
                 material->flush_property_updates();
+                material->print_properties();
 
                 renderer->materials.emplace_back(material);
 
                 eastl::span span {&mesh, 1};
                 auto& mesh_registry = get_asset_registry<graphics::mesh>();
-                renderer->meshes.emplace_back(mesh_registry[mesh_registry.insert(eastl::make_unique<graphics::mesh>(span))]);
+                renderer->meshes.emplace_back(mesh_registry.insert(eastl::make_unique<graphics::mesh>(span)).second);
             }
             for (unsigned i = 0; i < node->mNumChildren; ++i) {
                 visitor(node->mChildren[i]);

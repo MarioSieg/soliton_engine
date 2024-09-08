@@ -34,7 +34,7 @@ namespace lu::audio {
             print_audio_driver_info(m_system, driverID);
         }
 
-        m_test.emplace("/RES/audio/doggo.mp3");
+        m_test.emplace("/RES/audio/ambience.ogg");
         m_audio_source.clip = &*m_test;
     }
 
@@ -58,10 +58,9 @@ namespace lu::audio {
         FMOD_VECTOR f_pos, f_vel, f_for, f_up;
         XMVECTOR position { XMLoadFloat4(&transform.position) };
         XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&f_pos), position);
-        XMVECTOR velocity_delta = prev_position;
-        velocity_delta = XMVectorSubtract(position, velocity_delta);
-        XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&f_vel), velocity_delta);
+        XMVECTOR velocity_delta = XMVectorSubtract(position, prev_position);
         prev_position = position;
+        XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&f_vel), velocity_delta);
         XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&f_for), transform.forward_vec());
         XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&f_up), transform.up_vec());
         fmod_check(m_system->set3DListenerAttributes(

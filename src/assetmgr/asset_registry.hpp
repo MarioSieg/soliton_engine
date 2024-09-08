@@ -22,24 +22,31 @@ namespace lu::assetmgr {
             m_path_cache.reserve(capacity);
         }
 
-        [[nodiscard]] auto insert(eastl::unique_ptr<T>&& asset, const eastl::string_view path = {}) -> asset_ref {
-            if (!path.empty()) {
+        [[nodiscard]] auto insert(eastl::unique_ptr<T>&& asset = nullptr, const eastl::string_view path = {}) -> eastl::pair<asset_ref, T*> {
+            if constexpr (std::is_constructible_v<T>) {
+                if (!asset) {
+                    asset = eastl::make_unique<T>();
+                }
+            }
+            passert(asset != nullptr);
+            if (!path.empty()) { // Check if asset with path already exists
                 const auto it = m_path_cache.find(path);
-                if (it != m_path_cache.end()) {
-                    return it->second;
+                if (it != m_path_cache.end()) { // Return existing asset reference
+                    return eastl::make_pair(it->second, (*this)[it->second]);
                 }
             }
             const std::size_t idx = m_loaded.size();
             if (idx > static_cast<std::size_t>(asset_ref_max)) [[unlikely]] {
                 log_error("Asset asset_ref numeric capacity exhausted, cannot insert asset: {}", path);
-                return asset_ref_invalid;
+                return eastl::make_pair(asset_ref_invalid, nullptr);
             }
             const auto ref = static_cast<asset_ref>(idx);
+            T* const ptr = &*asset;
             m_loaded.emplace_back(eastl::move(asset));
             if (!path.empty()) {
                 m_path_cache.emplace(path, ref);
             }
-            return ref;
+            return eastl::make_pair(ref, ptr);
         }
 
         [[nodiscard]] auto load(eastl::string&& path) -> asset_ref {
@@ -57,11 +64,11 @@ namespace lu::assetmgr {
                 log_error("Failed to load asset from path: {}", path_view);
                 return asset_ref_invalid;
             }
-            return insert(eastl::move(asset), path_view);
+            return insert(eastl::move(asset), path_view).first;
         }
 
         [[nodiscard]] auto operator[](const asset_ref ref) const -> T* {
-            if (ref == asset_ref_invalid) [[unlikely]] {
+            if (ref == asset_ref_invalid || static_cast<std::size_t>(ref) >= m_loaded.size()) [[unlikely]] {
                 return nullptr;
             }
             if (ref > asset_ref_max) [[unlikely]] {
