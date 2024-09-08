@@ -32,7 +32,9 @@ namespace lu::assetmgr {
             if (!path.empty()) { // Check if asset with path already exists
                 const auto it = m_path_cache.find(path);
                 if (it != m_path_cache.end()) { // Return existing asset reference
-                    return eastl::make_pair(it->second, (*this)[it->second]);
+                    T* const loaded = (*this)[it->second];
+                    passert(loaded != nullptr);
+                    return eastl::make_pair(it->second, loaded);
                 }
             }
             const std::size_t idx = m_loaded.size();
