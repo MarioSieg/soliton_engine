@@ -5,6 +5,8 @@
 #include "../core/subsystem.hpp"
 #include "../scene/components.hpp"
 
+#include "audio_clip.hpp"
+
 #include <fmod.hpp>
 #include <fmod_errors.h>
 
@@ -19,10 +21,15 @@ namespace lu::audio {
         audio_subsystem();
         ~audio_subsystem() override;
 
+        [[nodiscard]] static auto get_system() noexcept -> FMOD::System* { return m_system; }
+
     private:
+        virtual auto on_start(scene& scene) -> void override;
         virtual auto on_post_tick() -> void override;
         auto set_audio_listener_transform(const com::transform& transform) noexcept -> void;
 
-        FMOD::System* m_system = nullptr;
+        static inline constinit FMOD::System* m_system = nullptr;
+        eastl::optional<audio_clip> m_test {};
+        com::audio_source m_audio_source {};
     };
 }

@@ -33,10 +33,14 @@ namespace lu::audio {
         if (int driverID = 0; m_system->getDriver(&driverID) == FMOD_RESULT::FMOD_OK) [[likely]] {
             print_audio_driver_info(m_system, driverID);
         }
+
+        m_test.emplace("/RES/audio/doggo.mp3");
+        m_audio_source.clip = &*m_test;
     }
 
     audio_subsystem::~audio_subsystem() {
         log_info("Shutting down audio engine");
+        m_test.reset();
         fmod_check(m_system->close());
         fmod_check(m_system->release());
     }
@@ -67,6 +71,10 @@ namespace lu::audio {
             &f_for,
             &f_up
         ));
+    }
+
+    auto audio_subsystem::on_start(scene& scene) -> void {
+        m_audio_source.play();
     }
 
     static auto print_audio_driver_info(FMOD::System* const sys, const int id) -> void {
