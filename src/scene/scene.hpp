@@ -14,7 +14,7 @@
 #include "../audio/audio_clip.hpp"
 
 namespace lu {
-    class scene : public flecs::world, public no_copy, public no_move {
+    class scene : public flecs::world, public no_copy {
     public:
         const int id;
         eastl::string name {};

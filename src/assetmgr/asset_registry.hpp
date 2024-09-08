@@ -69,6 +69,13 @@ namespace lu::assetmgr {
             return insert(eastl::move(asset), path_view).first;
         }
 
+        auto print_loaded() const -> void {
+            log_info("---- Registered {} Assets -----", m_loaded.size());
+            for (std::size_t i = 0; i < m_loaded.size(); ++i) {
+                log_info("Asset[{}]: {}", i, m_loaded[i]->get_asset_path());
+            }
+        }
+
         [[nodiscard]] auto operator[](const asset_ref ref) const -> T* {
             if (ref == asset_ref_invalid || static_cast<std::size_t>(ref) >= m_loaded.size()) [[unlikely]] {
                 return nullptr;
@@ -80,9 +87,13 @@ namespace lu::assetmgr {
             return &*m_loaded[static_cast<std::size_t>(ref)];
         }
 
+        [[nodiscard]] auto loaded() const -> const eastl::vector<eastl::unique_ptr<T>>& { return m_loaded; }
+
+        [[nodiscard]] auto size() const -> std::size_t { return m_loaded.size(); }
+
         auto invalidate() -> void {
-            m_loaded.clear();
             m_path_cache.clear();
+            m_loaded.clear();
         }
 
     private:

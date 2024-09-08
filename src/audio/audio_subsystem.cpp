@@ -94,7 +94,6 @@ namespace lu::audio {
         );
         if(result != FMOD_RESULT::FMOD_OK) [[unlikely]] return;
         log_info("Audio device: {}", name_buf.data());
-        static_assert(sizeof(FMOD_GUID) == 16);
         auto buf {eastl::bit_cast<eastl::array<std::uint64_t, 2>>(guid)};
         log_info("UUID: {:X}{:X}", buf[0], buf[1]);
         log_info("Rate: {} KHz", static_cast<double>(rate) / 1000.0);

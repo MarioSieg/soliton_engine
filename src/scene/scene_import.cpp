@@ -74,7 +74,15 @@ namespace lu {
                 const aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
                 const aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
 
-                auto load_tex = [&, binding = 0u](const std::initializer_list<aiTextureType> types) mutable -> graphics::material_property {
+                auto error_texture = get_asset_registry<graphics::texture>().load(graphics::sv_error_texture());
+                auto default_texture_w = get_asset_registry<graphics::texture>().load(graphics::sv_fallback_image_white());
+                auto default_texture_b = get_asset_registry<graphics::texture>().load(graphics::sv_fallback_image_black());
+
+                auto load_tex = [&, binding = 0u](
+                    const std::initializer_list<aiTextureType> types,
+                    const assetmgr::asset_ref fallback
+                ) mutable -> graphics::material_property {
+                    passert(fallback != assetmgr::asset_ref_invalid);
                     for (auto textureType = types.begin(); textureType != types.end(); std::advance(textureType, 1)) {
                         if (!mat->GetTextureCount(*textureType)) [[unlikely]] continue;
                         aiString name {};
@@ -97,20 +105,22 @@ namespace lu {
                     log_warn("No texture found for material");
                     return graphics::material_property {
                         binding++,
-                        get_asset_registry<graphics::texture>().load(graphics::sv_error_texture())
+                        fallback
                     };
                 };
 
                 auto& registry = get_asset_registry<graphics::material>();
                 auto [material_ref, material] = get_asset_registry<graphics::material>().insert();
-                material->properties["tex_albedo"]      = load_tex({aiTextureType_DIFFUSE, aiTextureType_BASE_COLOR});
-                material->properties["tex_normal"]      = load_tex({aiTextureType_NORMALS, aiTextureType_NORMAL_CAMERA});
-                material->properties["tex_roughness"]   = load_tex({aiTextureType_SPECULAR, aiTextureType_METALNESS, aiTextureType_DIFFUSE_ROUGHNESS, aiTextureType_SHININESS});
-                material->properties["tex_height"]      = load_tex({aiTextureType_DIFFUSE, aiTextureType_BASE_COLOR});
-                material->properties["tex_ao"]          = load_tex({aiTextureType_DIFFUSE, aiTextureType_BASE_COLOR});
-                material->properties["tex_emission"]    = load_tex({aiTextureType_EMISSION_COLOR, aiTextureType_EMISSIVE});
+                material->properties["tex_albedo"]      = load_tex({aiTextureType_DIFFUSE, aiTextureType_BASE_COLOR}, error_texture);
+                material->properties["tex_normal"]      = load_tex({aiTextureType_NORMALS, aiTextureType_NORMAL_CAMERA}, default_texture_b);
+                material->properties["tex_roughness"]   = load_tex({aiTextureType_SPECULAR, aiTextureType_METALNESS, aiTextureType_DIFFUSE_ROUGHNESS, aiTextureType_SHININESS}, default_texture_b);
+                material->properties["tex_height"]      = load_tex({aiTextureType_DIFFUSE, aiTextureType_BASE_COLOR}, default_texture_b);
+                material->properties["tex_ao"]          = load_tex({aiTextureType_DIFFUSE, aiTextureType_BASE_COLOR}, default_texture_b);
+                material->properties["tex_emission"]    = load_tex({aiTextureType_EMISSION_COLOR, aiTextureType_EMISSIVE}, default_texture_b);
                 material->flush_property_updates();
                 material->print_properties();
+
+                get_asset_registry<graphics::texture>().print_loaded();
 
                 renderer->materials.emplace_back(material);
 

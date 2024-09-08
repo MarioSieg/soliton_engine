@@ -20,19 +20,13 @@ namespace lu::graphics {
 
     auto material::flush_property_updates() -> void {
         auto& reg = scene::get_active().get_asset_registry<graphics::texture>();
-        const assetmgr::asset_ref error_texture = reg.load(sv_error_texture());
-
-        const auto make_write_tex_info = [&reg](
-            const assetmgr::asset_ref texture,
-            const assetmgr::asset_ref fallback
-        ) {
+        const auto make_write_tex_info = [&reg](const assetmgr::asset_ref texture) {
             auto* texture_ptr = reg[texture];
-            auto* fallback_ptr = reg[fallback];
-            passert(fallback_ptr != nullptr);
+            passert(texture_ptr != nullptr);
             vk::DescriptorImageInfo info {};
             info.imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-            info.imageView = texture_ptr ? texture_ptr->image_view() : fallback_ptr->image_view();
-            info.sampler = texture_ptr ? texture_ptr->sampler() : fallback_ptr->sampler();
+            info.imageView = texture_ptr->image_view();
+            info.sampler = texture_ptr->sampler();
             return info;
         };
 
@@ -40,10 +34,7 @@ namespace lu::graphics {
         vkb::descriptor_factory factory {s_resources->descriptor_layout_cache, s_resources->descriptor_allocator};
 
         for (auto&& [key, prop] : properties) {
-            image_infos.emplace_back(make_write_tex_info(
-                prop.value,
-                error_texture
-            ));
+            image_infos.emplace_back(make_write_tex_info(prop.value));
         }
 
         for (std::size_t i = 0; auto&& [_, prop] : properties) {
