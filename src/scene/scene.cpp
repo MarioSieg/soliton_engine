@@ -32,9 +32,8 @@ namespace lu {
         auto scene = eastl::make_unique<proxy>();
         scene->name = std::move(name);
         log_info("Created scene '{}', id: {}", scene->name, scene->id);
-        if (!file.empty()) {
+        if (!file.empty())
             scene->import_from_file(file, scale, load_flags);
-        }
         s_active = std::move(scene);
     }
 
@@ -46,10 +45,9 @@ namespace lu {
         kernel::get().on_new_scene_start(*this);
     }
 
-    auto scene::spawn(const char* name) const -> flecs::entity {
+    auto scene::spawn(const char* const name) const -> flecs::entity {
         flecs::entity ent = this->entity(name);
         ent.add<com::metadata>();
         return ent;
     }
-
 }

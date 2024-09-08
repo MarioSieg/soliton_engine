@@ -6,6 +6,7 @@
 #include "../graphics/graphics_subsystem.hpp"
 #include "../scripting/scripting_subsystem.hpp"
 #include "../physics/physics_subsystem.hpp"
+#include "../audio/audio_subsystem.hpp"
 
 static auto lunam_entry(const int argc, const char** argv, const char** $environ) -> void {
     using namespace lu;
@@ -14,6 +15,7 @@ static auto lunam_entry(const int argc, const char** argv, const char** $environ
     kernel.install<platform::platform_subsystem>();
     kernel.install<physics::physics_subsystem>();
     kernel.install<graphics::graphics_subsystem>();
+    kernel.install<audio::audio_subsystem>();
     kernel.run();
 }
 

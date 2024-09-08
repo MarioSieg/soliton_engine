@@ -11,6 +11,7 @@
 #include "../graphics/mesh.hpp"
 #include "../graphics/texture.hpp"
 #include "../graphics/material.hpp"
+#include "../audio/audio_clip.hpp"
 
 namespace lu {
     class scene : public flecs::world, public no_copy, public no_move {
@@ -43,24 +44,15 @@ namespace lu {
         assetmgr::asset_registry<graphics::mesh> m_meshes {};
         assetmgr::asset_registry<graphics::texture> m_textures {};
         assetmgr::asset_registry<graphics::material> m_materials {};
+        assetmgr::asset_registry<audio::audio_clip> m_audio_clips {};
 
         friend struct proxy;
         static inline eastl::unique_ptr<scene> s_active {};
         scene();
     };
 
-    template <>
-    constexpr auto scene::get_asset_registry() -> assetmgr::asset_registry<graphics::mesh>& {
-        return m_meshes;
-    }
-
-    template <>
-    constexpr auto scene::get_asset_registry() -> assetmgr::asset_registry<graphics::texture>& {
-        return m_textures;
-    }
-
-    template <>
-    constexpr auto scene::get_asset_registry() -> assetmgr::asset_registry<graphics::material>& {
-        return m_materials;
-    }
+    template <> constexpr auto scene::get_asset_registry() -> assetmgr::asset_registry<graphics::mesh>& { return m_meshes; }
+    template <> constexpr auto scene::get_asset_registry() -> assetmgr::asset_registry<graphics::texture>& { return m_textures; }
+    template <> constexpr auto scene::get_asset_registry() -> assetmgr::asset_registry<graphics::material>& { return m_materials; }
+    template <> constexpr auto scene::get_asset_registry() -> assetmgr::asset_registry<audio::audio_clip>& { return m_audio_clips; }
 }

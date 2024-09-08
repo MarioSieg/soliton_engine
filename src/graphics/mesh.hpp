@@ -16,11 +16,11 @@
 namespace lu::graphics {
     class material;
 
-    class mesh final : public assetmgr::asset {
+    class mesh : public assetmgr::asset {
     public:
         explicit mesh(eastl::string&& path, bool create_collider_mesh = true);
         explicit mesh(eastl::span<const aiMesh*> meshes, bool create_collider_mesh = true);
-        ~mesh() override = default;
+        virtual ~mesh() override = default;
 
         [[nodiscard]] auto get_primitives() const noexcept -> eastl::span<const primitive> { return m_primitives; }
         [[nodiscard]] auto get_aabb() const noexcept -> const BoundingBox& { return m_aabb; }
@@ -38,8 +38,8 @@ namespace lu::graphics {
             return k_import_flags;
         }();
 
-    private:
-        auto create_from_assimp(eastl::span<const aiMesh*> meshes, bool create_collider_mesh) -> void;
+    protected:
+        virtual auto create_from_assimp(eastl::span<const aiMesh*> meshes, bool create_collider_mesh) -> void;
         auto create_buffers(eastl::span<const vertex> vertices, eastl::span<const index> indices) -> void;
 
         eastl::optional<vkb::buffer> m_vertex_buffer {};

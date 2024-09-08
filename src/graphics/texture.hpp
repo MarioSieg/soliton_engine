@@ -43,16 +43,16 @@ namespace lu::graphics {
         std::size_t size = 0;
     };
 
-    class texture final : public assetmgr::asset {
+    class texture : public assetmgr::asset {
     public:
-        static constexpr auto get_mip_count(const std::uint32_t w, const std::uint32_t h) noexcept -> std::uint32_t {
-            return static_cast<std::uint32_t>(std::floor(std::log2(std::max(w, h)))) + 1; // [log2(max(w, h))] + 1
+        [[nodiscard]]static constexpr auto get_mip_count(const std::uint32_t w, const std::uint32_t h) noexcept -> std::uint32_t {
+            return static_cast<std::uint32_t>(std::floor(std::log2(std::max(w, h)))) + 1;
         }
 
         explicit texture(eastl::string&& asset_path); // Load from file
         explicit texture(eastl::span<const std::byte> file_mem); // Parse file from memory
         explicit texture(const texture_descriptor& desc, const eastl::optional<texture_data_supplier>& data); // Create manually
-        ~texture() override;
+        virtual ~texture() override;
 
         [[nodiscard]] auto image() const noexcept -> const vk::Image& { return m_image; }
         [[nodiscard]] auto image_view() const noexcept -> const vk::ImageView& { return m_image_view; }
@@ -77,7 +77,7 @@ namespace lu::graphics {
         [[nodiscard]] auto tiling() const noexcept -> vk::ImageTiling { return m_desc.tiling; }
         [[nodiscard]] auto sampler() const noexcept -> const vk::Sampler& { return m_sampler; }
 
-    private:
+    protected:
         auto create(const texture_descriptor& desc, const eastl::optional<texture_data_supplier>& data) -> void;
         auto parse_from_raw_memory(eastl::span<const std::byte> buf) -> void;
 
