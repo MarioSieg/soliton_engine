@@ -4,9 +4,12 @@ elseif(APPLE)
     target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/arm64/osx/libluajit.a)
     target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/arm64/osx/Noesis.dylib)
     target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/arm64/osx/libfmod.dylib)
+    target_include_directories(lunam PRIVATE extern/fmod/osx/api/core/inc)
 else()
     target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/amd64/linux/libluajit.a)
     target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/amd64/linux/libNoesis.so)
+    target_link_libraries(lunam ${CMAKE_CURRENT_SOURCE_DIR}/lib/amd64/linux/libfmod.so)
+    target_include_directories(lunam PRIVATE extern/fmod/linux/api/core/inc)
     target_link_libraries(lunam tbb)
 endif()
 
@@ -138,8 +141,6 @@ target_link_libraries(lunam libluv_a)
 add_subdirectory(extern/SPIRV-Reflect)
 target_include_directories(lunam PRIVATE extern/SPIRV-Reflect/include)
 target_link_libraries(lunam spirv-reflect-static)
-
-target_include_directories(lunam PRIVATE extern/fmod/osx/api/core/inc)
 
 ##################################################################################################
 # Libraries, which sadly requires C++ exceptions and have no way to disable them

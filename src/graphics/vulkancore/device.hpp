@@ -58,9 +58,9 @@ namespace lu::vkb {
             eastl::vector<const char*> extensions {};
             extensions.emplace_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
             extensions.emplace_back(VK_KHR_MAINTENANCE1_EXTENSION_NAME);
-            if constexpr (PLATFORM_OSX) {
+            #if PLATFORM_OSX
                 extensions.emplace_back(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
-            }
+            #endif
             return extensions;
         }()};
         static constexpr vk::PhysicalDeviceFeatures k_enabled_features = [] {
