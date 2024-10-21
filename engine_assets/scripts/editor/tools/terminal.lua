@@ -58,13 +58,6 @@ function terminal:render()
                 end
                 ui.EndTabItem()
             end
-            if ui.BeginTabItem(icons.i_cogs .. ' System') then
-                ffi.C.__lu_dd__draw_native_log(self.scroll_flags[1])
-                if self.scroll_flags[1] then
-                    self.scroll_flags[1] = false
-                end
-                ui.EndTabItem()
-            end
             ui.Separator()
             if ui.InputTextEx(icons.i_arrow_left, 'Enter command...', self.cmd_buf, self.cmd_buf_len, ui.ImVec2(0, 0), ffi.C.ImGuiInputTextFlags_EnterReturnsTrue) then
                 if self.cmd_buf[0] ~= 0 then
