@@ -156,7 +156,7 @@ namespace lu::vkb {
             if (vk::enumerateInstanceExtensionProperties(nullptr, &ext_count, extensions.data()) == vk::Result::eSuccess) {
                 for (vk::ExtensionProperties& extension : extensions) {
                     m_supported_instance_extensions.emplace_back(extension.extensionName);
-                    log_info("Supported instance extension: {}", extension.extensionName);
+                    log_info("Supported instance extension: {}", extension.extensionName.data());
                 }
             }
         }
@@ -214,7 +214,7 @@ namespace lu::vkb {
         vkcheck(vk::enumerateInstanceLayerProperties(&layer_count, layers.data()));
 
         for (const vk::LayerProperties& layer : layers) {
-            log_info("Layer present: '{}'", layer.layerName);
+            log_info("Layer present: '{}'", layer.layerName.data());
         }
 
         // Setup VK_LAYER_KHRONOS_validation layer
@@ -264,14 +264,14 @@ namespace lu::vkb {
         // Find best GPU, prefer discrete GPU
         for (std::uint32_t i = 0; i < num_gpus; i++) {
             physical_devices[i].getProperties(&device_properties);
-            log_info("Found Vulkan physical device: {}", device_properties.deviceName);
+            log_info("Found Vulkan physical device: {}", device_properties.deviceName.data());
             if (device_properties.deviceType == vk::PhysicalDeviceType::eDiscreteGpu) {
                 best_device = i;
                 break;
             }
         }
         m_physical_device = physical_devices[best_device];
-        log_info("Using Vulkan physical device: {}, Type: {}", device_properties.deviceName, string_VkPhysicalDeviceType(static_cast<VkPhysicalDeviceType>(device_properties.deviceType)));
+        log_info("Using Vulkan physical device: {}, Type: {}", device_properties.deviceName.data(), string_VkPhysicalDeviceType(static_cast<VkPhysicalDeviceType>(device_properties.deviceType)));
         m_physical_device.getProperties(&m_device_properties);
         m_physical_device.getFeatures(&m_device_features);
         m_physical_device.getMemoryProperties(&m_memory_properties);
@@ -281,7 +281,7 @@ namespace lu::vkb {
             m_supported_device_extensions.resize(num_ext);
             if (m_physical_device.enumerateDeviceExtensionProperties(nullptr, &num_ext, m_supported_device_extensions.data()) == vk::Result::eSuccess) {
                 for (const vk::ExtensionProperties& extension : m_supported_device_extensions) {
-                    log_info("Supported device extension: {}", extension.extensionName);
+                    log_info("Supported device extension: {}", extension.extensionName.data());
                 }
             }
         }
