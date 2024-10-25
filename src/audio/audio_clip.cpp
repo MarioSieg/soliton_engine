@@ -15,7 +15,7 @@ namespace lu::audio {
         create_from_memory(buf, desc);
     }
 
-    audio_clip::audio_clip(eastl::span<const std::byte> buf, const audio_clip_descriptor& desc) : assetmgr::asset{assetmgr::asset_source::memory} {
+    audio_clip::audio_clip(const eastl::span<const std::byte> buf, const audio_clip_descriptor& desc) : assetmgr::asset{assetmgr::asset_source::memory} {
         create_from_memory(buf, desc);
     }
 
@@ -26,10 +26,10 @@ namespace lu::audio {
     }
 
     auto audio_clip::create_from_memory(const eastl::span<const std::byte> buf, const audio_clip_descriptor& desc) -> void {
-        passert(!buf.empty() && !m_sound);
+        passert(!buf.empty() && !m_sound && buf.size() <= std::numeric_limits<std::uint32_t>::max());
         FMOD_CREATESOUNDEXINFO info {};
         info.cbsize = sizeof(FMOD_CREATESOUNDEXINFO);
-        info.length = buf.size();
+        info.length = static_cast<std::uint32_t>(buf.size());
         FMOD::System* const system = audio_subsystem::get_system();
         FMOD_MODE mode = FMOD_DEFAULT | FMOD_CREATESAMPLE | FMOD_OPENMEMORY;
         if (desc.enable_3d) mode |= FMOD_3D;

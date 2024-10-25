@@ -1,4 +1,4 @@
-## Lunam Engine
+## Lunam Engine - Introduction
 
 This guide will help you get started with Lunam Engine. It is a simple but powerful realtime 3D game/simulation engine written in modern C++ 20 and Lua.<br>
 A game engine is a software framework designed for the creation and development of video games, simulations and other interactive software.<br>
