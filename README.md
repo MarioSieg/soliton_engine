@@ -22,4 +22,9 @@ It is designed to be easy to use and understand, but powerful enough to create c
 * Easy to use Lua scripting API using LuaJIT
 * Simple and powerful editor
 
+## Documentation
+The documentation can be found [here](docs/onboarding).
+For onboarding, start with the [introduction](docs/onboarding/1-Introduction.md).
+
+## Screenshots
 ![screenshot](screenshots/3.png)
