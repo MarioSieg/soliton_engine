@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # CPU ISA configuration (careful here to not break compatibility)
 if (NOT APPLE)
-    add_compile_options(-msse2 -msse3 -mssse3 -msse4.1 -msse4.2 -mpclmul)
+    add_compile_options(-msse2 -msse3 -mssse3 -msse4.1 -msse4.2 -mpclmul -mavx -mavx2 -mfma -mbmi -mbmi2 -mlzcnt -mf16c)
 endif()
 
 if (WIN32)
