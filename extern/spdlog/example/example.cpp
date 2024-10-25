@@ -26,6 +26,7 @@ void udp_example();
 void custom_flags_example();
 void file_events_example();
 void replace_default_logger_example();
+void mdc_example();
 
 #include "spdlog/spdlog.h"
 #include "spdlog/cfg/env.h"   // support for loading levels from the environment variable
@@ -84,6 +85,7 @@ int main(int, char *[]) {
         custom_flags_example();
         file_events_example();
         replace_default_logger_example();
+        mdc_example();
 
         // Flush all *registered* loggers using a worker thread every 3 seconds.
         // note: registered loggers *must* be thread safe for this to work correctly!
@@ -264,13 +266,13 @@ void multi_sink_example() {
 struct my_type {
     int i = 0;
     explicit my_type(int i)
-        : i(i){};
+        : i(i){}
 };
 
 #ifndef SPDLOG_USE_STD_FORMAT  // when using fmtlib
 template <>
 struct fmt::formatter<my_type> : fmt::formatter<std::string> {
-    auto format(my_type my, format_context &ctx) -> decltype(ctx.out()) {
+    auto format(my_type my, format_context &ctx) const -> decltype(ctx.out()) {
         return fmt::format_to(ctx.out(), "[my_type i={}]", my.i);
     }
 };
@@ -376,3 +378,23 @@ void replace_default_logger_example() {
 
     spdlog::set_default_logger(old_logger);
 }
+
+// Mapped Diagnostic Context (MDC) is a map that stores key-value pairs (string values) in thread local storage.
+// Each thread maintains its own MDC, which loggers use to append diagnostic information to log outputs.
+// Note: it is not supported in asynchronous mode due to its reliance on thread-local storage.
+
+#ifndef SPDLOG_NO_TLS
+    #include "spdlog/mdc.h"
+void mdc_example()
+{
+    spdlog::mdc::put("key1", "value1");
+    spdlog::mdc::put("key2", "value2");
+    // if not using the default format, you can use the %& formatter to print mdc data as well
+    spdlog::set_pattern("[%H:%M:%S %z] [%^%L%$] [%&] %v");
+    spdlog::info("Some log message with context");
+}
+#else
+void mdc_example() {
+    // if TLS feature is disabled
+}
+#endif

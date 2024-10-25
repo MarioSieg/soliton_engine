@@ -4,7 +4,7 @@ endif()
 
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "arm")
     if( NOT ((CMAKE_CXX_COMPILER_ID STREQUAL "Clang") OR (CMAKE_CXX_COMPILER MATCHES "clang")))
-	  set(CXX_NEON_FLAG "-mfpu=neon -mfpu=neon-fp16")
+	  #set(CXX_NEON_FLAG "-mfpu=neon -mfpu=neon-fp16")
 	endif()
 	if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 		set(CXX_NEON_FLAG "${CXX_NEON_FLAG} -mfp16-format=ieee")

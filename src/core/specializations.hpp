@@ -15,9 +15,8 @@ template <>
 struct fmt::formatter<eastl::string_view> {
     constexpr auto parse (format_parse_context& ctx) { return ctx.begin(); }
     template <typename Context>
-    constexpr auto format (const eastl::string_view& str, Context& ctx) const {
-        const std::string_view std_str_v {str.data(), str.size()};
-        return format_to(ctx.out(), "{}", std_str_v);
+    constexpr auto format (const eastl::string_view str, Context& ctx) const {
+        return fmt::format_to(ctx.out(), "{}", str.data());
     }
 };
 
