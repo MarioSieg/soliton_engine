@@ -280,11 +280,11 @@ void flecs_strbuf_vappend(
     va_copy(arg_cpy, args);
 
     if (b->content) {
-        mem_required = vsnprintf(
+        mem_required = ecs_os_vsnprintf(
             flecs_strbuf_ptr(b), 
                 flecs_itosize(mem_left), str, args);
     } else {
-        mem_required = vsnprintf(NULL, 0, str, args);
+        mem_required = ecs_os_vsnprintf(NULL, 0, str, args);
         mem_left = 0;
     }
 
@@ -295,7 +295,7 @@ void flecs_strbuf_vappend(
             flecs_strbuf_grow(b);
             mem_left = b->size - b->length;
         }
-        vsnprintf(flecs_strbuf_ptr(b), 
+        ecs_os_vsnprintf(flecs_strbuf_ptr(b), 
             flecs_itosize(mem_required + 1), str, arg_cpy);
     }
 
@@ -478,10 +478,11 @@ void ecs_strbuf_list_push(
     ecs_assert(b != NULL, ECS_INVALID_PARAMETER, NULL);
     ecs_assert(list_open != NULL, ECS_INVALID_PARAMETER, NULL);
     ecs_assert(separator != NULL, ECS_INVALID_PARAMETER, NULL);
-    ecs_assert(b->list_sp >= 0, ECS_INVALID_OPERATION, NULL);
+    ecs_assert(b->list_sp >= 0, ECS_INVALID_OPERATION, 
+        "strbuf list is corrupt");
     b->list_sp ++;
     ecs_assert(b->list_sp < ECS_STRBUF_MAX_LIST_DEPTH, 
-        ECS_INVALID_OPERATION, NULL);
+        ECS_INVALID_OPERATION, "max depth for strbuf list stack exceeded");
 
     b->list_stack[b->list_sp].count = 0;
     b->list_stack[b->list_sp].separator = separator;
@@ -502,7 +503,8 @@ void ecs_strbuf_list_pop(
 {
     ecs_assert(b != NULL, ECS_INVALID_PARAMETER, NULL);
     ecs_assert(list_close != NULL, ECS_INVALID_PARAMETER, NULL);
-    ecs_assert(b->list_sp > 0, ECS_INVALID_OPERATION, NULL);
+    ecs_assert(b->list_sp > 0, ECS_INVALID_OPERATION, 
+        "pop called more often than push for strbuf list");
 
     b->list_sp --;
     

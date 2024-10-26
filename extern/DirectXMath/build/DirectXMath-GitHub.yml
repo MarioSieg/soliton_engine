@@ -12,42 +12,34 @@ schedules:
     include:
     - main
 
-trigger:
-  branches:
-    include:
-    - main
-  paths:
-    exclude:
-    - README.md
-    - HISTORY.md
-    - SECURITY.md
-    - LICENSE
+# GitHub Actions handles MSBuild for CI/PR
+trigger: none
 pr:
   branches:
     include:
     - main
   paths:
-    exclude:
-    - README.md
-    - HISTORY.md
-    - SECURITY.md
-    - LICENSE
-  drafts: false
+    include:
+    - build/DirectXMath-GitHub.yml
 
 resources:
   repositories:
   - repository: self
     type: git
     ref: refs/heads/main
+  - repository: testRepo
+    name: walbourn/directxmathtest
+    type: github
+    endpoint: microsoft
+    ref: refs/heads/main
 
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
-variables:
-  GITHUB_PAT: $(GITHUBPUBLICTOKEN)
-  Codeql.Enabled: true
-
 pool:
   vmImage: windows-2019
+
+variables:
+  Codeql.Enabled: false
 
 jobs:
 - job: BUILD_DEV16
@@ -57,17 +49,14 @@ jobs:
   - checkout: self
     clean: true
     fetchTags: false
-  - task: DeleteFiles@1
-    displayName: Delete files from Tests
-    inputs:
-      SourceFolder: Tests
-      Contents: '**'
-      RemoveSourceFolder: true
-      RemoveDotFiles: true
-  - task: CmdLine@2
+    fetchDepth: 1
+    path: 's'
+  - checkout: testRepo
     displayName: Fetch Tests
-    inputs:
-      script: git clone --quiet --no-tags https://%GITHUB_PAT%@github.com/walbourn/directxmathtest.git Tests
+    clean: true
+    fetchTags: false
+    fetchDepth: 1
+    path: 's/Tests'
   - task: VSBuild@1
     displayName: Build solution math3_2019.sln x86dbg
     inputs:
@@ -341,10 +330,14 @@ jobs:
   - checkout: self
     clean: true
     fetchTags: false
-  - task: CmdLine@2
+    fetchDepth: 1
+    path: 's'
+  - checkout: testRepo
     displayName: Fetch Tests
-    inputs:
-      script: git clone --quiet --no-tags https://%GITHUB_PAT%@github.com/walbourn/directxmathtest.git Tests
+    clean: true
+    fetchTags: false
+    fetchDepth: 1
+    path: 's/Tests'
   - task: VSBuild@1
     displayName: Build solution math3_2017.sln x86dbg
     inputs:

@@ -63,9 +63,9 @@ enum class EConstraintSpace
 /// Class used to store the configuration of a constraint. Allows run-time creation of constraints.
 class JPH_EXPORT ConstraintSettings : public SerializableObject, public RefTarget<ConstraintSettings>
 {
-public:
 	JPH_DECLARE_SERIALIZABLE_VIRTUAL(JPH_EXPORT, ConstraintSettings)
 
+public:
 	using ConstraintResult = Result<Ref<ConstraintSettings>>;
 
 	/// Saves the contents of the constraint settings in binary form to inStream.
@@ -159,6 +159,12 @@ public:
 	/// @param inBodyID ID of the body that has changed
 	/// @param inDeltaCOM The delta of the center of mass of the body (shape->GetCenterOfMass() - shape_before_change->GetCenterOfMass())
 	virtual void				NotifyShapeChanged(const BodyID &inBodyID, Vec3Arg inDeltaCOM) = 0;
+
+	/// Notify the system that the configuration of the bodies and/or constraint has changed enough so that the warm start impulses should not be applied the next frame.
+	/// You can use this function for example when repositioning a ragdoll through Ragdoll::SetPose in such a way that the orientation of the bodies completely changes so that
+	/// the previous frame impulses are no longer a good approximation of what the impulses will be in the next frame. Calling this function when there are no big changes
+	/// will result in the constraints being much 'softer' than usual so they are more easily violated (e.g. a long chain of bodies might sag a bit if you call this every frame).
+	virtual void				ResetWarmStart() = 0;
 
 	///@name Solver interface
 	///@{

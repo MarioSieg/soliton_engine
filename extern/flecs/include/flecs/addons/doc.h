@@ -29,15 +29,61 @@ extern "C" {
  * @{
  */
 
-FLECS_API extern const ecs_entity_t ecs_id(EcsDocDescription);
+FLECS_API extern const ecs_entity_t ecs_id(EcsDocDescription); /**< Component id for EcsDocDescription. */
+
+/** Tag for adding a UUID to entities. 
+ * Added to an entity as (EcsDocDescription, EcsUuid) by ecs_doc_set_uuid().
+ */
+FLECS_API extern const ecs_entity_t EcsDocUuid;
+
+/** Tag for adding brief descriptions to entities. 
+ * Added to an entity as (EcsDocDescription, EcsBrief) by ecs_doc_set_brief().
+ */
 FLECS_API extern const ecs_entity_t EcsDocBrief;
+
+/** Tag for adding detailed descriptions to entities. 
+ * Added to an entity as (EcsDocDescription, EcsDocDetail) by ecs_doc_set_detail().
+ */
 FLECS_API extern const ecs_entity_t EcsDocDetail;
+
+/** Tag for adding a link to entities. 
+ * Added to an entity as (EcsDocDescription, EcsDocLink) by ecs_doc_set_link().
+ */
 FLECS_API extern const ecs_entity_t EcsDocLink;
+
+/** Tag for adding a color to entities. 
+ * Added to an entity as (EcsDocDescription, EcsDocColor) by ecs_doc_set_link().
+ */
 FLECS_API extern const ecs_entity_t EcsDocColor;
 
+/** Component that stores description.
+ * Used as pair together with the following tags to store entity documentation:
+ * - EcsName
+ * - EcsDocBrief
+ * - EcsDocDetail
+ * - EcsDocLink
+ * - EcsDocColor
+ */
 typedef struct EcsDocDescription {
     char *value;
 } EcsDocDescription;
+
+/** Add UUID to entity.
+ * Associate entity with an (external) UUID.
+ *
+ * @param world The world.
+ * @param entity The entity to which to add the UUID.
+ * @param uuid The UUID to add.
+ *
+ * @see ecs_doc_get_uuid()
+ * @see flecs::doc::set_uuid()
+ * @see flecs::entity_builder::set_doc_uuid()
+ */
+FLECS_API
+void ecs_doc_set_uuid(
+    ecs_world_t *world,
+    ecs_entity_t entity,
+    const char *uuid);
 
 /** Add human-readable name to entity.
  * Contrary to entity names, human readable names do not have to be unique and
@@ -121,6 +167,20 @@ void ecs_doc_set_color(
     ecs_world_t *world,
     ecs_entity_t entity,
     const char *color);
+
+/** Get UUID from entity.
+ * @param world The world.
+ * @param entity The entity from which to get the UUID.
+ * @return The UUID.
+ *
+ * @see ecs_doc_set_uuid()
+ * @see flecs::doc::get_uuid()
+ * @see flecs::entity_view::get_doc_uuid()
+ */
+FLECS_API
+const char* ecs_doc_get_uuid(
+    const ecs_world_t *world,
+    ecs_entity_t entity);
 
 /** Get human readable name from entity.
  * If entity does not have an explicit human readable name, this operation will
@@ -211,7 +271,14 @@ const char* ecs_doc_get_color(
     const ecs_world_t *world,
     ecs_entity_t entity);
 
-/* Module import */
+/** Doc module import function.
+ * Usage:
+ * @code
+ * ECS_IMPORT(world, FlecsDoc)
+ * @endcode
+ * 
+ * @param world The world.
+ */
 FLECS_API
 void FlecsDocImport(
     ecs_world_t *world);

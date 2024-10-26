@@ -99,7 +99,8 @@ private:
 // A "call" is a pair: <caller, callee>.
 // There can be duplicates. General assumption is the list is small.
 struct TCall {
-    TCall(const TString& pCaller, const TString& pCallee) : caller(pCaller), callee(pCallee) { }
+    TCall(const TString& pCaller, const TString& pCallee)
+        : caller(pCaller), callee(pCallee), visited(false), currentPath(false), errorGiven(false) { }
     TString caller;
     TString callee;
     bool visited;
@@ -123,8 +124,10 @@ struct TRange {
 // within the same location range, component range, and index value.  Locations don't alias unless
 // all other dimensions of their range overlap.
 struct TIoRange {
-    TIoRange(TRange location, TRange component, TBasicType basicType, int index)
-        : location(location), component(component), basicType(basicType), index(index) { }
+    TIoRange(TRange location, TRange component, TBasicType basicType, int index, bool centroid, bool smooth, bool flat, bool sample, bool patch)
+        : location(location), component(component), basicType(basicType), index(index), centroid(centroid), smooth(smooth), flat(flat), sample(sample), patch(patch)
+    {
+    }
     bool overlap(const TIoRange& rhs) const
     {
         return location.overlap(rhs.location) && component.overlap(rhs.component) && index == rhs.index;
@@ -133,6 +136,11 @@ struct TIoRange {
     TRange component;
     TBasicType basicType;
     int index;
+    bool centroid;
+    bool smooth;
+    bool flat;
+    bool sample;
+    bool patch;
 };
 
 // An offset range is a 2-D rectangle; the set of (binding, offset) pairs all lying
@@ -724,6 +732,11 @@ public:
         usePhysicalStorageBuffer = true;
     }
     bool usingPhysicalStorageBuffer() const { return usePhysicalStorageBuffer; }
+    void setReplicatedComposites()
+    {
+        useReplicatedComposites = true;
+    }
+    bool usingReplicatedComposites() const { return useReplicatedComposites; }
     void setUseVariablePointers()
     {
         useVariablePointers = true;
@@ -1038,6 +1051,7 @@ public:
     void mergeGlobalUniformBlocks(TInfoSink& infoSink, TIntermediate& unit, bool mergeExistingOnly);
     void mergeUniformObjects(TInfoSink& infoSink, TIntermediate& unit);
     void checkStageIO(TInfoSink&, TIntermediate&);
+    void optimizeStageIO(TInfoSink&, TIntermediate&);
 
     bool buildConvertOp(TBasicType dst, TBasicType src, TOperator& convertOp) const;
     TIntermTyped* createConversion(TBasicType convertTo, TIntermTyped* node) const;
@@ -1050,6 +1064,7 @@ public:
     int checkLocationRT(int set, int location);
     int addUsedOffsets(int binding, int offset, int numOffsets);
     bool addUsedConstantId(int id);
+    GLSLANG_EXPORT_FOR_TESTS
     static int computeTypeLocationSize(const TType&, EShLanguage);
     static int computeTypeUniformLocationSize(const TType&);
 
@@ -1057,7 +1072,7 @@ public:
     static int getBaseAlignment(const TType&, int& size, int& stride, TLayoutPacking layoutPacking, bool rowMajor);
     static int getScalarAlignment(const TType&, int& size, int& stride, bool rowMajor);
     static int getMemberAlignment(const TType&, int& size, int& stride, TLayoutPacking layoutPacking, bool rowMajor);
-    static bool improperStraddle(const TType& type, int size, int offset);
+    static bool improperStraddle(const TType& type, int size, int offset, bool vectorLike);
     static void updateOffset(const TType& parentType, const TType& memberType, int& offset, int& memberSize);
     static int getOffset(const TType& type, int index);
     static int getBlockSize(const TType& blockType);
@@ -1237,6 +1252,7 @@ protected:
     bool subgroupUniformControlFlow;
     bool maximallyReconverges;
     bool usePhysicalStorageBuffer;
+    bool useReplicatedComposites { false };
 
     TSpirvRequirement* spirvRequirement;
     TSpirvExecutionMode* spirvExecutionMode;
@@ -1251,7 +1267,7 @@ protected:
 
     std::unordered_set<int> usedConstantId; // specialization constant ids used
     std::vector<TOffsetRange> usedAtomics;  // sets of bindings used by atomic counters
-    std::vector<TIoRange> usedIo[4];        // sets of used locations, one for each of in, out, uniform, and buffers
+    std::vector<TIoRange> usedIo[5];        // sets of used locations, one for each of in, out, uniform, and buffers
     std::vector<TRange> usedIoRT[4];        // sets of used location, one for rayPayload/rayPayloadIN,
                                             // one for callableData/callableDataIn, one for hitObjectAttributeNV and
                                             // one for shaderrecordhitobjectNV

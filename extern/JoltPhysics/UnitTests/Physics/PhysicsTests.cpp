@@ -448,7 +448,7 @@ TEST_SUITE("PhysicsTests")
 		TestPhysicsApplyForce(c2);
 	}
 
-	// Test angular accelartion for a box by applying torque every frame
+	// Test angular acceleration for a box by applying torque every frame
 	static void TestPhysicsApplyTorque(PhysicsTestContext &ioContext)
 	{
 		const RVec3 cInitialPos(0.0f, 10.0f, 0.0f);
@@ -492,7 +492,7 @@ TEST_SUITE("PhysicsTests")
 		TestPhysicsApplyTorque(c2);
 	}
 
-	// Let a sphere bounce on the floor with restition = 1
+	// Let a sphere bounce on the floor with restitution = 1
 	static void TestPhysicsCollisionElastic(PhysicsTestContext &ioContext)
 	{
 		const float cSimulationTime = 1.0f;
@@ -850,7 +850,7 @@ TEST_SUITE("PhysicsTests")
 		// Simulate a step
 		c.SimulateSingleStep();
 
-		// Check that it has triggered contact points and has bounced from it's initial position (effectively travelling the extra distance to the floor and back for free)
+		// Check that it has triggered contact points and has bounced from it's initial position (effectively traveling the extra distance to the floor and back for free)
 		CHECK(contact_listener.GetEntryCount() == 4); // 2 validates and 2 contacts
 		CHECK(contact_listener.Contains(LoggingContactListener::EType::Validate, box.GetID(), floor.GetID()));
 		CHECK(contact_listener.Contains(LoggingContactListener::EType::Add, box.GetID(), floor.GetID()));
@@ -1133,7 +1133,7 @@ TEST_SUITE("PhysicsTests")
 		// Step the world
 		ioContext.SimulateSingleStep();
 
-		// Other bodies should now be awake and each body should only collide with its neighbour
+		// Other bodies should now be awake and each body should only collide with its neighbor
 		CHECK(activation_listener.GetEntryCount() == cNumBodies - 1);
 		CHECK(contact_listener.GetEntryCount() == 2 * (cNumBodies - 1));
 
@@ -1488,33 +1488,36 @@ TEST_SUITE("PhysicsTests")
 			// Apply a force and torque in 3D
 			Vec3 force(100000, 110000, 120000);
 			box.AddForce(force);
-			Vec3 local_torque(13000, 14000, 15000);
-			box.AddTorque(initial_rotation * local_torque);
+			Vec3 torque(13000, 14000, 15000);
+			box.AddTorque(torque);
 
 			// Simulate
 			c.SimulateSingleStep();
 
 			// Cancel components that should not be allowed by the allowed DOFs
+			Vec3 linear_lock = Vec3::sReplicate(1.0f), angular_lock = Vec3::sReplicate(1.0f);
 			for (uint axis = 0; axis < 3; ++axis)
 			{
 				if ((allowed_dofs & (1 << axis)) == 0)
-					force.SetComponent(axis, 0.0f);
+					linear_lock.SetComponent(axis, 0.0f);
 
 				if ((allowed_dofs & (0b1000 << axis)) == 0)
-					local_torque.SetComponent(axis, 0.0f);
+					angular_lock.SetComponent(axis, 0.0f);
 			}
 
 			// Check resulting linear velocity
 			MassProperties mp = box_shape->GetMassProperties();
-			Vec3 expected_linear_velocity = force / mp.mMass * c.GetDeltaTime();
-			CHECK((force == Vec3::sZero() || expected_linear_velocity.Length() > 1.0f)); // Just to check that we applied a high enough force
+			Vec3 expected_linear_velocity = linear_lock * (force / mp.mMass * c.GetDeltaTime());
+			CHECK((linear_lock == Vec3::sZero() || expected_linear_velocity.Length() > 1.0f)); // Just to check that we applied a high enough force
 			CHECK_APPROX_EQUAL(box.GetLinearVelocity(), expected_linear_velocity);
 			RVec3 expected_position = initial_position + expected_linear_velocity * c.GetDeltaTime();
 			CHECK_APPROX_EQUAL(box.GetPosition(), expected_position);
 
 			// Check resulting angular velocity
-			Vec3 expected_angular_velocity = initial_rotation * (mp.mInertia.Inversed3x3() * local_torque) * c.GetDeltaTime();
-			CHECK((local_torque == Vec3::sZero() || expected_angular_velocity.Length() > 1.0f)); // Just to check that we applied a high enough torque
+			Mat44 inv_inertia = Mat44::sRotation(initial_rotation) * mp.mInertia.Inversed3x3() * Mat44::sRotation(initial_rotation.Conjugated());
+			inv_inertia = Mat44::sScale(angular_lock) * inv_inertia * Mat44::sScale(angular_lock); // Clear row and column for locked axes
+			Vec3 expected_angular_velocity = inv_inertia * torque * c.GetDeltaTime();
+			CHECK((angular_lock == Vec3::sZero() || expected_angular_velocity.Length() > 1.0f)); // Just to check that we applied a high enough torque
 			CHECK_APPROX_EQUAL(box.GetAngularVelocity(), expected_angular_velocity);
 			float expected_angular_velocity_len = expected_angular_velocity.Length();
 			Quat expected_rotation = expected_angular_velocity_len > 0.0f? Quat::sRotation(expected_angular_velocity / expected_angular_velocity_len, expected_angular_velocity_len * c.GetDeltaTime()) * initial_rotation : initial_rotation;
@@ -1567,7 +1570,7 @@ TEST_SUITE("PhysicsTests")
 		public:
 			bool						ShouldSaveBody(const BodyID &inBodyID) const
 			{
-				return find(mIgnoreBodies.cbegin(), mIgnoreBodies.cend(), inBodyID) == mIgnoreBodies.cend();
+				return std::find(mIgnoreBodies.cbegin(), mIgnoreBodies.cend(), inBodyID) == mIgnoreBodies.cend();
 			}
 
 			virtual bool				ShouldSaveBody(const Body &inBody) const override
@@ -1590,7 +1593,7 @@ TEST_SUITE("PhysicsTests")
 			Vec3 gravity = c.GetSystem()->GetGravity();
 			Vec3 upside_down_gravity = -gravity;
 
-  			// Create the ground.
+			// Create the ground.
 			Body &ground = c.CreateFloor();
 
 			// Create two sets of bodies that each overlap
@@ -1609,7 +1612,7 @@ TEST_SUITE("PhysicsTests")
 			if (mode == 1)
 			{
 				// Don't save the global state
-				state_to_save = EStateRecorderState(uint(EStateRecorderState::All) ^ uint(EStateRecorderState::Global));
+				state_to_save = EStateRecorderState::All ^ EStateRecorderState::Global;
 
 				// Don't save some bodies
 				filter.mIgnoreBodies.push_back(ground.GetID());
@@ -1764,6 +1767,108 @@ TEST_SUITE("PhysicsTests")
 		}
 	}
 
+	TEST_CASE("TestMultiPartRestoreState")
+	{
+		class MyFilter : public StateRecorderFilter
+		{
+		public:
+										MyFilter(const Array<BodyID> &inStoredBodies) : mStoredBodies(inStoredBodies) { }
+
+			bool						ShouldSaveBody(const BodyID &inBodyID) const
+			{
+				return std::find(mStoredBodies.cbegin(), mStoredBodies.cend(), inBodyID) != mStoredBodies.cend();
+			}
+
+			virtual bool				ShouldSaveBody(const Body &inBody) const override
+			{
+				if (ShouldSaveBody(inBody.GetID()))
+				{
+					++mNumBodies;
+					return true;
+				}
+				return false;
+			}
+
+			virtual bool				ShouldSaveContact(const BodyID &inBody1, const BodyID &inBody2) const override
+			{
+				if (ShouldSaveBody(inBody1) || ShouldSaveBody(inBody2))
+				{
+					++mNumContacts;
+					return true;
+				}
+				return false;
+			}
+
+			const Array<BodyID> &		mStoredBodies;
+			mutable int					mNumBodies = 0;
+			mutable int					mNumContacts = 0;
+		};
+
+		PhysicsTestContext c;
+		c.CreateFloor();
+
+		// Create 1st set of moving bodies
+		constexpr int cNumMoving1 = 10;
+		Array<BodyID> moving1;
+		for (int i = 0; i < cNumMoving1; ++i)
+			moving1.push_back(c.CreateSphere(RVec3(0, 2.0f + 2.0f * i, 0.01f * i), 1.0f, EMotionType::Dynamic, EMotionQuality::Discrete, Layers::MOVING, EActivation::Activate).GetID());
+
+		// Create 2nd set of moving bodies, note that although the bodies overlap with the 1st set, they don't collide because of their layer.
+		// We need to create disjoint sets for restoring in parts to work.
+		constexpr int cNumMoving2 = 12;
+		Array<BodyID> moving2;
+		for (int i = 0; i < cNumMoving2; ++i)
+			moving2.push_back(c.CreateSphere(RVec3(1.0f, 2.0f + 2.0f * i, 0.01f * i), 1.0f, EMotionType::Dynamic, EMotionQuality::Discrete, Layers::MOVING2, EActivation::Activate).GetID());
+
+		// Simulate for a short while to get some contacts
+		c.Simulate(2.0f);
+
+		// Save full snapshot
+		StateRecorderImpl initial_state;
+		c.GetSystem()->SaveState(initial_state);
+
+		// Save everything relating to 1st set of bodies
+		MyFilter filter1(moving1);
+		StateRecorderImpl state1;
+		c.GetSystem()->SaveState(state1, EStateRecorderState::All, &filter1);
+		CHECK(filter1.mNumBodies == cNumMoving1);
+		CHECK(filter1.mNumContacts > cNumMoving1 / 2); // Many bodies should be in contact now, if not we're not testing contact restoring
+		CHECK(state1.GetDataSize() < initial_state.GetDataSize()); // Should be smaller than the full state
+
+		// Save everything relating to 2nd set of bodies
+		MyFilter filter2(moving2);
+		StateRecorderImpl state2;
+		c.GetSystem()->SaveState(state2, EStateRecorderState::Bodies | EStateRecorderState::Contacts, &filter2);
+		CHECK(filter2.mNumBodies == cNumMoving2);
+		CHECK(filter2.mNumContacts > cNumMoving2 / 2);
+		CHECK(state2.GetDataSize() < initial_state.GetDataSize());
+
+		// Simulate for 2 seconds
+		c.Simulate(2.0f);
+
+		// Save result
+		StateRecorderImpl final_state;
+		c.GetSystem()->SaveState(final_state);
+
+		// Restore the initial state in parts
+		state1.SetIsLastPart(false);
+		c.GetSystem()->RestoreState(state1);
+		c.GetSystem()->RestoreState(state2);
+
+		// Verify we're back to the first state
+		StateRecorderImpl verify1;
+		c.GetSystem()->SaveState(verify1);
+		CHECK(initial_state.IsEqual(verify1));
+
+		// Simulate for 2 seconds again
+		c.Simulate(2.0f);
+
+		// Check we end up in the final state again
+		StateRecorderImpl verify2;
+		c.GetSystem()->SaveState(verify2);
+		CHECK(final_state.IsEqual(verify2));
+	}
+
 	// This tests that when switching UseManifoldReduction on/off we get the correct contact callbacks
 	TEST_CASE("TestSwitchUseManifoldReduction")
 	{
@@ -1783,7 +1888,7 @@ TEST_SUITE("PhysicsTests")
 		shape_settings->AddShape(Vec3(-5, 0, 0), Quat::sIdentity(), box_shape);
 		shape_settings->AddShape(Vec3(0, 0, 5), Quat::sIdentity(), box_shape);
 		shape_settings->AddShape(Vec3(0, 0, -5), Quat::sIdentity(), box_shape);
-		RefConst<StaticCompoundShape> compound_shape = static_cast<const StaticCompoundShape *>(shape_settings->Create().Get().GetPtr());
+		RefConst<StaticCompoundShape> compound_shape = StaticCast<StaticCompoundShape>(shape_settings->Create().Get());
 		SubShapeID sub_shape_ids[] = {
 			compound_shape->GetSubShapeIDFromIndex(0, SubShapeIDCreator()).GetID(),
 			compound_shape->GetSubShapeIDFromIndex(1, SubShapeIDCreator()).GetID(),

@@ -268,10 +268,16 @@ EnumValues PackedVectorFormatParams;
 EnumValues CooperativeMatrixOperandsParams;
 EnumValues CooperativeMatrixLayoutParams;
 EnumValues CooperativeMatrixUseParams;
+EnumValues CooperativeMatrixReduceParams;
+EnumValues TensorClampModeParams;
+EnumValues TensorAddressingOperandsParams;
 EnumValues InitializationModeQualifierParams;
 EnumValues HostAccessQualifierParams;
 EnumValues LoadCacheControlParams;
 EnumValues StoreCacheControlParams;
+EnumValues NamedMaximumNumberOfRegistersParams;
+EnumValues RawAccessChainOperandsParams;
+EnumValues FPEncodingParams;
 
 std::pair<bool, std::string> ReadFile(const std::string& path)
 {
@@ -422,10 +428,16 @@ ClassOptionality ToOperandClassAndOptionality(const std::string& operandKind, co
             type = OperandPackedVectorFormat;
         } else if (operandKind == "CooperativeMatrixOperands") {
             type = OperandCooperativeMatrixOperands;
+        } else if (operandKind == "TensorAddressingOperands") {
+            type = OperandTensorAddressingOperands;
         } else if (operandKind == "CooperativeMatrixLayout") {
             type = OperandCooperativeMatrixLayout;
         } else if (operandKind == "CooperativeMatrixUse") {
             type = OperandCooperativeMatrixUse;
+        } else if (operandKind == "CooperativeMatrixReduce") {
+            type = OperandCooperativeMatrixReduce;
+        } else if (operandKind == "TensorClampMode") {
+            type = OperandTensorClampMode;
         } else if (operandKind == "InitializationModeQualifier") {
             type = OperandInitializationModeQualifier;
         } else if (operandKind == "HostAccessQualifier") {
@@ -434,6 +446,12 @@ ClassOptionality ToOperandClassAndOptionality(const std::string& operandKind, co
             type = OperandLoadCacheControl;
         } else if (operandKind == "StoreCacheControl") {
             type = OperandStoreCacheControl;
+        } else if (operandKind == "NamedMaximumNumberOfRegisters") {
+            type = OperandNamedMaximumNumberOfRegisters;
+        } else if (operandKind == "RawAccessChainOperands") {
+            type = OperandRawAccessChainOperands;
+        } else if (operandKind == "FPEncoding") {
+            type = OperandFPEncoding;
         }
 
         if (type == OperandNone) {
@@ -522,6 +540,18 @@ void jsonToSpirv(const std::string& jsonPath, bool buildingHeaders)
         return result;
     };
 
+    const auto getAliases = [](const Json::Value& object) {
+        Aliases result;
+        const auto& aliases = object["aliases"];
+        if (!aliases.empty()) {
+            assert(aliases.isArray());
+            for (const auto& alias : aliases) {
+                result.emplace_back(alias.asString());
+            }
+        }
+        return result;
+    };
+
     // set up the printing classes
     std::unordered_set<std::string> tags;  // short-lived local for error checking below
     const Json::Value printingClasses = root["instruction_printing_class"];
@@ -541,6 +571,8 @@ void jsonToSpirv(const std::string& jsonPath, bool buildingHeaders)
     // process the instructions
     const Json::Value insts = root["instructions"];
     unsigned maxOpcode = 0;
+    std::string maxName = "";
+    bool maxCore = false;
     bool firstOpcode = true;
     for (const auto& inst : insts) {
         const auto printingClass = inst["class"].asString();
@@ -559,8 +591,11 @@ void jsonToSpirv(const std::string& jsonPath, bool buildingHeaders)
         }
         const auto opcode = inst["opcode"].asUInt();
         const std::string name = inst["opname"].asString();
+        std::string version = inst["version"].asString();
         if (firstOpcode) {
           maxOpcode = opcode;
+          maxName = name;
+          maxCore = version != "None";
           firstOpcode = false;
         } else {
           if (maxOpcode > opcode) {
@@ -568,12 +603,18 @@ void jsonToSpirv(const std::string& jsonPath, bool buildingHeaders)
                       << " is out of order. It follows the instruction with opcode " << maxOpcode
                       << std::endl;
             std::exit(1);
+          } else if (maxOpcode == opcode) {
+            std::cerr << "Error: " << name << " is an alias of " << maxName
+            << ". Use \"aliases\" instead." << std::endl;
+            std::exit(1);
           } else {
             maxOpcode = opcode;
+            maxName = name;
+            maxCore = version != "None";
           }
         }
+        Aliases aliases = getAliases(inst);
         EnumCaps caps = getCaps(inst);
-        std::string version = inst["version"].asString();
         std::string lastVersion = inst["lastVersion"].asString();
         Extensions exts = getExts(inst);
         OperandParameters operands;
@@ -589,7 +630,7 @@ void jsonToSpirv(const std::string& jsonPath, bool buildingHeaders)
             }
         }
         InstructionDesc.emplace_back(
-            std::move(EnumValue(opcode, name,
+            std::move(EnumValue(opcode, name, std::move(aliases),
                                 std::move(caps), std::move(version), std::move(lastVersion), std::move(exts),
                                 std::move(operands))),
              printingClass, defTypeId, defResultId);
@@ -601,7 +642,7 @@ void jsonToSpirv(const std::string& jsonPath, bool buildingHeaders)
     // Specific additional context-dependent operands
 
     // Populate dest with EnumValue objects constructed from source.
-    const auto populateEnumValues = [&getCaps,&getExts,&errorCount](EnumValues* dest, const Json::Value& source, bool bitEnum) {
+    const auto populateEnumValues = [&getCaps,&getAliases,&getExts,&errorCount](EnumValues* dest, const Json::Value& source, bool bitEnum) {
         // A lambda for determining the numeric value to be used for a given
         // enumerant in JSON form, and whether that value is a 0 in a bitfield.
         auto getValue = [&bitEnum](const Json::Value& enumerant) {
@@ -619,28 +660,40 @@ void jsonToSpirv(const std::string& jsonPath, bool buildingHeaders)
         };
 
         unsigned maxValue = 0;
+        std::string maxName = "";
+        bool maxCore = false;
         bool firstValue = true;
         for (const auto& enumerant : source["enumerants"]) {
             unsigned value;
             bool skip_zero_in_bitfield;
             std::tie(value, skip_zero_in_bitfield) = getValue(enumerant);
+            std::string name = enumerant["enumerant"].asString();
+            std::string version = enumerant["version"].asString();
             if (skip_zero_in_bitfield)
                 continue;
             if (firstValue) {
               maxValue = value;
+              maxName = name;
+              maxCore = version != "None";
               firstValue = false;
             } else {
               if (maxValue > value) {
-                std::cerr << "Error: " << source["kind"] << " enumerant " << enumerant["enumerant"]
+                std::cerr << "Error: " << source["kind"] << " enumerant " << name
                           << " is out of order. It has value " <<  value
                           << " but follows the enumerant with value " << maxValue << std::endl;
                 std::exit(1);
+              } else if (maxValue == value ) {
+                std::cerr << "Error: " << source["kind"] << " enumerant " << name
+                          << " is an alias of " << maxName << ". Use \"aliases\" instead." << std::endl;
+                std::exit(1);
               } else {
                 maxValue = value;
+                maxName = name;
+                maxCore = version != "None";
               }
             }
+            Aliases aliases = getAliases(enumerant);
             EnumCaps caps(getCaps(enumerant));
-            std::string version = enumerant["version"].asString();
             std::string lastVersion = enumerant["lastVersion"].asString();
             Extensions exts(getExts(enumerant));
             OperandParameters params;
@@ -655,7 +708,7 @@ void jsonToSpirv(const std::string& jsonPath, bool buildingHeaders)
                 }
             }
             dest->emplace_back(
-                value, enumerant["enumerant"].asString(),
+                value, enumerant["enumerant"].asString(), std::move(aliases),
                 std::move(caps), std::move(version), std::move(lastVersion), std::move(exts), std::move(params));
         }
     };
@@ -765,10 +818,16 @@ void jsonToSpirv(const std::string& jsonPath, bool buildingHeaders)
             establishOperandClass(enumName, OperandPackedVectorFormat, &PackedVectorFormatParams, operandEnum, category);
         } else if (enumName == "CooperativeMatrixOperands") {
             establishOperandClass(enumName, OperandCooperativeMatrixOperands, &CooperativeMatrixOperandsParams, operandEnum, category);
+        } else if (enumName == "TensorAddressingOperands") {
+            establishOperandClass(enumName, OperandTensorAddressingOperands, &TensorAddressingOperandsParams, operandEnum, category);
         } else if (enumName == "CooperativeMatrixLayout") {
             establishOperandClass(enumName, OperandCooperativeMatrixLayout, &CooperativeMatrixLayoutParams, operandEnum, category);
         } else if (enumName == "CooperativeMatrixUse") {
             establishOperandClass(enumName, OperandCooperativeMatrixUse, &CooperativeMatrixUseParams, operandEnum, category);
+        } else if (enumName == "CooperativeMatrixReduce") {
+            establishOperandClass(enumName, OperandCooperativeMatrixReduce, &CooperativeMatrixReduceParams, operandEnum, category);
+        } else if (enumName == "TensorClampMode") {
+            establishOperandClass(enumName, OperandTensorClampMode, &TensorClampModeParams, operandEnum, category);
         } else if (enumName == "InitializationModeQualifier") {
             establishOperandClass(enumName, OperandInitializationModeQualifier, &InitializationModeQualifierParams, operandEnum, category);
         } else if (enumName == "HostAccessQualifier") {
@@ -777,6 +836,12 @@ void jsonToSpirv(const std::string& jsonPath, bool buildingHeaders)
             establishOperandClass(enumName, OperandLoadCacheControl, &LoadCacheControlParams, operandEnum, category);
         } else if (enumName == "StoreCacheControl") {
             establishOperandClass(enumName, OperandStoreCacheControl, &StoreCacheControlParams, operandEnum, category);
+        } else if (enumName == "NamedMaximumNumberOfRegisters") {
+            establishOperandClass(enumName, OperandNamedMaximumNumberOfRegisters, &NamedMaximumNumberOfRegistersParams, operandEnum, category);
+        } else if (enumName == "RawAccessChainOperands") {
+            establishOperandClass(enumName, OperandRawAccessChainOperands, &RawAccessChainOperandsParams, operandEnum, category);
+        } else if (enumName == "FPEncoding") {
+            establishOperandClass(enumName, OperandFPEncoding, &FPEncodingParams, operandEnum, category);
         }
     }
 

@@ -22,9 +22,9 @@ class PhysicsSystem;
 /// See: https://www.asawicki.info/Mirror/Car%20Physics%20for%20Games/Car%20Physics%20for%20Games.html
 class JPH_EXPORT VehicleConstraintSettings : public ConstraintSettings
 {
-public:
 	JPH_DECLARE_SERIALIZABLE_VIRTUAL(JPH_EXPORT, VehicleConstraintSettings)
 
+public:
 	/// Saves the contents of the constraint settings in binary form to inStream.
 	virtual void				SaveBinaryState(StreamOut &inStream) const override;
 
@@ -33,7 +33,7 @@ public:
 	float						mMaxPitchRollAngle = JPH_PI;				///< Defines the maximum pitch/roll angle (rad), can be used to avoid the car from getting upside down. The vehicle up direction will stay within a cone centered around the up axis with half top angle mMaxPitchRollAngle, set to pi to turn off.
 	Array<Ref<WheelSettings>>	mWheels;									///< List of wheels and their properties
 	Array<VehicleAntiRollBar>	mAntiRollBars;								///< List of anti rollbars and their properties
-	Ref<VehicleControllerSettings> mController;								///< Defines how the vehicle can accelerate / decellerate
+	Ref<VehicleControllerSettings> mController;								///< Defines how the vehicle can accelerate / decelerate
 
 protected:
 	/// This function should not be called directly, it is used by sRestoreFromBinaryState.
@@ -88,7 +88,7 @@ public:
 	const CombineFunction &		GetCombineFriction() const					{ return mCombineFriction; }
 
 	/// Callback function to notify of current stage in PhysicsStepListener::OnStep.
-	using StepCallback = function<void(VehicleConstraint &inVehicle, float inDeltaTime, PhysicsSystem &inPhysicsSystem)>;
+	using StepCallback = function<void(VehicleConstraint &inVehicle, const PhysicsStepListenerContext &inContext)>;
 
 	/// Callback function to notify that PhysicsStepListener::OnStep has started for this vehicle. Default is to do nothing.
 	/// Can be used to allow higher-level code to e.g. control steering. This is the last moment that the position/orientation of the vehicle can be changed.
@@ -108,6 +108,12 @@ public:
 	const StepCallback &		GetPostStepCallback() const					{ return mPostStepCallback; }
 	void						SetPostStepCallback(const StepCallback &inPostStepCallback) { mPostStepCallback = inPostStepCallback; }
 
+	/// Override gravity for this vehicle. Note that overriding gravity will set the gravity factor of the vehicle body to 0 and apply gravity in the PhysicsStepListener instead.
+	void						OverrideGravity(Vec3Arg inGravity)			{ mGravityOverride = inGravity; mIsGravityOverridden = true; }
+	bool						IsGravityOverridden() const					{ return mIsGravityOverridden; }
+	Vec3						GetGravityOverride() const					{ return mGravityOverride; }
+	void						ResetGravityOverride()						{ mIsGravityOverridden = false; mBody->GetMotionProperties()->SetGravityFactor(1.0f); } ///< Note that resetting the gravity override will restore the gravity factor of the vehicle body to 1.
+
 	/// Get the local space forward vector of the vehicle
 	Vec3						GetLocalForward() const						{ return mForward; }
 
@@ -120,10 +126,10 @@ public:
 	/// Access to the vehicle body
 	Body *						GetVehicleBody() const						{ return mBody; }
 
-	/// Access to the vehicle controller interface (determines acceleration / decelleration)
+	/// Access to the vehicle controller interface (determines acceleration / deceleration)
 	const VehicleController *	GetController() const						{ return mController; }
 
-	/// Access to the vehicle controller interface (determines acceleration / decelleration)
+	/// Access to the vehicle controller interface (determines acceleration / deceleration)
 	VehicleController *			GetController()								{ return mController; }
 
 	/// Get the state of the wheels
@@ -136,7 +142,7 @@ public:
 	Wheel *						GetWheel(uint inIdx)						{ return mWheels[inIdx]; }
 	const Wheel *				GetWheel(uint inIdx) const					{ return mWheels[inIdx]; }
 
-	/// Get the basis vectors for the wheel in local space to the vehicle body (note: basis does not rotate when the wheel rotates arounds its axis)
+	/// Get the basis vectors for the wheel in local space to the vehicle body (note: basis does not rotate when the wheel rotates around its axis)
 	/// @param inWheel Wheel to fetch basis for
 	/// @param outForward Forward vector for the wheel
 	/// @param outUp Up vector for the wheel
@@ -174,6 +180,7 @@ public:
 	virtual bool				IsActive() const override					{ return mIsActive && Constraint::IsActive(); }
 	virtual void				NotifyShapeChanged(const BodyID &inBodyID, Vec3Arg inDeltaCOM) override { /* Do nothing */ }
 	virtual void				SetupVelocityConstraint(float inDeltaTime) override;
+	virtual void				ResetWarmStart() override;
 	virtual void				WarmStartVelocityConstraint(float inWarmStartImpulseRatio) override;
 	virtual bool				SolveVelocityConstraint(float inDeltaTime) override;
 	virtual bool				SolvePositionConstraint(float inDeltaTime, float inBaumgarte) override;
@@ -189,7 +196,7 @@ public:
 
 private:
 	// See: PhysicsStepListener
-	virtual void				OnStep(float inDeltaTime, PhysicsSystem &inPhysicsSystem) override;
+	virtual void				OnStep(const PhysicsStepListenerContext &inContext) override;
 
 	// Calculate the position where the suspension and traction forces should be applied in world space, relative to the center of mass of both bodies
 	void						CalculateSuspensionForcePoint(const Wheel &inWheel, Vec3 &outR1PlusU, Vec3 &outR2) const;
@@ -197,14 +204,18 @@ private:
 	// Calculate the constraint properties for mPitchRollPart
 	void						CalculatePitchRollConstraintProperties(RMat44Arg inBodyTransform);
 
-	// Simluation information
+	// Gravity override
+	bool						mIsGravityOverridden = false;				///< If the gravity is currently overridden
+	Vec3						mGravityOverride = Vec3::sZero();			///< Gravity override value, replaces PhysicsSystem::GetGravity() when mIsGravityOverridden is true
+
+	// Simulation information
 	Body *						mBody;										///< Body of the vehicle
 	Vec3						mForward;									///< Local space forward vector for the vehicle
 	Vec3						mUp;										///< Local space up vector for the vehicle
 	Vec3						mWorldUp;									///< Vector indicating the world space up direction (used to limit vehicle pitch/roll)
 	Wheels						mWheels;									///< Wheel states of the vehicle
 	Array<VehicleAntiRollBar>	mAntiRollBars;								///< Anti rollbars of the vehicle
-	VehicleController *			mController;								///< Controls the acceleration / declerration of the vehicle
+	VehicleController *			mController;								///< Controls the acceleration / deceleration of the vehicle
 	bool						mIsActive = false;							///< If this constraint is active
 	uint						mNumStepsBetweenCollisionTestActive = 1;	///< Number of simulation steps between wheel collision tests when the vehicle is active
 	uint						mNumStepsBetweenCollisionTestInactive = 1;	///< Number of simulation steps between wheel collision tests when the vehicle is inactive

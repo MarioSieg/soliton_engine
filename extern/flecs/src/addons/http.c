@@ -46,6 +46,9 @@
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <windows.h>
@@ -134,7 +137,7 @@ typedef struct ecs_http_request_entry_t {
     char *content;
     int32_t content_length;
     int code;
-    ecs_ftime_t time;
+    double time;
 } ecs_http_request_entry_t;
 
 /* HTTP server struct */
@@ -149,8 +152,8 @@ struct ecs_http_server_t {
     ecs_http_reply_action_t callback;
     void *ctx;
 
-    ecs_ftime_t cache_timeout;
-    ecs_ftime_t cache_purge_timeout;
+    double cache_timeout;
+    double cache_purge_timeout;
 
     ecs_sparse_t connections; /* sparse<http_connection_t> */
     ecs_sparse_t requests; /* sparse<http_request_t> */
@@ -553,7 +556,7 @@ ecs_http_request_entry_t* http_find_request_entry(
         &srv->request_cache, &key, ecs_http_request_entry_t);
 
     if (entry) {
-        ecs_ftime_t tf = (ecs_ftime_t)ecs_time_measure(&t);
+        double tf = ecs_time_measure(&t);
         if ((tf - entry->time) < srv->cache_timeout) {
             return entry;
         }
@@ -588,7 +591,7 @@ void http_insert_request_entry(
     }
 
     ecs_time_t t = {0, 0};
-    entry->time = (ecs_ftime_t)ecs_time_measure(&t);
+    entry->time = ecs_time_measure(&t);
     entry->content_length = ecs_strbuf_written(&reply->body);
     entry->content = ecs_strbuf_get(&reply->body);
     entry->code = reply->code;
@@ -983,7 +986,7 @@ void http_append_send_headers(
     ecs_strbuf_appendlit(hdrs, "Access-Control-Allow-Origin: *\r\n");
     if (preflight) {
         ecs_strbuf_appendlit(hdrs, "Access-Control-Allow-Private-Network: true\r\n");
-        ecs_strbuf_appendlit(hdrs, "Access-Control-Allow-Methods: GET, PUT, OPTIONS\r\n");
+        ecs_strbuf_appendlit(hdrs, "Access-Control-Allow-Methods: GET, PUT, DELETE, OPTIONS\r\n");
         ecs_strbuf_appendlit(hdrs, "Access-Control-Max-Age: 600\r\n");
     }
 
@@ -1156,7 +1159,7 @@ http_conn_res_t http_init_connection(
 }
 
 static
-void http_accept_connections(
+int http_accept_connections(
     ecs_http_server_t* srv, 
     const struct sockaddr* addr, 
     ecs_size_t addr_len) 
@@ -1170,7 +1173,7 @@ void http_accept_connections(
         if (result) {
             ecs_warn("http: WSAStartup failed with GetLastError = %d\n", 
                 GetLastError());
-            return;
+            return 0;
         }
     } else {
         http_close(&testsocket);
@@ -1180,6 +1183,8 @@ void http_accept_connections(
     /* Resolve name + port (used for logging) */
     char addr_host[256];
     char addr_port[20];
+
+    int ret = 0; /* 0 = ok, 1 = port occupied */
 
     ecs_http_socket_t sock = HTTP_SOCKET_INVALID;
     ecs_assert(srv->sock == HTTP_SOCKET_INVALID, ECS_INTERNAL_ERROR, NULL);
@@ -1223,8 +1228,15 @@ void http_accept_connections(
 
         result = http_bind(sock, addr, addr_len);
         if (result) {
-            ecs_err("http: failed to bind to '%s:%s': %s", 
-                addr_host, addr_port, ecs_os_strerror(errno));
+            if (errno == EADDRINUSE) {
+                ret = 1;
+                ecs_warn("http: address '%s:%s' in use, retrying with port %u", 
+                    addr_host, addr_port, srv->port + 1);
+            } else {
+                ecs_err("http: failed to bind to '%s:%s': %s", 
+                    addr_host, addr_port, ecs_os_strerror(errno));
+            }
+
             ecs_os_mutex_unlock(srv->lock);
             goto done;
         }
@@ -1276,6 +1288,8 @@ done:
 
     ecs_trace("http: no longer accepting connections on '%s:%s'",
         addr_host, addr_port);
+
+    return ret;
 }
 
 static
@@ -1284,6 +1298,9 @@ void* http_server_thread(void* arg) {
     struct sockaddr_in addr;
     ecs_os_zeromem(&addr);
     addr.sin_family = AF_INET;
+
+    int retries = 0;
+retry:
     addr.sin_port = htons(srv->port);
 
     if (!srv->ipaddr) {
@@ -1292,7 +1309,18 @@ void* http_server_thread(void* arg) {
         inet_pton(AF_INET, srv->ipaddr, &(addr.sin_addr));
     }
 
-    http_accept_connections(srv, (struct sockaddr*)&addr, ECS_SIZEOF(addr));
+    if (http_accept_connections(
+        srv, (struct sockaddr*)&addr, ECS_SIZEOF(addr)) == 1) 
+    {
+        srv->port ++;
+        retries ++;
+        if (retries < 10) {
+            goto retry;
+        } else {
+            ecs_err("http: failed to connect (retried 10 times)");
+        }
+    }
+
     return NULL;
 }
 
@@ -1366,7 +1394,7 @@ void http_purge_request_cache(
     bool fini)
 {
     ecs_time_t t = {0, 0};
-    ecs_ftime_t time = (ecs_ftime_t)ecs_time_measure(&t);
+    double time = ecs_time_measure(&t);
     ecs_map_iter_t it = ecs_map_iter(&srv->request_cache.impl);
     while (ecs_map_next(&it)) {
         ecs_hm_bucket_t *bucket = ecs_map_ptr(&it);
@@ -1551,8 +1579,10 @@ void ecs_http_server_stop(
     ecs_http_server_t* srv) 
 {
     ecs_check(srv != NULL, ECS_INVALID_PARAMETER, NULL);
-    ecs_check(srv->initialized, ECS_INVALID_OPERATION, NULL);
-    ecs_check(srv->should_run, ECS_INVALID_PARAMETER, NULL);
+    ecs_check(srv->initialized, ECS_INVALID_OPERATION, 
+        "cannot stop HTTP server: not initialized");
+    ecs_check(srv->should_run, ECS_INVALID_PARAMETER, 
+        "cannot stop HTTP server: already stopped/stopping");
 
     /* Stop server thread */
     ecs_dbg("http: shutting down server thread");
@@ -1690,14 +1720,13 @@ int ecs_http_server_request(
     int32_t method_len = ecs_os_strlen(method);
     int32_t req_len = ecs_os_strlen(req);
     int32_t http_ver_len = ecs_os_strlen(http_ver);
+    char reqbuf[1024], *reqstr = reqbuf;
 
     int32_t len = method_len + req_len + http_ver_len + 1;
     if (method_len + req_len + http_ver_len >= 1024) {
-        ecs_err("HTTP request too long");
-        return -1;
+        reqstr = ecs_os_malloc(len + 1);
     }
 
-    char reqstr[1024];
     char *ptr = reqstr;
     ecs_os_memcpy(ptr, method, method_len); ptr += method_len;
     ptr[0] = ' '; ptr ++;
@@ -1705,7 +1734,12 @@ int ecs_http_server_request(
     ecs_os_memcpy(ptr, http_ver, http_ver_len); ptr += http_ver_len;
     ptr[0] = '\n';
 
-    return ecs_http_server_http_request(srv, reqstr, len, reply_out);
+    int result = ecs_http_server_http_request(srv, reqstr, len, reply_out);
+    if (reqbuf != reqstr) {
+        ecs_os_free(reqstr);
+    }
+
+    return result;
 }
 
 void* ecs_http_server_ctx(

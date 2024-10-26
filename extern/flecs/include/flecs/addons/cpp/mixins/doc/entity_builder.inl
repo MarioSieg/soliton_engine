@@ -13,8 +13,8 @@
  * @memberof flecs::entity_builder
  * @ingroup cpp_addons_doc
  */
-Self& set_doc_name(const char *name) {
-    ecs_doc_set_name(m_world, m_id, name);
+const Self& set_doc_name(const char *name) const {
+    ecs_doc_set_name(world_, id_, name);
     return to_base();
 }
 
@@ -28,8 +28,8 @@ Self& set_doc_name(const char *name) {
  * @memberof flecs::entity_builder
  * @ingroup cpp_addons_doc
  */
-Self& set_doc_brief(const char *brief) {
-    ecs_doc_set_brief(m_world, m_id, brief);
+const Self& set_doc_brief(const char *brief) const {
+    ecs_doc_set_brief(world_, id_, brief);
     return to_base();
 }
 
@@ -43,8 +43,8 @@ Self& set_doc_brief(const char *brief) {
  * @memberof flecs::entity_builder
  * @ingroup cpp_addons_doc
  */
-Self& set_doc_detail(const char *detail) {
-    ecs_doc_set_detail(m_world, m_id, detail);
+const Self& set_doc_detail(const char *detail) const {
+    ecs_doc_set_detail(world_, id_, detail);
     return to_base();
 }
 
@@ -58,8 +58,8 @@ Self& set_doc_detail(const char *detail) {
  * @memberof flecs::entity_builder
  * @ingroup cpp_addons_doc
  */
-Self& set_doc_link(const char *link) {
-    ecs_doc_set_link(m_world, m_id, link);
+const Self& set_doc_link(const char *link) const {
+    ecs_doc_set_link(world_, id_, link);
     return to_base();
 }
 
@@ -73,7 +73,22 @@ Self& set_doc_link(const char *link) {
  * @memberof flecs::entity_builder
  * @ingroup cpp_addons_doc
  */
-Self& set_doc_color(const char *link) {
-    ecs_doc_set_color(m_world, m_id, link);
+const Self& set_doc_color(const char *color) const {
+    ecs_doc_set_color(world_, id_, color);
+    return to_base();
+}
+
+/** Set doc UUID.
+ * This adds `(flecs.doc.Description, flecs.doc.Uuid)` to the entity.
+ *
+ * @see ecs_doc_set_uuid()
+ * @see flecs::doc::set_uuid()
+ * @see flecs::entity_view::doc_uuid()
+ *
+ * @memberof flecs::entity_builder
+ * @ingroup cpp_addons_doc
+ */
+const Self& set_doc_uuid(const char *uuid) const {
+    ecs_doc_set_uuid(world_, id_, uuid);
     return to_base();
 }

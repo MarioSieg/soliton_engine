@@ -27,6 +27,8 @@ git config --global --add safe.directory $ROOT_DIR
 
 . /bin/using.sh # Declare the bash `using` function for configuring toolchains.
 
+using python-3.12
+
 if [ $COMPILER = "clang" ]; then
   using clang-10.0.0
 elif [ $COMPILER = "gcc" ]; then
@@ -191,7 +193,7 @@ elif [ $TOOL = "android-ndk-build" ]; then
 
   echo $(date): ndk-build completed.
 elif [ $TOOL = "bazel" ]; then
-  using bazel-5.0.0
+  using bazel-7.0.2
 
   echo $(date): Build everything...
   bazel build --cxxopt=-std=c++17 :all

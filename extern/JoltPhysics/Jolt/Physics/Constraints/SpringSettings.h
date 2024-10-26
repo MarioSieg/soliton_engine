@@ -21,9 +21,9 @@ enum class ESpringMode : uint8
 /// Settings for a linear or angular spring
 class JPH_EXPORT SpringSettings
 {
-public:
 	JPH_DECLARE_SERIALIZABLE_NON_VIRTUAL(JPH_EXPORT, SpringSettings)
 
+public:
 	/// Constructor
 								SpringSettings() = default;
 								SpringSettings(const SpringSettings &) = default;
@@ -41,7 +41,7 @@ public:
 
 	/// Selects the way in which the spring is defined
 	/// If the mode is StiffnessAndDamping then mFrequency becomes the stiffness (k) and mDamping becomes the damping ratio (c) in the spring equation F = -k * x - c * v. Otherwise the properties are as documented.
-	ESpringMode 				mMode = ESpringMode::FrequencyAndDamping;
+	ESpringMode					mMode = ESpringMode::FrequencyAndDamping;
 
 	union
 	{
@@ -63,7 +63,7 @@ public:
 	/// When mSpringMode = ESpringMode::FrequencyAndDamping mDamping is the damping ratio (0 = no damping, 1 = critical damping).
 	/// When mSpringMode = ESpringMode::StiffnessAndDamping mDamping is the damping (c) in the spring equation F = -k * x - c * v for a linear or T = -k * theta - c * w for an angular spring.
 	/// Note that if you set mDamping = 0, you will not get an infinite oscillation. Because we integrate physics using an explicit Euler scheme, there is always energy loss.
-	/// This is done to keep the simulation from exploding, because with a damping of 0 and even the slightest rounding error, the oscillation could become bigger and bigger until the simluation explodes.
+	/// This is done to keep the simulation from exploding, because with a damping of 0 and even the slightest rounding error, the oscillation could become bigger and bigger until the simulation explodes.
 	float						mDamping = 0.0f;
 };
 

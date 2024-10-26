@@ -78,7 +78,6 @@ target_include_directories(lunam PRIVATE extern/stb)
 
 add_subdirectory(extern/Vulkan-Headers)
 target_include_directories(lunam PRIVATE extern/Vulkan-Headers/include)
-add_subdirectory(extern/Vulkan-Loader)
 add_subdirectory(extern/SPIRV-Headers)
 add_subdirectory(extern/SPIRV-Tools)
 add_subdirectory(extern/glslang)

@@ -58,6 +58,7 @@ Additional features:
    - VK_KHR_buffer_device_address: Flag `VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT_KHR` is automatically added to memory allocations where needed.
    - VK_EXT_memory_priority: Set `priority` of allocations or custom pools and it will be set automatically using this extension.
    - VK_AMD_device_coherent_memory.
+   - VK_KHR_external_memory_win32.
 - Defragmentation of GPU and CPU memory: Let the library move data around to free some memory blocks and make your allocations better compacted.
 - Statistics: Obtain brief or detailed statistics about the amount of memory used, unused, number of allocated blocks, number of allocations etc. - globally, per memory heap, and per memory type.
 - Debug annotations: Associate custom `void* pUserData` and debug `char* pName` with each allocation.
@@ -146,7 +147,7 @@ The VulkanMemoryAllocator port in vcpkg is kept up to date by Microsoft team mem
 
 # Binaries
 
-The release comes with precompiled binary executable for "VulkanSample" application which contains test suite. It is compiled using Visual Studio 2019, so it requires appropriate libraries to work, including "MSVCP140.dll", "VCRUNTIME140.dll", "VCRUNTIME140_1.dll". If the launch fails with error message telling about those files missing, please download and install [Microsoft Visual C++ Redistributable for Visual Studio 2015, 2017 and 2019](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads), "x64" version.
+The release comes with precompiled binary executable for "VulkanSample" application which contains test suite. It is compiled using Visual Studio 2022, so it requires appropriate libraries to work, including "MSVCP140.dll", "VCRUNTIME140.dll", "VCRUNTIME140_1.dll". If the launch fails with error message telling about those files missing, please download and install [Microsoft Visual C++ Redistributable](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads), "X64" version.
 
 # Read more
 
@@ -155,6 +156,7 @@ See **[Documentation](https://gpuopen-librariesandsdks.github.io/VulkanMemoryAll
 # Software using this library
 
 - **[Blender](https://www.blender.org)**
+- **[Qt Project](https://github.com/qt)**
 - **[Baldur's Gate III](https://www.mobygames.com/game/150689/baldurs-gate-iii/credits/windows/?autoplatform=true)**
 - **[Cyberpunk 2077](https://www.mobygames.com/game/128136/cyberpunk-2077/credits/windows/?autoplatform=true)**
 - **[X-Plane](https://x-plane.com/)**
@@ -171,7 +173,7 @@ See **[Documentation](https://gpuopen-librariesandsdks.github.io/VulkanMemoryAll
 - **[PowerVR SDK](https://github.com/powervr-graphics/Native_SDK)** - C++ cross-platform 3D graphics SDK, from Imagination. License: MIT.
 - **[Skia](https://github.com/google/skia)** - complete 2D graphic library for drawing Text, Geometries, and Images, from Google.
 - **[The Forge](https://github.com/ConfettiFX/The-Forge)** - cross-platform rendering framework. Apache License 2.0.
-- **[VK9](https://github.com/disks86/VK9)** - Direct3D 9 compatibility layer using Vulkan. Zlib lincese.
+- **[VK9](https://github.com/disks86/VK9)** - Direct3D 9 compatibility layer using Vulkan. Zlib license.
 - **[vkDOOM3](https://github.com/DustinHLand/vkDOOM3)** - Vulkan port of GPL DOOM 3 BFG Edition. License: GNU GPL.
 - **[vkQuake2](https://github.com/kondrak/vkQuake2)** - vanilla Quake 2 with Vulkan support. License: GNU GPL.
 - **[Vulkan Best Practice for Mobile Developers](https://github.com/ARM-software/vulkan_best_practice_for_mobile_developers)** from ARM. License: MIT.

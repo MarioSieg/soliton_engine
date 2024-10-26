@@ -5,7 +5,9 @@
 
 /**
  * @memberof flecs::world
- * @ingroup cpp_core_filters
+ * @ingroup cpp_core_queries
+ *
+ * @{
  */
 
 /** Create a term.

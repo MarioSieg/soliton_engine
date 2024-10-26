@@ -8,24 +8,24 @@ JPH_NAMESPACE_BEGIN
 
 void MotionProperties::MoveKinematic(Vec3Arg inDeltaPosition, QuatArg inDeltaRotation, float inDeltaTime)
 {
-	JPH_ASSERT(BodyAccess::sCheckRights(BodyAccess::sVelocityAccess, BodyAccess::EAccess::ReadWrite));
-	JPH_ASSERT(BodyAccess::sCheckRights(BodyAccess::sPositionAccess, BodyAccess::EAccess::Read));
+	JPH_ASSERT(BodyAccess::sCheckRights(BodyAccess::sVelocityAccess(), BodyAccess::EAccess::ReadWrite));
+	JPH_ASSERT(BodyAccess::sCheckRights(BodyAccess::sPositionAccess(), BodyAccess::EAccess::Read));
 	JPH_ASSERT(mCachedBodyType == EBodyType::RigidBody);
 	JPH_ASSERT(mCachedMotionType != EMotionType::Static);
 
 	// Calculate required linear velocity
-	mLinearVelocity = inDeltaPosition / inDeltaTime;
+	mLinearVelocity = LockTranslation(inDeltaPosition / inDeltaTime);
 
 	// Calculate required angular velocity
 	Vec3 axis;
 	float angle;
 	inDeltaRotation.GetAxisAngle(axis, angle);
-	mAngularVelocity = axis * (angle / inDeltaTime);
+	mAngularVelocity = LockAngular(axis * (angle / inDeltaTime));
 }
 
 void MotionProperties::ClampLinearVelocity()
 {
-	JPH_ASSERT(BodyAccess::sCheckRights(BodyAccess::sVelocityAccess, BodyAccess::EAccess::ReadWrite));
+	JPH_ASSERT(BodyAccess::sCheckRights(BodyAccess::sVelocityAccess(), BodyAccess::EAccess::ReadWrite));
 
 	float len_sq = mLinearVelocity.LengthSq();
 	JPH_ASSERT(isfinite(len_sq));
@@ -35,7 +35,7 @@ void MotionProperties::ClampLinearVelocity()
 
 void MotionProperties::ClampAngularVelocity()
 {
-	JPH_ASSERT(BodyAccess::sCheckRights(BodyAccess::sVelocityAccess, BodyAccess::EAccess::ReadWrite));
+	JPH_ASSERT(BodyAccess::sCheckRights(BodyAccess::sVelocityAccess(), BodyAccess::EAccess::ReadWrite));
 
 	float len_sq = mAngularVelocity.LengthSq();
 	JPH_ASSERT(isfinite(len_sq));
@@ -62,20 +62,36 @@ Mat44 MotionProperties::GetInverseInertiaForRotation(Mat44Arg inRotation) const
 
 	Mat44 rotation = inRotation.Multiply3x3(Mat44::sRotation(mInertiaRotation));
 	Mat44 rotation_mul_scale_transposed(mInvInertiaDiagonal.SplatX() * rotation.GetColumn4(0), mInvInertiaDiagonal.SplatY() * rotation.GetColumn4(1), mInvInertiaDiagonal.SplatZ() * rotation.GetColumn4(2), Vec4(0, 0, 0, 1));
-	return rotation.Multiply3x3RightTransposed(rotation_mul_scale_transposed);
+	Mat44 inverse_inertia = rotation.Multiply3x3RightTransposed(rotation_mul_scale_transposed);
+
+	// We need to mask out both the rows and columns of DOFs that are not allowed
+	Vec4 angular_dofs_mask = GetAngularDOFsMask().ReinterpretAsFloat();
+	inverse_inertia.SetColumn4(0, Vec4::sAnd(inverse_inertia.GetColumn4(0), Vec4::sAnd(angular_dofs_mask, angular_dofs_mask.SplatX())));
+	inverse_inertia.SetColumn4(1, Vec4::sAnd(inverse_inertia.GetColumn4(1), Vec4::sAnd(angular_dofs_mask, angular_dofs_mask.SplatY())));
+	inverse_inertia.SetColumn4(2, Vec4::sAnd(inverse_inertia.GetColumn4(2), Vec4::sAnd(angular_dofs_mask, angular_dofs_mask.SplatZ())));
+
+	return inverse_inertia;
 }
 
 Vec3 MotionProperties::MultiplyWorldSpaceInverseInertiaByVector(QuatArg inBodyRotation, Vec3Arg inV) const
 {
 	JPH_ASSERT(mCachedMotionType == EMotionType::Dynamic);
 
+	// Mask out columns of DOFs that are not allowed
+	Vec3 angular_dofs_mask = Vec3(GetAngularDOFsMask().ReinterpretAsFloat());
+	Vec3 v = Vec3::sAnd(inV, angular_dofs_mask);
+
+	// Multiply vector by inverse inertia
 	Mat44 rotation = Mat44::sRotation(inBodyRotation * mInertiaRotation);
-	return rotation.Multiply3x3(mInvInertiaDiagonal * rotation.Multiply3x3Transposed(inV));
+	Vec3 result = rotation.Multiply3x3(mInvInertiaDiagonal * rotation.Multiply3x3Transposed(v));
+
+	// Mask out rows of DOFs that are not allowed
+	return Vec3::sAnd(result, angular_dofs_mask);
 }
 
 void MotionProperties::ApplyGyroscopicForceInternal(QuatArg inBodyRotation, float inDeltaTime)
 {
-	JPH_ASSERT(BodyAccess::sCheckRights(BodyAccess::sVelocityAccess, BodyAccess::EAccess::ReadWrite));
+	JPH_ASSERT(BodyAccess::sCheckRights(BodyAccess::sVelocityAccess(), BodyAccess::EAccess::ReadWrite));
 	JPH_ASSERT(mCachedBodyType == EBodyType::RigidBody);
 	JPH_ASSERT(mCachedMotionType == EMotionType::Dynamic);
 
@@ -103,7 +119,7 @@ void MotionProperties::ApplyGyroscopicForceInternal(QuatArg inBodyRotation, floa
 
 void MotionProperties::ApplyForceTorqueAndDragInternal(QuatArg inBodyRotation, Vec3Arg inGravity, float inDeltaTime)
 {
-	JPH_ASSERT(BodyAccess::sCheckRights(BodyAccess::sVelocityAccess, BodyAccess::EAccess::ReadWrite));
+	JPH_ASSERT(BodyAccess::sCheckRights(BodyAccess::sVelocityAccess(), BodyAccess::EAccess::ReadWrite));
 	JPH_ASSERT(mCachedBodyType == EBodyType::RigidBody);
 	JPH_ASSERT(mCachedMotionType == EMotionType::Dynamic);
 

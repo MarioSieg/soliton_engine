@@ -4,6 +4,7 @@
 // Copyright (C) 2015-2018 Google, Inc.
 // Copyright (C) 2017, 2019 ARM Limited.
 // Modifications Copyright (C) 2020 Advanced Micro Devices, Inc. All rights reserved.
+// Modifications Copyright (C) 2024 Ravi Prakash Singh.
 //
 // All rights reserved.
 //
@@ -41,7 +42,6 @@
 #include "Initialize.h"
 #include "Scan.h"
 
-#include "../OSDependent/osinclude.h"
 #include <algorithm>
 
 #include "preprocessor/PpContext.h"
@@ -399,6 +399,10 @@ void TParseContext::handlePragma(const TSourceLoc& loc, const TVector<TString>& 
         if (spvVersion.spv < glslang::EShTargetSpv_1_3)
             error(loc, "requires SPIR-V 1.3", "#pragma use_variable_pointers", "");
         intermediate.setUseVariablePointers();
+    } else if (spvVersion.spv > 0 && tokens[0].compare("use_replicated_composites") == 0) {
+        if (tokens.size() != 1)
+            error(loc, "extra tokens", "#pragma", "");
+        intermediate.setReplicatedComposites();
     } else if (tokens[0].compare("once") == 0) {
         warn(loc, "not implemented", "#pragma once", "");
     } else if (tokens[0].compare("glslang_binary_double_output") == 0) {
@@ -492,7 +496,7 @@ TIntermTyped* TParseContext::handleVariable(const TSourceLoc& loc, TSymbol* symb
                 if ((variable->getMangledName() == "gl_PrimitiveTriangleIndicesEXT" && primitiveType != ElgTriangles) ||
                     (variable->getMangledName() == "gl_PrimitiveLineIndicesEXT" && primitiveType != ElgLines) ||
                     (variable->getMangledName() == "gl_PrimitivePointIndicesEXT" && primitiveType != ElgPoints)) {
-                    error(loc, "cannot be used (ouput primitive type mismatch)", string->c_str(), "");
+                    error(loc, "cannot be used (output primitive type mismatch)", string->c_str(), "");
                     variable = nullptr;
                 }
             }
@@ -597,6 +601,10 @@ TIntermTyped* TParseContext::handleBracketDereference(const TSourceLoc& loc, TIn
             else if (base->getQualifier().builtIn == EbvCullDistance &&
                 indexValue >= resources.maxCullDistances) {
                 error(loc, "gl_CullDistance", "[", "array index out of range '%d'", indexValue);
+            }
+            else if (base->getQualifier().builtIn == EbvSampleMask &&
+                indexValue >= (resources.maxSamples + 31) / 32) {
+                error(loc, "gl_SampleMask", "[", "array index out of range '%d'", indexValue);
             }
             // For 2D per-view builtin arrays, update the inner dimension size in parent type
             if (base->getQualifier().isPerView() && base->getQualifier().builtIn != EbvNone) {
@@ -2524,15 +2532,26 @@ void TParseContext::builtInOpCheck(const TSourceLoc& loc, const TFunction& fnCan
                 error(loc, "only supported on image with format r64i", fnCandidate.getName().c_str(), "");
             else if (callNode.getType().getBasicType() == EbtUint64 && imageType.getQualifier().getFormat() != ElfR64ui)
                 error(loc, "only supported on image with format r64ui", fnCandidate.getName().c_str(), "");
+        } else if(callNode.getType().getBasicType() == EbtFloat16 && 
+                ((callNode.getType().getVectorSize() == 2 && arg0->getType().getQualifier().getFormat() == ElfRg16f) ||
+                  (callNode.getType().getVectorSize() == 4 && arg0->getType().getQualifier().getFormat() == ElfRgba16f))) {
+            if (StartsWith(fnCandidate.getName(), "imageAtomicAdd") ||
+                StartsWith(fnCandidate.getName(), "imageAtomicExchange") ||
+                StartsWith(fnCandidate.getName(), "imageAtomicMin") ||
+                StartsWith(fnCandidate.getName(), "imageAtomicMax")) {
+                requireExtensions(loc, 1, &E_GL_NV_shader_atomic_fp16_vector, fnCandidate.getName().c_str());
+            } else {
+                error(loc, "f16vec2/4 operation not supported on: ", fnCandidate.getName().c_str(), "");
+            }
         } else if (imageType.getSampler().type == EbtFloat) {
-            if (fnCandidate.getName().compare(0, 19, "imageAtomicExchange") == 0) {
+            if (StartsWith(fnCandidate.getName(), "imageAtomicExchange")) {
                 // imageAtomicExchange doesn't require an extension
-            } else if ((fnCandidate.getName().compare(0, 14, "imageAtomicAdd") == 0) ||
-                       (fnCandidate.getName().compare(0, 15, "imageAtomicLoad") == 0) ||
-                       (fnCandidate.getName().compare(0, 16, "imageAtomicStore") == 0)) {
+            } else if (StartsWith(fnCandidate.getName(), "imageAtomicAdd") ||
+                       StartsWith(fnCandidate.getName(), "imageAtomicLoad") ||
+                       StartsWith(fnCandidate.getName(), "imageAtomicStore")) {
                 requireExtensions(loc, 1, &E_GL_EXT_shader_atomic_float, fnCandidate.getName().c_str());
-            } else if ((fnCandidate.getName().compare(0, 14, "imageAtomicMin") == 0) ||
-                       (fnCandidate.getName().compare(0, 14, "imageAtomicMax") == 0)) {
+            } else if (StartsWith(fnCandidate.getName(), "imageAtomicMin") ||
+                       StartsWith(fnCandidate.getName(), "imageAtomicMax")) {
                 requireExtensions(loc, 1, &E_GL_EXT_shader_atomic_float2, fnCandidate.getName().c_str());
             } else {
                 error(loc, "only supported on integer images", fnCandidate.getName().c_str(), "");
@@ -2582,6 +2601,11 @@ void TParseContext::builtInOpCheck(const TSourceLoc& loc, const TFunction& fnCan
             const char* const extensions[2] = { E_GL_NV_shader_atomic_int64,
                                                 E_GL_EXT_shader_atomic_int64 };
             requireExtensions(loc, 2, extensions, fnCandidate.getName().c_str());
+        } else if ((callNode.getOp() == EOpAtomicAdd || callNode.getOp() == EOpAtomicExchange ||
+                    callNode.getOp() == EOpAtomicMin || callNode.getOp() == EOpAtomicMax) &&
+                   arg0->getType().getBasicType() == EbtFloat16 && 
+                   (arg0->getType().getVectorSize() == 2 || arg0->getType().getVectorSize() == 4 )) {
+            requireExtensions(loc, 1, &E_GL_NV_shader_atomic_fp16_vector, fnCandidate.getName().c_str());
         } else if ((callNode.getOp() == EOpAtomicAdd || callNode.getOp() == EOpAtomicExchange) &&
                    (arg0->getType().getBasicType() == EbtFloat ||
                     arg0->getType().getBasicType() == EbtDouble)) {
@@ -2684,7 +2708,7 @@ void TParseContext::builtInOpCheck(const TSourceLoc& loc, const TFunction& fnCan
     case EOpEmitStreamVertex:
     case EOpEndStreamPrimitive:
         if (version == 150)
-            requireExtensions(loc, 1, &E_GL_ARB_gpu_shader5, "if the verison is 150 , the EmitStreamVertex and EndStreamPrimitive only support at extension GL_ARB_gpu_shader5");
+            requireExtensions(loc, 1, &E_GL_ARB_gpu_shader5, "if the version is 150 , the EmitStreamVertex and EndStreamPrimitive only support at extension GL_ARB_gpu_shader5");
         intermediate.setMultiStream();
         break;
 
@@ -3593,6 +3617,19 @@ bool TParseContext::constructorError(const TSourceLoc& loc, TIntermNode* node, T
                 makeSpecConst = ! intArgument && !type.isArray();
                 break;
 
+            case EOpConstructCooperativeMatrixNV:
+            case EOpConstructCooperativeMatrixKHR:
+            case EOpConstructStruct:
+                {
+                    const char *specConstantCompositeExt[] = { E_GL_EXT_spec_constant_composites };
+                    if (checkExtensionsRequested(loc, 1, specConstantCompositeExt, "spec constant aggregate constructor")) {
+                        makeSpecConst = true;
+                    } else {
+                        makeSpecConst = false;
+                    }
+                }
+                break;
+
             default:
                 // anything else wasn't white-listed in the spec as a conversion
                 makeSpecConst = false;
@@ -3896,6 +3933,18 @@ void TParseContext::accStructCheck(const TSourceLoc& loc, const TType& type, con
         error(loc, "accelerationStructureNV can only be used in uniform variables or function parameters:",
             type.getBasicTypeString().c_str(), identifier.c_str());
 
+}
+
+void TParseContext::hitObjectNVCheck(const TSourceLoc & loc, const TType & type, const TString & identifier)
+{
+    if (type.getBasicType() == EbtStruct && containsFieldWithBasicType(type, EbtHitObjectNV)) {
+        error(loc, "struct is not allowed to contain hitObjectNV:", type.getTypeName().c_str(), identifier.c_str());
+    } else if (type.getBasicType() == EbtHitObjectNV) {
+        TStorageQualifier qualifier = type.getQualifier().storage;
+        if (qualifier != EvqGlobal && qualifier != EvqTemporary) {
+            error(loc, "hitObjectNV can only be declared in global or function scope with no storage qualifier:", "hitObjectNV", identifier.c_str());
+        }
+    }
 }
 
 void TParseContext::transparentOpaqueCheck(const TSourceLoc& loc, const TType& type, const TString& identifier)
@@ -6244,7 +6293,7 @@ void TParseContext::setLayoutQualifier(const TSourceLoc& loc, TPublicType& publi
                 error(loc, "needs a literal integer", "max_primitives", "");
             return;
         }
-        // Fall through
+        [[fallthrough]];
 
     case EShLangTask:
         // Fall through
@@ -6548,10 +6597,10 @@ void TParseContext::layoutTypeCheck(const TSourceLoc& loc, const TType& type)
         int repeated = intermediate.addUsedLocation(qualifier, type, typeCollision);
         if (repeated >= 0 && ! typeCollision)
             error(loc, "overlapping use of location", "location", "%d", repeated);
-        // "fragment-shader outputs/tileImageEXT ... if two variables are placed within the same
-        // location, they must have the same underlying type (floating-point or integer)"
-        if (typeCollision && language == EShLangFragment && (qualifier.isPipeOutput() || qualifier.storage == EvqTileImageEXT))
-            error(loc, "fragment outputs or tileImageEXTs sharing the same location", "location", "%d must be the same basic type", repeated);
+        // When location aliasing, the aliases sharing the location must have the same underlying numerical type and bit width(
+        // floating - point or integer, 32 - bit versus 64 - bit,etc.)
+        if (typeCollision && (qualifier.isPipeInput() || qualifier.isPipeOutput() || qualifier.storage == EvqTileImageEXT))
+            error(loc, "the aliases sharing the location", "location", "%d must be the same basic type and interpolation qualification", repeated);
     }
 
     if (qualifier.hasXfbOffset() && qualifier.hasXfbBuffer()) {
@@ -7320,7 +7369,7 @@ TIntermTyped* TParseContext::vkRelaxedRemapFunctionCall(const TSourceLoc& loc, T
             realFunc.addParameter(TParameter().copyParam((*function)[i]));
         }
 
-        TParameter tmpP = { nullptr, &uintType };
+        TParameter tmpP = { nullptr, &uintType, {} };
         realFunc.addParameter(TParameter().copyParam(tmpP));
         arguments = intermediate.growAggregate(arguments, intermediate.addConstantUnion(1, loc, true));
 
@@ -7337,7 +7386,7 @@ TIntermTyped* TParseContext::vkRelaxedRemapFunctionCall(const TSourceLoc& loc, T
             realFunc.addParameter(TParameter().copyParam((*function)[i]));
         }
 
-        TParameter tmpP = { nullptr, &uintType };
+        TParameter tmpP = { nullptr, &uintType, {} };
         realFunc.addParameter(TParameter().copyParam(tmpP));
         arguments = intermediate.growAggregate(arguments, intermediate.addConstantUnion(-1, loc, true));
 
@@ -7349,7 +7398,7 @@ TIntermTyped* TParseContext::vkRelaxedRemapFunctionCall(const TSourceLoc& loc, T
         }
     } else if (function->getName() == "atomicCounter") {
         // change atomicCounter into a direct read of the variable
-        if (arguments->getAsTyped()) {
+        if (arguments && arguments->getAsTyped()) {
             result = arguments->getAsTyped();
         }
     }
@@ -7397,6 +7446,7 @@ void TParseContext::coopMatTypeParametersCheck(const TSourceLoc& loc, const TPub
         case EbtUint:
         case EbtUint8:
         case EbtUint16:
+        case EbtSpirvType:
             break;
         default:
             error(loc, "coopmat invalid basic type", TType::getBasicString(publicType.typeParameters->basicType), "");
@@ -7620,6 +7670,7 @@ struct AccessChainTraverser : public TIntermTraverser {
     {}
 
     TString path = "";
+    TStorageQualifier topLevelStorageQualifier = TStorageQualifier::EvqLast;
 
     bool visitBinary(TVisit, TIntermBinary* binary) override {
         if (binary->getOp() == EOpIndexDirectStruct)
@@ -7650,6 +7701,8 @@ struct AccessChainTraverser : public TIntermTraverser {
     }
 
     void visitSymbol(TIntermSymbol* symbol) override {
+        if (symbol->getType().isOpaque())
+            topLevelStorageQualifier = symbol->getQualifier().storage;
         if (!IsAnonymous(symbol->getName()))
             path.append(symbol->getName());
     }
@@ -7660,7 +7713,16 @@ TIntermNode* TParseContext::vkRelaxedRemapFunctionArgument(const TSourceLoc& loc
     AccessChainTraverser accessChainTraverser{};
     intermTyped->traverse(&accessChainTraverser);
 
-    TParameter param = { NewPoolTString(accessChainTraverser.path.c_str()), new TType };
+    if (accessChainTraverser.topLevelStorageQualifier == TStorageQualifier::EvqUniform)
+    {
+        TParameter param = { 0, new TType, {} };
+        param.type->shallowCopy(intermTyped->getType());
+
+        function->addParameter(param);
+        return intermTyped;
+    }
+
+    TParameter param = { NewPoolTString(accessChainTraverser.path.c_str()), new TType, {} };
     param.type->shallowCopy(intermTyped->getType());
 
     std::vector<int> newParams = {};
@@ -7779,7 +7841,8 @@ TIntermNode* TParseContext::declareVariable(const TSourceLoc& loc, TString& iden
             error(loc, "unexpected number type parameters", identifier.c_str(), "");
         }
         if (publicType.typeParameters) {
-            if (!isTypeFloat(publicType.typeParameters->basicType) && !isTypeInt(publicType.typeParameters->basicType)) {
+            if (!isTypeFloat(publicType.typeParameters->basicType) &&
+                !isTypeInt(publicType.typeParameters->basicType) && publicType.typeParameters->basicType != EbtSpirvType) {
                 error(loc, "expected 8, 16, 32, or 64 bit signed or unsigned integer or 16, 32, or 64 bit float type", identifier.c_str(), "");
             }
         }
@@ -7823,6 +7886,7 @@ TIntermNode* TParseContext::declareVariable(const TSourceLoc& loc, TString& iden
     transparentOpaqueCheck(loc, type, identifier);
     atomicUintCheck(loc, type, identifier);
     accStructCheck(loc, type, identifier);
+    hitObjectNVCheck(loc, type, identifier);
     checkAndResizeMeshViewDim(loc, type, /*isBlockMember*/ false);
     if (type.getQualifier().storage == EvqConst && type.containsReference()) {
         error(loc, "variables with reference type can't have qualifier 'const'", "qualifier", "");
@@ -8321,6 +8385,11 @@ TIntermTyped* TParseContext::addConstructor(const TSourceLoc& loc, TIntermNode* 
 
     int paramCount = 0;  // keeps track of the constructor parameter number being checked
 
+    // We don't know "top down" whether type is a specialization constant,
+    // but a const becomes a specialization constant if any of its children are.
+    bool hasSpecConst = false;
+    bool isConstConstructor = true;
+
     // for each parameter to the constructor call, check to see if the right type is passed or convert them
     // to the right type if possible (and allowed).
     // for structure constructors, just check if the right type is passed, no conversion is allowed.
@@ -8333,13 +8402,24 @@ TIntermTyped* TParseContext::addConstructor(const TSourceLoc& loc, TIntermNode* 
         else
             newNode = constructBuiltIn(type, op, (*p)->getAsTyped(), node->getLoc(), true);
 
-        if (newNode)
+        if (newNode) {
             *p = newNode;
-        else
+            if (!newNode->getType().getQualifier().isConstant())
+                isConstConstructor = false;
+            if (newNode->getType().getQualifier().isSpecConstant())
+                hasSpecConst = true;
+        } else
             return nullptr;
     }
 
-    TIntermTyped *ret_node = intermediate.setAggregateOperator(aggrNode, op, type, loc);
+    TIntermTyped* ret_node = intermediate.setAggregateOperator(aggrNode, op, type, loc);
+
+    const char *specConstantCompositeExt[] = { E_GL_EXT_spec_constant_composites };
+    if (checkExtensionsRequested(loc, 1, specConstantCompositeExt, "spec constant aggregate constructor")) {
+        if (isConstConstructor && hasSpecConst) {
+            ret_node->getWritableType().getQualifier().makeSpecConstant();
+        }
+    }
 
     TIntermAggregate *agg_node = ret_node->getAsAggregate();
     if (agg_node && (agg_node->isVector() || agg_node->isArray() || agg_node->isMatrix()))
@@ -8418,6 +8498,7 @@ TIntermTyped* TParseContext::constructBuiltIn(const TType& type, TOperator op, T
                 intermediate.addBuiltInFunctionCall(node->getLoc(), EOpConstructUVec2, false, newSrcNode, type);
             return newNode;
         }
+        [[fallthrough]];
     case EOpConstructUVec3:
     case EOpConstructUVec4:
     case EOpConstructUint:
@@ -8439,6 +8520,7 @@ TIntermTyped* TParseContext::constructBuiltIn(const TType& type, TOperator op, T
                 intermediate.addBuiltInFunctionCall(node->getLoc(), EOpPackUint2x32, true, node, type);
             return newNode;
         }
+        [[fallthrough]];
     case EOpConstructDVec2:
     case EOpConstructDVec3:
     case EOpConstructDVec4:
@@ -8469,9 +8551,10 @@ TIntermTyped* TParseContext::constructBuiltIn(const TType& type, TOperator op, T
     case EOpConstructF16Mat4x4:
     case EOpConstructFloat16:
         basicOp = EOpConstructFloat16;
-        // 8/16-bit storage extensions don't support constructing composites of 8/16-bit types,
+        // 8/16-bit storage extensions don't support direct constructing composites of 8/16-bit types,
         // so construct a 32-bit type and convert
-        if (!intermediate.getArithemeticFloat16Enabled()) {
+        // and do not generate any conversion if it is an identity conversion, i.e. float16_t(<float16_t> var)
+        if (!intermediate.getArithemeticFloat16Enabled() && (node->getBasicType() != EbtFloat16)) {
             TType tempType(EbtFloat, EvqTemporary, type.getVectorSize());
             newNode = node;
             if (tempType != newNode->getType()) {
@@ -8492,9 +8575,10 @@ TIntermTyped* TParseContext::constructBuiltIn(const TType& type, TOperator op, T
     case EOpConstructI8Vec4:
     case EOpConstructInt8:
         basicOp = EOpConstructInt8;
-        // 8/16-bit storage extensions don't support constructing composites of 8/16-bit types,
+        // 8/16-bit storage extensions don't support direct constructing composites of 8/16-bit types,
         // so construct a 32-bit type and convert
-        if (!intermediate.getArithemeticInt8Enabled()) {
+        // and do not generate any conversion if it is an identity conversion, i.e. int8_t(<int8_t> var)
+        if (!intermediate.getArithemeticInt8Enabled() && (node->getBasicType() != EbtInt8)) {
             TType tempType(EbtInt, EvqTemporary, type.getVectorSize());
             newNode = node;
             if (tempType != newNode->getType()) {
@@ -8515,9 +8599,10 @@ TIntermTyped* TParseContext::constructBuiltIn(const TType& type, TOperator op, T
     case EOpConstructU8Vec4:
     case EOpConstructUint8:
         basicOp = EOpConstructUint8;
-        // 8/16-bit storage extensions don't support constructing composites of 8/16-bit types,
+        // 8/16-bit storage extensions don't support direct constructing composites of 8/16-bit types,
         // so construct a 32-bit type and convert
-        if (!intermediate.getArithemeticInt8Enabled()) {
+        // and do not generate any conversion if it is an identity conversion, i.e. uint8_t(<uint8_t> var)
+        if (!intermediate.getArithemeticInt8Enabled() && (node->getBasicType() != EbtUint8)) {
             TType tempType(EbtUint, EvqTemporary, type.getVectorSize());
             newNode = node;
             if (tempType != newNode->getType()) {
@@ -8538,9 +8623,10 @@ TIntermTyped* TParseContext::constructBuiltIn(const TType& type, TOperator op, T
     case EOpConstructI16Vec4:
     case EOpConstructInt16:
         basicOp = EOpConstructInt16;
-        // 8/16-bit storage extensions don't support constructing composites of 8/16-bit types,
+        // 8/16-bit storage extensions don't support direct constructing composites of 8/16-bit types,
         // so construct a 32-bit type and convert
-        if (!intermediate.getArithemeticInt16Enabled()) {
+        // and do not generate any conversion if it is an identity conversion, i.e. int16_t(<int16_t> var)
+        if (!intermediate.getArithemeticInt16Enabled() && (node->getBasicType() != EbtInt16)) {
             TType tempType(EbtInt, EvqTemporary, type.getVectorSize());
             newNode = node;
             if (tempType != newNode->getType()) {
@@ -8561,9 +8647,10 @@ TIntermTyped* TParseContext::constructBuiltIn(const TType& type, TOperator op, T
     case EOpConstructU16Vec4:
     case EOpConstructUint16:
         basicOp = EOpConstructUint16;
-        // 8/16-bit storage extensions don't support constructing composites of 8/16-bit types,
+        // 8/16-bit storage extensions don't support direct constructing composites of 8/16-bit types,
         // so construct a 32-bit type and convert
-        if (!intermediate.getArithemeticInt16Enabled()) {
+        // and do not generate any conversion if it is an identity conversion, i.e. uint16_t(<uint16_t> var)
+        if (!intermediate.getArithemeticInt16Enabled() && (node->getBasicType() != EbtUint16)) {
             TType tempType(EbtUint, EvqTemporary, type.getVectorSize());
             newNode = node;
             if (tempType != newNode->getType()) {
@@ -8591,7 +8678,7 @@ TIntermTyped* TParseContext::constructBuiltIn(const TType& type, TOperator op, T
             TIntermTyped* newNode = intermediate.addBuiltInFunctionCall(node->getLoc(), EOpConvPtrToUint64, true, node, type);
             return newNode;
         }
-        // fall through
+        [[fallthrough]];
     case EOpConstructU64Vec2:
     case EOpConstructU64Vec3:
     case EOpConstructU64Vec4:
@@ -9656,7 +9743,7 @@ void TParseContext::updateStandaloneQualifierDefaults(const TSourceLoc& loc, con
                     error(loc, "cannot apply to 'out'", TQualifier::getGeometryString(publicType.shaderQualifiers.geometry), "");
                     break;
                 }
-                // Fall through
+                [[fallthrough]];
             case ElgPoints:
             case ElgLineStrip:
             case ElgTriangleStrip:
@@ -9837,8 +9924,8 @@ void TParseContext::updateStandaloneQualifierDefaults(const TSourceLoc& loc, con
 
     if (publicType.shaderQualifiers.layoutDerivativeGroupQuads) {
         if (publicType.qualifier.storage == EvqVaryingIn) {
-            if ((intermediate.getLocalSize(0) & 1) ||
-                (intermediate.getLocalSize(1) & 1))
+            if ((intermediate.getLocalSizeSpecId(0) == TQualifier::layoutNotSet && (intermediate.getLocalSize(0) & 1)) ||
+                (intermediate.getLocalSizeSpecId(1) == TQualifier::layoutNotSet && (intermediate.getLocalSize(1) & 1)))
                 error(loc, "requires local_size_x and local_size_y to be multiple of two", "derivative_group_quadsNV", "");
             else
                 intermediate.setLayoutDerivativeMode(LayoutDerivativeGroupQuads);
@@ -9848,7 +9935,10 @@ void TParseContext::updateStandaloneQualifierDefaults(const TSourceLoc& loc, con
     }
     if (publicType.shaderQualifiers.layoutDerivativeGroupLinear) {
         if (publicType.qualifier.storage == EvqVaryingIn) {
-            if((intermediate.getLocalSize(0) *
+            if (intermediate.getLocalSizeSpecId(0) == TQualifier::layoutNotSet &&
+                intermediate.getLocalSizeSpecId(1) == TQualifier::layoutNotSet &&
+                intermediate.getLocalSizeSpecId(2) == TQualifier::layoutNotSet &&
+                (intermediate.getLocalSize(0) *
                 intermediate.getLocalSize(1) *
                 intermediate.getLocalSize(2)) % 4 != 0)
                 error(loc, "requires total group size to be multiple of four", "derivative_group_linearNV", "");

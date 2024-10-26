@@ -20,10 +20,6 @@
 #ifndef FLECS_ALERTS_H
 #define FLECS_ALERTS_H
 
-#ifndef FLECS_RULES
-#define FLECS_RULES
-#endif
-
 #ifndef FLECS_PIPELINE
 #define FLECS_PIPELINE
 #endif
@@ -34,36 +30,41 @@ extern "C" {
 
 #define ECS_ALERT_MAX_SEVERITY_FILTERS (4)
 
-/* Module id */
+/** Module id. */
 FLECS_API extern ECS_COMPONENT_DECLARE(FlecsAlerts);
 
 /* Module components */
 
-/** Tag added to alert, and used as first element of alert severity pair */
-FLECS_API extern ECS_COMPONENT_DECLARE(EcsAlert);
-FLECS_API extern ECS_COMPONENT_DECLARE(EcsAlertInstance);
-FLECS_API extern ECS_COMPONENT_DECLARE(EcsAlertsActive);
-FLECS_API extern ECS_COMPONENT_DECLARE(EcsAlertTimeout);
+FLECS_API extern ECS_COMPONENT_DECLARE(EcsAlert);          /**< Component added to alert, and used as first element of alert severity pair. */
+FLECS_API extern ECS_COMPONENT_DECLARE(EcsAlertInstance);  /**< Component added to alert instance. */
+FLECS_API extern ECS_COMPONENT_DECLARE(EcsAlertsActive);   /**< Component added to alert source which tracks how many active alerts there are. */
+FLECS_API extern ECS_COMPONENT_DECLARE(EcsAlertTimeout);   /**< Component added to alert which tracks how long an alert has been inactive. */
 
 /* Alert severity tags */
-FLECS_API extern ECS_TAG_DECLARE(EcsAlertInfo);
-FLECS_API extern ECS_TAG_DECLARE(EcsAlertWarning);
-FLECS_API extern ECS_TAG_DECLARE(EcsAlertError);
-FLECS_API extern ECS_TAG_DECLARE(EcsAlertCritical);
+FLECS_API extern ECS_TAG_DECLARE(EcsAlertInfo);            /**< Info alert severity. */
+FLECS_API extern ECS_TAG_DECLARE(EcsAlertWarning);         /**< Warning alert severity. */
+FLECS_API extern ECS_TAG_DECLARE(EcsAlertError);           /**< Error alert severity. */
+FLECS_API extern ECS_TAG_DECLARE(EcsAlertCritical);        /**< Critical alert severity. */
 
-/** Alert information. Added to each alert instance */
+/** Component added to alert instance. */
 typedef struct EcsAlertInstance {
-    char *message;
+    char *message; /**< Generated alert message */
 } EcsAlertInstance;
 
 /** Map with active alerts for entity. */
 typedef struct EcsAlertsActive {
-    int32_t info_count;
-    int32_t warning_count;
-    int32_t error_count;
+    int32_t info_count;    /**< Number of alerts for source with info severity */
+    int32_t warning_count; /**< Number of alerts for source with warning severity */
+    int32_t error_count;   /**< Number of alerts for source with error severity */
     ecs_map_t alerts;
 } EcsAlertsActive;
 
+/** Alert severity filter. 
+ * A severity filter can adjust the severity of an alert based on whether an
+ * entity in the alert query has a specific component. For example, a filter
+ * could check if an entity has the "Production" tag, and increase the default
+ * severity of an alert from Warning to Error.
+ */
 typedef struct ecs_alert_severity_filter_t {
     ecs_entity_t severity; /* Severity kind */
     ecs_id_t with;         /* Component to match */
@@ -72,6 +73,7 @@ typedef struct ecs_alert_severity_filter_t {
     int32_t _var_index;    /* Index of variable in filter (do not set) */
 } ecs_alert_severity_filter_t;
 
+/** Alert descriptor, used with ecs_alert_init(). */
 typedef struct ecs_alert_desc_t {
     int32_t _canary;
 
@@ -81,11 +83,11 @@ typedef struct ecs_alert_desc_t {
     /** Alert query. An alert will be created for each entity that matches the
      * specified query. The query must have at least one term that uses the
      * $this variable (default). */
-    ecs_filter_desc_t filter;
+    ecs_query_desc_t query;
 
     /** Template for alert message. This string is used to generate the alert
      * message and may refer to variables in the query result. The format for
-     * the template expressions is as specified by ecs_interpolate_string().
+     * the template expressions is as specified by ecs_script_string_interpolate().
      *
      * Examples:
      *
@@ -160,6 +162,9 @@ ecs_entity_t ecs_alert_init(
     ecs_world_t *world,
     const ecs_alert_desc_t *desc);
 
+/** Create a new alert.
+ * @see ecs_alert_init()
+ */
 #define ecs_alert(world, ...)\
     ecs_alert_init(world, &(ecs_alert_desc_t)__VA_ARGS__)
 
@@ -195,7 +200,14 @@ ecs_entity_t ecs_get_alert(
     ecs_entity_t entity,
     ecs_entity_t alert);
 
-/* Module import */
+/** Alert module import function.
+ * Usage:
+ * @code
+ * ECS_IMPORT(world, FlecsAlerts)
+ * @endcode
+ * 
+ * @param world The world.
+ */
 FLECS_API
 void FlecsAlertsImport(
     ecs_world_t *world);

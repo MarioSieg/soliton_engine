@@ -15,7 +15,7 @@
 cmake_minimum_required(VERSION 3.17.2)
 
 project(shaderc)
-enable_testing()
+#enable_testing()
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "")
   message(STATUS "No build type selected, default to Debug")
@@ -28,18 +28,11 @@ option(SHADERC_ENABLE_WGSL_OUTPUT "Enable WGSL output" OFF)
 
 option(SHADERC_SKIP_INSTALL "Skip installation" ${SHADERC_SKIP_INSTALL})
 if(NOT ${SHADERC_SKIP_INSTALL})
-  set(SHADERC_ENABLE_INSTALL OFF)
+  set(SHADERC_ENABLE_INSTALL ON)
 endif()
 
-option(SHADERC_SKIP_TESTS "Skip building tests" ${SHADERC_SKIP_TESTS})
-if(NOT ${SHADERC_SKIP_TESTS})
-  set(SHADERC_ENABLE_TESTS OFF)
-endif()
-if(${SHADERC_ENABLE_TESTS})
-  message(STATUS "Configuring Shaderc to build tests.")
-else()
-  message(STATUS "Configuring Shaderc to avoid building tests.")
-endif()
+set(SHADERC_ENABLE_TESTS OFF)
+
 
 option(SHADERC_SKIP_EXAMPLES "Skip building examples" ${SHADERC_SKIP_EXAMPLES})
 if(NOT ${SHADERC_SKIP_EXAMPLES})
@@ -91,22 +84,18 @@ if (COMPILER_SUPPORTS_EXTRA_SEMI_WARNING)
     add_compile_options("-Wextra-semi")
 endif()
 
-if(${CMAKE_VERSION} VERSION_LESS_EQUAL "3.12")
-  find_package(PythonInterp 3 REQUIRED)
-else ()
-  find_package(Python COMPONENTS Interpreter REQUIRED)
-endif ()
+find_package(Python COMPONENTS Interpreter REQUIRED)
 
 if (SHADERC_ENABLE_COPYRIGHT_CHECK)
   add_custom_target(check-copyright ALL
-    ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/utils/add_copyright.py
+    ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/utils/add_copyright.py
     --check
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     COMMENT "Check copyright")
 endif()
 
 add_custom_target(add-copyright
-  ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/utils/add_copyright.py
+  ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/utils/add_copyright.py
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   COMMENT "Add copyright")
 
@@ -134,7 +123,7 @@ if(${SHADERC_ENABLE_EXAMPLES})
 endif()
 
 add_custom_target(build-version
-  ${PYTHON_EXECUTABLE}
+  ${Python_EXECUTABLE}
   ${CMAKE_CURRENT_SOURCE_DIR}/utils/update_build_version.py
   ${shaderc_SOURCE_DIR} ${spirv-tools_SOURCE_DIR} ${glslang_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}/build-version.inc
   COMMENT "Update build-version.inc in the Shaderc build directory (if necessary).")
