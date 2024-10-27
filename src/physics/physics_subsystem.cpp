@@ -140,40 +140,20 @@ namespace lu::physics {
 
 		log_info("Creating static colliders...");
 
-    	auto filter = scene.filter<const com::transform, const com::mesh_renderer>();
+    	auto filter = scene.query<const com::transform, const com::mesh_renderer>();
 		eastl::vector<eastl::pair<eastl::span<const com::transform>, eastl::span<const com::mesh_renderer>>> targets {};
     	std::size_t total = 0;
-    	filter.iter([&](flecs::iter i, const com::transform* transform, const com::mesh_renderer* renderer) {
-    		const std::size_t n = i.count();
-    		total += n;
-    		targets.emplace_back(eastl::span{transform, n}, eastl::span{renderer, n});
+        for (auto old_body : m_static_bodies) {
+            bi.RemoveBody(old_body);
+        }
+        m_static_bodies.clear();
+    	filter.each([&](const com::transform& transform, const com::mesh_renderer& renderer) {
+            if (!renderer.meshes.empty()) [[likely]] {
+                JPH::BodyCreationSettings ci {};
+                create_static_body(ci, transform, renderer);
+                m_static_bodies.emplace_back(bi.CreateAndAddBody(ci, JPH::EActivation::DontActivate));
+            }
 		});
-    	eastl::vector<JPH::BodyID> bodies {};
-    	bodies.resize(total);
-    	for (std::size_t base_idx = 0; auto&& target : targets) {
-    		const auto& transforms = target.first;
-    		const auto& renderers = target.second;
-			passert(transforms.size() == renderers.size());
-            const auto exector = [&](const com::transform& transform) {
-                const auto index = &transform - &transforms.front();
-                const auto& renderer = renderers[index];
-                if (!renderer.meshes.empty()) [[likely]] {
-                    JPH::BodyCreationSettings ci {};
-                    create_static_body(ci, transform, renderer);
-                    bodies[base_idx + index] = bi.CreateAndAddBody(ci, JPH::EActivation::DontActivate);
-                }
-            };
-#if PLATFORM_OSX
-            std::for_each(std::begin(transforms), std::end(transforms), exector);
-#else
-            std::for_each(std::execution::par_unseq, std::begin(transforms), std::end(transforms), exector);
-#endif
-    	}
-    	for (auto old_body : m_static_bodies) {
-    		bi.RemoveBody(old_body);
-    	}
-        m_static_bodies = std::move(bodies);
-
         log_info("Optimizing broadphase...");
     	m_physics_system.OptimizeBroadPhase();
     }
@@ -191,14 +171,14 @@ namespace lu::physics {
     	JPH::BodyInterface& bi = m_physics_system.GetBodyInterface();
 
     	// sync loop 1 rigidbody => transform
-    	active.filter<const com::rigidbody, com::transform>().each([&](const com::rigidbody& rb, com::transform& transform) {
+    	active.query<const com::rigidbody, com::transform>().each([&](const com::rigidbody& rb, com::transform& transform) {
 			const JPH::BodyID body_id = rb.phys_body;
 			transform.position = eastl::bit_cast<XMFLOAT4>(bi.GetPosition(body_id));
 			transform.rotation = eastl::bit_cast<XMFLOAT4>(bi.GetRotation(body_id));
 		});
 
     	// sync loop 2 character controller => transform
-    	active.filter<const com::character_controller, com::transform>().each([&](const com::character_controller& cc, com::transform& transform) {
+    	active.query<const com::character_controller, com::transform>().each([&](const com::character_controller& cc, com::transform& transform) {
 			cc.phys_character->PostSimulation(0.05f);
     		transform.position = eastl::bit_cast<XMFLOAT4>(cc.phys_character->GetPosition());
 			transform.rotation = eastl::bit_cast<XMFLOAT4>(cc.phys_character->GetPosition());

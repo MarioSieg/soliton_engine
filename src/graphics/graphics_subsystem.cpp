@@ -83,7 +83,7 @@ namespace lu::graphics {
     }
 
     [[nodiscard]] static auto find_main_camera() -> flecs::entity {
-        const auto filter = scene::get_active().filter<const com::transform, const com::camera>();
+        const auto filter = scene::get_active().query<const com::transform, const com::camera>();
         if (filter.count() > 0) {
             return filter.first();
         }
@@ -196,9 +196,9 @@ namespace lu::graphics {
         }
         m_render_data.clear();
         scene.readonly_begin();
-        m_render_query.query.iter([this](const flecs::iter& i, const com::transform* const transforms, const com::mesh_renderer* const renderers) {
-            const std::size_t n = i.count();
-            m_render_data.emplace_back(eastl::span{transforms, n}, eastl::span{renderers, n});
+        const std::size_t n = m_render_query.query.count();
+        m_render_query.query.each([this, n](const com::transform& transform, const com::mesh_renderer& renderer) {
+            m_render_data.emplace_back(eastl::span{&transform, n}, eastl::span{&renderer, n});
         });
         if (m_cmd) [[likely]] { // TODO: refractor
             m_render_thread_pool->begin_frame(&m_inheritance_info);

@@ -107,7 +107,7 @@ LUA_INTEROP_API auto __lu_dd_set_fade_distance(const double $near, const double 
 LUA_INTEROP_API auto __lu_dd_draw_scene_with_aabbs(const lua_vec3 color) -> void {
     const XMFLOAT3 ccolor = color;
     dd().begin_batch();
-    scene::get_active().filter<const com::transform, const com::mesh_renderer>().each([&ccolor](const com::transform& transform, const com::mesh_renderer& renderer) {
+    scene::get_active().each([&ccolor](const com::transform& transform, const com::mesh_renderer& renderer) {
         for (const auto* mesh : renderer.meshes) {
            if (mesh) [[likely]] {
                BoundingOrientedBox obb {};

@@ -31,8 +31,8 @@ namespace lu::physics {
     }
 
     auto collider::new_mesh(const eastl::span<const graphics::vertex> vertices, const eastl::span<const graphics::index> indices) -> collider {
-        std::vector<JPH::Float3, JPH::STLAllocator<JPH::Float3>> verts {};
-        std::vector<JPH::IndexedTriangle, JPH::STLAllocator<JPH::IndexedTriangle>> triangles {};
+        JPH::Array<JPH::Float3> verts {};
+        JPH::IndexedTriangleList triangles {};
         verts.reserve(vertices.size());
         triangles.reserve(indices.size() / 3);
         for (auto&& v : vertices) {
