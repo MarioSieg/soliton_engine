@@ -59,6 +59,9 @@ namespace lu::physics {
         JPH::Allocate = +[](const std::size_t size) -> void* {
               return mi_malloc(size);
         };
+        JPH::Reallocate = +[](void* ptr, const std::size_t old, const std::size_t size) -> void* {
+            return mi_realloc(ptr, size);
+        };
         JPH::Free = +[](void* ptr) -> void {
             mi_free(ptr);
         };
