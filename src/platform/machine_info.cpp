@@ -252,10 +252,11 @@ namespace lu::platform {
                 }
             }
         #elif PLATFORM_LINUX
-            dl_iterate_phdr(+[](dl_phdr_info* info, std::size_t, void*) -> int {
-                if (info->dlpi_name && *info->dlpi_name) log_info("Loaded module #{} '{}'", i, info->dlpi_name);
+            int i=0;
+            dl_iterate_phdr(+[](dl_phdr_info* info, std::size_t, void* y) mutable -> int {
+                if (info->dlpi_name && *info->dlpi_name) log_info("Loaded module #{} '{}'", ++*static_cast<int*>(y), info->dlpi_name);
                 return 0;
-            }, nullptr);
+            }, &i);
         #elif PLATFORM_OSX
             const std::uint32_t num_images = _dyld_image_count();
             for (std::uint32_t i = 0; i < num_images; ++i) {
