@@ -54,8 +54,6 @@ namespace lu::graphics {
         m_imgui_context.emplace();
         m_noesis_context.emplace();
 
-        m_shared_buffers.emplace();
-
         //m_noesis_context->load_ui_from_xaml("App.xaml");
     }
 
@@ -66,7 +64,7 @@ namespace lu::graphics {
     graphics_subsystem::~graphics_subsystem() {
         vkcheck(vkb::vkdvc().waitIdle()); // must be first
 
-        m_shared_buffers.reset();
+        shared_buffers::get().~shared_buffers();
 
         m_imgui_context.reset();
         m_noesis_context.reset();
@@ -270,6 +268,6 @@ namespace lu::graphics {
         XMStoreFloat4(&per_frame_data.camPos, XMLoadFloat4(&s_camera_transform.position));
         per_frame_data.sunDir = scene.properties.environment.sun_dir;
         per_frame_data.sunColor = scene.properties.environment.sun_color;
-        m_shared_buffers->per_frame_ubo.set(per_frame_data);
+        shared_buffers::get().per_frame_ubo.set(per_frame_data);
     }
 }

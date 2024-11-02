@@ -89,7 +89,6 @@ namespace lu::graphics {
         eastl::optional<debugdraw> m_debugdraw {};
         eastl::optional<imgui::context> m_imgui_context {};
         eastl::optional<noesis::context> m_noesis_context {};
-        eastl::optional<shared_buffers> m_shared_buffers {};
         bool m_reload_pipelines_next_frame {};
 
         struct {

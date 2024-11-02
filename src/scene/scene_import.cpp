@@ -59,8 +59,8 @@ namespace lu {
                     resolved_names[name] = 0;
                 }
                 const flecs::entity e = spawn(name.c_str());
-                auto* metadata = e.get_mut<com::metadata>();
 
+                e.add<com::transform>();
                 auto* transform = e.get_mut<com::transform>();
                 aiVector3D scaling, position;
                 aiQuaternion rotation;
@@ -69,6 +69,7 @@ namespace lu {
                 transform->rotation = {rotation.x, rotation.y, rotation.z, rotation.w};
                 transform->scale = {scaling.x, scaling.y, scaling.z, 0.0f};
 
+                e.add<com::mesh_renderer>();
                 auto* renderer = e.get_mut<com::mesh_renderer>();
 
                 const aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
@@ -119,8 +120,6 @@ namespace lu {
                 material->properties["tex_emission"]    = load_tex({aiTextureType_EMISSION_COLOR, aiTextureType_EMISSIVE}, default_texture_b);
                 material->flush_property_updates();
                 material->print_properties();
-
-                get_asset_registry<graphics::texture>().print_loaded();
 
                 renderer->materials.emplace_back(material);
 

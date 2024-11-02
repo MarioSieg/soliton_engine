@@ -9,7 +9,7 @@ namespace lu {
     struct scene_properties final {
         struct {
             XMFLOAT4 sun_dir {0.0f, -1.0f, 0.0f, 1.0f};
-            XMFLOAT4 sun_color {1.0f, 0.0f, 0.0f, 1.0f};
+            XMFLOAT4 sun_color {1.0f, 1.0f, 1.0f, 1.0f};
         } environment {};
     };
 }

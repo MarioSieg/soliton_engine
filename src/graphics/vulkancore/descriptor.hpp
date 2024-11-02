@@ -32,7 +32,7 @@ namespace lu::vkb {
             //{ vk::DescriptorType::eAccelerationStructureKHR, .5f },
         };
 
-        std::uint32_t alloc_granularity {1024 };
+        std::uint32_t alloc_granularity {1024};
 
     private:
         vk::DescriptorPool m_current_pool {};

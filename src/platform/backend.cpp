@@ -3,6 +3,7 @@
 #include "backend.hpp"
 #include "../core/core.hpp"
 
+#include <spdlog/fmt/bin_to_hex.h>
 #include <GLFW/glfw3.h>
 #include <nfd.hpp>
 
@@ -89,10 +90,14 @@ namespace lu::platform::backend {
         }
         const GLFWgammaramp* const ramp = glfwGetGammaRamp(mon);
         log_info("-------- Gamma Ramp --------");
+        eastl::vector<std::uint8_t> gramp {};
+        gramp.reserve(ramp->size * 3);
         for (int i = 0; i < ramp->size; ++i) {
-            const std::uint32_t merged = (ramp->red[i]<<16) | (ramp->green[i]<<8) | ramp->blue[i];
-            log_info("{}: {:06x}", i, merged);
+            gramp.emplace_back(ramp->red[i]);
+            gramp.emplace_back(ramp->green[i]);
+            gramp.emplace_back(ramp->blue[i]);
         }
+        log_info("{}", spdlog::to_hex(gramp));
     }
 
     auto poll_events() -> void {

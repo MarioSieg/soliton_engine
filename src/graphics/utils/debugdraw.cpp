@@ -894,7 +894,7 @@ namespace lu::graphics {
                 auto* vptr = static_cast<std::uint8_t*>(m_vertex_buffer->get_mapped_ptr());
                 std::memcpy(vptr + sizeof(vertex) * k_max_vertices * frameidx, m_vertices.data(), sizeof(vertex) * m_vertices.size());
             }
-            std::uint32_t dynamic_offset = sizeof(uniform_data) * frameidx;
+            std::uint32_t dynamic_offset = m_uniform->get_dynamic_aligned_size() * frameidx;
             cmd.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, m_pipeline_layout, 0, 1, &m_descriptor_set, 1, &dynamic_offset);
             const vk::DeviceSize vbo_offset = sizeof(vertex) * k_max_vertices * frameidx;
             cmd.bindVertexBuffers(0, 1, &m_vertex_buffer->get_buffer(), &vbo_offset);
@@ -1074,7 +1074,7 @@ namespace lu::graphics {
         vk::DescriptorBufferInfo buffer_info {};
         buffer_info.buffer = m_uniform->get_buffer();
         buffer_info.offset = 0;
-        buffer_info.range = sizeof(uniform_data);
+        buffer_info.range = m_uniform->get_dynamic_aligned_size();
         factory.bind_buffers(0, 1, &buffer_info, vk::DescriptorType::eUniformBufferDynamic, vk::ShaderStageFlagBits::eVertex);
         passert(factory.build(m_descriptor_set, m_descriptor_set_layout));
     }
