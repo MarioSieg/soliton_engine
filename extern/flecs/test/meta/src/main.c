@@ -75,6 +75,7 @@ void EnumTypes_struct_w_enum(void);
 void EnumTypes_zero_initialized(void);
 void EnumTypes_enum_relation(void);
 void EnumTypes_enum_w_short_notation(void);
+void EnumTypes_enum_modified_event(void);
 
 // Testsuite 'BitmaskTypes'
 void BitmaskTypes_bitmask_1_constant(void);
@@ -634,6 +635,9 @@ void SerializeEntityToJson_serialize_w_name_1_tag(void);
 void SerializeEntityToJson_serialize_w_name_2_tags(void);
 void SerializeEntityToJson_serialize_w_name_1_pair(void);
 void SerializeEntityToJson_serialize_w_base(void);
+void SerializeEntityToJson_serialize_w_base_dont_inherit_tag(void);
+void SerializeEntityToJson_serialize_w_base_dont_inherit_component(void);
+void SerializeEntityToJson_serialize_w_base_dont_inherit_pair(void);
 void SerializeEntityToJson_serialize_w_2_base(void);
 void SerializeEntityToJson_serialize_component_w_base(void);
 void SerializeEntityToJson_serialize_component_w_base_no_reflection_data(void);
@@ -774,6 +778,7 @@ void SerializeIterToJson_serialize_15_fields(void);
 void SerializeIterToJson_serialize_16_fields(void);
 void SerializeIterToJson_serialize_31_fields(void);
 void SerializeIterToJson_serialize_32_fields(void);
+void SerializeIterToJson_serialize_field_w_escaped_sep(void);
 
 // Testsuite 'SerializeIterToRowJson'
 void SerializeIterToRowJson_serialize_this_w_1_tag(void);
@@ -1253,6 +1258,10 @@ bake_test_case EnumTypes_testcases[] = {
     {
         "enum_w_short_notation",
         EnumTypes_enum_w_short_notation
+    },
+    {
+        "enum_modified_event",
+        EnumTypes_enum_modified_event
     }
 };
 
@@ -3431,6 +3440,18 @@ bake_test_case SerializeEntityToJson_testcases[] = {
         SerializeEntityToJson_serialize_w_base
     },
     {
+        "serialize_w_base_dont_inherit_tag",
+        SerializeEntityToJson_serialize_w_base_dont_inherit_tag
+    },
+    {
+        "serialize_w_base_dont_inherit_component",
+        SerializeEntityToJson_serialize_w_base_dont_inherit_component
+    },
+    {
+        "serialize_w_base_dont_inherit_pair",
+        SerializeEntityToJson_serialize_w_base_dont_inherit_pair
+    },
+    {
         "serialize_w_2_base",
         SerializeEntityToJson_serialize_w_2_base
     },
@@ -3984,6 +4005,10 @@ bake_test_case SerializeIterToJson_testcases[] = {
     {
         "serialize_32_fields",
         SerializeIterToJson_serialize_32_fields
+    },
+    {
+        "serialize_field_w_escaped_sep",
+        SerializeIterToJson_serialize_field_w_escaped_sep
     }
 };
 
@@ -4846,7 +4871,7 @@ static bake_test_suite suites[] = {
         "EnumTypes",
         NULL,
         NULL,
-        8,
+        9,
         EnumTypes_testcases
     },
     {
@@ -4930,14 +4955,14 @@ static bake_test_suite suites[] = {
         "SerializeEntityToJson",
         NULL,
         NULL,
-        69,
+        72,
         SerializeEntityToJson_testcases
     },
     {
         "SerializeIterToJson",
         NULL,
         NULL,
-        75,
+        76,
         SerializeIterToJson_testcases
     },
     {
