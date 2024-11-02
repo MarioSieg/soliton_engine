@@ -7,6 +7,7 @@
 #pragma once
 
 #include "Config.h"
+#include "ClassInfo.h"
 #include "Errors.h"
 #include "FuncTraits.h"
 #include "LuaHelpers.h"
@@ -22,6 +23,9 @@
 #include <string>
 
 namespace luabridge {
+
+class LuaRef;
+
 namespace detail {
 
 //=================================================================================================
@@ -42,7 +46,7 @@ auto unwrap_argument_or_error(lua_State* L, std::size_t index, std::size_t start
 }
 
 template <class ArgsPack, std::size_t Start, std::size_t... Indices>
-auto make_arguments_list_impl(lua_State* L, std::index_sequence<Indices...>)
+auto make_arguments_list_impl([[maybe_unused]] lua_State* L, std::index_sequence<Indices...>)
 {
     return tupleize(unwrap_argument_or_error<std::tuple_element_t<Indices, ArgsPack>>(L, Indices, Start)...);
 }
@@ -574,7 +578,7 @@ inline int read_only_error(lua_State* L)
  * @brief __tostring metamethod for a class.
  */
 template <class C>
-static int tostring_metamethod(lua_State* L)
+int tostring_metamethod(lua_State* L)
 {
     const void* ptr = lua_topointer(L, 1);
 
@@ -592,11 +596,44 @@ static int tostring_metamethod(lua_State* L)
 
 //=================================================================================================
 /**
+ * @brief __destruct metamethod for a class.
+ */
+template <class C>
+int destruct_metamethod(lua_State* L)
+{
+    LUABRIDGE_ASSERT(lua_isuserdata(L, 1)); // Stack: userdata (ud)
+    const auto top = lua_gettop(L);
+
+    const int result = lua_getmetatable(L, 1); // Stack: ud, object metatable (ot) | nothing
+    if (result == 0)
+        return 0;
+
+    LUABRIDGE_ASSERT(lua_istable(L, -1)); // Stack: ud, ot
+
+    lua_rawgetp(L, LUA_REGISTRYINDEX, detail::getClassRegistryKey<C>()); // Stack: ud, ot, registry metatable (rt) | nil
+    if (lua_istable(L, -1)) // Stack: ud, ot, rt
+    {
+        rawgetfield(L, -1, "__destruct"); // Stack: ud, ot, rt, ud, function | nil
+        if (lua_isfunction(L, -1))
+        {
+            lua_pushvalue(L, 1); // Stack: ud, ot, rt, function, ud
+            lua_pcall(L, 1, 0, 0); // Stack: ud, ot, rt
+        }
+    }
+
+    lua_settop(L, top); // Stack: ud
+    return 0;
+}
+
+//=================================================================================================
+/**
  * @brief __gc metamethod for a class.
  */
 template <class C>
-static int gc_metamethod(lua_State* L)
+int gc_metamethod(lua_State* L)
 {
+    destruct_metamethod<C>(L);
+
     Userdata* ud = Userdata::getExact<C>(L, 1);
     LUABRIDGE_ASSERT(ud);
 
@@ -1063,6 +1100,26 @@ int invoke_proxy_constructor(lua_State* L)
 
 //=================================================================================================
 /**
+ * @brief lua_CFunction to call on a object constructor via functor (lambda wrapped in a std::function).
+ *
+ * The proxy std::function (lightuserdata) is in the first upvalue. The class userdata object will be pushed at the top of the Lua stack.
+ */
+template <class F>
+int invoke_proxy_destructor(lua_State* L)
+{
+    using FnTraits = function_traits<F>;
+
+    LUABRIDGE_ASSERT(isfulluserdata(L, lua_upvalueindex(1)));
+
+    auto& func = *align<F>(lua_touserdata(L, lua_upvalueindex(1)));
+
+    function<void, typename FnTraits::argument_types, 1>::call(L, func);
+
+    return 1;
+}
+
+//=================================================================================================
+/**
  * @brief lua_CFunction to resolve an invocation between several overloads.
  *
  * The list of overloads is in the first upvalue. The arguments of the function call are at the top of the Lua stack.
@@ -1215,7 +1272,25 @@ void push_member_function(lua_State* L, ReturnType (*fp)(T*, Params...), const c
 }
 
 template <class T, class ReturnType, class... Params>
+void push_member_function(lua_State* L, ReturnType (*fp)(T&, Params...), const char* debugname)
+{
+    using FnType = decltype(fp);
+
+    lua_pushlightuserdata(L, reinterpret_cast<void*>(fp));
+    lua_pushcclosure_x(L, &invoke_proxy_function<FnType>, debugname, 1);
+}
+
+template <class T, class ReturnType, class... Params>
 void push_member_function(lua_State* L, ReturnType (*fp)(T*, Params...) noexcept, const char* debugname)
+{
+    using FnType = decltype(fp);
+
+    lua_pushlightuserdata(L, reinterpret_cast<void*>(fp));
+    lua_pushcclosure_x(L, &invoke_proxy_function<FnType>, debugname, 1);
+}
+
+template <class T, class ReturnType, class... Params>
+void push_member_function(lua_State* L, ReturnType (*fp)(T&, Params...) noexcept, const char* debugname)
 {
     using FnType = decltype(fp);
 
@@ -1233,7 +1308,25 @@ void push_member_function(lua_State* L, ReturnType (*fp)(const T*, Params...), c
 }
 
 template <class T, class ReturnType, class... Params>
+void push_member_function(lua_State* L, ReturnType (*fp)(const T&, Params...), const char* debugname)
+{
+    using FnType = decltype(fp);
+
+    lua_pushlightuserdata(L, reinterpret_cast<void*>(fp));
+    lua_pushcclosure_x(L, &invoke_proxy_function<FnType>, debugname, 1);
+}
+
+template <class T, class ReturnType, class... Params>
 void push_member_function(lua_State* L, ReturnType (*fp)(const T*, Params...) noexcept, const char* debugname)
+{
+    using FnType = decltype(fp);
+
+    lua_pushlightuserdata(L, reinterpret_cast<void*>(fp));
+    lua_pushcclosure_x(L, &invoke_proxy_function<FnType>, debugname, 1);
+}
+
+template <class T, class ReturnType, class... Params>
+void push_member_function(lua_State* L, ReturnType (*fp)(const T&, Params...) noexcept, const char* debugname)
 {
     using FnType = decltype(fp);
 
@@ -1323,6 +1416,342 @@ void push_member_function(lua_State* L, int (U::*mfp)(lua_State*) const, const c
 
     new (lua_newuserdata_x<F>(L, sizeof(F))) F(mfp);
     lua_pushcclosure_x(L, &invoke_const_member_cfunction<T>, debugname, 1);
+}
+
+//=================================================================================================
+/**
+ * @brief
+ */
+template <class T, class = std::enable_if_t<
+    (std::is_base_of_v<T, LuaRef> || !detail::is_callable_v<T*>)>>
+void push_property_getter(lua_State* L, const T* value, const char* debugname)
+{
+    lua_pushlightuserdata(L, reinterpret_cast<void*>(const_cast<T*>(value)));
+    lua_pushcclosure_x(L, &property_getter<T>::call, debugname, 1);
+}
+
+template <class T>
+void push_property_getter(lua_State* L, T (*getter)(), const char* debugname)
+{
+    lua_pushlightuserdata(L, reinterpret_cast<void*>(getter));
+    lua_pushcclosure_x(L, &invoke_proxy_function<T (*)()>, debugname, 1);
+}
+
+template <class T>
+void push_property_getter(lua_State* L, T (*getter)() noexcept, const char* debugname)
+{
+    lua_pushlightuserdata(L, reinterpret_cast<void*>(getter));
+    lua_pushcclosure_x(L, &invoke_proxy_function<T (*)()  noexcept>, debugname, 1);
+}
+
+template <class T, class = std::enable_if_t<
+    detail::is_callable_v<T>>>
+void push_property_getter(lua_State* L, T getter, const char* debugname)
+{
+    if constexpr (std::is_same_v<T, lua_CFunction>)
+    {
+        lua_pushcfunction_x(L, getter, debugname);
+    }
+    else
+    {
+        lua_newuserdata_aligned<T>(L, std::move(getter));
+        lua_pushcclosure_x(L, &invoke_proxy_functor<T>, debugname, 1);
+    }
+}
+
+//=================================================================================================
+/**
+ * @brief
+ */
+template <class C, class T, class U>
+void push_class_property_getter(lua_State* L, T (U::*value), const char* debugname)
+{
+    using MemberValue = decltype(value);
+
+    new (lua_newuserdata_x<MemberValue>(L, sizeof(MemberValue))) MemberValue(value);
+    lua_pushcclosure_x(L, &property_getter<T, C>::call, debugname, 1);
+}
+
+template <class C, class T>
+void push_class_property_getter(lua_State* L, T (C::*getter)() const, const char* debugname)
+{
+    using GetType = decltype(getter);
+
+    new (lua_newuserdata_x<GetType>(L, sizeof(GetType))) GetType(getter);
+    lua_pushcclosure_x(L, &invoke_const_member_function<GetType, C>, debugname, 1);
+}
+
+template <class C, class T>
+void push_class_property_getter(lua_State* L, T (C::*getter)() const noexcept, const char* debugname)
+{
+    using GetType = decltype(getter);
+
+    new (lua_newuserdata_x<GetType>(L, sizeof(GetType))) GetType(getter);
+    lua_pushcclosure_x(L, &invoke_const_member_function<GetType, C>, debugname, 1);
+}
+
+template <class C, class T>
+void push_class_property_getter(lua_State* L, T (C::*getter)(lua_State*) const, const char* debugname)
+{
+    using GetType = decltype(getter);
+
+    new (lua_newuserdata_x<GetType>(L, sizeof(GetType))) GetType(getter);
+    lua_pushcclosure_x(L, &invoke_const_member_function<GetType, C>, debugname, 1);
+}
+
+template <class C, class T>
+void push_class_property_getter(lua_State* L, T (C::*getter)(lua_State*) const noexcept, const char* debugname)
+{
+    using GetType = decltype(getter);
+
+    new (lua_newuserdata_x<GetType>(L, sizeof(GetType))) GetType(getter);
+    lua_pushcclosure_x(L, &invoke_const_member_function<GetType, C>, debugname, 1);
+}
+
+template <class C, class T>
+void push_class_property_getter(lua_State* L, T (*getter)(const C*), const char* debugname)
+{
+    lua_pushlightuserdata(L, reinterpret_cast<void*>(getter));
+    lua_pushcclosure_x(L, &invoke_proxy_function<T (*)(const C*)>, debugname, 1);
+}
+
+template <class C, class T>
+void push_class_property_getter(lua_State* L, T (*getter)(const C&), const char* debugname)
+{
+    lua_pushlightuserdata(L, reinterpret_cast<void*>(getter));
+    lua_pushcclosure_x(L, &invoke_proxy_function<T (*)(const C&)>, debugname, 1);
+}
+
+template <class C, class T>
+void push_class_property_getter(lua_State* L, T (*getter)(const C*, lua_State*), const char* debugname)
+{
+    lua_pushlightuserdata(L, reinterpret_cast<void*>(getter));
+    lua_pushcclosure_x(L, &invoke_proxy_function<T (*)(const C*, lua_State*)>, debugname, 1);
+}
+
+template <class C, class T>
+void push_class_property_getter(lua_State* L, T (*getter)(const C&, lua_State*), const char* debugname)
+{
+    lua_pushlightuserdata(L, reinterpret_cast<void*>(getter));
+    lua_pushcclosure_x(L, &invoke_proxy_function<T (*)(const C&, lua_State*)>, debugname, 1);
+}
+
+template <class C, class T>
+void push_class_property_getter(lua_State* L, T (*getter)(const C*) noexcept, const char* debugname)
+{
+    lua_pushlightuserdata(L, reinterpret_cast<void*>(getter));
+    lua_pushcclosure_x(L, &invoke_proxy_function<T (*)(const C*) noexcept>, debugname, 1);
+}
+
+template <class C, class T>
+void push_class_property_getter(lua_State* L, T (*getter)(const C&) noexcept, const char* debugname)
+{
+    lua_pushlightuserdata(L, reinterpret_cast<void*>(getter));
+    lua_pushcclosure_x(L, &invoke_proxy_function<T (*)(const C&) noexcept>, debugname, 1);
+}
+
+template <class C, class T>
+void push_class_property_getter(lua_State* L, T (*getter)(const C*, lua_State*) noexcept, const char* debugname)
+{
+    lua_pushlightuserdata(L, reinterpret_cast<void*>(getter));
+    lua_pushcclosure_x(L, &invoke_proxy_function<T (*)(const C*)>, debugname, 1);
+}
+
+template <class C, class T>
+void push_class_property_getter(lua_State* L, T (*getter)(const C&, lua_State*) noexcept, const char* debugname)
+{
+    lua_pushlightuserdata(L, reinterpret_cast<void*>(getter));
+    lua_pushcclosure_x(L, &invoke_proxy_function<T (*)(const C&, lua_State*) noexcept>, debugname, 1);
+}
+
+template <class C>
+void push_class_property_getter(lua_State* L, lua_CFunction getter, const char* debugname)
+{
+    lua_pushcfunction_x(L, getter, debugname);
+}
+
+template <class C, class T, class = std::enable_if_t<
+    !std::is_pointer_v<T> && detail::is_callable_v<T>>>
+void push_class_property_getter(lua_State* L, T getter, const char* debugname)
+{
+    using FirstArg = detail::function_argument_t<0, T>;
+    static_assert(std::is_same_v<std::decay_t<std::remove_reference_t<std::remove_pointer_t<FirstArg>>>, C>);
+
+    lua_newuserdata_aligned<T>(L, std::move(getter));
+    lua_pushcclosure_x(L, &invoke_proxy_functor<T>, debugname, 1);
+}
+
+//=================================================================================================
+/**
+ * @brief
+ */
+template <class T, class = std::enable_if_t<
+    (std::is_base_of_v<T, LuaRef> || !detail::is_callable_v<T*>)>>
+void push_property_setter(lua_State* L, T* value, const char* debugname)
+{
+    lua_pushlightuserdata(L, reinterpret_cast<void*>(value));
+    lua_pushcclosure_x(L, &property_setter<T>::call, debugname, 1);
+}
+
+template <class T>
+void push_property_setter(lua_State* L, void (*setter)(T), const char* debugname)
+{
+    lua_pushlightuserdata(L, reinterpret_cast<void*>(setter));
+    lua_pushcclosure_x(L, &detail::invoke_proxy_function<void (*)(T)>, debugname, 1);
+}
+
+template <class T>
+void push_property_setter(lua_State* L, void (*setter)(T) noexcept, const char* debugname)
+{
+    lua_pushlightuserdata(L, reinterpret_cast<void*>(setter));
+    lua_pushcclosure_x(L, &detail::invoke_proxy_function<void (*)(T) noexcept>, debugname, 1);
+}
+
+template <class T, class = std::enable_if_t<
+    detail::is_callable_v<T>>>
+void push_property_setter(lua_State* L, T setter, const char* debugname)
+{
+    if constexpr (std::is_same_v<T, lua_CFunction>)
+    {
+        lua_pushcfunction_x(L, setter, debugname);
+    }
+    else
+    {
+        lua_newuserdata_aligned<T>(L, std::move(setter));
+        lua_pushcclosure_x(L, &invoke_proxy_functor<T>, debugname, 1);
+    }
+}
+
+//=================================================================================================
+/**
+ * @brief
+ */
+template <class C, class T, class U>
+void push_class_property_setter(lua_State* L, T U::*value, const char* debugname)
+{
+    using MemberValue = decltype(value);
+
+    new (lua_newuserdata_x<MemberValue>(L, sizeof(MemberValue))) MemberValue(value);
+    lua_pushcclosure_x(L, &property_setter<T, C>::call, debugname, 1);
+}
+
+template <class C, class T>
+void push_class_property_setter(lua_State* L, void (C::*setter)(T), const char* debugname)
+{
+    using SetType = decltype(setter);
+
+    new (lua_newuserdata_x<SetType>(L, sizeof(SetType))) SetType(setter);
+    lua_pushcclosure_x(L, &invoke_member_function<SetType, C>, debugname, 1);
+}
+
+template <class C, class T>
+void push_class_property_setter(lua_State* L, void (C::*setter)(T) noexcept, const char* debugname)
+{
+    using SetType = decltype(setter);
+
+    new (lua_newuserdata_x<SetType>(L, sizeof(SetType))) SetType(setter);
+    lua_pushcclosure_x(L, &invoke_member_function<SetType, C>, debugname, 1);
+}
+
+template <class C, class T>
+void push_class_property_setter(lua_State* L, void (C::*setter)(T, lua_State*), const char* debugname)
+{
+    using SetType = decltype(setter);
+
+    new (lua_newuserdata_x<SetType>(L, sizeof(SetType))) SetType(setter);
+    lua_pushcclosure_x(L, &invoke_member_function<SetType, C>, debugname, 1);
+}
+
+template <class C, class T>
+void push_class_property_setter(lua_State* L, void (C::*setter)(T, lua_State*) noexcept, const char* debugname)
+{
+    using SetType = decltype(setter);
+
+    new (lua_newuserdata_x<SetType>(L, sizeof(SetType))) SetType(setter);
+    lua_pushcclosure_x(L, &invoke_member_function<SetType, C>, debugname, 1);
+}
+
+template <class C, class T>
+void push_class_property_setter(lua_State* L, void (*setter)(C*, T), const char* debugname)
+{
+    lua_pushlightuserdata( L, reinterpret_cast<void*>(setter));
+    lua_pushcclosure_x(L, &invoke_proxy_function<void (*)(C*, T)>, debugname, 1);
+}
+
+template <class C, class T>
+void push_class_property_setter(lua_State* L, void (*setter)(C&, T), const char* debugname)
+{
+    lua_pushlightuserdata( L, reinterpret_cast<void*>(setter));
+    lua_pushcclosure_x(L, &invoke_proxy_function<void (*)(C&, T)>, debugname, 1);
+}
+
+template <class C, class T>
+void push_class_property_setter(lua_State* L, void (*setter)(C*, T, lua_State*), const char* debugname)
+{
+    lua_pushlightuserdata( L, reinterpret_cast<void*>(setter));
+    lua_pushcclosure_x(L, &invoke_proxy_function<void (*)(C*, T, lua_State*)>, debugname, 1);
+}
+
+template <class C, class T>
+void push_class_property_setter(lua_State* L, void (*setter)(C&, T, lua_State*), const char* debugname)
+{
+    lua_pushlightuserdata( L, reinterpret_cast<void*>(setter));
+    lua_pushcclosure_x(L, &invoke_proxy_function<void (*)(C&, T, lua_State*)>, debugname, 1);
+}
+
+template <class C, class T>
+void push_class_property_setter(lua_State* L, void (*setter)(C*, T) noexcept, const char* debugname)
+{
+    lua_pushlightuserdata( L, reinterpret_cast<void*>(setter));
+    lua_pushcclosure_x(L, &invoke_proxy_function<void (*)(C*, T) noexcept>, debugname, 1);
+}
+
+template <class C, class T>
+void push_class_property_setter(lua_State* L, void (*setter)(C&, T) noexcept, const char* debugname)
+{
+    lua_pushlightuserdata( L, reinterpret_cast<void*>(setter));
+    lua_pushcclosure_x(L, &invoke_proxy_function<void (*)(C&, T) noexcept>, debugname, 1);
+}
+
+template <class C, class T>
+void push_class_property_setter(lua_State* L, void (*setter)(C*, T, lua_State*) noexcept, const char* debugname)
+{
+    lua_pushlightuserdata( L, reinterpret_cast<void*>(setter));
+    lua_pushcclosure_x(L, &invoke_proxy_function<void (*)(C*, T, lua_State*) noexcept>, debugname, 1);
+}
+
+template <class C, class T>
+void push_class_property_setter(lua_State* L, void (*setter)(C&, T, lua_State*) noexcept, const char* debugname)
+{
+    lua_pushlightuserdata( L, reinterpret_cast<void*>(setter));
+    lua_pushcclosure_x(L, &invoke_proxy_function<void (*)(C&, T, lua_State*) noexcept>, debugname, 1);
+}
+
+template <class C>
+void push_class_property_setter(lua_State* L, lua_CFunction setter, const char* debugname)
+{
+    lua_pushcfunction_x(L, setter, debugname);
+}
+
+template <class C, class T, class = std::enable_if_t<
+    !std::is_pointer_v<T> && detail::is_callable_v<T>>>
+void push_class_property_setter(lua_State* L, T setter, const char* debugname)
+{
+    using FirstArg = detail::function_argument_t<0, T>;
+    static_assert(std::is_same_v<std::decay_t<std::remove_pointer_t<FirstArg>>, C>);
+
+    lua_newuserdata_aligned<T>(L, std::move(setter));
+    lua_pushcclosure_x(L, &invoke_proxy_functor<T>, debugname, 1);
+}
+
+//=================================================================================================
+/**
+ * @brief
+ */
+inline void push_property_readonly(lua_State* L, const char* debugname)
+{
+    lua_pushstring(L, debugname);
+    lua_pushcclosure_x(L, &detail::read_only_error, debugname, 1);
 }
 
 //=================================================================================================
@@ -1506,6 +1935,31 @@ struct constructor_forwarder
         value->commit();
 
         return object;
+    }
+
+private:
+    F m_func;
+};
+
+//=================================================================================================
+/**
+ * @brief Constructor forwarder.
+ */
+template <class T, class F>
+struct destructor_forwarder
+{
+    explicit destructor_forwarder(F f)
+        : m_func(std::move(f))
+    {
+    }
+
+    void operator()(lua_State* L)
+    {
+        auto* value = Userdata::get<T>(L, -1, false);
+        if (value == nullptr)
+            raise_lua_error(L, "invalid object destruction");
+
+        std::invoke(m_func, value);
     }
 
 private:

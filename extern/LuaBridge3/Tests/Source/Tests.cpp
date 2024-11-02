@@ -233,7 +233,7 @@ TEST_F(LuaBridgeTest, Tuple)
     
     luabridge::getGlobalNamespace(L)
         .beginNamespace("tuple")
-            .addProperty("t", &t)
+            .addProperty("t", &t, &t)
         .endNamespace();
 
     {
@@ -309,7 +309,7 @@ TEST_F(LuaBridgeTest, ClassFunction)
     luabridge::getGlobalNamespace(L)
         .beginClass<Inner>("Inner")
         .addConstructor<void (*)(int)>()
-        .addProperty("data", &Inner::data)
+        .addProperty("data", &Inner::data, &Inner::data)
         .endClass()
         .beginClass<Outer>("Outer")
         .addConstructor<void (*)(Inner)>()
@@ -712,6 +712,7 @@ TEST_F(LuaBridgeTest, StdSharedPtrDerived)
     }
 }
 
+#if !(_WIN32 && LUABRIDGE_ON_LUAJIT && LUABRIDGE_HAS_EXCEPTIONS)
 TEST_F(LuaBridgeTest, StdSharedPtrDerivedPolymorphic)
 {
     luabridge::getGlobalNamespace(L)
@@ -785,6 +786,7 @@ TEST_F(LuaBridgeTest, StdSharedPtrDerivedPolymorphic)
     auto x3 = result<std::string>();
     EXPECT_EQ("VirtualC", x3);
 }
+#endif
 
 namespace {
 class TestClassInner : public std::enable_shared_from_this<TestClassInner>
@@ -1003,8 +1005,8 @@ TEST_F(LuaBridgeTest, Exception)
 
     luabridge::getGlobalNamespace(L)
         .beginNamespace("ns")
-            .addProperty("cb1", &cb1)
-            .addProperty("cb2", &cb2)
+            .addProperty("cb1", &cb1, &cb1)
+            .addProperty("cb2", &cb2, &cb2)
         .endNamespace();
 
     auto text = R"(
