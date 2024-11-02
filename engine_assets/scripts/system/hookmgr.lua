@@ -11,7 +11,6 @@ local tick_hook_id = '_update' -- hook id for tick function
 
 -- Load all hook from all currently loaded module
 local function preload_all_hooks()
-    local entry = require '../entry' -- load preload entry
     local hooks = {}
     for key, module in pairs(package.loaded) do
         -- check if the script has a hook

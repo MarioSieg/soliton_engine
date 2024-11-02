@@ -2,6 +2,7 @@
 
 #include "physics_subsystem.hpp"
 #include "../core/kernel.hpp"
+#include "../scene/scene_mgr.hpp"
 #include "layerdef.hpp"
 #include "broad_phase_layer.hpp"
 #include "broad_phase_layer_filter.hpp"
@@ -170,7 +171,7 @@ namespace lu::physics {
 
 	// Sync transforms from physics to game objects
     auto physics_subsystem::post_sync() const -> void {
-    	auto& active = scene::get_active();
+    	auto& active = scene_mgr::active();
     	JPH::BodyInterface& bi = m_physics_system.GetBodyInterface();
 
     	// sync loop 1 rigidbody => transform

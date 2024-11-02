@@ -54,7 +54,7 @@ LUA_INTEROP_API auto __lu_dd_gizmo_enable(const bool enable) -> void {
 }
 
 LUA_INTEROP_API auto __lu_dd_gizmo_manipulator(const lua_entity_id id, const int op, const int mode, const bool enable_snap, const double snap_x, const lua_vec3 color) -> void {
-    const flecs::entity ent {scene::get_active(), eastl::bit_cast<flecs::id_t>(id)};
+    const flecs::entity ent {scene_mgr::active(), eastl::bit_cast<flecs::id_t>(id)};
     if (!ent.has<const com::transform>()) [[unlikely]] {
         return;
     }
@@ -107,7 +107,7 @@ LUA_INTEROP_API auto __lu_dd_set_fade_distance(const double $near, const double 
 LUA_INTEROP_API auto __lu_dd_draw_scene_with_aabbs(const lua_vec3 color) -> void {
     const XMFLOAT3 ccolor = color;
     dd().begin_batch();
-    scene::get_active().each([&ccolor](const com::transform& transform, const com::mesh_renderer& renderer) {
+    scene_mgr::active().each([&ccolor](const com::transform& transform, const com::mesh_renderer& renderer) {
         for (const auto* mesh : renderer.meshes) {
            if (mesh) [[likely]] {
                BoundingOrientedBox obb {};

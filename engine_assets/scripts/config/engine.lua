@@ -36,7 +36,7 @@ local ui_tesselation_error = {
 -- Do NOT rename any variables in here, as some these are accessed from C++ code.
 engine_cfg = {
     ['system'] = {
-        ['enable_editor'] = true, -- Enable the editor.
+        ['enable_editor'] = false, -- Enable the editor.
         ['enable_debug'] = true, -- Enable debugdraw mode.
         ['enable_jit'] = true, -- Enable Just-In-time compilation.
         ['enable_jit_disasm'] = false, -- Enable JIT assembly dump to jit.log output file.

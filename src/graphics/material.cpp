@@ -1,7 +1,7 @@
 // Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "material.hpp"
-
+#include "../scene/scene_mgr.hpp"
 #include "vulkancore/context.hpp"
 #include "graphics_subsystem.hpp"
 
@@ -19,7 +19,7 @@ namespace lu::graphics {
     material::~material() = default;
 
     auto material::flush_property_updates() -> void {
-        auto& reg = scene::get_active().get_asset_registry<graphics::texture>();
+        auto& reg = scene_mgr::active().get_asset_registry<graphics::texture>();
         const auto make_write_tex_info = [&reg](const assetmgr::asset_ref texture) {
             auto* texture_ptr = reg[texture];
             panic_assert(texture_ptr != nullptr);

@@ -2,8 +2,7 @@
 
 #include "kernel.hpp"
 #include "buffered_sink.hpp"
-
-#include "../scene/scene.hpp"
+#include "../scene/scene_mgr.hpp"
 
 #include <bit>
 #include <ranges>
@@ -163,7 +162,8 @@ static auto redirect_io() -> void {
         log_info("Engine config dir: {}", config_dir);
         log_info("Engine log dir: {}", log_dir);
 
-        assetmgr::init();
+        assetmgr::init(); // Initialize asset manager
+        scene_mgr::set_active(eastl::make_unique<scene>()); // Create a new empty scene
 
         log_info("-- ENGINE KERNEL BOOT DONE {:.03f}s --", duration_cast<duration<double>>(duration_cast<high_resolution_clock::duration>(high_resolution_clock::now() - m_boot_stamp)).count());
     }
@@ -172,7 +172,7 @@ static auto redirect_io() -> void {
         log_info("Shutting down...");
         log_info("Killing active scene...");
         // Kill active scene before other subsystems are shut down
-        scene::s_active.reset();
+        scene_mgr::set_active(nullptr);
         log_info("Killing subsystems...");
         m_subsystems.clear();
         log_info("Patching core engine config...");
@@ -211,7 +211,7 @@ static auto redirect_io() -> void {
         g_kernel_online = false;
     }
 
-    auto kernel::on_new_scene_start(scene& scene) -> void {
+    auto kernel::start_scene(scene& scene) -> void {
         stopwatch clock_total {};
         log_info("Starting new scene...");
         for (auto&& sys : m_subsystems) {

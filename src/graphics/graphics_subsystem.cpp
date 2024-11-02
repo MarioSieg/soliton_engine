@@ -1,7 +1,7 @@
 // Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "graphics_subsystem.hpp"
-
+#include "../scene/scene_mgr.hpp"
 #include "../platform/platform_subsystem.hpp"
 #include "../scripting/system_variable.hpp"
 
@@ -81,7 +81,7 @@ namespace lu::graphics {
     }
 
     [[nodiscard]] static auto find_main_camera() -> flecs::entity {
-        const auto filter = scene::get_active().query<const com::transform, const com::camera>();
+        const auto filter = scene_mgr::active().query<const com::transform, const com::camera>();
         if (filter.count() > 0) {
             return filter.first();
         }
@@ -89,14 +89,7 @@ namespace lu::graphics {
     }
 
     auto graphics_subsystem::update_main_camera(const float width, const float height) -> void {
-        flecs::entity main_cam;
-        auto& active = scene::get_active().active_camera;
-        if (!active.is_valid() || !active.is_alive()) {
-            active = flecs::entity::null();
-            main_cam = find_main_camera();
-        } else {
-            main_cam = active;
-        }
+        flecs::entity main_cam = find_main_camera();
         if (!main_cam.is_valid()
             || !main_cam.is_alive()
             || !main_cam.has<const com::camera>()
@@ -184,7 +177,7 @@ namespace lu::graphics {
     }
 
     HOTPROC auto graphics_subsystem::on_post_tick() -> void {
-        auto& scene = scene::get_active();
+        auto& scene = scene_mgr::active();
         m_noesis_context->tick();
         m_imgui_context->end_frame();
         if (!m_render_query.scene || &scene != m_render_query.scene) [[unlikely]] { // Scene changed
@@ -262,7 +255,7 @@ namespace lu::graphics {
     }
 
     auto graphics_subsystem::update_shared_buffers_per_frame() const -> void {
-        const auto& scene = scene::get_active();
+        const auto& scene = scene_mgr::active();
 
         glsl::perFrameData per_frame_data {};
         XMStoreFloat4(&per_frame_data.camPos, XMLoadFloat4(&s_camera_transform.position));

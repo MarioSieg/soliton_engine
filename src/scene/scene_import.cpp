@@ -2,10 +2,7 @@
 
 #include "scene.hpp"
 #include "../core/kernel.hpp"
-#include "../graphics/mesh.hpp"
-#include "../graphics/material.hpp"
 #include "../graphics/utils/assimp_utils.hpp"
-#include "../graphics/vulkancore/context.hpp"
 
 #include <filesystem>
 #include <assimp/scene.h>
@@ -13,12 +10,12 @@
 #include <assimp/postprocess.h>
 #include <ankerl/unordered_dense.h>
 #include <DirectXMath.h>
-#include <bimg/bimg.h>
-#include <bimg/decode.h>
 
 namespace lu {
-    auto scene::import_from_file(const eastl::string& path, const float scale, const std::uint32_t load_flags) -> void {
+    auto import_from_file(const eastl::string& path, const std::uint32_t load_flags) -> eastl::unique_ptr<scene> {
         log_info("Importing scene from file '{}'", path);
+
+        eastl::unique_ptr<scene> new_scene = eastl::make_unique<scene>();
 
         Assimp::DefaultLogger::create("", Assimp::Logger::NORMAL);
         Assimp::DefaultLogger::get()->attachStream(new graphics::assimp_logger {}, Assimp::Logger::Info | Assimp::Logger::Err | Assimp::Logger::Warn);
@@ -58,7 +55,7 @@ namespace lu {
                 } else {
                     resolved_names[name] = 0;
                 }
-                const flecs::entity e = spawn(name.c_str());
+                const flecs::entity e = new_scene->spawn(name.c_str());
 
                 e.add<com::transform>();
                 auto* transform = e.get_mut<com::transform>();
@@ -75,9 +72,9 @@ namespace lu {
                 const aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
                 const aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
 
-                auto error_texture = get_asset_registry<graphics::texture>().load(graphics::sv_error_texture());
-                auto default_texture_w = get_asset_registry<graphics::texture>().load(graphics::sv_fallback_image_white());
-                auto default_texture_b = get_asset_registry<graphics::texture>().load(graphics::sv_fallback_image_black());
+                auto error_texture = new_scene->get_asset_registry<graphics::texture>().load(graphics::sv_error_texture());
+                auto default_texture_w = new_scene->get_asset_registry<graphics::texture>().load(graphics::sv_fallback_image_white());
+                auto default_texture_b = new_scene->get_asset_registry<graphics::texture>().load(graphics::sv_fallback_image_black());
 
                 auto load_tex = [&, binding = 0u](
                     const std::initializer_list<aiTextureType> types,
@@ -100,7 +97,7 @@ namespace lu {
                         eastl::replace(path.begin(), path.end(), '\\', '/');
                         return graphics::material_property {
                             binding++,
-                            get_asset_registry<graphics::texture>().load(eastl::move(path))
+                            new_scene->get_asset_registry<graphics::texture>().load(eastl::move(path))
                         };
                     }
                     log_warn("No texture found for material");
@@ -110,8 +107,8 @@ namespace lu {
                     };
                 };
 
-                auto& registry = get_asset_registry<graphics::material>();
-                auto [material_ref, material] = get_asset_registry<graphics::material>().insert();
+                auto& registry = new_scene->get_asset_registry<graphics::material>();
+                auto [material_ref, material] = new_scene->get_asset_registry<graphics::material>().insert();
                 material->properties["tex_albedo"]      = load_tex({aiTextureType_DIFFUSE, aiTextureType_BASE_COLOR}, error_texture);
                 material->properties["tex_normal"]      = load_tex({aiTextureType_NORMALS, aiTextureType_NORMAL_CAMERA}, default_texture_b);
                 material->properties["tex_roughness"]   = load_tex({aiTextureType_SPECULAR, aiTextureType_METALNESS, aiTextureType_DIFFUSE_ROUGHNESS, aiTextureType_SHININESS}, default_texture_b);
@@ -124,7 +121,7 @@ namespace lu {
                 renderer->materials.emplace_back(material);
 
                 eastl::span span {&mesh, 1};
-                auto& mesh_registry = get_asset_registry<graphics::mesh>();
+                auto& mesh_registry = new_scene->get_asset_registry<graphics::mesh>();
                 renderer->meshes.emplace_back(mesh_registry.insert(eastl::make_unique<graphics::mesh>(span)).second);
             }
             for (unsigned i = 0; i < node->mNumChildren; ++i) {
@@ -137,5 +134,7 @@ namespace lu {
         Assimp::DefaultLogger::kill();
 
         log_info("Imported scene from file '{}', {} nodes in {:.03}s", path, num_nodes, eastl::chrono::duration_cast<eastl::chrono::duration<double>>(eastl::chrono::high_resolution_clock::now() - start).count());
+
+        return new_scene;
     }
 }

@@ -65,8 +65,8 @@ namespace lu {
         const auto* buf = static_cast<const std::uint8_t*>(buffer);
         #if CPU_ARM
             std::uint32_t crc = ~0;
-            for (; size && (std::bit_cast<std::uintptr_t>(buf) & 7); --size) crc = __crc32cb(crc, *buf++);
-            if ((std::bit_cast<std::uintptr_t>(buf) & 8) && size >= 8) {
+            for (; size && (eastl::bit_cast<std::uintptr_t>(buf) & 7); --size) crc = __crc32cb(crc, *buf++);
+            if ((eastl::bit_cast<std::uintptr_t>(buf) & 8) && size >= 8) {
                 crc = __crc32cd(crc, *reinterpret_cast<const std::uint64_t*>(buf));
                 buf += 8;
                 size -= 8;
@@ -130,7 +130,7 @@ namespace lu {
             return ~crc;
         #elif CPU_X86
             std::uint32_t crc = ~0;
-            for (; size && (std::bit_cast<std::uintptr_t>(buf) & 7); --size) crc = _mm_crc32_u8(crc, *buf++);
+            for (; size && (eastl::bit_cast<std::uintptr_t>(buf) & 7); --size) crc = _mm_crc32_u8(crc, *buf++);
             if (size >= 32) {
                 std::size_t klen = ((size - 8) / 24)<<3;
                 std::uint32_t crc1 = 0;

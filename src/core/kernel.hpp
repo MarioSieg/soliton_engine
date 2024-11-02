@@ -27,8 +27,9 @@ namespace lu {
 
         [[nodiscard]] auto get_delta_time() noexcept -> double;
         [[nodiscard]] auto get_time() noexcept -> double;
+
         auto request_exit() noexcept -> void;
-        auto on_new_scene_start(scene& scene) -> void;
+        auto start_scene(scene& scene) -> void;
 
         HOTPROC auto run() -> void;
         auto resize() -> void;

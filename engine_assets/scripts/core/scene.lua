@@ -21,9 +21,8 @@ local rad, sin, cos, tan, atan2, asin, pi = math.rad, math.sin, math.cos, math.t
 ffi.cdef[[
     typedef int lua_scene_id;
     lua_scene_id __lu_scene_create(const char* name);
-    lua_scene_id __lu_scene_import(const char* name, const char* model_file, double scale, uint32_t load_flags);
+    lua_scene_id __lu_scene_import(const char* name, const char* model_file, uint32_t load_flags);
     void __lu_scene_tick(void);
-    void __lu_scene_start(void);
     lua_entity_id __lu_scene_spawn_entity(const char* name);
     void __lu_scene_despawn_entity(lua_entity_id id);
     lua_entity_id __lu_scene_get_entity_by_name(const char* name);
@@ -276,10 +275,6 @@ local scene = {
     time_cycle = time_cycle
 }
 
-function scene._start()
-    cpp.__lu_scene_start()
-end
-
 function scene._update()
     scene.time_cycle:_advance()
     cpp.__lu_scene_set_sun_dir(scene.time_cycle._sun_dir)
@@ -315,9 +310,9 @@ function scene._entity_query_end()
     cpp.__lu_scene_full_entity_query_end()
 end
 
-function scene.set_active_camera_entity(entity)
-    assert(entity ~= nil)
-    cpp.__lu_scene_set_active_camera_entity(entity._id)
+function scene.set_active_camera_entity(camera)
+    assert(camera ~= nil)
+    cpp.__lu_scene_set_active_camera_entity(camera._id)
 end
 
 function scene.get_active_camera_entity()
@@ -336,7 +331,6 @@ local function setup_scene_class(id, name)
     -- Make scene active
     scene.name = name
     scene.id = id
-    scene._start() -- invoke start hook
     print(string.format('Created new scene: %s, id: %x', name, id))
 
     -- Perform one full GC cycle to clean up any garbage
@@ -358,13 +352,10 @@ end
 --- @param file: string, path to the file to load
 --- @param import_scale: number, scale factor to apply to the imported scene. Only applies if the scene is not a .lunam file
 --- @param import_flags: number, flags to control the import process. Only applies if the scene is not a .lunam file
-function scene.load(file, import_scale, import_flags)
+function scene.load(file, import_flags)
     if not file or type(file) ~= 'string' then
         eprint('scene name or source file must be provided')
         return false
-    end
-    if not import_scale or type(import_scale) ~= 'number' or import_scale == 0 then
-        import_scale = 1
     end
     if not import_flags or type(import_flags) ~= 'number' then
         import_flags = scene_import_flags.default
@@ -374,14 +365,8 @@ function scene.load(file, import_scale, import_flags)
         return false
     end
     local name = file:match("^.+/(.+)$"):match("(.+)%..+") -- extract scene name from file path
-    local id = cpp.__lu_scene_import(name, file, import_scale, band(import_flags, 0xffffffff)) -- create native scene
+    local id = cpp.__lu_scene_import(name, file, band(import_flags, 0xffffffff)) -- create native scene
     return setup_scene_class(id, name)
-end
-
--- Do NOT remove this
--- Create a default scene - Lunam requires to always have an active scene
-if not scene.new('Untitled') then
-    panic('failed to create default scene')
 end
 
 return scene

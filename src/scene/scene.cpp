@@ -7,6 +7,7 @@
 #include <filesystem>
 #include <assimp/scene.h>
 #include <ankerl/unordered_dense.h>
+#include <flecs/addons/http.h>
 
 namespace lu {
     struct proxy final : scene {
@@ -14,11 +15,13 @@ namespace lu {
         explicit proxy(Ts&&... args) : scene(std::forward<Ts>(args)...) {}
     };
 
-    static constinit std::atomic_int id_gen = 1;
+    extern thread_local std::mt19937 s_rng {std::random_device{}()};
+    extern thread_local uuids::uuid_random_generator s_uuid_gen {s_rng};
 
-    scene::scene() : id{id_gen.fetch_add(1, std::memory_order_seq_cst)} {
-        static const auto main_tid = std::this_thread::get_id();
-        panic_assert(main_tid == std::this_thread::get_id());
+    scene::scene(eastl::string&& name) : id{s_uuid_gen()} {
+        properties.name = std::move(name);
+        log_info("Allocated scene {} {}", uuids::to_string(id), properties.name);
+        set<flecs::Rest>({});
     }
 
     scene::~scene() {
@@ -27,15 +30,7 @@ namespace lu {
         m_textures.invalidate();
         m_materials.invalidate();
         m_audio_clips.invalidate();
-        log_info("Destroyed scene '{}', id: {}", name, id);
-    }
-
-    auto scene::new_active(eastl::string&& name, eastl::string&& file, const float scale, const std::uint32_t load_flags) -> void {
-        s_active = eastl::make_unique<proxy>();
-        s_active->name = std::move(name);
-        log_info("Created scene '{}', id: {}", s_active->name, s_active->id);
-        if (!file.empty())
-            s_active->import_from_file(file, scale, load_flags);
+        log_info("Deallocated scene {} {}", uuids::to_string(id), properties.name);
     }
 
     auto scene::on_tick() -> void {
@@ -43,7 +38,7 @@ namespace lu {
     }
 
     auto scene::on_start() -> void {
-        kernel::get().on_new_scene_start(*this);
+        kernel::get().start_scene(*this);
     }
 
     auto scene::spawn(const char* const name) const -> flecs::entity {

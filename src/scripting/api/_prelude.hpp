@@ -3,7 +3,7 @@
 #pragma once
 
 #include "../../core/core.hpp"
-#include "../../scene/scene.hpp"
+#include "../../scene/scene_mgr.hpp"
 
 #if PLATFORM_WINDOWS
 #define LUA_INTEROP_API [[maybe_unused]] extern "C" __cdecl __declspec(dllexport)
@@ -21,13 +21,13 @@ static_assert(alignof(flecs::id_t) == alignof(lua_entity_id));
 
 using lua_asset_id = assetmgr::asset_ref;
 
-[[nodiscard]] inline __attribute__((always_inline)) auto resolve_entity(const lua_entity_id id) noexcept -> eastl::optional<flecs::entity> {
+[[nodiscard]] inline auto resolve_entity(const lua_entity_id id) noexcept -> eastl::optional<flecs::entity> {
     const auto f_id = eastl::bit_cast<flecs::id_t>(id);
     if (f_id == 0) [[unlikely]] {
         log_warn("Entity ID is null");
         return eastl::nullopt;
     }
-    const flecs::entity ent {scene::get_active(), f_id};
+    const flecs::entity ent {scene_mgr::active(), f_id};
     if (!ent.is_valid()) [[unlikely]] {
         log_warn("Entity ID is invalid");
         return eastl::nullopt;

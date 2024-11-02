@@ -7,6 +7,7 @@
 namespace lu {
     // Contains all editable properties of a scene.
     struct scene_properties final {
+        eastl::string name {};
         struct {
             XMFLOAT4 sun_dir {0.0f, -1.0f, 0.0f, 1.0f};
             XMFLOAT4 sun_color {1.0f, 1.0f, 1.0f, 1.0f};

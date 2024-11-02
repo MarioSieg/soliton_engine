@@ -14,23 +14,17 @@
 #include "../audio/audio_clip.hpp"
 
 namespace lu {
-    class scene : public flecs::world, public no_copy {
+    class scene : public flecs::world, public no_copy, public no_move {
     public:
-        const int id;
-        eastl::string name {};
-        scene_properties properties {};
+        explicit scene(eastl::string&& name = {});
         virtual ~scene() override;
 
-        static auto new_active(eastl::string&& name, eastl::string&& file, float scale, std::uint32_t load_flags) -> void;
-        [[nodiscard]] static auto get_active() noexcept -> scene& {
-            assert(s_active != nullptr);
-            return *s_active;
-        }
-
-        virtual auto on_tick() -> void;
-        virtual auto on_start() -> void;
+        const uuids::uuid id;
+        scene_properties properties {};
 
         auto spawn(const char* name) const -> flecs::entity;
+        virtual auto on_tick() -> void;
+        virtual auto on_start() -> void;
 
         template <typename T>
         [[nodiscard]] constexpr auto get_asset_registry() -> assetmgr::asset_registry<T>&;
@@ -39,16 +33,11 @@ namespace lu {
 
     private:
         friend class kernel;
-        auto import_from_file(const eastl::string& path, float scale, std::uint32_t load_flags) -> void;
 
         assetmgr::asset_registry<graphics::mesh> m_meshes {};
         assetmgr::asset_registry<graphics::texture> m_textures {};
         assetmgr::asset_registry<graphics::material> m_materials {};
         assetmgr::asset_registry<audio::audio_clip> m_audio_clips {};
-
-        friend struct proxy;
-        static inline eastl::unique_ptr<scene> s_active {};
-        scene();
     };
 
     template <> constexpr auto scene::get_asset_registry() -> assetmgr::asset_registry<graphics::mesh>& { return m_meshes; }
