@@ -162,7 +162,7 @@ namespace lu {
         else this->m_slots = std::allocator_traits<Alloc>::allocate(this->m_alloc, this->m_cap + (k_padding << 1));
         const bool is_valid = reinterpret_cast<const std::byte*>(&this->m_read_idx) - reinterpret_cast<const std::byte*>(&this->m_write_idx)
             >= static_cast<std::ptrdiff_t>(k_hardware_destructive_interference_size);
-        passert(is_valid);
+        panic_assert(is_valid);
     }
 
     template <typename T, typename Alloc>
@@ -231,7 +231,7 @@ namespace lu {
     auto spsc_queue<T, Alloc>::pop() noexcept -> void {
         static_assert(std::is_nothrow_destructible_v<T>, "T must be nothrow destructible");
         const std::size_t read_idx {this->m_read_idx.load(std::memory_order_relaxed) };
-        passert(this->m_write_idx.load(std::memory_order_acquire) != read_idx);
+        panic_assert(this->m_write_idx.load(std::memory_order_acquire) != read_idx);
         (*(this->m_slots + k_padding)).~T();
         std::size_t next_idx = read_idx + 1;
         if (next_idx == this->m_cap)

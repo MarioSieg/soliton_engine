@@ -102,7 +102,7 @@ static auto redirect_io() -> void {
     static constinit kernel* g_kernel = nullptr;
 
     kernel::kernel(const int argc, const char** argv, const char** $environ) {
-        passert(g_kernel == nullptr);
+        panic_assert(g_kernel == nullptr);
         g_kernel = this;
 #if PLATFORM_WINDOWS
         redirect_io();
@@ -195,7 +195,7 @@ static auto redirect_io() -> void {
     }
 
     auto kernel::get() noexcept -> kernel& {
-        passert(g_kernel != nullptr);
+        panic_assert(g_kernel != nullptr);
         return *g_kernel;
     }
 

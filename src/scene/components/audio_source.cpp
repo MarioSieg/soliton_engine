@@ -10,7 +10,7 @@ namespace lu::com {
             return;
         }
         FMOD::System* const system = audio::audio_subsystem::get_system();
-        passert(system);
+        panic_assert(system);
         fmod_check(system->playSound(clip->get_sound(), nullptr, false, &m_channel));
     }
 }

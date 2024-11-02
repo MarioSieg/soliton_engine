@@ -140,7 +140,7 @@ namespace lu::vkb {
 
     // Get global vulkan context wrapper class
     [[nodiscard]] inline auto ctx() noexcept -> context& {
-        passert(context::s_instance != nullptr);
+        panic_assert(context::s_instance != nullptr);
         return *context::s_instance;
     }
 

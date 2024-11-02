@@ -19,7 +19,7 @@ namespace lu::vkb {
         find_physical_device();
         create_logical_device(k_enabled_features, k_device_extensions, nullptr);
         init_vma();
-        passert(find_supported_depth_format(require_stencil, m_depth_format));
+        panic_assert(find_supported_depth_format(require_stencil, m_depth_format));
 
         log_info("Vulkan device initialized");
     }
@@ -258,7 +258,7 @@ namespace lu::vkb {
         eastl::vector<vk::PhysicalDevice> physical_devices {num_gpus};
         vkcheck(m_instance.enumeratePhysicalDevices(&num_gpus, physical_devices.data()));
         log_info("Found {} Vulkan physical device(s)", num_gpus);
-        passert(num_gpus > 0 && "No Vulkan physical devices found");
+        panic_assert(num_gpus > 0 && "No Vulkan physical devices found");
         std::uint32_t best_device = 0;
         vk::PhysicalDeviceProperties device_properties;
         // Find best GPU, prefer discrete GPU

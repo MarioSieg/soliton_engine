@@ -37,14 +37,14 @@ namespace lu::scripting {
     }
 
     void scripting_subsystem::on_prepare() {
-        passert(m_is_lua_host_online);
+        panic_assert(m_is_lua_host_online);
         if (const luabridge::LuaResult r = (*m_on_prepare)(); r.hasFailed()) [[unlikely]] {
             lua_log_error("{}: Error in {}: {}", k_boot_script, k_prepare_hook, r.errorMessage());
         }
     }
 
     HOTPROC void scripting_subsystem::on_tick() {
-        passert(m_is_lua_host_online);
+        panic_assert(m_is_lua_host_online);
         if (const luabridge::LuaResult r = (*m_on_tick)(); r.hasFailed()) [[unlikely]] {
             lua_log_error("{}: Error in {}: {}", k_boot_script, k_tick_hook, r.errorMessage());
         }
@@ -77,7 +77,7 @@ namespace lu::scripting {
         }
 
         // init lua
-        passert(m_L == nullptr);
+        panic_assert(m_L == nullptr);
 #if USE_MIMALLOC
         if constexpr (use_mimalloc) {
             /*
@@ -97,16 +97,16 @@ namespace lu::scripting {
         {
             m_L = luaL_newstate();
         }
-        passert(m_L != nullptr);
+        panic_assert(m_L != nullptr);
 
         // open base libraries
         luaL_openlibs(m_L);
 
         // open LFS
-        passert(luaopen_lfs(m_L) == 1);
+        panic_assert(luaopen_lfs(m_L) == 1);
 
         // open LUV
-        passert(luaopen_luv(m_L) == 1);
+        panic_assert(luaopen_luv(m_L) == 1);
         lua_getglobal(m_L, "package");
         lua_getfield(m_L, -1, "loaded");
         lua_remove(m_L, -2);
@@ -139,17 +139,17 @@ namespace lu::scripting {
         lua_pop(m_L, 1);
 
         // run boot script
-        passert(exec_file(k_boot_script));
+        panic_assert(exec_file(k_boot_script));
 
         // setup hooks
         m_on_prepare = luabridge::getGlobal(m_L, k_prepare_hook);
-        passert(m_on_prepare && m_on_prepare->isFunction());
+        panic_assert(m_on_prepare && m_on_prepare->isFunction());
         m_on_tick = luabridge::getGlobal(m_L, k_tick_hook);
-        passert(m_on_tick && m_on_tick->isFunction());
+        panic_assert(m_on_tick && m_on_tick->isFunction());
 
         // init config table
         m_config_table = luabridge::getGlobal(m_L, k_engine_config_tab);
-        passert(m_config_table && m_config_table->isTable());
+        panic_assert(m_config_table && m_config_table->isTable());
 
         m_is_lua_host_online = true;
         log_info("Lua host connected");

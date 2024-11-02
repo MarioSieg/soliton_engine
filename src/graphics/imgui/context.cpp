@@ -63,7 +63,7 @@ namespace lu::imgui {
         init_info.CheckVkResultFn = [](const VkResult result) {
             vkccheck(result);
         };
-        passert(ImGui_ImplVulkan_Init(&init_info, vkb::ctx().get_scene_render_pass()));
+        panic_assert(ImGui_ImplVulkan_Init(&init_info, vkb::ctx().get_scene_render_pass()));
 
         const float font_size = cv_font_size();
 
@@ -104,7 +104,7 @@ namespace lu::imgui {
             reinterpret_cast<const ImWchar*>(range.ranges.data())
         );
         static_assert(sizeof(ImWchar) == sizeof(char16_t));
-        passert(ImGui_ImplVulkan_CreateFontsTexture());
+        panic_assert(ImGui_ImplVulkan_CreateFontsTexture());
 
         // Apply DPI scaling
         if constexpr (PLATFORM_OSX) {

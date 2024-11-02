@@ -78,7 +78,7 @@ namespace lu::vkb {
         auto set(const T& data) const noexcept -> void {
             *m_aligned_tmp = data;
             const auto offset = m_aligned_size * vkb::ctx().get_current_concurrent_frame_idx();
-            passert((std::bit_cast<std::uintptr_t>(m_mapped) + offset) % vkb::dvc().get_physical_device_props().limits.minUniformBufferOffsetAlignment == 0);
+            panic_assert((std::bit_cast<std::uintptr_t>(m_mapped) + offset) % vkb::dvc().get_physical_device_props().limits.minUniformBufferOffsetAlignment == 0);
             std::memcpy(static_cast<std::byte*>(m_mapped) + offset, m_aligned_tmp, sizeof(T));
             vmaFlushAllocation(m_allocator, m_allocation, offset, sizeof(T)); // Manual flush
         }

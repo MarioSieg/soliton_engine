@@ -313,8 +313,7 @@ namespace noesis {
     }
 
     auto context::render_offscreen(const vk::CommandBuffer cmd) -> void {
-        if (!m_app) [[unlikely]]
-            return;
+        if (!m_app) [[unlikely]] return;
         m_app->GetMainWindow()->GetView()->GetRenderer()->UpdateRenderTree();
         const NoesisApp::VKFactory::RecordingInfo recording_info {
             .commandBuffer = cmd,
@@ -351,7 +350,7 @@ namespace noesis {
         if (!m_xaml_path.empty()) [[likely]] {
             m_app.Reset();
             m_app = Noesis::DynamicPtrCast<NoesisApp::Application>(Noesis::GUI::LoadXaml(m_xaml_path.c_str()));
-            passert(m_app);
+            panic_assert(m_app);
             m_app->Init(m_device, m_xaml_path.c_str(), lu::vkb::ctx().get_width(), lu::vkb::ctx().get_height(), render_wireframe);
             s_event_proxy = m_app->GetMainWindow()->GetView();
         }

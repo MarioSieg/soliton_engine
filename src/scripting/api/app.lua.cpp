@@ -166,7 +166,7 @@ LUA_INTEROP_API auto __lu_app_open_folder_dialog(const char* default_path) -> co
 LUA_INTEROP_API auto __lu_app_get_subsystem_names(const char **data, const int size) -> std::uint32_t {
     const auto& kern = kernel::get();
     const auto& systems = kern.get_subsystems();
-    passert(size >= systems.size());
+    panic_assert(size >= systems.size());
     for (std::size_t i = 0; i < systems.size(); ++i) {
         data[i] = systems[i]->name.c_str();
     }
@@ -176,7 +176,7 @@ LUA_INTEROP_API auto __lu_app_get_subsystem_names(const char **data, const int s
 LUA_INTEROP_API auto __lu_app_get_subsystem_pre_tick_times(double* const data, const int size) -> void {
     const auto& kern = kernel::get();
     const auto& systems = kern.get_subsystems();
-    passert(size >= systems.size());
+    panic_assert(size >= systems.size());
     for (std::size_t i = 0; i < systems.size(); ++i) {
         data[i] = duration_cast<duration<double, eastl::milli>>(systems[i]->prev_pre_tick_time()).count();
     }
@@ -185,7 +185,7 @@ LUA_INTEROP_API auto __lu_app_get_subsystem_pre_tick_times(double* const data, c
 LUA_INTEROP_API auto __lu_app_get_subsystem_tick_times(double* const data, const int size) -> void {
     const auto& kern = kernel::get();
     const auto& systems = kern.get_subsystems();
-    passert(size >= systems.size());
+    panic_assert(size >= systems.size());
     for (std::size_t i = 0; i < systems.size(); ++i) {
         data[i] = duration_cast<duration<double, eastl::milli>>(systems[i]->prev_tick_time()).count();
     }
@@ -194,7 +194,7 @@ LUA_INTEROP_API auto __lu_app_get_subsystem_tick_times(double* const data, const
 LUA_INTEROP_API auto __lu_app_get_subsystem_post_tick_times(double* const data, const int size) -> void {
     const auto& kern = kernel::get();
     const auto& systems = kern.get_subsystems();
-    passert(size >= systems.size());
+    panic_assert(size >= systems.size());
     for (std::size_t i = 0; i < systems.size(); ++i) {
         data[i] = duration_cast<duration<double, eastl::milli>>(systems[i]->prev_post_tick_time()).count();
     }

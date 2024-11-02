@@ -49,7 +49,7 @@ namespace lu::assetmgr {
     asset_accessor::asset_accessor() : m_id{s_accessor_id_gen.fetch_add(1, std::memory_order_relaxed)} {
         log_info("Creating asset accessor {}", m_id);
         m_sys = assetsys_create(nullptr);
-        passert(m_sys != nullptr);
+        panic_assert(m_sys != nullptr);
         for (const auto [fs, vfs] : k_vfs_mounts) {
             log_info("Mounting asset root '{}' -> '{}", fs.data(), vfs.data());
             if (assetsys_error_t err = assetsys_mount(m_sys, fs.data(), vfs.data()); err != ASSETSYS_SUCCESS) { // Attempt to mount dir first

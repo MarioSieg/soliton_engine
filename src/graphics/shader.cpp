@@ -124,7 +124,7 @@ namespace lu::graphics {
         const auto start = eastl::chrono::high_resolution_clock::now();
 
         shaderc::Compiler compiler {};
-        passert(compiler.IsValid());
+        panic_assert(compiler.IsValid());
 
         // Load string BLOB from file
         eastl::string source_code_glsl {};
@@ -260,7 +260,7 @@ namespace lu::graphics {
     }
 
     auto shader_cache::get() noexcept -> shader_cache& {
-        passert(s_instance != nullptr);
+        panic_assert(s_instance != nullptr);
         return *s_instance;
     }
     auto shader_cache::init(eastl::string&& shader_dir) -> void {

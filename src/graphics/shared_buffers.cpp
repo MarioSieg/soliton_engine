@@ -21,7 +21,7 @@ namespace lu::graphics {
             vk::DescriptorType::eUniformBufferDynamic,
             static_cast<vk::ShaderStageFlagBits>(static_cast<std::underlying_type_t<vk::ShaderStageFlagBits>>(stages))
         );
-        passert(factory.build(m_set, m_layout));
+        panic_assert(factory.build(m_set, m_layout));
     }
 
     shared_buffers::~shared_buffers() {

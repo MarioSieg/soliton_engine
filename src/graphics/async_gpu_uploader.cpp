@@ -27,7 +27,7 @@ namespace lu::graphics {
             while (m_run.load()) {
                 thread_func();
             }
-            passert(!is_working());
+            panic_assert(!is_working());
             destroy_cmd_buf();
             vkb::vkdvc().destroyFence(m_fence, vkb::get_alloc());
             log_info("ASync GPU uploader {} offline", m_name);
@@ -36,19 +36,19 @@ namespace lu::graphics {
     }
 
     auto async_upload_base::start_record() -> void {
-        passert(m_cmd.has_value());
+        panic_assert(m_cmd.has_value());
         m_cmd->reset();
         m_cmd->begin(vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
     }
 
     auto async_upload_base::end_record() -> void {
-        passert(m_cmd.has_value());
+        panic_assert(m_cmd.has_value());
         m_cmd->end();
     }
 
     auto async_upload_base::prepare_cmd_buf() -> void {
-        passert(m_pool_async == VK_NULL_HANDLE);
-        passert(!m_cmd.has_value());
+        panic_assert(m_pool_async == VK_NULL_HANDLE);
+        panic_assert(!m_cmd.has_value());
 
         const std::uint32_t queue_idx = vkb::dvc().get_transfer_queue_idx();
         const vk::Queue queue = vkb::dvc().get_transfer_queue();
@@ -76,8 +76,8 @@ namespace lu::graphics {
     }
 
     auto async_upload_base::destroy_cmd_buf() -> void {
-        passert(m_cmd.has_value());
-        passert(m_pool_async != VK_NULL_HANDLE);
+        panic_assert(m_cmd.has_value());
+        panic_assert(m_pool_async != VK_NULL_HANDLE);
         vkb::vkdvc().freeCommandBuffers(m_pool_async, 1, &**m_cmd);
         vkb::vkdvc().destroyCommandPool(m_pool_async, vkb::get_alloc());
         m_cmd.reset();
@@ -85,7 +85,7 @@ namespace lu::graphics {
     }
 
     auto async_upload_base::on_finish() -> void {
-        passert(m_is_working);
+        panic_assert(m_is_working);
         m_is_working.store(false);
     }
 

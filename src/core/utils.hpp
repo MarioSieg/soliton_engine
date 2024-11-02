@@ -19,7 +19,7 @@ namespace lu {
         panic_impl(fmt::format(message, std::forward<Args>(args)...));
     }
 
-    #define passert(expr) \
+    #define panic_assert(expr) \
         do { \
             if (!(expr)) [[unlikely]] { \
                 ::lu::panic("Assertion failed: {} in {}:{}", #expr, __FILE__, __LINE__); \

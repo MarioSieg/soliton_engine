@@ -33,7 +33,7 @@ namespace lu::vkb {
         [[nodiscard]] auto get_mem_type_idx_or_panic(const std::uint32_t type_bits, const vk::MemoryPropertyFlags properties) const -> std::uint32_t {
             vk::Bool32 found {};
             const auto idx = get_mem_type_idx(type_bits, properties, found);
-            passert(found == vk::True);
+            panic_assert(found == vk::True);
             return idx;
         }
         [[nodiscard]] auto get_graphics_queue() const noexcept -> vk::Queue { return m_graphics_queue; }

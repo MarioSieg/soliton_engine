@@ -47,7 +47,7 @@ namespace lu::graphics {
     }
 
     auto pbr_filter_processor::generate_irradiance_cube() -> void {
-        passert(!m_irradiance_cube.has_value());
+        panic_assert(!m_irradiance_cube.has_value());
 
         stopwatch clock {};
         log_info("Generating irradiance cube...");
@@ -413,7 +413,7 @@ namespace lu::graphics {
     }
 
     auto pbr_filter_processor::generate_prefilter_cube() -> void {
-        passert(!m_prefiltered_cube.has_value());
+        panic_assert(!m_prefiltered_cube.has_value());
 
         stopwatch clock {};
         log_info("Generating prefiltered cube...");
@@ -779,7 +779,7 @@ namespace lu::graphics {
     }
 
     auto pbr_filter_processor::generate_brdf_lookup_table() -> void {
-        passert(!m_brdf_lut.has_value());
+        panic_assert(!m_brdf_lut.has_value());
 
         stopwatch clock {};
         log_info("Generating BRDF LUT...");

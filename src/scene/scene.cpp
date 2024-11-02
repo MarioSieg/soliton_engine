@@ -18,7 +18,7 @@ namespace lu {
 
     scene::scene() : id{id_gen.fetch_add(1, std::memory_order_seq_cst)} {
         static const auto main_tid = std::this_thread::get_id();
-        passert(main_tid == std::this_thread::get_id());
+        panic_assert(main_tid == std::this_thread::get_id());
     }
 
     scene::~scene() {

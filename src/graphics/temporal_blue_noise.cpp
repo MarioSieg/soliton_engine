@@ -61,7 +61,7 @@ namespace lu::graphics {
                 vk::ShaderStageFlagBits::eFragment
             );
         }
-        passert(factory.build(set, layout));
+        panic_assert(factory.build(set, layout));
     }
 
     temporal_blue_noise::temporal_blue_noise() {

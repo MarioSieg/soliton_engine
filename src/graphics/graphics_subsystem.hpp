@@ -47,7 +47,7 @@ namespace lu::graphics {
         [[nodiscard]] auto get_noesis_context() noexcept -> noesis::context& { return *m_noesis_context; }
         [[nodiscard]] auto get_imgui_context() noexcept -> imgui::context& { return *m_imgui_context; }
         [[nodiscard]] static auto get() noexcept -> graphics_subsystem& {
-            passert(s_instance != nullptr);
+            panic_assert(s_instance != nullptr);
             return *s_instance;
         }
         [[nodiscard]] static auto get_num_draw_calls() noexcept -> std::uint32_t;

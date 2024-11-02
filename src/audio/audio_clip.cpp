@@ -26,7 +26,7 @@ namespace lu::audio {
     }
 
     auto audio_clip::create_from_memory(const eastl::span<const std::byte> buf, const audio_clip_descriptor& desc) -> void {
-        passert(!buf.empty() && !m_sound && buf.size() <= std::numeric_limits<std::uint32_t>::max());
+        panic_assert(!buf.empty() && !m_sound && buf.size() <= std::numeric_limits<std::uint32_t>::max());
         FMOD_CREATESOUNDEXINFO info {};
         info.cbsize = sizeof(FMOD_CREATESOUNDEXINFO);
         info.length = static_cast<std::uint32_t>(buf.size());

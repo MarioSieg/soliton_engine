@@ -15,7 +15,7 @@ namespace lu::graphics::pipelines {
         info.imageView = m_skybox_texture->image_view();
         info.sampler = m_skybox_texture->sampler();
         factory.bind_images(0, 1, &info, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment);
-        passert(factory.build(m_descriptor_set, m_descriptor_set_layout));
+        panic_assert(factory.build(m_descriptor_set, m_descriptor_set_layout));
     }
 
     sky_pipeline::~sky_pipeline() {

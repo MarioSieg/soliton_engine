@@ -46,7 +46,7 @@ namespace lu::platform::backend {
             const char* desc = nullptr;
             glfwGetError(&desc);
             if (desc) log_error("Failed to initialize GLFW: {}", desc);
-            passert(glfw_online);
+            panic_assert(glfw_online);
         }
 
         if (NFD_Init() != NFD_OKAY) [[unlikely]] {

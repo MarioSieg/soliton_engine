@@ -15,7 +15,7 @@ namespace lu::platform {
     static const system_variable<eastl::string> cv_window_icon {"window.icon", {"assets/icons/logo.png"}};
 
     static auto proxy_resize_hook(GLFWwindow* const window, const int w, const int h) -> void {
-        passert(window != nullptr);
+        panic_assert(window != nullptr);
         void* user = glfwGetWindowUserPointer(window);
         if (!user) [[unlikely]] {
             log_error("No user context ptr set for window");

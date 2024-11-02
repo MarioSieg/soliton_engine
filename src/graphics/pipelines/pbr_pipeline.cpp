@@ -46,17 +46,17 @@ namespace lu::graphics::pipelines {
 
         for (const mesh* const mesh : renderer.meshes) {
             // Skip mesh if it's null
-            if (mesh == nullptr) [[unlikely]]
-                continue;
+            if (!mesh) [[unlikely]] continue;
 
             // Perform CPU frustum culling
             BoundingOrientedBox obb {};
             obb.CreateFromBoundingBox(obb, mesh->get_aabb());
             obb.Transform(obb, model_mtx);
-            if ((renderer.flags & com::render_flags::skip_frustum_culling) == 0) [[likely]]
-                if (frustum.Contains(obb) == ContainmentType::DISJOINT) // Object is culled
+            if ((renderer.flags & com::render_flags::skip_frustum_culling) == 0) [[likely]] {
+                if (frustum.Contains(obb) == ContainmentType::DISJOINT) {
                     continue;
-
+                }
+            }
             render_single_mesh(
                 cmd,
                 *mesh,
@@ -100,7 +100,7 @@ namespace lu::graphics::pipelines {
             df.bind_images(i, 1, &infos[i], vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment);
         }
 
-        passert(df.build(m_pbr_descriptor_set, m_pbr_descriptor_set_layout));
+        panic_assert(df.build(m_pbr_descriptor_set, m_pbr_descriptor_set_layout));
     }
 
     pbr_pipeline::~pbr_pipeline() {
@@ -136,7 +136,7 @@ namespace lu::graphics::pipelines {
     }
 
     auto pbr_pipeline::configure_multisampling(vk::PipelineMultisampleStateCreateInfo& cfg) -> void {
-        passert(type == pipeline_type::graphics);
+        panic_assert(type == pipeline_type::graphics);
         cfg.rasterizationSamples = vkb::ctx().get_msaa_samples();
         cfg.alphaToCoverageEnable = vk::False;
     }

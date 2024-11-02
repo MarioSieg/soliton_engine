@@ -31,7 +31,7 @@ namespace lu::graphics {
             }
             if constexpr (DEBUG) {
                 auto* const ptr = dynamic_cast<T*>(&*m_pipelines.at(name));
-                passert(ptr != nullptr);
+                panic_assert(ptr != nullptr);
                 return *ptr;
             } else {
                 return static_cast<T&>(*m_pipelines.at(name));

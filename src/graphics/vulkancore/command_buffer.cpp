@@ -12,7 +12,7 @@ namespace lu::vkb {
     static constinit std::atomic_uint32_t s_vertex_count;
 
     static auto validate_queue_type(const vk::QueueFlagBits flags) -> void {
-        passert(flags == vk::QueueFlagBits::eGraphics || flags == vk::QueueFlagBits::eCompute || flags == vk::QueueFlagBits::eTransfer);
+        panic_assert(flags == vk::QueueFlagBits::eGraphics || flags == vk::QueueFlagBits::eCompute || flags == vk::QueueFlagBits::eTransfer);
     }
 
     command_buffer::command_buffer(
@@ -59,7 +59,7 @@ namespace lu::vkb {
         const vk::CommandBufferUsageFlagBits usage,
         const vk::CommandBufferInheritanceInfo* const inheritance
     ) -> void {
-        passert(!m_was_used);
+        panic_assert(!m_was_used);
         m_was_used = true;
         const vk::CommandBufferBeginInfo info {.flags = usage, .pInheritanceInfo = inheritance};
         vkcheck(m_cmd.begin(&info));
@@ -124,6 +124,7 @@ namespace lu::vkb {
         }
         std::uint32_t vertex_sum = 0;
         for (std::size_t i = 0; i < mesh.get_primitives().size(); ++i) {
+            panic_assert(mats[i]);
             bind_material(*mats[i]);
             const graphics::primitive& prim = mesh.get_primitives()[i];
             m_cmd.drawIndexed(prim.index_count, 1, prim.index_start, 0, 1);
@@ -137,7 +138,7 @@ namespace lu::vkb {
     }
 
     auto command_buffer::bind_graphics_descriptor_set(const vk::DescriptorSet set, const std::uint32_t idx, const std::uint32_t* const dynamic_off) -> void {
-        passert(m_bounded_pipeline != nullptr);
+        panic_assert(m_bounded_pipeline != nullptr);
         m_cmd.bindDescriptorSets(
             vk::PipelineBindPoint::eGraphics,
             m_bounded_pipeline->get_layout(),
@@ -160,8 +161,8 @@ namespace lu::vkb {
     }
 
     auto command_buffer::push_consts_raw(const vk::ShaderStageFlagBits stage, const void* buf, std::size_t size) -> void {
-        passert(m_bounded_pipeline != nullptr);
-        passert(m_push_consts_init);
+        panic_assert(m_bounded_pipeline != nullptr);
+        panic_assert(m_push_consts_init);
         m_cmd.pushConstants(
             m_bounded_pipeline->get_layout(),
             stage,

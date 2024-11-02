@@ -22,7 +22,7 @@ namespace lu::graphics {
         auto& reg = scene::get_active().get_asset_registry<graphics::texture>();
         const auto make_write_tex_info = [&reg](const assetmgr::asset_ref texture) {
             auto* texture_ptr = reg[texture];
-            passert(texture_ptr != nullptr);
+            panic_assert(texture_ptr != nullptr);
             vk::DescriptorImageInfo info {};
             info.imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
             info.imageView = texture_ptr->image_view();
@@ -47,7 +47,7 @@ namespace lu::graphics {
             );
         }
 
-        passert(factory.build(m_descriptor_set));
+        panic_assert(factory.build(m_descriptor_set));
     }
 
     auto material::init_static_resources() -> void {
@@ -81,7 +81,7 @@ namespace lu::graphics {
             factory.bind_no_info_stage(vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, i);
 
         vk::DescriptorSet set {};
-        passert(factory.build(set, descriptor_layout));
+        panic_assert(factory.build(set, descriptor_layout));
     }
 
     material::static_resources::~static_resources() {

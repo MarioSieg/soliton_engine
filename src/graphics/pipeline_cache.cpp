@@ -6,7 +6,7 @@
 
 namespace lu::graphics {
     pipeline_cache::pipeline_cache(const vk::Device device) : m_device{device} {
-        passert(device);
+        panic_assert(device);
         vk::PipelineCacheCreateInfo cache_info {};
         vkcheck(device.createPipelineCache(&cache_info, vkb::get_alloc(), &m_cache));
     }
@@ -21,7 +21,7 @@ namespace lu::graphics {
 
     auto pipeline_cache::init() -> void {
         [[maybe_unused]] volatile shader_cache& _ensure_init = shader_cache::get(); // ensure shader cache is init
-        passert(s_instance == nullptr);
+        panic_assert(s_instance == nullptr);
         s_instance = eastl::make_unique<pipeline_cache>(vkb::vkdvc());
     }
 

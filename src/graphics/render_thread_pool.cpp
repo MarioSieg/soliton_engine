@@ -57,7 +57,7 @@ namespace lu::graphics {
 
     HOTPROC auto render_thread::thread_routine() -> void {
         log_info("Render thread {} started", m_thread_id);
-        passert(m_shared_ctx.render_callback != nullptr);
+        panic_assert(m_shared_ctx.render_callback != nullptr);
 
 #if PLATFORM_WINDOWS
         SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
@@ -119,11 +119,11 @@ namespace lu::graphics {
         while (m_shared_ctx.m_num_threads_ready.load(std::memory_order_seq_cst) < m_num_threads) {
             std::this_thread::yield();
         }
-        passert(!m_shared_ctx.m_sig_next_frame.is_triggered());
+        panic_assert(!m_shared_ctx.m_sig_next_frame.is_triggered());
     }
 
     render_thread_pool::render_thread_pool(eastl::function<render_bucket_callback>&& callback,const std::int32_t num_threads) : m_num_threads{std::max(0, num_threads)} {
-        passert(callback != nullptr);
+        panic_assert(callback != nullptr);
         m_shared_ctx.render_callback = std::move(callback);
         log_info("Creating render thread pool with {} threads", m_num_threads);
         m_threads = eastl::make_unique<eastl::optional<render_thread>[]>(m_num_threads);

@@ -28,12 +28,12 @@ namespace lu::assetmgr {
                     asset = eastl::make_unique<T>();
                 }
             }
-            passert(asset != nullptr);
+            panic_assert(asset != nullptr);
             if (!path.empty()) { // Check if asset with path already exists
                 const auto it = m_path_cache.find(path);
                 if (it != m_path_cache.end()) { // Return existing asset reference
                     T* const loaded = (*this)[it->second];
-                    passert(loaded != nullptr);
+                    panic_assert(loaded != nullptr);
                     return eastl::make_pair(it->second, loaded);
                 }
             }

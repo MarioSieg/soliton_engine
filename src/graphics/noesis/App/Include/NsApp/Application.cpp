@@ -28,7 +28,7 @@ namespace NoesisApp
         const bool wireframe
     ) -> void
     {
-        passert(!Noesis::StrIsNullOrEmpty(this->m_boot_uri.Str()));
+        panic_assert(!Noesis::StrIsNullOrEmpty(this->m_boot_uri.Str()));
 
         Noesis::Ptr<BaseComponent> root = Noesis::GUI::LoadXaml(this->m_boot_uri.Str());
         this->m_main_window = DynamicPtrCast<Window>(root);

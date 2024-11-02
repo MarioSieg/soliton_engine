@@ -14,7 +14,7 @@ namespace lu::graphics {
         const std::size_t num_extra_entities = num_entities % num_threads;
         const std::size_t begin = base_bucket_size*id + eastl::min(id, num_extra_entities);
         const std::size_t end = begin + base_bucket_size + (id < num_extra_entities ? 1 : 0);
-        passert(begin <= end && end <= num_entities);
+        panic_assert(begin <= end && end <= num_entities);
         return {begin, end};
     }
 
@@ -26,7 +26,7 @@ namespace lu::graphics {
         F&& callback
     ) -> void {
         static constexpr auto accumulator = [](const std::size_t acc, const auto& pair) noexcept {
-            passert(pair.first.size() == pair.second.size());
+            panic_assert(pair.first.size() == pair.second.size());
             return acc + pair.first.size();
         };
         const std::size_t total_entities = std::accumulate(render_data.begin(), render_data.end(), 0, accumulator);

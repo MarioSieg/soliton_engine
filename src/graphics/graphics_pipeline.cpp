@@ -16,7 +16,7 @@ namespace lu::graphics {
         eastl::vector<vk::PipelineShaderStageCreateInfo> shader_stages {};
         eastl::vector<eastl::shared_ptr<shader>> shaders {};
         configure_shaders(shaders);
-        passert(!shaders.empty());
+        panic_assert(!shaders.empty());
         shader_stages.reserve(shaders.size());
         for (auto&& shader : shaders) {
             shader_stages.emplace_back(shader->get_stage_info());
@@ -72,7 +72,7 @@ namespace lu::graphics {
 
         vk::RenderPass render_pass {};
         configure_render_pass(render_pass);
-        passert(render_pass);
+        panic_assert(render_pass);
         pipeline_info.renderPass = render_pass;
 
         // finally, create pipeline layout
@@ -92,20 +92,20 @@ namespace lu::graphics {
     }
 
     auto graphics_pipeline::configure_viewport_state(vk::PipelineViewportStateCreateInfo& cfg) -> void {
-        passert(type == pipeline_type::graphics);
+        panic_assert(type == pipeline_type::graphics);
         cfg.viewportCount = 1;
         cfg.scissorCount = 1;
         cfg.pViewports = nullptr;
     }
 
     auto graphics_pipeline::configure_input_assembly(vk::PipelineInputAssemblyStateCreateInfo& cfg) -> void {
-        passert(type == pipeline_type::graphics);
+        panic_assert(type == pipeline_type::graphics);
         cfg.topology = vk::PrimitiveTopology::eTriangleList;
         cfg.primitiveRestartEnable = vk::False;
     }
 
     auto graphics_pipeline::configure_rasterizer(vk::PipelineRasterizationStateCreateInfo& cfg) -> void {
-        passert(type == pipeline_type::graphics);
+        panic_assert(type == pipeline_type::graphics);
         cfg.polygonMode = vk::PolygonMode::eFill;
         cfg.cullMode = vk::CullModeFlagBits::eBack;
         cfg.frontFace = vk::FrontFace::eClockwise;
@@ -116,13 +116,13 @@ namespace lu::graphics {
     }
 
     auto graphics_pipeline::configure_dynamic_states(eastl::vector<vk::DynamicState>& states) -> void {
-        passert(type == pipeline_type::graphics);
+        panic_assert(type == pipeline_type::graphics);
         states.emplace_back(vk::DynamicState::eViewport);
         states.emplace_back(vk::DynamicState::eScissor);
     }
 
     auto graphics_pipeline::configure_depth_stencil(vk::PipelineDepthStencilStateCreateInfo& cfg) -> void {
-        passert(type == pipeline_type::graphics);
+        panic_assert(type == pipeline_type::graphics);
         cfg.depthTestEnable = vk::True;
         cfg.depthWriteEnable = vk::True;
         cfg.depthCompareOp = vk::CompareOp::eLessOrEqual;
@@ -135,13 +135,13 @@ namespace lu::graphics {
     }
 
     auto graphics_pipeline::configure_multisampling(vk::PipelineMultisampleStateCreateInfo& cfg) -> void {
-        passert(type == pipeline_type::graphics);
+        panic_assert(type == pipeline_type::graphics);
         cfg.rasterizationSamples = vkb::ctx().get_msaa_samples();
         cfg.alphaToCoverageEnable = vk::False;
     }
 
     auto graphics_pipeline::configure_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> void {
-        passert(type == pipeline_type::graphics);
+        panic_assert(type == pipeline_type::graphics);
         cfg.colorWriteMask = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA;
         cfg.blendEnable = vk::False;
         cfg.srcColorBlendFactor = vk::BlendFactor::eSrcAlpha;
@@ -153,7 +153,7 @@ namespace lu::graphics {
     }
 
     auto graphics_pipeline::configure_render_pass(vk::RenderPass& pass) -> void {
-        passert(type == pipeline_type::graphics);
+        panic_assert(type == pipeline_type::graphics);
         pass = vkb::ctx().get_scene_render_pass();
     }
 
@@ -163,7 +163,7 @@ namespace lu::graphics {
     }
 
     auto graphics_pipeline::configure_enable_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> void {
-        passert(type == pipeline_type::graphics);
+        panic_assert(type == pipeline_type::graphics);
         cfg.colorWriteMask = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA;
         cfg.blendEnable = vk::True;
         cfg.srcColorBlendFactor = vk::BlendFactor::eSrcAlpha;

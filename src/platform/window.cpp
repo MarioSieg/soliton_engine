@@ -10,50 +10,50 @@
 
 namespace lu::platform {
     static auto glfw_cursor_pos_callback(GLFWwindow* const window, double x, double y) -> void {
-        passert(window != nullptr);
-        passert(glfwGetWindowUserPointer(window) != nullptr);
+        panic_assert(window != nullptr);
+        panic_assert(glfwGetWindowUserPointer(window) != nullptr);
         auto& self = *static_cast<struct window*>(glfwGetWindowUserPointer(window));
         self.cursor_pos_callbacks(window, x, y);
     }
 
     static auto glfw_scroll_callback(GLFWwindow* const window, const double x, const double y) -> void {
-        passert(window != nullptr);
-        passert(glfwGetWindowUserPointer(window) != nullptr);
+        panic_assert(window != nullptr);
+        panic_assert(glfwGetWindowUserPointer(window) != nullptr);
         auto& self = *static_cast<struct window*>(glfwGetWindowUserPointer(window));
         self.scroll_callbacks(window, x, y);
     }
 
     static auto glfw_key_callback(GLFWwindow* const window, const int key, const int scancode, const int action, const int mods) -> void {
-        passert(window != nullptr);
-        passert(glfwGetWindowUserPointer(window) != nullptr);
+        panic_assert(window != nullptr);
+        panic_assert(glfwGetWindowUserPointer(window) != nullptr);
         auto& self = *static_cast<struct window*>(glfwGetWindowUserPointer(window));
         self.key_callbacks(window, key, scancode, action, mods);
     }
 
     static auto glfw_char_callback(GLFWwindow* const window, const unsigned codepoint) -> void {
-        passert(window != nullptr);
-        passert(glfwGetWindowUserPointer(window) != nullptr);
+        panic_assert(window != nullptr);
+        panic_assert(glfwGetWindowUserPointer(window) != nullptr);
         auto& self = *static_cast<struct window*>(glfwGetWindowUserPointer(window));
         self.char_callbacks(window, codepoint);
     }
 
     static auto glfw_mouse_button_callback(GLFWwindow* const window, const int button, const int action, const int mods) -> void {
-        passert(window != nullptr);
-        passert(glfwGetWindowUserPointer(window) != nullptr);
+        panic_assert(window != nullptr);
+        panic_assert(glfwGetWindowUserPointer(window) != nullptr);
         auto& self = *static_cast<struct window*>(glfwGetWindowUserPointer(window));
         self.mouse_button_callbacks(window, button, action, mods);
     }
 
     static auto glfw_cursor_enter_callback(GLFWwindow* const window, const int entered) -> void {
-        passert(window != nullptr);
-        passert(glfwGetWindowUserPointer(window) != nullptr);
+        panic_assert(window != nullptr);
+        panic_assert(glfwGetWindowUserPointer(window) != nullptr);
         auto& self = *static_cast<struct window*>(glfwGetWindowUserPointer(window));
         self.cursor_enter_callbacks(window, entered);
     }
 
     static auto glfw_framebuffer_size_callback(GLFWwindow* const window, const int w, const int h) -> void {
-        passert(window != nullptr);
-        passert(glfwGetWindowUserPointer(window) != nullptr);
+        panic_assert(window != nullptr);
+        panic_assert(glfwGetWindowUserPointer(window) != nullptr);
         auto& self = *static_cast<struct window*>(glfwGetWindowUserPointer(window));
         self.framebuffer_size_callbacks(window, w, h);
     }
@@ -63,7 +63,7 @@ namespace lu::platform {
         const XMINT2 size,
         const bool is_visible
     ) {
-        passert(backend::is_online());
+        panic_assert(backend::is_online());
 
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);

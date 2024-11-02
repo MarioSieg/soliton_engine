@@ -1051,7 +1051,6 @@ namespace lu::graphics {
         draw_line(verts[3], verts[7], color);
     }
 
-
     auto debugdraw::draw_transform(FXMMATRIX mtx, const float axis_len) -> void {
         XMVECTOR scale, rotation, translation;
         XMMatrixDecompose(&scale, &rotation, &translation, mtx);
@@ -1076,7 +1075,7 @@ namespace lu::graphics {
         buffer_info.offset = 0;
         buffer_info.range = m_uniform->get_dynamic_aligned_size();
         factory.bind_buffers(0, 1, &buffer_info, vk::DescriptorType::eUniformBufferDynamic, vk::ShaderStageFlagBits::eVertex);
-        passert(factory.build(m_descriptor_set, m_descriptor_set_layout));
+        panic_assert(factory.build(m_descriptor_set, m_descriptor_set_layout));
     }
 
     auto debugdraw::create_uniform_buffer() -> void {

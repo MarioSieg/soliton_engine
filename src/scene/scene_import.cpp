@@ -27,7 +27,7 @@ namespace lu {
 
         Assimp::Importer importer {};
         //importer.SetIOHandler(new graphics::lunam_assimp_io_system {});
-        passert(importer.ValidateFlags(load_flags));
+        panic_assert(importer.ValidateFlags(load_flags));
         const aiScene* scene = importer.ReadFile(path.c_str(), load_flags);
         if (!scene || !scene->mNumMeshes) [[unlikely]] {
             panic("Failed to load scene from file '{}': {}", path, importer.GetErrorString());
@@ -83,7 +83,7 @@ namespace lu {
                     const std::initializer_list<aiTextureType> types,
                     const assetmgr::asset_ref fallback
                 ) mutable -> graphics::material_property {
-                    passert(fallback != assetmgr::asset_ref_invalid);
+                    panic_assert(fallback != assetmgr::asset_ref_invalid);
                     for (auto textureType = types.begin(); textureType != types.end(); std::advance(textureType, 1)) {
                         if (!mat->GetTextureCount(*textureType)) [[unlikely]] continue;
                         aiString name {};

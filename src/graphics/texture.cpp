@@ -43,7 +43,7 @@ namespace lu::graphics {
         m_allocator = vkb::dvc().get_allocator();
 
         switch (desc.mipmap_mode) {
-            case texture_descriptor::mipmap_creation_mode::present_in_data: passert(data.has_value()); break;
+            case texture_descriptor::mipmap_creation_mode::present_in_data: panic_assert(data.has_value()); break;
             case texture_descriptor::mipmap_creation_mode::generate:
                 if (m_desc.miplevel_count <= 1)
                     m_desc.miplevel_count = get_mip_count(m_desc.width, m_desc.height);
@@ -85,7 +85,7 @@ namespace lu::graphics {
         m_mapped = alloc_info.pMappedData;
 
         if (data.has_value()) {
-            passert(data->data != nullptr && data->size != 0);
+            panic_assert(data->data != nullptr && data->size != 0);
             m_buf_size = data->size;
             m_approx_byte_size += m_buf_size;
 

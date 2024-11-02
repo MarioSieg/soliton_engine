@@ -16,7 +16,7 @@ namespace lu::vkb {
     };
 
     context::context(const context_desc& desc) : m_window{desc.window}, m_concurrent_frames{desc.concurrent_frames} {
-        passert(m_window != nullptr);
+        panic_assert(m_window != nullptr);
 
         switch (desc.msaa_samples) {
             case 0: m_msaa_samples = vk::SampleCountFlagBits::e1; break;
