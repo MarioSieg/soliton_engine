@@ -8,18 +8,14 @@
 namespace lu::graphics {
     static eastl::optional<material::static_resources> s_resources {};
 
-    material::material(
-        ankerl::unordered_dense::map<material_key, material_property>&& properties
-    ) : asset{assetmgr::asset_source::memory}, properties{eastl::move(properties)} {
-        if (!properties.empty()) {
-            flush_property_updates();
-        }
+    material::material() : asset{assetmgr::asset_source::memory} {
+
     }
 
     material::~material() = default;
 
-    auto material::flush_property_updates() -> void {
-        auto& reg = scene_mgr::active().get_asset_registry<graphics::texture>();
+    auto material::flush_property_updates(scene& scene) -> void {
+        auto& reg = scene.get_asset_registry<graphics::texture>();
         const auto make_write_tex_info = [&reg](const assetmgr::asset_ref texture) {
             auto* texture_ptr = reg[texture];
             panic_assert(texture_ptr != nullptr);

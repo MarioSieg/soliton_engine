@@ -270,7 +270,7 @@ scene_import_flags.default = bit_flag_union({
 })
 
 local scene = {
-    name = 'Untitled',
+    name = 'Default',
     id = 0,
     time_cycle = time_cycle
 }
@@ -320,12 +320,7 @@ function scene.get_active_camera_entity()
 end
 
 local function setup_scene_class(id, name)
-    -- Check if the id is valid
-    if type(id) ~= 'number' or id == 0 then
-        eprint(string.format('Failed to create scene, invalid id returned: %s', name))
-        return false
-    end
-
+    assert(type(id) == 'number' and id > 0)
     assert(name and type(name) == 'string')
 
     -- Make scene active
@@ -335,7 +330,6 @@ local function setup_scene_class(id, name)
 
     -- Perform one full GC cycle to clean up any garbage
     collectgarbage_full_cycle()
-    return true
 end
 
 --- Creates a new, empty scene with the given name and makes it the active scene.
@@ -343,7 +337,7 @@ end
 function scene.new(name)
     name = name or 'Untitled scene'
     local id = cpp.__lu_scene_create(name)
-    return setup_scene_class(id, name)
+    setup_scene_class(id, name)
 end
 
 --- Loads a scene from a given file and makes it the active scene.
@@ -366,7 +360,7 @@ function scene.load(file, import_flags)
     end
     local name = file:match("^.+/(.+)$"):match("(.+)%..+") -- extract scene name from file path
     local id = cpp.__lu_scene_import(name, file, band(import_flags, 0xffffffff)) -- create native scene
-    return setup_scene_class(id, name)
+    setup_scene_class(id, name)
 end
 
 return scene

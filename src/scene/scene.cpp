@@ -15,8 +15,8 @@ namespace lu {
         explicit proxy(Ts&&... args) : scene(std::forward<Ts>(args)...) {}
     };
 
-    extern thread_local std::mt19937 s_rng {std::random_device{}()};
-    extern thread_local uuids::uuid_random_generator s_uuid_gen {s_rng};
+    extern thread_local std::mt19937 s_rng;
+    extern thread_local uuids::uuid_random_generator s_uuid_gen;
 
     scene::scene(eastl::string&& name) : id{s_uuid_gen()} {
         properties.name = std::move(name);

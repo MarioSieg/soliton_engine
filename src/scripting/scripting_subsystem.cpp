@@ -36,10 +36,9 @@ namespace lu::scripting {
         lua_host_disconnect();
     }
 
-    void scripting_subsystem::on_prepare() {
-        panic_assert(m_is_lua_host_online);
-        if (const luabridge::LuaResult r = (*m_on_prepare)(); r.hasFailed()) [[unlikely]] {
-            lua_log_error("{}: Error in {}: {}", k_boot_script, k_prepare_hook, r.errorMessage());
+    auto scripting_subsystem::on_start(scene&) -> void {
+        if (const luabridge::LuaResult r = (*m_on_start)(); r.hasFailed()) [[unlikely]] {
+            lua_log_error("{}: Error in {}: {}", k_boot_script, k_start_hook, r.errorMessage());
         }
     }
 
@@ -55,7 +54,7 @@ namespace lu::scripting {
         // assetmgr needs access to the engine config which is stored in a lua script
         eastl::string full_path {"/RES/scripts/" + file};
         eastl::string lua_source_code {};
-        assetmgr::with_primary_accessor_lock([&](assetmgr::asset_accessor &acc) {
+        assetmgr::with_primary_accessor_lock([&](assetmgr::asset_accessor& acc) {
             if (!acc.load_txt_file(full_path.c_str(), lua_source_code)) {
                 lua_log_error("Failed to load script file '{}'", full_path);
             }
@@ -142,8 +141,8 @@ namespace lu::scripting {
         panic_assert(exec_file(k_boot_script));
 
         // setup hooks
-        m_on_prepare = luabridge::getGlobal(m_L, k_prepare_hook);
-        panic_assert(m_on_prepare && m_on_prepare->isFunction());
+        m_on_start = luabridge::getGlobal(m_L, k_start_hook);
+        panic_assert(m_on_start && m_on_start->isFunction());
         m_on_tick = luabridge::getGlobal(m_L, k_tick_hook);
         panic_assert(m_on_tick && m_on_tick->isFunction());
 
@@ -163,7 +162,7 @@ namespace lu::scripting {
         }
         m_config_table.reset();
         m_on_tick.reset();
-        m_on_prepare.reset();
+        m_on_start.reset();
         spdlog::get("app")->flush();
         lua_close(m_L);
         m_L = nullptr;

@@ -15,61 +15,75 @@ lua_include_dirs = {
     'engine_assets/scripts/lib'
 }
 
--- Dont't waste traces, machine-code and other memory jitting any boot code, it's only run once but stays in memory forever.
--- We turn the JIT back on before entering the main tick loop below.
 jit.off()
-
--- We load panic manually because it's not in the package path yet
-ffi.cdef [[
-    void __lu_panic(const char* msg);
-    uint32_t __lu_ffi_cookie(void);
-]]
-
-function panic(msg)
-    cpp.__lu_panic(msg)
-end
-
--- Check that FFI calls work
-local cookie = cpp.__lu_ffi_cookie()
-if cookie ~= 0xfefec0c0 then
-    panic('Invalid FFI cookie!')
-end
-
--- add all other directories to package paths
 for _, path in ipairs(lua_include_dirs) do
     package.path = string.format('%s;%s/?.lua', package.path, path)
 end
 
--- ###################### SYSTEM BOOTSTRAP ######################
--- Everything is now set up to load the engine context
+require 'system.cdefs' -- Load the C definitions
+if cpp.__lu_ffi_cookie() ~= 0xfefec0c0 then
+    panic('Invalid FFI cookie!')
+end
+function panic(msg)
+    cpp.__lu_panic(msg)
+end
 
-local engine_ctx = require 'system.setup' -- Lazy load the setup script
-assert(engine_ctx ~= nil) -- Ensure the setup script was loaded
-assert(engine_cfg ~= nil) -- Ensure the engine config was loaded
-
--- DO NOT Rename - Invoked from native code
--- This function is called before the main tick loop starts.
--- It's responsible for loading all tick hooks of global engine components.
--- Note: Scripts which are loaded per-world are loaded in the world-setup script.
-function __on_prepare__()
-    engine_ctx:inject_hooks() -- Load all start/tick hooks
-
-    if engine_cfg['system']['enable_jit'] == true then
-        jit.on() -- Enable JIT
-        jit.opt.start('+fma') -- enable FMA for better performance
-        if engine_cfg['system']['enable_jit_disasm'] then
-            require('jit.dump').on('m', 'jit.log')
-        end
-    else
-        print('! JIT is disabled')
+require 'system.extensions'
+require 'config.engine'
+if engine_cfg['system']['enable_jit'] == true then
+    jit.on() -- Enable JIT
+    jit.opt.start('+fma') -- enable FMA for better performance
+    if engine_cfg['system']['enable_jit_disasm'] then
+        require('jit.dump').on('m', 'jit.log')
     end
+else
+    print('! JIT is disabled')
+end
+print(string.format('%s %s %s', jit.version, jit.os, jit.arch))
+print('JIT active ->')
+print(jit.status())
+print('GC64: ' .. (ffi.abi('gc64') and 'yes' or 'no'))
 
-    -- Print some debugdraw info
-    print(string.format('%s %s %s', jit.version, jit.os, jit.arch))
-    print('JIT active ->')
-    print(jit.status())
-    print('GC64: ' .. (ffi.abi('gc64') and 'yes' or 'no'))
+-- ###################### SYSTEM BOOTSTRAP ######################
 
+local start_hook_id = '_start'
+local tick_hook_id = '_update'
+local function search_hooks()
+    local hooks = {}
+    for key, module in pairs(package.loaded) do
+        if module ~= nil and type(module) == 'table' then
+            pcall(function()
+                local has_hooks = false
+                if module[start_hook_id] then
+                    print('Found start hook in module ' .. key)
+                    has_hooks = true
+                end
+                if module[tick_hook_id] then
+                    print('Found tick hook in module ' .. key)
+                    has_hooks = true
+                end
+                if has_hooks then
+                    table.insert(hooks, module)
+                end
+            end)
+        end
+    end
+    print('Loaded ' .. #hooks .. ' hooks')
+    return hooks
+end
+local function invoke_hooks(hooks, id)
+    for i = 1, #hooks do
+        local hook = hooks[i]
+        local routine = hook[id]
+        if routine ~= nil then -- check if the hook has a start function
+            routine(hook) -- execute start hook
+        end
+    end
+end
+require 'system.redirect' -- Load the redirect script
+local hooks = search_hooks()
+function __on_start__()
+    invoke_hooks(hooks, start_hook_id)
     collectgarbage_full_cycle()
 end
 
@@ -77,9 +91,8 @@ local clock = os.clock
 local gc_clock = clock()
 local cfg = engine_cfg['system']
 
--- DO NOT Rename - Invoked from native code
 function __on_tick__()
-    engine_ctx:tick()
+    invoke_hooks(hooks, tick_hook_id)
     if cfg['auto_gc_time_stepping'] then
         local diff = clock() - gc_clock
         local target = 1.0 / max(cfg['target_fps'], 1.0)

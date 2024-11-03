@@ -31,7 +31,7 @@ namespace lu {
     using namespace std::filesystem;
     using namespace eastl::chrono;
 
-    static constexpr std::size_t k_log_threads = 2;
+    static constexpr std::size_t k_log_threads = 1;
     static constexpr std::size_t k_log_queue_size = 8192;
     static constinit double g_delta_time, g_time;
     static constinit bool g_kernel_online = true;
@@ -163,7 +163,6 @@ static auto redirect_io() -> void {
         log_info("Engine log dir: {}", log_dir);
 
         assetmgr::init(); // Initialize asset manager
-        scene_mgr::set_active(eastl::make_unique<scene>()); // Create a new empty scene
 
         log_info("-- ENGINE KERNEL BOOT DONE {:.03f}s --", duration_cast<duration<double>>(duration_cast<high_resolution_clock::duration>(high_resolution_clock::now() - m_boot_stamp)).count());
     }
@@ -229,6 +228,7 @@ static auto redirect_io() -> void {
             sys->on_prepare();
             sys->m_prepare_time = clock.elapsed<nanoseconds>();
         }
+        scene_mgr::set_active(eastl::make_unique<scene>()); // Create a new empty scene
         for (auto&& sys : m_subsystems) {
             const double boot_time = eastl::chrono::duration_cast<eastl::chrono::duration<double>>(sys->total_startup_time()).count();
             log_info("Startup time of subsystem '{}' (boot + prepare): {:.03f} s", sys->name, boot_time);

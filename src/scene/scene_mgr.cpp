@@ -13,7 +13,7 @@ namespace lu::scene_mgr {
     auto set_active(eastl::unique_ptr<scene>&& new_scene) -> void {
         s_active_scene.reset();
         if (!new_scene) return; // Just reset scene
-        new_scene->on_start(); // Start the new scene
         s_active_scene = std::move(new_scene);
+        s_active_scene->on_start(); // Start the new scene
     }
 }

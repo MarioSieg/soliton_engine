@@ -115,7 +115,7 @@ namespace lu {
                 material->properties["tex_height"]      = load_tex({aiTextureType_DIFFUSE, aiTextureType_BASE_COLOR}, default_texture_b);
                 material->properties["tex_ao"]          = load_tex({aiTextureType_DIFFUSE, aiTextureType_BASE_COLOR}, default_texture_b);
                 material->properties["tex_emission"]    = load_tex({aiTextureType_EMISSION_COLOR, aiTextureType_EMISSIVE}, default_texture_b);
-                material->flush_property_updates();
+                material->flush_property_updates(*new_scene);
                 material->print_properties();
 
                 renderer->materials.emplace_back(material);

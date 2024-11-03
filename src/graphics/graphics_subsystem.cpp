@@ -19,7 +19,7 @@ namespace lu::graphics {
     using platform::platform_subsystem;
     using vkb::context;
 
-    static const system_variable<eastl::string> cv_shader_dir {"renderer.shader_dir", eastl::monostate{}};
+    static const system_variable<eastl::string> cv_shader_dir {"renderer.shader_dir", {"engine_assets/shaders"}};
     static const system_variable<std::uint32_t> cv_concurrent_frames {"renderer.concurrent_frames", {3}};
     static const system_variable<std::uint32_t> cv_msaa_samples {"renderer.msaa_samples", {4}};
     static const system_variable<std::uint32_t> cv_max_render_threads {"cpu.render_threads", {2}};
@@ -89,12 +89,19 @@ namespace lu::graphics {
     }
 
     auto graphics_subsystem::update_main_camera(const float width, const float height) -> void {
-        flecs::entity main_cam = find_main_camera();
+        flecs::entity main_cam;
+        auto& active = scene_mgr::active().active_camera;
+        if (!active.is_valid() || !active.is_alive()) {
+            active = flecs::entity::null();
+            main_cam = find_main_camera();
+        } else {
+            main_cam = active;
+        }
         if (!main_cam.is_valid()
             || !main_cam.is_alive()
             || !main_cam.has<const com::camera>()
             || !main_cam.has<const com::transform>()) [[unlikely]] {
-                log_warn("No camera found in scene");
+                log_error("No camera found in scene");
                 return;
             }
         s_camera_transform = *main_cam.get<com::transform>();

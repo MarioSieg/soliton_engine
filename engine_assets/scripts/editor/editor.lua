@@ -199,6 +199,7 @@ function editor:load_scene(file)
     main_camera:add_flag(entity_flags.hidden + entity_flags.transient) -- hide and don't save
     main_camera:get_component(components.camera):set_fov(80)
     self.camera.target_entity = main_camera
+    scene.set_active_camera_entity(main_camera)
     entity_list_view:build_entity_list()
 end
 
@@ -676,6 +677,6 @@ end
 style.setup()
 
 editor:deserialize_config()
-editor:load_scene(nil)
+editor:load_scene()
 
 return editor

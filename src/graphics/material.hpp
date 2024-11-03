@@ -11,9 +11,9 @@
 #include "texture.hpp"
 
 namespace lu::graphics {
-    static const system_variable<eastl::string> sv_error_texture {"renderer.error_texture", eastl::monostate{}};
-    static const system_variable<eastl::string> sv_fallback_image_white {"renderer.fallback_texture_w", eastl::monostate{}};
-    static const system_variable<eastl::string> sv_fallback_image_black {"renderer.fallback_texture_b", eastl::monostate{}};
+    static const system_variable<eastl::string> sv_error_texture {"renderer.error_texture", {"/RES/textures/system/error.png"}};
+    static const system_variable<eastl::string> sv_fallback_image_white {"renderer.fallback_texture_w", {"/RES/textures/system/fallback_white.png"}};
+    static const system_variable<eastl::string> sv_fallback_image_black {"renderer.fallback_texture_b", {"/RES/textures/system/fallback_black.png"}};
 
     using material_key = eastl::string;
     struct material_property final {
@@ -36,7 +36,7 @@ namespace lu::graphics {
             vk::DescriptorSetLayout descriptor_layout {};
         };
 
-        explicit material(ankerl::unordered_dense::map<material_key, material_property>&& properties = {});
+        material();
         ~material() override;
 
         ankerl::unordered_dense::map<material_key, material_property> properties {};
@@ -44,7 +44,7 @@ namespace lu::graphics {
         auto print_properties() const -> void;
 
         [[nodiscard]] auto get_descriptor_set() const noexcept -> const vk::DescriptorSet& { return m_descriptor_set; }
-        auto flush_property_updates() -> void;
+        auto flush_property_updates(scene& scene) -> void;
         [[nodiscard]] static auto get_static_resources() -> const static_resources&;
 
     private:
