@@ -50,7 +50,7 @@ include(CMakePackageConfigHelpers)
 # Needed for CMAKE_DEPENDENT_OPTION macro
 include(CMakeDependentOption)
 
-option(BUILD_SHARED_LIBS "Build Shared Libraries")
+option(BUILD_SHARED_LIBS "Build Shared Libraries" OFF)
 option(BUILD_EXTERNAL "Build external dependencies in /External" ON)
 option(BUILD_WERROR "Enable warnings as errors (default is OFF)" OFF)
 
