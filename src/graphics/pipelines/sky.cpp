@@ -7,7 +7,7 @@
 namespace lu::graphics::pipelines {
     sky_pipeline::sky_pipeline() : graphics_pipeline{"sky"} {
         m_skybox_texture.emplace("/RES/textures/hdr/gcanyon_cube.ktx");
-        m_skydome.emplace("/RES/meshes/skydome.fbx");
+        m_skydome.emplace("/RES/meshes/skydome.fbx", false);
 
         vkb::descriptor_factory factory {vkb::ctx().descriptor_factory_begin()};
         vk::DescriptorImageInfo info {};

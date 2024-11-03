@@ -222,13 +222,19 @@ static auto redirect_io() -> void {
         log_info("Scene start time of engine: {:.03f} s", clock_total.elapsed_secs());
     }
 
+    extern eastl::unique_ptr<scene> s_active_scene;
+
     HOTPROC auto kernel::run() -> void {
         for (auto&& sys : m_subsystems) {
             const stopwatch clock {};
             sys->on_prepare();
             sys->m_prepare_time = clock.elapsed<nanoseconds>();
         }
-        scene_mgr::set_active(eastl::make_unique<scene>()); // Create a new empty scene
+        if (s_active_scene) {
+            s_active_scene->on_start(); // Start the active scene
+        } else {
+            scene_mgr::set_active(eastl::make_unique<scene>()); // Create a new empty scene, started by set_active
+        }
         for (auto&& sys : m_subsystems) {
             const double boot_time = eastl::chrono::duration_cast<eastl::chrono::duration<double>>(sys->total_startup_time()).count();
             log_info("Startup time of subsystem '{}' (boot + prepare): {:.03f} s", sys->name, boot_time);

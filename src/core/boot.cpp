@@ -12,9 +12,9 @@ static auto lunam_entry(const int argc, const char** argv, const char** $environ
     using namespace lu;
     kernel kernel {argc, argv, $environ};
     kernel.install<platform::platform_subsystem>();
-    kernel.install<physics::physics_subsystem>();
     kernel.install<graphics::graphics_subsystem>();
     kernel.install<audio::audio_subsystem>();
+    kernel.install<physics::physics_subsystem>();
     kernel.install<scripting::scripting_subsystem>();
     kernel.run();
 }

@@ -2,9 +2,11 @@
 
 #include "scene_mgr.hpp"
 
-namespace lu::scene_mgr {
-    static eastl::unique_ptr<scene> s_active_scene {};
+namespace lu {
+    eastl::unique_ptr<scene> s_active_scene {};
+}
 
+namespace lu::scene_mgr {
     auto active() -> scene& {
         panic_assert(s_active_scene != nullptr);
         return *s_active_scene;

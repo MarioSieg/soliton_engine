@@ -135,11 +135,16 @@ namespace lu::physics {
 			settings->mSupportingVolume = JPH::Plane(JPH::Vec3::sAxisY(), -cCharacterRadiusStanding); // Accept contacts that touch the lower sphere of the capsule
 			JPH::Ref<JPH::Character> character = new JPH::Character(settings, {}, JPH::Quat::sIdentity(), 0, &m_physics_system);
 			character->AddToPhysicsSystem(JPH::EActivation::Activate);
+    		if (cc.phys_character) {
+    			cc.phys_character->RemoveFromPhysicsSystem();
+    			cc.phys_character = nullptr;
+    		}
 			cc.phys_character = character;
 		});
 
     	scene.observer<com::character_controller>().event(flecs::OnRemove).each([&](com::character_controller& cc) {
-    		cc.phys_character->RemoveFromPhysicsSystem();
+			cc.phys_character->RemoveFromPhysicsSystem();
+    		cc.phys_character = nullptr;
 		});
 
 		log_info("Creating static colliders...");

@@ -39,7 +39,7 @@ namespace lu::graphics {
     };
 
 
-    pbr_filter_processor::pbr_filter_processor() : m_cube_mesh{"/RES/meshes/skybox.gltf"} {
+    pbr_filter_processor::pbr_filter_processor() : m_cube_mesh{"/RES/meshes/skybox.gltf", false} {
         m_environ_cube.emplace("/RES/textures/hdr/gcanyon_cube.ktx");
         generate_irradiance_cube();
         generate_prefilter_cube();
