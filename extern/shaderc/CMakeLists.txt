@@ -15,7 +15,7 @@
 cmake_minimum_required(VERSION 3.17.2)
 
 project(shaderc)
-#enable_testing()
+enable_testing()
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "")
   message(STATUS "No build type selected, default to Debug")
@@ -28,11 +28,18 @@ option(SHADERC_ENABLE_WGSL_OUTPUT "Enable WGSL output" OFF)
 
 option(SHADERC_SKIP_INSTALL "Skip installation" ${SHADERC_SKIP_INSTALL})
 if(NOT ${SHADERC_SKIP_INSTALL})
-  set(SHADERC_ENABLE_INSTALL ON)
+  set(SHADERC_ENABLE_INSTALL OFF)
 endif()
 
-set(SHADERC_ENABLE_TESTS OFF)
-
+option(SHADERC_SKIP_TESTS "Skip building tests" ${SHADERC_SKIP_TESTS})
+if(NOT ${SHADERC_SKIP_TESTS})
+  set(SHADERC_ENABLE_TESTS OFF)
+endif()
+if(${SHADERC_ENABLE_TESTS})
+  message(STATUS "Configuring Shaderc to build tests.")
+else()
+  message(STATUS "Configuring Shaderc to avoid building tests.")
+endif()
 
 option(SHADERC_SKIP_EXAMPLES "Skip building examples" ${SHADERC_SKIP_EXAMPLES})
 if(NOT ${SHADERC_SKIP_EXAMPLES})
