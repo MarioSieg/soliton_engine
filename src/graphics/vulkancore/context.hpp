@@ -6,7 +6,6 @@
 #include "swapchain.hpp"
 #include "command_buffer.hpp"
 #include "descriptor.hpp"
-#include "deletion_queue.hpp"
 
 #include <DirectXMath.h>
 
@@ -48,7 +47,6 @@ namespace lu::vkb {
         [[nodiscard]] auto get_skybox_render_pass() const noexcept -> vk::RenderPass { return m_skybox_render_pass; }
         [[nodiscard]] auto get_ui_render_pass() const noexcept -> vk::RenderPass { return m_ui_render_pass; }
         [[nodiscard]] auto get_framebuffers() const noexcept -> eastl::span<const vk::Framebuffer> { return m_framebuffers; }
-        [[nodiscard]] auto get_deferred_deletion_queue() noexcept -> deletion_queue& { return m_shutdown_deletion_queue; }
         [[nodiscard]] auto compute_aligned_dynamic_ubo_size(std::size_t size) noexcept -> std::size_t;
 
         [[nodiscard]] HOTPROC auto begin_frame(
@@ -93,7 +91,6 @@ namespace lu::vkb {
         vk::SampleCountFlagBits m_msaa_samples = vk::SampleCountFlagBits::e4;
         std::uint32_t m_width = 0;
         std::uint32_t m_height = 0;
-        deletion_queue m_shutdown_deletion_queue {};
 
         eastl::optional<device> m_device;
         eastl::optional<swapchain> m_swapchain;
