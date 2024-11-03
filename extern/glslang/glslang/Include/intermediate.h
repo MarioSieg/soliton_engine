@@ -1,7 +1,7 @@
 //
 // Copyright (C) 2002-2005  3Dlabs Inc. Ltd.
 // Copyright (C) 2012-2016 LunarG, Inc.
-// Copyright (C) 2017 ARM Limited.
+// Copyright (C) 2017, 2022-2024 Arm Limited.
 // Modifications Copyright (C) 2020 Advanced Micro Devices, Inc. All rights reserved.
 //
 // All rights reserved.
@@ -506,6 +506,8 @@ enum TOperator {
     EOpSubgroupShuffleXor,
     EOpSubgroupShuffleUp,
     EOpSubgroupShuffleDown,
+    EOpSubgroupRotate,
+    EOpSubgroupClusteredRotate,
     EOpSubgroupAdd,
     EOpSubgroupMul,
     EOpSubgroupMin,
@@ -1089,6 +1091,10 @@ enum TOperator {
     EOpWaveActiveCountBits,              // Will decompose to subgroupBallotBitCount(subgroupBallot()).
     EOpWavePrefixCountBits,              // Will decompose to subgroupBallotInclusiveBitCount(subgroupBallot()).
 
+    // GL_EXT_expect_assume
+    EOpAssumeEXT,
+    EOpExpectEXT,
+
     // Shader Clock Ops
     EOpReadClockSubgroupKHR,
     EOpReadClockDeviceKHR,
@@ -1105,6 +1111,12 @@ enum TOperator {
     EOpImageBoxFilterQCOM,
     EOpImageBlockMatchSADQCOM,
     EOpImageBlockMatchSSDQCOM,
+
+    // Image processing2
+    EOpImageBlockMatchWindowSSDQCOM,
+    EOpImageBlockMatchWindowSADQCOM,
+    EOpImageBlockMatchGatherSSDQCOM,
+    EOpImageBlockMatchGatherSADQCOM,
 };
 
 enum TLinkType {
@@ -1682,8 +1694,12 @@ typedef TVector<TStorageQualifier> TQualifierList;
 //
 class TIntermAggregate : public TIntermOperator {
 public:
-    TIntermAggregate() : TIntermOperator(EOpNull), userDefined(false), pragmaTable(nullptr) { }
-    TIntermAggregate(TOperator o) : TIntermOperator(o), pragmaTable(nullptr) { }
+    TIntermAggregate() : TIntermOperator(EOpNull), userDefined(false), pragmaTable(nullptr) { 
+        endLoc.init();
+    }
+    TIntermAggregate(TOperator o) : TIntermOperator(o), pragmaTable(nullptr) {
+        endLoc.init();
+    }
     ~TIntermAggregate() { delete pragmaTable; }
     virtual       TIntermAggregate* getAsAggregate()       { return this; }
     virtual const TIntermAggregate* getAsAggregate() const { return this; }
@@ -1707,6 +1723,9 @@ public:
     void setSpirvInstruction(const TSpirvInstruction& inst) { spirvInst = inst; }
     const TSpirvInstruction& getSpirvInstruction() const { return spirvInst; }
 
+    void setEndLoc(TSourceLoc loc) { endLoc = loc; }
+    TSourceLoc getEndLoc() const { return endLoc; }
+
     void setLinkType(TLinkType l) { linkType = l; }
     TLinkType getLinkType() const { return linkType; }
 protected:
@@ -1721,6 +1740,10 @@ protected:
     TPragmaTable* pragmaTable;
     TSpirvInstruction spirvInst;
     TLinkType linkType = ELinkNone;
+
+    // Marking the end source location of the aggregate.
+    // This is currently only set for a compound statement or a function body, pointing to '}'.
+    TSourceLoc endLoc;
 };
 
 //

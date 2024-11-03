@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "device.hpp"
 
@@ -19,7 +19,7 @@ namespace lu::vkb {
         find_physical_device();
         create_logical_device(k_enabled_features, k_device_extensions, nullptr);
         init_vma();
-        passert(find_supported_depth_format(require_stencil, m_depth_format));
+        panic_assert(find_supported_depth_format(require_stencil, m_depth_format));
 
         log_info("Vulkan device initialized");
     }
@@ -130,7 +130,7 @@ namespace lu::vkb {
         app_info.engineVersion = VK_MAKE_VERSION(major, minor, 0);
         app_info.apiVersion = m_api_version;
 
-        ankerl::unordered_dense::set<eastl::string> instance_extensions = {
+        ankerl::unordered_dense::set<eastl::string> requested_instance_extensions {
             VK_KHR_SURFACE_EXTENSION_NAME,
         };
 
@@ -145,7 +145,7 @@ namespace lu::vkb {
         }
         for (std::uint32_t i = 0; i < glfw_extension_count; ++i) {
             log_info("GLFW required instance extension: {}", glfw_extensions[i]);
-            instance_extensions.insert(glfw_extensions[i]);
+            requested_instance_extensions.insert(glfw_extensions[i]);
         }
 
         // Enumerate supported instance extensions
@@ -156,26 +156,24 @@ namespace lu::vkb {
             if (vk::enumerateInstanceExtensionProperties(nullptr, &ext_count, extensions.data()) == vk::Result::eSuccess) {
                 for (vk::ExtensionProperties& extension : extensions) {
                     m_supported_instance_extensions.emplace_back(extension.extensionName);
-                    log_info("Supported instance extension: {}", extension.extensionName);
+                    log_info("Supported instance extension: {}", extension.extensionName.data());
                 }
             }
         }
 
-#if PLATFORM_OSX
-        // When running on iOS/macOS with MoltenVK and VK_KHR_portability_subset is defined and supported by the device, enable the extension
-        if (is_device_extension_supported(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME)) {
-            instance_extensions.insert(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
+        if constexpr (PLATFORM_OSX) {
+            requested_instance_extensions.insert(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+            requested_instance_extensions.insert(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
         }
-        // When running on iOS/macOS with MoltenVK, enable VK_KHR_get_physical_device_properties2 if not already enabled by the example (required by VK_KHR_portability_subset)
-        if (is_device_extension_supported(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME)) {
-            instance_extensions.insert(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
-        }
-#endif
 
         // Setup instance create info
         vk::InstanceCreateInfo instance_create_info {};
         instance_create_info.pNext = nullptr;
         instance_create_info.pApplicationInfo = &app_info;
+
+        if constexpr (PLATFORM_OSX) { // macOS/iOS - enable MoltenVK portability extension
+            instance_create_info.flags = vk::InstanceCreateFlagBits::eEnumeratePortabilityKHR;
+        }
 
         // Setup debug utils messenger create info
         if (m_enable_validation) {
@@ -187,37 +185,44 @@ namespace lu::vkb {
                 m_debug_utils_messenger_ci.pfnUserCallback = &vulkan_debug_message_callback;
                 m_debug_utils_messenger_ci.pNext = instance_create_info.pNext;
                 instance_create_info.pNext = &m_debug_utils_messenger_ci;
-                instance_extensions.insert(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+                requested_instance_extensions.insert(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
             } else {
                 log_warn("Vulkan debug utils extension not supported");
             }
         }
 
         // Setup enabled instance extensions
-        eastl::vector<const char*> vk_instance_extensions {};
-        if (!instance_extensions.empty()) [[likely]] {
-            vk_instance_extensions.reserve(instance_extensions.size());
-            for (const auto& ext : instance_extensions) {
+        eastl::vector<const char*> enabled_instance_extensions {};
+        if (!requested_instance_extensions.empty()) [[likely]] {
+            enabled_instance_extensions.reserve(requested_instance_extensions.size());
+            for (const auto& ext : requested_instance_extensions) {
                 log_info("Enabling instance extension: {}", ext);
                 if (std::ranges::find(m_supported_instance_extensions, ext) == m_supported_instance_extensions.end()) [[unlikely]] {
                     panic("Instance extension {} not supported", ext);
                 }
-                vk_instance_extensions.emplace_back(ext.c_str());
+                enabled_instance_extensions.emplace_back(ext.c_str());
             }
-            instance_create_info.enabledExtensionCount = static_cast<std::uint32_t>(vk_instance_extensions.size());
-            instance_create_info.ppEnabledExtensionNames = vk_instance_extensions.data();
+            instance_create_info.enabledExtensionCount = static_cast<std::uint32_t>(enabled_instance_extensions.size());
+            instance_create_info.ppEnabledExtensionNames = enabled_instance_extensions.data();
+        }
+
+        log_info("Fetching instance layers...");
+
+        std::uint32_t layer_count = 0;
+        vkcheck(vk::enumerateInstanceLayerProperties(&layer_count, nullptr));
+        eastl::vector<vk::LayerProperties> layers {layer_count};
+        vkcheck(vk::enumerateInstanceLayerProperties(&layer_count, layers.data()));
+
+        for (const vk::LayerProperties& layer : layers) {
+            log_info("Layer present: '{}'", layer.layerName.data());
         }
 
         // Setup VK_LAYER_KHRONOS_validation layer
         if (m_enable_validation) {
-            const char* k_validation_layer = "VK_LAYER_KHRONOS_validation";
+            const char* const k_validation_layer = "VK_LAYER_KHRONOS_validation";
             // Check if this layer is available at instance level
-            std::uint32_t layer_count;
-            vkcheck(vk::enumerateInstanceLayerProperties(&layer_count, nullptr));
-            eastl::vector<vk::LayerProperties> layer_propertieses{layer_count};
-            vkcheck(vk::enumerateInstanceLayerProperties(&layer_count, layer_propertieses.data()));
             bool validationLayerPresent = false;
-            for (vk::LayerProperties& layer : layer_propertieses) {
+            for (vk::LayerProperties& layer : layers) {
                 if (std::strcmp(layer.layerName, k_validation_layer) == 0) {
                     validationLayerPresent = true;
                     break;
@@ -253,20 +258,20 @@ namespace lu::vkb {
         eastl::vector<vk::PhysicalDevice> physical_devices {num_gpus};
         vkcheck(m_instance.enumeratePhysicalDevices(&num_gpus, physical_devices.data()));
         log_info("Found {} Vulkan physical device(s)", num_gpus);
-        passert(num_gpus > 0 && "No Vulkan physical devices found");
+        panic_assert(num_gpus > 0 && "No Vulkan physical devices found");
         std::uint32_t best_device = 0;
         vk::PhysicalDeviceProperties device_properties;
         // Find best GPU, prefer discrete GPU
         for (std::uint32_t i = 0; i < num_gpus; i++) {
             physical_devices[i].getProperties(&device_properties);
-            log_info("Found Vulkan physical device: {}", device_properties.deviceName);
+            log_info("Found Vulkan physical device: {}", device_properties.deviceName.data());
             if (device_properties.deviceType == vk::PhysicalDeviceType::eDiscreteGpu) {
                 best_device = i;
                 break;
             }
         }
         m_physical_device = physical_devices[best_device];
-        log_info("Using Vulkan physical device: {}, Type: {}", device_properties.deviceName, string_VkPhysicalDeviceType(static_cast<VkPhysicalDeviceType>(device_properties.deviceType)));
+        log_info("Using Vulkan physical device: {}, Type: {}", device_properties.deviceName.data(), string_VkPhysicalDeviceType(static_cast<VkPhysicalDeviceType>(device_properties.deviceType)));
         m_physical_device.getProperties(&m_device_properties);
         m_physical_device.getFeatures(&m_device_features);
         m_physical_device.getMemoryProperties(&m_memory_properties);
@@ -276,7 +281,7 @@ namespace lu::vkb {
             m_supported_device_extensions.resize(num_ext);
             if (m_physical_device.enumerateDeviceExtensionProperties(nullptr, &num_ext, m_supported_device_extensions.data()) == vk::Result::eSuccess) {
                 for (const vk::ExtensionProperties& extension : m_supported_device_extensions) {
-                    log_info("Supported device extension: {}", extension.extensionName);
+                    log_info("Supported device extension: {}", extension.extensionName.data());
                 }
             }
         }
@@ -307,7 +312,7 @@ namespace lu::vkb {
 
     auto device::create_logical_device(
         const vk::PhysicalDeviceFeatures& enabled_features,
-        const eastl::span<const char*> enabled_extensions,
+        const eastl::span<const char* const> enabled_extensions,
         void* next_chain,
         vk::QueueFlags requested_queue_types
     ) -> void {

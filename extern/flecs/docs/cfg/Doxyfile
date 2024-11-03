@@ -48,7 +48,7 @@ PROJECT_NAME           = Flecs
 # could be handy for archiving the generated documentation or if some version
 # control system is used.
 
-PROJECT_NUMBER         = v3.2
+PROJECT_NUMBER         = v4.0
 
 # Using the PROJECT_BRIEF tag one can provide an optional one line description
 # for a project that appears at the top of each page and should give viewer a
@@ -944,16 +944,22 @@ INPUT                  = include/flecs.h \
                          include/flecs/addons \
                          README.md \
                          docs/Docs.md \
-                         docs/Quickstart.md \
                          docs/FAQ.md \
+                         docs/Quickstart.md \
                          docs/DesignWithFlecs.md \
-                         docs/FlecsScriptTutorial.md \
-                         docs/Manual.md \
+                         docs/EntitiesComponents.md \
                          docs/Queries.md \
+                         docs/FlecsQueryLanguage.md \
                          docs/Systems.md \
+                         docs/ObserversManual.md \
+                         docs/PrefabsManual.md \
+                         docs/ComponentTraits.md \
                          docs/Relationships.md \
-                         docs/RestApi.md \
-                         docs/JsonFormat.md
+                         docs/FlecsScript.md \
+                         docs/FlecsScriptTutorial.md \
+                         docs/FlecsRemoteApi.md \
+                         docs/Manual.md \
+                         docs/MigrationGuide.md
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -1366,6 +1372,7 @@ HTML_STYLESHEET        =
 HTML_EXTRA_STYLESHEET  = docs/cfg/doxygen-awesome.css \
                          docs/cfg/doxygen-awesome-sidebar-only.css \
                          docs/cfg/doxygen-awesome-sidebar-only-darkmode-toggle.css \
+                         docs/cfg/flecs-snippet-tabs.css \
                          docs/cfg/custom.css
 
 # The HTML_EXTRA_FILES tag can be used to specify one or more extra images or
@@ -1381,6 +1388,7 @@ HTML_EXTRA_FILES       = docs/cfg/doxygen-awesome-darkmode-toggle.js \
                          docs/cfg/doxygen-awesome-paragraph-link.js \
                          docs/cfg/doxygen-awesome-interactive-toc.js \
                          docs/cfg/doxygen-awesome-tabs.js \
+                         docs/cfg/flecs-snippet-tabs.js \
                          docs/img/logo_small_dark.png
 
 # The HTML_COLORSTYLE tag can be used to specify if the generated HTML output
@@ -1663,7 +1671,7 @@ QHP_CUST_FILTER_NAME   =
 QHP_CUST_FILTER_ATTRS  =
 
 # The QHP_SECT_FILTER_ATTRS tag specifies the list of the attributes this
-# project's filter section matches. Qt Help Project / Filter Attributes (see:
+# project's filter section matches. Qt Help Project / Query Attributes (see:
 # https://doc.qt.io/archives/qt-4.8/qthelpproject.html#filter-attributes).
 # This tag requires that the tag GENERATE_QHP is set to YES.
 
@@ -2425,24 +2433,17 @@ INCLUDE_FILE_PATTERNS  =
 # This tag requires that the tag ENABLE_PREPROCESSING is set to YES.
 
 PREDEFINED             = FLECS_APP \
-                         FLECS_COREDOC \
                          FLECS_DOC \
-                         FLECS_EXPR \
                          FLECS_HTTP \
                          FLECS_JOURNAL \
                          FLECS_JSON \
                          FLECS_LOG \
                          FLECS_META \
-                         FLECS_META_C \
                          FLECS_MODULE \
-                         FLECS_MONITOR \
                          FLECS_OS_API_IMPL \
-                         FLECS_PARSER \
                          FLECS_PIPELINE \
-                         FLECS_PLECS \
+                         FLECS_SCRIPT \
                          FLECS_REST \
-                         FLECS_RULES \
-                         FLECS_SNAPSHOT \
                          FLECS_STATS \
                          FLECS_SYSTEM \
                          FLECS_TIMER \

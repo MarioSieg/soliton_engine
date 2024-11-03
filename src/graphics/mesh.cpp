@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "mesh.hpp"
 #include "vulkancore/context.hpp"
@@ -14,8 +14,8 @@ namespace lu::graphics {
 	using namespace DirectX;
 
 	static auto compute_aabb(BoundingBox& aabb, const eastl::span<const vertex> vertices) noexcept -> void {
-		DirectX::XMVECTOR min = XMVectorReplicate(1e10f);
-        DirectX::XMVECTOR max = XMVectorReplicate(-1e10f);
+		XMVECTOR min = XMVectorReplicate(1e10f);
+        XMVECTOR max = XMVectorReplicate(-1e10f);
 		for (const auto& v : vertices) {
 			const auto pos = XMLoadFloat3(&v.position);
 			min = XMVectorMin(min, pos);
@@ -85,7 +85,7 @@ namespace lu::graphics {
         Assimp::Importer importer {};
         const auto load_flags = k_import_flags;
         importer.SetIOHandler(new graphics::lunam_assimp_io_system {});
-        passert(importer.ValidateFlags(load_flags));
+        panic_assert(importer.ValidateFlags(load_flags));
         eastl::string hint {};
         auto a_path {std::filesystem::path{get_asset_path().c_str()}};
         if (a_path.has_extension()) {
@@ -154,7 +154,7 @@ namespace lu::graphics {
     }
 
     auto mesh::create_buffers(const eastl::span<const vertex> vertices, const eastl::span<const index> indices) -> void {
-    	passert(indices.size() <= eastl::numeric_limits<index>::max());
+    	panic_assert(indices.size() <= eastl::numeric_limits<index>::max());
 
     	m_vertex_buffer.emplace(
 			vertices.size() * sizeof(vertices[0]),

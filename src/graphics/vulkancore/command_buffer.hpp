@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #pragma once
 
@@ -22,8 +22,16 @@ namespace lu::vkb {
 
     class command_buffer final : public no_copy {
     public:
-        explicit command_buffer(vk::CommandPool pool, vk::CommandBuffer cmd, vk::Queue queue, vk::QueueFlagBits queue_flags);
-        explicit command_buffer(vk::QueueFlagBits queue_flags, vk::CommandBufferLevel level = vk::CommandBufferLevel::ePrimary);
+        explicit command_buffer(
+            vk::CommandPool pool,
+            vk::CommandBuffer cmd,
+            vk::Queue queue,
+            vk::QueueFlagBits queue_flags
+        );
+        explicit command_buffer(
+            vk::QueueFlagBits queue_flags,
+            vk::CommandBufferLevel level = vk::CommandBufferLevel::ePrimary
+        );
         command_buffer(command_buffer&& other) noexcept;
         auto operator = (command_buffer&& other) noexcept -> command_buffer&;
         ~command_buffer();
@@ -36,6 +44,7 @@ namespace lu::vkb {
         ) -> void;
         auto end() -> void;
         auto flush() -> void;
+        auto reset() -> void;
 
         auto begin_render_pass(const vk::RenderPassBeginInfo& info, vk::SubpassContents contents) -> void;
         auto begin_render_pass(vk::RenderPass pass, vk::SubpassContents contents) -> void;
@@ -47,7 +56,7 @@ namespace lu::vkb {
         auto bind_index_buffer(vk::Buffer buffer, bool index32, vk::DeviceSize offset = 0) -> void;
         auto bind_pipeline(const graphics::graphics_pipeline& pipeline) -> void;
         auto bind_material(const graphics::material& mat) -> void;
-        auto bind_graphics_descriptor_set(vk::DescriptorSet set, std::uint32_t idx) -> void;
+        auto bind_graphics_descriptor_set(vk::DescriptorSet set, std::uint32_t idx, const std::uint32_t* dynamic_off = nullptr) -> void;
         auto bind_mesh_buffers(const graphics::mesh& mesh) -> void;
 
         auto draw_mesh(const graphics::mesh& mesh) -> void;
@@ -101,5 +110,6 @@ namespace lu::vkb {
         std::size_t m_push_constant_offset {};
         bool m_is_owned {};
         bool m_push_consts_init {};
+        bool m_was_used {};
     };
 }

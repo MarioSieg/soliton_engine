@@ -206,16 +206,9 @@ void Application::Run()
 			if (world_delta_time > 0.0f)
 				ClearDebugRenderer();
 
-			// Update the camera position
-			if (!mUI->IsVisible())
-				UpdateCamera(clock_delta_time);
-
-			// Start rendering
-			mRenderer->BeginFrame(mWorldCamera, GetWorldScale());
-
 			{
-				JPH_PROFILE("RenderFrame");
-				if (!RenderFrame(world_delta_time))
+				JPH_PROFILE("UpdateFrame");
+				if (!UpdateFrame(world_delta_time))
 					break;
 			}
 
@@ -225,6 +218,13 @@ void Application::Run()
 
 			// For next frame: mark that we haven't cleared debug stuff
 			mDebugRendererCleared = false;
+
+			// Update the camera position
+			if (!mUI->IsVisible())
+				UpdateCamera(clock_delta_time);
+
+			// Start rendering
+			mRenderer->BeginFrame(mWorldCamera, GetWorldScale());
 
 			// Draw debug information
 			static_cast<DebugRendererImp *>(mDebugRenderer)->Draw();
@@ -301,7 +301,7 @@ void Application::UpdateCamera(float inDeltaTime)
 	JPH_PROFILE_FUNCTION();
 
 	// Determine speed
-	float speed = GetWorldScale() * mWorldCamera.mFarPlane / 50.0f * inDeltaTime;
+	float speed = 20.0f * GetWorldScale() * inDeltaTime;
 	bool shift = mKeyboard->IsKeyPressed(DIK_LSHIFT) || mKeyboard->IsKeyPressed(DIK_RSHIFT);
 	bool control = mKeyboard->IsKeyPressed(DIK_LCONTROL) || mKeyboard->IsKeyPressed(DIK_RCONTROL);
 	bool alt = mKeyboard->IsKeyPressed(DIK_LALT) || mKeyboard->IsKeyPressed(DIK_RALT);

@@ -11,7 +11,7 @@
 #include <Jolt/Physics/Collision/CastResult.h>
 #include <Jolt/Physics/Collision/CollidePointResult.h>
 #include <Jolt/Physics/Collision/TransformedShape.h>
-#include <Jolt/Physics/SoftBody/SoftBodyVertex.h>
+#include <Jolt/Physics/Collision/CollideSoftBodyVertexIterator.h>
 #include <Jolt/Geometry/ConvexHullBuilder.h>
 #include <Jolt/Geometry/ClosestPoint.h>
 #include <Jolt/ObjectStream/TypeDeclarations.h>
@@ -123,7 +123,7 @@ ConvexHullShape::ConvexHullShape(const ConvexHullShapeSettings &inSettings, Shap
 	// Calculate inertia matrix assuming density is 1, note that element (3, 3) is garbage
 	mInertia = Mat44::sIdentity() * (covariance_matrix(0, 0) + covariance_matrix(1, 1) + covariance_matrix(2, 2)) - covariance_matrix;
 
-	// Convert polygons fron the builder to our internal representation
+	// Convert polygons from the builder to our internal representation
 	using VtxMap = UnorderedMap<int, uint8>;
 	VtxMap vertex_map;
 	for (BuilderFace *builder_face : builder_faces)
@@ -324,7 +324,7 @@ ConvexHullShape::ConvexHullShape(const ConvexHullShapeSettings &inSettings, Shap
 				// |n2x n2y n2z| |y| = - | r + c2 | <=> n point = -r (1, 1, 1) - (c1, c2, c3)
 				// |n3x n3y n3z| |z|     | r + c3 |
 				// Where point = (x, y, z), n1x is the x component of the first plane, c1 = plane constant of plane 1, etc.
-				// The relation between how much the interesection point shifts as a function of r is: -r * n^-1 (1, 1, 1) = r * offset
+				// The relation between how much the intersection point shifts as a function of r is: -r * n^-1 (1, 1, 1) = r * offset
 				// Where offset = -n^-1 (1, 1, 1) or -n^-1 (1, 1, 0) in case only the first 2 planes are offset
 				// The error that is introduced by a convex radius r is: error = r * |offset| - r
 				// So the max convex radius given error is: r = error / (|offset| - 1)
@@ -542,6 +542,7 @@ const ConvexShape::Support *ConvexHullShape::GetSupportFunction(ESupportMode inM
 	switch (inMode)
 	{
 	case ESupportMode::IncludeConvexRadius:
+	case ESupportMode::Default:
 		if (ScaleHelpers::IsNotScaled(inScale))
 			return new (&inBuffer) HullWithConvex(this);
 		else
@@ -1032,7 +1033,7 @@ void ConvexHullShape::CastRay(const RayCast &inRay, const RayCastSettings &inRay
 		}
 
 		// Check back side hit
-		if (inRayCastSettings.mBackFaceMode == EBackFaceMode::CollideWithBackFaces
+		if (inRayCastSettings.mBackFaceModeConvex == EBackFaceMode::CollideWithBackFaces
 			&& max_fraction < ioCollector.GetEarlyOutFraction())
 		{
 			hit.mFraction = max_fraction;
@@ -1056,7 +1057,7 @@ void ConvexHullShape::CollidePoint(Vec3Arg inPoint, const SubShapeIDCreator &inS
 	ioCollector.AddHit({ TransformedShape::sGetBodyID(ioCollector.GetContext()), inSubShapeIDCreator.GetID() });
 }
 
-void ConvexHullShape::CollideSoftBodyVertices(Mat44Arg inCenterOfMassTransform, Vec3Arg inScale, SoftBodyVertex *ioVertices, uint inNumVertices, [[maybe_unused]] float inDeltaTime, [[maybe_unused]] Vec3Arg inDisplacementDueToGravity, int inCollidingShapeIndex) const
+void ConvexHullShape::CollideSoftBodyVertices(Mat44Arg inCenterOfMassTransform, Vec3Arg inScale, const CollideSoftBodyVertexIterator &inVertices, uint inNumVertices, int inCollidingShapeIndex) const
 {
 	Mat44 inverse_transform = inCenterOfMassTransform.InversedRotationTranslation();
 
@@ -1064,10 +1065,10 @@ void ConvexHullShape::CollideSoftBodyVertices(Mat44Arg inCenterOfMassTransform, 
 	bool is_not_scaled = ScaleHelpers::IsNotScaled(inScale);
 	float scale_flip = ScaleHelpers::IsInsideOut(inScale)? -1.0f : 1.0f;
 
-	for (SoftBodyVertex *v = ioVertices, *sbv_end = ioVertices + inNumVertices; v < sbv_end; ++v)
-		if (v->mInvMass > 0.0f)
+	for (CollideSoftBodyVertexIterator v = inVertices, sbv_end = inVertices + inNumVertices; v != sbv_end; ++v)
+		if (v.GetInvMass() > 0.0f)
 		{
-			Vec3 local_pos = inverse_transform * v->mPosition;
+			Vec3 local_pos = inverse_transform * v.GetPosition();
 
 			// Find most facing plane
 			float max_distance = -FLT_MAX;
@@ -1149,17 +1150,14 @@ void ConvexHullShape::CollideSoftBodyVertices(Mat44Arg inCenterOfMassTransform, 
 				penetration = -penetration;
 			else
 				normal = -normal;
-			if (penetration > v->mLargestPenetration)
+			if (v.UpdatePenetration(penetration))
 			{
-				v->mLargestPenetration = penetration;
-
 				// Calculate contact plane
 				normal = normal_length > 0.0f? normal / normal_length : max_plane_normal;
 				Plane plane = Plane::sFromPointAndNormal(closest_point, normal);
 
 				// Store collision
-				v->mCollisionPlane = plane.GetTransformed(inCenterOfMassTransform);
-				v->mCollidingShapeIndex = inCollidingShapeIndex;
+				v.SetCollision(plane.GetTransformed(inCenterOfMassTransform), inCollidingShapeIndex);
 			}
 		}
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #pragma once
 
@@ -14,7 +14,7 @@ namespace lu::graphics {
         const std::size_t num_extra_entities = num_entities % num_threads;
         const std::size_t begin = base_bucket_size*id + eastl::min(id, num_extra_entities);
         const std::size_t end = begin + base_bucket_size + (id < num_extra_entities ? 1 : 0);
-        passert(begin <= end && end <= num_entities);
+        panic_assert(begin <= end && end <= num_entities);
         return {begin, end};
     }
 
@@ -26,7 +26,7 @@ namespace lu::graphics {
         F&& callback
     ) -> void {
         static constexpr auto accumulator = [](const std::size_t acc, const auto& pair) noexcept {
-            passert(pair.first.size() == pair.second.size());
+            panic_assert(pair.first.size() == pair.second.size());
             return acc + pair.first.size();
         };
         const std::size_t total_entities = std::accumulate(render_data.begin(), render_data.end(), 0, accumulator);
@@ -48,7 +48,11 @@ namespace lu::graphics {
         }
     }
 
-    inline auto is_last_thread(const std::int32_t thread_id, const std::int32_t num_threads) noexcept -> bool {
-        return thread_id == num_threads - 1;
+    constexpr auto is_first_thread(const std::int32_t thread_id, [[maybe_unused]] const std::int32_t num_threads) noexcept -> bool {
+        return thread_id == 0;
+    }
+
+    constexpr auto is_last_thread(const std::int32_t thread_id, const std::int32_t num_threads) noexcept -> bool {
+        return thread_id == std::max(num_threads - 1, 0);
     }
 }

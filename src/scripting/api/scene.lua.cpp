@@ -1,40 +1,40 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "_prelude.hpp"
+#include "../../../../scene/scene_import.hpp"
 
 LUA_INTEROP_API auto __lu_scene_create(const char* name) -> int {
-    passert(name != nullptr);
+    panic_assert(name != nullptr);
     // pass empty file name to NOT load a file
-    scene::new_active(name, "", 1.0f, 0);
-    return scene::get_active().id;
+    auto scene = eastl::make_unique<class scene>(name);
+    int id = static_cast<int>(eastl::bit_cast<std::uintptr_t>(scene.get()));
+    scene_mgr::set_active(std::move(scene));
+    return id;
 }
 
-LUA_INTEROP_API auto __lu_scene_import(const char* name, const char* file, const double scale, const std::uint32_t load_flags) -> int {
-    passert(name != nullptr);
-    passert(file != nullptr);
-    scene::new_active(name, file, static_cast<float>(scale), load_flags);
-    return scene::get_active().id;
+LUA_INTEROP_API auto __lu_scene_import(const char* name, const char* file, const std::uint32_t load_flags) -> int {
+    auto scene = import_from_file(file, load_flags);
+    scene->properties.name = name;
+    int id = static_cast<int>(eastl::bit_cast<std::uintptr_t>(scene.get()));
+    scene_mgr::set_active(std::move(scene));
+    return id;
 }
 
 LUA_INTEROP_API auto __lu_scene_tick() -> void {
-    scene::get_active().on_tick();
-}
-
-LUA_INTEROP_API auto __lu_scene_start() -> void {
-    scene::get_active().on_start();
+    scene_mgr::active().on_tick();
 }
 
 LUA_INTEROP_API auto __lu_scene_spawn_entity(const char* const name) -> lua_entity_id {
-    return eastl::bit_cast<lua_entity_id>(scene::get_active().spawn(name).raw_id());
+    return eastl::bit_cast<lua_entity_id>(scene_mgr::active().spawn(name).raw_id());
 }
 
 LUA_INTEROP_API auto __lu_scene_despawn_entity(const lua_entity_id id) -> void {
-    const flecs::entity ent {scene::get_active(), eastl::bit_cast<flecs::id_t>(id)};
+    const flecs::entity ent {scene_mgr::active(), eastl::bit_cast<flecs::id_t>(id)};
     ent.destruct();
 }
 
 LUA_INTEROP_API auto __lu_scene_get_entity_by_name(const char* const name) -> lua_entity_id {
-    const flecs::entity entity = scene::get_active().lookup(name);
+    const flecs::entity entity = scene_mgr::active().lookup(name);
     if (!entity) [[unlikely]] {
         return 0;
     }
@@ -42,15 +42,13 @@ LUA_INTEROP_API auto __lu_scene_get_entity_by_name(const char* const name) -> lu
 }
 
 LUA_INTEROP_API auto __lu_scene_set_active_camera_entity(const lua_entity_id id) -> void {
-    const flecs::entity ent {scene::get_active(), eastl::bit_cast<flecs::id_t>(id)};
-    scene::get_active().active_camera = ent;
+    const flecs::entity ent {scene_mgr::active(), eastl::bit_cast<flecs::id_t>(id)};
+    scene_mgr::active().active_camera = ent;
 }
 
 LUA_INTEROP_API auto __lu_scene_get_active_camera_entity() -> lua_entity_id {
-    return eastl::bit_cast<lua_entity_id>(scene::get_active().active_camera.raw_id());
+    return eastl::bit_cast<lua_entity_id>(scene_mgr::active().active_camera.raw_id());
 }
-
-// TODO: Convert to FLECS C++ API
 
 struct scene_iter_context final {
     flecs::query<const com::metadata> query {};
@@ -63,7 +61,7 @@ static eastl::optional<scene_iter_context> s_scene_iter_context {};
 LUA_INTEROP_API auto __lu_scene_full_entity_query_start() -> void {
     s_scene_iter_context.emplace();
     auto& ctx = s_scene_iter_context.value();
-    scene& active = scene::get_active();
+    scene& active = scene_mgr::active();
     if (&active != ctx.ref || !ctx.query) {
         ctx.ref = &active;
         ctx.query = active.query<const com::metadata>();
@@ -88,4 +86,8 @@ LUA_INTEROP_API auto __lu_scene_full_entity_query_end() -> void {
     if (ctx) {
         ctx.reset();
     }
+}
+
+LUA_INTEROP_API auto __lu_scene_set_sun_dir(const lua_vec3 sun_dir) -> void {
+    scene_mgr::active().properties.environment.sun_dir = sun_dir;
 }

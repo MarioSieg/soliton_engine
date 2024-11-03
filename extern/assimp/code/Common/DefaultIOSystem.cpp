@@ -3,7 +3,7 @@
 Open Asset Import Library (assimp)
 ---------------------------------------------------------------------------
 
-Copyright (c) 2006-2022, assimp team
+Copyright (c) 2006-2024, assimp team
 
 All rights reserved.
 
@@ -93,6 +93,10 @@ static std::string WideToUtf8(const wchar_t *in) {
 // ------------------------------------------------------------------------------------------------
 // Tests for the existence of a file at the given path.
 bool DefaultIOSystem::Exists(const char *pFile) const {
+    if (pFile == nullptr) {
+        return false;
+    }
+        
 #ifdef _WIN32
     struct __stat64 filestat;
     if (_wstat64(Utf8ToWide(pFile).c_str(), &filestat) != 0) {

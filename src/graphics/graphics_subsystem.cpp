@@ -1,7 +1,7 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "graphics_subsystem.hpp"
-
+#include "../scene/scene_mgr.hpp"
 #include "../platform/platform_subsystem.hpp"
 #include "../scripting/system_variable.hpp"
 
@@ -19,7 +19,7 @@ namespace lu::graphics {
     using platform::platform_subsystem;
     using vkb::context;
 
-    static const system_variable<eastl::string> cv_shader_dir {"renderer.shader_dir", eastl::monostate{}};
+    static const system_variable<eastl::string> cv_shader_dir {"renderer.shader_dir", {"engine_assets/shaders"}};
     static const system_variable<std::uint32_t> cv_concurrent_frames {"renderer.concurrent_frames", {3}};
     static const system_variable<std::uint32_t> cv_msaa_samples {"renderer.msaa_samples", {4}};
     static const system_variable<std::uint32_t> cv_max_render_threads {"cpu.render_threads", {2}};
@@ -32,20 +32,19 @@ namespace lu::graphics {
 
         s_instance = this;
 
-        GLFWwindow* const window = platform_subsystem::get_glfw_window();
+        GLFWwindow* const window = *platform_subsystem::get_main_window();
         context::create(vkb::context_desc {
             .window = window,
             .concurrent_frames = cv_concurrent_frames(),
             .msaa_samples = cv_msaa_samples()
         });
 
-        material::init_static_resources();
-
-        shader_cache::init(cv_shader_dir());
-
+        shader_cache::init(cv_shader_dir()); // 1. init shader cache (must be first)
         pipeline_cache::init();
-        auto& reg = pipeline_cache::get();
-        reg.register_pipeline<pipelines::pbr_pipeline>();
+        pipeline_cache::get().register_pipeline_async<pipelines::pbr_pipeline>();
+        pipeline_cache::get().register_pipeline_async<pipelines::sky_pipeline>();
+
+        material::init_static_resources();
 
         m_render_thread_pool.emplace([this](vkb::command_buffer& cmd, const std::int32_t bucket_id, const std::int32_t num_threads) -> void {
             render_scene_bucket(cmd, bucket_id, num_threads);
@@ -53,14 +52,19 @@ namespace lu::graphics {
         m_render_data.reserve(32);
 
         m_imgui_context.emplace();
-
         m_noesis_context.emplace();
 
         //m_noesis_context->load_ui_from_xaml("App.xaml");
     }
 
+    auto graphics_subsystem::on_prepare() -> void {
+        pipeline_cache::get().await_all_pipelines_async();
+    }
+
     graphics_subsystem::~graphics_subsystem() {
         vkcheck(vkb::vkdvc().waitIdle()); // must be first
+
+        shared_buffers::get().~shared_buffers();
 
         m_imgui_context.reset();
         m_noesis_context.reset();
@@ -77,7 +81,7 @@ namespace lu::graphics {
     }
 
     [[nodiscard]] static auto find_main_camera() -> flecs::entity {
-        const auto filter = scene::get_active().filter<const com::transform, const com::camera>();
+        const auto filter = scene_mgr::active().query<const com::transform, const com::camera>();
         if (filter.count() > 0) {
             return filter.first();
         }
@@ -86,7 +90,7 @@ namespace lu::graphics {
 
     auto graphics_subsystem::update_main_camera(const float width, const float height) -> void {
         flecs::entity main_cam;
-        auto& active = scene::get_active().active_camera;
+        auto& active = scene_mgr::active().active_camera;
         if (!active.is_valid() || !active.is_alive()) {
             active = flecs::entity::null();
             main_cam = find_main_camera();
@@ -97,7 +101,7 @@ namespace lu::graphics {
             || !main_cam.is_alive()
             || !main_cam.has<const com::camera>()
             || !main_cam.has<const com::transform>()) [[unlikely]] {
-                log_warn("No camera found in scene");
+                log_error("No camera found in scene");
                 return;
             }
         s_camera_transform = *main_cam.get<com::transform>();
@@ -106,14 +110,14 @@ namespace lu::graphics {
             cam.viewport.x = width;
             cam.viewport.y = height;
         }
-        DirectX::XMStoreFloat4A(&s_clear_color, DirectX::XMVectorSetW(DirectX::XMLoadFloat3(&cam.clear_color), 1.0f));
-        const DirectX::XMMATRIX view = cam.compute_view(s_camera_transform);
-        const DirectX::XMMATRIX proj = cam.compute_projection();
-        DirectX::XMStoreFloat4x4A(&s_view_mtx, view);
-        DirectX::XMStoreFloat4x4A(&s_proj_mtx, proj);
-        DirectX::XMStoreFloat4x4A(&s_view_proj_mtx, DirectX::XMMatrixMultiply(view, proj));
-        DirectX::BoundingFrustum::CreateFromMatrix(s_frustum, proj);
-        s_frustum.Transform(s_frustum, DirectX::XMMatrixInverse(nullptr, view));
+        XMStoreFloat4A(&s_clear_color, XMVectorSetW(XMLoadFloat3(&cam.clear_color), 1.0f));
+        const XMMATRIX view = cam.compute_view(s_camera_transform);
+        const XMMATRIX proj = cam.compute_projection();
+        XMStoreFloat4x4A(&s_view_mtx, view);
+        XMStoreFloat4x4A(&s_proj_mtx, proj);
+        XMStoreFloat4x4A(&s_view_proj_mtx, XMMatrixMultiply(view, proj));
+        BoundingFrustum::CreateFromMatrix(s_frustum, proj);
+        s_frustum.Transform(s_frustum, XMMatrixInverse(nullptr, view));
     }
 
     // WARNING! RENDER THREAD LOCAL
@@ -122,11 +126,19 @@ namespace lu::graphics {
         const std::int32_t bucket_id,
         const std::int32_t num_threads
     ) const -> void {
-        const auto& pipeline = static_cast<const graphics_pipeline&>(pipeline_cache::get().get_pipeline("mat_pbr"));
-        pipeline.on_bind(cmd);
+        if (is_first_thread(bucket_id, num_threads)) {
+            const auto& sky_pipeline
+                = pipeline_cache::get().get_pipeline<pipelines::sky_pipeline>("sky");
+            sky_pipeline.on_bind(cmd);
+            sky_pipeline.render_sky(cmd);
+        }
 
-        const DirectX::XMMATRIX view_mtx = DirectX::XMLoadFloat4x4A(&s_view_mtx);
-        const DirectX::XMMATRIX view_proj_mtx = DirectX::XMLoadFloat4x4A(&graphics_subsystem::s_view_proj_mtx);
+        const auto& pbr_pipeline
+            = pipeline_cache::get().get_pipeline<pipelines::pbr_pipeline>("mat_pbr");
+        pbr_pipeline.on_bind(cmd);
+
+        const XMMATRIX view_mtx = XMLoadFloat4x4A(&s_view_mtx);
+        const XMMATRIX view_proj_mtx = XMLoadFloat4x4A(&graphics_subsystem::s_view_proj_mtx);
 
         // thread workload distribution
         partitioned_draw(bucket_id, num_threads, get_render_data(), [&](
@@ -134,12 +146,12 @@ namespace lu::graphics {
             const com::transform& transform,
             const com::mesh_renderer& renderer
         ) -> void {
-            pipeline.render_mesh(cmd, transform, renderer, s_frustum, view_proj_mtx, view_mtx);
+            pbr_pipeline.render_mesh_renderer(cmd, transform, renderer, s_frustum, view_proj_mtx, view_mtx);
         });
 
         if (is_last_thread(bucket_id, num_threads)) { // Last thread
             if (auto& dd = const_cast<eastl::optional<debugdraw>&>(m_debugdraw); dd.has_value()) {
-                const auto view_pos = DirectX::XMLoadFloat4(&graphics_subsystem::s_camera_transform.position);
+                const auto view_pos = XMLoadFloat4(&graphics_subsystem::s_camera_transform.position);
                 dd->render(cmd, view_proj_mtx, view_pos);
             }
             if (auto& imgui = const_cast<eastl::optional<imgui::context>&>(m_imgui_context); imgui.has_value()) {
@@ -163,16 +175,16 @@ namespace lu::graphics {
         const auto h = static_cast<float>(vkb::ctx().get_height());
         m_imgui_context->begin_frame();
         update_main_camera(w, h);
-
         m_cmd.reset();
         m_cmd = vkb::ctx().begin_frame(s_clear_color, &m_inheritance_info);
         m_cmd->begin(vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
         vkb::ctx().begin_render_pass(*m_cmd, vkb::ctx().get_scene_render_pass(), vk::SubpassContents::eSecondaryCommandBuffers);
+        update_shared_buffers_per_frame();
         return true;
     }
 
     HOTPROC auto graphics_subsystem::on_post_tick() -> void {
-        auto& scene = scene::get_active();
+        auto& scene = scene_mgr::active();
         m_noesis_context->tick();
         m_imgui_context->end_frame();
         if (!m_render_query.scene || &scene != m_render_query.scene) [[unlikely]] { // Scene changed
@@ -182,20 +194,20 @@ namespace lu::graphics {
         }
         m_render_data.clear();
         scene.readonly_begin();
-        m_render_query.query.iter([this](const flecs::iter& i, const com::transform* const transforms, const com::mesh_renderer* const renderers) {
-            const std::size_t n = i.count();
-            m_render_data.emplace_back(eastl::span{transforms, n}, eastl::span{renderers, n});
+        const std::size_t n = m_render_query.query.count();
+        m_render_query.query.each([this, n](const com::transform& transform, const com::mesh_renderer& renderer) {
+            m_render_data.emplace_back(eastl::span{&transform, n}, eastl::span{&renderer, n});
         });
         if (m_cmd) [[likely]] { // TODO: refractor
             m_render_thread_pool->begin_frame(&m_inheritance_info);
             m_render_thread_pool->process_frame(*m_cmd);
             scene.readonly_end();
             m_cmd->end_render_pass();
-            m_cmd->end();
             m_render_data.clear();
 
             //render_uis(); TODO
 
+            m_cmd->end();
             vkb::ctx().end_frame(*m_cmd);
         } else {
             scene.readonly_end();
@@ -222,7 +234,7 @@ namespace lu::graphics {
         m_cmd->set_viewport(0.0f, h, w, -h);
         m_cmd->set_scissor(w, h);
 
-        vkb::ctx().begin_render_pass(*m_cmd, vkb::ctx().get_ui_render_pass(), vk::SubpassContents::eInline);
+        vkb::ctx().begin_render_pass(*m_cmd, vkb::ctx().get_ui_render_pass(), vk::SubpassContents::eInline); // TODO refractor
         m_noesis_context->render_onscreen(vkb::ctx().get_ui_render_pass());
         m_imgui_context->submit_imgui(*m_cmd);
         m_cmd->end_render_pass();
@@ -247,5 +259,15 @@ namespace lu::graphics {
 
     auto graphics_subsystem::get_num_draw_verts() noexcept -> std::uint32_t {
         return s_num_draw_verts_prev;
+    }
+
+    auto graphics_subsystem::update_shared_buffers_per_frame() const -> void {
+        const auto& scene = scene_mgr::active();
+
+        glsl::perFrameData per_frame_data {};
+        XMStoreFloat4(&per_frame_data.camPos, XMLoadFloat4(&s_camera_transform.position));
+        per_frame_data.sunDir = scene.properties.environment.sun_dir;
+        per_frame_data.sunColor = scene.properties.environment.sun_color;
+        shared_buffers::get().per_frame_ubo.set(per_frame_data);
     }
 }

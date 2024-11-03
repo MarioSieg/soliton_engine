@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #pragma once
 
@@ -19,10 +19,18 @@ namespace lu {
         panic_impl(fmt::format(message, std::forward<Args>(args)...));
     }
 
-    #define passert(expr) \
+    #define panic_assert(expr) \
         do { \
             if (!(expr)) [[unlikely]] { \
                 ::lu::panic("Assertion failed: {} in {}:{}", #expr, __FILE__, __LINE__); \
             } \
         } while (false)
+
+
+    inline auto str_replace(eastl::string& str, const eastl::string_view from, const eastl::string_view to) -> bool {
+        const std::size_t start_pos = str.find(from.data());
+        if(start_pos == std::string::npos) return false;
+        str.replace(start_pos, from.length(), to.data());
+        return true;
+    }
 }

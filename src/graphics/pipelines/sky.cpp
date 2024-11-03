@@ -1,61 +1,21 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "sky.hpp"
 #include "../vulkancore/context.hpp"
 #include "../graphics_subsystem.hpp"
 
 namespace lu::graphics::pipelines {
-    sky_pipeline::sky_pipeline() : graphics_pipeline{"sky_composite"} {
-        m_skybox_texture.emplace("/engine_assets/textures/hdr/gcanyon_cube.ktx");
-        m_skydome.emplace("/engine_assets/meshes/skydome.fbx");
+    sky_pipeline::sky_pipeline() : graphics_pipeline{"sky"} {
+        m_skybox_texture.emplace("/RES/textures/hdr/gcanyon_cube.ktx");
+        m_skydome.emplace("/RES/meshes/skydome.fbx", false);
 
-        const vk::Device device = vkb::vkdvc();
-
-        constexpr eastl::array<vk::DescriptorSetLayoutBinding, 1> bindings {
-            vk::DescriptorSetLayoutBinding {
-                .binding = 0u,
-                .descriptorType = vk::DescriptorType::eCombinedImageSampler,
-                .descriptorCount = 1u,
-                .stageFlags = vk::ShaderStageFlagBits::eFragment,
-                .pImmutableSamplers = nullptr
-            }
-        };
-
-        vk::DescriptorSetLayoutCreateInfo descriptor_layout {};
-        descriptor_layout.bindingCount = static_cast<std::uint32_t>(bindings.size());
-        descriptor_layout.pBindings = bindings.data();
-        vkcheck(device.createDescriptorSetLayout(&descriptor_layout, vkb::get_alloc(), &m_descriptor_set_layout));
-
-        vk::DescriptorPoolSize pool_size {};
-        pool_size.type = vk::DescriptorType::eCombinedImageSampler;
-        pool_size.descriptorCount = 2u;
-
-        const vk::DescriptorPoolCreateInfo pool_info {
-            .maxSets = 1u,
-            .poolSizeCount = 1u,
-            .pPoolSizes = &pool_size
-        };
-        vkcheck(device.createDescriptorPool(&pool_info, vkb::get_alloc(), &m_descriptor_pool));
-
-        vk::DescriptorSetAllocateInfo alloc_info {};
-        alloc_info.descriptorPool = m_descriptor_pool;
-        alloc_info.descriptorSetCount = 1u;
-        alloc_info.pSetLayouts = &m_descriptor_set_layout;
-        vkcheck(device.allocateDescriptorSets(&alloc_info, &m_descriptor_set));
-
-        vk::DescriptorImageInfo image_info {};
-        image_info.imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-        image_info.imageView = m_skybox_texture->image_view();
-        image_info.sampler = m_skybox_texture->sampler();
-
-        vk::WriteDescriptorSet write {};
-        write.descriptorType = vk::DescriptorType::eCombinedImageSampler;
-        write.descriptorCount = 1u;
-        write.dstBinding = 0u;
-        write.dstArrayElement = 0u;
-        write.dstSet = m_descriptor_set;
-        write.pImageInfo = &image_info;
-        device.updateDescriptorSets(1u, &write, 0u, nullptr);
+        vkb::descriptor_factory factory {vkb::ctx().descriptor_factory_begin()};
+        vk::DescriptorImageInfo info {};
+        info.imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+        info.imageView = m_skybox_texture->image_view();
+        info.sampler = m_skybox_texture->sampler();
+        factory.bind_images(0, 1, &info, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment);
+        panic_assert(factory.build(m_descriptor_set, m_descriptor_set_layout));
     }
 
     sky_pipeline::~sky_pipeline() {
@@ -64,8 +24,8 @@ namespace lu::graphics::pipelines {
     }
 
     auto sky_pipeline::configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> void {
-        auto vs = shader_cache::get().get_shader(shader_variant{"/engine_assets/shaders/src/skybox.vert", shader_stage::vertex});
-        auto fs = shader_cache::get().get_shader(shader_variant{"/engine_assets/shaders/src/skybox.frag", shader_stage::fragment});
+        auto vs = shader_cache::get().get_shader(shader_variant{"/RES/shaders/src/skybox.vert", shader_stage::vertex});
+        auto fs = shader_cache::get().get_shader(shader_variant{"/RES/shaders/src/skybox.frag", shader_stage::fragment});
         cfg.emplace_back(vs);
         cfg.emplace_back(fs);
     }
@@ -80,15 +40,28 @@ namespace lu::graphics::pipelines {
         ranges.emplace_back(push_constant_range);
     }
 
-    auto sky_pipeline::render(vkb::command_buffer& cmd) const -> void {
-        const vk::PipelineLayout layout = get_layout();
-        (*cmd).bindDescriptorSets(vk::PipelineBindPoint::eGraphics, layout, 0u, 1u, &m_descriptor_set, 0u, nullptr);
+    auto sky_pipeline::configure_rasterizer(vk::PipelineRasterizationStateCreateInfo& cfg) -> void {
+        graphics_pipeline::configure_rasterizer(cfg);
+        cfg.cullMode = vk::CullModeFlagBits::eBack;
+    }
+
+    auto sky_pipeline::on_bind(vkb::command_buffer& cmd) const -> void {
+        graphics_pipeline::on_bind(cmd);
+        cmd.bind_graphics_descriptor_set(m_descriptor_set, 0, nullptr);
+    }
+
+    auto sky_pipeline::render_sky(vkb::command_buffer& cmd) const -> void {
         gpu_vertex_push_constants push_constants {};
-        const DirectX::XMMATRIX model = DirectX::XMMatrixScalingFromVector(DirectX::XMVectorReplicate(10.0f));
-        const auto& vp = graphics_subsystem::get_view_proj_mtx();
-        DirectX::XMStoreFloat4x4A(&push_constants.model_view_proj, DirectX::XMMatrixMultiply(model, DirectX::XMLoadFloat4x4A(&vp)));
-        cmd.bind_pipeline(*this);
+        XMStoreFloat4x4A(&push_constants.view, XMLoadFloat4x4A(&graphics_subsystem::get_view_mtx()));
+        XMStoreFloat4x4A(&push_constants.proj, XMLoadFloat4x4A(&graphics_subsystem::get_proj_mtx()));
+        cmd.push_consts_start();
         cmd.push_consts(vk::ShaderStageFlagBits::eVertex, push_constants);
         cmd.draw_mesh(*m_skydome);
+    }
+
+    auto sky_pipeline::configure_depth_stencil(vk::PipelineDepthStencilStateCreateInfo& cfg) -> void {
+        graphics_pipeline::configure_depth_stencil(cfg);
+        cfg.depthTestEnable = vk::False;
+        cfg.depthWriteEnable = vk::False;
     }
 }

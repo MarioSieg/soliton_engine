@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #pragma once
 
@@ -35,10 +35,10 @@ namespace lu {
         //  -> acquire a std::mutex (typically via std::lock_guard)
         //  -> perform the modification while the lock is held
         //  -> execute notify_one or notify_all on the std::condition_variable (the lock does not need to be held for notification)
-        passert(value != 0);
+        panic_assert(value != 0);
         {
             std::unique_lock lock {m_mtx};
-            passert(!m_signaled.load(std::memory_order_seq_cst) && !m_threads_awaken.load(std::memory_order_seq_cst));
+            panic_assert(!m_signaled.load(std::memory_order_seq_cst) && !m_threads_awaken.load(std::memory_order_seq_cst));
             m_signaled.store(value, std::memory_order_seq_cst);
         }
         // Unlocking is done before notifying, to avoid waking up the waiting
@@ -70,7 +70,7 @@ namespace lu {
         const std::int32_t signaled_value = m_signaled.load(std::memory_order_seq_cst);
         const std::int32_t num_thread_awaken = 1 + m_threads_awaken.fetch_add(1, std::memory_order_seq_cst); // fetch_add returns the original value immediately preceding the addition.
         if (auto_reset) {
-            passert(num_threads_waiting != 0);
+            panic_assert(num_threads_waiting != 0);
             if (num_thread_awaken == num_threads_waiting) {
                 m_signaled.store(0, std::memory_order_seq_cst);
                 m_threads_awaken.store(0, std::memory_order_seq_cst);

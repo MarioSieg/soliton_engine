@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #pragma once
 
@@ -7,50 +7,97 @@
 #include "asset.hpp"
 
 namespace lu::assetmgr {
+    enum class asset_ref : std::int32_t {}; // Asset reference type to access asset instances by index (used from Lua)
+    static constexpr asset_ref asset_ref_invalid = static_cast<asset_ref>(std::numeric_limits<std::underlying_type_t<asset_ref>>::max());
+    static_assert(0x7fffffff == static_cast<std::size_t>(asset_ref_invalid)); // Invalid asset ref constant also used in Lua
+
+    // Maximum number of valid asset references
+    static constexpr asset_ref asset_ref_max = static_cast<asset_ref>(static_cast<std::size_t>(asset_ref_invalid) - 1);
+
     template <typename  T> requires is_asset<T>
     class asset_registry final {
     public:
         explicit asset_registry(std::size_t capacity = 32) {
-            m_registry.reserve(capacity);
+            m_loaded.reserve(capacity);
+            m_path_cache.reserve(capacity);
         }
 
-        template <typename... Args>
-        [[nodiscard]] auto load_from_memory(Args&&... args) -> T* {
-            eastl::unique_ptr<T> ptr {eastl::make_unique<T>(std::forward<Args>(args)...)};
-            ++m_cache_misses;
-            return &*m_registry.emplace(eastl::to_string(++m_id_gen), std::move(ptr)).first->second;
-        }
-
-        template <typename... Args>
-        [[nodiscard]] auto load(eastl::string&& path, Args&&... args) -> T* {
-            if (m_registry.contains(path)) {
-                ++m_cache_hits;
-                return &*m_registry[path];
+        [[nodiscard]] auto insert(eastl::unique_ptr<T>&& asset = nullptr, const eastl::string_view path = {}) -> eastl::pair<asset_ref, T*> {
+            if constexpr (std::is_constructible_v<T>) {
+                if (!asset) {
+                    asset = eastl::make_unique<T>();
+                }
             }
-            eastl::string key {path};
-            eastl::unique_ptr<T> ptr {eastl::make_unique<T>(std::move(path), std::forward<Args>(args)...)};
-            ++m_cache_misses;
-            return &*m_registry.emplace(std::move(key), std::move(ptr)).first->second;
+            panic_assert(asset != nullptr);
+            if (!path.empty()) { // Check if asset with path already exists
+                const auto it = m_path_cache.find(path);
+                if (it != m_path_cache.end()) { // Return existing asset reference
+                    T* const loaded = (*this)[it->second];
+                    panic_assert(loaded != nullptr);
+                    return eastl::make_pair(it->second, loaded);
+                }
+            }
+            const std::size_t idx = m_loaded.size();
+            if (idx > static_cast<std::size_t>(asset_ref_max)) [[unlikely]] {
+                log_error("Asset asset_ref numeric capacity exhausted, cannot insert asset: {}", path);
+                return eastl::make_pair(asset_ref_invalid, nullptr);
+            }
+            const auto ref = static_cast<asset_ref>(idx);
+            T* const ptr = &*asset;
+            m_loaded.emplace_back(eastl::move(asset));
+            if (!path.empty()) {
+                m_path_cache.emplace(path, ref);
+            }
+            return eastl::make_pair(ref, ptr);
         }
 
-        [[nodiscard]] auto get_map() const noexcept -> const ankerl::unordered_dense::map<eastl::string, eastl::unique_ptr<T>>& {
-            return m_registry;
+        [[nodiscard]] auto load(eastl::string&& path) -> asset_ref {
+            if (path.empty()) {
+                log_error("Cannot load asset with empty path");
+                return asset_ref_invalid;
+            }
+            const auto it = m_path_cache.find(path);
+            if (it != m_path_cache.end()) {
+                return it->second;
+            }
+            eastl::string_view path_view { path };
+            auto asset = eastl::make_unique<T>(eastl::move(path));
+            if (!asset) {
+                log_error("Failed to load asset from path: {}", path_view);
+                return asset_ref_invalid;
+            }
+            return insert(eastl::move(asset), path_view).first;
         }
 
-        [[nodiscard]] auto get_cache_hits() const noexcept -> std::uint32_t { return m_cache_hits; }
-        [[nodiscard]] auto get_cache_misses() const noexcept -> std::uint32_t { return m_cache_misses; }
-        [[nodiscard]] auto get_load_count() const noexcept -> std::uint32_t { return m_cache_hits + m_cache_misses; }
+        auto print_loaded() const -> void {
+            log_info("---- Registered {} Assets -----", m_loaded.size());
+            for (std::size_t i = 0; i < m_loaded.size(); ++i) {
+                log_info("Asset[{}]: {}", i, m_loaded[i]->get_asset_path());
+            }
+        }
 
-        [[nodiscard]] auto invalidate() {
-            m_registry.clear();
-            m_cache_hits = 0;
-            m_cache_misses = 0;
+        [[nodiscard]] auto operator[](const asset_ref ref) const -> T* {
+            if (ref == asset_ref_invalid || static_cast<std::size_t>(ref) >= m_loaded.size()) [[unlikely]] {
+                return nullptr;
+            }
+            if (ref > asset_ref_max) [[unlikely]] {
+                log_error("Invalid asset reference: {}", static_cast<std::size_t>(ref));
+                return nullptr;
+            }
+            return &*m_loaded[static_cast<std::size_t>(ref)];
+        }
+
+        [[nodiscard]] auto loaded() const -> const eastl::vector<eastl::unique_ptr<T>>& { return m_loaded; }
+
+        [[nodiscard]] auto size() const -> std::size_t { return m_loaded.size(); }
+
+        auto invalidate() -> void {
+            m_path_cache.clear();
+            m_loaded.clear();
         }
 
     private:
-        ankerl::unordered_dense::map<eastl::string, eastl::unique_ptr<T>> m_registry {};
-        std::uint32_t m_cache_hits = 0;
-        std::uint32_t m_cache_misses = 0;
-        std::uint32_t m_id_gen = 0;
+        eastl::vector<eastl::unique_ptr<T>> m_loaded {};
+        ankerl::unordered_dense::map<eastl::string_view, asset_ref> m_path_cache {};
     };
 }

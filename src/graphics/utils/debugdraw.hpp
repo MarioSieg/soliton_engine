@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #pragma once
 
@@ -11,14 +11,14 @@
 namespace lu::graphics {
     class debugdraw final : public no_copy, public no_move {
     public:
-        struct uniform final {
-            DirectX::XMFLOAT4X4A view_proj {};
+        struct uniform_data final {
+            XMFLOAT4X4A view_proj {};
         };
 
         struct vertex final {
-            DirectX::XMFLOAT3 pos {};
-            DirectX::XMFLOAT2 uv {};
-            DirectX::XMFLOAT3 color {};
+            XMFLOAT3 pos {};
+            XMFLOAT2 uv {};
+            XMFLOAT3 color {};
         };
 
         struct draw_command final {
@@ -51,13 +51,15 @@ namespace lu::graphics {
             m_batched_mode = false;
         }
 
-        auto draw_line(const DirectX::XMFLOAT3& from, const DirectX::XMFLOAT3& to, const DirectX::XMFLOAT3& color) -> void;
-        auto draw_grid(const DirectX::XMFLOAT3& pos, float step, const DirectX::XMFLOAT3& color) -> void;
-        auto draw_aabb(const DirectX::XMFLOAT3& min, const DirectX::XMFLOAT3& max, const DirectX::XMFLOAT3& color) -> void;
-        auto draw_aabb(const DirectX::BoundingBox& aabb, const DirectX::XMFLOAT3& color) -> void;
-        auto draw_obb(const DirectX::BoundingOrientedBox& obb, DirectX::FXMMATRIX model, const DirectX::XMFLOAT3& color) -> void;
-        auto draw_transform(DirectX::FXMMATRIX mtx, float axis_len) -> void;
-        auto render(vk::CommandBuffer cmd, DirectX::FXMMATRIX view_proj, DirectX::FXMVECTOR view_pos) -> void;
+        auto draw_line(const XMFLOAT3& from, const XMFLOAT3& to, const XMFLOAT3& color) -> void;
+        auto draw_arrow(const XMFLOAT3& from, const XMFLOAT3& to, const XMFLOAT3& color, float arrowhead_length) -> void;
+        auto draw_arrow_dir(const XMFLOAT3& from, const XMFLOAT3& dir, const XMFLOAT3& color, float arrowhead_length) -> void;
+        auto draw_grid(const XMFLOAT3& pos, float step, const XMFLOAT3& color) -> void;
+        auto draw_aabb(const XMFLOAT3& min, const XMFLOAT3& max, const XMFLOAT3& color) -> void;
+        auto draw_aabb(const BoundingBox& aabb, const XMFLOAT3& color) -> void;
+        auto draw_obb(const BoundingOrientedBox& obb, FXMMATRIX model, const XMFLOAT3& color) -> void;
+        auto draw_transform(FXMMATRIX mtx, float axis_len) -> void;
+        auto render(vk::CommandBuffer cmd, FXMMATRIX view_proj, FXMVECTOR view_pos) -> void;
 
     private:
         auto create_descriptor() -> void;
@@ -76,7 +78,7 @@ namespace lu::graphics {
         bool m_batched_mode = false;
         bool m_distance_fade = false;
         eastl::optional<vkb::buffer> m_vertex_buffer {};
-        eastl::optional<vkb::buffer> m_uniform {};
+        eastl::optional<vkb::uniform_buffer<uniform_data>> m_uniform {};
         vk::PipelineLayout m_pipeline_layout {};
         vk::DescriptorSetLayout m_descriptor_set_layout {};
         vk::DescriptorSet m_descriptor_set {};

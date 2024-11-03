@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #pragma once
 
@@ -32,7 +32,7 @@ namespace lu::vkb {
             //{ vk::DescriptorType::eAccelerationStructureKHR, .5f },
         };
 
-        std::uint32_t alloc_granularity {1024 };
+        std::uint32_t alloc_granularity {1024};
 
     private:
         vk::DescriptorPool m_current_pool {};

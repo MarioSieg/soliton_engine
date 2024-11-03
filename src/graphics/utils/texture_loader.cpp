@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "texture_loader.hpp"
 
@@ -153,28 +153,15 @@ namespace lu::graphics {
     };
 
 #if USE_MIMALLOC
-    static constexpr std::size_t k_natural_align = 8;
     auto texture_allocator::realloc(void* p, const std::size_t size, const std::size_t align, const char*, std::uint32_t) -> void* {
-        if (0 == size) {
-            if (nullptr != p) {
-                if (k_natural_align >= align) {
-                    mi_free(p);
-                    return nullptr;
-                }
-                mi_free_aligned(p, align);
-            }
+        if (!size) {
+            if (p) align > alignof(std::max_align_t) ? mi_free_aligned(p, align) : mi_free(p);
             return nullptr;
         }
-        if (nullptr == p) {
-            if (k_natural_align >= align) {
-                return mi_malloc(size);
-            }
-            return mi_malloc_aligned(size, align);
+        if (!p) {
+            return align > alignof(std::max_align_t) ? mi_malloc_aligned(size, align) : mi_malloc(size);
         }
-        if (k_natural_align >= align) {
-            return mi_realloc(p, size);
-        }
-        return mi_realloc_aligned(p, size, align);
+        return align > alignof(std::max_align_t) ? mi_realloc_aligned(p, size, align) : mi_realloc(p, size);
     }
 
     constinit texture_allocator s_texture_allocator {};

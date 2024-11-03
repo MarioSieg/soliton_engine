@@ -78,7 +78,15 @@ static constexpr aiImporterDesc desc = {
 
 // ------------------------------------------------------------------------------------------------
 // Recursive parsing of LWS files
-void LWS::Element::Parse(const char *&buffer, const char *end) {
+namespace {
+    constexpr int MAX_DEPTH = 1000; // Define the maximum depth allowed
+}
+
+void LWS::Element::Parse(const char *&buffer, const char *end, int depth) {
+    if (depth > MAX_DEPTH) {
+        throw std::runtime_error("Maximum recursion depth exceeded in LWS::Element::Parse");
+    }
+
     for (; SkipSpacesAndLineEnd(&buffer, end); SkipLine(&buffer, end)) {
 
         // begin of a new element with children
@@ -121,7 +129,7 @@ void LWS::Element::Parse(const char *&buffer, const char *end) {
 
         // parse more elements recursively
         if (sub) {
-            children.back().Parse(buffer, end);
+            children.back().Parse(buffer, end, depth + 1);
         }
     }
 }
@@ -305,14 +313,14 @@ void LWSImporter::SetupNodeName(aiNode *nd, LWS::NodeDesc &src) {
             }
             std::string::size_type t = src.path.substr(s).find_last_of('.');
 
-            nd->mName.length = ::ai_snprintf(nd->mName.data, MAXLEN, "%s_(%08X)", src.path.substr(s).substr(0, t).c_str(), combined);
-            if (nd->mName.length > MAXLEN) {
-                nd->mName.length = MAXLEN;
+            nd->mName.length = ::ai_snprintf(nd->mName.data, AI_MAXLEN, "%s_(%08X)", src.path.substr(s).substr(0, t).c_str(), combined);
+            if (nd->mName.length > AI_MAXLEN) {
+                nd->mName.length = AI_MAXLEN;
             }
             return;
         }
     }
-    nd->mName.length = ::ai_snprintf(nd->mName.data, MAXLEN, "%s_(%08X)", src.name, combined);
+    nd->mName.length = ::ai_snprintf(nd->mName.data, AI_MAXLEN, "%s_(%08X)", src.name, combined);
 }
 
 // ------------------------------------------------------------------------------------------------

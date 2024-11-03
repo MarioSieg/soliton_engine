@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #pragma once
 
@@ -98,5 +98,6 @@ namespace lu::graphics {
 
         const eastl::string m_shader_dir;
         ankerl::unordered_dense::map<std::size_t, eastl::shared_ptr<shader>> m_shaders {};
+        std::mutex m_mtx {};
     };
 }

@@ -1,4 +1,9 @@
--- Copyright (c) 2022-2023 Mario "Neo" Sieg. All Rights Reserved.
+-- Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
+
+----------------------------------------------------------------------------
+--- character_controller Module - Implements the character-controller component.
+--- @module character_controller
+------------------------------------------------------------------------------
 
 local ffi = require 'ffi'
 local cpp = ffi.C

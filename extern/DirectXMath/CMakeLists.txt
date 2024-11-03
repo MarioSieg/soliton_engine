@@ -3,7 +3,7 @@
 
 cmake_minimum_required (VERSION 3.20)
 
-set(DIRECTXMATH_VERSION 3.1.8)
+set(DIRECTXMATH_VERSION 3.20)
 
 project(DirectXMath
   VERSION ${DIRECTXMATH_VERSION}
@@ -71,7 +71,7 @@ install(FILES
 # Create pkg-config file
 include(build/JoinPaths.cmake)
 # from: https://github.com/jtojnar/cmake-snips#concatenating-paths-when-building-pkg-config-files
-join_paths(DIRECTXMATH_INCLUDEDIR_FOR_PKG_CONFIG "\${prefix}" "${CMAKE_INSTALL_INCLUDEDIR}")
+join_paths(DIRECTXMATH_INCLUDEDIR_FOR_PKG_CONFIG "\${prefix}" "${CMAKE_INSTALL_INCLUDEDIR}/directxmath")
 join_paths(DIRECTXMATH_LIBDIR_FOR_PKG_CONFIG "\${prefix}"     "${CMAKE_INSTALL_LIBDIR}")
 
 configure_file(
@@ -83,7 +83,7 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/DirectXMath.pc"
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 
 #--- Test suite
-if (DEFINED VCPKG_TARGET_ARCHITECTURE)
+if(DEFINED VCPKG_TARGET_ARCHITECTURE)
     set(DXMATH_ARCHITECTURE ${VCPKG_TARGET_ARCHITECTURE})
 elseif(CMAKE_GENERATOR_PLATFORM MATCHES "^[Ww][Ii][Nn]32$")
     set(DXMATH_ARCHITECTURE x86)
@@ -93,13 +93,27 @@ elseif(CMAKE_GENERATOR_PLATFORM MATCHES "^[Aa][Rr][Mm]$")
     set(DXMATH_ARCHITECTURE arm)
 elseif(CMAKE_GENERATOR_PLATFORM MATCHES "^[Aa][Rr][Mm]64$")
     set(DXMATH_ARCHITECTURE arm64)
-elseif(NOT DXMATH_ARCHITECTURE)
+elseif(CMAKE_GENERATOR_PLATFORM MATCHES "^[Aa][Rr][Mm]64EC$")
+    set(DXMATH_ARCHITECTURE arm64ec)
+elseif(CMAKE_VS_PLATFORM_NAME_DEFAULT MATCHES "^[Ww][Ii][Nn]32$")
+    set(DXMATH_ARCHITECTURE x86)
+elseif(CMAKE_VS_PLATFORM_NAME_DEFAULT MATCHES "^[Xx]64$")
+    set(DXMATH_ARCHITECTURE x64)
+elseif(CMAKE_VS_PLATFORM_NAME_DEFAULT MATCHES "^[Aa][Rr][Mm]$")
+    set(DXMATH_ARCHITECTURE arm)
+elseif(CMAKE_VS_PLATFORM_NAME_DEFAULT MATCHES "^[Aa][Rr][Mm]64$")
+    set(DXMATH_ARCHITECTURE arm64)
+elseif(CMAKE_VS_PLATFORM_NAME_DEFAULT MATCHES "^[Aa][Rr][Mm]64EC$")
+    set(DXMATH_ARCHITECTURE arm64ec)
+elseif(NOT (DEFINED DXMATH_ARCHITECTURE))
     set(DXMATH_ARCHITECTURE "x64")
 endif()
 
 #--- Test suite
-include(CTest)
-if(BUILD_TESTING AND WIN32 AND (NOT WINDOWS_STORE) AND (EXISTS "${CMAKE_CURRENT_LIST_DIR}/Tests/CMakeLists.txt"))
-  enable_testing()
-  add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/Tests)
+if(NOT WINDOWS_STORE)
+  include(CTest)
+  if(BUILD_TESTING AND WIN32 AND (NOT WINDOWS_STORE) AND (EXISTS "${CMAKE_CURRENT_LIST_DIR}/Tests/CMakeLists.txt"))
+    enable_testing()
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/Tests)
+  endif()
 endif()

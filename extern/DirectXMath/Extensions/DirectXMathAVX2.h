@@ -9,7 +9,7 @@
 
 #pragma once
 
-#if defined(_M_ARM) || defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || __arm__ || __aarch64__
+#if defined(_M_ARM) || defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || defined(_M_ARM64EC) || __arm__ || __aarch64__
 #error AVX2 not supported on ARM platform
 #endif
 
@@ -479,7 +479,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiplyTranspose
 // Permute Templates
 //-------------------------------------------------------------------------------------
 
-namespace Internal
+namespace MathInternal
 {
     // Slow path fallback for permutes that do not map to a single SSE opcode.
     template<uint32_t Shuffle, bool WhichX, bool WhichY, bool WhichZ, bool WhichW> struct PermuteHelper
@@ -545,7 +545,7 @@ template<uint32_t PermuteX, uint32_t PermuteY, uint32_t PermuteZ, uint32_t Permu
     const bool WhichZ = PermuteZ > 3;
     const bool WhichW = PermuteW > 3;
 
-    return AVX2::Internal::PermuteHelper<Shuffle, WhichX, WhichY, WhichZ, WhichW>::Permute(V1, V2);
+    return AVX2::MathInternal::PermuteHelper<Shuffle, WhichX, WhichY, WhichZ, WhichW>::Permute(V1, V2);
 }
 
 // Special-case permute templates

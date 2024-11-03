@@ -141,8 +141,13 @@ TEST_SUITE("DVec3Tests")
 
 	TEST_CASE("TestDVec3Select")
 	{
+		const double cTrue2 = BitCast<double>(uint64(1) << 63);
+		const double cFalse2 = BitCast<double>(~uint64(0) >> 1);
+
 		CHECK(DVec3::sSelect(DVec3(1, 2, 3), DVec3(4, 5, 6), DVec3(DVec3::cTrue, DVec3::cFalse, DVec3::cTrue)) == DVec3(4, 2, 6));
 		CHECK(DVec3::sSelect(DVec3(1, 2, 3), DVec3(4, 5, 6), DVec3(DVec3::cFalse, DVec3::cTrue, DVec3::cFalse)) == DVec3(1, 5, 3));
+		CHECK(DVec3::sSelect(DVec3(1, 2, 3), DVec3(4, 5, 6), DVec3(cTrue2, cFalse2, cTrue2)) == DVec3(4, 2, 6));
+		CHECK(DVec3::sSelect(DVec3(1, 2, 3), DVec3(4, 5, 6), DVec3(cFalse2, cTrue2, cFalse2)) == DVec3(1, 5, 3));
 	}
 
 	TEST_CASE("TestDVec3BitOps")
@@ -171,6 +176,16 @@ TEST_SUITE("DVec3Tests")
 	TEST_CASE("TestDVec3Operators")
 	{
 		CHECK(-DVec3(1, 2, 3) == DVec3(-1, -2, -3));
+
+		DVec3 neg_zero = -DVec3::sZero();
+		CHECK(neg_zero == DVec3::sZero());
+
+	#ifdef JPH_CROSS_PLATFORM_DETERMINISTIC
+		// When cross platform deterministic, we want to make sure that -0 is represented as 0
+		CHECK(BitCast<uint64>(neg_zero.GetX()) == 0);
+		CHECK(BitCast<uint64>(neg_zero.GetY()) == 0);
+		CHECK(BitCast<uint64>(neg_zero.GetZ()) == 0);
+	#endif // JPH_CROSS_PLATFORM_DETERMINISTIC
 
 		CHECK(DVec3(1, 2, 3) + Vec3(4, 5, 6) == DVec3(5, 7, 9));
 		CHECK(DVec3(1, 2, 3) - Vec3(6, 5, 4) == DVec3(-5, -3, -1));

@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "_prelude.hpp"
 
@@ -14,11 +14,8 @@
 
 using graphics::graphics_subsystem;
 using platform::platform_subsystem;
+using namespace eastl::chrono;
 
-static constinit int s_window_pos_x = 0;
-static constinit int s_window_pos_y = 0;
-static constinit int s_window_width = 1280;
-static constinit int s_window_height = 720;
 static eastl::string s_tmp_proxy;
 
 LUA_INTEROP_API auto __lu_panic(const char* const msg) -> void {
@@ -34,7 +31,7 @@ LUA_INTEROP_API auto __lu_engine_version() -> std::uint32_t {
 }
 
 LUA_INTEROP_API auto __lu_app_is_focused() -> bool {
-    return glfwGetWindowAttrib(platform_subsystem::get_glfw_window(), GLFW_FOCUSED) == GLFW_TRUE;
+    return platform_subsystem::get_main_window().is_focused();
 }
 
 LUA_INTEROP_API auto __lu_app_is_ui_hovered() -> bool {
@@ -50,74 +47,59 @@ LUA_INTEROP_API auto __lu_app_hot_reload_shaders() -> void {
 }
 
 LUA_INTEROP_API auto __lu_window_maximize() -> void {
-    glfwMaximizeWindow(platform_subsystem::get_glfw_window());
+    platform_subsystem::get_main_window().maximize();
 }
 
 LUA_INTEROP_API auto __lu_window_minimize() -> void {
-    glfwIconifyWindow(platform_subsystem::get_glfw_window());
+    platform_subsystem::get_main_window().minimize();
 }
 
 LUA_INTEROP_API auto __lu_window_enter_fullscreen() -> void {
-    GLFWmonitor* mon = glfwGetPrimaryMonitor();
-    if (!mon) [[unlikely]] { return; }
-    const GLFWvidmode* mode = glfwGetVideoMode(mon);
-    if (!mode) [[unlikely]] { return; }
-    glfwGetWindowPos(platform_subsystem::get_glfw_window(), &s_window_pos_x, &s_window_pos_y);
-    glfwGetWindowSize(platform_subsystem::get_glfw_window(), &s_window_width, &s_window_height);
-    glfwSetWindowMonitor(platform_subsystem::get_glfw_window(), mon, 0, 0, mode->width, mode->height, GLFW_DONT_CARE);
+    platform_subsystem::get_main_window().enter_fullscreen();
 }
 
 LUA_INTEROP_API auto __lu_window_leave_fullscreen() -> void {
-    s_window_width = std::max(s_window_width, 1280);
-    s_window_height = std::max(s_window_height, 720);
-    glfwSetWindowMonitor(platform_subsystem::get_glfw_window(), nullptr,
-        s_window_pos_x, s_window_pos_y, s_window_width, s_window_height, GLFW_DONT_CARE);
+    platform_subsystem::get_main_window().exit_fullscreen();
 }
 
 LUA_INTEROP_API auto __lu_window_set_title(const char* const title) -> void {
-    glfwSetWindowTitle(platform_subsystem::get_glfw_window(), title);
+    platform_subsystem::get_main_window().set_title(title);
 }
 
 LUA_INTEROP_API auto __lu_window_set_size(const int width, const int height) -> void {
-    glfwSetWindowSize(platform_subsystem::get_glfw_window(), width, height);
+    platform_subsystem::get_main_window().set_size({width, height});
 }
 
 LUA_INTEROP_API auto __lu_window_set_pos(const int x, const int y) -> void {
-    glfwSetWindowPos(platform_subsystem::get_glfw_window(), x, y);
+    platform_subsystem::get_main_window().set_pos({x, y});
 }
 
 LUA_INTEROP_API auto __lu_window_show() -> void {
-    glfwShowWindow(platform_subsystem::get_glfw_window());
+    platform_subsystem::get_main_window().show();
 }
 
 LUA_INTEROP_API auto __lu_window_hide() -> void {
-    glfwHideWindow(platform_subsystem::get_glfw_window());
+    platform_subsystem::get_main_window().hide();
 }
 
 LUA_INTEROP_API auto __lu_window_allow_resize(const bool allow) -> void {
-    glfwSetWindowAttrib(platform_subsystem::get_glfw_window(), GLFW_RESIZABLE, allow);
+    platform_subsystem::get_main_window().set_resizeable(allow);
 }
 
 LUA_INTEROP_API auto __lu_window_get_size() -> lua_vec2 {
-    int width, height;
-    glfwGetWindowSize(platform_subsystem::get_glfw_window(), &width, &height);
-    return lua_vec2 { static_cast<float>(width), static_cast<float>(height) };
+    return lua_vec2{platform_subsystem::get_main_window().get_size()};
 }
 
 LUA_INTEROP_API auto __lu_window_get_framebuf_size() -> lua_vec2 {
-    int width, height;
-    glfwGetFramebufferSize(platform_subsystem::get_glfw_window(), &width, &height);
-    return lua_vec2 { static_cast<float>(width), static_cast<float>(height) };
+    return lua_vec2{platform_subsystem::get_main_window().get_framebuffer_size()};
 }
 
 LUA_INTEROP_API auto __lu_window_get_pos() -> lua_vec2 {
-    int x, y;
-    glfwGetWindowPos(platform_subsystem::get_glfw_window(), &x, &y);
-    return lua_vec2 { static_cast<float>(x), static_cast<float>(y) };
+   return lua_vec2{platform_subsystem::get_main_window().get_pos()};
 }
 
 LUA_INTEROP_API auto __lu_window_enable_cursor(const bool enable) -> void {
-    glfwSetInputMode(platform_subsystem::get_glfw_window(), GLFW_CURSOR, enable ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+    platform_subsystem::get_main_window().set_cursor_mode(enable);
 }
 
 LUA_INTEROP_API auto __lu_app_exit() -> void {
@@ -179,4 +161,41 @@ LUA_INTEROP_API auto __lu_app_open_folder_dialog(const char* default_path) -> co
         return s_tmp_proxy.c_str();
     }
     return "";
+}
+
+LUA_INTEROP_API auto __lu_app_get_subsystem_names(const char **data, const int size) -> std::uint32_t {
+    const auto& kern = kernel::get();
+    const auto& systems = kern.get_subsystems();
+    panic_assert(size >= systems.size());
+    for (std::size_t i = 0; i < systems.size(); ++i) {
+        data[i] = systems[i]->name.c_str();
+    }
+    return systems.size();
+}
+
+LUA_INTEROP_API auto __lu_app_get_subsystem_pre_tick_times(double* const data, const int size) -> void {
+    const auto& kern = kernel::get();
+    const auto& systems = kern.get_subsystems();
+    panic_assert(size >= systems.size());
+    for (std::size_t i = 0; i < systems.size(); ++i) {
+        data[i] = duration_cast<duration<double, eastl::milli>>(systems[i]->prev_pre_tick_time()).count();
+    }
+}
+
+LUA_INTEROP_API auto __lu_app_get_subsystem_tick_times(double* const data, const int size) -> void {
+    const auto& kern = kernel::get();
+    const auto& systems = kern.get_subsystems();
+    panic_assert(size >= systems.size());
+    for (std::size_t i = 0; i < systems.size(); ++i) {
+        data[i] = duration_cast<duration<double, eastl::milli>>(systems[i]->prev_tick_time()).count();
+    }
+}
+
+LUA_INTEROP_API auto __lu_app_get_subsystem_post_tick_times(double* const data, const int size) -> void {
+    const auto& kern = kernel::get();
+    const auto& systems = kern.get_subsystems();
+    panic_assert(size >= systems.size());
+    for (std::size_t i = 0; i < systems.size(); ++i) {
+        data[i] = duration_cast<duration<double, eastl::milli>>(systems[i]->prev_post_tick_time()).count();
+    }
 }

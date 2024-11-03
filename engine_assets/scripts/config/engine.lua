@@ -4,6 +4,7 @@
 
 local jit = require 'jit'
 local ffi = require 'ffi'
+local min, max, ceil = math.min, math.max, math.ceil
 ffi.cdef[[
     uint32_t __lu_app_host_get_num_cpus(void);
 ]]
@@ -30,88 +31,95 @@ local ui_tesselation_error = {
     high = 0.2 -- high quality
 }
 
--- Default engine config. Most of the variables are used on initialization and runtime changes might require a restart.
+-- Global engine config. Table might be extended at runtime.
+-- Most of the variables are used on initialization and runtime changes might require a restart.
 -- Do NOT rename any variables in here, as some these are accessed from C++ code.
 engine_cfg = {
-    system = {
-        enable_editor = true, -- Enable the editor.
-        enable_debug = true, -- Enable debugdraw mode.
-        enable_jit = true, -- Enable Just-In-time compilation.
-        enable_jit_disasm = false, -- Enable JIT assembly dump to jit.log output file.
-        enable_fs_validation = true, -- Enable filesystem validation.
-        auto_gc_time_stepping = false, -- Enable smart garbage collection stepping based on framerate.
-        auto_gc_time_stepping_step_limit = 0.01, -- Variable number of seconds to reserve for other things that won’t be caught in diff (experimented with everywhere from 0.002 to 0.01).
-        target_fps = 0, -- Target framerate. Set to 0 to set to the display refresh rate.
+    ['system'] = {
+        ['enable_editor'] = false, -- Enable the editor.
+        ['enable_debug'] = true, -- Enable debugdraw mode.
+        ['enable_jit'] = true, -- Enable Just-In-time compilation.
+        ['enable_jit_disasm'] = false, -- Enable JIT assembly dump to jit.log output file.
+        ['enable_fs_validation'] = true, -- Enable filesystem validation.
+        ['auto_gc_time_stepping'] = false, -- Enable smart garbage collection stepping based on framerate.
+        ['auto_gc_time_stepping_step_limit'] = 0.01, -- Variable number of seconds to reserve for other things that won’t be caught in diff (experimented with everywhere from 0.002 to 0.01).
+        ['target_fps'] = 0, -- Target framerate. Set to 0 to set to the display refresh rate.
     },
-    cpu = {
+    ['cpu'] = {
         -- Lunam gives 1/4 of the CPU threads to rendering, 1/4 to physics and 1/4 to simulation (ECS), if partition_denominator == 4 for example.
         -- The rest is used for audio and scene loading threads and for other software running on the system.
         -- The total amount of threads is capped at MAX_TOTAL_ENGINE_THREADS (if ~= 0)
 
-        auto_thread_partitioning = true, -- Automatically partition the engine thread count.
-        max_engine_threads = 16, -- Maximum total engine threads for ecs, rendering and physics. (Except audio and scene loading threads, which are created on demand). Set to 0 to use the number of logical cores.
-        partition_denominator = 4, -- The ratio of threads to use for rendering, physics and ECS. The rest will be used for audio and scene loading threads.
-        max_render_threads = 8, -- Maximum render threads.
-        max_physics_threads = 8, -- Maximum physics threads.
-        max_sim_threads = 8, -- Maximum simulation threads.
-        render_threads = 8, -- Number of render threads.
-        physics_threads = 8, -- Number of physics threads.
-        simulation_threads = 8, -- Number of simulation threads.
+        ['auto_thread_partitioning'] = true, -- Automatically partition the engine thread count.
+        ['max_engine_threads'] = 16, -- Maximum total engine threads for ecs, rendering and physics. (Except audio and scene loading threads, which are created on demand). Set to 0 to use the number of logical cores.
+        ['partition_denominator'] = 4, -- The ratio of threads to use for rendering, physics and ECS. The rest will be used for audio and scene loading threads.
+        ['max_render_threads'] = 8, -- Maximum render threads.
+        ['max_physics_threads'] = 8, -- Maximum physics threads.
+        ['max_sim_threads'] = 8, -- Maximum simulation threads.
+        ['render_threads'] = 8, -- Number of render threads.
+        ['physics_threads'] = 8, -- Number of physics threads.
+        ['simulation_threads'] = 8, -- Number of simulation threads.
     },
-    window = {
-        default_width = 1920, -- Default window width.
-        default_height = 1080, -- Default window height.
-        min_width = 640, -- Minimum window width.
-        min_height = 480, -- Minimum window height.
-        icon = '/engine_assets/icons/logo.png' -- window icon image file.
+    ['window'] = {
+        ['default_width'] = 1920, -- Default window width.
+        ['default_height'] = 1080, -- Default window height.
+        ['min_width'] = 640, -- Minimum window width.
+        ['min_height'] = 480, -- Minimum window height.
+        ['icon'] = '/RES/icons/logo.png' -- window icon image file.
     },
-    renderer = {
-        shader_dir = 'engine_assets/shaders/src', -- Shader directory.
-        enable_parallel_shader_compilation = true, -- Enable shader compilation using multiple threads.
-        enable_vulkan_validation_layers = true, -- Enable Vulkan validation layers, if available.
-        max_debug_draw_vertices = 0x20000, -- Maximum amount of debugdraw draw vertices.
-        error_texture = '/engine_assets/textures/system/error.png', -- Fallback texture when a texture is not found.
-        brdf_lut_dim = 512, -- Width and height of the PBR BRDF integration LUT texture: LUT x LUT.
-        irradiance_cube_size = 64,
-        prefiltered_cube_size = 512,
-        prefiltered_cube_samples = 32,
-        concurrent_frames = 3,
-        force_vsync = false, -- Enable vertical synchronization.
+    ['renderer'] = {
+        ['shader_dir'] = 'engine_assets/shaders/src', -- Shader directory.
+        ['enable_parallel_shader_compilation'] = true, -- Enable shader compilation using multiple threads.
+        ['enable_vulkan_validation_layers'] = true, -- Enable Vulkan validation layers, if available.
+        ['max_debug_draw_vertices'] = 0x20000, -- Maximum amount of debugdraw draw vertices.
+        ['error_texture'] = '/RES/textures/system/error.png', -- Fallback texture when a texture is not found.
+        ['fallback_texture_w'] = '/RES/textures/system/fallback_white.png',
+        ['fallback_texture_b'] = '/RES/textures/system/fallback_black.png',
+        ['brdf_lut_dim'] = 512, -- Width and height of the PBR BRDF integration LUT texture: LUT x LUT.
+        ['irradiance_cube_size'] = 64,
+        ['prefiltered_cube_size'] = 512,
+        ['prefiltered_cube_samples'] = 32,
+        ['concurrent_frames'] = 3,
+        ['force_vsync'] = false, -- Enable vertical synchronization.
+        ['parallel_pipeline_creation'] = false
     },
-    ui = { -- In-Game UI settings.
-        render_flags = ui_render_flags.lcd + ui_render_flags.flip_y + ui_render_flags.ppaa, -- In-Game UI default render flags.
-        tesselation_error = ui_tesselation_error.high, -- In-Game UI tesselation pixel error quality.
-        license = {
-            id = 'neo',
-            key = 'Hayg7oXhoO5LHKuI/YPxXOK/Ghu5Mosoic3bbRrVZQmc/ovw'
+    ['ui'] = { -- In-Game UI settings.
+        ['render_flags'] = ui_render_flags.lcd + ui_render_flags.flip_y + ui_render_flags.ppaa, -- In-Game UI default render flags.
+        ['tesselation_error'] = ui_tesselation_error.high, -- In-Game UI tesselation pixel error quality.
+        ['license'] = {
+            ['id'] = 'neo',
+            ['key'] = 'Hayg7oXhoO5LHKuI/YPxXOK/Ghu5Mosoic3bbRrVZQmc/ovw'
         },
-        xaml_root_path = 'assets/ui',
-        font_root_path = 'assets/ui',
-        texture_root_path = 'assets/ui',
-        default_font = {
-            family = 'Fonts/#PT Root UI',
-            size = 15.0,
-            weight = 400,
-            stretch = 5
+        ['xaml_root_path'] = 'assets/ui',
+        ['font_root_path'] = 'assets/ui',
+        ['texture_root_path'] = 'assets/ui',
+        ['default_font'] = {
+            ['family'] = 'Fonts/#PT Root UI',
+            ['size'] = 15.0,
+            ['weight'] = 400,
+            ['stretch'] = 5
         }
     },
-    physics = {
-        temp_allocator_buffer_size = (1024 ^ 2) * 64, -- 64 MB
-        max_rigid_bodies = (2 ^ 16) - 1, -- Max amount of rigid bodies that you can add to the physics system. If you try to add more you'll get an error.
-        mutex_count = 0, -- how many mutexes to allocate to protect rigid bodies from concurrent access. Set it to 0 for the default settings.
+    ['physics'] = {
+        ['temp_allocator_buffer_size'] = 64 * (1024 ^ 2), -- 64 MB
+        ['max_rigid_bodies'] = 2 ^ 16, -- Max amount of rigid bodies that you can add to the physics system. If you try to add more you'll get an error.
+        ['mutex_count'] = 0, -- how many mutexes to allocate to protect rigid bodies from concurrent access. Set it to 0 for the default settings.
 
         -- This is the max amount of body pairs that can be queued at any time (the broad phase will detect overlapping
         -- body pairs based on their bounding boxes and will insert them into a queue for the narrowphase). If you make this buffer
         -- too small the queue will fill up and the broad phase jobs will start to do narrow phase work. This is slightly less efficient.
-        max_body_pairs = (2 ^ 16) - 1,
+        ['max_body_pairs'] = 2 ^ 16,
 
         -- This is the maximum size of the contact constraint buffer. If more contacts (collisions between bodies) are detected than this
         -- number then these contacts will be ignored and bodies will start interpenetrating / fall through the world.
-        max_contacts = (2 ^ 16) - 1,
+        ['max_contacts'] = 2 ^ 16,
     },
-    editor = { -- Editor UI settings.
-        font_size = 18, -- Font size
-        style = {
+    ['audio'] = {
+        ['max_channels'] = 1024
+    },
+    ['editor'] = { -- Editor UI settings.
+        ['font_size'] = 18, -- Font size
+        ['style'] = {
             windowPadding            = { x = 8.00, y = 8.00 },
             framePadding             = { x = 5.00, y = 2.00 },
             cellPadding              = { x = 6.00, y = 6.00 },
@@ -193,31 +201,32 @@ engine_cfg = {
     }
 }
 
-function engine_cfg:adjust_config_for_local_machine()
+local function clamp(x, min_x, max_x)
+    return min(max(x, min_x), max_x)
+end
+
+local function adjust_config_for_local_machine()
     if jit.os == 'OSX' then
-        self.editor.font_size = 2 * self.editor.font_size
-        self.system.enable_jit = false -- Disable JIT on OSX for now, see: https://github.com/LuaJIT/LuaJIT/issues/285
+        engine_cfg['system']['enable_jit'] = false
+        engine_cfg['editor']['font_size'] = 2 * engine_cfg['editor']['font_size']
     end
 
-    if self.cpu.auto_thread_partitioning then
-        local threads = self.cpu
-        local function clamp(x, min, max)
-            return math.min(math.max(x, min), max)
-        end
-        local cpus = math.max(1, ffi.C.__lu_app_host_get_num_cpus())
+    if engine_cfg['cpu']['auto_thread_partitioning'] then
+        local cpu = engine_cfg['cpu']
+        local cpus = max(1, ffi.C.__lu_app_host_get_num_cpus())
         print(string.format('Detected %d logical cores.', cpus))
-        if threads.max_engine_threads > 0 then
-            cpus = math.min(cpus, threads.max_engine_threads)
+        if cpu['max_engine_threads'] > 0 then
+            cpus = min(cpus, cpu['max_engine_threads'])
         end
-        local ratio = math.max(1, threads.partition_denominator)
-        threads.render_threads = clamp(math.ceil(cpus / ratio), 1, threads.max_render_threads)
-        threads.physics_threads = clamp(math.ceil(cpus / ratio), 1, threads.max_physics_threads)
-        threads.simulation_threads = clamp(math.ceil(cpus / ratio), 1, threads.max_sim_threads)
+        local ratio = max(1, cpu['partition_denominator'])
+        cpu['render_threads'] = clamp(ceil(cpus / ratio), 1, cpu['max_render_threads'])
+        cpu['physics_threads'] = clamp(ceil(cpus / ratio), 1, cpu['max_physics_threads'])
+        cpu['simulation_threads'] = clamp(ceil(cpus / ratio), 1, cpu['max_sim_threads'])
         print(string.format(
             'Auto-partitioned engine thread count: Total %d threads, %d render threads, %d physics threads, %d ECS threads.',
-            cpus, threads.render_threads, threads.physics_threads, threads.simulation_threads
+            cpus, cpu['render_threads'], cpu['physics_threads'], cpu['simulation_threads']
         ))
     end
 end
 
-engine_cfg:adjust_config_for_local_machine() -- Adjust some engine config values for the local machine the engine is running on
+adjust_config_for_local_machine() -- Adjust some engine config values for the local machine the engine is running on

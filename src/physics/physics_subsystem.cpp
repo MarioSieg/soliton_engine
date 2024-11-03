@@ -1,7 +1,8 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "physics_subsystem.hpp"
 #include "../core/kernel.hpp"
+#include "../scene/scene_mgr.hpp"
 #include "layerdef.hpp"
 #include "broad_phase_layer.hpp"
 #include "broad_phase_layer_filter.hpp"
@@ -58,6 +59,9 @@ namespace lu::physics {
 #if USE_MIMALLOC
         JPH::Allocate = +[](const std::size_t size) -> void* {
               return mi_malloc(size);
+        };
+        JPH::Reallocate = +[](void* ptr, const std::size_t old, const std::size_t size) -> void* {
+            return mi_realloc(ptr, size);
         };
         JPH::Free = +[](void* ptr) -> void {
             mi_free(ptr);
@@ -131,49 +135,34 @@ namespace lu::physics {
 			settings->mSupportingVolume = JPH::Plane(JPH::Vec3::sAxisY(), -cCharacterRadiusStanding); // Accept contacts that touch the lower sphere of the capsule
 			JPH::Ref<JPH::Character> character = new JPH::Character(settings, {}, JPH::Quat::sIdentity(), 0, &m_physics_system);
 			character->AddToPhysicsSystem(JPH::EActivation::Activate);
+    		if (cc.phys_character) {
+    			cc.phys_character->RemoveFromPhysicsSystem();
+    			cc.phys_character = nullptr;
+    		}
 			cc.phys_character = character;
 		});
 
     	scene.observer<com::character_controller>().event(flecs::OnRemove).each([&](com::character_controller& cc) {
-    		cc.phys_character->RemoveFromPhysicsSystem();
+			cc.phys_character->RemoveFromPhysicsSystem();
+    		cc.phys_character = nullptr;
 		});
 
 		log_info("Creating static colliders...");
 
-    	auto filter = scene.filter<const com::transform, const com::mesh_renderer>();
+    	auto filter = scene.query<const com::transform, const com::mesh_renderer>();
 		eastl::vector<eastl::pair<eastl::span<const com::transform>, eastl::span<const com::mesh_renderer>>> targets {};
     	std::size_t total = 0;
-    	filter.iter([&](flecs::iter i, const com::transform* transform, const com::mesh_renderer* renderer) {
-    		const std::size_t n = i.count();
-    		total += n;
-    		targets.emplace_back(eastl::span{transform, n}, eastl::span{renderer, n});
+        for (auto old_body : m_static_bodies) {
+            bi.RemoveBody(old_body);
+        }
+        m_static_bodies.clear();
+    	filter.each([&](const com::transform& transform, const com::mesh_renderer& renderer) {
+            if (!renderer.meshes.empty()) [[likely]] {
+                JPH::BodyCreationSettings ci {};
+                create_static_body(ci, transform, renderer);
+                m_static_bodies.emplace_back(bi.CreateAndAddBody(ci, JPH::EActivation::DontActivate));
+            }
 		});
-    	eastl::vector<JPH::BodyID> bodies {};
-    	bodies.resize(total);
-    	for (std::size_t base_idx = 0; auto&& target : targets) {
-    		const auto& transforms = target.first;
-    		const auto& renderers = target.second;
-			passert(transforms.size() == renderers.size());
-            const auto exector = [&](const com::transform& transform) {
-                const auto index = &transform - &transforms.front();
-                const auto& renderer = renderers[index];
-                if (!renderer.meshes.empty()) [[likely]] {
-                    JPH::BodyCreationSettings ci {};
-                    create_static_body(ci, transform, renderer);
-                    bodies[base_idx + index] = bi.CreateAndAddBody(ci, JPH::EActivation::DontActivate);
-                }
-            };
-#if PLATFORM_OSX
-            std::for_each(std::begin(transforms), std::end(transforms), exector);
-#else
-            std::for_each(std::execution::par_unseq, std::begin(transforms), std::end(transforms), exector);
-#endif
-    	}
-    	for (auto old_body : m_static_bodies) {
-    		bi.RemoveBody(old_body);
-    	}
-        m_static_bodies = std::move(bodies);
-
         log_info("Optimizing broadphase...");
     	m_physics_system.OptimizeBroadPhase();
     }
@@ -187,21 +176,21 @@ namespace lu::physics {
 
 	// Sync transforms from physics to game objects
     auto physics_subsystem::post_sync() const -> void {
-    	auto& active = scene::get_active();
+    	auto& active = scene_mgr::active();
     	JPH::BodyInterface& bi = m_physics_system.GetBodyInterface();
 
     	// sync loop 1 rigidbody => transform
-    	active.filter<const com::rigidbody, com::transform>().each([&](const com::rigidbody& rb, com::transform& transform) {
+    	active.query<const com::rigidbody, com::transform>().each([&](const com::rigidbody& rb, com::transform& transform) {
 			const JPH::BodyID body_id = rb.phys_body;
-			transform.position = eastl::bit_cast<DirectX::XMFLOAT4>(bi.GetPosition(body_id));
-			transform.rotation = eastl::bit_cast<DirectX::XMFLOAT4>(bi.GetRotation(body_id));
+			transform.position = eastl::bit_cast<XMFLOAT4>(bi.GetPosition(body_id));
+			transform.rotation = eastl::bit_cast<XMFLOAT4>(bi.GetRotation(body_id));
 		});
 
     	// sync loop 2 character controller => transform
-    	active.filter<const com::character_controller, com::transform>().each([&](const com::character_controller& cc, com::transform& transform) {
+    	active.query<const com::character_controller, com::transform>().each([&](const com::character_controller& cc, com::transform& transform) {
 			cc.phys_character->PostSimulation(0.05f);
-    		transform.position = eastl::bit_cast<DirectX::XMFLOAT4>(cc.phys_character->GetPosition());
-			transform.rotation = eastl::bit_cast<DirectX::XMFLOAT4>(cc.phys_character->GetPosition());
+    		transform.position = eastl::bit_cast<XMFLOAT4>(cc.phys_character->GetPosition());
+			transform.rotation = eastl::bit_cast<XMFLOAT4>(cc.phys_character->GetPosition());
 		});
     }
 
@@ -217,13 +206,13 @@ namespace lu::physics {
         }
         JPH::Shape::ShapeResult result {};
         JPH::Vec3 pos;
-        static_assert(sizeof(pos) == sizeof(DirectX::XMFLOAT3A));
-        DirectX::XMStoreFloat3(reinterpret_cast<DirectX::XMFLOAT3A*>(&pos), DirectX::XMLoadFloat4(&transform.position));
+        static_assert(sizeof(pos) == sizeof(XMFLOAT3A));
+        XMStoreFloat3(reinterpret_cast<XMFLOAT3A*>(&pos), XMLoadFloat4(&transform.position));
         JPH::Quat rot;
-        static_assert(sizeof(rot) == sizeof(DirectX::XMFLOAT4));
-        DirectX::XMStoreFloat4(reinterpret_cast<DirectX::XMFLOAT4*>(&rot), DirectX::XMQuaternionNormalize(DirectX::XMLoadFloat4(&transform.rotation)));
-        DirectX::XMFLOAT3A scale {};
-        DirectX::XMStoreFloat3A(&scale, DirectX::XMLoadFloat4(&transform.scale));
+        static_assert(sizeof(rot) == sizeof(XMFLOAT4));
+        XMStoreFloat4(reinterpret_cast<XMFLOAT4*>(&rot), XMQuaternionNormalize(XMLoadFloat4(&transform.rotation)));
+        XMFLOAT3A scale {};
+        XMStoreFloat3A(&scale, XMLoadFloat4(&transform.scale));
         ci = {
             new JPH::ScaledShape{mesh->get_collision_mesh()->data(), eastl::bit_cast<JPH::Vec3>(scale)},
             pos,

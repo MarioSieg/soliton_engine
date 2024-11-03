@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "temporal_blue_noise.hpp"
 #include "vulkancore/context.hpp"
@@ -61,7 +61,7 @@ namespace lu::graphics {
                 vk::ShaderStageFlagBits::eFragment
             );
         }
-        passert(factory.build(set, layout));
+        panic_assert(factory.build(set, layout));
     }
 
     temporal_blue_noise::temporal_blue_noise() {

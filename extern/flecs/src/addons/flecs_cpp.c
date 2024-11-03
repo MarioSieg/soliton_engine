@@ -98,12 +98,9 @@ char* ecs_cpp_get_symbol_name(
     const char *type_name,
     size_t len)
 {
-    // Symbol is same as name, but with '::' replaced with '.'
-    ecs_os_strcpy(symbol_name, type_name);
-
-    char *ptr;
+    const char *ptr;
     size_t i;
-    for (i = 0, ptr = symbol_name; i < len && *ptr; i ++, ptr ++) {
+    for (i = 0, ptr = type_name; i < len && *ptr; i ++, ptr ++) {
         if (*ptr == ':') {
             symbol_name[i] = '.';
             ptr ++;
@@ -186,9 +183,12 @@ const char* ecs_cpp_trim_module(
         if (!ecs_os_strncmp(path, type_name, len)) {
             // Type is a child of current parent, trim name of parent
             type_name += len;
-            ecs_assert(type_name[0], ECS_INVALID_PARAMETER, NULL);
-            ecs_assert(type_name[0] == ':', ECS_INVALID_PARAMETER, NULL);
-            ecs_assert(type_name[1] == ':', ECS_INVALID_PARAMETER, NULL);
+            ecs_assert(type_name[0], ECS_INVALID_PARAMETER, 
+                "invalid C++ type name");
+            ecs_assert(type_name[0] == ':', ECS_INVALID_PARAMETER,
+                "invalid C++ type name");
+            ecs_assert(type_name[1] == ':', ECS_INVALID_PARAMETER,
+                "invalid C++ type name");
             type_name += 2;
         } else {
             // Type is not a child of current parent, trim entire path
@@ -242,7 +242,7 @@ void ecs_cpp_component_validate(
     } else {
         /* Ensure that the entity id valid */
         if (!ecs_is_alive(world, id)) {
-            ecs_ensure(world, id);
+            ecs_make_alive(world, id);
         }
 
         /* Register name with entity, so that when the entity is created the
@@ -318,7 +318,7 @@ ecs_entity_t ecs_cpp_component_register(
                  * The latter ensures that it was the intent of the application
                  * to alias the type, vs. accidentally registering an unrelated
                  * type with the same size/alignment. */
-                char *type_path = ecs_get_fullpath(world, ent);
+                char *type_path = ecs_get_path(world, ent);
                 if (ecs_os_strcmp(type_path, symbol) || 
                     component->size != size || 
                     component->alignment != alignment) 
@@ -399,14 +399,16 @@ ecs_entity_t ecs_cpp_component_register_explicit(
             .symbol = symbol,
             .use_low_id = true
         });
-        ecs_assert(entity != 0, ECS_INVALID_OPERATION, NULL);
+        ecs_assert(entity != 0, ECS_INVALID_OPERATION, 
+            "registration failed for component %s", name);
 
         entity = ecs_component_init(world, &(ecs_component_desc_t){
             .entity = entity,
             .type.size = flecs_uto(int32_t, size),
             .type.alignment = flecs_uto(int32_t, alignment)
         });
-        ecs_assert(entity != 0, ECS_INVALID_OPERATION, NULL);
+        ecs_assert(entity != 0, ECS_INVALID_OPERATION, 
+            "registration failed for component %s", name);
     } else {
         entity = ecs_entity(world, {
             .id = s_id,
@@ -503,7 +505,7 @@ const ecs_member_t* ecs_cpp_last_member(
 {
     const EcsStruct *st = ecs_get(world, type, EcsStruct);
     if (!st) {
-        char *type_str = ecs_get_fullpath(world, type);
+        char *type_str = ecs_get_path(world, type);
         ecs_err("entity '%s' is not a struct", type_str);
         ecs_os_free(type_str);
         return 0;

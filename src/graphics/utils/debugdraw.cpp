@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "debugdraw.hpp"
 
@@ -884,18 +884,17 @@ namespace lu::graphics {
         FXMVECTOR view_pos
     ) -> void {
         if (!m_vertices.empty()) {
-            const std::uint32_t frameidx = vkb::ctx().get_current_frame();
-            uniform uniform_data {};
+            const std::uint32_t frameidx = vkb::ctx().get_current_concurrent_frame_idx();
+            uniform_data uniform_data {};
             XMStoreFloat4x4A(&uniform_data.view_proj, view_proj);
-            auto* uptr = static_cast<std::uint8_t*>(m_uniform->get_mapped_ptr());
-            std::memcpy(uptr + sizeof(uniform_data) * frameidx, &uniform_data, sizeof(uniform_data));
+            m_uniform->set(uniform_data);
             if (m_vertices.size() > k_max_vertices) [[unlikely]] {
                 log_error("Too many vertices: {}, max: {}", m_vertices.size(), k_max_vertices);
             } else {
                 auto* vptr = static_cast<std::uint8_t*>(m_vertex_buffer->get_mapped_ptr());
                 std::memcpy(vptr + sizeof(vertex) * k_max_vertices * frameidx, m_vertices.data(), sizeof(vertex) * m_vertices.size());
             }
-            std::uint32_t dynamic_offset = sizeof(uniform) * frameidx;
+            std::uint32_t dynamic_offset = m_uniform->get_dynamic_aligned_size() * frameidx;
             cmd.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, m_pipeline_layout, 0, 1, &m_descriptor_set, 1, &dynamic_offset);
             const vk::DeviceSize vbo_offset = sizeof(vertex) * k_max_vertices * frameidx;
             cmd.bindVertexBuffers(0, 1, &m_vertex_buffer->get_buffer(), &vbo_offset);
@@ -948,6 +947,38 @@ namespace lu::graphics {
         if (m_batched_mode) {
             m_batch_end = m_vertices.size();
         }
+    }
+
+    auto debugdraw::draw_arrow(const XMFLOAT3& from, const XMFLOAT3& to, const XMFLOAT3& color, const float arrowhead_length) -> void {
+        draw_line(from, to, color);
+        XMVECTOR fromVec = XMLoadFloat3(&from);
+        XMVECTOR toVec = XMLoadFloat3(&to);
+        XMVECTOR dir = XMVectorSubtract(toVec, fromVec);
+        XMVECTOR dirNormalized = XMVector3Normalize(dir);
+        XMVECTOR arrowheadDir = XMVectorScale(dirNormalized, arrowhead_length);
+        XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+        XMVECTOR perp1 = XMVector3Cross(dirNormalized, up);
+        perp1 = XMVector3Normalize(perp1);
+        float angle_step = XM_PIDIV4;  // 45 degrees in radians
+        for (int i = 0; i < 16; ++i) {
+            XMVECTOR rotation = XMQuaternionRotationAxis(dirNormalized, angle_step * static_cast<float>(i));
+            XMVECTOR rotatedPerp = XMVector3Rotate(perp1, rotation);
+            XMVECTOR perpScaled = XMVectorScale(rotatedPerp, 0.1f);  // Adjust width of the arrowhead
+            XMVECTOR arrowheadPoint = XMVectorSubtract(toVec, arrowheadDir);
+            arrowheadPoint = XMVectorAdd(arrowheadPoint, perpScaled);
+            XMFLOAT3 arrowheadPointFloat;
+            XMStoreFloat3(&arrowheadPointFloat, arrowheadPoint);
+            draw_line(to, arrowheadPointFloat, color);
+        }
+    }
+
+    auto debugdraw::draw_arrow_dir(const XMFLOAT3& from, const XMFLOAT3& dir, const XMFLOAT3& color, const float arrowhead_length) -> void {
+        XMVECTOR fromVec = XMLoadFloat3(&from);
+        XMVECTOR dirVec = XMLoadFloat3(&dir);
+        XMVECTOR toVec = XMVectorAdd(fromVec, dirVec);
+        XMFLOAT3 to;
+        XMStoreFloat3(&to, toVec);
+        draw_arrow(from, to, color, arrowhead_length);
     }
 
     auto debugdraw::draw_grid(const XMFLOAT3& pos, const float step, const XMFLOAT3& color) -> void {
@@ -1020,7 +1051,6 @@ namespace lu::graphics {
         draw_line(verts[3], verts[7], color);
     }
 
-
     auto debugdraw::draw_transform(FXMMATRIX mtx, const float axis_len) -> void {
         XMVECTOR scale, rotation, translation;
         XMMatrixDecompose(&scale, &rotation, &translation, mtx);
@@ -1043,24 +1073,18 @@ namespace lu::graphics {
         vk::DescriptorBufferInfo buffer_info {};
         buffer_info.buffer = m_uniform->get_buffer();
         buffer_info.offset = 0;
-        buffer_info.range = sizeof(uniform);
+        buffer_info.range = m_uniform->get_dynamic_aligned_size();
         factory.bind_buffers(0, 1, &buffer_info, vk::DescriptorType::eUniformBufferDynamic, vk::ShaderStageFlagBits::eVertex);
-        passert(factory.build(m_descriptor_set, m_descriptor_set_layout));
+        panic_assert(factory.build(m_descriptor_set, m_descriptor_set_layout));
     }
 
     auto debugdraw::create_uniform_buffer() -> void {
-        m_uniform.emplace(
-            sizeof(uniform) * vkb::ctx().get_concurrent_frames(),
-            0,
-            vk::BufferUsageFlagBits::eUniformBuffer,
-            VMA_MEMORY_USAGE_CPU_TO_GPU,
-            VMA_ALLOCATION_CREATE_MAPPED_BIT
-        );
+        m_uniform.emplace();
     }
 
     auto debugdraw::create_vertex_buffer() -> void {
         m_vertex_buffer.emplace(
-           sizeof(vertex) * k_max_vertices * vkb::ctx().get_concurrent_frames(),
+           sizeof(vertex) * k_max_vertices * vkb::ctx().get_concurrent_frame_count(),
            0,
            vk::BufferUsageFlagBits::eVertexBuffer,
            VMA_MEMORY_USAGE_CPU_TO_GPU,

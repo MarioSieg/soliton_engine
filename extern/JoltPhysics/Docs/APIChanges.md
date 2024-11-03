@@ -4,8 +4,36 @@ This document lists all breaking API changes by date and by release tag. Note th
 
 Changes that make some state saved through SaveBinaryState from a prior version of the library unreadable by the new version is marked as *SBS*. See [Saving Shapes](https://jrouwe.github.io/JoltPhysics/#saving-shapes) for further information.
 
-## Changes between v4.0.2 and latest
+## Changes between v5.1.0 and latest
 
+* 20240927 - PhysicsStepListener::OnStep now takes a single PhysicsStepListenerContext parameter. The old parameters 'delta time' and 'physics system' are part of this context. The VehicleConstraint step callbacks use the same context. (8153cd854ce0547b2def425118e1e2f68a9e365c)
+* 20240922 - SoftBodyManifold now has a separate interface to return collisions with sensors (GetNumSensorContacts/GetSensorContactBodyID), this means they can no longer be retrieved through GetContactBodyID. (4058e6a72edc6e11630b3ec6b67d97e2b9324473)
+* 20240922 - The interface of Shape::CollideSoftBodyVertices changed. It no longer takes a list of SoftBodyVertex but instead uses CollideSoftBodyVertexIterator. Also the delta time and displacement due to gravity parameters have been removed. If you have custom shapes, you need to update the signature. (4058e6a72edc6e11630b3ec6b67d97e2b9324473)
+* 20240825 - RayCastSettings::mBackFaceMode was split into mBackFaceModeTriangles and mBackFaceModeConvex. Replace `mBackFaceMode = ...` with `SetBackFaceMode(...)` (b3cd9f4846c52a84064b7e5e9a9a9fcbfdf286de)
+* 20240823 - Added virtual function Shape::GetLeafShape. If you have custom shapes, you may need to override this function and provide an implementation. (d7f08b83670ea6d0842e231f50ad2a175f56f949)
+
+## Changes between v5.0.0 and v5.1.0
+
+* 20240811 - Added cmake options to toggle exception-handling and RTTI. CPP_EXCEPTIONS_ENABLED enables exceptions, CPP_RTTI_ENABLED enables RTTI. Before this change RTTI was off for MSVC and on for other compilers. Exceptions were on for all builds. You may need to set these options if your build relies on these C++ features. (760974d733ed24ea268a3bb9a8ef391b8ac503c7)
+* 20240803 - *SBS* - Removed the use of size_t when saving to binary. This means that the 32 and 64 bit versions of the lib can now read each others streams and that the 64 bit version has been adjusted to match the 32 bit version. (b54a0849e01f9f793fef3a219dfabdc7559f71ed)
+* 20240714 - The Reallocate function now takes an additional parameter 'old size' (6a7251d095f4c7e7c1c351d00829a20fa770246e)
+* 20240517 - *SBS* - Combined a number of allocations into 1 for HeightFieldShape. This changes the binary serialization format for this class. (bd32df12bb8ab77b37eeedc226f368268c32ae17)
+* 20240514 - Added macro JPH_OBJECT_STREAM that controls if ObjectStream is compiled or not. By default this is turned on, so you should not see a change, but if you compile without cmake you may need to define JPH_OBJECT_STREAM. (dc3ea787223d45855987e32b8bef7f9a59f6fcd2)
+* 20240504 - Replaced std::vector with a custom Array class. It can be turned off by enabling the JPH_USE_STD_VECTOR define (or the USE_STD_VECTOR cmake option). (bdc1695a643457db86b72119b1393ae69b9a182e)
+* 20240504 - Added a Reallocate function that needs to be implemented when you override the memory allocators and a reallocate function that you need to implement if you have a custom array allocator. The behavior is the same as the C realloc function. It is used to reallocate a block of memory for simple types instead of always going through a alloc, copy, free cycle. (bdc1695a643457db86b72119b1393ae69b9a182e)
+* 20240413 - *SBS* - Skinned constraints are now processed in parallel, this means that they are reordered when Optimize() is called (see SoftBodySharedSettings::OptimizationResults::mSkinnedRemap). This also caused a change to the binary serialization format of SoftBodySharedSettings. (744900a4becb4dc69ee2bd70d6b26ee46da3e64a)
+* 20240407 - *SBS* - The binary format of SoftBodySharedSettings changed due to an optimization pass. Also the results of the Optimize() call are no longer serialized when using an ObjectStream. Finally the Optimize() call will reorder the constraints (see SoftBodySharedSettings::OptimizationResults). (22739d900b4d92905ecccf2d81f18dece4a42595)
+
+## Changes between v4.0.2 and v5.0.0
+
+* 20240327 - *SBS* - SoftBodySharedSettings::CreateEdges was renamed to CreateConstraints and can now also create shear and bend constraints. This also breaks the serialization format for SoftBodySharedSettings. (8e4bf3fa03f59cff6af7394d69cdf62abaf7a1d2)
+* 20240310 - *SBS* - Soft body skinned constraints now use a sphere as backstop instead of an infinite plane. This also breaks the serialization format for SoftBodySharedSettings. (17db6d3f245d2198319c3787f62498fe5935b7c8)
+* 20240225 - *SBS* - Changes were made to SoftBodySharedSettings that break the binary serialization format of that class. (277b818ffefed4f15477ff1e6d0cc07065899903)
+* 20240223 - Added ConvexShape::ESupportMode::Default. If you have custom convex shapes you need to handle this in ConvexShape::GetSupportFunction. (0f67cc2915c5e34a4a38480580dad73888a1952e)
+* 20240216 - Restriction angular motion using EAllowedDOFs now works in world space rather than in local space. This change was made to be more in line with other physics engines and to fix some issues with constraints. If you need the old behavior then copy [this](https://github.com/jrouwe/JoltPhysics/blob/9631e217e54b8492ac36471f2aa966df40d6c2ad/Jolt/Physics/Body/MotionProperties.cpp#L33-L118) code into your own code base and call MotionProperties::SetInverseInertia(diagonal, rotation) where diagonal is called mInvInertiaDiagonal and rotation is called mInertiaRotation in the code snippet. (191536d51d71ee29147205aa09d1acab52789e5f)
+* 20240210 - Fixed spelling error EPathRotationConstraintType::ConstaintToPath to EPathRotationConstraintType::ConstrainToPath (6c095bbf7906b01f427b52d43212f5ebf760fc81)
+* 20240210 - Added extra parameter fraction hint to PathConstraintPath::GetClosestPoint. This can be used to speed up the search along the curve and to disambiguate fractions in case a path reaches the same point multiple times (i.e. a figure-8) (b91e729e6e2c34df16cc03f5ac3b3f6d3fa8b762)
+* 20240203 - Longitudinal friction impulse for wheeled/tracked vehicles could become much higher than the calculated max because each iteration it was clamped to the max friction impulse which meant the total friction impulse could be PhysicsSettings::mNumVelocitySteps times too high. In case this breaks your vehicle, the new max tire impulse callback can be used to restore the old behavior, see [the vehicle constraint test](https://github.com/jrouwe/JoltPhysics/blob/a456b244aa2ad2ce0a8124d27823377ed0b1c4b4/Samples/Tests/Vehicle/VehicleConstraintTest.cpp#L156-L164). (a456b244aa2ad2ce0a8124d27823377ed0b1c4b4)
 * 20240120 - *SBS* - Implemented enhanced internal edge removal algorithm. This breaks the binary serialization format for BodyCreationSettings. (94c1ad811b95c72f4d3bb6841c73c1c3461caa91)
 * 20240113 - VehicleConstraint::CombineFunction now calculates both longitudinal and lateral friction in 1 call so there can be dependencies between the two. (d6ed5b3e7b22904af555088b6ae4770f8fb0e00f)
 * 20240105 - CharacterVirtual will now receive an OnContactAdded callback when it collides with a sensor (but will have no further interaction). You may need to update the logic in your CharacterContactListener to ignore those contacts. (fb778c568d3ba14556559324671ffec172957f5c)

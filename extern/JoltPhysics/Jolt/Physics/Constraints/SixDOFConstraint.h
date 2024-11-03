@@ -17,9 +17,9 @@ JPH_NAMESPACE_BEGIN
 /// 6 Degree Of Freedom Constraint setup structure. Allows control over each of the 6 degrees of freedom.
 class JPH_EXPORT SixDOFConstraintSettings final : public TwoBodyConstraintSettings
 {
-public:
 	JPH_DECLARE_SERIALIZABLE_VIRTUAL(JPH_EXPORT, SixDOFConstraintSettings)
 
+public:
 	/// Constraint is split up into translation/rotation around X, Y and Z axis.
 	enum EAxis
 	{
@@ -38,7 +38,7 @@ public:
 	// See: ConstraintSettings::SaveBinaryState
 	virtual void				SaveBinaryState(StreamOut &inStream) const override;
 
-	/// Create an an instance of this constraint
+	/// Create an instance of this constraint
 	virtual TwoBodyConstraint *	Create(Body &inBody1, Body &inBody2) const override;
 
 	/// This determines in which space the constraint is setup, all properties below should be in the specified space
@@ -117,6 +117,7 @@ public:
 	virtual EConstraintSubType	GetSubType() const override									{ return EConstraintSubType::SixDOF; }
 	virtual void				NotifyShapeChanged(const BodyID &inBodyID, Vec3Arg inDeltaCOM) override;
 	virtual void				SetupVelocityConstraint(float inDeltaTime) override;
+	virtual void				ResetWarmStart() override;
 	virtual void				WarmStartVelocityConstraint(float inWarmStartImpulseRatio) override;
 	virtual bool				SolveVelocityConstraint(float inDeltaTime) override;
 	virtual bool				SolvePositionConstraint(float inDeltaTime, float inBaumgarte) override;
@@ -172,15 +173,15 @@ public:
 	EMotorState					GetMotorState(EAxis inAxis) const							{ return mMotorState[inAxis]; }
 
 	/// Set the target velocity in body 1 constraint space
-	Vec3		 				GetTargetVelocityCS() const									{ return mTargetVelocity; }
+	Vec3						GetTargetVelocityCS() const									{ return mTargetVelocity; }
 	void						SetTargetVelocityCS(Vec3Arg inVelocity)						{ mTargetVelocity = inVelocity; }
 
 	/// Set the target angular velocity in body 2 constraint space (!)
 	void						SetTargetAngularVelocityCS(Vec3Arg inAngularVelocity)		{ mTargetAngularVelocity = inAngularVelocity; }
-	Vec3		 				GetTargetAngularVelocityCS() const							{ return mTargetAngularVelocity; }
+	Vec3						GetTargetAngularVelocityCS() const							{ return mTargetAngularVelocity; }
 
 	/// Set the target position in body 1 constraint space
-	Vec3		 				GetTargetPositionCS() const									{ return mTargetPosition; }
+	Vec3						GetTargetPositionCS() const									{ return mTargetPosition; }
 	void						SetTargetPositionCS(Vec3Arg inPosition)						{ mTargetPosition = inPosition; }
 
 	/// Set the target orientation in body 1 constraint space
@@ -192,7 +193,7 @@ public:
 	void						SetTargetOrientationBS(QuatArg inOrientation)				{ SetTargetOrientationCS(mConstraintToBody1.Conjugated() * inOrientation * mConstraintToBody2); }
 
 	///@name Get Lagrange multiplier from last physics update (the linear/angular impulse applied to satisfy the constraint)
-	inline Vec3		 			GetTotalLambdaPosition() const								{ return IsTranslationFullyConstrained()? mPointConstraintPart.GetTotalLambda() : Vec3(mTranslationConstraintPart[0].GetTotalLambda(), mTranslationConstraintPart[1].GetTotalLambda(), mTranslationConstraintPart[2].GetTotalLambda()); }
+	inline Vec3					GetTotalLambdaPosition() const								{ return IsTranslationFullyConstrained()? mPointConstraintPart.GetTotalLambda() : Vec3(mTranslationConstraintPart[0].GetTotalLambda(), mTranslationConstraintPart[1].GetTotalLambda(), mTranslationConstraintPart[2].GetTotalLambda()); }
 	inline Vec3					GetTotalLambdaRotation() const								{ return IsRotationFullyConstrained()? mRotationConstraintPart.GetTotalLambda() : Vec3(mSwingTwistConstraintPart.GetTotalTwistLambda(), mSwingTwistConstraintPart.GetTotalSwingYLambda(), mSwingTwistConstraintPart.GetTotalSwingZLambda()); }
 	inline Vec3					GetTotalLambdaMotorTranslation() const						{ return Vec3(mMotorTranslationConstraintPart[0].GetTotalLambda(), mMotorTranslationConstraintPart[1].GetTotalLambda(), mMotorTranslationConstraintPart[2].GetTotalLambda()); }
 	inline Vec3					GetTotalLambdaMotorRotation() const							{ return Vec3(mMotorRotationConstraintPart[0].GetTotalLambda(), mMotorRotationConstraintPart[1].GetTotalLambda(), mMotorRotationConstraintPart[2].GetTotalLambda()); }

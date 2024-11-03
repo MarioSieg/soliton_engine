@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #pragma once
 
@@ -25,7 +25,7 @@ namespace lu::physics {
             mesh
         };
 
-        [[nodiscard]] static auto new_box(const DirectX::XMFLOAT3A& half_extent) -> collider;
+        [[nodiscard]] static auto new_box(const XMFLOAT3A& half_extent) -> collider;
         [[nodiscard]] static auto new_sphere(float radius) -> collider;
         [[nodiscard]] static auto new_cylinder(float half_height, float radius) -> collider;
         [[nodiscard]] static auto new_capsule(float half_height, float radius) -> collider;

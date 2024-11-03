@@ -6,7 +6,7 @@ https://github.com/Microsoft/DirectXMath
 
 Copyright (c) Microsoft Corporation.
 
-**December 2023**
+**October 2024**
 
 This package contains the DirectXMath library, an all inline SIMD C++ linear algebra library for use in games and graphics apps.
 
@@ -63,7 +63,7 @@ Officially the library is supported with Microsoft Visual C++ 2019 or later, cla
 
 When building with clang/LLVM or other GNU C compilers, the ``_XM_NO_XMVECTOR_OVERLOADS_`` control define is set because these compilers do not support creating operator overloads for the ``XMVECTOR`` type. You can choose to enable this preprocessor define explicitly to do the same thing with Visual C++ for improved portability.
 
-To build for non-Windows platforms, you need to provide a ``sal.h`` header in your include path. You can obtain an open source version from [GitHub](https://github.com/dotnet/corert/blob/master/src/Native/inc/unix/sal.h).
+To build for non-Windows platforms, you need to provide a ``sal.h`` header in your include path. You can obtain an open source version from [GitHub](https://raw.githubusercontent.com/dotnet/runtime/main/src/coreclr/pal/inc/rt/sal.h).
 
 With GCC, the SAL annotation preprocessor symbols can conflict with the GNU implementation of the Standard C++ Library. The workaround is to include the system headers before including DirectXMath:
 
@@ -80,6 +80,14 @@ All content and source code for this package are subject to the terms of the [MI
 
 For the latest version of DirectXMath, bug reports, etc. please visit the project site on [GitHub](https://github.com/microsoft/DirectXMath).
 
+## Release Notes
+
+FOR SECURITY ADVISORIES, see [GitHub](https://github.com/microsoft/DirectXMath/security/advisories).
+
+For a full change history, see [CHANGELOG.md](https://github.com/microsoft/DirectXMath/blob/main/CHANGELOG.md).
+
+* The clang/LLVM toolset currently does not respect the ``float_control`` pragma for SSE instrinsics. Therefore, the use of ``/fp:fast`` is not recommended on clang/LLVM until this issue is fixed. See [55713](https://github.com/llvm/llvm-project/issues/55713).
+
 ## Support
 
 For questions, consider using [Stack Overflow](https://stackoverflow.com/questions/tagged/directxmath) with the *directxmath* tag, or the [DirectX Discord Server](https://discord.gg/directx) in the *dx12-developers* or *dx9-dx11-developers* channel.
@@ -91,6 +99,8 @@ For bug reports and feature requests, please use GitHub [issues](https://github.
 This project welcomes contributions and suggestions. Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
 
 When you submit a pull request, a CLA bot will automatically determine whether you need to provide a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions provided by the bot. You will only need to do this once across all repos using our CLA.
+
+Tests for new features should also be submitted as a PR to the [Test Suite](https://github.com/walbourn/directxmathtest/wiki) repository.
 
 ## Code of Conduct
 

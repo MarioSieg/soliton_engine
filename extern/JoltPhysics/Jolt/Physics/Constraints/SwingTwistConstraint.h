@@ -19,13 +19,13 @@ JPH_NAMESPACE_BEGIN
 /// @image html Docs/SwingTwistConstraint.png
 class JPH_EXPORT SwingTwistConstraintSettings final : public TwoBodyConstraintSettings
 {
-public:
 	JPH_DECLARE_SERIALIZABLE_VIRTUAL(JPH_EXPORT, SwingTwistConstraintSettings)
 
+public:
 	// See: ConstraintSettings::SaveBinaryState
 	virtual void				SaveBinaryState(StreamOut &inStream) const override;
 
-	/// Create an an instance of this constraint
+	/// Create an instance of this constraint
 	virtual TwoBodyConstraint *	Create(Body &inBody1, Body &inBody2) const override;
 
 	/// This determines in which space the constraint is setup, all properties below should be in the specified space
@@ -79,6 +79,7 @@ public:
 	virtual EConstraintSubType	GetSubType() const override									{ return EConstraintSubType::SwingTwist; }
 	virtual void				NotifyShapeChanged(const BodyID &inBodyID, Vec3Arg inDeltaCOM) override;
 	virtual void				SetupVelocityConstraint(float inDeltaTime) override;
+	virtual void				ResetWarmStart() override;
 	virtual void				WarmStartVelocityConstraint(float inWarmStartImpulseRatio) override;
 	virtual bool				SolveVelocityConstraint(float inDeltaTime) override;
 	virtual bool				SolvePositionConstraint(float inDeltaTime, float inBaumgarte) override;
@@ -95,10 +96,10 @@ public:
 	virtual Mat44				GetConstraintToBody2Matrix() const override					{ return Mat44::sRotationTranslation(mConstraintToBody2, mLocalSpacePosition2); }
 
 	///@name Constraint reference frame
-	inline Vec3 				GetLocalSpacePosition1() const								{ return mLocalSpacePosition1; }
-	inline Vec3		 			GetLocalSpacePosition2() const								{ return mLocalSpacePosition2; }
-	inline Quat		 			GetConstraintToBody1() const								{ return mConstraintToBody1; }
-	inline Quat		 			GetConstraintToBody2() const								{ return mConstraintToBody2; }
+	inline Vec3					GetLocalSpacePosition1() const								{ return mLocalSpacePosition1; }
+	inline Vec3					GetLocalSpacePosition2() const								{ return mLocalSpacePosition2; }
+	inline Quat					GetConstraintToBody1() const								{ return mConstraintToBody1; }
+	inline Quat					GetConstraintToBody2() const								{ return mConstraintToBody2; }
 
 	///@name Constraint limits
 	inline float				GetNormalHalfConeAngle() const								{ return mNormalHalfConeAngle; }
@@ -130,11 +131,11 @@ public:
 
 	/// Set the target angular velocity of body 2 in constraint space of body 2
 	void						SetTargetAngularVelocityCS(Vec3Arg inAngularVelocity)		{ mTargetAngularVelocity = inAngularVelocity; }
-	Vec3		 				GetTargetAngularVelocityCS() const							{ return mTargetAngularVelocity; }
+	Vec3						GetTargetAngularVelocityCS() const							{ return mTargetAngularVelocity; }
 
 	/// Set the target orientation in constraint space (drives constraint to: GetRotationInConstraintSpace() == inOrientation)
 	void						SetTargetOrientationCS(QuatArg inOrientation);
-	Quat 						GetTargetOrientationCS() const								{ return mTargetOrientation; }
+	Quat						GetTargetOrientationCS() const								{ return mTargetOrientation; }
 
 	/// Set the target orientation in body space (R2 = R1 * inOrientation, where R1 and R2 are the world space rotations for body 1 and 2).
 	/// Solve: R2 * ConstraintToBody2 = R1 * ConstraintToBody1 * q (see SwingTwistConstraint::GetSwingTwist) and R2 = R1 * inOrientation for q.
@@ -145,7 +146,7 @@ public:
 	Quat						GetRotationInConstraintSpace() const;
 
 	///@name Get Lagrange multiplier from last physics update (the linear/angular impulse applied to satisfy the constraint)
-	inline Vec3		 			GetTotalLambdaPosition() const								{ return mPointConstraintPart.GetTotalLambda(); }
+	inline Vec3					GetTotalLambdaPosition() const								{ return mPointConstraintPart.GetTotalLambda(); }
 	inline float				GetTotalLambdaTwist() const									{ return mSwingTwistConstraintPart.GetTotalTwistLambda(); }
 	inline float				GetTotalLambdaSwingY() const								{ return mSwingTwistConstraintPart.GetTotalSwingYLambda(); }
 	inline float				GetTotalLambdaSwingZ() const								{ return mSwingTwistConstraintPart.GetTotalSwingZLambda(); }

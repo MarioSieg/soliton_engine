@@ -19,13 +19,12 @@ class Texture;
 /// Camera setup
 struct CameraState
 {
-									CameraState() : mPos(RVec3::sZero()), mForward(0, 0, -1), mUp(0, 1, 0), mFOVY(DegreesToRadians(70.0f)), mFarPlane(100.0f) { }
+									CameraState() : mPos(RVec3::sZero()), mForward(0, 0, -1), mUp(0, 1, 0), mFOVY(DegreesToRadians(70.0f)) { }
 
 	RVec3							mPos;								///< Camera position
 	Vec3							mForward;							///< Camera forward vector
 	Vec3							mUp;								///< Camera up vector
 	float							mFOVY;								///< Field of view in radians in up direction
-	float							mFarPlane;							///< Distance of far plane
 };
 
 /// Responsible for rendering primitives to the screen
@@ -51,7 +50,7 @@ public:
 	/// Access to the most important DirectX structures
 	ID3D12Device *					GetDevice()							{ return mDevice.Get(); }
 	ID3D12RootSignature *			GetRootSignature()					{ return mRootSignature.Get(); }
-	ID3D12GraphicsCommandList *		GetCommandList()					{ return mCommandList.Get(); }
+	ID3D12GraphicsCommandList *		GetCommandList()					{ JPH_ASSERT(mInFrame); return mCommandList.Get(); }
 	CommandQueue &					GetUploadQueue()					{ return mUploadQueue; }
 	DescriptorHeap &				GetDSVHeap()						{ return mDSVHeap; }
 	DescriptorHeap &				GetSRVHeap()						{ return mSRVHeap; }
@@ -86,21 +85,21 @@ public:
 	unique_ptr<PipelineState>		CreatePipelineState(ID3DBlob *inVertexShader, const D3D12_INPUT_ELEMENT_DESC *inInputDescription, uint inInputDescriptionCount, ID3DBlob *inPixelShader, D3D12_FILL_MODE inFillMode, D3D12_PRIMITIVE_TOPOLOGY_TYPE inTopology, PipelineState::EDepthTest inDepthTest, PipelineState::EBlendMode inBlendMode, PipelineState::ECullMode inCullMode);
 
 	/// Get the camera state / frustum (only valid between BeginFrame() / EndFrame())
-	const CameraState &				GetCameraState() const				{ return mCameraState; }
-	const Frustum &					GetCameraFrustum() const			{ return mCameraFrustum; }
+	const CameraState &				GetCameraState() const				{ JPH_ASSERT(mInFrame); return mCameraState; }
+	const Frustum &					GetCameraFrustum() const			{ JPH_ASSERT(mInFrame); return mCameraFrustum; }
 
 	/// Offset relative to which the world is rendered, helps avoiding rendering artifacts at big distances
 	RVec3							GetBaseOffset() const				{ return mBaseOffset; }
 	void							SetBaseOffset(RVec3 inOffset)		{ mBaseOffset = inOffset; }
 
 	/// Get the light frustum (only valid between BeginFrame() / EndFrame())
-	const Frustum &					GetLightFrustum() const				{ return mLightFrustum; }
+	const Frustum &					GetLightFrustum() const				{ JPH_ASSERT(mInFrame); return mLightFrustum; }
 
 	/// How many frames our pipeline is
 	static const uint				cFrameCount = 2;
 
 	/// Which frame is currently rendering (to keep track of which buffers are free to overwrite)
-	uint							GetCurrentFrameIndex() const		{ return mFrameIndex; }
+	uint							GetCurrentFrameIndex() const		{ JPH_ASSERT(mInFrame); return mFrameIndex; }
 
 	/// Create a buffer on the default heap (usable for permanent buffers)
 	ComPtr<ID3D12Resource>			CreateD3DResourceOnDefaultHeap(const void *inData, uint64 inSize);
@@ -139,33 +138,34 @@ private:
 	unique_ptr<ConstantBuffer>		mVertexShaderConstantBufferProjection[cFrameCount];
 	unique_ptr<ConstantBuffer>		mVertexShaderConstantBufferOrtho[cFrameCount];
 	unique_ptr<ConstantBuffer>		mPixelShaderConstantBuffer[cFrameCount];
+	bool							mInFrame = false;					///< If we're within a BeginFrame() / EndFrame() pair
 	CameraState						mCameraState;
 	RVec3							mBaseOffset { RVec3::sZero() };		///< Offset to subtract from the camera position to deal with large worlds
 	Frustum							mCameraFrustum;
 	Frustum							mLightFrustum;
 
-    // DirectX interfaces
-    ComPtr<IDXGIFactory4>			mDXGIFactory;
-    ComPtr<ID3D12Device>			mDevice;
+	// DirectX interfaces
+	ComPtr<IDXGIFactory4>			mDXGIFactory;
+	ComPtr<ID3D12Device>			mDevice;
 	DescriptorHeap					mRTVHeap;							///< Render target view heap
 	DescriptorHeap					mDSVHeap;							///< Depth stencil view heap
 	DescriptorHeap					mSRVHeap;							///< Shader resource view heap
-    ComPtr<IDXGISwapChain3>			mSwapChain;
-    ComPtr<ID3D12Resource>			mRenderTargets[cFrameCount];		///< Two render targets (we're double buffering in order for the CPU to continue while the GPU is rendering)
+	ComPtr<IDXGISwapChain3>			mSwapChain;
+	ComPtr<ID3D12Resource>			mRenderTargets[cFrameCount];		///< Two render targets (we're double buffering in order for the CPU to continue while the GPU is rendering)
 	D3D12_CPU_DESCRIPTOR_HANDLE		mRenderTargetViews[cFrameCount];	///< The two render views corresponding to the render targets
 	ComPtr<ID3D12Resource>			mDepthStencilBuffer;				///< The main depth buffer
 	D3D12_CPU_DESCRIPTOR_HANDLE		mDepthStencilView { 0 };			///< A view for binding the depth buffer
-    ComPtr<ID3D12CommandAllocator>	mCommandAllocators[cFrameCount];	///< Two command allocator lists (one per frame)
-    ComPtr<ID3D12CommandQueue>		mCommandQueue;						///< The command queue that will execute commands (there's only 1 since we want to finish rendering 1 frame before moving onto the next)
-    ComPtr<ID3D12GraphicsCommandList> mCommandList;						///< The command list
-    ComPtr<ID3D12RootSignature>		mRootSignature;						///< The root signature, we have a simple application so we only need 1, which is suitable for all our shaders
+	ComPtr<ID3D12CommandAllocator>	mCommandAllocators[cFrameCount];	///< Two command allocator lists (one per frame)
+	ComPtr<ID3D12CommandQueue>		mCommandQueue;						///< The command queue that will execute commands (there's only 1 since we want to finish rendering 1 frame before moving onto the next)
+	ComPtr<ID3D12GraphicsCommandList> mCommandList;						///< The command list
+	ComPtr<ID3D12RootSignature>		mRootSignature;						///< The root signature, we have a simple application so we only need 1, which is suitable for all our shaders
 	Ref<Texture>					mRenderTargetTexture;				///< When rendering to a texture, this is the active texture
 	CommandQueue					mUploadQueue;						///< Queue used to upload resources to GPU memory
 
 	// Synchronization objects used to finish rendering and swapping before reusing a command queue
-    uint							mFrameIndex;						///< Current frame index (0 or 1)
-    HANDLE							mFenceEvent;						///< Fence event to wait for the previous frame rendering to complete (in order to free 1 of the buffers)
-    ComPtr<ID3D12Fence>				mFence;								///< Fence object, used to signal the end of a frame
+	uint							mFrameIndex;						///< Current frame index (0 or 1)
+	HANDLE							mFenceEvent;						///< Fence event to wait for the previous frame rendering to complete (in order to free 1 of the buffers)
+	ComPtr<ID3D12Fence>				mFence;								///< Fence object, used to signal the end of a frame
 	UINT64							mFenceValues[cFrameCount] = {};		///< Values that were used to signal completion of one of the two frames
 
 	using ResourceCache = UnorderedMap<uint64, Array<ComPtr<ID3D12Resource>>>;

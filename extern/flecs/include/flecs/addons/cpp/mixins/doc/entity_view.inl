@@ -13,7 +13,7 @@
  * @ingroup cpp_addons_doc
  */
 const char* doc_name() const {
-    return ecs_doc_get_name(m_world, m_id);
+    return ecs_doc_get_name(world_, id_);
 }
 
 /** Get brief description.
@@ -26,7 +26,7 @@ const char* doc_name() const {
  * @ingroup cpp_addons_doc
  */
 const char* doc_brief() const {
-    return ecs_doc_get_brief(m_world, m_id);
+    return ecs_doc_get_brief(world_, id_);
 }
 
 /** Get detailed description.
@@ -39,7 +39,7 @@ const char* doc_brief() const {
  * @ingroup cpp_addons_doc
  */
 const char* doc_detail() const {
-    return ecs_doc_get_detail(m_world, m_id);
+    return ecs_doc_get_detail(world_, id_);
 }
 
 /** Get link to external documentation.
@@ -52,7 +52,7 @@ const char* doc_detail() const {
  * @ingroup cpp_addons_doc
  */
 const char* doc_link() const {
-    return ecs_doc_get_link(m_world, m_id);
+    return ecs_doc_get_link(world_, id_);
 }
 
 /** Get color.
@@ -65,5 +65,18 @@ const char* doc_link() const {
  * @ingroup cpp_addons_doc
  */
 const char* doc_color() const {
-    return ecs_doc_get_color(m_world, m_id);
+    return ecs_doc_get_color(world_, id_);
+}
+
+/** Get UUID.
+ *
+ * @see ecs_doc_get_uuid()
+ * @see flecs::doc::get_uuid()
+ * @see flecs::entity_builder::set_doc_uuid()
+ *
+ * @memberof flecs::entity_view
+ * @ingroup cpp_addons_doc
+ */
+const char* doc_uuid() const {
+    return ecs_doc_get_uuid(world_, id_);
 }

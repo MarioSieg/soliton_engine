@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #ifndef LUNAM_CORE_HPP
 #define LUNAM_CORE_HPP
@@ -24,6 +24,7 @@
 #include <EASTL/weak_ptr.h>
 #include <EASTL/unique_ptr.h>
 #include <EASTL/chrono.h>
+#include <EASTL/queue.h>
 #include <EASTL/initializer_list.h>
 #include <EAStdC/EABitTricks.h>
 
@@ -56,7 +57,11 @@ namespace lu {
     [[nodiscard]] consteval auto minor_version(const std::uint32_t v) -> std::uint8_t { return v&0xff; }
     [[nodiscard]] consteval auto unpack_version(const std::uint32_t v) -> eastl::array<std::uint8_t, 2> { return {major_version(v), minor_version(v)}; }
 
-    constexpr std::uint32_t k_lunam_engine_version = make_version(0, 3); // current engine version (must be known at compile time and we don't use patches yet)
+    constexpr std::uint32_t k_lunam_engine_version = make_version(0, 4); // current engine version (must be known at compile time and we don't use patches yet)
+
+    [[nodiscard]] extern auto get_version_string() -> eastl::string;
+
+    using namespace DirectX; // Re-export DirectX namespace
 }
 
 #endif

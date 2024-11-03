@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #pragma once
 
@@ -73,13 +73,13 @@ namespace lu {
 
     template <typename T>
     inline auto lazy_flex<T>::operator *() const noexcept -> const T& {
-        passert(this->is_init());
+        panic_assert(this->is_init());
         return *this->m_dat;
     }
 
     template <typename T>
     inline auto lazy_flex<T>::operator *() noexcept -> T& {
-        passert(this->is_init());
+        panic_assert(this->is_init());
         return *this->m_dat;
     }
 

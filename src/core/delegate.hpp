@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #pragma once
 
@@ -11,11 +11,11 @@ namespace lu {
     struct multicast_delegate final {
     public:
         inline auto operator += (T&& d) noexcept -> void {
-            passert(!m_is_locked);
+            panic_assert(!m_is_locked);
             m_delegates.emplace_back(std::forward<T>(d));
         }
         inline auto operator -= (const T& d) noexcept -> void {
-            passert(!m_is_locked);
+            panic_assert(!m_is_locked);
             m_delegates.remove(d);
         }
 
@@ -27,7 +27,7 @@ namespace lu {
         }
 
         inline auto clear() noexcept -> void {
-            passert(!m_is_locked);
+            panic_assert(!m_is_locked);
             m_delegates.clear();
             m_invocations = 0;
         }

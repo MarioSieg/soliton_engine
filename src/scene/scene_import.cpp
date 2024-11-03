@@ -1,10 +1,8 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "scene.hpp"
 #include "../core/kernel.hpp"
-#include "../graphics/mesh.hpp"
 #include "../graphics/utils/assimp_utils.hpp"
-#include "../graphics/vulkancore/context.hpp"
 
 #include <filesystem>
 #include <assimp/scene.h>
@@ -12,12 +10,12 @@
 #include <assimp/postprocess.h>
 #include <ankerl/unordered_dense.h>
 #include <DirectXMath.h>
-#include <bimg/bimg.h>
-#include <bimg/decode.h>
 
 namespace lu {
-    auto scene::import_from_file(const eastl::string& path, const float scale, const std::uint32_t load_flags) -> void {
+    auto import_from_file(const eastl::string& path, const std::uint32_t load_flags) -> eastl::unique_ptr<scene> {
         log_info("Importing scene from file '{}'", path);
+
+        eastl::unique_ptr<scene> new_scene = eastl::make_unique<scene>();
 
         Assimp::DefaultLogger::create("", Assimp::Logger::NORMAL);
         Assimp::DefaultLogger::get()->attachStream(new graphics::assimp_logger {}, Assimp::Logger::Info | Assimp::Logger::Err | Assimp::Logger::Warn);
@@ -26,18 +24,15 @@ namespace lu {
 
         Assimp::Importer importer {};
         //importer.SetIOHandler(new graphics::lunam_assimp_io_system {});
-        passert(importer.ValidateFlags(load_flags));
+        panic_assert(importer.ValidateFlags(load_flags));
         const aiScene* scene = importer.ReadFile(path.c_str(), load_flags);
         if (!scene || !scene->mNumMeshes) [[unlikely]] {
             panic("Failed to load scene from file '{}': {}", path, importer.GetErrorString());
         }
 
         eastl::string asset_root = std::filesystem::path{path.c_str()}.parent_path().string().c_str();
+        str_replace(asset_root, "engine_assets", "RES");
         asset_root += "/";
-
-        auto* missing_material = get_asset_registry<graphics::material>().load_from_memory();
-        missing_material->albedo_map = const_cast<graphics::texture*>(&graphics::material::get_static_resources().error_texture);
-        missing_material->flush_property_updates();
 
         ankerl::unordered_dense::map<eastl::string, std::uint32_t> resolved_names {};
 
@@ -60,9 +55,9 @@ namespace lu {
                 } else {
                     resolved_names[name] = 0;
                 }
-                const flecs::entity e = spawn(name.c_str());
-                auto* metadata = e.get_mut<com::metadata>();
+                const flecs::entity e = new_scene->spawn(name.c_str());
 
+                e.add<com::transform>();
                 auto* transform = e.get_mut<com::transform>();
                 aiVector3D scaling, position;
                 aiQuaternion rotation;
@@ -71,41 +66,62 @@ namespace lu {
                 transform->rotation = {rotation.x, rotation.y, rotation.z, rotation.w};
                 transform->scale = {scaling.x, scaling.y, scaling.z, 0.0f};
 
+                e.add<com::mesh_renderer>();
                 auto* renderer = e.get_mut<com::mesh_renderer>();
 
                 const aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
                 const aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
 
-                const auto load_tex = [&](const std::initializer_list<aiTextureType> types) -> graphics::texture* {
+                auto error_texture = new_scene->get_asset_registry<graphics::texture>().load(graphics::sv_error_texture());
+                auto default_texture_w = new_scene->get_asset_registry<graphics::texture>().load(graphics::sv_fallback_image_white());
+                auto default_texture_b = new_scene->get_asset_registry<graphics::texture>().load(graphics::sv_fallback_image_black());
+
+                auto load_tex = [&, binding = 0u](
+                    const std::initializer_list<aiTextureType> types,
+                    const assetmgr::asset_ref fallback
+                ) mutable -> graphics::material_property {
+                    panic_assert(fallback != assetmgr::asset_ref_invalid);
                     for (auto textureType = types.begin(); textureType != types.end(); std::advance(textureType, 1)) {
                         if (!mat->GetTextureCount(*textureType)) [[unlikely]] continue;
                         aiString name {};
-                        mat->Get(AI_MATKEY_TEXTURE(*textureType, 0), name);
+                        if (mat->Get(AI_MATKEY_TEXTURE(*textureType, 0), name) != AI_SUCCESS) {
+                            continue;
+                        }
                         std::filesystem::path tex_path = "/";
                         tex_path += std::filesystem::relative((asset_root + name.C_Str()).c_str()).string().c_str();
-                        if (!tex_path.has_extension()) {
-                            return nullptr;
+                        if (!tex_path.has_extension()) [[unlikely]] {
+                            continue;
                         }
                         eastl::string path = tex_path.c_str();
                         // replace backslashes with forward slashes
                         eastl::replace(path.begin(), path.end(), '\\', '/');
-                        return get_asset_registry<graphics::texture>().load(std::move(path));
+                        return graphics::material_property {
+                            binding++,
+                            new_scene->get_asset_registry<graphics::texture>().load(eastl::move(path))
+                        };
                     }
-                    return nullptr;
+                    log_warn("No texture found for material");
+                    return graphics::material_property {
+                        binding++,
+                        fallback
+                    };
                 };
 
-                auto* material = get_asset_registry<graphics::material>().load_from_memory();
-                material->albedo_map = load_tex({aiTextureType_DIFFUSE, aiTextureType_BASE_COLOR});
-                material->normal_map = load_tex({aiTextureType_NORMALS, aiTextureType_NORMAL_CAMERA});
-                material->metallic_roughness_map = load_tex({aiTextureType_SPECULAR, aiTextureType_METALNESS, aiTextureType_DIFFUSE_ROUGHNESS, aiTextureType_SHININESS});
-                material->height_map = load_tex({aiTextureType_HEIGHT, aiTextureType_DISPLACEMENT});
-                material->ambient_occlusion_map = load_tex({aiTextureType_AMBIENT_OCCLUSION, aiTextureType_AMBIENT, aiTextureType_LIGHTMAP});
-                material->flush_property_updates();
+                auto& registry = new_scene->get_asset_registry<graphics::material>();
+                auto [material_ref, material] = new_scene->get_asset_registry<graphics::material>().insert();
+                material->properties["tex_albedo"]      = load_tex({aiTextureType_DIFFUSE, aiTextureType_BASE_COLOR}, error_texture);
+                material->properties["tex_normal"]      = load_tex({aiTextureType_NORMALS, aiTextureType_NORMAL_CAMERA}, default_texture_b);
+                material->properties["tex_roughness"]   = load_tex({aiTextureType_SPECULAR, aiTextureType_METALNESS, aiTextureType_DIFFUSE_ROUGHNESS, aiTextureType_SHININESS}, default_texture_b);
+                material->properties["tex_height"]      = load_tex({aiTextureType_DIFFUSE, aiTextureType_BASE_COLOR}, default_texture_b);
+                material->properties["tex_ao"]          = load_tex({aiTextureType_DIFFUSE, aiTextureType_BASE_COLOR}, default_texture_b);
+                material->properties["tex_emission"]    = load_tex({aiTextureType_EMISSION_COLOR, aiTextureType_EMISSIVE}, default_texture_b);
+                material->flush_property_updates(*new_scene);
 
                 renderer->materials.emplace_back(material);
 
                 eastl::span span {&mesh, 1};
-                renderer->meshes.emplace_back(get_asset_registry<graphics::mesh>().load_from_memory(span));
+                auto& mesh_registry = new_scene->get_asset_registry<graphics::mesh>();
+                renderer->meshes.emplace_back(mesh_registry.insert(eastl::make_unique<graphics::mesh>(span)).second);
             }
             for (unsigned i = 0; i < node->mNumChildren; ++i) {
                 visitor(node->mChildren[i]);
@@ -117,5 +133,7 @@ namespace lu {
         Assimp::DefaultLogger::kill();
 
         log_info("Imported scene from file '{}', {} nodes in {:.03}s", path, num_nodes, eastl::chrono::duration_cast<eastl::chrono::duration<double>>(eastl::chrono::high_resolution_clock::now() - start).count());
+
+        return new_scene;
     }
 }

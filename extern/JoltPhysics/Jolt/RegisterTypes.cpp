@@ -10,11 +10,13 @@
 #include <Jolt/Core/TickCounter.h>
 #include <Jolt/Physics/Collision/CollisionDispatch.h>
 #include <Jolt/Physics/Collision/Shape/TriangleShape.h>
+#include <Jolt/Physics/Collision/Shape/PlaneShape.h>
 #include <Jolt/Physics/Collision/Shape/SphereShape.h>
 #include <Jolt/Physics/Collision/Shape/BoxShape.h>
 #include <Jolt/Physics/Collision/Shape/CapsuleShape.h>
 #include <Jolt/Physics/Collision/Shape/TaperedCapsuleShape.h>
 #include <Jolt/Physics/Collision/Shape/CylinderShape.h>
+#include <Jolt/Physics/Collision/Shape/TaperedCylinderShape.h>
 #include <Jolt/Physics/Collision/Shape/ScaledShape.h>
 #include <Jolt/Physics/Collision/Shape/MeshShape.h>
 #include <Jolt/Physics/Collision/Shape/ConvexHullShape.h>
@@ -23,26 +25,12 @@
 #include <Jolt/Physics/Collision/Shape/OffsetCenterOfMassShape.h>
 #include <Jolt/Physics/Collision/Shape/MutableCompoundShape.h>
 #include <Jolt/Physics/Collision/Shape/StaticCompoundShape.h>
+#include <Jolt/Physics/Collision/Shape/EmptyShape.h>
 #include <Jolt/Physics/Collision/PhysicsMaterialSimple.h>
 #include <Jolt/Physics/SoftBody/SoftBodyShape.h>
 
 JPH_DECLARE_RTTI_WITH_NAMESPACE_FOR_FACTORY(JPH_EXPORT, JPH, Skeleton)
 JPH_DECLARE_RTTI_WITH_NAMESPACE_FOR_FACTORY(JPH_EXPORT, JPH, SkeletalAnimation)
-JPH_DECLARE_RTTI_WITH_NAMESPACE_FOR_FACTORY(JPH_EXPORT, JPH, CompoundShapeSettings)
-JPH_DECLARE_RTTI_WITH_NAMESPACE_FOR_FACTORY(JPH_EXPORT, JPH, StaticCompoundShapeSettings)
-JPH_DECLARE_RTTI_WITH_NAMESPACE_FOR_FACTORY(JPH_EXPORT, JPH, MutableCompoundShapeSettings)
-JPH_DECLARE_RTTI_WITH_NAMESPACE_FOR_FACTORY(JPH_EXPORT, JPH, TriangleShapeSettings)
-JPH_DECLARE_RTTI_WITH_NAMESPACE_FOR_FACTORY(JPH_EXPORT, JPH, SphereShapeSettings)
-JPH_DECLARE_RTTI_WITH_NAMESPACE_FOR_FACTORY(JPH_EXPORT, JPH, BoxShapeSettings)
-JPH_DECLARE_RTTI_WITH_NAMESPACE_FOR_FACTORY(JPH_EXPORT, JPH, CapsuleShapeSettings)
-JPH_DECLARE_RTTI_WITH_NAMESPACE_FOR_FACTORY(JPH_EXPORT, JPH, TaperedCapsuleShapeSettings)
-JPH_DECLARE_RTTI_WITH_NAMESPACE_FOR_FACTORY(JPH_EXPORT, JPH, CylinderShapeSettings)
-JPH_DECLARE_RTTI_WITH_NAMESPACE_FOR_FACTORY(JPH_EXPORT, JPH, ScaledShapeSettings)
-JPH_DECLARE_RTTI_WITH_NAMESPACE_FOR_FACTORY(JPH_EXPORT, JPH, MeshShapeSettings)
-JPH_DECLARE_RTTI_WITH_NAMESPACE_FOR_FACTORY(JPH_EXPORT, JPH, ConvexHullShapeSettings)
-JPH_DECLARE_RTTI_WITH_NAMESPACE_FOR_FACTORY(JPH_EXPORT, JPH, HeightFieldShapeSettings)
-JPH_DECLARE_RTTI_WITH_NAMESPACE_FOR_FACTORY(JPH_EXPORT, JPH, RotatedTranslatedShapeSettings)
-JPH_DECLARE_RTTI_WITH_NAMESPACE_FOR_FACTORY(JPH_EXPORT, JPH, OffsetCenterOfMassShapeSettings)
 JPH_DECLARE_RTTI_WITH_NAMESPACE_FOR_FACTORY(JPH_EXPORT, JPH, RagdollSettings)
 JPH_DECLARE_RTTI_WITH_NAMESPACE_FOR_FACTORY(JPH_EXPORT, JPH, PointConstraintSettings)
 JPH_DECLARE_RTTI_WITH_NAMESPACE_FOR_FACTORY(JPH_EXPORT, JPH, SixDOFConstraintSettings)
@@ -81,11 +69,24 @@ void RegisterTypesInternal(uint64 inVersionID)
 	if (!VerifyJoltVersionIDInternal(inVersionID))
 	{
 		Trace("Version mismatch, make sure you compile the client code with the same Jolt version and compiler definitions!");
+		uint64 mismatch = JPH_VERSION_ID ^ inVersionID;
+		auto check_bit = [mismatch](int inBit, const char *inLabel) { if (mismatch & (uint64(1) << (inBit + 23))) Trace("Mismatching define %s.", inLabel); };
+		check_bit(1, "JPH_DOUBLE_PRECISION");
+		check_bit(2, "JPH_CROSS_PLATFORM_DETERMINISTIC");
+		check_bit(3, "JPH_FLOATING_POINT_EXCEPTIONS_ENABLED");
+		check_bit(4, "JPH_PROFILE_ENABLED");
+		check_bit(5, "JPH_EXTERNAL_PROFILE");
+		check_bit(6, "JPH_DEBUG_RENDERER");
+		check_bit(7, "JPH_DISABLE_TEMP_ALLOCATOR");
+		check_bit(8, "JPH_DISABLE_CUSTOM_ALLOCATOR");
+		check_bit(9, "JPH_OBJECT_LAYER_BITS");
+		check_bit(10, "JPH_ENABLE_ASSERTS");
+		check_bit(11, "JPH_OBJECT_STREAM");
 		std::abort();
 	}
 
 #ifndef JPH_DISABLE_CUSTOM_ALLOCATOR
-	JPH_ASSERT(Allocate != nullptr && Free != nullptr && AlignedAllocate != nullptr && AlignedFree != nullptr, "Need to supply an allocator first or call RegisterDefaultAllocator()");
+	JPH_ASSERT(Allocate != nullptr && Reallocate != nullptr && Free != nullptr && AlignedAllocate != nullptr && AlignedFree != nullptr, "Need to supply an allocator first or call RegisterDefaultAllocator()");
 #endif // !JPH_DISABLE_CUSTOM_ALLOCATOR
 
 	JPH_ASSERT(Factory::sInstance != nullptr, "Need to create a factory first!");
@@ -103,11 +104,13 @@ void RegisterTypesInternal(uint64 inVersionID)
 
 	// Leaf classes
 	TriangleShape::sRegister();
+	PlaneShape::sRegister();
 	SphereShape::sRegister();
 	BoxShape::sRegister();
 	CapsuleShape::sRegister();
 	TaperedCapsuleShape::sRegister();
 	CylinderShape::sRegister();
+	TaperedCylinderShape::sRegister();
 	MeshShape::sRegister();
 	ConvexHullShape::sRegister();
 	HeightFieldShape::sRegister();
@@ -117,6 +120,7 @@ void RegisterTypesInternal(uint64 inVersionID)
 	RotatedTranslatedShape::sRegister();
 	OffsetCenterOfMassShape::sRegister();
 	ScaledShape::sRegister();
+	EmptyShape::sRegister();
 
 	// Create list of all types
 	const RTTI *types[] = {
@@ -126,17 +130,20 @@ void RegisterTypesInternal(uint64 inVersionID)
 		JPH_RTTI(StaticCompoundShapeSettings),
 		JPH_RTTI(MutableCompoundShapeSettings),
 		JPH_RTTI(TriangleShapeSettings),
+		JPH_RTTI(PlaneShapeSettings),
 		JPH_RTTI(SphereShapeSettings),
 		JPH_RTTI(BoxShapeSettings),
 		JPH_RTTI(CapsuleShapeSettings),
 		JPH_RTTI(TaperedCapsuleShapeSettings),
 		JPH_RTTI(CylinderShapeSettings),
+		JPH_RTTI(TaperedCylinderShapeSettings),
 		JPH_RTTI(ScaledShapeSettings),
 		JPH_RTTI(MeshShapeSettings),
 		JPH_RTTI(ConvexHullShapeSettings),
 		JPH_RTTI(HeightFieldShapeSettings),
 		JPH_RTTI(RotatedTranslatedShapeSettings),
 		JPH_RTTI(OffsetCenterOfMassShapeSettings),
+		JPH_RTTI(EmptyShapeSettings),
 		JPH_RTTI(RagdollSettings),
 		JPH_RTTI(PointConstraintSettings),
 		JPH_RTTI(SixDOFConstraintSettings),

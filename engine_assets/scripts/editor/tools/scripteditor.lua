@@ -3,7 +3,8 @@
 local ffi = require 'ffi'
 
 local icons = require 'imgui.icons'
-local UI = require 'imgui.imgui'
+local ui = require 'imgui.imgui'
+local utils = require 'editor.utils'
 
 ffi.cdef [[
     void __lu_script_editor_render(const char* title);
@@ -116,38 +117,38 @@ local script_editor = {
 }
 
 function script_editor:render()
-    UI.SetNextWindowSize(default_window_size, ffi.C.ImGuiCond_FirstUseEver)
-    if UI.Begin(script_editor.name, script_editor.is_visible, ffi.C.ImGuiWindowFlags_MenuBar) then
-        if UI.BeginMenuBar() then
-            if UI.BeginMenu('File') then
-                UI.EndMenu()
+    ui.SetNextWindowSize(utils.default_window_size, ffi.C.ImGuiCond_FirstUseEver)
+    if ui.Begin(script_editor.name, script_editor.is_visible, ffi.C.ImGuiWindowFlags_MenuBar) then
+        if ui.BeginMenuBar() then
+            if ui.BeginMenu('File') then
+                ui.EndMenu()
             end
-            if UI.BeginMenu('Edit') then
-                UI.EndMenu()
+            if ui.BeginMenu('Edit') then
+                ui.EndMenu()
             end
-            if UI.BeginMenu('View') then
-                UI.EndMenu()
+            if ui.BeginMenu('View') then
+                ui.EndMenu()
             end
-            UI.Separator()
-            if UI.Button(icons.i_play_circle .. ' Run') then
+            ui.Separator()
+            if ui.Button(icons.i_play_circle .. ' Run') then
                 local script = script_editor.scripts[script_editor.activeScriptName]
                 assert(script)
                 script:exec()
             end
-            UI.EndMenuBar()
+            ui.EndMenuBar()
         end
-        UI.Separator()
-        if UI.BeginTabBar('##ScriptEditorTabs') then
+        ui.Separator()
+        if ui.BeginTabBar('##ScriptEditorTabs') then
             for name, script in pairs(script_editor.scripts) do
-                if UI.BeginTabItem(script.nameWithExt) then
+                if ui.BeginTabItem(script.nameWithExt) then
                     native_editor.render(name.nameWithExt)
-                    UI.EndTabItem()
+                    ui.EndTabItem()
                 end
             end
-            UI.EndTabBar()
+            ui.EndTabBar()
         end
     end
-    UI.End()
+    ui.End()
 end
 
 return script_editor

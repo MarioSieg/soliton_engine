@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #pragma once
 
@@ -12,12 +12,11 @@
 #include "vulkancore/command_buffer.hpp"
 
 #include "render_thread_pool.hpp"
-
 #include "shader.hpp"
-
 #include "mesh.hpp"
 #include "texture.hpp"
 #include "utils/debugdraw.hpp"
+#include "shared_buffers.hpp"
 
 #include "imgui/context.hpp"
 #include "noesis/context.hpp"
@@ -31,6 +30,7 @@ namespace lu::graphics {
         HOTPROC auto on_pre_tick() -> bool override;
         HOTPROC auto on_post_tick() -> void override;
         auto on_resize() -> void override;
+        auto on_prepare() -> void override;
         auto on_start(scene& scene) -> void override;
 
         [[nodiscard]] auto get_render_thread_pool() const noexcept -> const render_thread_pool& { return *m_render_thread_pool; }
@@ -47,16 +47,16 @@ namespace lu::graphics {
         [[nodiscard]] auto get_noesis_context() noexcept -> noesis::context& { return *m_noesis_context; }
         [[nodiscard]] auto get_imgui_context() noexcept -> imgui::context& { return *m_imgui_context; }
         [[nodiscard]] static auto get() noexcept -> graphics_subsystem& {
-            passert(s_instance != nullptr);
+            panic_assert(s_instance != nullptr);
             return *s_instance;
         }
         [[nodiscard]] static auto get_num_draw_calls() noexcept -> std::uint32_t;
         [[nodiscard]] static auto get_num_draw_verts() noexcept -> std::uint32_t;
-        [[nodiscard]] static auto get_view_mtx() noexcept -> const DirectX::XMFLOAT4X4A& { return s_view_mtx; }
-        [[nodiscard]] static auto get_proj_mtx() noexcept -> const DirectX::XMFLOAT4X4A& { return s_proj_mtx; }
-        [[nodiscard]] static auto get_view_proj_mtx() noexcept -> const DirectX::XMFLOAT4X4A& { return s_view_proj_mtx; }
-        [[nodiscard]] static auto get_frustum() noexcept -> const DirectX::BoundingFrustum& { return s_frustum; }
-        [[nodiscard]] static auto get_clear_color() noexcept -> DirectX::XMFLOAT4A& { return s_clear_color; }
+        [[nodiscard]] static auto get_view_mtx() noexcept -> const XMFLOAT4X4A& { return s_view_mtx; }
+        [[nodiscard]] static auto get_proj_mtx() noexcept -> const XMFLOAT4X4A& { return s_proj_mtx; }
+        [[nodiscard]] static auto get_view_proj_mtx() noexcept -> const XMFLOAT4X4A& { return s_view_proj_mtx; }
+        [[nodiscard]] static auto get_frustum() noexcept -> const BoundingFrustum& { return s_frustum; }
+        [[nodiscard]] static auto get_clear_color() noexcept -> XMFLOAT4A& { return s_clear_color; }
         [[nodiscard]] static auto get_camera_transform() noexcept -> com::transform& { return s_camera_transform; }
 
         auto hot_reload_pipelines() noexcept -> void {
@@ -67,6 +67,7 @@ namespace lu::graphics {
         friend class graphics_pipeline;
         static auto reload_pipelines() -> void;
         auto render_uis() -> void;
+        auto update_shared_buffers_per_frame() const -> void;
         static auto update_main_camera(float width, float height) -> void;
         HOTPROC auto render_scene_bucket(
             vkb::command_buffer& cmd,
@@ -74,11 +75,11 @@ namespace lu::graphics {
             std::int32_t num_threads
         ) const -> void;
 
-        static inline constinit DirectX::XMFLOAT4X4A s_view_mtx;
-        static inline constinit DirectX::XMFLOAT4X4A s_proj_mtx;
-        static inline constinit DirectX::XMFLOAT4X4A s_view_proj_mtx;
-        static inline DirectX::XMFLOAT4A s_clear_color;
-        static inline DirectX::BoundingFrustum s_frustum;
+        static inline constinit XMFLOAT4X4A s_view_mtx;
+        static inline constinit XMFLOAT4X4A s_proj_mtx;
+        static inline constinit XMFLOAT4X4A s_view_proj_mtx;
+        static inline XMFLOAT4A s_clear_color;
+        static inline BoundingFrustum s_frustum;
         static inline com::transform s_camera_transform;
         static inline constinit graphics_subsystem* s_instance;
         eastl::optional<vkb::command_buffer> m_cmd {};

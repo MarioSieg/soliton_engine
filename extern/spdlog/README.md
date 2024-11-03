@@ -30,7 +30,7 @@ see example [CMakeLists.txt](https://github.com/gabime/spdlog/blob/v1.x/example/
 * Arch Linux: `pacman -S spdlog`
 * openSUSE: `sudo zypper in spdlog-devel`
 * vcpkg: `vcpkg install spdlog`
-* conan: `spdlog/[>=1.4.1]`
+* conan: `conan install --requires=spdlog/[*]`
 * conda: `conda install -c conda-forge spdlog`
 * build2: ```depends: spdlog ^1.8.2```
 
@@ -170,9 +170,9 @@ spdlog::flush_every(std::chrono::seconds(3));
 ```
 
 ---
-#### stopwatch
+#### Stopwatch
 ```c++
-// stopwatch support for spdlog
+// Stopwatch support for spdlog
 #include "spdlog/stopwatch.h"
 void stopwatch_example()
 {
@@ -273,6 +273,7 @@ void async_example()
 ---
 #### Asynchronous logger with multi sinks
 ```c++
+#include "spdlog/async.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/sinks/rotating_file_sink.h"
 
@@ -436,7 +437,22 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     logger->info("Some info message");
 }
 ```
+---
 
+#### Mapped Diagnostic Context
+```c++
+// Mapped Diagnostic Context (MDC) is a map that stores key-value pairs (string values) in thread local storage.
+// Each thread maintains its own MDC, which loggers use to append diagnostic information to log outputs.
+// Note: it is not supported in asynchronous mode due to its reliance on thread-local storage.
+#include "spdlog/mdc.h"
+void mdc_example()
+{
+    spdlog::mdc::put("key1", "value1");
+    spdlog::mdc::put("key2", "value2");
+    // if not using the default format, use the %& formatter to print mdc data
+    // spdlog::set_pattern("[%H:%M:%S %z] [%^%L%$] [%&] %v");
+}
+```
 ---
 ## Benchmarks
 

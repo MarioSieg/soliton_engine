@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "debug_renderer.hpp"
 #include "../graphics/graphics_subsystem.hpp"
@@ -16,12 +16,12 @@ namespace lu::physics {
         dd().end_batch();
     }
 
-    static constexpr DirectX::XMFLOAT3 k_physics_debug_color {1.0f, 0.0f, 0.0f};
+    static constexpr XMFLOAT3 k_physics_debug_color {1.0f, 0.0f, 0.0f};
 
     auto debug_renderer::DrawLine(JPH::RVec3Arg from, JPH::RVec3Arg to, const JPH::ColorArg color) -> void {
         dd().draw_line(
-            eastl::bit_cast<DirectX::XMFLOAT3A>(from),
-            eastl::bit_cast<DirectX::XMFLOAT3A>(to),
+            eastl::bit_cast<XMFLOAT3A>(from),
+            eastl::bit_cast<XMFLOAT3A>(to),
             k_physics_debug_color
         );
     }
@@ -34,18 +34,18 @@ namespace lu::physics {
         ECastShadow shadow
     ) -> void {
         dd().draw_line(
-            eastl::bit_cast<DirectX::XMFLOAT3A>(a),
-            eastl::bit_cast<DirectX::XMFLOAT3A>(b),
+            eastl::bit_cast<XMFLOAT3A>(a),
+            eastl::bit_cast<XMFLOAT3A>(b),
             k_physics_debug_color
         );
         dd().draw_line(
-            eastl::bit_cast<DirectX::XMFLOAT3A>(b),
-            eastl::bit_cast<DirectX::XMFLOAT3A>(c),
+            eastl::bit_cast<XMFLOAT3A>(b),
+            eastl::bit_cast<XMFLOAT3A>(c),
             k_physics_debug_color
         );
         dd().draw_line(
-            eastl::bit_cast<DirectX::XMFLOAT3A>(c),
-            eastl::bit_cast<DirectX::XMFLOAT3A>(a),
+            eastl::bit_cast<XMFLOAT3A>(c),
+            eastl::bit_cast<XMFLOAT3A>(a),
             k_physics_debug_color
         );
     }

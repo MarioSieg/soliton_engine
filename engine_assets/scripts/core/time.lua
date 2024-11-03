@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------
 -- Lunam Engine time Module
 --
--- Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+-- Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 ------------------------------------------------------------------------------
 
 local ffi = require 'ffi'
@@ -9,6 +9,7 @@ local cpp = ffi.C
 
 ffi.cdef [[
     double __lu_get_delta_time(void);
+    double __lu_get_hpc_clock_now_ns(void);
 ]]
 
 local min, max = math.min, math.max
@@ -56,6 +57,26 @@ function time:_update()
     self.fps_avg = sum / samples
     self.fps_avg_min = min(self.fps_avg_min, self.fps_avg)
     self.fps_avg_max = max(self.fps_avg_max, self.fps_avg)
+end
+
+function time.hpc_clock_now()
+    return cpp.__lu_get_hpc_clock_now_ns()
+end
+
+function time.hpc_clock_elapsed_ns(start)
+    return time.hpc_clock_now() - start
+end
+
+function time.hpc_clock_elapsed_us(start)
+    return time.hpc_clock_elapsed_ns(start) / 1000
+end
+
+function time.hpc_clock_elapsed_ms(start)
+    return time.hpc_clock_elapsed_ns(start) / 1000000
+end
+
+function time.hpc_clock_elapsed_s(start)
+    return time.hpc_clock_elapsed_ns(start) / 1000000000
 end
 
 return time

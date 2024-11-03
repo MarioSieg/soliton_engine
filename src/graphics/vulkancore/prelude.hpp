@@ -1,8 +1,11 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #pragma once
 
 #include "../../core/core.hpp"
+
+// Include GLSL/C++ shader header
+#include "../../../../engine_assets/shaders/include/cpp_shared_structures.h"
 
 // Keep Vulkan's C++ source code clean and remove some magic
 // Useful when tutorials or other stuff use plain C, so its easier to compare

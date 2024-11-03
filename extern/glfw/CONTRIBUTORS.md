@@ -15,6 +15,7 @@ video tutorials.
  - Keith Bauer
  - John Bartholomew
  - Coşku Baş
+ - Bayemite
  - Niklas Behrens
  - Andrew Belt
  - Nevyn Bengtsson
@@ -32,7 +33,9 @@ video tutorials.
  - Nicolas Caramelli
  - David Carlier
  - Arturo Castro
+ - Jose Luis Cercós Pita
  - Chi-kwan Chan
+ - Victor Chernyakin
  - TheChocolateOre
  - Ali Chraghi
  - Joseph Chua
@@ -46,7 +49,9 @@ video tutorials.
  - Andrew Corrigan
  - Bailey Cosier
  - Noel Cower
+ - James Cowgill
  - CuriouserThing
+ - Bill Currie
  - Jason Daly
  - danhambleton
  - Jarrod Davis
@@ -98,6 +103,7 @@ video tutorials.
  - Warren Hu
  - Charles Huber
  - Brent Huisman
+ - Florian Hülsmann
  - illustris
  - InKryption
  - IntellectualKitty
@@ -150,6 +156,7 @@ video tutorials.
  - Jonathan Mercier
  - Marcel Metz
  - Liam Middlebrook
+ - mightgoyardstill
  - Ave Milia
  - Icyllis Milica
  - Jonathan Miller
@@ -166,11 +173,15 @@ video tutorials.
  - Pascal Muetschard
  - James Murphy
  - Julian Møller
+ - Julius Häger
+ - Nat!
+ - NateIsStalling
  - ndogxj
  - F. Nedelec
  - n3rdopolis
  - Kristian Nielsen
  - Joel Niemelä
+ - Victor Nova
  - Kamil Nowakowski
  - onox
  - Denis Ovod
@@ -217,6 +228,7 @@ video tutorials.
  - Brandon Schaefer
  - Sebastian Schuberth
  - Scr3amer
+ - Jan Schuerkamp
  - Christian Sdunek
  - Matt Sealey
  - Steve Sexton
@@ -246,6 +258,7 @@ video tutorials.
  - Paul Sultana
  - Nathan Sweet
  - TTK-Bandit
+ - Nuno Teixeira
  - Jared Tiala
  - Sergey Tikhomirov
  - Arthur Tombs

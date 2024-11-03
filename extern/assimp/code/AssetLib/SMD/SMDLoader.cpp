@@ -3,7 +3,7 @@
 Open Asset Import Library (assimp)
 ---------------------------------------------------------------------------
 
-Copyright (c) 2006-2022, assimp team
+Copyright (c) 2006-2024, assimp team
 
 All rights reserved.
 
@@ -400,8 +400,12 @@ void SMDImporter::AddBoneChildren(aiNode* pcNode, uint32_t iParent) {
         }
     }
 
+    // nothing to do
+    if (pcNode->mNumChildren == 0)
+        return;
+
     // now allocate the output array
-    pcNode->mChildren = new aiNode*[pcNode->mNumChildren];
+    pcNode->mChildren = new aiNode *[pcNode->mNumChildren];
 
     // and fill all subnodes
     unsigned int qq( 0 );
@@ -589,12 +593,12 @@ void SMDImporter::CreateOutputMaterials() {
         pScene->mMaterials[iMat] = pcMat;
 
         aiString szName;
-        szName.length = static_cast<ai_uint32>(ai_snprintf(szName.data,MAXLEN,"Texture_%u",iMat));
+        szName.length = static_cast<ai_uint32>(ai_snprintf(szName.data, AI_MAXLEN, "Texture_%u", iMat));
         pcMat->AddProperty(&szName,AI_MATKEY_NAME);
 
         if (aszTextures[iMat].length())
         {
-            ::strncpy(szName.data, aszTextures[iMat].c_str(),MAXLEN-1);
+            ::strncpy(szName.data, aszTextures[iMat].c_str(), AI_MAXLEN - 1);
             szName.length = static_cast<ai_uint32>( aszTextures[iMat].length() );
             pcMat->AddProperty(&szName,AI_MATKEY_TEXTURE_DIFFUSE(0));
         }

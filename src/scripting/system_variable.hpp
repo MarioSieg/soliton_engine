@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #pragma once
 
@@ -33,7 +33,10 @@ namespace lu::scripting {
         }
     }
 
-    #define lu_convar_check(expr, msg) if (!(expr)) { log_error("Failed to register system variable {}: {}", #expr, msg); return false; }
+    #define lu_convar_check(expr, msg) if (!(expr)) {\
+        log_error("Failed to register system variable '{}': Failed: {} <- {}", m_name, #expr, msg);\
+        return false;\
+    }
 
     template <typename T> requires is_con_var_type<T>
     class system_variable final {

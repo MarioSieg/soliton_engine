@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #pragma once
 
@@ -15,9 +15,11 @@ namespace lu {
 
         template <typename T, typename... Ar> requires is_subsystem<T, Ar...>
         auto install(Ar&&... args) -> eastl::shared_ptr<T> {
+            stopwatch clock {};
             auto subsystem = eastl::make_shared<T>(std::forward<Ar>(args)...);
             subsystem->resize_hook = [this] { this->resize(); };
             m_subsystems.emplace_back(subsystem);
+            dynamic_cast<class subsystem*>(&*subsystem)->m_boot_time = clock.elapsed<eastl::chrono::nanoseconds>();
             return subsystem;
         }
 
@@ -25,8 +27,9 @@ namespace lu {
 
         [[nodiscard]] auto get_delta_time() noexcept -> double;
         [[nodiscard]] auto get_time() noexcept -> double;
+
         auto request_exit() noexcept -> void;
-        auto on_new_scene_start(scene& scene) -> void;
+        auto start_scene(scene& scene) -> void;
 
         HOTPROC auto run() -> void;
         auto resize() -> void;

@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "context.hpp"
 #include "../shader.hpp"
@@ -16,7 +16,7 @@ namespace lu::vkb {
     };
 
     context::context(const context_desc& desc) : m_window{desc.window}, m_concurrent_frames{desc.concurrent_frames} {
-        passert(m_window != nullptr);
+        panic_assert(m_window != nullptr);
 
         switch (desc.msaa_samples) {
             case 0: m_msaa_samples = vk::SampleCountFlagBits::e1; break;
@@ -38,10 +38,6 @@ namespace lu::vkb {
 
         m_descriptor_allocator.emplace();
         m_descriptor_layout_cache.emplace();
-        m_shutdown_deletion_queue.push([this] {
-            m_descriptor_allocator.reset();
-            m_descriptor_layout_cache.reset();
-        });
     }
 
     context::~context() {
@@ -57,13 +53,26 @@ namespace lu::vkb {
         vmaFreeStatsString(m_device->get_allocator(), vma_stats_string);
 
         vkcheck(m_device->get_logical_device().waitIdle());
-        m_shutdown_deletion_queue.flush();
+        m_descriptor_allocator.reset();
+        m_descriptor_layout_cache.reset();
+        destroy_sync_prims();
+        destroy_command_buffers();
+        destroy_msaa_target();
+        destroy_frame_buffer();
+        m_device->get_logical_device().destroyRenderPass(m_scene_render_pass, vkb::get_alloc());
+        m_device->get_logical_device().destroyRenderPass(m_ui_render_pass, vkb::get_alloc());
+        destroy_depth_stencil();
+        m_device->get_logical_device().destroyCommandPool(m_graphics_command_pool, vkb::get_alloc());
+        m_device->get_logical_device().destroyCommandPool(m_compute_command_pool, vkb::get_alloc());
+        m_device->get_logical_device().destroyCommandPool(m_transfer_command_pool, vkb::get_alloc());
+        m_swapchain.reset();
+        m_device.reset();
     }
 
     // Set clear values for all framebuffer attachments with loadOp set to clear
     // We use two attachments (color and depth) that are cleared at the start of the subpass and as such we need to set clear values for both
     auto context::begin_frame(
-        const DirectX::XMFLOAT4A& clear_color,
+        const XMFLOAT4A& clear_color,
         vk::CommandBufferInheritanceInfo* out_inheritance_info
     ) -> eastl::optional<command_buffer> {
         m_clear_values[0].color = eastl::bit_cast<vk::ClearColorValue>(clear_color);
@@ -71,12 +80,12 @@ namespace lu::vkb {
         m_clear_values[2].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
 
         // Use a fence to wait until the command buffer has finished execution before using it again
-        vkcheck(m_device->get_logical_device().waitForFences(1, &m_wait_fences[m_current_frame], vk::True, eastl::numeric_limits<std::uint64_t>::max()));
-        vkcheck(m_device->get_logical_device().resetFences(1, &m_wait_fences[m_current_frame]));
+        vkcheck(m_device->get_logical_device().waitForFences(1, &m_wait_fences[m_current_concurrent_frame_idx], vk::True, eastl::numeric_limits<std::uint64_t>::max()));
+        vkcheck(m_device->get_logical_device().resetFences(1, &m_wait_fences[m_current_concurrent_frame_idx]));
 
         // Get the next swap chain image from the implementation
         // Note that the implementation is free to return the images in any order, so we must use the acquire function and can't just cycle through the images/imageIndex on our own
-        vk::Result result = m_swapchain->acquire_next_image(m_semaphores.present_complete[m_current_frame], m_image_index);
+        vk::Result result = m_swapchain->acquire_next_image(m_semaphores.present_complete[m_current_concurrent_frame_idx], m_image_index);
         if (result == vk::Result::eErrorOutOfDateKHR || result == vk::Result::eSuboptimalKHR) [[unlikely]] {
             if (result == vk::Result::eErrorOutOfDateKHR) {
                 on_resize();
@@ -92,7 +101,7 @@ namespace lu::vkb {
             out_inheritance_info->framebuffer = m_framebuffers[m_image_index];
         }
 
-        const vk::CommandBuffer cmd_buf = m_command_buffers[m_current_frame];
+        const vk::CommandBuffer cmd_buf = m_command_buffers[m_current_concurrent_frame_idx];
         return command_buffer{m_graphics_command_pool, cmd_buf, dvc().get_graphics_queue(), vk::QueueFlagBits::eGraphics};
     }
 
@@ -104,13 +113,13 @@ namespace lu::vkb {
         submit_info.pCommandBuffers = &*cmd;
         // Semaphore to wait upon before the submitted command buffer starts executing
         submit_info.waitSemaphoreCount = 1;
-        submit_info.pWaitSemaphores = &m_semaphores.present_complete[m_current_frame];
+        submit_info.pWaitSemaphores = &m_semaphores.present_complete[m_current_concurrent_frame_idx];
         // Semaphore to be signaled when command buffers have completed
         submit_info.signalSemaphoreCount = 1;
-        submit_info.pSignalSemaphores = &m_semaphores.render_complete[m_current_frame];
+        submit_info.pSignalSemaphores = &m_semaphores.render_complete[m_current_concurrent_frame_idx];
 
         // Submit to the graphics queue passing a wait fence
-        vkcheck(cmd.queue().submit(1, &submit_info, m_wait_fences[m_current_frame]));
+        vkcheck(cmd.queue().submit(1, &submit_info, m_wait_fences[m_current_concurrent_frame_idx]));
 
         // Present the current frame buffer to the swap chain
         // Pass the semaphore signaled by the command buffer submission from the submit info as the wait semaphore for swap chain presentation
@@ -121,7 +130,7 @@ namespace lu::vkb {
         present_info.pSwapchains = &swapchain;
         present_info.pImageIndices = &m_image_index;
         present_info.waitSemaphoreCount = 1;
-        present_info.pWaitSemaphores = &m_semaphores.render_complete[m_current_frame];
+        present_info.pWaitSemaphores = &m_semaphores.render_complete[m_current_concurrent_frame_idx];
         vk::Result result = m_device->get_graphics_queue().presentKHR(&present_info);
         if (result == vk::Result::eErrorOutOfDateKHR || result == vk::Result::eSuboptimalKHR) [[unlikely]] {
             on_resize();
@@ -129,7 +138,7 @@ namespace lu::vkb {
             vkcheck(result);
         }
 
-        m_current_frame = (m_current_frame + 1) % m_concurrent_frames; // Advance to the next frame
+        m_current_concurrent_frame_idx = (m_current_concurrent_frame_idx + 1) % m_concurrent_frames; // Advance to the next frame
     }
 
     auto context::on_resize() -> void {
@@ -157,7 +166,6 @@ namespace lu::vkb {
         destroy_sync_prims();
         create_sync_prims();
 
-        m_shutdown_deletion_queue.flush();
         vkcheck(m_device->get_logical_device().waitIdle());
     }
 
@@ -166,10 +174,6 @@ namespace lu::vkb {
         m_swapchain.emplace(m_device->get_instance(), m_device->get_physical_device(), m_device->get_logical_device());
         m_swapchain->init_surface(m_window);
         recreate_swapchain();
-        m_shutdown_deletion_queue.push([this] {
-            m_swapchain.reset();
-            m_device.reset();
-        });
     }
 
     auto context::create_sync_prims() -> void {
@@ -186,10 +190,6 @@ namespace lu::vkb {
             vkcheck(m_device->get_logical_device().createSemaphore(&semaphore_ci, get_alloc(), &m_semaphores.render_complete[i]));
             vkcheck(m_device->get_logical_device().createFence(&fence_ci, get_alloc(), &m_wait_fences[i]));
         }
-
-        m_shutdown_deletion_queue.push([this] {
-            destroy_sync_prims();
-        });
     }
 
     auto context::create_command_pools() -> void {
@@ -202,11 +202,6 @@ namespace lu::vkb {
         create_cp(m_device->get_graphics_queue_idx(), m_graphics_command_pool);
         create_cp(m_device->get_compute_queue_idx(), m_compute_command_pool);
         create_cp(m_device->get_transfer_queue_idx(), m_transfer_command_pool);
-        m_shutdown_deletion_queue.push([this] {
-            m_device->get_logical_device().destroyCommandPool(m_graphics_command_pool, vkb::get_alloc());
-            m_device->get_logical_device().destroyCommandPool(m_compute_command_pool, vkb::get_alloc());
-            m_device->get_logical_device().destroyCommandPool(m_transfer_command_pool, vkb::get_alloc());
-        });
     }
 
     auto context::create_command_buffers() -> void {
@@ -217,10 +212,6 @@ namespace lu::vkb {
         command_buffer_allocate_info.level = vk::CommandBufferLevel::ePrimary;
         command_buffer_allocate_info.commandBufferCount = static_cast<std::uint32_t>(m_command_buffers.size());
         vkcheck(m_device->get_logical_device().allocateCommandBuffers(&command_buffer_allocate_info, m_command_buffers.data()));
-
-        m_shutdown_deletion_queue.push([this] {
-            destroy_command_buffers();
-        });
     }
 
     auto context::setup_depth_stencil() -> void {
@@ -267,10 +258,6 @@ namespace lu::vkb {
             image_view_ci.subresourceRange.aspectMask |= vk::ImageAspectFlagBits::eStencil;
         }
         vkcheck(m_device->get_logical_device().createImageView(&image_view_ci, get_alloc(), &m_depth_stencil.view));
-
-        m_shutdown_deletion_queue.push([this] {
-            destroy_depth_stencil();
-        });
     }
 
     // Render pass setup
@@ -360,12 +347,8 @@ namespace lu::vkb {
         render_pass_ci.pDependencies = dependencies.data();
 
         vkcheck(m_device->get_logical_device().createRenderPass(&render_pass_ci, get_alloc(), &m_scene_render_pass));
+        vkcheck(m_device->get_logical_device().createRenderPass(&render_pass_ci, get_alloc(), &m_skybox_render_pass));
         vkcheck(m_device->get_logical_device().createRenderPass(&render_pass_ci, get_alloc(), &m_ui_render_pass));
-
-        m_shutdown_deletion_queue.push([this] {
-            m_device->get_logical_device().destroyRenderPass(m_scene_render_pass, vkb::get_alloc());
-            m_device->get_logical_device().destroyRenderPass(m_ui_render_pass, vkb::get_alloc());
-        });
     }
 
     auto context::setup_frame_buffer() -> void {
@@ -386,10 +369,6 @@ namespace lu::vkb {
             framebuffer_ci.layers = 1;
             vkcheck(m_device->get_logical_device().createFramebuffer(&framebuffer_ci, get_alloc(), &m_framebuffers[i]));
         }
-
-        m_shutdown_deletion_queue.push([this] {
-            destroy_frame_buffer();
-        });
     }
 
     auto context::create_pipeline_cache() -> void {
@@ -466,10 +445,6 @@ namespace lu::vkb {
         }
 
         vkcheck(m_device->get_logical_device().createImageView(&image_view_ci, get_alloc(), &m_msaa_target.depth.view));
-
-        m_shutdown_deletion_queue.push([this] {
-            destroy_msaa_target();
-        });
     }
 
     auto context::destroy_depth_stencil() const -> void {
@@ -534,5 +509,11 @@ namespace lu::vkb {
         delete s_instance;
         s_instance = nullptr;
         s_init.store(false);
+    }
+
+    auto context::compute_aligned_dynamic_ubo_size(const std::size_t size) noexcept -> std::size_t {
+        const std::size_t min_align = m_device->get_physical_device_props().limits.minUniformBufferOffsetAlignment;
+        if (!min_align) return size;
+        return (size+min_align-1) & -min_align;
     }
 }

@@ -645,6 +645,34 @@ struct ClassFunctions : ClassTests
 {
 };
 
+#if !LUABRIDGE_ON_LUAU
+TEST_F(ClassFunctions, Destructor)
+{
+    using Int = Class<int, EmptyBase>;
+
+    bool called = false;
+    int data = 0;
+
+    luabridge::getGlobalNamespace(L)
+        .beginClass<Int>("Int")
+            .addConstructor<void(int)>()
+            .addDestructor([&](Int* obj)
+            {
+                called = true;
+                data = obj->data;
+            })
+        .endClass();
+
+    runLua("local x = Int(42)");
+    ASSERT_TRUE(result().isNil());
+
+    closeLuaState();
+
+    EXPECT_TRUE(called);
+    EXPECT_EQ(42, data);
+}
+#endif
+
 TEST_F(ClassFunctions, MemberFunctions)
 {
     using Int = Class<int, EmptyBase>;
@@ -777,7 +805,19 @@ T proxyConstFunction(const Class<T, Base>* object, T value)
 }
 
 template<class T, class Base>
+T proxyConstFunctionRef(const Class<T, Base>& object, T value)
+{
+    return value;
+}
+
+template<class T, class Base>
 T proxyConstFunctionNoexcept(const Class<T, Base>* object, T value) noexcept
+{
+    return value;
+}
+
+template<class T, class Base>
+T proxyConstFunctionRefNoexcept(const Class<T, Base>& object, T value) noexcept
 {
     return value;
 }
@@ -911,7 +951,9 @@ TEST_F(ClassFunctions, ConstProxyFunctions)
     luabridge::getGlobalNamespace(L)
         .beginClass<Int>("Int")
         .addFunction("constMethod", &proxyConstFunction<int, EmptyBase>)
+        .addFunction("constMethodRef", &proxyConstFunctionRef<int, EmptyBase>)
         .addFunction("constMethodNoexcept", &proxyConstFunctionNoexcept<int, EmptyBase>)
+        .addFunction("constMethodRefNoexcept", &proxyConstFunctionRefNoexcept<int, EmptyBase>)
         .endClass();
 
     addHelperFunctions(L);
@@ -1123,7 +1165,7 @@ TEST_F(ClassProperties, FieldPointers)
     luabridge::getGlobalNamespace(L)
         .beginClass<Int>("Int")
         .addConstructor<void (*)(int)>()
-        .addProperty("data", &Int::data, true)
+        .addProperty("data", &Int::data, &Int::data)
         .endClass();
 
     runLua("result = Int (501)");
@@ -1146,7 +1188,7 @@ TEST_F(ClassProperties, FieldPointers_ReadOnly)
     luabridge::getGlobalNamespace(L)
         .beginClass<Int>("Int")
         .addConstructor<void (*)(int)>()
-        .addProperty("data", &Int::data, false)
+        .addProperty("data", &Int::data)
         .endClass();
 
     runLua("result = Int (501)");
@@ -1776,7 +1818,7 @@ TEST_F(ClassStaticProperties, FieldPointers)
 
     luabridge::getGlobalNamespace(L)
         .beginClass<Int>("Int")
-        .addStaticProperty("staticData", &Int::staticData, true)
+        .addStaticProperty("staticData", &Int::staticData, &Int::staticData)
         .endClass();
 
     Int::staticData = 10;
@@ -1817,7 +1859,7 @@ TEST_F(ClassStaticProperties, FieldPointers_ReadOnly)
 
     luabridge::getGlobalNamespace(L)
         .beginClass<Int>("Int")
-        .addStaticProperty("staticData", &Int::staticData, false)
+        .addStaticProperty("staticData", &Int::staticData)
         .endClass();
 
     Int::staticData = 10;
@@ -1976,7 +2018,7 @@ TEST_F(ClassStaticProperties, FieldPointers_Derived)
 
     luabridge::getGlobalNamespace(L)
         .beginClass<Base>("Base")
-        .addStaticProperty("staticData", &Base::staticData, true)
+        .addStaticProperty("staticData", &Base::staticData, &Base::staticData)
         .endClass()
         .deriveClass<Derived, Base>("Derived")
         .endClass();
@@ -2000,10 +2042,10 @@ TEST_F(ClassStaticProperties, FieldPointers_Overridden)
 
     luabridge::getGlobalNamespace(L)
         .beginClass<Base>("Base")
-        .addStaticProperty("staticData", &Base::staticData, true)
+        .addStaticProperty("staticData", &Base::staticData, &Base::staticData)
         .endClass()
         .deriveClass<Derived, Base>("Derived")
-        .addStaticProperty("staticData", &Derived::staticData, true)
+        .addStaticProperty("staticData", &Derived::staticData, &Derived::staticData)
         .endClass();
 
     Base::staticData = 1.23f;
@@ -2034,7 +2076,7 @@ TEST_F(ClassStaticProperties, SubsequentRegistration)
         .beginClass<Int>("Int")
         .endClass()
         .beginClass<Int>("Int")
-        .addStaticProperty("staticData", &Int::staticData, true)
+        .addStaticProperty("staticData", &Int::staticData, &Int::staticData)
         .endClass();
 
     Int::staticData = 10;
@@ -2591,10 +2633,10 @@ TEST_F(ClassTests, EnclosedClassProperties)
 
     luabridge::getGlobalNamespace(L)
         .beginClass<Inner>("Inner")
-        .addProperty("data", &Inner::data)
+        .addProperty("data", &Inner::data, &Inner::data)
         .endClass()
         .beginClass<Outer>("Outer")
-        .addProperty("data", &Outer::data)
+        .addProperty("data", &Outer::data, &Outer::data)
         .endClass();
 
     Outer outer(Inner(0));

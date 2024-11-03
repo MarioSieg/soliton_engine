@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "descriptor.hpp"
 #include "context.hpp"
@@ -136,7 +136,7 @@ namespace lu::vkb {
         layout_info.bindingCount = static_cast<std::uint32_t>(m_bindings.size());
         layout_info.pBindings = m_bindings.data();
         layout = m_cache->create_layout(layout_info);
-        passert(m_allocator->allocate(set, layout));
+        panic_assert(m_allocator->allocate(set, layout));
     }
 
     auto descriptor_factory::build_no_info(vk::DescriptorSet& set) -> void {

@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #pragma once
 
@@ -25,29 +25,13 @@ namespace lu::graphics {
         virtual auto configure_multisampling(vk::PipelineMultisampleStateCreateInfo& cfg) -> void;
         virtual auto configure_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> void;
         virtual auto configure_render_pass(vk::RenderPass& pass) -> void;
+
         auto configure_enable_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> void;
 
-        HOTPROC virtual auto render_single_mesh(
-            vkb::command_buffer& cmd,
-            const mesh& mesh,
-            const com::mesh_renderer& renderer,
-            DirectX::FXMMATRIX view_proj_mtx,
-            DirectX::CXMMATRIX model_mtx,
-            DirectX::CXMMATRIX view_mtx
-        ) const noexcept -> void = 0;
         virtual auto on_bind(vkb::command_buffer& cmd) const -> void;
 
     private:
         friend class graphics_subsystem;
-
-        HOTPROC auto render_mesh(
-            vkb::command_buffer& cmd,
-            const com::transform& transform,
-            const com::mesh_renderer& renderer,
-            const DirectX::BoundingFrustum& frustum,
-            DirectX::FXMMATRIX view_proj_mtx,
-            DirectX::CXMMATRIX view_mtx
-        ) const noexcept -> void;
 
         auto create(vk::PipelineLayout& out_layout, vk::Pipeline& out_pipeline, vk::PipelineCache cache) -> void override final;
     };

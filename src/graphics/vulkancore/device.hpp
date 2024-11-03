@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #pragma once
 
@@ -33,7 +33,7 @@ namespace lu::vkb {
         [[nodiscard]] auto get_mem_type_idx_or_panic(const std::uint32_t type_bits, const vk::MemoryPropertyFlags properties) const -> std::uint32_t {
             vk::Bool32 found {};
             const auto idx = get_mem_type_idx(type_bits, properties, found);
-            passert(found == vk::True);
+            panic_assert(found == vk::True);
             return idx;
         }
         [[nodiscard]] auto get_graphics_queue() const noexcept -> vk::Queue { return m_graphics_queue; }
@@ -54,10 +54,15 @@ namespace lu::vkb {
         ) const -> void;
 
     private:
-        static inline constinit eastl::array<const char*, 2> k_device_extensions {
-            VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-            VK_KHR_MAINTENANCE1_EXTENSION_NAME
-        };
+        static inline const eastl::vector<const char*> k_device_extensions {[] {
+            eastl::vector<const char*> extensions {};
+            extensions.emplace_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+            extensions.emplace_back(VK_KHR_MAINTENANCE1_EXTENSION_NAME);
+            #if PLATFORM_OSX
+                extensions.emplace_back(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
+            #endif
+            return extensions;
+        }()};
         static constexpr vk::PhysicalDeviceFeatures k_enabled_features = [] {
             vk::PhysicalDeviceFeatures enabled_features {};
             enabled_features.samplerAnisotropy = vk::True;
@@ -69,7 +74,7 @@ namespace lu::vkb {
         auto find_physical_device() -> void;
         auto create_logical_device(
             const vk::PhysicalDeviceFeatures& enabled_features,
-            eastl::span<const char*> enabled_extensions,
+            eastl::span<const char* const> enabled_extensions,
             void* next_chain,
             vk::QueueFlags requested_queue_types = vk::QueueFlagBits::eGraphics | vk::QueueFlagBits::eCompute | vk::QueueFlagBits::eTransfer
         ) -> void;

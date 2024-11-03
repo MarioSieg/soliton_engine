@@ -11,6 +11,8 @@ local vec2 = require 'vec2'
 local vec3 = require 'vec3'
 local components = require 'components'
 
+local abs, rad = math.abs, math.rad
+
 local camera = {
     target_entity = nil,
     sensitivity = 0.5, -- mouse look sensitivity
@@ -32,7 +34,7 @@ local camera = {
     enable_fast_movement = true, -- enable faster movement when the key below is pressed
     fast_movement_key = input.keys.left_shift, -- move fast when this key is pressed
     lock_movement_axis = vec3.one, -- enables to disable the movement on any axis, by setting the axis to 0
-    enable_smooth_movement = true,
+    enable_smooth_movement = false,
     smooth_movement_time = 0.5,
     enable_smooth_look = true,
     smooth_look_snappiness = 12.0,
@@ -61,8 +63,8 @@ function camera:_update()
 end
 
 function camera:_compute_rotation()
-    local sens = gmath.abs(self.sensitivity) * 0.01
-    local clamp_y_rad = gmath.rad(gmath.abs(self.clamp_y))
+    local sens = abs(self.sensitivity) * 0.01
+    local clamp_y_rad = rad(abs(self.clamp_y))
     local mouse_pos = input.get_mouse_position()
 
     local delta = mouse_pos
@@ -89,22 +91,22 @@ end
 
 function camera:_compute_position()
     local delta = time.delta_time
-    local speed = gmath.abs(self.default_movement_speed)
+    local speed = abs(self.default_movement_speed)
 
     if self.enable_fast_movement then
         if input.is_key_pressed(input.keys.left_shift) then -- are we moving fast (sprinting?)
-            speed = gmath.abs(self.fast_movement_speed)
+            speed = abs(self.fast_movement_speed)
         end
     end
 
     local target = self._position
 
     local function update_pos(dir)
-        local movSpeed = speed
+        local move_speed = speed
         if not self.enable_smooth_movement then -- if we use raw movement, we have to apply the delta time here
-            movSpeed = movSpeed * delta
+            move_speed = move_speed * delta
         end
-        target = target + (dir * self._rotation) * movSpeed
+        target = target + (dir * self._rotation) * move_speed
     end
 
     if self._is_focused then
@@ -123,7 +125,7 @@ function camera:_compute_position()
     end
 
     if self.enable_smooth_movement then -- smooth movement
-        local _position, _velocity = vec3.smooth_damp(self._position, target, self._velocity, self.smooth_movement_time, gmath.infinity, delta) -- smooth damp and apply delta time
+        local _position, _velocity = vec3.smooth_damp(self._position, target, self._velocity, self.smooth_movement_time, math.huge, delta) -- smooth damp and apply delta time
         self._position = _position
         -- self._velocity = vec3.clamp(self._velocity, -speed, speed)
     else -- raw movement

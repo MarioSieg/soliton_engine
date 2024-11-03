@@ -19,7 +19,25 @@ Moving bodies have a [MotionProperties](@ref MotionProperties) object that conta
 
 ## Creating Bodies {#creating-bodies}
 
-Bodies are inserted into the [PhysicsSystem](@ref PhysicsSystem) and interacted with through the [BodyInterface](@ref BodyInterface). 
+Bodies are inserted into the [PhysicsSystem](@ref PhysicsSystem) and interacted with through the [BodyInterface](@ref BodyInterface).
+
+The general life cycle of a body is:
+
+- BodyInterface::CreateBody - Construct a Body object and initialize it. You cannot use `new` to create a Body.
+- BodyInterface::AddBody - Add the body to the PhysicsSystem and make it participate in the simulation.
+- BodyInterface::RemoveBody - Remove it from the PhysicsSystem.
+- BodyInterface::DestroyBody - Deinitialize and destruct the Body. You cannot use `delete` to delete a Body. This function will not automatically remove the Body from the PhysicsSystem.
+
+If you need to add many bodies at the same time then use the batching functions:
+
+- BodyInterface::AddBodiesPrepare - Prepares bodies to be added to the PhysicsSystem. Doesn't affect simulation and can be done from a background thread.
+- BodyInterface::AddBodiesFinalize - Finalize insertion. This atomically adds all bodies to the PhysicsSystem.
+- BodyInterface::AddBodiesAbort - If you've called AddBodiesPrepare but changed your mind and no longer want to add the bodies to the PhysicsSystem. Useful when streaming in level sections and the player decides to go the other way.
+- BodyInterface::RemoveBodies - Batch remove a lot of bodies from the PhysicsSystem.
+
+Always use the batch adding functions when possible! Adding many bodies, one at a time, results in a really inefficient broadphase and in the worst case can lead to missed collisions (an assert will trigger if this is the case). If you cannot avoid adding many bodies one at a time, use PhysicsSystem::OptimizeBroadPhase to rebuild the tree.
+
+You can call AddBody, RemoveBody, AddBody, RemoveBody to temporarily remove and later reinsert a body into the simulation.
 
 ## Multithreaded Access 
 
@@ -28,12 +46,12 @@ Jolt is designed to be accessed from multiple threads so the body interface come
 In general, body ID's ([BodyID](@ref BodyID)) are used to refer to bodies. You can access a body through the following construct:
 
 	JPH::BodyLockInterface lock_interface = physics_system.GetBodyLockInterface(); // Or GetBodyLockInterfaceNoLock
-	JPH::BodyID phys_body = ...; // Obtain ID to body
+	JPH::BodyID body_id = ...; // Obtain ID to body
 
 	// Scoped lock
 	{
-		JPH::BodyLockRead lock(lock_interface, phys_body);
-		if (lock.Succeeded()) // phys_body may no longer be valid
+		JPH::BodyLockRead lock(lock_interface, body_id);
+		if (lock.Succeeded()) // body_id may no longer be valid
 		{
 			const JPH::Body &body = lock.GetBody();
 
@@ -70,17 +88,31 @@ Each body has a shape attached that determines the collision volume. The followi
 * [CapsuleShape](@ref CapsuleShape) - A capsule centered around zero.
 * [TaperedCapsuleShape](@ref TaperedCapsuleShape) - A capsule with different radii at the bottom and top.
 * [CylinderShape](@ref CylinderShape) - A cylinder shape. Note that cylinders are the least stable of all shapes, so use another shape if possible.
+* [TaperedCylinderShape](@ref TaperedCylinderShape) - A cylinder with different radii at the bottom and top. Note that cylinders are the least stable of all shapes, so use another shape if possible.
 * [ConvexHullShape](@ref ConvexHullShape) - A convex hull defined by a set of points.
+* [TriangleShape](@ref TriangleShape) - A single triangle. Use a MeshShape if you have multiple triangles.
+* [PlaneShape](@ref PlaneShape) - An infinite plane. Negative half space is considered solid.
 * [StaticCompoundShape](@ref StaticCompoundShape) - A shape containing other shapes. This shape is constructed once and cannot be changed afterwards. Child shapes are organized in a tree to speed up collision detection.
 * [MutableCompoundShape](@ref MutableCompoundShape) - A shape containing other shapes. This shape can be constructed/changed at runtime and trades construction time for runtime performance. Child shapes are organized in a list to make modification easy.
-* [MeshShape](@ref MeshShape) - A shape consisting of triangles. They are mostly used for static geometry but can be used for dynamic or kinematic objects as long as they don't collide with other mesh shapes or heightfield shapes.
+* [MeshShape](@ref MeshShape) - A shape consisting of triangles. They are mostly used for static geometry.
 * [HeightFieldShape](@ref HeightFieldShape) - A shape consisting of NxN points that define the height at each point, very suitable for representing hilly terrain. Any body that uses this shape needs to be static.
+* [EmptyShape](@ref EmptyShape) - A shape that collides with nothing and that can be used as a placeholder or for dummy bodies.
 
 Next to this there are a number of decorator shapes that change the behavior of their children:
 
 * [ScaledShape](@ref ScaledShape) - This shape can scale a child shape. Note that if a shape is rotated first and then scaled, you can introduce shearing which is not supported by the library.
 * [RotatedTranslatedShape](@ref RotatedTranslatedShape) - This shape can rotate and translate a child shape, it can e.g. be used to offset a sphere from the origin.
 * [OffsetCenterOfMassShape](@ref OffsetCenterOfMassShape) - This shape does not change its child shape but it does shift the calculated center of mass for that shape. It allows you to e.g. shift the center of mass of a vehicle down to improve its handling.
+
+### Dynamic Mesh Shapes {#dynamic-mesh-shapes}
+
+Meshes are usually static, but they can be made kinematic or dynamic provided that they don't collide with other mesh- or heightfield shapes (an assert will trigger when this happens and the collision will be ignored).
+
+Mesh shapes also cannot calculate their mass and inertia, so when you want a dynamic mesh, you need to provide these yourself by setting BodyCreationSettings::mOverrideMassProperties = EOverrideMassProperties::MassAndInertiaProvided and supplying the mass and inertia in BodyCreationSettings::mMassPropertiesOverride.
+
+An example can be found [here](https://github.com/jrouwe/JoltPhysics/blob/master/Samples/Tests/General/DynamicMeshTest.cpp).
+
+Note that you should try to avoid dynamic mesh shapes as they are fairly expensive to simulate. Also, mesh shapes don't have a clear inside/outside so a mesh is only considered to be colliding when one of its triangles intersect with the other object. This can result in objects getting stuck inside the mesh without knowing which way is out.
 
 ### Creating Shapes {#creating-shapes}
 
@@ -107,7 +139,7 @@ Creating a convex hull for example looks like:
 			... // Error handling
 	}
 
-Note that after you call Create, the shape is cached and ShapeSettings keeps a reference to your shape. If you call Create again, the same shape will be returned regardless of what changed to the settings object.
+Note that after you call Create, the shape is cached and ShapeSettings keeps a reference to your shape (see @ref memory-management). If you call Create again, the same shape will be returned regardless of what changed to the settings object (unless you call [ClearCachedResult](@ref ShapeSettings::ClearCachedResult) to clear the cache).
 
 ### Saving Shapes {#saving-shapes}
 
@@ -201,6 +233,26 @@ will return a box of size 2x2x2 centered around the origin, so in order to get i
 
 Note that when you work with interface of [BroadPhaseQuery](@ref BroadPhaseQuery), [NarrowPhaseQuery](@ref NarrowPhaseQuery) or [TransformedShape](@ref TransformedShape) this transformation is done for you.
 
+### Scaling Shapes {#scaling-shapes}
+
+Shapes can be scaled using the [ScaledShape](@ref ScaledShape) class. You can scale a shape like:
+
+	JPH::RefConst<Shape> my_scaled_shape = new JPH::ScaledShape(my_non_scaled_shape, JPH::Vec3(x_scale, y_scale, z_scale));
+
+Not all scales are valid for every shape. Use Shape::IsValidScale to check if a scale is valid for a particular shape (the documentation for this function also lists the rules for all shape types).
+
+A safer way of scaling shapes is provided by the Shape::ScaleShape function:
+
+	JPH::Shape::ShapeResult my_scaled_shape = my_non_scaled_shape->ScaleShape(JPH::Vec3(x_scale, y_scale, z_scale));
+
+This function will check if a scale is valid for a particular shape and if a scale is not valid, it will produce the closest scale that is valid. 
+For example, if you scale a CompoundShape that has rotated sub shapes, a non-uniform scale would cause shearing. In that case the Shape::ScaleShape function will create a new compound shape and scale the sub shapes (losing the shear) rather than creating a ScaledShape around the entire CompoundShape.
+
+Updating scaling after a body is created is also possible, but should be done with care. Imagine a sphere in a pipe, scaling the sphere so that it becomes bigger than the pipe creates an impossible situation as there is no way to resolve the collision anymore. 
+Please take a look at the [DynamicScaledShape](https://github.com/jrouwe/JoltPhysics/blob/master/Samples/Tests/ScaledShapes/DynamicScaledShape.cpp) demo. The reason that no ScaledShape::SetScale function exists is to ensure thread safety when collision queries are being executed while shapes are modified.
+
+Note that there are many functions that take a scale in Jolt (e.g. CollisionDispatch::sCollideShapeVsShape), usually the shape is scaled relative to its center of mass. The Shape::ScaleShape function scales the shape relative to the origin of the shape.
+
 ### Creating Custom Shapes {#creating-custom-shapes}
 
 If the defined Shape classes are not sufficient, or if your application can make a more efficient implementation because it has specific domain knowledge, it is possible to create a custom collision shape:
@@ -231,6 +283,14 @@ To create a sensor, either set [BodyCreationSettings::mIsSensor](@ref BodyCreati
 
 To make sensors detect collisions with static objects, set the [BodyCreationSettings::mCollideKinematicVsNonDynamic](@ref BodyCreationSettings::mCollideKinematicVsNonDynamic) to true or call [Body::SetCollideKinematicVsNonDynamic](@ref Body::SetCollideKinematicVsNonDynamic). Note that it can place a large burden on the collision detection system if you have a large sensor intersect with e.g. a large mesh terrain or a height field as you will get many contact callbacks and these contacts will take up a lot of space in the contact cache. Ensure that your sensor is in an object layer that collides with as few static bodies as possible.
 
+## Sleeping {#sleeping-bodies}
+
+During the simulation step, bodies are divided in 'islands'. Each island consists of a set of dynamic bodies that are either in contact with each other, or that are connected through a constraint:
+
+![Simulation islands are enclosed by a red box. Note that the floor is static so not part of an island.](Images/SimulationIsland.jpg)
+
+At the end of each step, all the bodies in an island are checked to see if they have come to rest, if this is the case then the entire island is put to sleep. When a body is sleeping, it can still detect collisions with other objects that are not sleeping, but it will not move or otherwise participate in the simulation to conserve CPU cycles. Sleeping bodies wake up automatically when they're in contact with non-sleeping objects or they can be explicitly woken through an API call like BodyInterface::ActivateBody. Unlike some other physics engines, removing a Body from the world doesn't wake up any surrounding bodies. If you want this you can call BodyInterface::ActivateBodiesInAABox with the bounding box of the removed body (or the combined bounding box if you're removing multiple bodies). Also, things like setting the velocity through Body::SetLinearVelocity will not wake up the Body, use BodyInterface::SetLinearVelocity instead. You can configure the definition of a body 'at rest' through PhysicsSettings::mTimeBeforeSleep and PhysicsSettings::mPointVelocitySleepThreshold.
+
 ## Soft Bodies {#soft-bodies}
 
 Soft bodies (also known as deformable bodies) can be used to create e.g. a soft ball or a piece of cloth. They are created in a very similar way to normal rigid bodies:
@@ -243,11 +303,32 @@ Soft bodies use the Body class just like rigid bodies but can be identified by c
 
 Soft bodies try to implement as much as possible of the normal Body interface, but this interface provides a simplified version of reality, e.g. Body::GetLinearVelocity will return the average particle speed and Body::GetPosition returns the average particle position. During simulation, a soft body will never update its rotation. Internally it stores particle velocities in local space, so if you rotate a soft body e.g. by calling BodyInterface::SetRotation, the body will rotate but its velocity will as well.
 
+### Soft Body Contact Listeners {#soft-body-contact-listener}
+
+Soft Bodies provide contacts with other bodies through the SoftBodyContactListener class. This contact listener works a little bit different from the normal contact listener as you will not receive a contact callback per colliding vertex.
+
+After the broad phase has detected an overlap and the normal layer / collision group filters have had a chance to reject the collision, you will receive a SoftBodyContactListener::OnSoftBodyContactValidate callback. This callback allows you to specify how the vertices of the soft body should interact with the other body. You can override the mass for both bodies and you can turn the contact into a sensor contact.
+
+The simulation will then proceed to do all collision detection and response and after that is finished, you will receive a SoftBodyContactListener::OnSoftBodyContactAdded callback that allows you to inspect all collisions that happened during the simulation step. In order to do this a SoftBodyManifold is provided which allows you to loop over the vertices and ask each vertex what it collided with.
+
+Note that at the time of the callback, multiple threads are operating at the same time. The soft body is stable and can be safely read. The other body that is collided with is not stable however, so you cannot safely read its position/orientation and velocity as it may be modified by another soft body collision at the same time.
+
+### Skinning Soft Bodies {#skinning-soft-bodies}
+
+Using the [skinning](@ref SoftBodySharedSettings::Skinned) constraints, a soft body can be (partially) skinned to joints. This can be used e.g. to partially drive cloth with a character animation. The [vertices](@ref SoftBodySharedSettings::Vertex::mPosition) of the soft body need to be placed in the neutral pose of the character and the joints for this pose need to be calculated in model space (relative to these vertices). The inverted matrices of this neutral pose need to be stored as the [inverse bind matrices](@ref SoftBodySharedSettings::InvBind) and the skinning constraints can then be [weighted](@ref SoftBodySharedSettings::SkinWeight) to these joints. SoftBodySharedSettings::CalculateSkinnedConstraintNormals must be called to gather information needed to calculate the face normals at run-time.
+
+At run-time, you need to provide the animated joints every simulation step through the SoftBodyMotionProperties::SkinVertices call. During simulation, each skinned vertex will calculate its position and this position will be used to limit the movement of its simulated counterpart.
+
+![A Skinned Constraint](Images/SoftBodySkinnedConstraint.jpg)
+
+The adjacent faces of the soft body will be used to calculate the normal of each vertex (shown in red), the vertex is then free to move inside the sphere formed by the skinned vertex position with radius [MaxDistance](@ref SoftBodySharedSettings::Skinned::mMaxDistance) (green sphere). To prevent the vertex from intersecting with the character, it is possible to specify a [BackStopDistance](@ref SoftBodySharedSettings::Skinned::mBackStopDistance) and [BackStopRadius](@ref SoftBodySharedSettings::Skinned::mBackStopRadius), together these form the red sphere. The vertex is not allowed to move inside this sphere.
+
+### Soft Body Work In Progress {#soft-body-wip}
+
 Soft bodies are currently in development, please note the following:
 
 * Soft bodies can only collide with rigid bodies, collisions between soft bodies are not implemented yet.
-* ContactListener callbacks are not triggered for soft bodies.
-* AddForce/AddTorque/SetLinearVelocity/SetLinearVelocityClamped/SetAngularVelocity/SetAngularVelocityClamped/AddImpulse/AddAngularImpulse have no effect on soft bodies as the velocity is stored per particle rather than per body.
+* AddTorque/SetLinearVelocity/SetLinearVelocityClamped/SetAngularVelocity/SetAngularVelocityClamped/AddImpulse/AddAngularImpulse have no effect on soft bodies as the velocity is stored per particle rather than per body.
 * Buoyancy calculations have not been implemented yet.
 * Constraints cannot operate on soft bodies, set the inverse mass of a particle to zero and move it by setting a velocity to constrain a soft body to something else.
 * When calculating friction / restitution an empty SubShapeID will be passed to the ContactConstraintManager::CombineFunction because this is called once per body pair rather than once per sub shape as is common for rigid bodies.
@@ -295,11 +376,11 @@ Motors apply a force (when driving position) or torque (when driving angle) ever
 
 Usually the limits are symmetric, so you would set -mMinForceLimit = mMaxForceLimit. This way the motor can push at an equal rate as it can pull. If you would set the range to e.g. [0, FLT_MAX] then the motor would only be able to push in the positive direction. The units for the force limits are Newtons and the values can get pretty big. If your motor doesn't seem to do anything, chances are that you have set the value too low. Since Force = Mass * Acceleration you can calculate the approximate force that a motor would need to supply in order to be effective. Usually the range is set to [-FLT_MAX, FLT_MAX] which lets the motor achieve its target as fast as possible.
 
-For an angular motor, the units are Newton Meters. The formula is Torque = Inertia * Angular Accelaration. Inertia of a solid sphere is 2/5 * Mass * Radius^2. You can use this to get a sense of the amount of torque needed to get the angular acceleration you want. Again, you'd usually set the range to [-FLT_MAX, FLT_MAX] to not limit the motor.
+For an angular motor, the units are Newton Meters. The formula is Torque = Inertia * Angular Acceleration. Inertia of a solid sphere is 2/5 * Mass * Radius^2. You can use this to get a sense of the amount of torque needed to get the angular acceleration you want. Again, you'd usually set the range to [-FLT_MAX, FLT_MAX] to not limit the motor.
 
 When settings the force or torque limits to [-FLT_MAX, FLT_MAX] a velocity motor will accelerate the bodies to the desired relative velocity in a single time step (if no other forces act on those bodies).
 
-Position motors have two additional parameters: Frequency (MotorSettings::mSpringSettings.mFrequency, Hz) and damping (MotorSettings::mSpringSettings.mDamping, no units). They are implemented as described in [Soft Contraints: Reinventing The Spring - Erin Catto - GDC 2011](https://box2d.org/files/ErinCatto_SoftConstraints_GDC2011.pdf).
+Position motors have two additional parameters: Frequency (MotorSettings::mSpringSettings.mFrequency, Hz) and damping (MotorSettings::mSpringSettings.mDamping, no units). They are implemented as described in [Soft Constraints: Reinventing The Spring - Erin Catto - GDC 2011](https://box2d.org/files/ErinCatto_SoftConstraints_GDC2011.pdf).
 
 You can see a position motor as a spring between the target position and the rigid body. The force applied to reach the target is linear with the distance between current position and target position. When there is no damping, the position motor will cause the rigid body to oscillate around its target.
 
@@ -320,6 +401,22 @@ Because Jolt Physics uses a Symplectic Euler integrator, there will still be a s
 Constraints can be turned on / off by calling Constraint::SetEnabled. After every simulation step, check the total 'lambda' applied on each constraint and disable the constraint if the value goes over a certain threshold. Use e.g. SliderConstraint::GetTotalLambdaPosition / HingeConstraint::GetTotalLambdaRotation. You can see 'lambda' as the linear/angular impulse applied at the constraint in the last physics step to keep the constraint together.
 
 # Collision Detection {#collision-detection}
+
+Collision detection can be performed through various interfaces:
+
+* Coarse collision detection against the world, using only the bounding box of each body is done through the BroadPhaseQuery interface (see PhysicsSystem::GetBroadPhaseQuery).
+* Detailed collision detection against the world is done through NarrowPhaseQuery interface (see PhysicsSystem::GetNarrowPhaseQuery).
+* Checking collisions with a single body is done through TransformedShape (see Body::GetTransformedShape)
+* Checking collisions against a single shape is done through various interfaces on the Shape class (see e.g. Shape::CastRay) or through the CollisionDispatch interface.
+
+The most common collision tests are:
+
+* Casting a ray: BroadPhaseQuery::CastRay, NarrowPhaseQuery::CastRay, TransformedShape::CastRay, Shape::CastRay.
+* Colliding a shape (e.g. a sphere) in a static position: NarrowPhaseQuery::CollideShape, TransformedShape::CollideShape, CollisionDispatch::sCollideShapeVsShape.
+* Casting a shape (sweeping it from a start to an end position and finding collisions along the way): NarrowPhaseQuery::CastShape, TransformedShape::CastShape, CollisionDispatch::sCastShapeVsShapeWorldSpace.
+* Checking if a shape contains a point: BroadPhaseQuery::CollidePoint, NarrowPhaseQuery::CollidePoint, TransformedShape::CollidePoint, Shape::CollidePoint.
+
+The following sections describe the collision detection system in more detail.
 
 ## Broad Phase {#broad-phase}
 
@@ -401,7 +498,7 @@ Now that we know about the basics, we list the order in which the collision dete
 
 To avoid work, try to filter out collisions as early as possible.
 
-## Continuous Collision Detection {#continous-collision-detection}
+## Continuous Collision Detection {#continuous-collision-detection}
 
 Each body has a motion quality setting ([EMotionQuality](@ref EMotionQuality)). By default the motion quality is [Discrete](@ref Discrete). This means that at the beginning of each simulation step we will perform collision detection and if no collision is found, the body is free to move according to its velocity. This usually works fine for big or slow moving objects. Fast and small objects can easily 'tunnel' through thin objects because they can completely move through them in a single time step. For these objects there is the motion quality [LinearCast](@ref LinearCast). Objects that have this motion quality setting will do the same collision detection at the beginning of the simulation step, but once their new position is known, they will do an additional CastShape to check for any collisions that may have been missed. If this is the case, the object is placed back to where the collision occurred and will remain there until the next time step. This is called 'time stealing' and has the disadvantage that an object may appear to move much slower for a single time step and then speed up again. The alternative, back stepping the entire simulation, is computationally heavy so was not implemented.
 
@@ -435,6 +532,8 @@ The [Character](@ref Character) and [CharacterVirtual](@ref CharacterVirtual) cl
 
 The Character class is the simplest controller and is essentially a rigid body that has been configured to only allow translation (and no rotation so it stays upright). It is simulated together with the other rigid bodies so it properly reacts to them. Because it is simulated, it is usually not the best solution for a player as the player usually requires a lot of behavior that is non-physical. This character controller is cheap so it is recommended for e.g. simple AI characters. After every PhysicsSystem::Update call you must call Character::PostSimulation to update the ground contacts.
 
+Characters are usually driven in a kinematic way (i.e. by calling Character::SetLinearVelocity or CharacterVirtual::SetLinearVelocity before their update).
+
 The CharacterVirtual class is much more advanced. It is implemented using collision detection functionality only (through NarrowPhaseQuery) and is simulated when CharacterVirtual::Update is called. Since the character is not 'added' to the world, it is not visible to rigid bodies and it only interacts with them during the CharacterVirtual::Update function by applying impulses. This does mean there can be some update order artifacts, like the character slightly hovering above an elevator going down, because the characters moves at a different time than the other rigid bodies. Separating it has the benefit that the update can happen at the appropriate moment in the game code. Multiple CharacterVirtuals can update concurrently, so it is not an issue if the game code is parallelized.
 
 CharacterVirtual has the following extra functionality:
@@ -445,9 +544,13 @@ CharacterVirtual has the following extra functionality:
 * Sticking to the ground when walking down a slope through the CharacterVirtual::ExtendedUpdate call
 * Support for specifying a local coordinate system that allows e.g. [walking around in a flying space ship](https://github.com/jrouwe/JoltPhysics/blob/master/Samples/Tests/Character/CharacterSpaceShipTest.cpp) that is equipped with 'inertial dampers' (a sci-fi concept often used in games).
 
-If you want CharacterVirtual to have presence in the world, it is recommended to pair it with a slightly smaller [Kinematic](@ref EMotionType) body (or Character). After each update, move this body using BodyInterface::MoveKinematic to the new location. This ensures that standard collision tests like ray casts are able to find the character in the world and that fast moving objects with motion quality [LinearCast](@ref EMotionQuality) will not pass through the character in 1 update. As an alternative to a Kinematic body, you can also use a regular Dynamic body with a [gravity factor](@ref BodyCreationSettings::mGravityFactor) of 0. Ensure that the character only collides with dynamic objects in this case. The advantage of this approach is that the paired body doesn't have infinite mass so is less strong.
+CharacterVirtual should provide everything that Character provides. Since it is not a rigid body, it requires some extra consideration:
+* Collision callbacks are passed through the CharacterContactListener instead of the ContactListener class
+* CharacterVirtual vs sensor contacts are also passed through this listener, you will not receive them through the regular ContactListener
+* CharacterVirtual vs CharacterVirtual collisions can be handled through the CharacterVsCharacterCollision interface
+* Collision checks (e.g. CastRay) do not collide with CharacterVirtual. Use e.g. `NarrowPhaseQuery::CastRay(..., collector)` followed by `CharacterVirtual::GetTransformedShape().CastRay(..., collector)` to include the collision results.
 
-Characters are usually driven in a kinematic way (i.e. by calling Character::SetLinearVelocity or CharacterVirtual::SetLinearVelocity before their update).
+You can create a hybrid between these two by setting CharacterVirtualSettings::mInnerBodyShape. This will create an inner rigid body that follows the movement of the CharacterVirtual. This inner rigid body will be detected by sensors and regular collision tests.
 
 To get started take a look at the [Character](https://github.com/jrouwe/JoltPhysics/blob/master/Samples/Tests/Character/CharacterTest.cpp) and [CharacterVirtual](https://github.com/jrouwe/JoltPhysics/blob/master/Samples/Tests/Character/CharacterVirtualTest.cpp) examples.
 
@@ -470,7 +573,7 @@ Jolt Physics uses a right handed coordinate system with Y-up. It is easy to use 
 
 We use column-major vectors and matrices, this means that to transform a point you need to multiply it on the right hand side: TransformedPoint = Matrix * Point.
 
-Note that the physics simulation works best if you use SI units (meters, radians, seconds, kg). In order for the simluation to be accurate, dynamic objects should be in the order [0.1, 10] meters long and have speeds in the order of [0, 500] m/s. Static object should be in the order [0.1, 2000] meter long. If you are using different units, consider scaling the objects before passing them on to the physics simulation.
+Note that the physics simulation works best if you use SI units (meters, radians, seconds, kg). In order for the simulation to be accurate, dynamic objects should be in the order [0.1, 10] meters long, have speeds in the order of [0, 500] m/s and have gravity in the order of [0, 10] m/s^2. Static object should be in the order [0.1, 2000] meter long. If you are using different units, consider scaling the objects before passing them on to the physics simulation.
 
 # Big Worlds {#big-worlds}
 
@@ -492,12 +595,12 @@ Because of the minimal use of doubles, the simulation runs 5-10% slower in doubl
 
 The physics simulation is deterministic provided that:
 
-* The APIs that modify the simulation are called in exactly the same order. For example, bodies and constraints need to be added/removed/modified in exactly the same order so that the state at the beginning of a simulation step is exactly the same for both simulations.
+* The APIs that modify the simulation are called in exactly the same order. For example, bodies and constraints need to be added/removed/modified in exactly the same order so that the state at the beginning of a simulation step is exactly the same for both simulations ([exceptions](@ref sloppy-determinism)).
 * The same binary code is used to run the simulation. For example, when you run the simulation on Windows it doesn't matter if you have an AMD or Intel processor.
 
 If you want cross platform determinism then please turn on the CROSS_PLATFORM_DETERMINISTIC option in CMake. This will make the library approximately 8% slower but the simulation will be deterministic regardless of:
 
-* Compiler used to compile the library (tested MSVC2022 vs clang)
+* Compiler used to compile the library (tested MSVC2022, clang, gcc and emscripten)
 * Configuration (Debug, Release or Distribution)
 * OS (tested Windows, macOS, Linux)
 * Architecture (x86 or ARM).
@@ -511,9 +614,12 @@ It is quite difficult to verify cross platform determinism, so this feature is l
 
 * Windows MSVC x86 64-bit with AVX2
 * Windows MSVC x86 32-bit with SSE2
-* macOS clang x86 64-bit with AVX
+* macOS clang ARM 64-bit with NEON
 * Linux clang x86 64-bit with AVX2
 * Linux clang ARM 64-bit with NEON
+* Linux gcc x86 64-bit with AVX2
+* Linux gcc ARM 64-bit with NEON
+* WASM emscripten running in nodejs
 
 The most important things to look out for in your own application:
 
@@ -526,9 +632,18 @@ When running the Samples Application you can press ESC, Physics Settings and che
 
 # Rolling Back a Simulation {#rolling-back-a-simulation}
 
-When synchronizing two simulations via a network, it is possible that a change that needed to be applied at frame N is received at frame N + M. This will require rolling back the simulation to the state of frame N and repeating the simulation with the new inputs. This can be implemented by saving the physics state using [SaveState](@ref PhysicsSystem::SaveState) at every frame. To roll back, call [RestoreState](@ref PhysicsSystem::RestoreState) with the state at frame N. SaveState only records the state that the physics engine modifies during its update step (positions, velocities etc.), so if you change anything else you need to restore this yourself. E.g. if you did a [SetFriction](@ref Body::SetFriction) on frame N + 2 then, when rewinding, you need to restore the friction to what is was on frame N and update it again on frame N + 2 when you replay. If you start adding/removing objects (e.g. bodies or constraints) during these frames, the RestoreState function will not work. If you added a body on frame N + 1, you'll need to remove it when rewinding and then add it back on frame N + 1 again (with the proper initial position/velocity etc. because it won't be contained in the snapshot at frame N).
+When synchronizing two simulations via a network, it is possible that a change that needed to be applied at frame N is received at frame N + M. This will require rolling back the simulation to the state of frame N and repeating the simulation with the new inputs. This can be implemented by saving the physics state using [SaveState](@ref PhysicsSystem::SaveState) at every frame. To roll back, call [RestoreState](@ref PhysicsSystem::RestoreState) with the state at frame N. SaveState only records the state that the physics engine modifies during its update step (positions, velocities etc.), so if you change anything else you need to restore this yourself. E.g. if you did a [SetFriction](@ref Body::SetFriction) on frame N + 2 then, when rewinding, you need to restore the friction to what is was on frame N and update it again on frame N + 2 when you replay. If you start adding/removing objects (e.g. bodies or constraints) during these frames, the RestoreState function will not work. If you added a body on frame N + 1, you'll need to remove it when rewinding and then add it back on frame N + 1 again (with the proper initial position/velocity etc. because it won't be contained in the snapshot at frame N). The [SaveState](@ref PhysicsSystem::SaveState) function comes with a StateRecorderFilter interface that you can use to selectively save state. E.g. [ShouldSaveBody](@ref StateRecorderFilter::ShouldSaveBody) could simply return false for all static or inactive bodies which can be used to limit the size of the snapshot.
 
 If you wish to share saved state between server and client, you need to ensure that all APIs that modify the state of the world are called in the exact same order. So if the client creates physics objects for player 1 then 2 and the server creates the objects for 2 then 1 you already have a problem (the body IDs will be different, which will render the save state snapshots incompatible). When rolling back a simulation, you'll also need to ensure that the BodyIDs are kept the same, so you need to remove/add the body from/to the physics system instead of destroy/re-create them or you need to create bodies with the same ID on both sides using [BodyInterface::CreateBodyWithID](@ref BodyInterface::CreateBodyWithID).
+
+# Being Sloppy While Still Being Deterministic {#sloppy-determinism}
+
+If you do things in the same order it is guaranteed to be deterministic, but if you know what you're doing you can take some liberties.
+E.g. doing `BodyA.SetFriction(...); BodyB.SetFriction(...);` or `BodyB.SetFriction(...); BodyA.SetFriction(...);` doesn't matter for determinism,
+the main thing you need to ensure is that when you do a PhysicsSystem::Update that the binary state is the same.
+Also adding body A then B is the same as B then A as long as the BodyIDs of A and B are consistent.
+For constraints, adding A then B or B then A is equivalent as long as ConstraintSettings::mConstraintPriority is unique per constraint so that it defines a consistent ordering (in this case all constraints in the system must have a unique number).
+Note though that PhysicsSystem::SaveState relies on the ordering of constraints, so you'll have to skip serializing constraints by not setting EStateRecorderState::Constraints and call Constraint::SaveState / Constraint::RestoreState directly yourself.
 
 # Working With Multiple Physics Systems {#working-with-multiple-physics-systems}
 
@@ -548,7 +663,44 @@ These functions / systems need to be registered in advance.
 
 # Debug Rendering {#debug-rendering}
 
-When the define JPH_DEBUG_RENDERER is defined (which by default is defined in Debug and Release but not Distribution), Jolt is able to render its internal state. To integrate this into your own application you must inherit from the DebugRenderer class and implement the pure virtual functions DebugRenderer::DrawLine, DebugRenderer::DrawTriangle, DebugRenderer::CreateTriangleBatch, DebugRenderer::DrawGeometry and DebugRenderer::DrawText3D. The CreateTriangleBatch is used to prepare a batch of triangles to be drawn by a single DrawGeometry call, which means that Jolt can render a complex scene much more efficiently than when each triangle in that scene would have been drawn through DrawTriangle. At run-time create an instance of your DebugRenderer which will internally assign itself to DebugRenderer::sInstance. Finally call for example PhysicsSystem::DrawBodies or PhysicsSystem::DrawConstraints to draw the state of the simulation. For an example implementation see [the DebugRenderer from the Samples application](https://github.com/jrouwe/JoltPhysics/blob/master/TestFramework/Renderer/DebugRendererImp.h).
+When the define JPH_DEBUG_RENDERER is defined (which by default is defined in Debug and Release but not Distribution), Jolt is able to render its internal state. To integrate this into your own application you must inherit from the DebugRenderer class and implement the pure virtual functions DebugRenderer::DrawLine, DebugRenderer::DrawTriangle, DebugRenderer::CreateTriangleBatch, DebugRenderer::DrawGeometry and DebugRenderer::DrawText3D. The CreateTriangleBatch is used to prepare a batch of triangles to be drawn by a single DrawGeometry call, which means that Jolt can render a complex scene much more efficiently than when each triangle in that scene would have been drawn through DrawTriangle. At run-time create an instance of your DebugRenderer which will internally assign itself to DebugRenderer::sInstance. Finally call for example PhysicsSystem::DrawBodies or PhysicsSystem::DrawConstraints to draw the state of the simulation. For an example implementation see [the DebugRenderer from the Samples application](https://github.com/jrouwe/JoltPhysics/blob/master/TestFramework/Renderer/DebugRendererImp.h) or to get started quickly take a look at DebugRendererSimple.
+
+# Memory Management {#memory-management}
+
+Jolt uses reference counting for a number of its classes (everything that inherits from RefTarget). The most important classes are:
+
+* ShapeSettings
+* Shape
+* ConstraintSettings
+* Constraint
+* PhysicsMaterial
+* GroupFilter
+* PhysicsScene
+* SoftBodySharedSettings
+* VehicleCollisionTester
+* VehicleController
+* WheelSettings
+* CharacterBaseSettings
+* CharacterBase
+* RagdollSettings
+* Ragdoll
+* Skeleton
+* SkeletalAnimation
+* SkeletonMapper
+
+Reference counting objects start with a reference count of 0. If you want to keep ownership of the object, you need to call [object->AddRef()](@ref RefTarget::AddRef), this will increment the reference count. If you want to release ownership you call [object->ReleaseRef()](@ref RefTarget::Release), this will decrement the reference count and if the reference count reaches 0 the object will be destroyed. If, after newing, you pass a reference counted object on to another object (e.g. a ShapeSettings to a CompoundShapeSettings or a Shape to a Body) then that other object will take a reference, in that case it is not needed take a reference yourself beforehand so you can skip the calls to ```AddRef/Release```. Note that it is also possible to do ```auto x = new XXX``` followed by ```delete x``` for a reference counted object if no one ever took a reference. The safest way of working with reference counting objects is to use the Ref or RefConst classes, these automatically manage the reference count for you when assigning a new value or on destruction:
+
+```
+// Calls 'AddRef' to keep a reference the shape
+JPH::Ref<Shape> shape = new JPH::SphereShape(1.0f);
+
+// Calls 'Release' to release and delete the shape (note that this also happens if JPH::Ref goes out of scope)
+shape = nullptr;
+```
+
+The Body class is a special case, it is destroyed through BodyInterface::DestroyBody (which internally destroys the Body).
+
+Jolt also supports routing all of its internal allocations through a custom allocation function. See: [Allocate](@ref Allocate), [Free](@ref Free), [AlignedAllocate](@ref AlignedAllocate) and [AlignedFree](@ref AlignedFree).
 
 # The Simulation Step in Detail {#the-simulation-step-in-detail}
 
@@ -623,7 +775,7 @@ This job does some housekeeping work that can be executed concurrent to the solv
 
 A number of these jobs will run in parallel. Each job takes the next unprocessed island and will run the iterative constraint solver for that island. It will first apply the impulses applied from the previous simulation step (which are stored in the contact cache) to warm start the solver. It will then repeatedly iterate over all contact and non-contact constraints until either the applied impulses are too small or a max iteration count is reached ([PhysicsSettings::mNumVelocitySteps](@ref PhysicsSettings::mNumVelocitySteps)). The result will be that the new velocities are known for all active bodies. The applied impulses are stored in the contact cache for the next step.
 
-When an island consists of more than LargeIslandSplitter::cLargeIslandTreshold contacts plus constraints it is considered a large island. In order to not do all work on a single thread, this island will be split up by the LargeIslandSplitter. This follows an algorithm described in High-Performance Physical Simulations on Next-Generation Architecture with Many Cores by Chen et al. This is basically a greedy algorithm that tries to group contacts and constraints into groups where no contact or constraint affects the same body. Within a group, the order of execution does not matter since every memory location is only read/written once, so we can parallelize the update. At the end of each group, we need to synchronize the CPU cores before starting on the next group. When the number of groups becomes too large, a final group is created that contains all other contacts and constraints and these are solved on a single thread. The groups are processed PhysicsSettings::mNumVelocitySteps times so the end result is almost the same as an island that was not split up (only the evalutation order changes in a consistent way).
+When an island consists of more than LargeIslandSplitter::cLargeIslandTreshold contacts plus constraints it is considered a large island. In order to not do all work on a single thread, this island will be split up by the LargeIslandSplitter. This follows an algorithm described in High-Performance Physical Simulations on Next-Generation Architecture with Many Cores by Chen et al. This is basically a greedy algorithm that tries to group contacts and constraints into groups where no contact or constraint affects the same body. Within a group, the order of execution does not matter since every memory location is only read/written once, so we can parallelize the update. At the end of each group, we need to synchronize the CPU cores before starting on the next group. When the number of groups becomes too large, a final group is created that contains all other contacts and constraints and these are solved on a single thread. The groups are processed PhysicsSettings::mNumVelocitySteps times so the end result is almost the same as an island that was not split up (only the evaluation order changes in a consistent way).
 
 ## Pre Integrate {#pre-integrate}
 
@@ -633,7 +785,7 @@ This job prepares the CCD buffers.
 
 This job will integrate the velocity and update the position. It will clamp the velocity to the max velocity.
 
-Depending on the motion quality ([EMotionQuality](@ref EMotionQuality)) of the body, it will schedule a body for continuous collision detection (CCD) if its movement is bigger than some treshold based on the [inner radius](@ref Shape::GetInnerRadius)) of the shape.
+Depending on the motion quality ([EMotionQuality](@ref EMotionQuality)) of the body, it will schedule a body for continuous collision detection (CCD) if its movement is bigger than some threshold based on the [inner radius](@ref Shape::GetInnerRadius)) of the shape.
 
 ## Post Integrate {#post-integrate}
 
@@ -641,7 +793,7 @@ Find CCD Contact jobs are created on the fly depending on how many CCD bodies we
 
 ## Find CCD Contacts {#find-ccd-contacts}
 
-A number of jobs wil run in parallel and pick up bodies that have been scheduled for CCD and will do a linear cast to detect the first collision. It always allows movement of the object by a fraction if its inner radius in order to prevent it from getting fully stuck.
+A number of jobs will run in parallel and pick up bodies that have been scheduled for CCD and will do a linear cast to detect the first collision. It always allows movement of the object by a fraction if its inner radius in order to prevent it from getting fully stuck.
 
 ## Resolve CCD Contacts {#resolve-ccd-contacts}
 
@@ -672,7 +824,7 @@ These jobs will do broadphase checks for all of the soft bodies. A thread picks 
 
 ## Soft Body Simulate {#soft-body-simulate}
 
-These jobs will do the actual simulation of the soft bodies. They first collide batches of soft body vertices with the rigid bodies found during during the Collide job (multiple threads can work on a single soft body) and then perform the simulation using XPBD (also partially distributing a single soft body on multiple threads).
+These jobs will do the actual simulation of the soft bodies. They first collide batches of soft body vertices with the rigid bodies found during the Collide job (multiple threads can work on a single soft body) and then perform the simulation using XPBD (also partially distributing a single soft body on multiple threads).
 
 ## Soft Body Finalize {#soft-body-finalize}
 

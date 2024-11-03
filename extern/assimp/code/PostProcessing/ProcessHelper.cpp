@@ -2,7 +2,7 @@
 Open Asset Import Library (assimp)
 ----------------------------------------------------------------------
 
-Copyright (c) 2006-2022, assimp team
+Copyright (c) 2006-2024, assimp team
 
 
 All rights reserved.
@@ -177,8 +177,8 @@ unsigned int GetMeshVFormatUnique(const aiMesh *pcMesh) {
     if (pcMesh->HasTangentsAndBitangents()) iRet |= 0x4;
 
 
-    static_assert(8 >= AI_MAX_NUMBER_OF_COLOR_SETS);
-    static_assert(8 >= AI_MAX_NUMBER_OF_TEXTURECOORDS);
+    static_assert(8 >= AI_MAX_NUMBER_OF_COLOR_SETS, "static_assert(8 >= AI_MAX_NUMBER_OF_COLOR_SETS)");
+    static_assert(8 >= AI_MAX_NUMBER_OF_TEXTURECOORDS, "static_assert(8 >= AI_MAX_NUMBER_OF_TEXTURECOORDS)");
 
     // texture coordinates
     unsigned int p = 0;

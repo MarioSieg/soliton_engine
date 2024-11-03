@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "command_buffer.hpp"
 #include "context.hpp"
@@ -12,7 +12,7 @@ namespace lu::vkb {
     static constinit std::atomic_uint32_t s_vertex_count;
 
     static auto validate_queue_type(const vk::QueueFlagBits flags) -> void {
-        passert(flags == vk::QueueFlagBits::eGraphics || flags == vk::QueueFlagBits::eCompute || flags == vk::QueueFlagBits::eTransfer);
+        panic_assert(flags == vk::QueueFlagBits::eGraphics || flags == vk::QueueFlagBits::eCompute || flags == vk::QueueFlagBits::eTransfer);
     }
 
     command_buffer::command_buffer(
@@ -59,6 +59,8 @@ namespace lu::vkb {
         const vk::CommandBufferUsageFlagBits usage,
         const vk::CommandBufferInheritanceInfo* const inheritance
     ) -> void {
+        panic_assert(!m_was_used);
+        m_was_used = true;
         const vk::CommandBufferBeginInfo info {.flags = usage, .pInheritanceInfo = inheritance};
         vkcheck(m_cmd.begin(&info));
     }
@@ -79,6 +81,14 @@ namespace lu::vkb {
         vkcheck(queue.submit(1, &submit_info, fence));// TODO: not thread safe, use transfer queue
         vkcheck(device.waitForFences(1, &fence, vk::True, eastl::numeric_limits<std::uint64_t>::max()));
         device.destroyFence(fence, vkb::get_alloc());
+    }
+
+    auto command_buffer::reset() -> void {
+        vkcheck(m_cmd.reset({}));
+        m_bounded_pipeline = nullptr;
+        m_push_consts_init = false;
+        m_push_constant_offset = 0;
+        m_was_used = false;
     }
 
     auto command_buffer::bind_vertex_buffer(const vk::Buffer buffer, const vk::DeviceSize offset) -> void {
@@ -114,6 +124,7 @@ namespace lu::vkb {
         }
         std::uint32_t vertex_sum = 0;
         for (std::size_t i = 0; i < mesh.get_primitives().size(); ++i) {
+            panic_assert(mats[i]);
             bind_material(*mats[i]);
             const graphics::primitive& prim = mesh.get_primitives()[i];
             m_cmd.drawIndexed(prim.index_count, 1, prim.index_start, 0, 1);
@@ -123,19 +134,19 @@ namespace lu::vkb {
     }
 
     auto command_buffer::bind_material(const graphics::material& mat) -> void {
-        bind_graphics_descriptor_set(mat.get_descriptor_set(), 0);
+        bind_graphics_descriptor_set(mat.get_descriptor_set(), LU_GLSL_DESCRIPTOR_SET_IDX_PER_MATERIAL);
     }
 
-    auto command_buffer::bind_graphics_descriptor_set(const vk::DescriptorSet set, const std::uint32_t idx) -> void {
-        passert(m_bounded_pipeline != nullptr);
+    auto command_buffer::bind_graphics_descriptor_set(const vk::DescriptorSet set, const std::uint32_t idx, const std::uint32_t* const dynamic_off) -> void {
+        panic_assert(m_bounded_pipeline != nullptr);
         m_cmd.bindDescriptorSets(
             vk::PipelineBindPoint::eGraphics,
             m_bounded_pipeline->get_layout(),
             idx,
             1,
             &set,
-            0,
-            nullptr
+            dynamic_off ? 1 : 0,
+            dynamic_off
         );
     }
 
@@ -150,8 +161,8 @@ namespace lu::vkb {
     }
 
     auto command_buffer::push_consts_raw(const vk::ShaderStageFlagBits stage, const void* buf, std::size_t size) -> void {
-        passert(m_bounded_pipeline != nullptr);
-        passert(m_push_consts_init);
+        panic_assert(m_bounded_pipeline != nullptr);
+        panic_assert(m_push_consts_init);
         m_cmd.pushConstants(
             m_bounded_pipeline->get_layout(),
             stage,

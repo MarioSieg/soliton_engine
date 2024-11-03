@@ -40,7 +40,7 @@ TEST_SUITE("Vec4Tests")
 		CHECK(f4_out[2] == 3);
 		CHECK(f4_out[3] == 4);
 
-		float sf[] = { 0, 0,  1, 0,  0, 0,  2, 0,  0, 0,  0, 0,  0, 0,  0, 0,  3, 0, 4, 0 };
+		float sf[] = { 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 4, 0 };
 		CHECK(Vec4::sGatherFloat4<2 * sizeof(float)>(sf, UVec4(1, 3, 8, 9)) == Vec4(1, 2, 3, 4));
 	}
 
@@ -117,6 +117,8 @@ TEST_SUITE("Vec4Tests")
 	{
 		CHECK(Vec4::sSelect(Vec4(1, 2, 3, 4), Vec4(5, 6, 7, 8), UVec4(0x80000000U, 0, 0x80000000U, 0)) == Vec4(5, 2, 7, 4));
 		CHECK(Vec4::sSelect(Vec4(1, 2, 3, 4), Vec4(5, 6, 7, 8), UVec4(0, 0x80000000U, 0, 0x80000000U)) == Vec4(1, 6, 3, 8));
+		CHECK(Vec4::sSelect(Vec4(1, 2, 3, 4), Vec4(5, 6, 7, 8), UVec4(0xffffffffU, 0x7fffffffU, 0xffffffffU, 0x7fffffffU)) == Vec4(5, 2, 7, 4));
+		CHECK(Vec4::sSelect(Vec4(1, 2, 3, 4), Vec4(5, 6, 7, 8), UVec4(0x7fffffffU, 0xffffffffU, 0x7fffffffU, 0xffffffffU)) == Vec4(1, 6, 3, 8));
 	}
 
 	TEST_CASE("TestVec4BitOps")
@@ -142,6 +144,18 @@ TEST_SUITE("Vec4Tests")
 	TEST_CASE("TestVec4Operators")
 	{
 		CHECK(-Vec4(1, 2, 3, 4) == Vec4(-1, -2, -3, -4));
+
+		Vec4 neg_zero = -Vec4::sZero();
+		CHECK(neg_zero == Vec4::sZero());
+
+	#ifdef JPH_CROSS_PLATFORM_DETERMINISTIC
+		// When cross platform deterministic, we want to make sure that -0 is represented as 0
+		UVec4 neg_zero_bin = neg_zero.ReinterpretAsInt();
+		CHECK(neg_zero_bin.GetX() == 0);
+		CHECK(neg_zero_bin.GetY() == 0);
+		CHECK(neg_zero_bin.GetZ() == 0);
+		CHECK(neg_zero_bin.GetW() == 0);
+	#endif // JPH_CROSS_PLATFORM_DETERMINISTIC
 
 		CHECK(Vec4(1, 2, 3, 4) + Vec4(5, 6, 7, 8) == Vec4(6, 8, 10, 12));
 		CHECK(Vec4(1, 2, 3, 4) - Vec4(8, 7, 6, 5) == Vec4(-7, -5, -3, -1));

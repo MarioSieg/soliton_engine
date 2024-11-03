@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "shader.hpp"
 #include "vulkancore/context.hpp"
@@ -124,7 +124,7 @@ namespace lu::graphics {
         const auto start = eastl::chrono::high_resolution_clock::now();
 
         shaderc::Compiler compiler {};
-        passert(compiler.IsValid());
+        panic_assert(compiler.IsValid());
 
         // Load string BLOB from file
         eastl::string source_code_glsl {};
@@ -241,20 +241,26 @@ namespace lu::graphics {
 
     [[nodiscard]] auto shader_cache::get_shader(shader_variant&& variant) -> eastl::shared_ptr<shader> {
         const std::size_t hash = variant.get_hash();
-        const bool exists = m_shaders.find(hash) != m_shaders.end();
-        if (exists) {
-            return m_shaders[hash];
+        {
+            std::unique_lock lock {m_mtx};
+            const bool exists = m_shaders.find(hash) != m_shaders.end();
+            if (exists) {
+                return m_shaders[hash];
+            }
         }
         auto shader = shader::compile(std::move(variant));
         if (!shader) [[unlikely]] {
             return nullptr;
         }
-        m_shaders[hash] = shader;
+        {
+            std::unique_lock lock {m_mtx};
+            m_shaders[hash] = shader;
+        }
         return shader;
     }
 
     auto shader_cache::get() noexcept -> shader_cache& {
-        passert(s_instance != nullptr);
+        panic_assert(s_instance != nullptr);
         return *s_instance;
     }
     auto shader_cache::init(eastl::string&& shader_dir) -> void {

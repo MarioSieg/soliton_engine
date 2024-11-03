@@ -1,4 +1,4 @@
--- Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+-- Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 -- Lua library extensions and utility functions.
 
 -- Execute one full GC cycle and stop automatic GC afterwards, because collection restarts the automatic GC.

@@ -6,7 +6,11 @@ local ffi = require 'ffi'
 -- Define the CDEFS for the Lua API
 -- Must match the C++ struct definitions
 ffi.cdef [[
+    void __lu_panic(const char* msg);
+    uint32_t __lu_ffi_cookie(void);
+
     typedef uint64_t lua_entity_id;
+    typedef int32_t lua_asset_id;
 
     typedef struct {
         double x;

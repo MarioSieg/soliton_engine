@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "render_thread_pool.hpp"
 
@@ -29,11 +29,11 @@ namespace lu::graphics {
         const vk::CommandBufferAllocateInfo alloc_info {
             .commandPool = m_command_pool,
             .level = vk::CommandBufferLevel::eSecondary,
-            .commandBufferCount = vkb::ctx().get_concurrent_frames()
+            .commandBufferCount = vkb::ctx().get_concurrent_frame_count()
         };
 
         eastl::fixed_vector<vk::CommandBuffer, 4> command_buffers {};
-        command_buffers.resize(vkb::ctx().get_concurrent_frames());
+        command_buffers.resize(vkb::ctx().get_concurrent_frame_count());
         vkcheck(device.allocateCommandBuffers(&alloc_info, command_buffers.data()));
 
         m_command_buffers.reserve(command_buffers.size());
@@ -57,7 +57,7 @@ namespace lu::graphics {
 
     HOTPROC auto render_thread::thread_routine() -> void {
         log_info("Render thread {} started", m_thread_id);
-        passert(m_shared_ctx.render_callback != nullptr);
+        panic_assert(m_shared_ctx.render_callback != nullptr);
 
 #if PLATFORM_WINDOWS
         SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
@@ -88,7 +88,8 @@ namespace lu::graphics {
         const std::int32_t signaled = m_shared_ctx.m_sig_render_subset.wait(true, m_num_threads);
         if (signaled < 0) [[unlikely]] return false;
 
-        m_active_command_buffer = &m_command_buffers[vkb::ctx().get_current_frame()];
+        m_active_command_buffer = &m_command_buffers[vkb::ctx().get_current_concurrent_frame_idx()];
+        m_active_command_buffer->reset();
         m_active_command_buffer->begin(vk::CommandBufferUsageFlagBits::eRenderPassContinue, m_shared_ctx.inheritance_info);
 
         const auto w = static_cast<float>(vkb::ctx().get_width());
@@ -118,11 +119,11 @@ namespace lu::graphics {
         while (m_shared_ctx.m_num_threads_ready.load(std::memory_order_seq_cst) < m_num_threads) {
             std::this_thread::yield();
         }
-        passert(!m_shared_ctx.m_sig_next_frame.is_triggered());
+        panic_assert(!m_shared_ctx.m_sig_next_frame.is_triggered());
     }
 
     render_thread_pool::render_thread_pool(eastl::function<render_bucket_callback>&& callback,const std::int32_t num_threads) : m_num_threads{std::max(0, num_threads)} {
-        passert(callback != nullptr);
+        panic_assert(callback != nullptr);
         m_shared_ctx.render_callback = std::move(callback);
         log_info("Creating render thread pool with {} threads", m_num_threads);
         m_threads = eastl::make_unique<eastl::optional<render_thread>[]>(m_num_threads);

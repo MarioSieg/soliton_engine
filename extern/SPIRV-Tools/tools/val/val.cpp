@@ -111,7 +111,7 @@ int main(int argc, char** argv) {
         printf("%s\n", spvSoftwareVersionDetailsString());
         printf(
             "Targets:\n  %s\n  %s\n  %s\n  %s\n  %s\n  %s\n  %s\n  %s\n  %s\n  "
-            "%s\n %s\n %s\n %s\n",
+            "%s\n  %s\n  %s\n  %s\n",
             spvTargetEnvDescription(SPV_ENV_UNIVERSAL_1_0),
             spvTargetEnvDescription(SPV_ENV_UNIVERSAL_1_1),
             spvTargetEnvDescription(SPV_ENV_UNIVERSAL_1_2),
@@ -193,7 +193,7 @@ int main(int argc, char** argv) {
   }
 
   std::vector<uint32_t> contents;
-  if (!ReadBinaryFile<uint32_t>(inFile, &contents)) return 1;
+  if (!ReadBinaryFile(inFile, &contents)) return 1;
 
   spvtools::SpirvTools tools(target_env);
   tools.SetMessageConsumer(spvtools::utils::CLIMessageConsumer);

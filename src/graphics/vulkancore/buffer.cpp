@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "buffer.hpp"
 #include "context.hpp"
@@ -11,7 +11,8 @@ namespace lu::vkb {
         vk::BufferUsageFlags buffer_usage,
         const VmaMemoryUsage memory_usage,
         const VmaAllocationCreateFlags create_flags,
-        const void* data
+        const void* const data,
+        const bool manual_flush
     ) {
         m_allocator = vkb::dvc().get_allocator();
         m_size = size;
@@ -21,7 +22,8 @@ namespace lu::vkb {
         vk::MemoryPropertyFlags mem_props {};
         switch (memory_usage) {
             case VMA_MEMORY_USAGE_CPU_ONLY:
-                mem_props |= vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent;
+                mem_props |= vk::MemoryPropertyFlagBits::eHostVisible;
+                if (!manual_flush) mem_props |= vk::MemoryPropertyFlagBits::eHostCoherent;
                 buffer_usage |= vk::BufferUsageFlagBits::eTransferSrc;
             break;
             case VMA_MEMORY_USAGE_GPU_ONLY:
@@ -29,7 +31,8 @@ namespace lu::vkb {
                 buffer_usage |= vk::BufferUsageFlagBits::eTransferDst;
             break;
             case VMA_MEMORY_USAGE_CPU_TO_GPU:
-                mem_props |= vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent;
+                mem_props |= vk::MemoryPropertyFlagBits::eHostVisible;
+                if (!manual_flush) mem_props |= vk::MemoryPropertyFlagBits::eHostCoherent;
             break;
             case VMA_MEMORY_USAGE_GPU_TO_CPU:
                 mem_props |= vk::MemoryPropertyFlagBits::eHostVisible;
@@ -91,8 +94,7 @@ namespace lu::vkb {
         }
     }
 
-    auto buffer::upload_data(const void* data, const std::size_t size, const std::size_t offset) -> void {
-        const vk::Device device = vkb::vkdvc();
+    auto buffer::upload_data(const void* const data, const std::size_t size, const std::size_t offset) const -> void {
         if (m_memory_usage == VMA_MEMORY_USAGE_GPU_ONLY) {
             buffer staging_buffer {
                 size,
@@ -103,23 +105,19 @@ namespace lu::vkb {
                 data
             };
 
-            command_buffer copy_cmd {vk::QueueFlagBits::eTransfer};
+            command_buffer copy_cmd {vk::QueueFlagBits::eTransfer}; // TODO thread safety
             copy_cmd.begin();
             copy_cmd.copy_buffer(staging_buffer.get_buffer(), m_buffer, size, offset);
             copy_cmd.end();
             copy_cmd.flush();
+
         } else {
             if (!m_mapped) {
-                vkcheck(device.mapMemory(m_memory, 0, size, {}, &m_mapped));
+                vkccheck(vmaMapMemory(m_allocator, m_allocation, &m_mapped));
             }
-            std::memcpy(m_mapped, data, size);
-            // If host coherency hasn't been requested, do a manual flush to make writes visible
-            if (m_memory_properties & vk::MemoryPropertyFlagBits::eHostCoherent) {
-                vk::MappedMemoryRange mapped_range {};
-                mapped_range.memory = m_memory;
-                mapped_range.offset = 0;
-                mapped_range.size = vk::WholeSize;
-                vkcheck(device.flushMappedMemoryRanges(1, &mapped_range));
+            std::memcpy(static_cast<std::byte*>(m_mapped) + offset, data, size);
+            if (!(m_memory_properties & vk::MemoryPropertyFlagBits::eHostCoherent)) { // If host coherency hasn't been requested, do a manual flush to make writes visible
+                vkccheck(vmaFlushAllocation(m_allocator, m_allocation, offset, size));
             }
         }
     }

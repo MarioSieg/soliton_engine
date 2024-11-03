@@ -28,8 +28,8 @@ public:
 							SamplesApp();
 	virtual					~SamplesApp() override;
 
-	// Render the frame.
-	virtual bool			RenderFrame(float inDeltaTime) override;
+	// Update the application
+	virtual bool			UpdateFrame(float inDeltaTime) override;
 
 	// Override to specify the initial camera state (local to GetCameraPivot)
 	virtual void			GetInitialCamera(CameraState &ioState) const override;
@@ -191,7 +191,8 @@ private:
 	EProbeShape				mProbeShape = EProbeShape::Sphere;							// Shape to use for the mouse probe.
 	bool					mScaleShape = false;										// If the shape is scaled or not. When true mShapeScale is taken into account.
 	Vec3					mShapeScale = Vec3::sReplicate(1.0f);						// Scale in local space for the probe shape.
-	EBackFaceMode			mBackFaceMode = EBackFaceMode::CollideWithBackFaces;		// How to handle back facing triangles when doing a collision probe check.
+	EBackFaceMode			mBackFaceModeTriangles = EBackFaceMode::CollideWithBackFaces; // How to handle back facing triangles when doing a collision probe check.
+	EBackFaceMode			mBackFaceModeConvex = EBackFaceMode::CollideWithBackFaces; // How to handle back facing convex shapes when doing a collision probe check.
 	EActiveEdgeMode			mActiveEdgeMode = EActiveEdgeMode::CollideOnlyWithActive;	// How to handle active edges when doing a collision probe check.
 	ECollectFacesMode		mCollectFacesMode = ECollectFacesMode::NoFaces;				// If we should collect colliding faces
 	float					mMaxSeparationDistance = 0.0f;								// Max separation distance for collide shape test
@@ -218,6 +219,7 @@ private:
 	float					mShootObjectRestitution = 0.0f;								// Restitution for the object that is shot
 	bool					mShootObjectScaleShape = false;								// If the shape should be scaled
 	Vec3					mShootObjectShapeScale = Vec3::sReplicate(1.0f);			// Scale of the object to shoot
+	bool					mWasShootKeyPressed = false;								// Remembers if the shoot key was pressed last frame
 
 	// Mouse dragging
 	Body *					mDragAnchor = nullptr;										// Rigid bodies only: A anchor point for the distance constraint. Corresponds to the current crosshair position.

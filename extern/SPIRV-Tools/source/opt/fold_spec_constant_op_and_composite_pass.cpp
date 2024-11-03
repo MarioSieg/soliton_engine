@@ -115,20 +115,9 @@ bool FoldSpecConstantOpAndCompositePass::ProcessOpSpecConstantOp(
          "The first in-operand of OpSpecConstantOp instruction must be of "
          "SPV_OPERAND_TYPE_SPEC_CONSTANT_OP_NUMBER type");
 
-  switch (static_cast<spv::Op>(inst->GetSingleWordInOperand(0))) {
-    case spv::Op::OpCompositeExtract:
-    case spv::Op::OpVectorShuffle:
-    case spv::Op::OpCompositeInsert:
-    case spv::Op::OpQuantizeToF16:
-      folded_inst = FoldWithInstructionFolder(pos);
-      break;
-    default:
-      // TODO: This should use the instruction folder as well, but some folding
-      // rules are missing.
-
-      // Component-wise operations.
-      folded_inst = DoComponentWiseOperation(pos);
-      break;
+  folded_inst = FoldWithInstructionFolder(pos);
+  if (!folded_inst) {
+    folded_inst = DoComponentWiseOperation(pos);
   }
   if (!folded_inst) return false;
 
@@ -258,18 +247,7 @@ utils::SmallVector<uint32_t, 2> EncodeIntegerAsWords(const analysis::Type& type,
 
   // Truncate first_word if the |type| has width less than uint32.
   if (bit_width < bits_per_word) {
-    const uint32_t num_high_bits_to_mask = bits_per_word - bit_width;
-    const bool is_negative_after_truncation =
-        result_type_signed &&
-        utils::IsBitAtPositionSet(first_word, bit_width - 1);
-
-    if (is_negative_after_truncation) {
-      // Truncate and sign-extend |first_word|. No padding words will be
-      // added and |pad_value| can be left as-is.
-      first_word = utils::SetHighBits(first_word, num_high_bits_to_mask);
-    } else {
-      first_word = utils::ClearHighBits(first_word, num_high_bits_to_mask);
-    }
+    first_word = utils::SignExtendValue(first_word, bit_width);
   }
 
   utils::SmallVector<uint32_t, 2> words = {first_word};

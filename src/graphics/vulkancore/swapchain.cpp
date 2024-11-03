@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "swapchain.hpp"
 
@@ -13,9 +13,9 @@
 
 namespace lu::vkb {
     swapchain::swapchain(vk::Instance instance, vk::PhysicalDevice physical_device, vk::Device logical_device) {
-        passert(instance);
-        passert(physical_device);
-        passert(logical_device);
+        panic_assert(instance);
+        panic_assert(physical_device);
+        panic_assert(logical_device);
         m_instance = instance;
         m_physical_device = physical_device;
         m_logical_device = logical_device;
@@ -31,7 +31,7 @@ namespace lu::vkb {
 
     auto swapchain::init_surface(GLFWwindow* window) -> void {
         log_info("Initializing swapchain surface");
-        passert(window != nullptr);
+        panic_assert(window != nullptr);
 
         vkccheck(glfwCreateWindowSurface(m_instance, window, reinterpret_cast<const VkAllocationCallbacks*>(vkb::get_alloc()), reinterpret_cast<VkSurfaceKHR*>(&m_surface)));
 
@@ -78,9 +78,9 @@ namespace lu::vkb {
             }
         }
 
-        passert(graphics_queue_node_index != eastl::numeric_limits<std::uint32_t>::max()
+        panic_assert(graphics_queue_node_index != eastl::numeric_limits<std::uint32_t>::max()
             && present_queue_node_index != eastl::numeric_limits<std::uint32_t>::max()); // Exit if either a graphics or a presenting queue hasn't been found
-        passert(graphics_queue_node_index == present_queue_node_index); // Separate graphics and presenting queues are not supported yet
+        panic_assert(graphics_queue_node_index == present_queue_node_index); // Separate graphics and presenting queues are not supported yet
 
         m_queue_node_index = graphics_queue_node_index;
 
@@ -134,7 +134,7 @@ namespace lu::vkb {
         vkcheck(m_physical_device.getSurfaceCapabilitiesKHR(m_surface, &surface_capabilities));
         std::uint32_t num_present_modes = 0;
         vkcheck(m_physical_device.getSurfacePresentModesKHR(m_surface, &num_present_modes, nullptr));
-        passert(num_present_modes != 0);
+        panic_assert(num_present_modes != 0);
         eastl::vector<vk::PresentModeKHR> present_modes {};
         present_modes.resize(num_present_modes);
         vkcheck(m_physical_device.getSurfacePresentModesKHR(m_surface, &num_present_modes, present_modes.data()));

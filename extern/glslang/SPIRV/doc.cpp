@@ -1,5 +1,6 @@
 //
 // Copyright (C) 2014-2015 LunarG, Inc.
+// Copyright (C) 2022-2024 Arm Limited.
 // Modifications Copyright (C) 2020 Advanced Micro Devices, Inc. All rights reserved.
 //
 // All rights reserved.
@@ -318,6 +319,7 @@ const char* DecorationString(int decoration)
 
     case DecorationWeightTextureQCOM:           return "DecorationWeightTextureQCOM";
     case DecorationBlockMatchTextureQCOM:       return "DecorationBlockMatchTextureQCOM";
+    case DecorationBlockMatchSamplerQCOM:       return "DecorationBlockMatchSamplerQCOM";
     case DecorationExplicitInterpAMD:           return "ExplicitInterpAMD";
     case DecorationOverrideCoverageNV:          return "OverrideCoverageNV";
     case DecorationPassthroughNV:               return "PassthroughNV";
@@ -942,6 +944,7 @@ const char* CapabilityString(int info)
     case CapabilitySubgroupBallotKHR: return "SubgroupBallotKHR";
     case CapabilityDrawParameters:    return "DrawParameters";
     case CapabilitySubgroupVoteKHR:   return "SubgroupVoteKHR";
+    case CapabilityGroupNonUniformRotateKHR: return "CapabilityGroupNonUniformRotateKHR";
 
     case CapabilityStorageUniformBufferBlock16: return "StorageUniformBufferBlock16";
     case CapabilityStorageUniform16:            return "StorageUniform16";
@@ -1032,14 +1035,19 @@ const char* CapabilityString(int info)
     case CapabilityTileImageDepthReadAccessEXT:           return "TileImageDepthReadAccessEXT";
     case CapabilityTileImageStencilReadAccessEXT:         return "TileImageStencilReadAccessEXT";
 
+    case CapabilityCooperativeMatrixLayoutsARM:             return "CooperativeMatrixLayoutsARM";
+
     case CapabilityFragmentShadingRateKHR:                  return "FragmentShadingRateKHR";
 
     case CapabilityDemoteToHelperInvocationEXT:             return "DemoteToHelperInvocationEXT";
+    case CapabilityAtomicFloat16VectorNV:                   return "AtomicFloat16VectorNV";
     case CapabilityShaderClockKHR:                          return "ShaderClockKHR";
     case CapabilityQuadControlKHR:                          return "QuadControlKHR";
     case CapabilityInt64ImageEXT:                           return "Int64ImageEXT";
 
     case CapabilityIntegerFunctions2INTEL:              return "CapabilityIntegerFunctions2INTEL";
+
+    case CapabilityExpectAssumeKHR:                         return "ExpectAssumeKHR";
 
     case CapabilityAtomicFloat16AddEXT:                     return "AtomicFloat16AddEXT";
     case CapabilityAtomicFloat32AddEXT:                     return "AtomicFloat32AddEXT";
@@ -1058,6 +1066,9 @@ const char* CapabilityString(int info)
     case CapabilityTextureSampleWeightedQCOM:           return "TextureSampleWeightedQCOM";
     case CapabilityTextureBoxFilterQCOM:                return "TextureBoxFilterQCOM";
     case CapabilityTextureBlockMatchQCOM:               return "TextureBlockMatchQCOM";
+    case CapabilityTextureBlockMatch2QCOM:              return "TextureBlockMatch2QCOM";
+
+    case CapabilityReplicatedCompositesEXT:             return "CapabilityReplicatedCompositesEXT";
 
     default: return "Bad";
     }
@@ -1436,6 +1447,7 @@ const char* OpcodeString(int op)
     case 4429: return "OpSubgroupAnyKHR";
     case 4430: return "OpSubgroupAllEqualKHR";
     case 4432: return "OpSubgroupReadInvocationKHR";
+    case 4433: return "OpExtInstWithForwardRefsKHR";
 
     case OpGroupNonUniformQuadAllKHR: return "OpGroupNonUniformQuadAllKHR";
     case OpGroupNonUniformQuadAnyKHR: return "OpGroupNonUniformQuadAnyKHR";
@@ -1482,6 +1494,8 @@ const char* OpcodeString(int op)
     case OpWritePackedPrimitiveIndices4x8NV: return "OpWritePackedPrimitiveIndices4x8NV";
     case OpEmitMeshTasksEXT:                 return "OpEmitMeshTasksEXT";
     case OpSetMeshOutputsEXT:                return "OpSetMeshOutputsEXT";
+
+    case OpGroupNonUniformRotateKHR:         return "OpGroupNonUniformRotateKHR";
 
     case OpTypeRayQueryKHR:                                                   return "OpTypeRayQueryKHR";
     case OpRayQueryInitializeKHR:                                             return "OpRayQueryInitializeKHR";
@@ -1570,6 +1584,14 @@ const char* OpcodeString(int op)
     case OpImageBoxFilterQCOM:              return "OpImageBoxFilterQCOM";
     case OpImageBlockMatchSADQCOM:          return "OpImageBlockMatchSADQCOM";
     case OpImageBlockMatchSSDQCOM:          return "OpImageBlockMatchSSDQCOM";
+    case OpImageBlockMatchWindowSSDQCOM:    return "OpImageBlockMatchWindowSSDQCOM";
+    case OpImageBlockMatchWindowSADQCOM:    return "OpImageBlockMatchWindowSADQCOM";
+    case OpImageBlockMatchGatherSSDQCOM:    return "OpImageBlockMatchGatherSSDQCOM";
+    case OpImageBlockMatchGatherSADQCOM:    return "OpImageBlockMatchGatherSADQCOM";
+
+    case OpConstantCompositeReplicateEXT: return "OpConstantCompositeReplicateEXT";
+    case OpSpecConstantCompositeReplicateEXT: return "OpSpecConstantCompositeReplicateEXT";
+    case OpCompositeConstructReplicateEXT: return "OpCompositeConstructReplicateEXT";
 
     default:
         return "Bad";
@@ -1876,6 +1898,10 @@ void Parameterize()
         InstructionDesc[OpExtInst].operands.push(OperandId, "'Set'");
         InstructionDesc[OpExtInst].operands.push(OperandLiteralNumber, "'Instruction'");
         InstructionDesc[OpExtInst].operands.push(OperandVariableIds, "'Operand 1', +\n'Operand 2', +\n...");
+
+        InstructionDesc[OpExtInstWithForwardRefsKHR].operands.push(OperandId, "'Set'");
+        InstructionDesc[OpExtInstWithForwardRefsKHR].operands.push(OperandLiteralNumber, "'Instruction'");
+        InstructionDesc[OpExtInstWithForwardRefsKHR].operands.push(OperandVariableIds, "'Operand 1', +\n'Operand 2', +\n...");
 
         InstructionDesc[OpLoad].operands.push(OperandId, "'Pointer'");
         InstructionDesc[OpLoad].operands.push(OperandMemoryAccess, "", true);
@@ -2901,6 +2927,11 @@ void Parameterize()
         InstructionDesc[OpSubgroupAllEqualKHR].operands.push(OperandScope, "'Execution'");
         InstructionDesc[OpSubgroupAllEqualKHR].operands.push(OperandId, "'Predicate'");
 
+        InstructionDesc[OpGroupNonUniformRotateKHR].operands.push(OperandScope, "'Execution'");
+        InstructionDesc[OpGroupNonUniformRotateKHR].operands.push(OperandId, "'X'");
+        InstructionDesc[OpGroupNonUniformRotateKHR].operands.push(OperandId, "'Delta'");
+        InstructionDesc[OpGroupNonUniformRotateKHR].operands.push(OperandId, "'ClusterSize'", true);
+
         InstructionDesc[OpSubgroupReadInvocationKHR].operands.push(OperandId, "'Value'");
         InstructionDesc[OpSubgroupReadInvocationKHR].operands.push(OperandId, "'Index'");
 
@@ -3421,7 +3452,43 @@ void Parameterize()
         InstructionDesc[OpImageBlockMatchSSDQCOM].operands.push(OperandId, "'block size'");
         InstructionDesc[OpImageBlockMatchSSDQCOM].operands.push(OperandImageOperands, "", true);
         InstructionDesc[OpImageBlockMatchSSDQCOM].setResultAndType(true, true);
+
+        InstructionDesc[OpImageBlockMatchWindowSSDQCOM].operands.push(OperandId, "'target texture'");
+        InstructionDesc[OpImageBlockMatchWindowSSDQCOM].operands.push(OperandId, "'target coordinates'");
+        InstructionDesc[OpImageBlockMatchWindowSSDQCOM].operands.push(OperandId, "'reference texture'");
+        InstructionDesc[OpImageBlockMatchWindowSSDQCOM].operands.push(OperandId, "'reference coordinates'");
+        InstructionDesc[OpImageBlockMatchWindowSSDQCOM].operands.push(OperandId, "'block size'");
+        InstructionDesc[OpImageBlockMatchWindowSSDQCOM].operands.push(OperandImageOperands, "", true);
+        InstructionDesc[OpImageBlockMatchWindowSSDQCOM].setResultAndType(true, true);
+
+        InstructionDesc[OpImageBlockMatchWindowSADQCOM].operands.push(OperandId, "'target texture'");
+        InstructionDesc[OpImageBlockMatchWindowSADQCOM].operands.push(OperandId, "'target coordinates'");
+        InstructionDesc[OpImageBlockMatchWindowSADQCOM].operands.push(OperandId, "'reference texture'");
+        InstructionDesc[OpImageBlockMatchWindowSADQCOM].operands.push(OperandId, "'reference coordinates'");
+        InstructionDesc[OpImageBlockMatchWindowSADQCOM].operands.push(OperandId, "'block size'");
+        InstructionDesc[OpImageBlockMatchWindowSADQCOM].operands.push(OperandImageOperands, "", true);
+        InstructionDesc[OpImageBlockMatchWindowSADQCOM].setResultAndType(true, true);
+
+        InstructionDesc[OpImageBlockMatchGatherSSDQCOM].operands.push(OperandId, "'target texture'");
+        InstructionDesc[OpImageBlockMatchGatherSSDQCOM].operands.push(OperandId, "'target coordinates'");
+        InstructionDesc[OpImageBlockMatchGatherSSDQCOM].operands.push(OperandId, "'reference texture'");
+        InstructionDesc[OpImageBlockMatchGatherSSDQCOM].operands.push(OperandId, "'reference coordinates'");
+        InstructionDesc[OpImageBlockMatchGatherSSDQCOM].operands.push(OperandId, "'block size'");
+        InstructionDesc[OpImageBlockMatchGatherSSDQCOM].operands.push(OperandImageOperands, "", true);
+        InstructionDesc[OpImageBlockMatchGatherSSDQCOM].setResultAndType(true, true);
+
+        InstructionDesc[OpImageBlockMatchGatherSADQCOM].operands.push(OperandId, "'target texture'");
+        InstructionDesc[OpImageBlockMatchGatherSADQCOM].operands.push(OperandId, "'target coordinates'");
+        InstructionDesc[OpImageBlockMatchGatherSADQCOM].operands.push(OperandId, "'reference texture'");
+        InstructionDesc[OpImageBlockMatchGatherSADQCOM].operands.push(OperandId, "'reference coordinates'");
+        InstructionDesc[OpImageBlockMatchGatherSADQCOM].operands.push(OperandId, "'block size'");
+        InstructionDesc[OpImageBlockMatchGatherSADQCOM].operands.push(OperandImageOperands, "", true);
+        InstructionDesc[OpImageBlockMatchGatherSADQCOM].setResultAndType(true, true);
+
+        InstructionDesc[OpConstantCompositeReplicateEXT].operands.push(OperandId, "'Value'");
+        InstructionDesc[OpSpecConstantCompositeReplicateEXT].operands.push(OperandId, "'Value'");
+        InstructionDesc[OpCompositeConstructReplicateEXT].operands.push(OperandId, "'Value'");
     });
 }
 
-}; // end spv namespace
+} // end spv namespace

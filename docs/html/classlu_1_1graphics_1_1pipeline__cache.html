@@ -133,7 +133,7 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ae15f52bcab1bc18229e15546746f51c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac5c247f83741fba93105cec27b0e2743" id="r_ac5c247f83741fba93105cec27b0e2743"><td class="memTemplParams" colspan="2">template&lt;typename T , typename... Args&gt; <br />
 requires std::is_base_of_v&lt;<a class="el" href="classlu_1_1graphics_1_1pipeline__base.html">pipeline_base</a>, T&gt;</td></tr>
-<tr class="memitem:ac5c247f83741fba93105cec27b0e2743"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ac5c247f83741fba93105cec27b0e2743">register_pipeline</a> (Args &amp;&amp;... args) -&gt; T &amp;</td></tr>
+<tr class="memitem:ac5c247f83741fba93105cec27b0e2743"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ac5c247f83741fba93105cec27b0e2743">register_pipeline_async</a> (Args &amp;&amp;... args) -&gt; T &amp;</td></tr>
 <tr class="separator:ac5c247f83741fba93105cec27b0e2743"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8b0988a70f95b4defafec3a9e726892b" id="r_a8b0988a70f95b4defafec3a9e726892b"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8b0988a70f95b4defafec3a9e726892b">invalidate_all</a> () -&gt; <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a></td></tr>
 <tr class="separator:a8b0988a70f95b4defafec3a9e726892b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -378,7 +378,7 @@ Static Private Attributes</h2></td></tr>
 </div>
 </div>
 <a id="ac5c247f83741fba93105cec27b0e2743" name="ac5c247f83741fba93105cec27b0e2743"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac5c247f83741fba93105cec27b0e2743">&#9670;&#160;</a></span>register_pipeline()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5c247f83741fba93105cec27b0e2743">&#9670;&#160;</a></span>register_pipeline_async()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -390,7 +390,7 @@ requires std::is_base_of_v&lt;<a class="el" href="classlu_1_1graphics_1_1pipelin
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">auto lu::graphics::pipeline_cache::register_pipeline </td>
+          <td class="memname">auto lu::graphics::pipeline_cache::register_pipeline_async </td>
           <td>(</td>
           <td class="paramtype">Args &amp;&amp;...</td>          <td class="paramname"><span class="paramname"><em>args</em></span></td><td>)</td>
           <td> -&gt; T&amp; </td>

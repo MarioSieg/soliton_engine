@@ -39,7 +39,7 @@ TEST_SUITE("CastShapeTests")
 		CHECK_APPROX_EQUAL(result.mContactPointOn2, inPosition, 1.0e-3f);
 	}
 
-	/// Helper function that tests a shere against a triangle centered on the origin with normal Z
+	/// Helper function that tests a sphere against a triangle centered on the origin with normal Z
 	static void sTestCastSphereTriangle(const Shape *inTriangle)
 	{
 		// Create sphere
@@ -267,13 +267,13 @@ TEST_SUITE("CastShapeTests")
 			CHECK_APPROX_EQUAL(result.mFraction, 0.0f);
 			CHECK(result.mPenetrationAxis.Normalized().Dot(Vec3(1, 0, 0)) > Cos(DegreesToRadians(1.0f)));
 			CHECK_APPROX_EQUAL(result.mPenetrationDepth, 1.05f);
-			CHECK_APPROX_EQUAL(result.mContactPointOn1, Vec3(2.05f, 0, 0), 1.0e-5f); // Box starts at 1.0, center of sphere adds 0.05, radius of sphere is 1
-			CHECK_APPROX_EQUAL(result.mContactPointOn2, Vec3(1.0f, 0, 0), 1.0e-5f); // Box starts at 1.0
+			CHECK_APPROX_EQUAL(result.mContactPointOn1, Vec3(2.05f, 0, 0), 2.0e-5f); // Box starts at 1.0, center of sphere adds 0.05, radius of sphere is 1
+			CHECK_APPROX_EQUAL(result.mContactPointOn2, Vec3(1.0f, 0, 0), 2.0e-5f); // Box starts at 1.0
 			CHECK(!result.mIsBackFaceHit);
 		}
 	}
 
-	// Test casting a capsule against a mesh that is interecting at fraction 0 and test that it returns the deepest penetration
+	// Test casting a capsule against a mesh that is intersecting at fraction 0 and test that it returns the deepest penetration
 	TEST_CASE("TestDeepestPenetrationAtFraction0")
 	{
 		// Create an n x n grid of triangles

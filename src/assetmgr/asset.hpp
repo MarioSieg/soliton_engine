@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #pragma once
 
@@ -21,7 +21,7 @@ namespace lu::assetmgr {
         ) noexcept;
 
     public:
-        virtual ~asset() = default;
+        virtual ~asset();
 
         [[nodiscard]] auto get_uuid() const noexcept -> const uuids::uuid& { return m_uuid; }
         [[nodiscard]] auto get_source() const noexcept -> asset_source { return m_source; }

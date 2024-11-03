@@ -1,4 +1,4 @@
-// Copyright (c) 2022-2024 Mario "Neo" Sieg. All Rights Reserved.
+// Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 // TODO (not that important): shorten code a lot by converting to derived class using new pipeline builder
 // TODO (not that important): Port old GLM math code to DXM
@@ -39,15 +39,15 @@ namespace lu::graphics {
     };
 
 
-    pbr_filter_processor::pbr_filter_processor() : m_cube_mesh{"/engine_assets/meshes/skybox.gltf"} {
-        m_environ_cube.emplace("/engine_assets/textures/hdr/gcanyon_cube.ktx");
+    pbr_filter_processor::pbr_filter_processor() : m_cube_mesh{"/RES/meshes/skybox.gltf", false} {
+        m_environ_cube.emplace("/RES/textures/hdr/gcanyon_cube.ktx");
         generate_irradiance_cube();
         generate_prefilter_cube();
         generate_brdf_lookup_table();
     }
 
     auto pbr_filter_processor::generate_irradiance_cube() -> void {
-        passert(!m_irradiance_cube.has_value());
+        panic_assert(!m_irradiance_cube.has_value());
 
         stopwatch clock {};
         log_info("Generating irradiance cube...");
@@ -279,8 +279,8 @@ namespace lu::graphics {
         vertex_input_ci.vertexAttributeDescriptionCount = static_cast<std::uint32_t>(k_vertex_attrib_desc.size());
 
         eastl::array<vk::PipelineShaderStageCreateInfo, 2> shader_stages {
-            shader_cache::get().get_shader(shader_variant{"/engine_assets/shaders/src/filter_env_cube.vert", shader_stage::vertex})->get_stage_info(),
-            shader_cache::get().get_shader(shader_variant{"/engine_assets/shaders/src/irradiance_cube.frag", shader_stage::fragment})->get_stage_info()
+            shader_cache::get().get_shader(shader_variant{"/RES/shaders/src/filter_env_cube.vert", shader_stage::vertex})->get_stage_info(),
+            shader_cache::get().get_shader(shader_variant{"/RES/shaders/src/irradiance_cube.frag", shader_stage::fragment})->get_stage_info()
         };
 
         vk::GraphicsPipelineCreateInfo pipeline_ci {};
@@ -413,7 +413,7 @@ namespace lu::graphics {
     }
 
     auto pbr_filter_processor::generate_prefilter_cube() -> void {
-        passert(!m_prefiltered_cube.has_value());
+        panic_assert(!m_prefiltered_cube.has_value());
 
         stopwatch clock {};
         log_info("Generating prefiltered cube...");
@@ -644,8 +644,8 @@ namespace lu::graphics {
         vertex_input_ci.vertexAttributeDescriptionCount = static_cast<std::uint32_t>(k_vertex_attrib_desc.size());
 
         eastl::array<vk::PipelineShaderStageCreateInfo, 2> shader_stages {
-            shader_cache::get().get_shader(shader_variant{"/engine_assets/shaders/src/filter_env_cube.vert", shader_stage::vertex})->get_stage_info(),
-            shader_cache::get().get_shader(shader_variant{"/engine_assets/shaders/src/prefilter_env_cube.frag", shader_stage::fragment})->get_stage_info()
+            shader_cache::get().get_shader(shader_variant{"/RES/shaders/src/filter_env_cube.vert", shader_stage::vertex})->get_stage_info(),
+            shader_cache::get().get_shader(shader_variant{"/RES/shaders/src/prefilter_env_cube.frag", shader_stage::fragment})->get_stage_info()
         };
 
         vk::GraphicsPipelineCreateInfo pipeline_ci {};
@@ -779,7 +779,7 @@ namespace lu::graphics {
     }
 
     auto pbr_filter_processor::generate_brdf_lookup_table() -> void {
-        passert(!m_brdf_lut.has_value());
+        panic_assert(!m_brdf_lut.has_value());
 
         stopwatch clock {};
         log_info("Generating BRDF LUT...");
@@ -934,8 +934,8 @@ namespace lu::graphics {
         vk::PipelineVertexInputStateCreateInfo vertex_input_ci {};
 
         eastl::array<vk::PipelineShaderStageCreateInfo, 2> shader_stages {
-            shader_cache::get().get_shader(shader_variant{"/engine_assets/shaders/src/gen_brdf_lut.vert", shader_stage::vertex})->get_stage_info(),
-            shader_cache::get().get_shader(shader_variant{"/engine_assets/shaders/src/gen_brdf_lut.frag", shader_stage::fragment})->get_stage_info()
+            shader_cache::get().get_shader(shader_variant{"/RES/shaders/src/gen_brdf_lut.vert", shader_stage::vertex})->get_stage_info(),
+            shader_cache::get().get_shader(shader_variant{"/RES/shaders/src/gen_brdf_lut.frag", shader_stage::fragment})->get_stage_info()
         };
 
         vk::Pipeline shader_pipeline {};

@@ -5,7 +5,7 @@
 
 #include "../private_api.h"
 
-ecs_vec_t* ecs_vec_init(
+void ecs_vec_init(
     ecs_allocator_t *allocator,
     ecs_vec_t *v,
     ecs_size_t size,
@@ -25,7 +25,6 @@ ecs_vec_t* ecs_vec_init(
 #ifdef FLECS_SANITIZE
     v->elem_size = size;
 #endif
-    return v;
 }
 
 void ecs_vec_init_if(
@@ -301,6 +300,7 @@ void* ecs_vec_get(
     int32_t index)
 {
     ecs_san_assert(size == v->elem_size, ECS_INVALID_PARAMETER, NULL);
+    ecs_assert(index >= 0, ECS_OUT_OF_RANGE, NULL);
     ecs_assert(index < v->count, ECS_OUT_OF_RANGE, NULL);
     return ECS_ELEM(v->array, size, index);
 }
