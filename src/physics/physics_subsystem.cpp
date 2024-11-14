@@ -143,6 +143,7 @@ namespace lu::physics {
 		});
 
     	scene.observer<com::character_controller>().event(flecs::OnRemove).each([&](com::character_controller& cc) {
+    		if (!cc.phys_character) return;
 			cc.phys_character->RemoveFromPhysicsSystem();
     		cc.phys_character = nullptr;
 		});
