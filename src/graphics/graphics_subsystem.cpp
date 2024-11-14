@@ -187,17 +187,16 @@ namespace lu::graphics {
         auto& scene = scene_mgr::active();
         m_noesis_context->tick();
         m_imgui_context->end_frame();
-        if (!m_render_query.scene || &scene != m_render_query.scene) [[unlikely]] { // Scene changed
-            m_render_query.scene = &scene;
-            // m_render_query.query.destruct(); TODO: leak
-            m_render_query.query = scene.query<const com::transform, const com::mesh_renderer>();
-        }
+        auto query = scene.query<const com::transform, const com::mesh_renderer>(); // TODO: leak?
         m_render_data.clear();
-        scene.readonly_begin();
-        const std::size_t n = m_render_query.query.count();
-        m_render_query.query.each([this, n](const com::transform& transform, const com::mesh_renderer& renderer) {
-            m_render_data.emplace_back(eastl::span{&transform, n}, eastl::span{&renderer, n});
-        });
+        panic_assert(!scene.readonly_begin());
+        auto it = ecs_query_iter(scene, query.c_ptr());
+        while (ecs_query_next(&it)) { // TODO: convert to C++ API
+            const com::transform* transforms = ecs_field(&it, com::transform, 0);
+            const com::mesh_renderer* renderers = ecs_field(&it, com::mesh_renderer, 1);
+            const std::size_t n = it.count;
+            m_render_data.emplace_back(eastl::span{transforms, n}, eastl::span{renderers, n});
+        }
         if (m_cmd) [[likely]] { // TODO: refractor
             m_render_thread_pool->begin_frame(&m_inheritance_info);
             m_render_thread_pool->process_frame(*m_cmd);

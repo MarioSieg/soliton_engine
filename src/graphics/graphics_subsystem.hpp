@@ -90,10 +90,5 @@ namespace lu::graphics {
         eastl::optional<imgui::context> m_imgui_context {};
         eastl::optional<noesis::context> m_noesis_context {};
         bool m_reload_pipelines_next_frame {};
-
-        struct {
-            flecs::query<const com::transform, const com::mesh_renderer> query {};
-            scene* scene {};
-        } m_render_query {};
     };
 }
