@@ -75,12 +75,11 @@ local time_cycle = {
     debug_draw = true,
     time_cycle_scale = 0.1, -- Time cycle speed multiplier
     date = {
-        day = 29,
-        month = 12,
+        day = 1,
+        month = 6,
         year = 2024,
         time = 12,
     },
-    current_season = 1,
     _time_light_factor = 0.0, -- 0.0 = night, 1.0 = day
     _north_dir = vec3.unit_x,
     _sun_dir = -vec3.unit_y,
