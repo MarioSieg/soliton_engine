@@ -17,6 +17,7 @@ local assets = require 'assets'
 
 local bor, band = bit.bor, bit.band
 local rad, sin, cos, tan, atan2, asin, pi = math.rad, math.sin, math.cos, math.tan, math.atan2, math.asin, math.pi
+local clamp = gmath.clamp
 
 ffi.cdef[[
     typedef int lua_scene_id;
@@ -33,7 +34,16 @@ ffi.cdef[[
     void __lu_scene_set_active_camera_entity(lua_entity_id id);
     lua_entity_id __lu_scene_get_active_camera_entity(void);
     void __lu_scene_set_sun_dir(lua_vec3 sun_dir);
+    void __lu_scene_set_sun_color(lua_vec3 sun_color);
+    void __lu_scene_set_ambient_color(lua_vec3 ambient_color);
 ]]
+
+local lighting = {
+    sun_color = vec3.one,
+    ambient_color = vec3.one * 0.2,
+    _current_sun_color = vec3.one,
+    _current_ambient_color = vec3.one * 0.2,
+}
 
 -- Simplified time cycle system:
 -- 24 hour day
@@ -71,12 +81,13 @@ local time_cycle = {
         time = 12,
     },
     current_season = 1,
+    _time_light_factor = 0.0, -- 0.0 = night, 1.0 = day
     _north_dir = vec3.unit_x,
     _sun_dir = -vec3.unit_y,
     _sun_dir_quat = quat.identity,
     _latitude = 50.0,
     _delta = 0.0,
-    _ecliptic_obliquity = rad(23.44),
+    _ecliptic_obliquity = rad(23.44)
 }
 
 function time_cycle:get_date_string()
@@ -121,12 +132,15 @@ end
 
 function time_cycle:update_with_time(time_hour_24)
     self:_compute_sun_orbit()
-    self:_compute_sun_dir(gmath.clamp(time_hour_24, 0, 24) - 12)
+    self:_compute_sun_dir(clamp(time_hour_24, 0, 24) - 12)
+    self._time_light_factor = self:_calculate_day_night_factor()
+    lighting._current_sun_color = lighting.sun_color * self._time_light_factor -- Overide sun color with time of day
+    lighting._current_ambient_color = lighting.ambient_color * (1 - self._time_light_factor) -- Overide ambient color with time of day
 end
 
 function time_cycle:_advance()
     if self.debug_draw then
-        debugdraw.draw_arrow_dir(vec3.zero, -self._sun_dir * 5.0, colors.yellow)
+        debugdraw.draw_arrow_dir(vec3.zero, self._sun_dir * 5.0, colors.yellow)
     end
     if not self.freeze_time then
         self.date.time = self.date.time + time.delta_time * self.time_cycle_scale
@@ -166,6 +180,11 @@ function time_cycle:_update_season()
     else
         self.current_season = self.seasons.winter
     end
+end
+
+function time_cycle:_calculate_day_night_factor()
+    local hour_angle = rad(self.date.time / 24 * 360 - 180) -- Angle for the time of day
+    return clamp((cos(hour_angle) + 1) / 2, 0, 1) -- Normalized day-night factor
 end
 
 function time_cycle:_compute_sun_orbit()
@@ -272,12 +291,15 @@ scene_import_flags.default = bit_flag_union({
 local scene = {
     name = 'Default',
     id = 0,
+    lighting = lighting,
     time_cycle = time_cycle
 }
 
 function scene._update()
     scene.time_cycle:_advance()
     cpp.__lu_scene_set_sun_dir(scene.time_cycle._sun_dir)
+    cpp.__lu_scene_set_sun_color(scene.lighting._current_sun_color)
+    cpp.__lu_scene_set_ambient_color(scene.lighting._current_ambient_color)
     cpp.__lu_scene_tick()
 end
 

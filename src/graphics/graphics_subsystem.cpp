@@ -267,6 +267,7 @@ namespace lu::graphics {
         XMStoreFloat4(&per_frame_data.camPos, XMLoadFloat4(&s_camera_transform.position));
         per_frame_data.sunDir = scene.properties.environment.sun_dir;
         per_frame_data.sunColor = scene.properties.environment.sun_color;
+        per_frame_data.ambientColor = scene.properties.environment.ambient_color;
         shared_buffers::get().per_frame_ubo.set(per_frame_data);
     }
 }

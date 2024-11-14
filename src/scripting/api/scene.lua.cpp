@@ -91,3 +91,11 @@ LUA_INTEROP_API auto __lu_scene_full_entity_query_end() -> void {
 LUA_INTEROP_API auto __lu_scene_set_sun_dir(const lua_vec3 sun_dir) -> void {
     scene_mgr::active().properties.environment.sun_dir = sun_dir;
 }
+
+LUA_INTEROP_API auto __lu_scene_set_sun_color(const lua_vec3 sun_color) -> void {
+    scene_mgr::active().properties.environment.sun_color = sun_color;
+}
+
+LUA_INTEROP_API auto __lu_scene_set_ambient_color(const lua_vec3 ambient_color) -> void {
+    scene_mgr::active().properties.environment.ambient_color = ambient_color;
+}
