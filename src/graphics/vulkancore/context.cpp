@@ -149,7 +149,7 @@ namespace lu::vkb {
         m_width = w;
         m_height = h;
 
-        recreate_swapchain();
+        m_swapchain->create(m_width, m_height, cv_enable_vsync(), false);
 
         destroy_depth_stencil();
         setup_depth_stencil();
@@ -173,7 +173,7 @@ namespace lu::vkb {
         m_device.emplace(cv_enable_vulkan_validation_layers());
         m_swapchain.emplace(m_device->get_instance(), m_device->get_physical_device(), m_device->get_logical_device());
         m_swapchain->init_surface(m_window);
-        recreate_swapchain();
+        m_swapchain->create(m_width, m_height, cv_enable_vsync(), false);
     }
 
     auto context::create_sync_prims() -> void {
@@ -374,10 +374,6 @@ namespace lu::vkb {
     auto context::create_pipeline_cache() -> void {
         constexpr vk::PipelineCacheCreateInfo pipeline_cache_ci {};
         vkcheck(m_device->get_logical_device().createPipelineCache(&pipeline_cache_ci, get_alloc(), &m_pipeline_cache));
-    }
-
-    auto context::recreate_swapchain() -> void {
-        m_swapchain->create(m_width, m_height, cv_enable_vsync(), false);
     }
 
     auto context::create_msaa_target() -> void {

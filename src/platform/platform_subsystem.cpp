@@ -17,16 +17,12 @@ namespace lu::platform {
     static auto proxy_resize_hook(GLFWwindow* const window, const int w, const int h) -> void {
         panic_assert(window != nullptr);
         void* user = glfwGetWindowUserPointer(window);
-        if (!user) [[unlikely]] {
-            log_error("No user context ptr set for window");
-            return;
-        }
-        auto& sys = *static_cast<platform_subsystem*>(user);
-        if (!sys.resize_hook) [[unlikely]] {
-            log_error("No resize hook set for window");
-            return;
-        }
-        eastl::invoke(sys.resize_hook); // inform kernel about resize
+        panic_assert(user);
+        user = static_cast<class window*>(user)->usr;
+        panic_assert(user);
+        auto* sys = static_cast<platform_subsystem*>(user);
+        panic_assert(sys->resize_hook);
+        eastl::invoke(sys->resize_hook); // inform kernel about resize
         log_info("Resized window to {}x{}", w, h);
     }
 
@@ -41,6 +37,7 @@ namespace lu::platform {
         m_main_window->set_size_limits(XMINT2 {cv_min_width(), cv_min_height()});
         m_main_window->set_icon(cv_window_icon());
         m_main_window->framebuffer_size_callbacks += &proxy_resize_hook;
+        m_main_window->usr = this;
     }
 
     platform_subsystem::~platform_subsystem() {
