@@ -114,7 +114,7 @@ local editor = {
     },
     gizmos = {
         show_grid = true,
-        show_center_axis = true,
+        show_center_axis = false,
         grid_step = 1.0,
         grid_dims = vec3(256, 0, 256),
         grid_color = vec3(0.7, 0.7, 0.7),
@@ -302,6 +302,9 @@ function editor:draw_main_menu_bar()
             end
             if ui.MenuItem(icons.i_arrow_up .. ' Show Center Axis', nil, self.gizmos.show_center_axis) then
                 self.gizmos.show_center_axis = not self.gizmos.show_center_axis
+            end
+            if ui.MenuItem(icons.i_sun .. ' Show Skylight Vector', nil, scene.clock.debug_draw) then
+                scene.clock.debug_draw = not scene.clock.debug_draw
             end
             ui.EndMenu()
         end

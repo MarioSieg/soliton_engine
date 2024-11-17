@@ -33,7 +33,7 @@ local clock = {
         november = 11,
         december = 12
     },
-    debug_draw = true,
+    debug_draw = false,
     time_cycle_scale = 1.0, -- Time cycle speed multiplier
     date = {
         day = 1,
