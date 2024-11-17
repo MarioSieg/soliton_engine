@@ -8,11 +8,11 @@
 
 namespace lu::platform {
 
-    static const system_variable<std::int32_t> cv_default_width {"window.default_width", {1280}};
-    static const system_variable<std::int32_t> cv_default_height {"window.default_height", {720}};
-    static const system_variable<std::int32_t> cv_min_width {"window.min_width", {640}};
-    static const system_variable<std::int32_t> cv_min_height {"window.min_height", {480}};
-    static const system_variable<eastl::string> cv_window_icon {"window.icon", {"assets/icons/logo.png"}};
+    static const system_variable<std::int32_t> sv_default_width {"window.default_width", {1280}};
+    static const system_variable<std::int32_t> sv_default_height {"window.default_height", {720}};
+    static const system_variable<std::int32_t> sv_min_width {"window.min_width", {640}};
+    static const system_variable<std::int32_t> sv_min_height {"window.min_height", {480}};
+    static const system_variable<eastl::string> sv_window_icon {"window.icon", {"engine_assets/icons/logo.png"}};
 
     static auto proxy_resize_hook(GLFWwindow* const window, const int w, const int h) -> void {
         panic_assert(window != nullptr);
@@ -31,11 +31,11 @@ namespace lu::platform {
         print_full_machine_info();
         m_main_window.emplace(
             "Lunam Engine " + get_version_string(),
-            XMINT2 {cv_default_width(), cv_default_height()},
+            XMINT2 {sv_default_width(), sv_default_height()},
             false
         );
-        m_main_window->set_size_limits(XMINT2 {cv_min_width(), cv_min_height()});
-        m_main_window->set_icon(cv_window_icon());
+        m_main_window->set_size_limits(XMINT2 {sv_min_width(), sv_min_height()});
+        m_main_window->set_icon(sv_window_icon());
         m_main_window->framebuffer_size_callbacks += &proxy_resize_hook;
         m_main_window->usr = this;
     }

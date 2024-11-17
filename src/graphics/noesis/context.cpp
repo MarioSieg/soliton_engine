@@ -79,15 +79,15 @@ extern "C" void NsShutdownPackages_NoesisApp() {
 }
 
 namespace noesis {
-    static const system_variable<eastl::string> cv_license {"ui.license.id", eastl::monostate{} };
-    static const system_variable<eastl::string> cv_key {"ui.license.key", eastl::monostate{} };
-    static const system_variable<eastl::string> cv_xaml_root {"ui.xaml_root_path", {"assets/ui"} };
-    static const system_variable<eastl::string> cv_font_root {"ui.font_root_path", {"assets/ui"} };
-    static const system_variable<eastl::string> cv_texture_root {"ui.texture_root_path", {"assets/ui"} };
-    static const system_variable<eastl::string> cv_default_font {"ui.default_font.family", {"Fonts/#PT Root UI"} };
-    static const system_variable<float> cv_default_font_size {"ui.default_font.size", {15.0f} };
-    static const system_variable<std::int32_t> cv_default_font_weight {"ui.default_font.weight", {Noesis::FontWeight_Normal} };
-    static const system_variable<std::int32_t> cv_default_font_stretch {"ui.default_font.stretch", {Noesis::FontStretch_Normal} };
+    static const system_variable<eastl::string> sv_license {"ui.license.id", eastl::monostate{} };
+    static const system_variable<eastl::string> sv_key {"ui.license.key", eastl::monostate{} };
+    static const system_variable<eastl::string> sv_xaml_root {"ui.xaml_root_path", {"assets/ui"} };
+    static const system_variable<eastl::string> sv_font_root {"ui.font_root_path", {"assets/ui"} };
+    static const system_variable<eastl::string> sv_texture_root {"ui.texture_root_path", {"assets/ui"} };
+    static const system_variable<eastl::string> sv_default_font {"ui.default_font.family", {"Fonts/#PT Root UI"} };
+    static const system_variable<float> sv_default_font_size {"ui.default_font.size", {15.0f} };
+    static const system_variable<std::int32_t> sv_default_font_weight {"ui.default_font.weight", {Noesis::FontWeight_Normal} };
+    static const system_variable<std::int32_t> sv_default_font_stretch {"ui.default_font.stretch", {Noesis::FontStretch_Normal} };
 
     static constinit Noesis::IView* s_event_proxy;
 
@@ -248,8 +248,8 @@ namespace noesis {
                 default: log_info("{}:{} [GUI] {}", file_name, line, msg); break;
             }
         });
-        static const eastl::string user_name {cv_license()};
-        static const eastl::string license_key {cv_key()};
+        static const eastl::string user_name {sv_license()};
+        static const eastl::string license_key {sv_key()};
         Noesis::GUI::SetLicense(
             user_name.c_str(),
             license_key.c_str()
@@ -269,19 +269,19 @@ namespace noesis {
         Noesis::RegisterComponent<Noesis::EnumConverter<Menu3D::State>>();
         Noesis::RegisterComponent<Menu3D::MultiplierConverter>();
 
-        static const eastl::string xaml_root = cv_xaml_root();
-        static const eastl::string font_root = cv_font_root();
-        static const eastl::string texture_root = cv_texture_root();
+        static const eastl::string xaml_root = sv_xaml_root();
+        static const eastl::string font_root = sv_font_root();
+        static const eastl::string texture_root = sv_texture_root();
         Noesis::GUI::SetXamlProvider(Noesis::MakePtr<NoesisApp::LocalXamlProvider>(xaml_root.c_str()));
         Noesis::GUI::SetFontProvider(Noesis::MakePtr<NoesisApp::LocalFontProvider>(font_root.c_str()));
         Noesis::GUI::SetTextureProvider(Noesis::MakePtr<NoesisApp::LocalTextureProvider>(texture_root.c_str()));
-        static const eastl::string default_font = cv_default_font();
+        static const eastl::string default_font = sv_default_font();
         const char* fonts[] = { default_font.c_str() };
         Noesis::GUI::SetFontFallbacks(fonts, 1);
         Noesis::GUI::SetFontDefaultProperties(
-            cv_default_font_size(),
-            static_cast<Noesis::FontWeight>(cv_default_font_weight()),
-            static_cast<Noesis::FontStretch>(cv_default_font_stretch()),
+            sv_default_font_size(),
+            static_cast<Noesis::FontWeight>(sv_default_font_weight()),
+            static_cast<Noesis::FontStretch>(sv_default_font_stretch()),
             Noesis::FontStyle_Normal
         );
         NoesisApp::SetThemeProviders();

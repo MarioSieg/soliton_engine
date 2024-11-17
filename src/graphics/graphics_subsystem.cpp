@@ -20,10 +20,10 @@ namespace lu::graphics {
     using platform::platform_subsystem;
     using vkb::context;
 
-    static const system_variable<eastl::string> cv_shader_dir {"renderer.shader_dir", {"engine_assets/shaders"}};
-    static const system_variable<std::uint32_t> cv_concurrent_frames {"renderer.concurrent_frames", {3}};
-    static const system_variable<std::uint32_t> cv_msaa_samples {"renderer.msaa_samples", {4}};
-    static const system_variable<std::uint32_t> cv_max_render_threads {"cpu.render_threads", {2}};
+    static const system_variable<eastl::string> sv_shader_dir {"renderer.shader_dir", {"engine_assets/shaders"}};
+    static const system_variable<std::uint32_t> sv_concurrent_frames {"renderer.concurrent_frames", {3}};
+    static const system_variable<std::uint32_t> sv_msaa_samples {"renderer.msaa_samples", {4}};
+    static const system_variable<std::uint32_t> sv_max_render_threads {"cpu.render_threads", {2}};
 
     static constinit std::uint32_t s_num_draw_calls_prev = 0;
     static constinit std::uint32_t s_num_draw_verts_prev = 0;
@@ -36,11 +36,11 @@ namespace lu::graphics {
         GLFWwindow* const window = *platform_subsystem::get_main_window();
         context::create(vkb::context_desc {
             .window = window,
-            .concurrent_frames = cv_concurrent_frames(),
-            .msaa_samples = cv_msaa_samples()
+            .concurrent_frames = sv_concurrent_frames(),
+            .msaa_samples = sv_msaa_samples()
         });
 
-        shader_cache::init(cv_shader_dir()); // 1. init shader cache (must be first)
+        shader_cache::init(sv_shader_dir()); // 1. init shader cache (must be first)
         pipeline_cache::init();
         pipeline_cache::get().register_pipeline_async<pipelines::pbr_pipeline>();
         pipeline_cache::get().register_pipeline_async<pipelines::static_sky_pipeline>();
@@ -50,7 +50,7 @@ namespace lu::graphics {
 
         m_render_thread_pool.emplace([this](vkb::command_buffer& cmd, const std::int32_t bucket_id, const std::int32_t num_threads) -> void {
             render_scene_bucket(cmd, bucket_id, num_threads);
-        }, cv_max_render_threads());
+        }, sv_max_render_threads());
         m_render_data.reserve(32);
 
         m_imgui_context.emplace();

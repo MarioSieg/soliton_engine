@@ -6,11 +6,11 @@
 #include "../../scripting/system_variable.hpp"
 
 namespace lu::vkb {
-    static const system_variable<bool> cv_enable_vulkan_validation_layers {
+    static const system_variable<bool> sv_enable_vulkan_validation_layers {
         "renderer.enable_vulkan_validation_layers",
         {false}
     };
-    static const system_variable<bool> cv_enable_vsync {
+    static const system_variable<bool> sv_enable_vsync {
         "renderer.force_vsync",
         {false}
     };
@@ -149,7 +149,7 @@ namespace lu::vkb {
         m_width = w;
         m_height = h;
 
-        m_swapchain->create(m_width, m_height, cv_enable_vsync(), false);
+        m_swapchain->create(m_width, m_height, sv_enable_vsync(), false);
 
         destroy_depth_stencil();
         setup_depth_stencil();
@@ -170,10 +170,10 @@ namespace lu::vkb {
     }
 
     auto context::boot_vulkan_core() -> void {
-        m_device.emplace(cv_enable_vulkan_validation_layers());
+        m_device.emplace(sv_enable_vulkan_validation_layers());
         m_swapchain.emplace(m_device->get_instance(), m_device->get_physical_device(), m_device->get_logical_device());
         m_swapchain->init_surface(m_window);
-        m_swapchain->create(m_width, m_height, cv_enable_vsync(), false);
+        m_swapchain->create(m_width, m_height, sv_enable_vsync(), false);
     }
 
     auto context::create_sync_prims() -> void {

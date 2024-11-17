@@ -17,7 +17,7 @@
 #include <vk_mem_alloc.h>
 
 namespace lu::imgui {
-    static const system_variable<float> cv_font_size {"editor.font_size", {18.0f}};
+    static const system_variable<float> sv_font_size {"editor.font_size", {18.0f}};
 
     context::context() {
 #if USE_MIMALLOC
@@ -65,7 +65,7 @@ namespace lu::imgui {
         };
         panic_assert(ImGui_ImplVulkan_Init(&init_info, vkb::ctx().get_scene_render_pass()));
 
-        const float font_size = cv_font_size();
+        const float font_size = sv_font_size();
 
         // add primary text font:
         ImFontConfig config { };
