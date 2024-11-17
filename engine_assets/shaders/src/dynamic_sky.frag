@@ -21,8 +21,8 @@ float nrand(in vec2 n)
 
 float n4rand_ss(in vec2 n)
 {
-	float nrnd0 = nrand( n + 0.07*fract( uboPerFrame.params.w ) );
-	float nrnd1 = nrand( n + 0.11*fract( uboPerFrame.params.w + 0.573953 ) );
+	float nrnd0 = nrand( n + 0.07*fract( uboPerFrame.sky.params.w ) );
+	float nrnd1 = nrand( n + 0.11*fract( uboPerFrame.sky.params.w + 0.573953 ) );
 	return 0.23*sqrt(-log(nrnd0+0.00001))*cos(2.0*3.141592*nrnd1)+0.5;
 }
 

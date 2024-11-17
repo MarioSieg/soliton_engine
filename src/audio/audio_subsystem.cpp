@@ -34,7 +34,7 @@ namespace lu::audio {
             print_audio_driver_info(m_system, driverID);
         }
 
-        m_test.emplace("/RES/audio/ambience.ogg");
+        m_test.emplace("/RES/audio/city.wav");
         m_audio_source.clip = &*m_test;
     }
 

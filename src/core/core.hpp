@@ -25,6 +25,7 @@
 #include <EASTL/unique_ptr.h>
 #include <EASTL/chrono.h>
 #include <EASTL/queue.h>
+#include <EASTL/map.h>
 #include <EASTL/initializer_list.h>
 #include <EAStdC/EABitTricks.h>
 

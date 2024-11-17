@@ -11,7 +11,7 @@ namespace lu::graphics {
         shared_buffers();
         ~shared_buffers();
 
-        vkb::uniform_buffer<glsl::perFrameData> per_frame_ubo {};
+        vkb::uniform_buffer<glsl::per_frame_data> per_frame_ubo {};
 
         [[nodiscard]] inline auto get_layout() const noexcept -> const vk::DescriptorSetLayout& { return m_layout; }
         [[nodiscard]] inline auto get_set() const noexcept -> const vk::DescriptorSet& { return m_set; }

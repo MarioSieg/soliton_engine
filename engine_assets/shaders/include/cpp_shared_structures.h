@@ -27,17 +27,8 @@ namespace lu::graphics::glsl {
     #define gpu_check(strut)
 #endif
 
-// Sun and scene lighting properties. Updated once per frame.
-struct perFrameData {
-    mat4 viewProj;
-    mat4 viewProjInverse;
-    vec4 cameraInfo; // x = fov, y = aspect ratio
-    vec4 camPos; // w unused for now
-    vec4 sunDir; // w unused for now
-    vec4 sunColor; // w unused for now
-    vec4 ambientColor; // w unused for now
-
-    // sky params
+// sky params
+struct sky_data {
     vec4 sun_luminance;
     vec4 sky_luminance_xyz;
     vec4 sky_luminance;
@@ -48,11 +39,24 @@ struct perFrameData {
     vec4 perez4;
     vec4 perez5;
 };
-gpu_check(perFrameData)
+
+// Sun and scene lighting properties. Updated once per frame.
+struct per_frame_data {
+    mat4 viewProj;
+    mat4 viewProjInverse;
+    vec4 cameraInfo; // x = fov, y = aspect ratio
+    vec4 camPos; // w unused for now
+    vec4 sunDir; // w unused for now
+    vec4 sunColor; // w unused for now
+    vec4 ambientColor; // w unused for now
+
+    sky_data sky;
+};
+gpu_check(per_frame_data)
 
 #ifndef __cplusplus
 layout (std140, set = LU_GLSL_DESCRIPTOR_SET_IDX_PER_FRAME, binding = 0) uniform uniformPerFrameUBO {
-    perFrameData uboPerFrame;
+    per_frame_data uboPerFrame;
 };
 #endif
 

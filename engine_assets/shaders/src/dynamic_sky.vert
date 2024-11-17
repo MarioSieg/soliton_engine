@@ -43,17 +43,17 @@ void main() {
 	gl_Position = vec4(inPos.xy, 1.0, 1.0);
 	vec3 lightDir = -normalize(uboPerFrame.sunDir.xyz);
 	vec3 skyDir = vec3(0.0, 1.0, 0.0);
-	vec3 A = uboPerFrame.perez1.xyz;
-	vec3 B = uboPerFrame.perez2.xyz;
-	vec3 C = uboPerFrame.perez3.xyz;
-	vec3 D = uboPerFrame.perez4.xyz;
-	vec3 E = uboPerFrame.perez5.xyz;
+	vec3 A = uboPerFrame.sky.perez1.xyz;
+	vec3 B = uboPerFrame.sky.perez2.xyz;
+	vec3 C = uboPerFrame.sky.perez3.xyz;
+	vec3 D = uboPerFrame.sky.perez4.xyz;
+	vec3 E = uboPerFrame.sky.perez5.xyz;
 	float costeta = max(dot(outViewDir, skyDir), 0.001);
 	float cosgamma = clamp(dot(outViewDir, lightDir), -0.9999, 0.9999);
 	float cosgammas = dot(skyDir, lightDir);
 	vec3 P = Perez(A,B,C,D,E, costeta, cosgamma);
 	vec3 P0 = Perez(A,B,C,D,E, 1.0, cosgammas);
-	vec3 lum = uboPerFrame.sky_luminance_xyz.xyz;
+	vec3 lum = uboPerFrame.sky.sky_luminance_xyz.xyz;
 	vec3 skyColorxyY = vec3(
 		lum.x / (lum.x+lum.y + lum.z)
 		, lum.y / (lum.x+lum.y + lum.z)
@@ -61,5 +61,5 @@ void main() {
 	);
 	vec3 Yp = skyColorxyY * P / P0;
 	vec3 skyColorXYZ = vec3(Yp.x * Yp.z / Yp.y,Yp.z, (1.0 - Yp.x- Yp.y)*Yp.z/Yp.y);
-	outSkyColor = convertXYZ2RGB(skyColorXYZ * uboPerFrame.params.z);
+	outSkyColor = convertXYZ2RGB(skyColorXYZ * uboPerFrame.sky.params.z);
 }

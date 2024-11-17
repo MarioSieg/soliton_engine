@@ -126,6 +126,6 @@ function clock:update()
     self.current_season = self.seasons[season_map[self.date.month]]
 end
 
-clock:set_time_scale(2)
+clock:set_time_scale(60)
 
 return clock
