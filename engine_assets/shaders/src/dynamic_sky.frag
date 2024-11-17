@@ -41,7 +41,7 @@ void main()
 	vec2 sunCoord = computeSunScreenCoords(-uboPerFrame.sunDir.xyz * 65535.0); // Multiply by a large number to simulate sun's position at infinity
 	vec3 ghostColor;
 	vec3 lensFlareColor = lensFlare(texcoord, sunCoord, ghostColor);
-	color += (ghostColor + lensFlareColor) * 1.0;
+	color += (ghostColor + lensFlareColor) * 1.5;
 	color = pow(color, vec3(1.0 / 2.2));
 	float r = n4rand_ss(outScreenPos);
 	color += vec3(r, r, r) / 40.0;
