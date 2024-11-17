@@ -15,10 +15,13 @@ namespace lu::graphics {
 
         [[nodiscard]] inline auto get_layout() const noexcept -> const vk::DescriptorSetLayout& { return m_layout; }
         [[nodiscard]] inline auto get_set() const noexcept -> const vk::DescriptorSet& { return m_set; }
-        [[nodiscard]] static auto get() -> shared_buffers&;
-
+        [[nodiscard]] static inline auto get() -> eastl::unique_ptr<shared_buffers>& {
+            if (!m_instance) m_instance = eastl::make_unique<shared_buffers>();
+            return m_instance;
+        }
 
     private:
+        static inline eastl::unique_ptr<shared_buffers> m_instance {};
         vk::DescriptorSetLayout m_layout {};
         vk::DescriptorSet m_set {};
     };

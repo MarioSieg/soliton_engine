@@ -70,8 +70,8 @@ namespace lu::graphics::pipelines {
 
     auto pbr_pipeline::on_bind(vkb::command_buffer& cmd) const -> void {
         graphics_pipeline::on_bind(cmd);
-        const std::uint32_t dynamic_offset = shared_buffers::get().per_frame_ubo.get_dynamic_aligned_size() * vkb::ctx().get_current_concurrent_frame_idx();
-        cmd.bind_graphics_descriptor_set(shared_buffers::get().get_set(), LU_GLSL_DESCRIPTOR_SET_IDX_PER_FRAME, &dynamic_offset);
+        const std::uint32_t dynamic_offset = shared_buffers::get()->per_frame_ubo.get_dynamic_aligned_size() * vkb::ctx().get_current_concurrent_frame_idx();
+        cmd.bind_graphics_descriptor_set(shared_buffers::get()->get_set(), LU_GLSL_DESCRIPTOR_SET_IDX_PER_FRAME, &dynamic_offset);
         cmd.bind_graphics_descriptor_set(m_pbr_descriptor_set, LU_GLSL_DESCRIPTOR_SET_IDX_CUSTOM);
     }
 
@@ -120,7 +120,7 @@ namespace lu::graphics::pipelines {
         eastl::vector<vk::DescriptorSetLayout>& layouts,
         eastl::vector<vk::PushConstantRange>& ranges
     ) -> void {
-        layouts.emplace_back(shared_buffers::get().get_layout());
+        layouts.emplace_back(shared_buffers::get()->get_layout());
         layouts.emplace_back(material::get_static_resources().descriptor_layout);
         layouts.emplace_back(m_pbr_descriptor_set_layout);
 

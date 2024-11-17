@@ -64,7 +64,7 @@ namespace lu::graphics {
     graphics_subsystem::~graphics_subsystem() {
         vkcheck(vkb::vkdvc().waitIdle()); // must be first
 
-        shared_buffers::get().~shared_buffers();
+        shared_buffers::get().reset();
 
         m_imgui_context.reset();
         m_noesis_context.reset();
@@ -269,6 +269,6 @@ namespace lu::graphics {
         per_frame_data.sunDir = scene.properties.environment.sun_dir;
         per_frame_data.sunColor = scene.properties.environment.sun_color;
         per_frame_data.ambientColor = scene.properties.environment.ambient_color;
-        shared_buffers::get().per_frame_ubo.set(per_frame_data);
+        shared_buffers::get()->per_frame_ubo.set(per_frame_data);
     }
 }
