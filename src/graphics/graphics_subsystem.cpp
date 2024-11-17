@@ -108,6 +108,7 @@ namespace lu::graphics {
             }
         s_camera_transform = *main_cam.get<com::transform>();
         com::camera& cam = *main_cam.get_mut<com::camera>();
+        s_camera_fov = cam.fov;
         if (cam.auto_viewport) {
             cam.viewport.x = width;
             cam.viewport.y = height;
@@ -283,6 +284,8 @@ namespace lu::graphics {
         glsl::perFrameData per_frame_data {};
         XMStoreFloat4x4(&per_frame_data.viewProj, XMLoadFloat4x4A(&s_view_proj_mtx));
         XMStoreFloat4x4(&per_frame_data.viewProjInverse, XMMatrixInverse(nullptr, XMLoadFloat4x4A(&s_view_proj_mtx)));
+        per_frame_data.cameraInfo.x = s_camera_fov;
+        per_frame_data.cameraInfo.y = static_cast<float>(vkb::ctx().get_width()) / static_cast<float>(vkb::ctx().get_height());
         XMStoreFloat4(&per_frame_data.camPos, XMLoadFloat4(&s_camera_transform.position));
         per_frame_data.sunDir = scene.properties.environment.sun_dir;
         per_frame_data.sunColor = scene.properties.environment.sun_color;

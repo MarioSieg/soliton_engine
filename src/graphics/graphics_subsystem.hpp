@@ -81,6 +81,7 @@ namespace lu::graphics {
         static inline XMFLOAT4A s_clear_color;
         static inline BoundingFrustum s_frustum;
         static inline com::transform s_camera_transform;
+        static inline float s_camera_fov;
         static inline constinit graphics_subsystem* s_instance;
         eastl::optional<vkb::command_buffer> m_cmd {};
         vk::CommandBufferInheritanceInfo m_inheritance_info {};

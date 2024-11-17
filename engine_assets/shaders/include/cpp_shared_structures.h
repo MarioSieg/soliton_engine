@@ -31,6 +31,7 @@ namespace lu::graphics::glsl {
 struct perFrameData {
     mat4 viewProj;
     mat4 viewProjInverse;
+    vec4 cameraInfo; // x = fov, y = aspect ratio
     vec4 camPos; // w unused for now
     vec4 sunDir; // w unused for now
     vec4 sunColor; // w unused for now

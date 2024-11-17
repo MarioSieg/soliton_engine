@@ -39,7 +39,7 @@ local clock = {
         day = 1,
         month = 6,
         year = 2024,
-        time = 6,
+        time = 4.45,
     },
     daytime_coeff = 0.0, -- 0.0 = night, 1.0 = day
     _north_dir = vec3.unit_x,
@@ -126,6 +126,6 @@ function clock:update()
     self.current_season = self.seasons[season_map[self.date.month]]
 end
 
-clock:set_time_scale(60)
+clock:set_time_scale(2)
 
 return clock

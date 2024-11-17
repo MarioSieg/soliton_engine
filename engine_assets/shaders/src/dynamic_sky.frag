@@ -5,6 +5,7 @@
 #include "shader_common.h"
 #include "cpp_shared_structures.h"
 #include "filmic_tonemapper.h"
+#include "lens_flare.h"
 
 layout (location = 0) in vec3 outSkyColor;
 layout (location = 1) in vec2 outScreenPos;
@@ -25,14 +26,22 @@ float n4rand_ss(in vec2 n)
 	return 0.23*sqrt(-log(nrnd0+0.00001))*cos(2.0*3.141592*nrnd1)+0.5;
 }
 
+vec2 computeSunScreenCoords(vec3 sunWorldPos)
+{
+	vec4 sunClipPos = uboPerFrame.viewProj * vec4(sunWorldPos, 1.0);
+	vec3 sunNDC = sunClipPos.xyz / sunClipPos.w;
+	vec2 sunScreenCoords = sunNDC.xy * 0.5 + 0.5;
+	return sunScreenCoords;
+}
+
 void main()
 {
-	float size2 = uboPerFrame.params.x * uboPerFrame.params.x;
-	vec3 lightDir = -normalize(uboPerFrame.sunDir.xyz);
-	float distance = 2.0 * (1.0 - dot(normalize(outViewDir), lightDir));
-	float sun = exp(-distance/ uboPerFrame.params.y / size2) + step(distance, size2);
-	float sun2 = min(sun * sun, 1.0);
-	vec3 color = outSkyColor + sun2;
+	vec3 color = outSkyColor;
+	vec2 texcoord = (outScreenPos * 0.5) + 0.5;
+	vec2 sunCoord = computeSunScreenCoords(-uboPerFrame.sunDir.xyz * 65535.0); // Multiply by a large number to simulate sun's position at infinity
+	vec3 ghostColor;
+	vec3 lensFlareColor = lensFlare(texcoord, sunCoord, ghostColor);
+	color += (ghostColor + lensFlareColor) * 1.0;
 	color = pow(color, vec3(1.0 / 2.2));
 	float r = n4rand_ss(outScreenPos);
 	color += vec3(r, r, r) / 40.0;
