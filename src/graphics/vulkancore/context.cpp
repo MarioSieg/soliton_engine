@@ -8,7 +8,7 @@
 namespace lu::vkb {
     static const system_variable<bool> cv_enable_vulkan_validation_layers {
         "renderer.enable_vulkan_validation_layers",
-        {true}
+        {false}
     };
     static const system_variable<bool> cv_enable_vsync {
         "renderer.force_vsync",

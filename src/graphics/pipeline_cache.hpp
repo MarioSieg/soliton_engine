@@ -11,7 +11,7 @@
 #include "../scripting/system_variable.hpp"
 
 namespace lu::graphics {
-    inline const system_variable<bool> sv_parallel_pipeline_creation { "renderer.parallel_pipeline_creation", true };
+    inline const system_variable<bool> sv_parallel_pipeline_creation { "renderer.parallel_pipeline_creation", false };
 
     class pipeline_cache final : public no_copy, public no_move {
     public:
