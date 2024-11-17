@@ -49,7 +49,7 @@ function scene._update()
     cpp.__lu_scene_set_time(scene.clock.date.time)
     cpp.__lu_scene_set_sun_dir(scene.clock._sun_dir)
     cpp.__lu_scene_set_sun_color(scene.lighting.sun_color * scene.clock.daytime_coeff)
-    cpp.__lu_scene_set_ambient_color(scene.lighting.ambient_color * (1 - scene.clock.daytime_coeff))
+    cpp.__lu_scene_set_ambient_color(scene.lighting.ambient_color)
     cpp.__lu_scene_tick()
 end
 

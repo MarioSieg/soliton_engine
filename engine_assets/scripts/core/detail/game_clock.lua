@@ -33,15 +33,13 @@ local clock = {
         november = 11,
         december = 12
     },
-    freeze_time = false,
-    freeze_date = false,
     debug_draw = true,
-    time_cycle_scale = 0.1, -- Time cycle speed multiplier
+    time_cycle_scale = 1.0, -- Time cycle speed multiplier
     date = {
         day = 1,
         month = 6,
         year = 2024,
-        time = 12,
+        time = 6,
     },
     daytime_coeff = 0.0, -- 0.0 = night, 1.0 = day
     _north_dir = vec3.unit_x,
@@ -67,6 +65,10 @@ function clock:is_morning() return self.date.time >= 6 and self.date.time < 12 e
 function clock:is_afternoon() return self.date.time >= 12 and self.date.time < 18 end
 function clock:is_evening() return self.date.time >= 18 and self.date.time < 24 end
 function clock:is_night() return self.date.time >= 0 and self.date.time < 6 end
+function clock:set_time_scale(real_minutes_per_game_day)
+    local real_seconds_per_game_day = real_minutes_per_game_day * 60
+    self.time_cycle_scale = 24 / real_seconds_per_game_day
+end
 
 -- Calculate day-night factor based on time of day. 0.0 = night, 1.0 = day
 local function daytime_coeff()
@@ -114,10 +116,8 @@ function clock:update()
         debugdraw.draw_arrow_dir(vec3.zero, -self._sun_dir * 2.0, colors.yellow)
     end
     self:set_time(self.date.time)
-    if self.freeze_time then return end
     self.date.time = self.date.time + time.delta_time * self.time_cycle_scale
     self.date.time = self.date.time % 24.0
-    if self.freeze_date then return end
     self.date.day = self.date.day + (self.date.time == 0 and 1 or 0)
     self.date.month = self.date.month + (self.date.day > 30 and 1 or 0)
     self.date.day = (self.date.day > 30) and 1 or self.date.day
@@ -125,5 +125,7 @@ function clock:update()
     self.date.month = (self.date.month > 12) and 1 or self.date.month
     self.current_season = self.seasons[season_map[self.date.month]]
 end
+
+clock:set_time_scale(60)
 
 return clock
