@@ -128,6 +128,12 @@ namespace lu::graphics {
         const std::int32_t bucket_id,
         const std::int32_t num_threads
     ) const -> void {
+        if (is_first_thread(bucket_id, num_threads)) { // First thread
+            const auto& sky_pipeline = pipeline_cache::get().get_pipeline<pipelines::dynamic_sky_pipeline>("dynamic_sky");
+            sky_pipeline.on_bind(cmd);
+            sky_pipeline.render_sky(cmd);
+        }
+
         const auto& pbr_pipeline
             = pipeline_cache::get().get_pipeline<pipelines::pbr_pipeline>("mat_pbr");
         pbr_pipeline.on_bind(cmd);
@@ -145,9 +151,6 @@ namespace lu::graphics {
         });
 
         if (is_last_thread(bucket_id, num_threads)) { // Last thread
-            const auto& sky_pipeline = pipeline_cache::get().get_pipeline<pipelines::dynamic_sky_pipeline>("dynamic_sky");
-                sky_pipeline.on_bind(cmd);
-                sky_pipeline.render_sky(cmd);
             if (auto& dd = const_cast<eastl::optional<debugdraw>&>(m_debugdraw); dd.has_value()) {
                 const auto view_pos = XMLoadFloat4(&graphics_subsystem::s_camera_transform.position);
                 dd->render(cmd, view_proj_mtx, view_pos);
