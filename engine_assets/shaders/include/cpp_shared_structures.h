@@ -29,12 +29,19 @@ namespace lu::graphics::glsl {
 
 // Sun and scene lighting properties. Updated once per frame.
 struct perFrameData {
+    mat4 viewProj;
     vec4 camPos; // w unused for now
     vec4 sunDir; // w unused for now
     vec4 sunColor; // w unused for now
     vec4 ambientColor; // w unused for now
 };
 gpu_check(perFrameData)
+
+#ifndef __cplusplus
+layout (std140, set = LU_GLSL_DESCRIPTOR_SET_IDX_PER_FRAME, binding = 0) uniform uniformPerFrameUBO {
+    perFrameData uboPerFrame;
+};
+#endif
 
 #ifdef __cplusplus // If included from C++
 }

@@ -264,6 +264,7 @@ namespace lu::graphics {
         const auto& scene = scene_mgr::active();
 
         glsl::perFrameData per_frame_data {};
+        XMStoreFloat4x4(&per_frame_data.viewProj, XMLoadFloat4x4A(&s_view_proj_mtx));
         XMStoreFloat4(&per_frame_data.camPos, XMLoadFloat4(&s_camera_transform.position));
         per_frame_data.sunDir = scene.properties.environment.sun_dir;
         per_frame_data.sunColor = scene.properties.environment.sun_color;

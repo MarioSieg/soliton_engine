@@ -32,6 +32,12 @@ float random(const vec2 co) {
     return fract(sin(sn) * c);
 }
 
+float atan2(vec2 v) {
+    return v.x == 0.0 ?
+        (1.0 - step(abs(v.y), 0.0)) * sign(v.y) * kPI * 0.5 :
+        atan(v.y / v.x) + step(v.x, 0.0) * sign(v.y) * kPI;
+}
+
 float saturate(const float x) { return clamp(x, 0.0, 1.0); }
 vec2 saturate(const vec2 x) { return clamp(x, vec2(0.0), vec2(1.0)); }
 vec3 saturate(const vec3 x) { return clamp(x, vec3(0.0), vec3(1.0)); }

@@ -17,10 +17,6 @@ layout (location = 7) in mat3 inTBN;
 
 layout (location = 0) out vec4 outFragColor;
 
-layout (std140, set = LU_GLSL_DESCRIPTOR_SET_IDX_PER_FRAME, binding = 0) uniform uniformPerFrameUBO {
-  perFrameData uboPerFrame;
-};
-
 layout (set = LU_GLSL_DESCRIPTOR_SET_IDX_PER_MATERIAL, binding = 0) uniform sampler2D sAlbedoMap;
 layout (set = LU_GLSL_DESCRIPTOR_SET_IDX_PER_MATERIAL, binding = 1) uniform sampler2D sNormalMap;
 layout (set = LU_GLSL_DESCRIPTOR_SET_IDX_PER_MATERIAL, binding = 2) uniform sampler2D sRoughnessMap;
