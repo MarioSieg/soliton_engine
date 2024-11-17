@@ -26,6 +26,7 @@ ffi.cdef[[
     void __lu_scene_full_entity_query_end(void);
     void __lu_scene_set_active_camera_entity(lua_entity_id id);
     lua_entity_id __lu_scene_get_active_camera_entity(void);
+    void __lu_scene_set_time(double time);
     void __lu_scene_set_sun_dir(lua_vec3 sun_dir);
     void __lu_scene_set_sun_color(lua_vec3 sun_color);
     void __lu_scene_set_ambient_color(lua_vec3 ambient_color);
@@ -45,6 +46,7 @@ local scene = {
 
 function scene._update()
     scene.clock:update()
+    cpp.__lu_scene_set_time(scene.clock.date.time)
     cpp.__lu_scene_set_sun_dir(scene.clock._sun_dir)
     cpp.__lu_scene_set_sun_color(scene.lighting.sun_color * scene.clock.daytime_coeff)
     cpp.__lu_scene_set_ambient_color(scene.lighting.ambient_color * (1 - scene.clock.daytime_coeff))

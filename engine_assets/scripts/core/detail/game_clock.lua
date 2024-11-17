@@ -36,7 +36,7 @@ local clock = {
     freeze_time = false,
     freeze_date = false,
     debug_draw = true,
-    time_cycle_scale = 1.0, -- Time cycle speed multiplier
+    time_cycle_scale = 0.1, -- Time cycle speed multiplier
     date = {
         day = 1,
         month = 6,
@@ -116,11 +116,8 @@ function clock:update()
     self:set_time(self.date.time)
     if self.freeze_time then return end
     self.date.time = self.date.time + time.delta_time * self.time_cycle_scale
-    if self.freeze_date then
-        self.date.time = self.date.time % 24.0 -- Wrap time around 24 hour day if date is frozen
-    end
-    if self.freeze_date then return end
     self.date.time = self.date.time % 24.0
+    if self.freeze_date then return end
     self.date.day = self.date.day + (self.date.time == 0 and 1 or 0)
     self.date.month = self.date.month + (self.date.day > 30 and 1 or 0)
     self.date.day = (self.date.day > 30) and 1 or self.date.day

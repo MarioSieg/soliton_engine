@@ -13,7 +13,8 @@
 #include "draw_partition.hpp"
 #include "pipeline_cache.hpp"
 #include "pipelines/pbr_pipeline.hpp"
-#include "pipelines/sky.hpp"
+#include "pipelines/static_sky.hpp"
+#include "pipelines/dynamic_sky.hpp"
 
 namespace lu::graphics {
     using platform::platform_subsystem;
@@ -42,7 +43,8 @@ namespace lu::graphics {
         shader_cache::init(cv_shader_dir()); // 1. init shader cache (must be first)
         pipeline_cache::init();
         pipeline_cache::get().register_pipeline_async<pipelines::pbr_pipeline>();
-        pipeline_cache::get().register_pipeline_async<pipelines::sky_pipeline>();
+        pipeline_cache::get().register_pipeline_async<pipelines::static_sky_pipeline>();
+        pipeline_cache::get().register_pipeline_async<pipelines::dynamic_sky_pipeline>();
 
         material::init_static_resources();
 
@@ -126,13 +128,6 @@ namespace lu::graphics {
         const std::int32_t bucket_id,
         const std::int32_t num_threads
     ) const -> void {
-        if (is_first_thread(bucket_id, num_threads)) {
-            const auto& sky_pipeline
-                = pipeline_cache::get().get_pipeline<pipelines::sky_pipeline>("sky");
-            sky_pipeline.on_bind(cmd);
-            sky_pipeline.render_sky(cmd);
-        }
-
         const auto& pbr_pipeline
             = pipeline_cache::get().get_pipeline<pipelines::pbr_pipeline>("mat_pbr");
         pbr_pipeline.on_bind(cmd);
@@ -150,6 +145,9 @@ namespace lu::graphics {
         });
 
         if (is_last_thread(bucket_id, num_threads)) { // Last thread
+            const auto& sky_pipeline = pipeline_cache::get().get_pipeline<pipelines::dynamic_sky_pipeline>("dynamic_sky");
+                sky_pipeline.on_bind(cmd);
+                sky_pipeline.render_sky(cmd);
             if (auto& dd = const_cast<eastl::optional<debugdraw>&>(m_debugdraw); dd.has_value()) {
                 const auto view_pos = XMLoadFloat4(&graphics_subsystem::s_camera_transform.position);
                 dd->render(cmd, view_proj_mtx, view_pos);
@@ -260,15 +258,49 @@ namespace lu::graphics {
         return s_num_draw_verts_prev;
     }
 
+    // HDTV rec. 709 matrix.
+    static constexpr float M_XYZ2RGB[] = {
+        3.240479f, -0.969256f,  0.055648f,
+        -1.53715f,   1.875991f, -0.204043f,
+        -0.49853f,   0.041556f,  1.057311f,
+    };
+
+    // Converts color representation from CIE XYZ to RGB color-space.
+    [[nodiscard]] static constexpr auto xyz_to_rgb(const XMFLOAT3& xyz) noexcept -> XMFLOAT3 {
+        XMFLOAT3 rgb {};
+        rgb.x = M_XYZ2RGB[0] * xyz.x + M_XYZ2RGB[3] * xyz.y + M_XYZ2RGB[6] * xyz.z;
+        rgb.y = M_XYZ2RGB[1] * xyz.x + M_XYZ2RGB[4] * xyz.y + M_XYZ2RGB[7] * xyz.z;
+        rgb.z = M_XYZ2RGB[2] * xyz.x + M_XYZ2RGB[5] * xyz.y + M_XYZ2RGB[8] * xyz.z;
+        return rgb;
+    };
+
     auto graphics_subsystem::update_shared_buffers_per_frame() const -> void {
         const auto& scene = scene_mgr::active();
 
         glsl::perFrameData per_frame_data {};
         XMStoreFloat4x4(&per_frame_data.viewProj, XMLoadFloat4x4A(&s_view_proj_mtx));
+        XMStoreFloat4x4(&per_frame_data.viewProjInverse, XMMatrixInverse(nullptr, XMLoadFloat4x4A(&s_view_proj_mtx)));
         XMStoreFloat4(&per_frame_data.camPos, XMLoadFloat4(&s_camera_transform.position));
         per_frame_data.sunDir = scene.properties.environment.sun_dir;
         per_frame_data.sunColor = scene.properties.environment.sun_color;
         per_frame_data.ambientColor = scene.properties.environment.ambient_color;
+
+        eastl::array<XMFLOAT4, 5> perez {};
+        pipelines::dynamic_sky_pipeline::compute_perez_coeff(scene.properties.environment.sky_turbidity, perez);
+        per_frame_data.perez1 = perez[0];
+        per_frame_data.perez2 = perez[1];
+        per_frame_data.perez3 = perez[2];
+        per_frame_data.perez4 = perez[3];
+        per_frame_data.perez5 = perez[4];
+        float time = scene.properties.environment.time;
+        per_frame_data.params = { 0.02f, 3.0f, 0.1f, time };
+        XMFLOAT3 sunLuminanceXYZ = pipelines::dynamic_sky_pipeline::m_sunLuminanceXYZ.GetValue(time);
+        XMFLOAT3 sunLuminanceRGB = xyz_to_rgb(sunLuminanceXYZ);
+        XMFLOAT3 skyLuminanceXYZ = pipelines::dynamic_sky_pipeline::m_skyLuminanceXYZ.GetValue(time);
+        XMFLOAT3 skyLuminanceRGB = xyz_to_rgb(skyLuminanceXYZ);
+        XMStoreFloat4(&per_frame_data.sun_luminance, XMLoadFloat3(&sunLuminanceRGB));
+        XMStoreFloat4(&per_frame_data.sky_luminance, XMLoadFloat3(&skyLuminanceRGB));
+        XMStoreFloat4(&per_frame_data.sky_luminance_xyz, XMLoadFloat3(&skyLuminanceXYZ));
         shared_buffers::get()->per_frame_ubo.set(per_frame_data);
     }
 }

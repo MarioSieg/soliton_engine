@@ -250,6 +250,7 @@ namespace lu::graphics {
         }
         auto shader = shader::compile(std::move(variant));
         if (!shader) [[unlikely]] {
+            panic("Failed to compile shader"); // todo recover
             return nullptr;
         }
         {

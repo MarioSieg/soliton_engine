@@ -8,7 +8,7 @@
 namespace lu::vkb {
     static const system_variable<bool> cv_enable_vulkan_validation_layers {
         "renderer.enable_vulkan_validation_layers",
-        {false}
+        {true}
     };
     static const system_variable<bool> cv_enable_vsync {
         "renderer.force_vsync",
@@ -508,8 +508,10 @@ namespace lu::vkb {
     }
 
     auto context::compute_aligned_dynamic_ubo_size(const std::size_t size) noexcept -> std::size_t {
-        const std::size_t min_align = m_device->get_physical_device_props().limits.minUniformBufferOffsetAlignment;
-        if (!min_align) return size;
-        return (size+min_align-1) & -min_align;
+        const std::size_t min_alin = m_device->get_physical_device_props().limits.minUniformBufferOffsetAlignment;
+        std::size_t dyn_align = size;
+        if (min_alin > 0) dyn_align = (dyn_align + min_alin - 1) & ~(min_alin - 1);
+        panic_assert((dyn_align % min_alin) == 0);
+        return dyn_align;
     }
 }

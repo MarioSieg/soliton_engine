@@ -12,6 +12,8 @@ namespace lu {
             XMFLOAT4 sun_dir {0.0f, -1.0f, 0.0f, 1.0f};
             XMFLOAT4 sun_color {1.0f, 1.0f, 1.0f, 1.0f};
             XMFLOAT4 ambient_color {1.0f, 1.0f, 1.0f, 1.0f};
+            float time {12.0f};
+            float sky_turbidity {2.15f};
         } environment {};
     };
 }

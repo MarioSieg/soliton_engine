@@ -9,10 +9,10 @@
 #include "../../scene/components.hpp"
 
 namespace lu::graphics::pipelines {
-    class sky_pipeline final : public graphics_pipeline {
+    class static_sky_pipeline final : public graphics_pipeline {
     public:
-        explicit sky_pipeline();
-        ~sky_pipeline() override;
+        explicit static_sky_pipeline();
+        ~static_sky_pipeline() override;
 
         struct gpu_vertex_push_constants final {
             XMFLOAT4X4A view;

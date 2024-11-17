@@ -67,7 +67,7 @@ namespace lu::vkb {
             nullptr,
             true
         }, m_aligned_size{vkb::ctx().compute_aligned_dynamic_ubo_size(sizeof(T))} {
-            m_aligned_tmp = static_cast<T*>(mi_malloc_aligned(m_aligned_size, m_aligned_size));
+            m_aligned_tmp = static_cast<T*>(mi_malloc_aligned(m_aligned_size, vkb::dvc().get_physical_device_props().limits.minUniformBufferOffsetAlignment));
             new (m_aligned_tmp) T {eastl::forward<Args>(args)...};
         }
         virtual ~uniform_buffer() override {

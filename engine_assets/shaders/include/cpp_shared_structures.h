@@ -30,10 +30,22 @@ namespace lu::graphics::glsl {
 // Sun and scene lighting properties. Updated once per frame.
 struct perFrameData {
     mat4 viewProj;
+    mat4 viewProjInverse;
     vec4 camPos; // w unused for now
     vec4 sunDir; // w unused for now
     vec4 sunColor; // w unused for now
     vec4 ambientColor; // w unused for now
+
+    // sky params
+    vec4 sun_luminance;
+    vec4 sky_luminance_xyz;
+    vec4 sky_luminance;
+    vec4 params;
+    vec4 perez1;
+    vec4 perez2;
+    vec4 perez3;
+    vec4 perez4;
+    vec4 perez5;
 };
 gpu_check(perFrameData)
 

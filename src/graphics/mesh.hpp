@@ -20,6 +20,7 @@ namespace lu::graphics {
     public:
         explicit mesh(eastl::string&& path, bool create_collider_mesh = true);
         explicit mesh(eastl::span<const aiMesh*> meshes, bool create_collider_mesh = true);
+        explicit mesh(eastl::span<const vertex> vertices, eastl::span<const index> indices, bool create_collider_mesh = true);
         virtual ~mesh() override = default;
 
         [[nodiscard]] auto get_primitives() const noexcept -> eastl::span<const primitive> { return m_primitives; }
@@ -40,6 +41,7 @@ namespace lu::graphics {
 
     protected:
         virtual auto create_from_assimp(eastl::span<const aiMesh*> meshes, bool create_collider_mesh) -> void;
+        auto create_from_data(eastl::span<const vertex> vertices, eastl::span<const index> indices, bool create_collider_mesh) -> void;
         auto create_buffers(eastl::span<const vertex> vertices, eastl::span<const index> indices) -> void;
 
         eastl::optional<vkb::buffer> m_vertex_buffer {};

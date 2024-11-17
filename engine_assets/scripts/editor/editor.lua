@@ -621,7 +621,23 @@ function editor:draw_tools()
     end
 end
 
+local ffi_bool = ffi.new('bool[1]', false)
+local time_v = ffi.new('float[1]', 0.0)
+
 function editor:_update()
+    if ui.Begin('Game Clock') then
+        ffi_bool[0] = scene.clock.freeze_time
+        if ui.Checkbox('Freeze Time', ffi_bool) then
+            scene.clock.freeze_time = ffi_bool[0]
+        end
+        time_v[0] = scene.clock.date.time
+        if ui.SliderFloat('Time', time_v, 0.0, 24.0, '%.3f') then
+            scene.clock:set_time(time_v[0])
+        end
+        scene.clock.date.time = time_v[0]
+        ui.End()
+    end
+
     if self.is_ingame then
         self:update_scene()
         self:draw_ingame_overlay()

@@ -1,11 +1,11 @@
 // Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
-#include "sky.hpp"
+#include "static_sky.hpp"
 #include "../vulkancore/context.hpp"
 #include "../graphics_subsystem.hpp"
 
 namespace lu::graphics::pipelines {
-    sky_pipeline::sky_pipeline() : graphics_pipeline{"sky"} {
+    static_sky_pipeline::static_sky_pipeline() : graphics_pipeline{"static_sky"} {
         m_skybox_texture.emplace("/RES/textures/hdr/gcanyon_cube.ktx");
         m_skydome.emplace("/RES/meshes/skydome.fbx", false);
 
@@ -18,19 +18,19 @@ namespace lu::graphics::pipelines {
         panic_assert(factory.build(m_descriptor_set, m_descriptor_set_layout));
     }
 
-    sky_pipeline::~sky_pipeline() {
+    static_sky_pipeline::~static_sky_pipeline() {
         const vk::Device device = vkb::vkdvc();
         device.destroyDescriptorSetLayout(m_descriptor_set_layout, vkb::get_alloc());
     }
 
-    auto sky_pipeline::configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> void {
+    auto static_sky_pipeline::configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> void {
         auto vs = shader_cache::get().get_shader(shader_variant{"/RES/shaders/src/skybox.vert", shader_stage::vertex});
         auto fs = shader_cache::get().get_shader(shader_variant{"/RES/shaders/src/skybox.frag", shader_stage::fragment});
         cfg.emplace_back(vs);
         cfg.emplace_back(fs);
     }
 
-    auto sky_pipeline::configure_pipeline_layout(eastl::vector<vk::DescriptorSetLayout>& layouts, eastl::vector<vk::PushConstantRange>& ranges) -> void {
+    auto static_sky_pipeline::configure_pipeline_layout(eastl::vector<vk::DescriptorSetLayout>& layouts, eastl::vector<vk::PushConstantRange>& ranges) -> void {
         layouts.emplace_back(m_descriptor_set_layout);
 
         vk::PushConstantRange push_constant_range {};
@@ -40,17 +40,17 @@ namespace lu::graphics::pipelines {
         ranges.emplace_back(push_constant_range);
     }
 
-    auto sky_pipeline::configure_rasterizer(vk::PipelineRasterizationStateCreateInfo& cfg) -> void {
+    auto static_sky_pipeline::configure_rasterizer(vk::PipelineRasterizationStateCreateInfo& cfg) -> void {
         graphics_pipeline::configure_rasterizer(cfg);
         cfg.cullMode = vk::CullModeFlagBits::eBack;
     }
 
-    auto sky_pipeline::on_bind(vkb::command_buffer& cmd) const -> void {
+    auto static_sky_pipeline::on_bind(vkb::command_buffer& cmd) const -> void {
         graphics_pipeline::on_bind(cmd);
         cmd.bind_graphics_descriptor_set(m_descriptor_set, 0, nullptr);
     }
 
-    auto sky_pipeline::render_sky(vkb::command_buffer& cmd) const -> void {
+    auto static_sky_pipeline::render_sky(vkb::command_buffer& cmd) const -> void {
         gpu_vertex_push_constants push_constants {};
         XMStoreFloat4x4A(&push_constants.view, XMLoadFloat4x4A(&graphics_subsystem::get_view_mtx()));
         XMStoreFloat4x4A(&push_constants.proj, XMLoadFloat4x4A(&graphics_subsystem::get_proj_mtx()));
@@ -59,7 +59,7 @@ namespace lu::graphics::pipelines {
         cmd.draw_mesh(*m_skydome);
     }
 
-    auto sky_pipeline::configure_depth_stencil(vk::PipelineDepthStencilStateCreateInfo& cfg) -> void {
+    auto static_sky_pipeline::configure_depth_stencil(vk::PipelineDepthStencilStateCreateInfo& cfg) -> void {
         graphics_pipeline::configure_depth_stencil(cfg);
         cfg.depthTestEnable = vk::False;
         cfg.depthWriteEnable = vk::False;

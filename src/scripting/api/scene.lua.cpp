@@ -88,6 +88,10 @@ LUA_INTEROP_API auto __lu_scene_full_entity_query_end() -> void {
     }
 }
 
+LUA_INTEROP_API auto __lu_scene_set_time(const double time) -> void {
+    scene_mgr::active().properties.environment.time = time;
+}
+
 LUA_INTEROP_API auto __lu_scene_set_sun_dir(const lua_vec3 sun_dir) -> void {
     scene_mgr::active().properties.environment.sun_dir = sun_dir;
 }
