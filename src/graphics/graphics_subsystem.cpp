@@ -54,7 +54,7 @@ namespace lu::graphics {
         m_render_data.reserve(32);
 
         m_imgui_context.emplace();
-        m_noesis_context.emplace();
+        //m_noesis_context.emplace();
 
         //m_noesis_context->load_ui_from_xaml("App.xaml");
     }
@@ -187,7 +187,7 @@ namespace lu::graphics {
 
     HOTPROC auto graphics_subsystem::on_post_tick() -> void {
         auto& scene = scene_mgr::active();
-        m_noesis_context->tick();
+        //m_noesis_context->tick();
         m_imgui_context->end_frame();
         auto query = scene.query<const com::transform, const com::mesh_renderer>(); // TODO: leak?
         m_render_data.clear();
@@ -217,7 +217,7 @@ namespace lu::graphics {
 
     auto graphics_subsystem::on_resize() -> void {
         vkb::ctx().on_resize();
-        m_noesis_context->on_resize();
+        //m_noesis_context->on_resize();
     }
 
     auto graphics_subsystem::on_start(scene& scene) -> void {
