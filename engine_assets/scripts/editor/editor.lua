@@ -3,6 +3,7 @@
 -- The ImGui LuaJIT bindings are useable but somewhat dirty, which makes this file a bit messy - but hey it works!
 
 local ffi = require 'ffi'
+local jit = require 'jit'
 local bit = require 'bit'
 local band = bit.band
 local ui = require 'imgui.imgui'
@@ -308,46 +309,65 @@ function editor:draw_main_menu_bar()
             end
             ui.EndMenu()
         end
+        if ui.BeginMenu('Remote') then
+            if ui.MenuItem(icons.i_server .. ' Start Server') then
+                local script = 'remote_explorer.sh'
+                if lfs.attributes(script) then
+                    pcall(os.execute('bash ' .. '"' .. script .. '" &'))
+                else
+                    eprint('Server host script not found: ' .. script)
+                end
+            end
+            if ui.MenuItem(icons.i_sitemap .. ' Open Dashboard') then
+                local entry = 'http://0.0.0.0:8000/'
+                if jit.os == 'Windows' then
+                    pcall(os.execute('start "" ' .. '"' .. entry .. '"'))
+                else
+                    pcall(os.execute('open ' .. '"' .. entry .. '"'))
+                end
+            end
+            ui.EndMenu()
+        end
         if ui.BeginMenu('Help') then
             if ui.MenuItem(icons.i_book_open .. ' Open Lua API Documentation') then
-                local INDEX = 'docs/lua/index.html'
-                if lfs.attributes(INDEX) then
+                local entry = 'docs/lua/index.html'
+                if lfs.attributes(entry) then
                     if jit.os == 'Windows' then
-                        pcall(os.execute('start "" ' .. '"' .. INDEX .. '"'))
+                        pcall(os.execute('start "" ' .. '"' .. entry .. '"'))
                     else
-                        pcall(os.execute('open ' .. '"' .. INDEX .. '"'))
+                        pcall(os.execute('open ' .. '"' .. entry .. '"'))
                     end
                 else
-                    eprint('Lua API documentation not found: ' .. INDEX)
+                    eprint('Lua API documentation not found: ' .. entry)
                 end
             end
             if ui.MenuItem(icons.i_book_open .. ' Open C++ SDK Documentation') then
-                local INDEX = 'docs/html/index.html'
-                if lfs.attributes(INDEX) then
+                local entry = 'docs/html/index.html'
+                if lfs.attributes(entry) then
                     if jit.os == 'Windows' then
-                        pcall(os.execute('start "" ' .. '"' .. INDEX .. '"'))
+                        pcall(os.execute('start "" ' .. '"' .. entry .. '"'))
                     else
-                        pcall(os.execute('open ' .. '"' .. INDEX .. '"'))
+                        pcall(os.execute('open ' .. '"' .. entry .. '"'))
                     end
                 else
-                    eprint('C++ SDK documentation not found: ' .. INDEX)
+                    eprint('C++ SDK documentation not found: ' .. entry)
                 end
             end
             if jit.os ~= 'Windows' then -- Currently only POSIX support
                 if ui.MenuItem(icons.i_cogs .. ' Regenerate Lua API Documentation') then
-                    local GENERATOR = 'gen_lua_docs.sh'
-                    if lfs.attributes(GENERATOR) then
-                        pcall(os.execute('bash ' .. '"' .. GENERATOR .. '" &'))
+                    local script = 'gen_lua_docs.sh'
+                    if lfs.attributes(script) then
+                        pcall(os.execute('bash ' .. '"' .. script .. '" &'))
                     else
-                        eprint('Lua API documentation generator not found: ' .. GENERATOR)
+                        eprint('Lua API documentation generator not found: ' .. script)
                     end
                 end
                 if ui.MenuItem(icons.i_cogs .. ' Regenerate C++ API Documentation') then
-                    local GENERATOR = 'gen_cpp_docs.sh'
-                    if lfs.attributes(GENERATOR) then
-                        pcall(os.execute('bash ' .. '"' .. GENERATOR .. '" &'))
+                    local script = 'gen_cpp_docs.sh'
+                    if lfs.attributes(script) then
+                        pcall(os.execute('bash ' .. '"' .. script .. '" &'))
                     else
-                        eprint('C++ SDK documentation generator not found: ' .. GENERATOR)
+                        eprint('C++ SDK documentation generator not found: ' .. script)
                     end
                 end
             end
