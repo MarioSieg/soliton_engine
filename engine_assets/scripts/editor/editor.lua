@@ -5,7 +5,6 @@
 local ffi = require 'ffi'
 local jit = require 'jit'
 local bit = require 'bit'
-local band = bit.band
 local ui = require 'imgui.imgui'
 local style = require 'imgui.style'
 local app = require 'app'
@@ -26,18 +25,8 @@ local script_editor = require 'editor.tools.scripteditor'
 local entity_list_view = require 'editor.tools.entity_list_view'
 local inspector = require 'editor.tools.inspector'
 local asset_explorer = require 'editor.tools.asset_explorer'
-local sqlite = require 'sqlite.db'
+local band = bit.band
 
-local db = sqlite {
-    uri = 'engine_assets/soliton_engine.db',
-    projects = {
-        id = 'INTEGER PRIMARY KEY',
-        name = 'TEXT',
-        path = 'TEXT',
-        created_at = 'TEXT',
-        updated_at = 'TEXT',
-    },
-}
 
 local host_info = app.host.graphics_api .. ' | ' .. (app.host.host_string)
 local cpu_name = 'CPU: ' .. app.host.cpu_name
@@ -64,7 +53,6 @@ local material_filter = utils.build_filter_string(utils.material_file_exts)
 local sound_filter = utils.build_filter_string(utils.sound_file_exts)
 local icons_filter = utils.build_filter_string(utils.icons_file_exts)
 local xaml_filter = utils.build_filter_string(utils.xaml_file_exts)
-local config_file_name = 'config/editor.json'
 local component_window_size = ui.ImVec2(utils.default_window_size.x * 0.5, utils.default_window_size.y * 0.5)
 local selected_component = nil
 local overlay_flags = ffi.C.ImGuiWindowFlags_NoDecoration
@@ -657,6 +645,7 @@ function editor:_update()
         return
     end
     self.camera:_update()
+
     local selected = entity_list_view.selected_entity
     if selected ~= nil and entity_list_view.selected_wants_focus and selected:is_valid() then
         if selected:has_component(components.transform) then
@@ -669,6 +658,7 @@ function editor:_update()
         end
         entity_list_view.selected_wants_focus = false
     end
+    inspector.env_editor = entity_list_view.selected_env_editor
     inspector.selected_entity = selected
     if inspector.name_changed then
         entity_list_view:update_name_of_active_entity()
@@ -678,28 +668,8 @@ function editor:_update()
     self:draw_pending_popups()
 end
 
-function editor:deserialize_config() -- TODO: Save config on exit
-    if lfs.attributes(config_file_name) then
-        self.serialized_config = json.deserialize_from_file(config_file_name)
-    else
-        print('Creating new editor config file: '..config_file_name)
-        self:serialize_config()
-    end
-    if not self.serialized_config.general.prev_project_location or not lfs.attributes(self.serialized_config.general.prev_project_location) then
-        self.serialized_config.general.prev_project_location = default_project_location
-    end
-    if not self.serialized_config.general.prev_scene_location or not lfs.attributes(self.serialized_config.general.prev_scene_location) then
-        self.serialized_config.general.prev_scene_location = default_project_location
-    end
-end
-
-function editor:serialize_config()
-    json.serialize_to_file(config_file_name, self.serialized_config)
-end
-
 style.setup()
 
-editor:deserialize_config()
 editor:load_scene()
 
 return editor

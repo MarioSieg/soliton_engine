@@ -42,6 +42,7 @@ namespace soliton::graphics::pipelines {
         virtual auto configure_pipeline_layout(eastl::vector<vk::DescriptorSetLayout>& layouts, eastl::vector<vk::PushConstantRange>& ranges) -> void override;
         virtual auto configure_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> void override;
         virtual auto configure_multisampling(vk::PipelineMultisampleStateCreateInfo& cfg) -> void override;
+        virtual auto configure_rasterizer(vk::PipelineRasterizationStateCreateInfo& cfg) -> void override;
 
         HOTPROC auto render_single_mesh(
             vkb::command_buffer& cmd,

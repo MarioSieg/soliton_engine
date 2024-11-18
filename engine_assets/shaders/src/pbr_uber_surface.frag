@@ -42,7 +42,8 @@ vec3 calculateNormal(vec2 uv)
 
 void main() {
   const vec2 uv = inUV;
-  const vec3 albedo = texture(sAlbedoMap, uv).rgb;
+  const vec4 albedo_full = texture(sAlbedoMap, uv);
+  const vec3 albedo = albedo_full.rgb;
   const vec2 metallic_roughness = texture(sRoughnessMap, uv).rg;
   const float metallic = metallic_roughness.r;
   const float roughness = metallic_roughness.g;
@@ -115,5 +116,7 @@ void main() {
   color = postToneMap(color);
 
   outFragColor.rgb = color;
-  outFragColor.a = 1.0;
+  outFragColor.a = albedo_full.a;
+  const float cutoff = 0.4;
+  outFragColor.a = (outFragColor.a - cutoff) / max(fwidth(outFragColor.a), 0.0001) + 0.5;
 }

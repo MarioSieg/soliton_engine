@@ -103,3 +103,7 @@ LUA_INTEROP_API auto __lu_scene_set_sun_color(const lua_vec3 sun_color) -> void 
 LUA_INTEROP_API auto __lu_scene_set_ambient_color(const lua_vec3 ambient_color) -> void {
     scene_mgr::active().properties.environment.ambient_color = ambient_color;
 }
+
+LUA_INTEROP_API auto __lu_scene_set_sky_turbidity(const double sky_turbidity) -> void {
+    scene_mgr::active().properties.environment.sky_turbidity = sky_turbidity;
+}

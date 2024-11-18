@@ -138,6 +138,11 @@ namespace soliton::graphics::pipelines {
     auto pbr_pipeline::configure_multisampling(vk::PipelineMultisampleStateCreateInfo& cfg) -> void {
         panic_assert(type == pipeline_type::graphics);
         cfg.rasterizationSamples = vkb::ctx().get_msaa_samples();
-        cfg.alphaToCoverageEnable = vk::False;
+        cfg.alphaToCoverageEnable = vk::True; // TODO Custom alpha pipeline
+    }
+
+    auto pbr_pipeline::configure_rasterizer(vk::PipelineRasterizationStateCreateInfo& cfg) -> void {
+        graphics_pipeline::configure_rasterizer(cfg);
+        cfg.cullMode = vk::CullModeFlagBits::eNone;// TODO Custom alpha pipeline
     }
 }

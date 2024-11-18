@@ -30,11 +30,13 @@ ffi.cdef[[
     void __lu_scene_set_sun_dir(lua_vec3 sun_dir);
     void __lu_scene_set_sun_color(lua_vec3 sun_color);
     void __lu_scene_set_ambient_color(lua_vec3 ambient_color);
+    void __lu_scene_set_sky_turbidity(double turbidity);
 ]]
 
 local lighting = {
     sun_color = vec3.one,
-    ambient_color = vec3.one * 0.1
+    ambient_color = vec3.one * 0.1,
+    sky_turbidity = 2.2
 }
 
 local scene = {
@@ -46,10 +48,12 @@ local scene = {
 
 function scene._update()
     scene.clock:update()
+    -- Update scene time and lighting
     cpp.__lu_scene_set_time(scene.clock.date.time)
     cpp.__lu_scene_set_sun_dir(scene.clock._sun_dir)
     cpp.__lu_scene_set_sun_color(scene.lighting.sun_color * scene.clock.daytime_coeff)
     cpp.__lu_scene_set_ambient_color(scene.lighting.ambient_color)
+    cpp.__lu_scene_set_sky_turbidity(scene.lighting.sky_turbidity)
     cpp.__lu_scene_tick()
 end
 
@@ -92,7 +96,9 @@ function scene.get_active_camera_entity()
 end
 
 local function setup_scene_class(id, name)
-    assert(type(id) == 'number' and id > 0)
+    if type(id) ~= 'number' then
+        id = tonumber(id)
+    end
     assert(name and type(name) == 'string')
 
     -- Make scene active
