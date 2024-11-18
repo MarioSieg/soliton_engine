@@ -7,7 +7,7 @@
 #include "../mesh.hpp"
 #include "../material.hpp"
 
-namespace lu::vkb {
+namespace soliton::vkb {
     static constinit std::atomic_uint32_t s_draw_call_count;
     static constinit std::atomic_uint32_t s_vertex_count;
 

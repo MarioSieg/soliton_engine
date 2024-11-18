@@ -5,7 +5,7 @@
 #include "vulkancore/prelude.hpp"
 #include "vulkancore/buffer.hpp"
 
-namespace lu::graphics {
+namespace soliton::graphics {
     class temporal_blue_noise final : public no_copy, public no_move {
     public:
         temporal_blue_noise();

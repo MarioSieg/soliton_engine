@@ -14,7 +14,7 @@
 #include "debug_renderer.hpp"
 #include "../scene/components.hpp"
 
-namespace lu::physics {
+namespace soliton::physics {
     class physics_subsystem final : public subsystem {
     public:
         physics_subsystem();

@@ -10,11 +10,11 @@
 
 #include "texture.hpp"
 
-namespace lu {
+namespace soliton {
     class scene;
 }
 
-namespace lu::graphics {
+namespace soliton::graphics {
     inline const system_variable<eastl::string> sv_error_texture {"renderer.error_texture", {"/RES/textures/system/error.png"}};
     inline const system_variable<eastl::string> sv_fallback_image_white {"renderer.fallback_texture_w", {"/RES/textures/system/fallback_white.png"}};
     inline const system_variable<eastl::string> sv_fallback_image_black {"renderer.fallback_texture_b", {"/RES/textures/system/fallback_black.png"}};

@@ -4,7 +4,7 @@
 
 #include "core.hpp"
 
-namespace lu {
+namespace soliton {
     template <typename T>
     concept sv_supported_type = requires {
         requires std::is_default_constructible_v<T>;

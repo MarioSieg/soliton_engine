@@ -28,7 +28,7 @@ local asset_explorer = require 'editor.tools.asset_explorer'
 local sqlite = require 'sqlite.db'
 
 local db = sqlite {
-    uri = 'engine_assets/lunam.db',
+    uri = 'engine_assets/soliton_engine.db',
     projects = {
         id = 'INTEGER PRIMARY KEY',
         name = 'TEXT',
@@ -251,7 +251,7 @@ function editor:draw_main_menu_bar()
                 ui.PopID()
             end
             if ui.MenuItem(icons.i_folder_open .. ' Open project...') then
-                local selected_file = app.utils.open_file_dialog('Lunam Projects', 'lupro', self.serialized_config.general.prev_project_location)
+                local selected_file = app.utils.open_file_dialog('Soliton Projects', 'lupro', self.serialized_config.general.prev_project_location)
                 if selected_file and lfs.attributes(selected_file) then
                     self.serialized_config.general.prev_project_location = selected_file:match("(.*[/\\])")
                     local proj = project:open(selected_file)

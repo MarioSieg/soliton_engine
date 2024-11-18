@@ -11,7 +11,7 @@ local function bit_flag_union(flags)
 end
 
 --- scene import flags for post processing.
---- Only applies if the scene is not a .lunam file.
+--- Only applies if the scene is not a .soliton_engine file.
 local scene_import_flags = {
     none = 0x0,
     calc_tangent_space = 0x1,

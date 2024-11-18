@@ -4,7 +4,7 @@
 
 #include "scene.hpp"
 
-namespace lu::scene_mgr {
+namespace soliton::scene_mgr {
     [[nodiscard]] extern auto active() -> scene&;
     extern auto set_active(eastl::unique_ptr<scene>&& new_scene) -> void;
 }

@@ -176,7 +176,7 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <StackPanel x:Name="MenuTitle" Orientation="Vertical" HorizontalAlignment="Left">
-                    <TextBlock Text="LUNAM" FontSize="180" FontFamily="Fonts/#Bonello" Foreground="{StaticResource TransparentWhiteBrush95}"/>
+                    <TextBlock Text="Soliton" FontSize="180" FontFamily="Fonts/#Bonello" Foreground="{StaticResource TransparentWhiteBrush95}"/>
                     <TextBlock Text="by Mario Sieg" FontSize="50" FontFamily="Fonts/#Story Lens" HorizontalAlignment="Right" Margin="0,-60,-2,0" Foreground="{StaticResource TransparentWhiteBrush95}"/>
                 </StackPanel>
                 <Grid x:Name="MenuOptions" Grid.Row="1" Width="640" HorizontalAlignment="Left" Margin="0,30,0,0" RenderTransformOrigin="0.5,0.5"

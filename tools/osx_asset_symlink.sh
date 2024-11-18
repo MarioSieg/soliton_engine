@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
-cd ../bin/release/lunam.app/Contents/Resources
+cd ../bin/release/soliton_engine.app/Contents/Resources
 ln -s ../../../../../assets assets
 cd -
-cd ../bin/debug/lunam.app/Contents/Resources
+cd ../bin/debug/soliton_engine.app/Contents/Resources
 ln -s ../../../../../assets assets

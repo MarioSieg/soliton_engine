@@ -5,7 +5,7 @@
 #include "vulkancore/context.hpp"
 #include "graphics_subsystem.hpp"
 
-namespace lu::graphics {
+namespace soliton::graphics {
     static eastl::optional<material::static_resources> s_resources {};
 
     material::material() : asset{assetmgr::asset_source::memory} {

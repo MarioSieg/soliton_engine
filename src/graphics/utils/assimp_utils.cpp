@@ -7,7 +7,7 @@
 
 #include <filesystem>
 
-namespace lu::graphics {
+namespace soliton::graphics {
     auto assimp_logger::write(const char* const message) -> void {
         const auto len = std::strlen(message);
         auto* copy = static_cast<char*>(alloca(len));

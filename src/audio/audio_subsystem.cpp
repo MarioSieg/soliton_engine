@@ -6,7 +6,7 @@
 
 #include <mimalloc.h>
 
-namespace lu::audio {
+namespace soliton::audio {
     static const system_variable<std::int64_t> sv_max_audio_channels {"audio.max_channels", {512}};
 
     static auto print_audio_driver_info(FMOD::System* sys, int id) -> void;

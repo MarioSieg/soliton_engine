@@ -5,7 +5,7 @@
 #include "vulkancore/prelude.hpp"
 #include "vulkancore/buffer.hpp"
 
-namespace lu::graphics {
+namespace soliton::graphics {
     class shared_buffers final : public no_copy, public no_move {
     public:
         shared_buffers();

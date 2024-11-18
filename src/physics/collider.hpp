@@ -13,7 +13,7 @@
 #include <Jolt/Physics/Collision/Shape/ConvexShape.h>
 #include <Jolt/Physics/Collision/Shape/MeshShape.h>
 
-namespace lu::physics {
+namespace soliton::physics {
     class collider final : public no_copy {
     public:
         enum class shape_type {

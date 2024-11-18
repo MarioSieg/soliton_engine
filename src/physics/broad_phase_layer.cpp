@@ -2,7 +2,7 @@
 
 #include "broad_phase_layer.hpp"
 
-namespace lu::physics {
+namespace soliton::physics {
     broad_phase_layer::broad_phase_layer() noexcept {
         // Create a mapping table from object to broad phase layer
         m_broad_phase[layers::k_static] = layers::broadphase::k_static;

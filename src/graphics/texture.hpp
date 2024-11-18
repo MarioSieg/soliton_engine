@@ -5,7 +5,7 @@
 #include "../assetmgr/assetmgr.hpp"
 #include "vulkancore/buffer.hpp"
 
-namespace lu::graphics {
+namespace soliton::graphics {
     struct texture_descriptor final {
         enum class mipmap_creation_mode {
             no_mips,

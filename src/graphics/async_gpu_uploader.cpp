@@ -3,7 +3,7 @@
 #include "async_gpu_uploader.hpp"
 #include "vulkancore/context.hpp"
 
-namespace lu::graphics {
+namespace soliton::graphics {
     static constexpr std::size_t k_buf_offset_round = 128;
 
     [[nodiscard]] static inline auto get_upload_size_quant(

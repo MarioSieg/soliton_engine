@@ -1,0 +1,36 @@
+var namespacesoliton_1_1platform =
+[
+    [ "backend", "namespacesoliton_1_1platform_1_1backend.html", [
+      [ "init", "namespacesoliton_1_1platform_1_1backend.html#a26b0470675fd53f0bb6d04af1719be39", null ],
+      [ "is_online", "namespacesoliton_1_1platform_1_1backend.html#ad02e3461d4e53bd64f57d96683cb20c5", null ],
+      [ "poll_events", "namespacesoliton_1_1platform_1_1backend.html#abfab016640395bfba64e6b0ce8f975a9", null ],
+      [ "print_monitor_info", "namespacesoliton_1_1platform_1_1backend.html#aada453b0d0530b49c82af16203d5e90c", null ],
+      [ "shutdown", "namespacesoliton_1_1platform_1_1backend.html#a5b8875d2833ca454ace04506efefe3f9", null ],
+      [ "s_is_initialized", "namespacesoliton_1_1platform_1_1backend.html#a729ac02e6f21b83a3f1a829a2be372c1", null ],
+      [ "s_is_nfd_online", "namespacesoliton_1_1platform_1_1backend.html#ae1f6861fa35e65cf177bb0e27973274a", null ]
+    ] ],
+    [ "platform_subsystem", "classsoliton_1_1platform_1_1platform__subsystem.html", "classsoliton_1_1platform_1_1platform__subsystem" ],
+    [ "window", "classsoliton_1_1platform_1_1window.html", "classsoliton_1_1platform_1_1window" ],
+    [ "architecture_name", "namespacesoliton_1_1platform.html#a2fd79ae3870b8d9702fee61158d1bef0", null ],
+    [ "cache_type_name", "namespacesoliton_1_1platform.html#a47cf52748790471077d903b03ead24f0", null ],
+    [ "endianness_name", "namespacesoliton_1_1platform.html#adb95cfb7eb67522ef45135d855143a96", null ],
+    [ "glfw_char_callback", "namespacesoliton_1_1platform.html#ad41499c917cefc30d5e99159641ef347", null ],
+    [ "glfw_cursor_enter_callback", "namespacesoliton_1_1platform.html#a19a8d10875781f6e380d5036088cb467", null ],
+    [ "glfw_cursor_pos_callback", "namespacesoliton_1_1platform.html#a7a741917dc9197750f0fd8bddd1a811c", null ],
+    [ "glfw_framebuffer_size_callback", "namespacesoliton_1_1platform.html#ab4ab93d31c26b39f9a175fa1c8a43fb3", null ],
+    [ "glfw_key_callback", "namespacesoliton_1_1platform.html#a8038ad33049a66f6b3454a5edf2e2427", null ],
+    [ "glfw_mouse_button_callback", "namespacesoliton_1_1platform.html#aa6b731c56e2cff58ec54b8b3f0e525aa", null ],
+    [ "glfw_scroll_callback", "namespacesoliton_1_1platform.html#a2ea2650347ea7627a6c13967ef29e11d", null ],
+    [ "kernel_variant_name", "namespacesoliton_1_1platform.html#aa202bff4d3f5966f40462efbaccca91b", null ],
+    [ "print_cpu_info", "namespacesoliton_1_1platform.html#a6401a4bd396e890fcb25f5070ed8af2d", null ],
+    [ "print_full_machine_info", "namespacesoliton_1_1platform.html#aaf872a076544d05f3d3d8c581d6186b7", null ],
+    [ "print_loaded_shared_modules", "namespacesoliton_1_1platform.html#a25222cfb7333f395969c79dfa0e83227", null ],
+    [ "print_memory_info", "namespacesoliton_1_1platform.html#af18a305fa47c744eacfd2421084ff682", null ],
+    [ "print_os_info", "namespacesoliton_1_1platform.html#a77eea144a2338a43bfa67cfaf9c5374a", null ],
+    [ "proxy_resize_hook", "namespacesoliton_1_1platform.html#abe05b59758d6d5625d9dd5e733c13be7", null ],
+    [ "sv_default_height", "namespacesoliton_1_1platform.html#a64b71d5197a43c626283d3a4dff72d5e", null ],
+    [ "sv_default_width", "namespacesoliton_1_1platform.html#a3248f8a33fdb9b40b7ae76a21ff826b9", null ],
+    [ "sv_min_height", "namespacesoliton_1_1platform.html#a4de1691b0726c8b837f1d7568f73f29f", null ],
+    [ "sv_min_width", "namespacesoliton_1_1platform.html#a4534921331bded863004381e5798c65f", null ],
+    [ "sv_window_icon", "namespacesoliton_1_1platform.html#ab146d85a70d38b01f6f526bf97cf348d", null ]
+];

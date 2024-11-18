@@ -8,7 +8,7 @@
 #include "../vulkancore/command_buffer.hpp"
 #include "../../scene/components.hpp"
 
-namespace lu::graphics::pipelines {
+namespace soliton::graphics::pipelines {
     class dynamic_sky_pipeline final : public graphics_pipeline {
     public:
         static constexpr std::size_t grid_size = 32;

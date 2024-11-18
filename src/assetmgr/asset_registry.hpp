@@ -6,7 +6,7 @@
 
 #include "asset.hpp"
 
-namespace lu::assetmgr {
+namespace soliton::assetmgr {
     enum class asset_ref : std::int32_t {}; // Asset reference type to access asset instances by index (used from Lua)
     static constexpr asset_ref asset_ref_invalid = static_cast<asset_ref>(std::numeric_limits<std::underlying_type_t<asset_ref>>::max());
     static_assert(0x7fffffff == static_cast<std::size_t>(asset_ref_invalid)); // Invalid asset ref constant also used in Lua

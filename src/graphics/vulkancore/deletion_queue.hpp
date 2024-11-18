@@ -4,7 +4,7 @@
 
 #include "../../core/core.hpp"
 
-namespace lu::vkb {
+namespace soliton::vkb {
     class deletion_queue final {
     public:
         deletion_queue();

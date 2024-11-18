@@ -16,7 +16,7 @@
 
 #include <vk_mem_alloc.h>
 
-namespace lu::imgui {
+namespace soliton::imgui {
     static const system_variable<float> sv_font_size {"editor.font_size", {18.0f}};
 
     context::context() {

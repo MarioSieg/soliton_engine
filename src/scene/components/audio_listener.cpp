@@ -2,6 +2,6 @@
 
 #include "audio_listener.hpp"
 
-namespace lu::com {
+namespace soliton::com {
 
 }

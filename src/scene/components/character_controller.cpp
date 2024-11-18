@@ -2,6 +2,6 @@
 
 #include "character_controller.hpp"
 
-namespace lu::com {
+namespace soliton::com {
 
 }

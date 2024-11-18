@@ -6,7 +6,7 @@
 
 #include "../core/core.hpp"
 
-namespace lu::platform {
+namespace soliton::platform {
     extern auto kernel_variant_name(iware::system::kernel_t variant) noexcept -> eastl::string_view;
     extern auto cache_type_name(iware::cpu::cache_type_t cache_type) noexcept -> eastl::string_view;
     extern auto architecture_name(iware::cpu::architecture_t architecture) noexcept -> eastl::string_view;

@@ -5,7 +5,7 @@
 #include "../core/subsystem.hpp"
 #include "window.hpp"
 
-namespace lu::platform {
+namespace soliton::platform {
     class platform_subsystem final : public subsystem {
     public:
         platform_subsystem();

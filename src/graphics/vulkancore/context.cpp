@@ -5,7 +5,7 @@
 
 #include "../../core/system_variable.hpp"
 
-namespace lu::vkb {
+namespace soliton::vkb {
     static const system_variable<bool> sv_enable_vulkan_validation_layers {
         "renderer.enable_vulkan_validation_layers",
         {false}

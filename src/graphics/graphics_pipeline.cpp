@@ -7,7 +7,7 @@
 #include "mesh.hpp"
 #include "material.hpp"
 
-namespace lu::graphics {
+namespace soliton::graphics {
     auto graphics_pipeline::create(vk::PipelineLayout& out_layout, vk::Pipeline& out_pipeline, vk::PipelineCache cache) -> void {
         const vk::Device device = vkb::ctx().get_device();
 

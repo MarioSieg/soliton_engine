@@ -10,7 +10,7 @@
 
 #include "../core/core.hpp"
 
-namespace lu::assetmgr {
+namespace soliton::assetmgr {
     // Virtual file system mounts: {physical path, virtual path}, physical path can either be a directory or a LUPACK archive
     constexpr eastl::array<eastl::pair<eastl::string_view, eastl::string_view>, 1> k_vfs_mounts {
         eastl::make_pair("./engine_assets", "/RES")

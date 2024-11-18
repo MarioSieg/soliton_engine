@@ -6,7 +6,7 @@
 
 #include "utils.hpp"
 
-namespace lu {
+namespace soliton {
     /**
     * @brief A stopwatch class that uses eastl::chrono for timekeeping.
     * @tparam Clock

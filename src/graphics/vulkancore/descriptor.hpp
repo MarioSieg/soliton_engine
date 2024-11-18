@@ -6,7 +6,7 @@
 
 #include <ankerl/unordered_dense.h>
 
-namespace lu::vkb {
+namespace soliton::vkb {
     class descriptor_allocator final : public no_copy, public no_move {
     public:
         explicit descriptor_allocator(std::uint32_t alloc_granularity = 1024) noexcept : alloc_granularity{alloc_granularity} {}

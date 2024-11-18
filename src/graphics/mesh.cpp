@@ -10,7 +10,7 @@
 #include "material.hpp"
 #include "utils/assimp_utils.hpp"
 
-namespace lu::graphics {
+namespace soliton::graphics {
 	using namespace DirectX;
 
 	static auto compute_aabb(BoundingBox& aabb, const eastl::span<const vertex> vertices) noexcept -> void {

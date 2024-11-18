@@ -3,7 +3,7 @@
 #include "shared_buffers.hpp"
 #include "vulkancore/context.hpp"
 
-namespace lu::graphics {
+namespace soliton::graphics {
     shared_buffers::shared_buffers() {
         vkb::descriptor_factory factory {vkb::ctx().descriptor_factory_begin()};
         vk::DescriptorBufferInfo info {

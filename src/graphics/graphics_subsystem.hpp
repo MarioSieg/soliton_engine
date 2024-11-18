@@ -21,7 +21,7 @@
 #include "imgui/context.hpp"
 #include "noesis/context.hpp"
 
-namespace lu::graphics {
+namespace soliton::graphics {
     class graphics_subsystem final : public subsystem {
     public:
         graphics_subsystem();

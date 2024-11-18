@@ -8,7 +8,7 @@
 #include <Jolt/Physics/Body/Body.h>
 #include <Jolt/Physics/Character/Character.h>
 
-namespace lu::com {
+namespace soliton::com {
     struct character_controller final {
         JPH::Ref<JPH::Character> phys_character {};
     };

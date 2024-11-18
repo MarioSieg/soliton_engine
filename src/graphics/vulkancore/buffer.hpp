@@ -4,7 +4,7 @@
 
 #include "context.hpp"
 
-namespace lu::vkb {
+namespace soliton::vkb {
     class buffer : public no_copy, public no_move {
     public:
         buffer(

@@ -1,4 +1,4 @@
 var buffered__sink_8hpp =
 [
-    [ "lu::buffered_sink", "classlu_1_1buffered__sink.html", "classlu_1_1buffered__sink" ]
+    [ "soliton::buffered_sink", "classsoliton_1_1buffered__sink.html", "classsoliton_1_1buffered__sink" ]
 ];

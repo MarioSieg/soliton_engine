@@ -4,7 +4,7 @@
 
 #include "prelude.hpp"
 
-namespace lu::vkb {
+namespace soliton::vkb {
     class device final : public no_copy, public no_move {
     public:
         static constexpr std::uint32_t k_vulkan_api_version = VK_API_VERSION_1_2;

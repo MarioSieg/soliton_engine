@@ -4,7 +4,7 @@
 
 #include "../core/core.hpp"
 
-namespace lu::graphics {
+namespace soliton::graphics {
     [[nodiscard]] inline auto compute_render_bucket_range(
         const std::size_t id,
         const std::size_t num_entities,

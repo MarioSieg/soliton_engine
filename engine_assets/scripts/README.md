@@ -1,4 +1,4 @@
-# Lunam Engine Scripting API
+# Soliton Engine Scripting API
 
 <img src="../icons/logo.png" width="200" height="200">
 
@@ -6,7 +6,7 @@
 - `editor` - Editor scripts
 - `ext` - External libraries (useable in all scripts)
 - `jit` - LuaJIT scripts (internal scripts)
-- `lu` - Lunam core API with event handlers
+- `lu` - Soliton core API with event handlers
 - `system` - System scripts (internal scripts)
 - `tools` - Tool scripts (internal scripts)
 
@@ -44,7 +44,7 @@ You can register event handlers by defining functions with the correct name: <br
 - Use `print` to print debugdraw information
 
 ## Lua JIT
-Lunam engine uses LuaJIT, which is a Just-In-time compiler for Lua.<br>
+Soliton engine uses LuaJIT, which is a Just-In-time compiler for Lua.<br>
 This means that Lua code is compiled to machine code at runtime,<br>
 which makes it much faster than the standard Lua interpreter.<br>
 LuaJIT is also compatible with the standard Lua interpreter,<br>

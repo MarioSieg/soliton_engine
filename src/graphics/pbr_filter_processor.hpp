@@ -8,7 +8,7 @@
 #include "mesh.hpp"
 #include "texture.hpp"
 
-namespace lu::graphics {
+namespace soliton::graphics {
     class pbr_filter_processor final : public no_copy, public no_move {
     public:
         static constexpr vk::Format k_brfd_lut_format = vk::Format::eR16G16Sfloat;

@@ -8,7 +8,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-namespace lu::platform {
+namespace soliton::platform {
     static auto glfw_cursor_pos_callback(GLFWwindow* const window, double x, double y) -> void {
         panic_assert(window != nullptr);
         panic_assert(glfwGetWindowUserPointer(window) != nullptr);
@@ -71,7 +71,7 @@ namespace lu::platform {
         m_window = glfwCreateWindow(
             std::max(size.x, 800),
             std::max(size.y, 600),
-            !title.empty() ? title.c_str() : "Lunam Engine Window",
+            !title.empty() ? title.c_str() : "Soliton Engine Window",
             nullptr,
             nullptr
         );

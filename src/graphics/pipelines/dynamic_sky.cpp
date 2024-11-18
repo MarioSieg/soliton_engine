@@ -5,7 +5,7 @@
 #include "../graphics_subsystem.hpp"
 #include "../../scene/scene_mgr.hpp"
 
-namespace lu::graphics::pipelines {
+namespace soliton::graphics::pipelines {
 	// Performs piecewise linear interpolation of a Color parameter.
 	struct color_interpolator final {
 		using map = eastl::map<float, XMFLOAT3>;

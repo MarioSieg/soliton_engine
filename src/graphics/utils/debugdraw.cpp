@@ -5,7 +5,7 @@
 #include "../../core/system_variable.hpp"
 #include "../vulkancore/context.hpp"
 
-namespace lu::graphics {
+namespace soliton::graphics {
     static const system_variable<std::int64_t> k_debug_draw_max_verts {
         "renderer.max_debug_draw_vertices",
         {0x20000}

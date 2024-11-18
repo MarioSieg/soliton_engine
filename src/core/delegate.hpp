@@ -4,7 +4,7 @@
 
 #include "utils.hpp"
 
-namespace lu {
+namespace soliton {
     [[noreturn]] extern auto panic_impl(eastl::string&& message) -> void;
 
     template <typename T>

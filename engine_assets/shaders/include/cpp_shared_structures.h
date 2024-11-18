@@ -10,7 +10,7 @@
 #define LU_GLSL_DESCRIPTOR_SET_IDX_CUSTOM 2
 
 #ifdef __cplusplus // If included from C++
-namespace lu::graphics::glsl {
+namespace soliton::graphics::glsl {
     using ivec2 = DirectX::XMINT2;
     using ivec3 = DirectX::XMINT3;
     using ivec4 = DirectX::XMINT4;

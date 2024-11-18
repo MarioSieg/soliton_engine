@@ -1,7 +1,7 @@
 
 #include "collider.hpp"
 
-namespace lu::physics {
+namespace soliton::physics {
     auto collider::new_box(const XMFLOAT3A& half_extent) -> collider {
         return collider{
             shape_type::box,

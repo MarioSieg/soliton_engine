@@ -13,7 +13,7 @@
 
 #include "../physics/collider.hpp"
 
-namespace lu::graphics {
+namespace soliton::graphics {
     class material;
 
     class mesh : public assetmgr::asset {

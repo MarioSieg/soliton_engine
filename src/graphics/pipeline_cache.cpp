@@ -4,7 +4,7 @@
 #include "vulkancore/context.hpp"
 
 
-namespace lu::graphics {
+namespace soliton::graphics {
     pipeline_cache::pipeline_cache(const vk::Device device) : m_device{device} {
         panic_assert(device);
         vk::PipelineCacheCreateInfo cache_info {};

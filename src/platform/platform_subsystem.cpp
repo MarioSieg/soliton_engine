@@ -6,13 +6,13 @@
 
 #include "../core/system_variable.hpp"
 
-namespace lu::platform {
+namespace soliton::platform {
 
-    static const system_variable<std::int64_t> sv_default_width {"window.default_width", {1280}};
-    static const system_variable<std::int64_t> sv_default_height {"window.default_height", {720}};
+    static const system_variable<std::int64_t> sv_default_width {"window.default_width", {1920}};
+    static const system_variable<std::int64_t> sv_default_height {"window.default_height", {1080}};
     static const system_variable<std::int64_t> sv_min_width {"window.min_width", {640}};
     static const system_variable<std::int64_t> sv_min_height {"window.min_height", {480}};
-    static const system_variable<eastl::string> sv_window_icon {"window.icon", {"engine_assets/icons/logo.png"}};
+    static const system_variable<eastl::string> sv_window_icon {"window.icon", {"/RES/icons/logo.png"}};
 
     static auto proxy_resize_hook(GLFWwindow* const window, const int w, const int h) -> void {
         panic_assert(window != nullptr);
@@ -30,7 +30,7 @@ namespace lu::platform {
         backend::init();
         print_full_machine_info();
         m_main_window.emplace(
-            "Lunam Engine " + get_version_string(),
+            "Soliton Engine " + get_version_string(),
             XMINT2 {static_cast<std::int32_t>(sv_default_width()), static_cast<std::int32_t>(sv_default_height())},
             false
         );

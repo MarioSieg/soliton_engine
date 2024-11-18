@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['proxy_0',['proxy',['../classlu_1_1scene.html#aa73351a519d1f651b16f8ceb186f6d87',1,'lu::scene']]]
+  ['shader_0',['shader',['../structsoliton_1_1graphics_1_1shader__variant.html#a15a84cf7c941a0baf90dc6013314e534',1,'soliton::graphics::shader_variant']]]
 ];

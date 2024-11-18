@@ -5,7 +5,7 @@
 #include <unordered_set>
 #include <GLFW/glfw3.h>
 
-namespace lu::vkb {
+namespace soliton::vkb {
     device::device(
         const bool enable_validation,
         const bool require_stencil
@@ -124,9 +124,9 @@ namespace lu::vkb {
 
         // Create application info
         vk::ApplicationInfo app_info {};
-        app_info.pApplicationName = "Lunam Engine";
+        app_info.pApplicationName = "Soliton Engine";
         app_info.applicationVersion = VK_MAKE_VERSION(major, minor, 0);
-        app_info.pEngineName = "Lunam Engine";
+        app_info.pEngineName = "Soliton Engine";
         app_info.engineVersion = VK_MAKE_VERSION(major, minor, 0);
         app_info.apiVersion = m_api_version;
 

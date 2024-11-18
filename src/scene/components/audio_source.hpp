@@ -6,7 +6,7 @@
 
 #include "../../audio/audio_clip.hpp"
 
-namespace lu::com {
+namespace soliton::com {
     struct audio_source final {
     public:
         audio::audio_clip* clip = nullptr;

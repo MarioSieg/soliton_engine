@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------------
--- Lunam Engine Vector3 gmath Module
+-- Soliton Engine Vector3 gmath Module
 --
 -- Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 ------------------------------------------------------------------------------

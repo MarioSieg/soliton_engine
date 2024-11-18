@@ -25,7 +25,7 @@
 #   include <vulkan/vulkan_beta.h>
 #endif
 
-namespace lu::vkb {
+namespace soliton::vkb {
     extern auto dump_physical_device_props(const vk::PhysicalDeviceProperties& props) -> void;
 
 #if USE_MIMALLOC

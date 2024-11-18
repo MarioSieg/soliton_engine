@@ -6,7 +6,7 @@
 
 #include "../scene/components.hpp"
 
-namespace lu::graphics {
+namespace soliton::graphics {
     class graphics_pipeline : public pipeline_base {
     public:
         virtual ~graphics_pipeline() override = default;

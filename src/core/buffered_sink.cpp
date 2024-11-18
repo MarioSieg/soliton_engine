@@ -2,7 +2,7 @@
 
 #include "buffered_sink.hpp"
 
-namespace lu {
+namespace soliton {
     auto buffered_sink::sink_it_(const spdlog::details::log_msg& msg) -> void {
         spdlog::memory_buf_t buffer{};
         formatter_->format(msg, buffer);

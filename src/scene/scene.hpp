@@ -13,7 +13,7 @@
 #include "../graphics/material.hpp"
 #include "../audio/audio_clip.hpp"
 
-namespace lu {
+namespace soliton {
     class scene : public flecs::world, public no_copy, public no_move {
     public:
         explicit scene(eastl::string&& name = {});

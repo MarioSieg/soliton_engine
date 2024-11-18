@@ -3,7 +3,7 @@
 #include "pipeline_base.hpp"
 #include "vulkancore/context.hpp"
 
-namespace lu::graphics {
+namespace soliton::graphics {
     pipeline_base::~pipeline_base() {
         const vk::Device device = vkb::ctx().get_device();
         if (m_pipeline && m_layout) { // Destroy old pipeline and layout

@@ -1,25 +1,9 @@
 var platform__subsystem_8cpp =
 [
-    [ "architecture_name", "platform__subsystem_8cpp.html#a4af615a4e624e45ad113cd06a864ff65", null ],
-    [ "cache_type_name", "platform__subsystem_8cpp.html#a2f3eb252da24c24d99dce11d3f43d1f8", null ],
-    [ "dump_cpu_info", "platform__subsystem_8cpp.html#af342c4bd56859c7fe2d4658ae83e639e", null ],
-    [ "dump_loaded_dylibs", "platform__subsystem_8cpp.html#acba1fafe40671735cc854a2ae82ac29c", null ],
-    [ "dump_memory_info", "platform__subsystem_8cpp.html#ad56fc7abe5b053f6bd395bcf07b85192", null ],
-    [ "dump_os_info", "platform__subsystem_8cpp.html#a6b8ecd34d67626e0eed585d24ed6a809", null ],
-    [ "endianness_name", "platform__subsystem_8cpp.html#a4c170215736bed110ba02635e6be51b2", null ],
-    [ "glfw_char_callback", "platform__subsystem_8cpp.html#a4fe00f45840079665c97d4616d7e9921", null ],
-    [ "glfw_cursor_enter_callback", "platform__subsystem_8cpp.html#a2602a7e95d25508fd78f4e3204436d83", null ],
-    [ "glfw_cursor_pos_callback", "platform__subsystem_8cpp.html#a0cf125bcea38a5e61e390185f146afd9", null ],
-    [ "glfw_framebuffer_size_callback", "platform__subsystem_8cpp.html#ab2ece9730e0dd7cc938ad700d12e9672", null ],
-    [ "glfw_key_callback", "platform__subsystem_8cpp.html#ab6eaa176dc9885019685db4ea2ce3cbf", null ],
-    [ "glfw_mouse_button_callback", "platform__subsystem_8cpp.html#a67b65744b2f38d4735f88c3f5e2a76dc", null ],
-    [ "glfw_scroll_callback", "platform__subsystem_8cpp.html#ad2ba38238135fe6e9c796ad7d0cbf533", null ],
-    [ "kernel_variant_name", "platform__subsystem_8cpp.html#ab3d6720314691db51b5209bf4be3e47c", null ],
-    [ "proxy_resize_hook", "platform__subsystem_8cpp.html#a95f5a0d2f037f63bef992d5e478207c5", null ],
-    [ "cv_default_height", "platform__subsystem_8cpp.html#a67ae78b44df99053455d6c7f2fe3b3ae", null ],
-    [ "cv_default_width", "platform__subsystem_8cpp.html#aad32982ac86dc1c368ceff9775cbdc89", null ],
-    [ "cv_min_height", "platform__subsystem_8cpp.html#a221a43c4bd5e235d6d66676241691737", null ],
-    [ "cv_min_width", "platform__subsystem_8cpp.html#a9d0977459b9508006c3c3c4be4f8f546", null ],
-    [ "cv_window_icon", "platform__subsystem_8cpp.html#a0b479b8c05ec80d57936a550292ff8c5", null ],
-    [ "s_window", "platform__subsystem_8cpp.html#af49f3b7d57ca26ff5abfcc9876fe6a20", null ]
+    [ "proxy_resize_hook", "platform__subsystem_8cpp.html#abe05b59758d6d5625d9dd5e733c13be7", null ],
+    [ "sv_default_height", "platform__subsystem_8cpp.html#a64b71d5197a43c626283d3a4dff72d5e", null ],
+    [ "sv_default_width", "platform__subsystem_8cpp.html#a3248f8a33fdb9b40b7ae76a21ff826b9", null ],
+    [ "sv_min_height", "platform__subsystem_8cpp.html#a4de1691b0726c8b837f1d7568f73f29f", null ],
+    [ "sv_min_width", "platform__subsystem_8cpp.html#a4534921331bded863004381e5798c65f", null ],
+    [ "sv_window_icon", "platform__subsystem_8cpp.html#ab146d85a70d38b01f6f526bf97cf348d", null ]
 ];

@@ -6,7 +6,7 @@
 #include <EASTL/numeric_limits.h>
 #include <EASTL/algorithm.h>
 
-namespace lu {
+namespace soliton {
     template <typename T, const std::size_t N> requires std::is_arithmetic_v<T>
     struct fixed_ring_scalar_buffer final {
         auto submit(T value) noexcept -> void;

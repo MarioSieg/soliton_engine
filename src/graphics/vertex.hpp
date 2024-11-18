@@ -4,7 +4,7 @@
 
 #include "vulkancore/prelude.hpp"
 
-namespace lu::graphics {
+namespace soliton::graphics {
     struct vertex final {
         XMFLOAT3 position;
         XMFLOAT3 normal;

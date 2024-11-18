@@ -8,7 +8,7 @@
 #include "../vulkancore/command_buffer.hpp"
 #include "../../scene/components.hpp"
 
-namespace lu::graphics::pipelines {
+namespace soliton::graphics::pipelines {
     class static_sky_pipeline final : public graphics_pipeline {
     public:
         explicit static_sky_pipeline();

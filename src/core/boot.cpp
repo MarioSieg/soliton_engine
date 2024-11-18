@@ -10,7 +10,7 @@
 #include "../core/system_variable.hpp"
 
 static auto lunam_entry(const int argc, const char** argv, const char** $environ) -> void {
-    using namespace lu;
+    using namespace soliton;
 
     bool sv_loaded = detail::load_system_variables();
 

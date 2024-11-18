@@ -36,7 +36,7 @@
 #include "../graphics/graphics_subsystem.hpp"
 #include "../core/system_variable.hpp"
 
-namespace lu::physics {
+namespace soliton::physics {
     static auto trace_proc(const char* msg, ...) -> void {
         va_list list;
         va_start(list, msg);

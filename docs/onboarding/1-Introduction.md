@@ -1,8 +1,8 @@
-## Lunam Engine - Introduction
+## Soliton Engine - Introduction
 
-This guide will help you get started with Lunam Engine. It is a simple but powerful realtime 3D game/simulation engine written in modern C++ 20 and Lua.<br>
+This guide will help you get started with Soliton Engine. It is a simple but powerful realtime 3D game/simulation engine written in modern C++ 20 and Lua.<br>
 A game engine is a software framework designed for the creation and development of video games, simulations and other interactive software.<br>
-Most game engine are very complex and hard to understand, but Lunam is designed to be easy to use and understand.<br>
+Most game engine are very complex and hard to understand, but Soliton is designed to be easy to use and understand.<br>
 
 ## Clone the repository
 Clone the repository from GitHub. Someone will need to provide you with access to the repository.
@@ -11,7 +11,7 @@ Recursive cloning is not necessary, as the submodules are included in the reposi
 (Some directories such as bin, config, and log might not exist, but will be created during the build process.)
 
 ## Building
-Lunam engine is built using CMake and requires a modern C++ compiler that supports C++20. The following compilers are supported:
+Soliton engine is built using CMake and requires a modern C++ compiler that supports C++20. The following compilers are supported:
 * GCC 10 or later
 * Clang 14 or later
 * MSVC 2019 or later
@@ -34,8 +34,15 @@ An IDE with CMake support is recommended, such as CLion, Visual Studio Code, or 
 Remember to open CMakeLists.txt as a project not as a file, but in CLion File->Open->CMakeLists.txt does the trick.
 ![Open CMakeLists.txt as a project](../media/open_proj.png)
 
-3. From the run configurations, select lunam as the target and run the project.
+
+3. Find the soliton_engine target in the run configurations and set the working directory to the root directory of the project.
+The run configurations are usually located in the top right corner of the IDE, next to the green run button.
+Scroll to the bottom of the list and click on Edit Configurations. In this window, search for soliton_engine and set the working directory to the root directory of the project.
+![Config](../media/config.png)
+
+4. From the run configurations, select soliton_engine as the target and run the project.
 ![Run the project](../media/run.png)
+
 The engine will build and run, and you will see the output in the console.
 Depening on the system, the build process might take a while, so be patient.
 If build fails, check the error messages and try to fix them. If you can't fix them, ask Mario for help.
@@ -72,13 +79,13 @@ The engine code is the code that runs the engine itself, doing things like rende
 This code is written in C++ as it needs to be fast and efficient.
 The game code is the code that runs the game logic, such as player movement, AI, and game rules.
 This code is written in Lua, a scripting language that is easy to use and understand.
-In Lunam, the engine code is in the src/ directory, and the Lua game code is in the engine_assets/scripts.
-Note that Lunam provides a powerful Lua API that allows you to interact with the engine in many ways,
-but your own game logic will be stored in your Lunam project directory, not in the engine itself.
+In Soliton, the engine code is in the src/ directory, and the Lua game code is in the engine_assets/scripts.
+Note that Soliton provides a powerful Lua API that allows you to interact with the engine in many ways,
+but your own game logic will be stored in your Soliton project directory, not in the engine itself.
 
 ## Lua
 Lua is a powerful, efficient, lightweight, embeddable scripting language.
 I often compare Lua to a mixture of Python and JavaScript.
 It is easy to learn and use, but powerful enough to create complex games and simulations.
 Lua is used in many game engines, such as CryEngine, Lumberyard, and Roblox.
-Lunam uses LuaJIT, a Just-In-Time compiler for Lua, which makes Lua code run very fast.
+Soliton uses LuaJIT, a Just-In-Time compiler for Lua, which makes Lua code run very fast.

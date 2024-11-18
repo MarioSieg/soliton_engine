@@ -1,6 +1,6 @@
 var structsqlite3__value =
 [
-    [ "MemValue", "unionsqlite3__value_1_1_mem_value.html", "unionsqlite3__value_1_1_mem_value" ],
+    [ "MemValue", "unionsqlite3__value_1_1MemValue.html", "unionsqlite3__value_1_1MemValue" ],
     [ "db", "structsqlite3__value.html#ab4dab30fa8816d3bf668df2b2fbfaebd", null ],
     [ "enc", "structsqlite3__value.html#a2b0d5eac4e14a699c8b58c593d25dce7", null ],
     [ "eSubtype", "structsqlite3__value.html#ae59191dcf28e21cdf26b551ecc18b4c6", null ],

@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------------
--- Lunam Engine scene Module
+-- Soliton Engine scene Module
 --
 -- Copyright (c) 2024 Mario 'Neo' Sieg. All Rights Reserved.
 ------------------------------------------------------------------------------
@@ -113,11 +113,11 @@ function scene.new(name)
 end
 
 --- Loads a scene from a given file and makes it the active scene.
---- The file can be a 3d mesh file like .gltf, .fbx, .obj etc.. or a .lunam file.
---- Importing an external file which is not .lunam will take much longer, because conversion is required.
+--- The file can be a 3d mesh file like .gltf, .fbx, .obj etc.. or a .soliton_engine file.
+--- Importing an external file which is not .soliton_engine will take much longer, because conversion is required.
 --- @param file: string, path to the file to load
---- @param import_scale: number, scale factor to apply to the imported scene. Only applies if the scene is not a .lunam file
---- @param import_flags: number, flags to control the import process. Only applies if the scene is not a .lunam file
+--- @param import_scale: number, scale factor to apply to the imported scene. Only applies if the scene is not a .soliton_engine file
+--- @param import_flags: number, flags to control the import process. Only applies if the scene is not a .soliton_engine file
 function scene.load(file, import_flags)
     if not file or type(file) ~= 'string' then
         eprint('scene name or source file must be provided')

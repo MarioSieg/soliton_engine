@@ -16,7 +16,7 @@
 #   include <mach-o/dyld.h>
 #endif
 
-namespace lu::platform {
+namespace soliton::platform {
     auto kernel_variant_name(const iware::system::kernel_t variant) noexcept -> eastl::string_view {
         switch (variant) {
             case iware::system::kernel_t::windows_nt:
@@ -52,9 +52,9 @@ namespace lu::platform {
             case iware::cpu::architecture_t::arm:
                 return "arm64";
             case iware::cpu::architecture_t::itanium:
-                return "Itanium"; // not supported by lunam
+                return "Itanium"; // not supported by soliton_engine
             case iware::cpu::architecture_t::x86:
-                return "x86"; // not supported by lunam
+                return "x86"; // not supported by soliton_engine
             default:
                 return "unknown";
         }

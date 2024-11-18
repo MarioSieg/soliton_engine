@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------------
--- Lunam Engine time Module
+-- Soliton Engine time Module
 --
 -- Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 ------------------------------------------------------------------------------

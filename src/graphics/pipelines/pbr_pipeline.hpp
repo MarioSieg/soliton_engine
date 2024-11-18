@@ -10,7 +10,7 @@
 #include "../temporal_blue_noise.hpp"
 #include "../../scene/components.hpp"
 
-namespace lu::graphics::pipelines {
+namespace soliton::graphics::pipelines {
     class pbr_pipeline final : public graphics_pipeline {
     public:
         explicit pbr_pipeline();

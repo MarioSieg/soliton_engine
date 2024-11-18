@@ -10,7 +10,7 @@
 #include <fmod.hpp>
 #include <fmod_errors.h>
 
-namespace lu::audio {
+namespace soliton::audio {
     #define fmod_check(f) \
         if (const FMOD_RESULT rrr = (f); rrr != FMOD_OK) [[unlikely]] { \
             panic("Audio engine error: {} -> " #f, FMOD_ErrorString(rrr)); \

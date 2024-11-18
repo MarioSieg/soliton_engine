@@ -16,7 +16,7 @@
 #include "pipelines/static_sky.hpp"
 #include "pipelines/dynamic_sky.hpp"
 
-namespace lu::graphics {
+namespace soliton::graphics {
     using platform::platform_subsystem;
     using vkb::context;
 

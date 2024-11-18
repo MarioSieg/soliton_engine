@@ -1,5 +1,5 @@
 var move__copy__base_8hpp =
 [
-    [ "lu::no_copy", "classlu_1_1no__copy.html", "classlu_1_1no__copy" ],
-    [ "lu::no_move", "classlu_1_1no__move.html", "classlu_1_1no__move" ]
+    [ "soliton::no_copy", "classsoliton_1_1no__copy.html", "classsoliton_1_1no__copy" ],
+    [ "soliton::no_move", "classsoliton_1_1no__move.html", "classsoliton_1_1no__move" ]
 ];

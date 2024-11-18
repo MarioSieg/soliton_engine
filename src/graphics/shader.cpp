@@ -8,7 +8,7 @@
 #include "../assetmgr/assetmgr.hpp"
 #include <filesystem>
 
-namespace lu::graphics {
+namespace soliton::graphics {
     [[nodiscard]] static constexpr auto get_shaderc_err(const shaderc_compilation_status status) noexcept -> const char* {
         switch (status) {
             case shaderc_compilation_status_success:

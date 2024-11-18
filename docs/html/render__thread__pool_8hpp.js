@@ -1,7 +1,7 @@
 var render__thread__pool_8hpp =
 [
-    [ "lu::graphics::thread_shared_ctx", "structlu_1_1graphics_1_1thread__shared__ctx.html", "structlu_1_1graphics_1_1thread__shared__ctx" ],
-    [ "lu::graphics::render_thread", "classlu_1_1graphics_1_1render__thread.html", "classlu_1_1graphics_1_1render__thread" ],
-    [ "lu::graphics::render_thread_pool", "classlu_1_1graphics_1_1render__thread__pool.html", "classlu_1_1graphics_1_1render__thread__pool" ],
-    [ "render_bucket_callback", "render__thread__pool_8hpp.html#a3dc8caa61e4598cffd27b595b5ee32e3", null ]
+    [ "soliton::graphics::thread_shared_ctx", "structsoliton_1_1graphics_1_1thread__shared__ctx.html", "structsoliton_1_1graphics_1_1thread__shared__ctx" ],
+    [ "soliton::graphics::render_thread", "classsoliton_1_1graphics_1_1render__thread.html", "classsoliton_1_1graphics_1_1render__thread" ],
+    [ "soliton::graphics::render_thread_pool", "classsoliton_1_1graphics_1_1render__thread__pool.html", "classsoliton_1_1graphics_1_1render__thread__pool" ],
+    [ "render_bucket_callback", "render__thread__pool_8hpp.html#a271200bfd20de64e4b348a2ebd8a5d1e", null ]
 ];

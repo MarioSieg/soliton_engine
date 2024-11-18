@@ -3,7 +3,7 @@
 #include "descriptor.hpp"
 #include "context.hpp"
 
-namespace lu::vkb {
+namespace soliton::vkb {
     auto descriptor_allocator::reset_all_pools() -> void {
         for (auto&& pool : m_used_pools) {
             vkb::vkdvc().resetDescriptorPool(pool, vk::DescriptorPoolResetFlags{});

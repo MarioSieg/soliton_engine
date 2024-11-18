@@ -4,7 +4,7 @@
 #include "../vulkancore/context.hpp"
 #include "../graphics_subsystem.hpp"
 
-namespace lu::graphics::pipelines {
+namespace soliton::graphics::pipelines {
     static_sky_pipeline::static_sky_pipeline() : graphics_pipeline{"static_sky"} {
         m_skybox_texture.emplace("/RES/textures/hdr/gcanyon_cube.ktx");
         m_skydome.emplace("/RES/meshes/skydome.fbx", false);

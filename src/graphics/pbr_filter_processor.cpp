@@ -17,7 +17,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-namespace lu::graphics {
+namespace soliton::graphics {
     static const system_variable<std::int64_t> brdf_lut_size {"renderer.brdf_lut_dim", {512}};
     static const system_variable<std::int64_t> irradiance_cube_size {"renderer.irradiance_cube_size", {64}};
     static const system_variable<std::int64_t> prefiltered_cube_size {"renderer.prefiltered_cube_size", {512}};

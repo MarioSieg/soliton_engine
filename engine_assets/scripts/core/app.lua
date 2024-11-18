@@ -226,9 +226,9 @@ end
 -- @tparam string suffix Suffix to add to the title
 function app.window.set_platform_title(suffix)
     if suffix and type(suffix) == 'string' then
-        app.window.set_title(string.format('Lunam Engine %s - %s %s - %s', app.engine_version_str(), jit.os, jit.arch, suffix))
+        app.window.set_title(string.format('Soliton Engine %s - %s %s - %s', app.engine_version_str(), jit.os, jit.arch, suffix))
     else
-        app.window.set_title(string.format('Lunam Engine %s - %s %s', app.engine_version_str(), jit.os, jit.arch))
+        app.window.set_title(string.format('Soliton Engine %s - %s %s', app.engine_version_str(), jit.os, jit.arch))
     end
 end
 

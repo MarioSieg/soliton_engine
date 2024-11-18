@@ -6,7 +6,7 @@
 #include <charconv>
 #include <SimpleIni.h>
 
-namespace lu {
+namespace soliton {
     static constexpr const char* cfg_file = "config/engine.ini";
 
     auto detail::save_system_variables() -> bool {

@@ -1,5 +1,6 @@
 var scene_8cpp =
 [
-    [ "lu::proxy", "structlu_1_1proxy.html", "structlu_1_1proxy" ],
-    [ "id_gen", "scene_8cpp.html#a2d589d6b11689bf7080595120c03b31c", null ]
+    [ "soliton::proxy", "structsoliton_1_1proxy.html", "structsoliton_1_1proxy" ],
+    [ "sv_enable_remote_api", "scene_8cpp.html#aa27dfb5df76c095e03d7bce769623df0", null ],
+    [ "sv_enable_stats_recorder", "scene_8cpp.html#abac83b2163131c14119b633022ff7052", null ]
 ];

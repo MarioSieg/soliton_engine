@@ -5,7 +5,7 @@
 #include <cstddef>
 #include <functional>
 
-namespace lu {
+namespace soliton {
     constexpr auto hash_merge(std::size_t lhs, const std::size_t rhs) noexcept -> std::size_t {
         lhs ^= rhs + 0x9e3779b9 + (lhs << 6) + (lhs >> 2);
         return lhs;

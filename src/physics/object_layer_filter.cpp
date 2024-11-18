@@ -2,7 +2,7 @@
 
 #include "object_layer_filter.hpp"
 
-namespace lu::physics {
+namespace soliton::physics {
     auto object_layer_filter::ShouldCollide(const JPH::ObjectLayer layer1, const JPH::ObjectLayer layer2) const -> bool {
         switch (layer1) {
             case layers::k_static: return layer2 == layers::k_dynamic; // Non moving only collides with moving

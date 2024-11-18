@@ -6,11 +6,11 @@
 
 #include "../core/core.hpp"
 
-namespace lu::assetmgr {
+namespace soliton::assetmgr {
     enum class asset_source : std::uint8_t {
         filesystem, // asset loaded from regular file from disk
         memory, // asset loaded from memory buffer
-        package // asset loaded from compressed lunam package from disk
+        package // asset loaded from compressed soliton_engine package from disk
     };
 
     class asset : public no_copy, public no_move {

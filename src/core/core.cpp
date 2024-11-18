@@ -5,7 +5,7 @@
 #include <iostream>
 #include <boxer/boxer.h>
 
-namespace lu {
+namespace soliton {
     static const auto main_tid = std::this_thread::get_id();
 
     auto panic_impl(std::string&& message) -> void {

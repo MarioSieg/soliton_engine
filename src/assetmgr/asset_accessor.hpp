@@ -10,7 +10,7 @@
 
 extern "C" struct assetsys_t;
 
-namespace lu::assetmgr {
+namespace soliton::assetmgr {
     // Context to read/write assets from within the virtual file system.
     // This class is not thread-safe, so each thread should have its own instance.
     class asset_accessor final {

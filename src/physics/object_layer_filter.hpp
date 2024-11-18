@@ -8,7 +8,7 @@
 #include "../core/core.hpp"
 #include "layerdef.hpp"
 
-namespace lu::physics {
+namespace soliton::physics {
     /// Class that determines if two object layers can collide
     class object_layer_filter final : public JPH::ObjectLayerPairFilter {
     public:

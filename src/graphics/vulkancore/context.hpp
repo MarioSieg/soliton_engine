@@ -9,11 +9,11 @@
 
 #include <DirectXMath.h>
 
-namespace lu::graphics {
+namespace soliton::graphics {
     class graphics_subsystem;
 }
 
-namespace lu::vkb {
+namespace soliton::vkb {
     struct context_desc final {
         GLFWwindow* window = nullptr;
         std::uint32_t concurrent_frames = 3;

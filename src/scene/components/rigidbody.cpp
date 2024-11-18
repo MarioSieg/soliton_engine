@@ -2,6 +2,6 @@
 
 #include "rigidbody.hpp"
 
-namespace lu::com {
+namespace soliton::com {
 
 }

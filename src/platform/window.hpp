@@ -6,7 +6,7 @@
 
 #include <GLFW/glfw3.h>
 
-namespace lu::platform {
+namespace soliton::platform {
     class window final : public no_copy, public no_move {
     public:
         window(

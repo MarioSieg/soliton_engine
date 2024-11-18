@@ -1,4 +1,4 @@
 var device_8hpp =
 [
-    [ "lu::vkb::device", "classlu_1_1vkb_1_1device.html", "classlu_1_1vkb_1_1device" ]
+    [ "soliton::vkb::device", "classsoliton_1_1vkb_1_1device.html", "classsoliton_1_1vkb_1_1device" ]
 ];

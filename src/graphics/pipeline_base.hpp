@@ -9,7 +9,7 @@
 
 #include "shader.hpp"
 
-namespace lu::graphics {
+namespace soliton::graphics {
     class mesh;
     class material;
 

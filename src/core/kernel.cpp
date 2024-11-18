@@ -27,7 +27,7 @@ extern "C" __declspec(dllexport) unsigned __int32 NvOptimusEnablement = 0x000000
 extern "C" __declspec(dllexport) unsigned __int32 AmdPowerXpressRequestHighPerformance = 0x00000001;
 #endif
 
-namespace lu {
+namespace soliton {
     using namespace std::filesystem;
     using namespace eastl::chrono;
 
@@ -107,10 +107,10 @@ static auto redirect_io() -> void {
         redirect_io();
         SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
         SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
-        SetConsoleTitleA("Lunam Engine Main Thread");
+        SetConsoleTitleA("Soliton Engine Main Thread");
 #elif PLATFORM_LINUX
         pthread_t cthr_id = pthread_self();
-        pthread_setname_np(cthr_id, "Lunam Engine Main Thread");
+        pthread_setname_np(cthr_id, "Soliton Engine Main Thread");
         pthread_attr_t thr_attr {};
         int policy = 0;
         int max_prio_for_policy = 0;
@@ -122,7 +122,7 @@ static auto redirect_io() -> void {
 #elif PLATFORM_OSX
         setpriority(PRIO_PROCESS, 0, -10);  // Use -5 to -10 instead of -20 for a better balance
         pthread_t cthr_id = pthread_self();
-        pthread_setname_np("Lunam Engine Main Thread");
+        pthread_setname_np("Soliton Engine Main Thread");
         pthread_attr_t thr_attr {};
         int policy = 0;
         int max_prio_for_policy = 0;

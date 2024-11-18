@@ -46,7 +46,7 @@ engine_cfg = {
         ['target_fps'] = 0, -- Target framerate. Set to 0 to set to the display refresh rate.
     },
     ['cpu'] = {
-        -- Lunam gives 1/4 of the CPU threads to rendering, 1/4 to physics and 1/4 to simulation (ECS), if partition_denominator == 4 for example.
+        -- Soliton gives 1/4 of the CPU threads to rendering, 1/4 to physics and 1/4 to simulation (ECS), if partition_denominator == 4 for example.
         -- The rest is used for audio and scene loading threads and for other software running on the system.
         -- The total amount of threads is capped at MAX_TOTAL_ENGINE_THREADS (if ~= 0)
 

@@ -6,13 +6,13 @@
 #include "../../../../../platform/platform_subsystem.hpp"
 #include "../../../../../core/system_variable.hpp"
 
-namespace lu::scripting {
+namespace soliton::scripting {
     class scripting_subsystem;
 }
 
 namespace NoesisApp
 {
-    using namespace lu;
+    using namespace soliton;
 
     static const system_variable<std::int64_t> ui_render_flags {
         "ui.render_flags",

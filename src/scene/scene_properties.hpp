@@ -4,7 +4,7 @@
 
 #include "../core/core.hpp"
 
-namespace lu {
+namespace soliton {
     // Contains all editable properties of a scene.
     struct scene_properties final {
         eastl::string name {};

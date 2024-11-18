@@ -7,7 +7,7 @@
 #include "../../core/kernel.hpp"
 #include "../graphics_subsystem.hpp"
 
-namespace lu::graphics::pipelines {
+namespace soliton::graphics::pipelines {
     auto pbr_pipeline::render_single_mesh(     // WARNING! RENDER THREAD LOCAL
         vkb::command_buffer& cmd,
         const mesh& mesh,

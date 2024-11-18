@@ -4,7 +4,7 @@
 
 #include "subsystem.hpp"
 
-namespace lu {
+namespace soliton {
     template <typename T, typename... Ar>
     concept is_subsystem = std::conjunction_v<std::is_base_of<subsystem, T>, std::is_constructible<T, Ar...>>;
 

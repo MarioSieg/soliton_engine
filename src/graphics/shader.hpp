@@ -14,7 +14,7 @@
 #include <future>
 #include <optional>
 
-namespace lu::graphics {
+namespace soliton::graphics {
     enum class shader_stage {
         vertex,
         fragment,

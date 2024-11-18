@@ -4,7 +4,7 @@
 #include "context.hpp"
 #include "command_buffer.hpp"
 
-namespace lu::vkb {
+namespace soliton::vkb {
     buffer::buffer(
         const std::size_t size,
         const std::size_t alignment,

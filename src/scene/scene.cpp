@@ -8,7 +8,7 @@
 #include <assimp/scene.h>
 #include <ankerl/unordered_dense.h>
 
-namespace lu {
+namespace soliton {
     struct proxy final : scene {
         template <typename... Ts>
         explicit proxy(Ts&&... args) : scene(std::forward<Ts>(args)...) {}

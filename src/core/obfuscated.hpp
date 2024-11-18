@@ -4,7 +4,7 @@
 
 #include "core.hpp"
 
-namespace lu {
+namespace soliton {
 #ifndef LU_FORCEINLINE
 #define LU_FORCEINLINE __attribute__((always_inline)) inline
 #endif

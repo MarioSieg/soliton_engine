@@ -2,7 +2,7 @@
 
 #pragma once
 
-namespace lu {
+namespace soliton {
     class no_copy {
     public:
         constexpr no_copy() = default;

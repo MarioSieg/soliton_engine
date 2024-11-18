@@ -2,7 +2,7 @@
 
 #include "contact_listener.hpp"
 
-namespace lu::physics {
+namespace soliton::physics {
     auto contact_listener::OnContactAdded(
         const JPH::Body& body1,
         const JPH::Body& body2,

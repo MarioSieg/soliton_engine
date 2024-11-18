@@ -8,7 +8,7 @@
 #include "vulkancore/buffer.hpp"
 #include "vulkancore/command_buffer.hpp"
 
-namespace lu::graphics {
+namespace soliton::graphics {
     texture::texture(eastl::string&& asset_path) : asset {assetmgr::asset_source::filesystem, std::move(asset_path)} {
         log_info("Loading texture '{}'", get_asset_path());
         eastl::vector<std::byte> texels {};

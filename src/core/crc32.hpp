@@ -5,6 +5,6 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace lu {
+namespace soliton {
     [[nodiscard]] extern auto crc32(const void* buffer, std::size_t size) noexcept -> std::uint32_t;
 }

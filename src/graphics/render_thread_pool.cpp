@@ -9,7 +9,7 @@
 #include <pthread.h>
 #endif
 
-namespace lu::graphics {
+namespace soliton::graphics {
     render_thread::render_thread(
         std::atomic_bool& token,
         const std::int32_t num_threads,
@@ -63,7 +63,7 @@ namespace lu::graphics {
         SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
 #elif PLATFORM_LINUX
         pthread_t cthr_id = pthread_self();
-        pthread_setname_np(cthr_id, "Lunam Engine Render Thread");
+        pthread_setname_np(cthr_id, "Soliton Engine Render Thread");
         pthread_attr_t thr_attr {};
         int policy = 0;
         int max_prio_for_policy = 0;

@@ -11,7 +11,7 @@
 #include <ankerl/unordered_dense.h>
 #include <DirectXMath.h>
 
-namespace lu {
+namespace soliton {
     auto import_from_file(const eastl::string& path, const std::uint32_t load_flags) -> eastl::unique_ptr<scene> {
         log_info("Importing scene from file '{}'", path);
 

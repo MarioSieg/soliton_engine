@@ -4,6 +4,6 @@
 
 #include "../base.hpp"
 
-namespace lu::com {
+namespace soliton::com {
     struct audio_listener final {};
 }

@@ -8,7 +8,7 @@
 
 #include "utils.hpp"
 
-namespace lu {
+namespace soliton {
     /**
      * Container for lazy initialization.
      * Same as Lazy<T> but heap allocated and fully moveable,

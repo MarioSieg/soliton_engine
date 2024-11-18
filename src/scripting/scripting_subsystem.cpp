@@ -14,7 +14,7 @@ extern "C" int luaopen_luv (lua_State *L);
 #include <mimalloc.h>
 #endif
 
-namespace lu::scripting {
+namespace soliton::scripting {
     template <typename... Ts>
     static auto lua_log_info(const fmt::format_string<Ts...> fmt, Ts&&... args) -> void {
         SPDLOG_LOGGER_INFO(spdlog::get("app"), "[Lua]: {}", fmt::format(fmt, std::forward<Ts>(args)...));
