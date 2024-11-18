@@ -120,10 +120,13 @@ namespace soliton::graphics {
         return true;
     }
 
+    static std::mutex s_mtx {};
+    static shaderc::Compiler compiler {}; // TODO: allow for multithreading here
+
     auto shader::compile(shader_variant&& variant) -> eastl::shared_ptr<shader> {
         const auto start = eastl::chrono::high_resolution_clock::now();
 
-        shaderc::Compiler compiler {};
+        std::lock_guard lock {s_mtx};
         panic_assert(compiler.IsValid());
 
         // Load string BLOB from file

@@ -34,8 +34,8 @@ namespace soliton {
         >;
         inline ankerl::unordered_dense::map<eastl::string, value> sv_registry {};
         inline std::mutex sv_mutex {}; // Well, we need to lock it. :( Better not use sv variables every frame from different threads.
-        [[nodiscard]] extern auto save_system_variables() -> bool;
-        [[nodiscard]] extern auto load_system_variables() -> bool;
+        extern auto save_system_variables() -> bool;
+        extern auto load_system_variables() -> bool;
     }
 
     // System variable class. Configurable at runtime via INI or command line.
