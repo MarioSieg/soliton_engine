@@ -47,7 +47,6 @@
 #include "stopwatch.hpp"
 #include "thread_signal.hpp"
 #include "utils.hpp"
-
 #include "specializations.hpp"
 
 #define USE_MIMALLOC 1

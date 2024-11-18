@@ -8,7 +8,7 @@
 
 #include "shader.hpp"
 #include "pipeline_base.hpp"
-#include "../scripting/system_variable.hpp"
+#include "../core/system_variable.hpp"
 
 namespace lu::graphics {
     inline const system_variable<bool> sv_parallel_pipeline_creation { "renderer.parallel_pipeline_creation", false };

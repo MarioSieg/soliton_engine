@@ -7,16 +7,25 @@
 #include "../scripting/scripting_subsystem.hpp"
 #include "../physics/physics_subsystem.hpp"
 #include "../audio/audio_subsystem.hpp"
+#include "../core/system_variable.hpp"
 
 static auto lunam_entry(const int argc, const char** argv, const char** $environ) -> void {
     using namespace lu;
+
+    bool sv_loaded = detail::load_system_variables();
+
     kernel kernel {argc, argv, $environ};
     kernel.install<platform::platform_subsystem>();
     kernel.install<graphics::graphics_subsystem>();
     kernel.install<audio::audio_subsystem>();
     kernel.install<physics::physics_subsystem>();
     kernel.install<scripting::scripting_subsystem>();
+
+    if (!sv_loaded) detail::save_system_variables();
+
     kernel.run();
+
+    if (!sv_loaded) detail::save_system_variables();
 }
 
 #if PLATFORM_WINDOWS

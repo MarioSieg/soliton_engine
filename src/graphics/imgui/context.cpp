@@ -12,7 +12,7 @@
 #include "../pipeline_cache.hpp"
 #include "../vulkancore/context.hpp"
 #include "../../platform/platform_subsystem.hpp"
-#include "../../scripting/system_variable.hpp"
+#include "../../core/system_variable.hpp"
 
 #include <vk_mem_alloc.h>
 

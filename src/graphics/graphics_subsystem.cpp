@@ -3,7 +3,7 @@
 #include "graphics_subsystem.hpp"
 #include "../scene/scene_mgr.hpp"
 #include "../platform/platform_subsystem.hpp"
-#include "../scripting/system_variable.hpp"
+#include "../core/system_variable.hpp"
 
 #if USE_MIMALLOC
 #include <mimalloc.h>
@@ -21,9 +21,9 @@ namespace lu::graphics {
     using vkb::context;
 
     static const system_variable<eastl::string> sv_shader_dir {"renderer.shader_dir", {"engine_assets/shaders"}};
-    static const system_variable<std::uint32_t> sv_concurrent_frames {"renderer.concurrent_frames", {3}};
-    static const system_variable<std::uint32_t> sv_msaa_samples {"renderer.msaa_samples", {4}};
-    static const system_variable<std::uint32_t> sv_max_render_threads {"cpu.render_threads", {2}};
+    static const system_variable<std::int64_t> sv_concurrent_frames {"renderer.concurrent_frames", {3}};
+    static const system_variable<std::int64_t> sv_msaa_samples {"renderer.msaa_samples", {4}};
+    static const system_variable<std::int64_t> sv_max_render_threads {"cpu.render_threads", {2}};
 
     static constinit std::uint32_t s_num_draw_calls_prev = 0;
     static constinit std::uint32_t s_num_draw_verts_prev = 0;
@@ -36,8 +36,8 @@ namespace lu::graphics {
         GLFWwindow* const window = *platform_subsystem::get_main_window();
         context::create(vkb::context_desc {
             .window = window,
-            .concurrent_frames = sv_concurrent_frames(),
-            .msaa_samples = sv_msaa_samples()
+            .concurrent_frames = static_cast<std::uint32_t>(sv_concurrent_frames()),
+            .msaa_samples = static_cast<std::uint32_t>(sv_msaa_samples())
         });
 
         shader_cache::init(sv_shader_dir()); // 1. init shader cache (must be first)

@@ -3,7 +3,7 @@
 #include "context.hpp"
 #include "../shader.hpp"
 
-#include "../../scripting/system_variable.hpp"
+#include "../../core/system_variable.hpp"
 
 namespace lu::vkb {
     static const system_variable<bool> sv_enable_vulkan_validation_layers {

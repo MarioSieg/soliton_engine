@@ -4,13 +4,17 @@
 #include <GLFW/glfw3.h>
 
 #include "../../../../../platform/platform_subsystem.hpp"
-#include "../../../../../scripting/system_variable.hpp"
+#include "../../../../../core/system_variable.hpp"
+
+namespace lu::scripting {
+    class scripting_subsystem;
+}
 
 namespace NoesisApp
 {
     using namespace lu;
 
-    static const system_variable<std::int32_t> ui_render_flags {
+    static const system_variable<std::int64_t> ui_render_flags {
         "ui.render_flags",
         {Noesis::RenderFlags_LCD | Noesis::RenderFlags_FlipY | Noesis::RenderFlags_PPAA}
     };
@@ -43,8 +47,6 @@ namespace NoesisApp
             static_cast<std::uint32_t>(height)
         );
     }
-
-    using scripting::scripting_subsystem;
 
     auto Window::Init(Noesis::RenderDevice* const device, const std::uint16_t width, const std::uint16_t height, const bool wireframe) -> void
     {

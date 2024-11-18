@@ -29,10 +29,9 @@
 #include "../vulkancore/context.hpp"
 #include "../imgui/imgui.h"
 
-#include "../../scripting/system_variable.hpp"
+#include "../../core/system_variable.hpp"
 #include "../../platform/platform_subsystem.hpp"
 
-using lu::scripting::scripting_subsystem;
 using lu::platform::platform_subsystem;
 
 #include "UI/App.xaml.h"
@@ -79,15 +78,15 @@ extern "C" void NsShutdownPackages_NoesisApp() {
 }
 
 namespace noesis {
-    static const system_variable<eastl::string> sv_license {"ui.license.id", eastl::monostate{} };
-    static const system_variable<eastl::string> sv_key {"ui.license.key", eastl::monostate{} };
-    static const system_variable<eastl::string> sv_xaml_root {"ui.xaml_root_path", {"assets/ui"} };
-    static const system_variable<eastl::string> sv_font_root {"ui.font_root_path", {"assets/ui"} };
-    static const system_variable<eastl::string> sv_texture_root {"ui.texture_root_path", {"assets/ui"} };
-    static const system_variable<eastl::string> sv_default_font {"ui.default_font.family", {"Fonts/#PT Root UI"} };
-    static const system_variable<float> sv_default_font_size {"ui.default_font.size", {15.0f} };
-    static const system_variable<std::int32_t> sv_default_font_weight {"ui.default_font.weight", {Noesis::FontWeight_Normal} };
-    static const system_variable<std::int32_t> sv_default_font_stretch {"ui.default_font.stretch", {Noesis::FontStretch_Normal} };
+    static const lu::system_variable<eastl::string> sv_license {"ui.license.id", eastl::monostate{} };
+    static const lu::system_variable<eastl::string> sv_key {"ui.license.key", eastl::monostate{} };
+    static const lu::system_variable<eastl::string> sv_xaml_root {"ui.xaml_root_path", {"assets/ui"} };
+    static const lu::system_variable<eastl::string> sv_font_root {"ui.font_root_path", {"assets/ui"} };
+    static const lu::system_variable<eastl::string> sv_texture_root {"ui.texture_root_path", {"assets/ui"} };
+    static const lu::system_variable<eastl::string> sv_default_font {"ui.default_font.family", {"Fonts/#PT Root UI"} };
+    static const lu::system_variable<float> sv_default_font_size {"ui.default_font.size", {15.0f} };
+    static const lu::system_variable<std::int64_t> sv_default_font_weight {"ui.default_font.weight", {Noesis::FontWeight_Normal} };
+    static const lu::system_variable<std::int64_t> sv_default_font_stretch {"ui.default_font.stretch", {Noesis::FontStretch_Normal} };
 
     static constinit Noesis::IView* s_event_proxy;
 

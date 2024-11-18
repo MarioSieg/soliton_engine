@@ -5,15 +5,19 @@
 #include "vulkancore/prelude.hpp"
 #include "vulkancore/descriptor.hpp"
 #include "../assetmgr/assetmgr.hpp"
-#include "../scripting/system_variable.hpp"
+#include "../core/system_variable.hpp"
 
 
 #include "texture.hpp"
 
+namespace lu {
+    class scene;
+}
+
 namespace lu::graphics {
-    static const system_variable<eastl::string> sv_error_texture {"renderer.error_texture", {"/RES/textures/system/error.png"}};
-    static const system_variable<eastl::string> sv_fallback_image_white {"renderer.fallback_texture_w", {"/RES/textures/system/fallback_white.png"}};
-    static const system_variable<eastl::string> sv_fallback_image_black {"renderer.fallback_texture_b", {"/RES/textures/system/fallback_black.png"}};
+    inline const system_variable<eastl::string> sv_error_texture {"renderer.error_texture", {"/RES/textures/system/error.png"}};
+    inline const system_variable<eastl::string> sv_fallback_image_white {"renderer.fallback_texture_w", {"/RES/textures/system/fallback_white.png"}};
+    inline const system_variable<eastl::string> sv_fallback_image_black {"renderer.fallback_texture_b", {"/RES/textures/system/fallback_black.png"}};
 
     using material_key = eastl::string;
     struct material_property final {

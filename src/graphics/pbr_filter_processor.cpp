@@ -6,7 +6,7 @@
 #include "pbr_filter_processor.hpp"
 #include "vulkancore/context.hpp"
 #include "shader.hpp"
-#include "../scripting/system_variable.hpp"
+#include "../core/system_variable.hpp"
 
 #include <numbers>
 
@@ -18,10 +18,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace lu::graphics {
-    static const system_variable<std::uint32_t> brdf_lut_size {"renderer.brdf_lut_dim", {512u}};
-    static const system_variable<std::uint32_t> irradiance_cube_size {"renderer.irradiance_cube_size", {64u}};
-    static const system_variable<std::uint32_t> prefiltered_cube_size {"renderer.prefiltered_cube_size", {512u}};
-    static const system_variable<std::uint32_t> prefiltered_cube_samples {"renderer.prefiltered_cube_samples", {32u}};
+    static const system_variable<std::int64_t> brdf_lut_size {"renderer.brdf_lut_dim", {512}};
+    static const system_variable<std::int64_t> irradiance_cube_size {"renderer.irradiance_cube_size", {64}};
+    static const system_variable<std::int64_t> prefiltered_cube_size {"renderer.prefiltered_cube_size", {512}};
+    static const system_variable<std::int64_t> prefiltered_cube_samples {"renderer.prefiltered_cube_samples", {32}};
 
     static const eastl::array<glm::mat4, 6> k_cube_matrices {
         // POSITIVE_X

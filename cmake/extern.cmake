@@ -144,6 +144,10 @@ add_subdirectory(extern/SPIRV-Reflect)
 target_include_directories(lunam PRIVATE extern/SPIRV-Reflect/include)
 target_link_libraries(lunam spirv-reflect-static)
 
+add_subdirectory(extern/simpleini)
+target_include_directories(lunam PRIVATE extern/simpleini)
+target_link_libraries(lunam SimpleIni)
+
 ##################################################################################################
 # Libraries, which sadly requires C++ exceptions and have no way to disable them
 ##################################################################################################
