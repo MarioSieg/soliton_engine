@@ -3,6 +3,7 @@
 #include "system_variable.hpp"
 
 #include <filesystem>
+#include <charconv>
 #include <SimpleIni.h>
 
 namespace lu {
@@ -68,15 +69,27 @@ namespace lu {
                     log_warn("Empty value for key '{}'", key.pItem);
                     continue;
                 }
+
                 if (value == "true" || value == "false") {
-                    sv_registry[key.pItem] = value == "true";
-                } else if (value.find('.') != eastl::string::npos) {
-                    sv_registry[key.pItem] = static_cast<float>(ini.GetDoubleValue(section.pItem, key.pItem));
-                } else if (value.find_first_not_of("0123456789") == eastl::string::npos) {
-                    sv_registry[key.pItem] = static_cast<std::int64_t>(ini.GetLongValue(section.pItem, key.pItem));
-                } else {
-                    sv_registry[key.pItem] = value;
+                    sv_registry[key.pItem] = (value == "true");
+                    continue;
                 }
+
+                std::int64_t intValue = 0;
+                auto int_r = std::from_chars(value.data(), value.data() + value.size(), intValue);
+                if (int_r.ec == std::errc() && int_r.ptr == value.data() + value.size()) {
+                    sv_registry[key.pItem] = intValue;
+                    continue;
+                }
+
+                float float_r = 0.0f;
+                auto floatResult = std::from_chars(value.data(), value.data() + value.size(), float_r);
+                if (floatResult.ec == std::errc() && floatResult.ptr == value.data() + value.size()) {
+                    sv_registry[key.pItem] = float_r;
+                    continue;
+                }
+
+                sv_registry[key.pItem] = value;
             }
         }
         log_info("Loaded {} system variables from '{}'", sv_registry.size(), cfg_file);
