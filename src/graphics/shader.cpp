@@ -204,6 +204,15 @@ namespace soliton::graphics {
             return nullptr;
         }
 
+        if (variant.m_reflect) {
+            SpvReflectShaderModule module;
+            SpvReflectResult result = spvReflectCreateShaderModule(bytecode.size() * sizeof(std::uint32_t), bytecode.data(), &module);
+            if (result == SPV_REFLECT_RESULT_SUCCESS) [[likely]] {
+                shader->m_reflection = module;
+            } else {
+                log_error("Failed to reflect shader: {}", file_name);
+            }
+        }
         if (variant.m_keep_source) {
             shader->m_source = std::move(source_code_glsl);
         }
@@ -230,6 +239,10 @@ namespace soliton::graphics {
     }
 
     shader::~shader() noexcept {
+        if (m_reflection) {
+            spvReflectDestroyShaderModule(&m_reflection.value());
+            m_reflection.reset();
+        }
         vkb::vkdvc().destroyShaderModule(m_module, vkb::get_alloc());
     }
 

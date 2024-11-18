@@ -45,7 +45,7 @@ namespace soliton::platform {
         backend::shutdown();
     }
 
-    void platform_subsystem::on_prepare() {
+    void platform_subsystem::on_start(scene&) {
         m_main_window->show();
         m_main_window->focus();
     }

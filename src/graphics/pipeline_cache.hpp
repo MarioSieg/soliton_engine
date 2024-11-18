@@ -3,12 +3,11 @@
 #pragma once
 
 #include "vulkancore/prelude.hpp"
-
-#include <ankerl/unordered_dense.h>
-
 #include "shader.hpp"
 #include "pipeline_base.hpp"
 #include "../core/system_variable.hpp"
+#include <future>
+#include <ankerl/unordered_dense.h>
 
 namespace soliton::graphics {
     inline const system_variable<bool> sv_parallel_pipeline_creation { "renderer.parallel_pipeline_creation", false };

@@ -11,7 +11,7 @@ namespace soliton::platform {
         platform_subsystem();
         ~platform_subsystem() override;
 
-        auto on_prepare() -> void override;
+        auto on_start(scene&) -> void override;
         HOTPROC auto on_pre_tick() -> bool override;
 
         [[nodiscard]] static inline auto get_main_window() -> window& { return *m_main_window; }
