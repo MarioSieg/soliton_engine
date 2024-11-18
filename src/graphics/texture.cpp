@@ -206,7 +206,7 @@ namespace soliton::graphics {
         copy_cmd.flush();
     }
 
-    auto texture::generate_mips(
+   auto texture::generate_mips(
         const vk::ImageLayout src_layout,
         const vk::ImageLayout dst_layout,
         const vk::ImageAspectFlags aspect_mask,
@@ -215,60 +215,53 @@ namespace soliton::graphics {
         vkb::command_buffer blit_cmd {vk::QueueFlagBits::eGraphics};
         blit_cmd.begin();
 
-        vk::ImageSubresourceRange intial_subresource_range {};
-        intial_subresource_range.aspectMask = aspect_mask;
-        intial_subresource_range.baseMipLevel = 1;
-        intial_subresource_range.levelCount = m_desc.miplevel_count - 1;
-        intial_subresource_range.layerCount = m_desc.array_size;
-        intial_subresource_range.baseArrayLayer = 0;
-
-        blit_cmd.set_image_layout_barrier(
-            m_image,
-            vk::ImageLayout::eUndefined,
-            vk::ImageLayout::eTransferDstOptimal,
-            intial_subresource_range
-        );
-
         vk::ImageSubresourceRange subresource_range {};
         subresource_range.aspectMask = aspect_mask;
+        subresource_range.baseArrayLayer = 0;
+        subresource_range.layerCount = m_desc.array_size;
         subresource_range.levelCount = 1;
-        subresource_range.layerCount = 1;
 
-        for (std::uint32_t i = 0; i < m_desc.array_size; ++i) {
-            std::uint32_t mip_w = m_desc.width;
-            std::uint32_t mip_h = m_desc.height;
-            for (std::uint32_t j = 1; j < m_desc.miplevel_count; ++j) {
-                subresource_range.baseMipLevel = j - 1;
-                subresource_range.baseArrayLayer = i;
-                vk::ImageLayout layout = vk::ImageLayout::eTransferDstOptimal;
-                if (j == 1) {
-                    layout = src_layout;
-                }
-                if (layout != vk::ImageLayout::eTransferSrcOptimal) {
-                    blit_cmd.set_image_layout_barrier(
-                        m_image,
-                        layout,
-                        vk::ImageLayout::eTransferSrcOptimal,
-                        subresource_range
-                    );
-                }
+        std::uint32_t mip_w = m_desc.width;
+        std::uint32_t mip_h = m_desc.height;
+
+        for (std::uint32_t i = 1; i < m_desc.miplevel_count; ++i) {
+            // Transition source mip level to TRANSFER_SRC_OPTIMAL
+            subresource_range.baseMipLevel = i - 1;
+            blit_cmd.set_image_layout_barrier(
+                m_image,
+                i == 1 ? src_layout : vk::ImageLayout::eTransferDstOptimal,
+                vk::ImageLayout::eTransferSrcOptimal,
+                subresource_range
+            );
+
+            // Transition destination mip level to TRANSFER_DST_OPTIMAL
+            subresource_range.baseMipLevel = i;
+            blit_cmd.set_image_layout_barrier(
+                m_image,
+                vk::ImageLayout::eUndefined,
+                vk::ImageLayout::eTransferDstOptimal,
+                subresource_range
+            );
+
+            for (uint32_t layer = 0; layer < m_desc.array_size; ++layer) {
                 vk::ImageBlit blit {};
                 blit.srcOffsets[0] = vk::Offset3D { 0, 0, 0 };
-                blit.srcOffsets[1] = vk::Offset3D { static_cast<std::int32_t>(mip_w), static_cast<std::int32_t>(mip_h), 1 };
+                blit.srcOffsets[1] = vk::Offset3D { static_cast<int32_t>(mip_w), static_cast<int32_t>(mip_h), 1 };
                 blit.srcSubresource.aspectMask = aspect_mask;
-                blit.srcSubresource.mipLevel = j - 1;
-                blit.srcSubresource.baseArrayLayer = i;
+                blit.srcSubresource.mipLevel = i - 1;
+                blit.srcSubresource.baseArrayLayer = layer;
                 blit.srcSubresource.layerCount = 1;
-                blit.dstOffsets[0] = vk::Offset3D {};
-                blit.dstOffsets[1] = vk::Offset3D {
-                    static_cast<std::int32_t>(mip_w > 1 ? mip_w >> 1 : 1),
-                    static_cast<std::int32_t>(mip_h > 1 ? mip_h >> 1 : 1),
-                    1
-                };
+
+                uint32_t next_mip_w = mip_w > 1 ? mip_w >> 1 : 1;
+                uint32_t next_mip_h = mip_h > 1 ? mip_h >> 1 : 1;
+
+                blit.dstOffsets[0] = vk::Offset3D { 0, 0, 0 };
+                blit.dstOffsets[1] = vk::Offset3D { static_cast<int32_t>(next_mip_w), static_cast<int32_t>(next_mip_h), 1 };
                 blit.dstSubresource.aspectMask = aspect_mask;
-                blit.dstSubresource.mipLevel = j;
-                blit.dstSubresource.baseArrayLayer = i;
+                blit.dstSubresource.mipLevel = i;
+                blit.dstSubresource.baseArrayLayer = layer;
                 blit.dstSubresource.layerCount = 1;
+
                 (*blit_cmd).blitImage(
                     m_image,
                     vk::ImageLayout::eTransferSrcOptimal,
@@ -278,17 +271,22 @@ namespace soliton::graphics {
                     &blit,
                     filter
                 );
-                blit_cmd.set_image_layout_barrier(
-                    m_image,
-                    vk::ImageLayout::eTransferSrcOptimal,
-                    dst_layout,
-                    subresource_range
-                );
-                mip_w >>= mip_w > 1;
-                mip_h >>= mip_h > 1;
             }
+
+            // Transition previous mip level to dst_layout
+            subresource_range.baseMipLevel = i - 1;
+            blit_cmd.set_image_layout_barrier(
+                m_image,
+                vk::ImageLayout::eTransferSrcOptimal,
+                dst_layout,
+                subresource_range
+            );
+
+            mip_w = mip_w > 1 ? mip_w >> 1 : 1;
+            mip_h = mip_h > 1 ? mip_h >> 1 : 1;
         }
 
+        // Transition last mip level to dst_layout
         subresource_range.baseMipLevel = m_desc.miplevel_count - 1;
         blit_cmd.set_image_layout_barrier(
             m_image,
@@ -301,6 +299,8 @@ namespace soliton::graphics {
         blit_cmd.flush();
         log_info("Generated mipmap-chain with {} maps", m_desc.miplevel_count);
     }
+
+
 
     auto texture::create_sampler(
         const vk::Filter mag_filter,
