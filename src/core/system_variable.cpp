@@ -9,6 +9,8 @@
 namespace soliton {
     static constexpr const char* cfg_file = "config/engine.ini";
 
+    // log_* cannot be used as the logger might not be initialized yet
+
     auto detail::save_system_variables() -> bool {
         if (!std::filesystem::exists("config")) {
             std::filesystem::create_directory("config");

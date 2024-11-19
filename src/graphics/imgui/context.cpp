@@ -65,7 +65,10 @@ namespace soliton::imgui {
         };
         panic_assert(ImGui_ImplVulkan_Init(&init_info, vkb::ctx().get_scene_render_pass()));
 
-        const float font_size = sv_font_size();
+        float font_size = sv_font_size();
+        if constexpr (PLATFORM_OSX) {
+            font_size *= 2.0f;
+        }
 
         // add primary text font:
         ImFontConfig config { };
