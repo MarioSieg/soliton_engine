@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.4"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Soliton Engine: src/platform/window.cpp File Reference</title>
+<title>Soliton Engine: src/graphics/noesis/App/Include/NsApp/Window.cpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -66,7 +66,7 @@ $(function() {
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('window_8cpp.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('Window_8cpp.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -86,46 +86,28 @@ $(document).ready(function(){initNavTree('window_8cpp.html',''); initResizable()
 
 <div class="header">
   <div class="summary">
-<a href="#namespaces">Namespaces</a> &#124;
-<a href="#func-members">Functions</a>  </div>
-  <div class="headertitle"><div class="title">window.cpp File Reference</div></div>
+<a href="#namespaces">Namespaces</a>  </div>
+  <div class="headertitle"><div class="title">Window.cpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="window_8hpp_source.html">window.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="backend_8hpp_source.html">backend.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="assetmgr_8hpp_source.html">../assetmgr/assetmgr.hpp</a>&quot;</code><br />
-<code>#include &lt;<a class="el" href="stb__image_8h_source.html">stb_image.h</a>&gt;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="Window_8h_source.html">Window.h</a>&quot;</code><br />
+<code>#include &lt;GLFW/glfw3.h&gt;</code><br />
+<code>#include &quot;<a class="el" href="platform__subsystem_8hpp_source.html">../../../../../platform/platform_subsystem.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="system__variable_8hpp_source.html">../../../../../core/system_variable.hpp</a>&quot;</code><br />
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespacesoliton"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesoliton.html">soliton</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacesoliton_1_1platform"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesoliton_1_1platform.html">soliton::platform</a></td></tr>
+<tr class="memitem:namespacesoliton_1_1scripting"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesoliton_1_1scripting.html">soliton::scripting</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
-Functions</h2></td></tr>
-<tr class="memitem:a7a741917dc9197750f0fd8bddd1a811c"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesoliton_1_1platform.html#a7a741917dc9197750f0fd8bddd1a811c">soliton::platform::glfw_cursor_pos_callback</a> (GLFWwindow *const window, double <a class="el" href="transform_8lua_8cpp.html#af05596f7370b04043875e02bde7204dc">x</a>, double <a class="el" href="transform_8lua_8cpp.html#a536b5df3d99aa841599665038c874866">y</a>) -&gt; <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a></td></tr>
-<tr class="separator:a7a741917dc9197750f0fd8bddd1a811c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2ea2650347ea7627a6c13967ef29e11d"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesoliton_1_1platform.html#a2ea2650347ea7627a6c13967ef29e11d">soliton::platform::glfw_scroll_callback</a> (GLFWwindow *const window, const double <a class="el" href="transform_8lua_8cpp.html#af05596f7370b04043875e02bde7204dc">x</a>, const double <a class="el" href="transform_8lua_8cpp.html#a536b5df3d99aa841599665038c874866">y</a>) -&gt; <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a></td></tr>
-<tr class="separator:a2ea2650347ea7627a6c13967ef29e11d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8038ad33049a66f6b3454a5edf2e2427"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesoliton_1_1platform.html#a8038ad33049a66f6b3454a5edf2e2427">soliton::platform::glfw_key_callback</a> (GLFWwindow *const window, const int key, const int scancode, const int action, const int mods) -&gt; <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a></td></tr>
-<tr class="separator:a8038ad33049a66f6b3454a5edf2e2427"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad41499c917cefc30d5e99159641ef347"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesoliton_1_1platform.html#ad41499c917cefc30d5e99159641ef347">soliton::platform::glfw_char_callback</a> (GLFWwindow *const window, const unsigned codepoint) -&gt; <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a></td></tr>
-<tr class="separator:ad41499c917cefc30d5e99159641ef347"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa6b731c56e2cff58ec54b8b3f0e525aa"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesoliton_1_1platform.html#aa6b731c56e2cff58ec54b8b3f0e525aa">soliton::platform::glfw_mouse_button_callback</a> (GLFWwindow *const window, const int button, const int action, const int mods) -&gt; <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a></td></tr>
-<tr class="separator:aa6b731c56e2cff58ec54b8b3f0e525aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a19a8d10875781f6e380d5036088cb467"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesoliton_1_1platform.html#a19a8d10875781f6e380d5036088cb467">soliton::platform::glfw_cursor_enter_callback</a> (GLFWwindow *const window, const int entered) -&gt; <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a></td></tr>
-<tr class="separator:a19a8d10875781f6e380d5036088cb467"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab4ab93d31c26b39f9a175fa1c8a43fb3"><td class="memItemLeft" align="right" valign="top">static auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesoliton_1_1platform.html#ab4ab93d31c26b39f9a175fa1c8a43fb3">soliton::platform::glfw_framebuffer_size_callback</a> (GLFWwindow *const window, const int w, const int h) -&gt; <a class="el" href="transform_8lua_8cpp.html#a7fb99d5538bec25633e1c2b62f5033d5">void</a></td></tr>
-<tr class="separator:ab4ab93d31c26b39f9a175fa1c8a43fb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_4b68c2fef3e151b6b93d5e93b14f1857.html">platform</a></li><li class="navelem"><a class="el" href="window_8cpp.html">window.cpp</a></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_560415a5d2bc4999842279f4fc1debef.html">graphics</a></li><li class="navelem"><a class="el" href="dir_2f077c8ca8b5ce9c7d9acebc9da766ec.html">noesis</a></li><li class="navelem"><a class="el" href="dir_d441eb09834fc65887315900d5045b63.html">App</a></li><li class="navelem"><a class="el" href="dir_6fa78302dc7a78a462622d07c12ec3f1.html">Include</a></li><li class="navelem"><a class="el" href="dir_3c9095032dd04af4b4de3c1020d8d004.html">NsApp</a></li><li class="navelem"><a class="el" href="Window_8cpp.html">Window.cpp</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4 </li>
   </ul>
 </div>
