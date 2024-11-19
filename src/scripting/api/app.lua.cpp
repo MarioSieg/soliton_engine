@@ -7,6 +7,7 @@
 #include "../../platform/platform_subsystem.hpp"
 #include "../../graphics/graphics_subsystem.hpp"
 
+#include <filesystem>
 #include <infoware/infoware.hpp>
 #include <nfd.hpp>
 
@@ -198,4 +199,25 @@ LUA_INTEROP_API auto __lu_app_get_subsystem_post_tick_times(double* const data, 
     for (std::size_t i = 0; i < systems.size(); ++i) {
         data[i] = duration_cast<duration<double, eastl::milli>>(systems[i]->prev_post_tick_time()).count();
     }
+}
+
+LUA_INTEROP_API auto __lu_app_copy_dir_recursive(const char* from, const char* to) -> bool {
+    const std::filesystem::path from_path = from;
+    const std::filesystem::path to_path = to;
+    if (!std::filesystem::exists(from_path) || !std::filesystem::is_directory(from_path)) {
+        return false;
+    }
+    if (!std::filesystem::exists(to_path)) {
+        std::filesystem::create_directories(to_path);
+    }
+    for (const auto& entry : std::filesystem::recursive_directory_iterator(from_path)) {
+        const std::filesystem::path relative_path = entry.path().lexically_relative(from_path);
+        const std::filesystem::path target_path = to_path / relative_path;
+        if (std::filesystem::is_directory(entry)) {
+            std::filesystem::create_directories(target_path);
+        } else {
+            std::filesystem::copy_file(entry, target_path, std::filesystem::copy_options::overwrite_existing);
+        }
+    }
+    return true;
 }
