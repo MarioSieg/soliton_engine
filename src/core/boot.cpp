@@ -60,6 +60,8 @@ static auto lunam_entry(const int argc, const char** argv, const char** $environ
     std::shared_ptr<spdlog::logger> engine_logger = create_logger("engine", "%H:%M:%S:%e %s:%# %^[%l]%$ T:%t %v");
     std::shared_ptr<spdlog::logger> script_logger = create_logger("app", "%H:%M:%S:%e %v");
     spdlog::set_default_logger(engine_logger);
+    spdlog::flush_on(spdlog::level::err);
+
     log_info("-- ENGINE BOOT --");
     log_info("LunamEngine v.{}.{}", major_version(k_lunam_engine_version), minor_version(k_lunam_engine_version));
     log_info("Copyright (c) 2022-2024 Mario \"Neo\" Sieg. <mario.sieg.64@gmail.com> All Rights Reserved.");

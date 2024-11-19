@@ -38,14 +38,18 @@ namespace soliton::graphics {
         const shaderc_shader_kind kind,
         const std::string& source,
         const shaderc::CompileOptions& options,
-        std::string& out
+        std::string& out,
+        std::string& out_error
     ) -> bool {
-        const shaderc::PreprocessedSourceCompilationResult result =
-                m_compiler.PreprocessGlsl(source, kind, source_name.c_str(), options);
+        const shaderc::PreprocessedSourceCompilationResult result = m_compiler.PreprocessGlsl(source, kind, source_name.c_str(), options);
         if (result.GetCompilationStatus() != shaderc_compilation_status_success) [[unlikely]] {
-            if (const auto msg = result.GetErrorMessage(); !msg.empty())
-                log_error(result.GetErrorMessage());
-            log_error("{}: {}",  get_shaderc_err(result.GetCompilationStatus()), source_name);
+            std::stringstream error {};
+            error << source_name << ": " << get_shaderc_err(result.GetCompilationStatus());
+            if (const auto msg = result.GetErrorMessage(); !msg.empty()) {
+                error << "\n" << result.GetErrorMessage();
+            }
+            out_error = error.str();
+            out = {};
             return false;
         }
         out = {result.cbegin(), result.cend()};
@@ -58,14 +62,18 @@ namespace soliton::graphics {
         const shaderc_shader_kind kind,
         const std::string& source,
         const shaderc::CompileOptions& options,
-        eastl::string& out
+        eastl::string& out,
+        std::string& out_error
     ) -> bool {
-        const shaderc::AssemblyCompilationResult result = m_compiler.CompileGlslToSpvAssembly(
-                source, kind, source_name.c_str(), options);
+        const shaderc::AssemblyCompilationResult result = m_compiler.CompileGlslToSpvAssembly( source, kind, source_name.c_str(), options);
         if (result.GetCompilationStatus() != shaderc_compilation_status_success) [[unlikely]] {
-            if (const auto msg = result.GetErrorMessage(); !msg.empty())
-                log_error(result.GetErrorMessage());
-            log_error("{}: {}",  get_shaderc_err(result.GetCompilationStatus()), source_name);
+            std::stringstream error {};
+            error << source_name << ": " << get_shaderc_err(result.GetCompilationStatus());
+            if (const auto msg = result.GetErrorMessage(); !msg.empty()) {
+                error << "\n" << result.GetErrorMessage();
+            }
+            out_error = error.str();
+            out = {};
             return false;
         }
         out = {result.cbegin(), result.cend()};
@@ -78,14 +86,18 @@ namespace soliton::graphics {
         shaderc_shader_kind kind,
         const std::string& source,
         const shaderc::CompileOptions& options,
-        eastl::vector<uint32_t>& out
+        eastl::vector<uint32_t>& out,
+        std::string& out_error
     ) -> bool {
-        const shaderc::SpvCompilationResult result =
-                m_compiler.CompileGlslToSpv(source, kind, source_name.c_str(), options);
+        const shaderc::SpvCompilationResult result = m_compiler.CompileGlslToSpv(source, kind, source_name.c_str(), options);
         if (result.GetCompilationStatus() != shaderc_compilation_status_success) [[unlikely]] {
-            if (const auto msg = result.GetErrorMessage(); !msg.empty())
-                log_error(result.GetErrorMessage());
-            log_error("{}: {}",  get_shaderc_err(result.GetCompilationStatus()), source_name);
+            std::stringstream error {};
+            error << source_name << ": " << get_shaderc_err(result.GetCompilationStatus());
+            if (const auto msg = result.GetErrorMessage(); !msg.empty()) {
+                error << "\n" << result.GetErrorMessage();
+            }
+            out_error = error.str();
+            out = {};
             return false;
         }
         out = {result.cbegin(), result.cend()};
@@ -115,18 +127,18 @@ namespace soliton::graphics {
         }
     }
 
-    auto shader_compiler::compile(shader_variant&& variant) -> eastl::shared_ptr<shader> {
+    auto shader_compiler::compile(shader_variant&& variant) -> eastl::pair<eastl::shared_ptr<shader>, eastl::string> {
         const auto start = eastl::chrono::high_resolution_clock::now();
 
         // Load string BLOB from file
         eastl::string source_code_glsl {};
         bool success {};
+
         assetmgr::with_primary_accessor_lock([&](assetmgr::asset_accessor &acc) {
             success = acc.load_txt_file(variant.get_path().c_str(), source_code_glsl);
         });
         if (!success) [[unlikely]] {
-            log_error("Failed to load shader file: {}", variant.get_path());
-            return nullptr;
+            return {nullptr, {fmt::format("Failed to load shader file: {}", variant.get_path()).c_str()}};
         }
 
         shaderc::CompileOptions options {};
@@ -148,31 +160,29 @@ namespace soliton::graphics {
                 vk_stage = vk::ShaderStageFlagBits::eCompute;
                 break;
             default:
-                log_error("Unsupported shader stage: {}", static_cast<std::underlying_type_t<shader_stage>>(variant.get_stage()));
-                return nullptr;
+                panic("Unsupported shader stage: {}", static_cast<std::underlying_type_t<shader_stage>>(variant.get_stage()));
         }
 
         const std::string file_name = std::filesystem::path {variant.get_path().c_str()}.filename().string();
         std::string src = source_code_glsl.c_str();
-        if (!preprocess_shader(file_name, kind, src, options, src)) [[unlikely]] {
-            return nullptr;
+        std::string error {};
+        if (!preprocess_shader(file_name, kind, src, options, src, error)) [[unlikely]] {
+            return {nullptr, error.c_str()};
         }
 
         struct proxy : shader {};
         auto shader = eastl::make_shared<proxy>();
 
         eastl::vector<std::uint32_t> bytecode {};
-        if (!compile_file_to_bin(file_name, kind, src, options, bytecode) || bytecode.empty()) [[unlikely]] {
-            log_error("Failed to compile shader: {}", file_name);
-            return nullptr;
+        if (!compile_file_to_bin(file_name, kind, src, options, bytecode, error) || bytecode.empty()) [[unlikely]] {
+            return {nullptr, error.c_str()};
         }
 
         vk::ShaderModuleCreateInfo create_info {};
         create_info.codeSize = bytecode.size() * sizeof(std::uint32_t);
         create_info.pCode = bytecode.data();
         if (vk::Result::eSuccess != vkb::ctx().get_device().get_logical_device().createShaderModule(&create_info, vkb::get_alloc(), &shader->m_module)) [[unlikely]] {
-            log_error("Failed to create shader module: {}", file_name);
-            return nullptr;
+            return {nullptr, error.c_str()};
         }
 
         if (variant.get_reflect()) {
@@ -192,8 +202,8 @@ namespace soliton::graphics {
         }
         if (variant.get_keep_assembly()) {
             eastl::string assembly {};
-            if (!compile_file_to_assembly(file_name, kind, src, options, assembly)) [[unlikely]] {
-                return nullptr;
+            if (!compile_file_to_assembly(file_name, kind, src, options, assembly, error)) [[unlikely]] {
+                return {nullptr, error.c_str()};
             }
             shader->m_assembly = std::move(assembly);
         }
@@ -206,7 +216,7 @@ namespace soliton::graphics {
 
         log_info("Compiled shader: {} in {:.03f}s", file_name, eastl::chrono::duration_cast<eastl::chrono::duration<double>>(eastl::chrono::high_resolution_clock::now() - start).count());
 
-        return shader;
+        return {shader, {}};
     }
 
     shader_compiler::shader_compiler() {
@@ -227,9 +237,9 @@ namespace soliton::graphics {
         if (!m_compiler) {
             m_compiler.emplace();
         }
-        auto shader = m_compiler->compile(eastl::move(variant));
+        auto [shader, error] = m_compiler->compile(eastl::move(variant));
         if (!shader) [[unlikely]] {
-            panic("Failed to compile shader"); // todo recover
+            log_error("{}", error);
             return nullptr;
         }
         m_shaders[hash] = shader;
@@ -241,7 +251,6 @@ namespace soliton::graphics {
     }
 
     auto shader_cache::invalidate_all() -> void {
-        m_compiler.reset();
         m_shaders.clear();
     }
 }

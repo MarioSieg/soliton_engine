@@ -33,13 +33,32 @@ namespace soliton::graphics {
         }
 
         template <typename T> requires std::is_base_of_v<pipeline_base, T>
-        auto register_pipeline() -> void {
+        auto register_pipeline(bool force_success) -> bool {
             auto instance = eastl::make_unique<T>();
             auto name = instance->name;
+            eastl::unique_ptr<pipeline_base> prev = nullptr;
+            if (m_pipelines.contains(name)) {
+                prev = std::move(m_pipelines[name]);
+                m_pipelines[name] = nullptr;
+            }
             auto& base = dynamic_cast<pipeline_base&>(*instance);
             base.shader_cache = m_shader_cache;
-            base.create(m_cache);
-            m_pipelines[name] = std::move(instance);
+            bool result = base.initialize(m_cache);
+            if (force_success) { // Pipeline creation might have failed, but it must succeed
+                panic_assert(result);
+                m_pipelines[name] = std::move(instance);
+            } else { // Pipeline creation might have failed, but we can recover
+                if (result) { // Use the new pipeline
+                    m_pipelines[name] = std::move(instance);
+                    return true;
+                } else { // Use the old pipeline
+                    panic_assert(prev != nullptr);
+                    m_pipelines[name] = std::move(prev);
+                    return false;
+                }
+            }
+            panic_assert(m_pipelines[name] != nullptr);
+            return true;
         }
 
         auto invalidate_all() -> void;

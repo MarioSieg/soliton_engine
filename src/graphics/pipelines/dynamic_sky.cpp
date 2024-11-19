@@ -141,20 +141,24 @@ namespace soliton::graphics::pipelines {
         m_grid.emplace(vertices, indices2, false);
     }
 
-    auto dynamic_sky_pipeline::configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> void {
+    auto dynamic_sky_pipeline::configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> bool {
         auto vs = shader_cache->get_shader(shader_variant{"dynamic_sky.vert", shader_stage::vertex});
         auto fs = shader_cache->get_shader(shader_variant{"dynamic_sky.frag", shader_stage::fragment});
+        if (!vs || !fs) [[unlikely]] return false;
         cfg.emplace_back(vs);
         cfg.emplace_back(fs);
+        return true;
     }
 
-    auto dynamic_sky_pipeline::configure_pipeline_layout(eastl::vector<vk::DescriptorSetLayout>& layouts, eastl::vector<vk::PushConstantRange>& ranges) -> void {
+    auto dynamic_sky_pipeline::configure_pipeline_layout(eastl::vector<vk::DescriptorSetLayout>& layouts, eastl::vector<vk::PushConstantRange>& ranges) -> bool {
     	layouts.emplace_back(shared_buffers::get()->get_layout());
+        return true;
     }
 
-    auto dynamic_sky_pipeline::configure_rasterizer(vk::PipelineRasterizationStateCreateInfo& cfg) -> void {
-        graphics_pipeline::configure_rasterizer(cfg);
+    auto dynamic_sky_pipeline::configure_rasterizer(vk::PipelineRasterizationStateCreateInfo& cfg) -> bool {
+        if (!graphics_pipeline::configure_rasterizer(cfg)) return false;
         cfg.cullMode = vk::CullModeFlagBits::eFront;
+        return true;
     }
 
     auto dynamic_sky_pipeline::on_bind(vkb::command_buffer& cmd) const -> void {
@@ -185,9 +189,10 @@ namespace soliton::graphics::pipelines {
     	XMStoreFloat4(&data.sky_luminance_xyz, sky_lum_xyz);
     }
 
-    auto dynamic_sky_pipeline::configure_depth_stencil(vk::PipelineDepthStencilStateCreateInfo& cfg) -> void {
-        graphics_pipeline::configure_depth_stencil(cfg);
+    auto dynamic_sky_pipeline::configure_depth_stencil(vk::PipelineDepthStencilStateCreateInfo& cfg) -> bool {
+        if (!graphics_pipeline::configure_depth_stencil(cfg)) return false;
         cfg.depthTestEnable = vk::False;
         cfg.depthWriteEnable = vk::False;
+        return true;
     }
 }

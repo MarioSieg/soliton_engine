@@ -13,6 +13,7 @@ namespace soliton::graphics {
 
     pipeline_cache::~pipeline_cache() {
         m_pipelines.clear();
+        m_shader_cache.reset();
         if (m_cache) {
             m_device.destroyPipelineCache(m_cache, vkb::get_alloc());
             m_cache = nullptr;
@@ -20,7 +21,6 @@ namespace soliton::graphics {
     }
 
     auto pipeline_cache::invalidate_all() -> void {
-        m_pipelines.clear();
         m_shader_cache->invalidate_all();
     }
 }

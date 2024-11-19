@@ -38,12 +38,12 @@ namespace soliton::graphics::pipelines {
         vk::DescriptorSetLayout m_pbr_descriptor_set_layout {};
         vk::DescriptorSet m_pbr_descriptor_set {};
 
-        virtual auto pre_configure() -> void override;
-        virtual auto configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> void override;
-        virtual auto configure_pipeline_layout(eastl::vector<vk::DescriptorSetLayout>& layouts, eastl::vector<vk::PushConstantRange>& ranges) -> void override;
-        virtual auto configure_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> void override;
-        virtual auto configure_multisampling(vk::PipelineMultisampleStateCreateInfo& cfg) -> void override;
-        virtual auto configure_rasterizer(vk::PipelineRasterizationStateCreateInfo& cfg) -> void override;
+        [[nodiscard]] virtual auto pre_configure() -> bool override;
+        [[nodiscard]] virtual auto configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> bool override;
+        [[nodiscard]] virtual auto configure_pipeline_layout(eastl::vector<vk::DescriptorSetLayout>& layouts, eastl::vector<vk::PushConstantRange>& ranges) -> bool override;
+        [[nodiscard]] virtual auto configure_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> bool override;
+        [[nodiscard]] virtual auto configure_multisampling(vk::PipelineMultisampleStateCreateInfo& cfg) -> bool override;
+        [[nodiscard]] virtual auto configure_rasterizer(vk::PipelineRasterizationStateCreateInfo& cfg) -> bool override;
 
         HOTPROC auto render_single_mesh(
             vkb::command_buffer& cmd,

@@ -64,7 +64,7 @@ namespace soliton::graphics {
         friend class graphics_pipeline;
 
         auto render_uis() -> void;
-        auto load_all_pipelines() -> void;
+        auto load_all_pipelines(bool force_success) -> void;
         auto update_shared_buffers_per_frame() const -> void;
         static auto update_main_camera(float width, float height) -> void;
         HOTPROC auto render_scene_bucket(

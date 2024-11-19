@@ -17,7 +17,7 @@ namespace soliton::graphics {
             "engine_assets/shaders/include"
         };
 
-        [[nodiscard]] auto compile(shader_variant&& variant) -> eastl::shared_ptr<shader>;
+        [[nodiscard]] auto compile(shader_variant&& variant) -> eastl::pair<eastl::shared_ptr<shader>, eastl::string>;
 
     private:
         shaderc_util::FileFinder m_file_finder {};
@@ -30,7 +30,8 @@ namespace soliton::graphics {
             const shaderc_shader_kind kind,
             const std::string& source,
             const shaderc::CompileOptions& options,
-            std::string& out
+            std::string& out,
+            std::string& out_error
         ) -> bool;
 
         [[nodiscard]]
@@ -39,7 +40,8 @@ namespace soliton::graphics {
             const shaderc_shader_kind kind,
             const std::string& source,
             const shaderc::CompileOptions& options,
-            eastl::string& out
+            eastl::string& out,
+            std::string& out_error
         ) -> bool;
 
         [[nodiscard]]
@@ -48,7 +50,8 @@ namespace soliton::graphics {
             shaderc_shader_kind kind,
             const std::string& source,
             const shaderc::CompileOptions& options,
-            eastl::vector<uint32_t>& out
+            eastl::vector<uint32_t>& out,
+            std::string& out_error
         ) -> bool;
 
         auto configure_compile_options(shaderc::CompileOptions& opt, const shader_variant& variant) -> void;

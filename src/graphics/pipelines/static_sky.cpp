@@ -23,14 +23,16 @@ namespace soliton::graphics::pipelines {
         device.destroyDescriptorSetLayout(m_descriptor_set_layout, vkb::get_alloc());
     }
 
-    auto static_sky_pipeline::configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> void {
+    auto static_sky_pipeline::configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> bool {
         auto vs = shader_cache->get_shader(shader_variant{"skybox.vert", shader_stage::vertex});
         auto fs = shader_cache->get_shader(shader_variant{"skybox.frag", shader_stage::fragment});
+        if (!vs || !fs) [[unlikely]] return false;
         cfg.emplace_back(vs);
         cfg.emplace_back(fs);
+        return true;
     }
 
-    auto static_sky_pipeline::configure_pipeline_layout(eastl::vector<vk::DescriptorSetLayout>& layouts, eastl::vector<vk::PushConstantRange>& ranges) -> void {
+    auto static_sky_pipeline::configure_pipeline_layout(eastl::vector<vk::DescriptorSetLayout>& layouts, eastl::vector<vk::PushConstantRange>& ranges) -> bool {
         layouts.emplace_back(m_descriptor_set_layout);
 
         vk::PushConstantRange push_constant_range {};
@@ -38,11 +40,14 @@ namespace soliton::graphics::pipelines {
         push_constant_range.offset = 0;
         push_constant_range.size = sizeof(gpu_vertex_push_constants);
         ranges.emplace_back(push_constant_range);
+
+        return true;
     }
 
-    auto static_sky_pipeline::configure_rasterizer(vk::PipelineRasterizationStateCreateInfo& cfg) -> void {
-        graphics_pipeline::configure_rasterizer(cfg);
+    auto static_sky_pipeline::configure_rasterizer(vk::PipelineRasterizationStateCreateInfo& cfg) -> bool {
+        if (!graphics_pipeline::configure_rasterizer(cfg)) [[unlikely]] return false;
         cfg.cullMode = vk::CullModeFlagBits::eBack;
+        return true;
     }
 
     auto static_sky_pipeline::on_bind(vkb::command_buffer& cmd) const -> void {
@@ -59,9 +64,10 @@ namespace soliton::graphics::pipelines {
         cmd.draw_mesh(*m_skydome);
     }
 
-    auto static_sky_pipeline::configure_depth_stencil(vk::PipelineDepthStencilStateCreateInfo& cfg) -> void {
-        graphics_pipeline::configure_depth_stencil(cfg);
+    auto static_sky_pipeline::configure_depth_stencil(vk::PipelineDepthStencilStateCreateInfo& cfg) -> bool {
+        if (!graphics_pipeline::configure_depth_stencil(cfg)) [[unlikely]] return false;
         cfg.depthTestEnable = vk::False;
         cfg.depthWriteEnable = vk::False;
+        return true;
     }
 }

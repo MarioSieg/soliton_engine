@@ -83,17 +83,19 @@ namespace soliton::graphics::pipelines {
         vkb::vkdvc().destroyDescriptorSetLayout(m_pbr_descriptor_set_layout, vkb::get_alloc());
     }
 
-    auto pbr_pipeline::configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> void {
+    auto pbr_pipeline::configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> bool {
         auto vs = shader_cache->get_shader({"pbr_uber_surface.vert", shader_stage::vertex});
         auto fs = shader_cache->get_shader({"pbr_uber_surface.frag", shader_stage::fragment});
+        if (!vs || !fs) [[unlikely]] return false;
         cfg.emplace_back(vs);
         cfg.emplace_back(fs);
+        return true;
     }
 
     auto pbr_pipeline::configure_pipeline_layout(
         eastl::vector<vk::DescriptorSetLayout>& layouts,
         eastl::vector<vk::PushConstantRange>& ranges
-    ) -> void {
+    ) -> bool {
         layouts.emplace_back(shared_buffers::get()->get_layout());
         layouts.emplace_back(material::get_static_resources().descriptor_layout);
         layouts.emplace_back(m_pbr_descriptor_set_layout);
@@ -103,24 +105,29 @@ namespace soliton::graphics::pipelines {
         push_constant_range.offset = 0;
         push_constant_range.size = sizeof(push_constants_vs);
         ranges.emplace_back(push_constant_range);
+
+        return true;
     }
 
-    auto pbr_pipeline::configure_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> void {
+    auto pbr_pipeline::configure_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> bool {
         graphics_pipeline::configure_enable_color_blending(cfg);
+        return true;
     }
 
-    auto pbr_pipeline::configure_multisampling(vk::PipelineMultisampleStateCreateInfo& cfg) -> void {
+    auto pbr_pipeline::configure_multisampling(vk::PipelineMultisampleStateCreateInfo& cfg) -> bool {
         panic_assert(type == pipeline_type::graphics);
         cfg.rasterizationSamples = vkb::ctx().get_msaa_samples();
         cfg.alphaToCoverageEnable = vk::True; // TODO Custom alpha pipeline
+        return true;
     }
 
-    auto pbr_pipeline::configure_rasterizer(vk::PipelineRasterizationStateCreateInfo& cfg) -> void {
-        graphics_pipeline::configure_rasterizer(cfg);
+    auto pbr_pipeline::configure_rasterizer(vk::PipelineRasterizationStateCreateInfo& cfg) -> bool {
+        if (!graphics_pipeline::configure_rasterizer(cfg)) return false;
         cfg.cullMode = vk::CullModeFlagBits::eNone;// TODO Custom alpha pipeline
+        return true;
     }
 
-    auto pbr_pipeline::pre_configure() -> void {
+    auto pbr_pipeline::pre_configure() -> bool {
         m_pbr_filter_processor.emplace(shader_cache);
         vkb::descriptor_factory df {vkb::ctx().descriptor_factory_begin()};
         eastl::array<vk::DescriptorImageInfo, 3> infos {
@@ -145,6 +152,6 @@ namespace soliton::graphics::pipelines {
             df.bind_images(i, 1, &infos[i], vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment);
         }
 
-        panic_assert(df.build(m_pbr_descriptor_set, m_pbr_descriptor_set_layout));
+        return df.build(m_pbr_descriptor_set, m_pbr_descriptor_set_layout);
     }
 }

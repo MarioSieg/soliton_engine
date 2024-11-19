@@ -42,7 +42,7 @@ namespace soliton::graphics {
 
         material::init_static_resources();
         m_pipeline_cache.emplace(vkb::vkdvc());
-        load_all_pipelines();
+        load_all_pipelines(true);
 
         m_render_thread_pool.emplace([this](vkb::command_buffer& cmd, const std::int32_t bucket_id, const std::int32_t num_threads) -> void {
             render_scene_bucket(cmd, bucket_id, num_threads);
@@ -159,7 +159,7 @@ namespace soliton::graphics {
         s_num_draw_calls_prev = num_draw_verts.exchange(0, std::memory_order_relaxed);
         if (m_reload_pipelines_next_frame) [[unlikely]] {
             vkcheck(vkb::vkdvc().waitIdle());
-            load_all_pipelines();
+            load_all_pipelines(false);
             vkcheck(vkb::vkdvc().waitIdle());
             m_reload_pipelines_next_frame = false;
         }
@@ -258,14 +258,19 @@ namespace soliton::graphics {
         shared_buffers::get()->per_frame_ubo.set(data);
     }
 
-    auto graphics_subsystem::load_all_pipelines() -> void {
+    auto graphics_subsystem::load_all_pipelines(bool force_success) -> void {
         const auto now = std::chrono::high_resolution_clock::now();
         log_info("Rebuilding pipeline cache");
         m_pipeline_cache->invalidate_all();
-        m_pipeline_cache->register_pipeline<pipelines::pbr_pipeline>();
-        m_pipeline_cache->register_pipeline<pipelines::static_sky_pipeline>();
-        m_pipeline_cache->register_pipeline<pipelines::dynamic_sky_pipeline>();
+        bool ok = true;
+        ok &= m_pipeline_cache->register_pipeline<pipelines::pbr_pipeline>(force_success);
+        ok &= m_pipeline_cache->register_pipeline<pipelines::static_sky_pipeline>(force_success);
+        ok &= m_pipeline_cache->register_pipeline<pipelines::dynamic_sky_pipeline>(force_success);
         m_pipeline_cache->get_shader_cache()->shutdown_compiler();
-        log_info("Pipeline cache rebuilt in {}ms", std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - now).count());
+        if (ok) {
+            log_info("Pipeline cache rebuilt in {}ms", std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - now).count());
+        } else {
+            log_error("Pipeline cache rebuild failed");
+        }
     }
 }

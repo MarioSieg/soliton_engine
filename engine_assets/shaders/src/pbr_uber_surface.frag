@@ -115,9 +115,8 @@ void main() {
   // Tone mapping
   color = postToneMap(color);
 
-  //outFragColor = vec4(color, 1.0);
-  const float cutoff = 0.4;
   outFragColor.rgb = color;
+  const float cutoff = 0.2;
   outFragColor.a = albedo_full.a;
   outFragColor.a = (outFragColor.a - cutoff) / max(fwidth(outFragColor.a), 0.0001) + 0.5;
 }
