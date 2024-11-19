@@ -3,8 +3,6 @@
 #pragma once
 
 #include "vulkancore/prelude.hpp"
-#include <shaderc/shaderc.hpp>
-#include <spirv_reflect.h>
 
 namespace soliton::graphics {
     enum class shader_stage {
@@ -15,7 +13,8 @@ namespace soliton::graphics {
 
     struct shader_variant final {
     public:
-        shader_variant(eastl::string&& path, const shader_stage stage) noexcept : m_path{std::move(path)}, m_stage{stage} {}
+        inline static const eastl::string k_shader_dir = "/RES/shaders/src/";
+        shader_variant(const eastl::string& path, const shader_stage stage) noexcept : m_path{k_shader_dir + path}, m_stage{stage} {}
 
         [[nodiscard]] auto get_path() const noexcept -> const eastl::string& { return m_path; }
         [[nodiscard]] auto get_stage() const noexcept -> shader_stage { return m_stage; }
@@ -52,12 +51,6 @@ namespace soliton::graphics {
 
     class shader : public no_copy, public no_move {
     public:
-        static constexpr eastl::array<const eastl::string_view, 1> k_shader_include_dirs {
-            "engine_assets/shaders/include"
-        };
-
-        [[nodiscard]] static auto compile(shader_variant&& variant) -> eastl::shared_ptr<shader>;
-
         virtual ~shader() noexcept;
 
         [[nodiscard]] auto get_variant() const noexcept -> const shader_variant& { return m_variant; }
@@ -68,8 +61,8 @@ namespace soliton::graphics {
         [[nodiscard]] auto get_stage_info() const noexcept -> const vk::PipelineShaderStageCreateInfo& { return m_stage_info; }
         [[nodiscard]] auto get_reflection() noexcept -> eastl::optional<SpvReflectShaderModule>& { return m_reflection; }
 
-
     private:
+        friend class shader_compiler;
         shader() = default;
         eastl::optional<eastl::string> m_source {};
         eastl::optional<eastl::string> m_assembly {};
@@ -78,24 +71,5 @@ namespace soliton::graphics {
         vk::ShaderModule m_module {};
         vk::PipelineShaderStageCreateInfo m_stage_info {};
         eastl::optional<SpvReflectShaderModule> m_reflection {};
-    };
-
-    class shader_cache final : public no_copy, public no_move {
-    public:
-        explicit shader_cache(eastl::string&& shader_dir);
-
-        [[nodiscard]] auto get_shader(shader_variant&& variant) -> eastl::shared_ptr<shader>;
-        auto invalidate_all() -> void;
-
-        [[nodiscard]] static auto get() noexcept -> shader_cache&;
-        static auto init(eastl::string&& shader_dir) -> void;
-        static auto shutdown() noexcept -> void;
-
-    private:
-        static inline eastl::unique_ptr<shader_cache> s_instance {};
-
-        const eastl::string m_shader_dir;
-        ankerl::unordered_dense::map<std::size_t, eastl::shared_ptr<shader>> m_shaders {};
-        std::mutex m_mtx {};
     };
 }

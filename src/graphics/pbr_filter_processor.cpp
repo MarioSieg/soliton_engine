@@ -5,7 +5,7 @@
 
 #include "pbr_filter_processor.hpp"
 #include "vulkancore/context.hpp"
-#include "shader.hpp"
+#include "shader_compiler.hpp"
 #include "../core/system_variable.hpp"
 
 #include <numbers>
@@ -39,8 +39,10 @@ namespace soliton::graphics {
     };
 
 
-    pbr_filter_processor::pbr_filter_processor() : m_cube_mesh{"/RES/meshes/skybox.gltf", false} {
+    pbr_filter_processor::pbr_filter_processor(const std::shared_ptr<shader_cache>& shader_cache)
+        : m_cube_mesh{"/RES/meshes/skybox.gltf", false} {
         m_environ_cube.emplace("/RES/textures/hdr/gcanyon_cube.ktx");
+        m_shader_cache = shader_cache;
         generate_irradiance_cube();
         generate_prefilter_cube();
         generate_brdf_lookup_table();
@@ -279,8 +281,8 @@ namespace soliton::graphics {
         vertex_input_ci.vertexAttributeDescriptionCount = static_cast<std::uint32_t>(k_vertex_attrib_desc.size());
 
         eastl::array<vk::PipelineShaderStageCreateInfo, 2> shader_stages {
-            shader_cache::get().get_shader(shader_variant{"/RES/shaders/src/filter_env_cube.vert", shader_stage::vertex})->get_stage_info(),
-            shader_cache::get().get_shader(shader_variant{"/RES/shaders/src/irradiance_cube.frag", shader_stage::fragment})->get_stage_info()
+            m_shader_cache->get_shader(shader_variant{"filter_env_cube.vert", shader_stage::vertex})->get_stage_info(),
+            m_shader_cache->get_shader(shader_variant{"irradiance_cube.frag", shader_stage::fragment})->get_stage_info()
         };
 
         vk::GraphicsPipelineCreateInfo pipeline_ci {};
@@ -644,8 +646,8 @@ namespace soliton::graphics {
         vertex_input_ci.vertexAttributeDescriptionCount = static_cast<std::uint32_t>(k_vertex_attrib_desc.size());
 
         eastl::array<vk::PipelineShaderStageCreateInfo, 2> shader_stages {
-            shader_cache::get().get_shader(shader_variant{"/RES/shaders/src/filter_env_cube.vert", shader_stage::vertex})->get_stage_info(),
-            shader_cache::get().get_shader(shader_variant{"/RES/shaders/src/prefilter_env_cube.frag", shader_stage::fragment})->get_stage_info()
+            m_shader_cache->get_shader(shader_variant{"filter_env_cube.vert", shader_stage::vertex})->get_stage_info(),
+            m_shader_cache->get_shader(shader_variant{"prefilter_env_cube.frag", shader_stage::fragment})->get_stage_info()
         };
 
         vk::GraphicsPipelineCreateInfo pipeline_ci {};
@@ -934,8 +936,8 @@ namespace soliton::graphics {
         vk::PipelineVertexInputStateCreateInfo vertex_input_ci {};
 
         eastl::array<vk::PipelineShaderStageCreateInfo, 2> shader_stages {
-            shader_cache::get().get_shader(shader_variant{"/RES/shaders/src/gen_brdf_lut.vert", shader_stage::vertex})->get_stage_info(),
-            shader_cache::get().get_shader(shader_variant{"/RES/shaders/src/gen_brdf_lut.frag", shader_stage::fragment})->get_stage_info()
+            m_shader_cache->get_shader(shader_variant{"gen_brdf_lut.vert", shader_stage::vertex})->get_stage_info(),
+            m_shader_cache->get_shader(shader_variant{"gen_brdf_lut.frag", shader_stage::fragment})->get_stage_info()
         };
 
         vk::Pipeline shader_pipeline {};

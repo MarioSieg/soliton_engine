@@ -7,7 +7,7 @@
 
 #include <ankerl/unordered_dense.h>
 
-#include "shader.hpp"
+#include "shader_compiler.hpp"
 
 namespace soliton::graphics {
     class mesh;
@@ -24,6 +24,7 @@ namespace soliton::graphics {
 
         const eastl::string name;
         const pipeline_type type;
+        std::shared_ptr<shader_cache> shader_cache {};
 
         auto create(vk::PipelineCache cache) -> void;
         [[nodiscard]] auto get_layout() const -> vk::PipelineLayout { return m_layout; }

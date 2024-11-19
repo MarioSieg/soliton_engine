@@ -40,13 +40,9 @@ namespace soliton::graphics {
             .msaa_samples = static_cast<std::uint32_t>(sv_msaa_samples())
         });
 
-        shader_cache::init(sv_shader_dir()); // 1. init shader cache (must be first)
-        pipeline_cache::init();
-        pipeline_cache::get().register_pipeline_async<pipelines::pbr_pipeline>();
-        pipeline_cache::get().register_pipeline_async<pipelines::static_sky_pipeline>();
-        pipeline_cache::get().register_pipeline_async<pipelines::dynamic_sky_pipeline>();
-
         material::init_static_resources();
+        m_pipeline_cache.emplace(vkb::vkdvc());
+        load_all_pipelines();
 
         m_render_thread_pool.emplace([this](vkb::command_buffer& cmd, const std::int32_t bucket_id, const std::int32_t num_threads) -> void {
             render_scene_bucket(cmd, bucket_id, num_threads);
@@ -59,10 +55,6 @@ namespace soliton::graphics {
         //m_noesis_context->load_ui_from_xaml("App.xaml");
     }
 
-    auto graphics_subsystem::on_prepare() -> void {
-        pipeline_cache::get().await_all_pipelines_async();
-    }
-
     graphics_subsystem::~graphics_subsystem() {
         vkcheck(vkb::vkdvc().waitIdle()); // must be first
 
@@ -71,8 +63,7 @@ namespace soliton::graphics {
         m_imgui_context.reset();
         m_noesis_context.reset();
 
-        shader_cache::shutdown();
-        pipeline_cache::shutdown();
+        m_pipeline_cache.reset();
         m_render_thread_pool.reset();
         if (m_debugdraw) {
             m_debugdraw.reset();
@@ -130,13 +121,12 @@ namespace soliton::graphics {
         const std::int32_t num_threads
     ) const -> void {
         if (is_first_thread(bucket_id, num_threads)) { // First thread
-            const auto& sky_pipeline = pipeline_cache::get().get_pipeline<pipelines::dynamic_sky_pipeline>("dynamic_sky");
+            const auto& sky_pipeline = m_pipeline_cache->get_pipeline<pipelines::dynamic_sky_pipeline>("dynamic_sky");
             sky_pipeline.on_bind(cmd);
             sky_pipeline.render_sky(cmd);
         }
 
-        const auto& pbr_pipeline
-            = pipeline_cache::get().get_pipeline<pipelines::pbr_pipeline>("mat_pbr");
+        const auto& pbr_pipeline = m_pipeline_cache->get_pipeline<pipelines::pbr_pipeline>("mat_pbr");
         pbr_pipeline.on_bind(cmd);
 
         const XMMATRIX view_mtx = XMLoadFloat4x4A(&s_view_mtx);
@@ -169,7 +159,7 @@ namespace soliton::graphics {
         s_num_draw_calls_prev = num_draw_verts.exchange(0, std::memory_order_relaxed);
         if (m_reload_pipelines_next_frame) [[unlikely]] {
             vkcheck(vkb::vkdvc().waitIdle());
-            reload_pipelines();
+            load_all_pipelines();
             vkcheck(vkb::vkdvc().waitIdle());
             m_reload_pipelines_next_frame = false;
         }
@@ -242,18 +232,6 @@ namespace soliton::graphics {
         m_cmd->end();
     }
 
-    auto graphics_subsystem::reload_pipelines() -> void {
-        log_info("Reloading pipelines");
-        const auto now = eastl::chrono::high_resolution_clock::now();
-        if (true) [[likely]] { // TODO
-            auto& reg = pipeline_cache::get();
-            reg.recreate_all();
-            log_info("Reloaded pipelines in {}ms", eastl::chrono::duration_cast<eastl::chrono::milliseconds>(eastl::chrono::high_resolution_clock::now() - now).count());
-        } else {
-            log_error("Failed to compile shaders");
-        }
-    }
-
     auto graphics_subsystem::get_num_draw_calls() noexcept -> std::uint32_t {
         return s_num_draw_calls_prev;
     }
@@ -278,5 +256,16 @@ namespace soliton::graphics {
         pipelines::dynamic_sky_pipeline::get_ubo_data(data.sky);
 
         shared_buffers::get()->per_frame_ubo.set(data);
+    }
+
+    auto graphics_subsystem::load_all_pipelines() -> void {
+        const auto now = std::chrono::high_resolution_clock::now();
+        log_info("Rebuilding pipeline cache");
+        m_pipeline_cache->invalidate_all();
+        m_pipeline_cache->register_pipeline<pipelines::pbr_pipeline>();
+        m_pipeline_cache->register_pipeline<pipelines::static_sky_pipeline>();
+        m_pipeline_cache->register_pipeline<pipelines::dynamic_sky_pipeline>();
+        m_pipeline_cache->get_shader_cache()->shutdown_compiler();
+        log_info("Pipeline cache rebuilt in {}ms", std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - now).count());
     }
 }

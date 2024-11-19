@@ -34,10 +34,11 @@ namespace soliton::graphics::pipelines {
         virtual auto on_bind(vkb::command_buffer& cmd) const -> void override;
 
     private:
-        pbr_filter_processor m_pbr_filter_processor {};
+        eastl::optional<pbr_filter_processor> m_pbr_filter_processor {};
         vk::DescriptorSetLayout m_pbr_descriptor_set_layout {};
         vk::DescriptorSet m_pbr_descriptor_set {};
 
+        virtual auto pre_configure() -> void override;
         virtual auto configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> void override;
         virtual auto configure_pipeline_layout(eastl::vector<vk::DescriptorSetLayout>& layouts, eastl::vector<vk::PushConstantRange>& ranges) -> void override;
         virtual auto configure_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> void override;

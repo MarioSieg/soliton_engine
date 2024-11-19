@@ -76,31 +76,7 @@ namespace soliton::graphics::pipelines {
     }
 
     pbr_pipeline::pbr_pipeline() : graphics_pipeline{"mat_pbr"} {
-        vkb::descriptor_factory df {vkb::ctx().descriptor_factory_begin()};
 
-        eastl::array<vk::DescriptorImageInfo, 3> infos {
-            vk::DescriptorImageInfo {
-                .imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal,
-                .imageView = m_pbr_filter_processor.brdf_lut().image_view(),
-                .sampler = m_pbr_filter_processor.brdf_lut().sampler(),
-            },
-            vk::DescriptorImageInfo {
-                .imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal,
-                .imageView = m_pbr_filter_processor.irradiance_cube().image_view(),
-                .sampler = m_pbr_filter_processor.irradiance_cube().sampler(),
-            },
-            vk::DescriptorImageInfo {
-                .imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal,
-                .imageView = m_pbr_filter_processor.prefiltered_cube().image_view(),
-                .sampler = m_pbr_filter_processor.prefiltered_cube().sampler(),
-            }
-        };
-
-        for (std::size_t i = 0; i < infos.size(); ++i) {
-            df.bind_images(i, 1, &infos[i], vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment);
-        }
-
-        panic_assert(df.build(m_pbr_descriptor_set, m_pbr_descriptor_set_layout));
     }
 
     pbr_pipeline::~pbr_pipeline() {
@@ -108,10 +84,8 @@ namespace soliton::graphics::pipelines {
     }
 
     auto pbr_pipeline::configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> void {
-        shader_variant vs_variant {"/RES/shaders/src/pbr_uber_surface.vert", shader_stage::vertex};
-        shader_variant fs_variant {"/RES/shaders/src/pbr_uber_surface.frag", shader_stage::fragment};
-        auto vs = shader_cache::get().get_shader(std::move(vs_variant));
-        auto fs = shader_cache::get().get_shader(std::move(fs_variant));
+        auto vs = shader_cache->get_shader({"pbr_uber_surface.vert", shader_stage::vertex});
+        auto fs = shader_cache->get_shader({"pbr_uber_surface.frag", shader_stage::fragment});
         cfg.emplace_back(vs);
         cfg.emplace_back(fs);
     }
@@ -144,5 +118,33 @@ namespace soliton::graphics::pipelines {
     auto pbr_pipeline::configure_rasterizer(vk::PipelineRasterizationStateCreateInfo& cfg) -> void {
         graphics_pipeline::configure_rasterizer(cfg);
         cfg.cullMode = vk::CullModeFlagBits::eNone;// TODO Custom alpha pipeline
+    }
+
+    auto pbr_pipeline::pre_configure() -> void {
+        m_pbr_filter_processor.emplace(shader_cache);
+        vkb::descriptor_factory df {vkb::ctx().descriptor_factory_begin()};
+        eastl::array<vk::DescriptorImageInfo, 3> infos {
+            vk::DescriptorImageInfo {
+                .imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal,
+                .imageView = m_pbr_filter_processor->brdf_lut().image_view(),
+                .sampler = m_pbr_filter_processor->brdf_lut().sampler(),
+            },
+            vk::DescriptorImageInfo {
+                .imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal,
+                .imageView = m_pbr_filter_processor->irradiance_cube().image_view(),
+                .sampler = m_pbr_filter_processor->irradiance_cube().sampler(),
+            },
+            vk::DescriptorImageInfo {
+                .imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal,
+                .imageView = m_pbr_filter_processor->prefiltered_cube().image_view(),
+                .sampler = m_pbr_filter_processor->prefiltered_cube().sampler(),
+            }
+        };
+
+        for (std::size_t i = 0; i < infos.size(); ++i) {
+            df.bind_images(i, 1, &infos[i], vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment);
+        }
+
+        panic_assert(df.build(m_pbr_descriptor_set, m_pbr_descriptor_set_layout));
     }
 }

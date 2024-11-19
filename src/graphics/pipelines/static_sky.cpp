@@ -24,8 +24,8 @@ namespace soliton::graphics::pipelines {
     }
 
     auto static_sky_pipeline::configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> void {
-        auto vs = shader_cache::get().get_shader(shader_variant{"/RES/shaders/src/skybox.vert", shader_stage::vertex});
-        auto fs = shader_cache::get().get_shader(shader_variant{"/RES/shaders/src/skybox.frag", shader_stage::fragment});
+        auto vs = shader_cache->get_shader(shader_variant{"skybox.vert", shader_stage::vertex});
+        auto fs = shader_cache->get_shader(shader_variant{"skybox.frag", shader_stage::fragment});
         cfg.emplace_back(vs);
         cfg.emplace_back(fs);
     }

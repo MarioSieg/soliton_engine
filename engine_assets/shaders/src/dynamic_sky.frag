@@ -13,19 +13,6 @@ layout (location = 2) in vec3 outViewDir;
 
 layout (location = 0) out vec4 outFragColor;
 
-//uniformly distributed, normalized rand, [0, 1)
-float nrand(in vec2 n)
-{
-	return fract(sin(dot(n.xy, vec2(12.9898, 78.233)))* 43758.5453);
-}
-
-float n4rand_ss(in vec2 n)
-{
-	float nrnd0 = nrand( n + 0.07*fract( uboPerFrame.sky.params.w ) );
-	float nrnd1 = nrand( n + 0.11*fract( uboPerFrame.sky.params.w + 0.573953 ) );
-	return 0.23*sqrt(-log(nrnd0+0.00001))*cos(2.0*3.141592*nrnd1)+0.5;
-}
-
 vec2 computeSunScreenCoords(vec3 sunWorldPos)
 {
 	vec4 sunClipPos = uboPerFrame.viewProj * vec4(sunWorldPos, 1.0);
@@ -43,7 +30,5 @@ void main()
 	vec3 lensFlareColor = lensFlare(texcoord, sunCoord, ghostColor);
 	color += (ghostColor + lensFlareColor*0.5) * uboPerFrame.sky.sun_luminance.rgb * 0.1;
 	color = postToneMap(color);
-	float r = n4rand_ss(outScreenPos);
-	color += vec3(r, r, r) / 30.0;
 	outFragColor = vec4(color, 1.0);
 }

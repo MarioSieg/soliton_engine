@@ -19,32 +19,8 @@ namespace soliton::graphics {
         }
     }
 
-    auto pipeline_cache::init() -> void {
-        [[maybe_unused]] volatile shader_cache& _ensure_init = shader_cache::get(); // ensure shader cache is init
-        panic_assert(s_instance == nullptr);
-        s_instance = eastl::make_unique<pipeline_cache>(vkb::vkdvc());
-    }
-
-    auto pipeline_cache::shutdown() -> void {
-        s_instance.reset();
-    }
-
     auto pipeline_cache::invalidate_all() -> void {
         m_pipelines.clear();
-    }
-
-    auto pipeline_cache::recreate_all() -> void {
-        shader_cache::get().invalidate_all();
-        for (const auto& [name, pipeline] : m_pipelines) {
-            pipeline->create(m_cache);
-        }
-    }
-
-    auto pipeline_cache::await_all_pipelines_async() -> void {
-        for (auto&& pipe : m_async_load_queue) {
-            auto [name, instance] = pipe.get();
-            m_pipelines[name] = std::move(instance);
-        }
-        m_async_load_queue.clear();
+        m_shader_cache->invalidate_all();
     }
 }
