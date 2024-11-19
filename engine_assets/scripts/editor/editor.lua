@@ -292,8 +292,8 @@ function editor:draw_main_menu_bar()
             if ui.MenuItem(icons.i_arrow_up .. ' Show Center Axis', nil, self.gizmos.show_center_axis) then
                 self.gizmos.show_center_axis = not self.gizmos.show_center_axis
             end
-            if ui.MenuItem(icons.i_sun .. ' Show Skylight Vector', nil, scene.clock.debug_draw) then
-                scene.clock.debug_draw = not scene.clock.debug_draw
+            if ui.MenuItem(icons.i_sun .. ' Show Skylight Vectors', nil, scene.chrono.debug_draw) then
+                scene.chrono.debug_draw = not scene.chrono.debug_draw
             end
             ui.EndMenu()
         end
@@ -522,7 +522,6 @@ function editor:draw_pending_popups()
         if ui.Button(icons.i_plus_circle .. ' Add') then
             if inspector.selected_entity ~= nil and inspector.selected_entity:is_valid() and selected_component ~= nil and selected_component.component ~= nil then
                 inspector.selected_entity:get_component(selected_component.component)
-                inspector.properties_changed = true
             end
             selected_component = nil
             ui.CloseCurrentPopup()
@@ -585,7 +584,7 @@ function editor:draw_ingame_overlay()
             ui.TextUnformatted(string.format('Dir: %s', transform:get_forward_dir()))
         end
         ui.Separator()
-        ui.TextUnformatted(string.format('Scene Date: %s', scene.clock:get_date_time_string()))
+        ui.TextUnformatted(string.format('Scene Date: %s', scene.chrono:get_date_time_string()))
         ui.Separator()
         ui.TextUnformatted(host_info)
         ui.TextUnformatted(cpu_name)
@@ -658,7 +657,7 @@ function editor:_update()
         end
         entity_list_view.selected_wants_focus = false
     end
-    inspector.env_editor = entity_list_view.selected_env_editor
+    inspector.inspector_mode = entity_list_view.selected_mode
     inspector.selected_entity = selected
     if inspector.name_changed then
         entity_list_view:update_name_of_active_entity()

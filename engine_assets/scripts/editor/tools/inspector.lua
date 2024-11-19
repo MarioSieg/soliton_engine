@@ -6,13 +6,14 @@ local bit = require 'bit'
 local ui = require 'imgui.imgui'
 local icons = require 'imgui.icons'
 local components = require 'components'
+local vec2 = require 'vec2'
 local vec3 = require 'vec3'
 local quat = require 'quat'
 local scene = require 'scene'
 local utils = require 'editor.utils'
 
 local cpp = ffi.C
-local bxor = bit.bxor
+local band, bxor = bit.band, bit.bxor
 local rad, deg, inf = math.rad, math.deg, math.huge
 local entity_flags = entity_flags
 local render_flags = render_flags
@@ -20,65 +21,77 @@ local color_pick_flags = cpp.ImGuiColorEditFlags_NoAlpha + cpp.ImGuiColorEditFla
 local max_name_text_len = 256
 local header_buttons_offset = 60.0 -- TODO: calculate from button sizes
 local inspector_header_flags = cpp.ImGuiTreeNodeFlags_DefaultOpen + cpp.ImGuiTreeNodeFlags_AllowOverlap
+
+-- The inspector can be used to edit the env_editor settings, scene config or the selected entity.
 local inspector = {
     name = icons.i_cogs .. ' Inspector',
     is_visible = ffi.new('bool[1]', true),
     selected_entity = nil,
-    env_editor = false,
-    properties_changed = false,
+    inspector_mode = 'entity', -- 'entity' or 'env_editor' etc..
     name_changed = false,
 
-    _tmp_text = ffi.new('char[?]', 1 + max_name_text_len),
+    _tmp_text = ffi.new('char[?]', 1 + max_name_text_len), -- +1 for null terminator
     _tmp_float = ffi.new('float[1]'),
     _tmp_vec2 = ffi.new('float[2]'),
     _tmp_vec3 = ffi.new('float[3]'),
     _tmp_boolean = ffi.new('bool[1]'),
 }
 
+-- The inspect functions are used to display and edit the values of the selected entity and its components.
+-- The functions return the new value if it was changed, otherwise the old value is returned.
+
+function inspector:_inspect_string(name, str)
+    if #str >= max_name_text_len then
+        str = str:sub(1, max_name_text_len) -- Truncate string if too long for buffer
+    end
+    ffi.copy(self._tmp_text, str)
+    if ui.InputText(name, self._tmp_text, max_name_text_len) then
+        return ffi.string(self._tmp_text) -- Return new string if changed
+    end
+    return str
+end
+
+function inspector:_inspect_bit_flags(name, flags, flag)
+    local is_set = band(flags, flag) ~= 0 -- Check if flag is set
+    self._tmp_boolean[0] = is_set
+    ui.Checkbox(name, self._tmp_boolean)
+    if is_set ~= self._tmp_boolean[0] then
+        flags = bxor(flags, flag) -- Toggle flag if changed
+    end
+    return flags
+end
+
 function inspector:_inspect_float(name, x, step, min, max, fmt, slider)
     self._tmp_float[0] = x
-    local updated = false
-    if slider then
-        updated = ui.SliderFloat(name, self._tmp_float, min or -inf, max or inf, fmt or '%.3f')
+    if slider then -- Use slider or drag input
+        ui.SliderFloat(name, self._tmp_float, min or -inf, max or inf, fmt or '%.3f')
     else
-        updated = ui.DragFloat(name, self._tmp_float, step or 0.1, min or -inf, max or inf, fmt or '%.3f')
+        ui.DragFloat(name, self._tmp_float, step or 0.1, min or -inf, max or inf, fmt or '%.3f')
     end
-    if updated then
-        return true, self._tmp_float[0]
-    end
-    return true, x
+    return self._tmp_float[0]
 end
 
 function inspector:_inspect_vec2(name, v2, step, min, max, fmt)
     self._tmp_vec2[0] = v2.x
     self._tmp_vec2[1] = v2.y
-    local updated = ui.DragFloat2(name, self._tmp_vec2, step or 0.1, min or -inf, max or inf, fmt or '%.3f')
-    if updated then
-        return true, vec2(self._tmp_vec2[0], self._tmp_vec2[1])
-    end
-    return false, v2
+    ui.DragFloat2(name, self._tmp_vec2, step or 0.1, min or -inf, max or inf, fmt or '%.3f')
+    return vec2(self._tmp_vec2[0], self._tmp_vec2[1])
 end
 
 function inspector:_inspect_vec3(name, v3, step, min, max, fmt)
     self._tmp_vec3[0] = v3.x
     self._tmp_vec3[1] = v3.y
     self._tmp_vec3[2] = v3.z
-    local updated = ui.DragFloat3(name, self._tmp_vec3, step or 0.1, min or -inf, max or inf, fmt or '%.3f')
-    if updated then
-        return true, vec3(self._tmp_vec3[0], self._tmp_vec3[1], self._tmp_vec3[2])
-    end
-    return false, v3
+    ui.DragFloat3(name, self._tmp_vec3, step or 0.1, min or -inf, max or inf, fmt or '%.3f')
+    return vec3(self._tmp_vec3[0], self._tmp_vec3[1], self._tmp_vec3[2])
 end
 
 function inspector:_inspect_vec3_color_rgb(name, v3)
     self._tmp_vec3[0] = v3.x
     self._tmp_vec3[1] = v3.y
     self._tmp_vec3[2] = v3.z
-    local updated = ui.ColorEdit3(name, self._tmp_vec3, color_pick_flags)
-    if updated then
-        return true, vec3(self._tmp_vec3[0], self._tmp_vec3[1], self._tmp_vec3[2])
-    end
-    return false, v3
+    ui.ColorEdit3(name, self._tmp_vec3, color_pick_flags)
+    return vec3(self._tmp_vec3[0], self._tmp_vec3[1], self._tmp_vec3[2])
 end
 
 function inspector:_component_base_header()
@@ -87,7 +100,6 @@ function inspector:_component_base_header()
     ui.SameLine(ui.GetWindowWidth() - header_buttons_offset)
     local keep_component = true
     if ui.SmallButton(icons.i_trash_restore) then
-        self.properties_changed = true
         keep_component = false
     end
     if ui.IsItemHovered() then
@@ -95,7 +107,6 @@ function inspector:_component_base_header()
     end
     ui.SameLine()
     if ui.SmallButton(icons.i_trash) then
-        self.properties_changed = true
         keep_component = false
     end
     if ui.IsItemHovered() then
@@ -113,32 +124,18 @@ function inspector:_inspect_component_transform()
             return
         end
 
-        local pos = c_transform:get_position()
-        local rx, ry, rz = quat.to_euler(c_transform:get_rotation())
-        local rot = vec3(deg(rx), deg(ry), deg(rz))
-        local scale = c_transform:get_scale()
         ui.PushStyleColor_U32(cpp.ImGuiCol_Text, 0xff88ff88)
-        local updated, pos = self:_inspect_vec3(icons.i_arrows_alt .. ' Position', pos)
-        if updated then
-            c_transform:set_position(pos)
-            self.properties_changed = true
-        end
+        c_transform:set_position(self:_inspect_vec3(icons.i_arrows_alt .. ' Position', c_transform:get_position()))
         ui.PopStyleColor()
 
         ui.PushStyleColor_U32(cpp.ImGuiCol_Text, 0xff8888ff)
-        local updated, rot = self:_inspect_vec3(icons.i_redo_alt .. ' Rotation', rot)
-        if updated then
-            c_transform:set_rotation(quat.from_euler(rad(rot.x), rad(rot.y), rad(rot.z)))
-            self.properties_changed = true
-        end
+        local rx, ry, rz = quat.to_euler(c_transform:get_rotation())
+        local rot = self:_inspect_vec3(icons.i_redo_alt .. ' Rotation', vec3(deg(rx), deg(ry), deg(rz)))
+        c_transform:set_rotation(quat.from_euler(rad(rot.x), rad(rot.y), rad(rot.z)))
         ui.PopStyleColor()
 
         ui.PushStyleColor_U32(cpp.ImGuiCol_Text, 0xff88ffff)
-        local updated, scale = self:_inspect_vec3(icons.i_expand_arrows .. ' Scale', scale)
-        if updated then
-            c_transform:set_scale(scale)
-            self.properties_changed = true
-        end
+        c_transform:set_scale(self:_inspect_vec3(icons.i_expand_arrows .. ' Scale', c_transform:get_scale()))
         ui.PopStyleColor()
     end
 end
@@ -151,26 +148,9 @@ function inspector:_inspect_component_camera()
             return
         end
 
-        local fov = c_camera:get_fov()
-        local updated, fov = self:_inspect_float(icons.i_eye .. ' FOV', fov, 0.1, 1.0, 180.0, '%.0f')
-        if updated then
-            c_camera:set_fov(fov)
-            self.properties_changed = true
-        end
-
-        local near_z_clip = c_camera:get_near_clip()
-        local updated, near_z_clip = self:_inspect_float(icons.i_sign_in_alt .. ' Near Clip', near_z_clip, 1.0, 0.1, 10000.0, '%.0f')
-        if updated then
-            c_camera:set_near_clip(near_z_clip)
-            self.properties_changed = true
-        end
-
-        local far_z_clip = c_camera:get_far_clip()
-        local updated, far_z_clip = self:_inspect_float(icons.i_sign_out_alt .. ' Far Clip', far_z_clip, 1.0, 0.1, 10000.0, '%.0f')
-        if updated then
-            c_camera:set_far_clip(far_z_clip)
-            self.properties_changed = true
-        end
+        c_camera:set_fov(self:_inspect_float(icons.i_eye .. ' FOV', c_camera:get_fov(), 0.1, 1.0, 180.0, '%.0f'))
+        c_camera:set_near_clip(self:_inspect_float(icons.i_sign_in_alt .. ' Near Clip', c_camera:get_near_clip(), 1.0, 0.1, 10000.0, '%.0f'))
+        c_camera:set_far_clip(self:_inspect_float(icons.i_sign_out_alt .. ' Far Clip', c_camera:get_far_clip(), 1.0, 0.1, 10000.0, '%.0f'))
     end
 end
 
@@ -187,7 +167,6 @@ function inspector:_inspect_component_mesh_renderer()
         ui.Checkbox(icons.i_eye .. ' Visible', self._tmp_boolean)
         if is_visible ~= self._tmp_boolean[0] then
             c_mesh_renderer:set_flags(bxor(c_mesh_renderer:get_flags(), render_flags.skip_rendering))
-            self.properties_changed = true
         end
 
         ui.SameLine()
@@ -197,7 +176,6 @@ function inspector:_inspect_component_mesh_renderer()
         ui.Checkbox(icons.i_camera .. ' Frustum Culling', self._tmp_boolean)
         if do_frustum_culling ~= self._tmp_boolean[0] then
             c_mesh_renderer:set_flags(bxor(c_mesh_renderer:get_flags(), render_flags.skip_frustum_culling))
-            self.properties_changed = true
         end
     end
 end
@@ -206,72 +184,35 @@ function inspector:_entity_base_header(entity)
     if ui.CollapsingHeader(icons.i_cogs .. ' Entity', cpp.ImGuiTreeNodeFlags_DefaultOpen) then
 
         local name = entity:get_name()
-        if #name >= max_name_text_len then
-            name = name:sub(1, max_name_text_len-1)
-        end
-        ffi.copy(self._tmp_text, name)
-        if ui.InputText('Name', self._tmp_text, max_name_text_len) then
-            entity:set_name(ffi.string(self._tmp_text))
+        local new_name = self:_inspect_string(icons.i_tag .. ' Name', name)
+        if new_name ~= name then
+            entity:set_name(new_name)
             self.name_changed = true
         end
 
-        local hidden = entity:has_flag(entity_flags.hidden)
-        self._tmp_boolean[0] = hidden
-        ui.Checkbox(icons.i_eye_slash .. ' Hidden', self._tmp_boolean)
-        if hidden ~= self._tmp_boolean[0] then
-            entity:set_flags(bxor(entity:get_flags(), entity_flags.hidden))
-            self.properties_changed = true
-        end
-
+        entity:set_flags(self:_inspect_bit_flags(icons.i_eye_slash .. ' Hidden', entity:get_flags(), entity_flags.hidden))
         ui.SameLine()
-
-        local static = entity:has_flag(entity_flags.static)
-        self._tmp_boolean[0] = static
-        ui.Checkbox(icons.i_do_not_enter .. ' Static', self._tmp_boolean)
-        if static ~= self._tmp_boolean[0] then
-            entity:set_flags(bxor(entity:get_flags(), entity_flags.static))
-            self.properties_changed = true
-        end
-
+        entity:set_flags(self:_inspect_bit_flags(icons.i_do_not_enter .. ' Static', entity:get_flags(), entity_flags.static))
         ui.SameLine()
-
-        local transient = entity:has_flag(entity_flags.transient)
-        self._tmp_boolean[0] = transient
-        ui.Checkbox(icons.i_alarm_clock .. ' Transient', self._tmp_boolean)
-        if transient ~= self._tmp_boolean[0] then
-            entity:set_flags(bxor(entity:get_flags(), entity_flags.transient))
-            self.properties_changed = true
-        end
-
-        -- ui.Separator()
-        -- ui.PushStyleColor_U32(cpp.ImGuiCol_Text, 0xff888888)
-        -- ui.TextUnformatted(string.format('ID: 0x%x', tonumber(entity.id)))
-        -- ui.TextUnformatted(string.format('Valid: %s', entity:isValid() and 'yes' or 'no'))
-        -- ui.TextUnformatted(string.format('ID Address: %p', entity.id))
-        -- ui.PopStyleColor()
+        entity:set_flags(self:_inspect_bit_flags(icons.i_alarm_clock .. ' Transient', entity:get_flags(), entity_flags.transient))
     end
 end
 
+-- Inspect the env_editor settings.
 function inspector:_inspect_env_editor()
     if ui.CollapsingHeader(icons.i_moon_stars .. ' Timecycle', cpp.ImGuiTreeNodeFlags_DefaultOpen) then
-        local _, value = self:_inspect_float(icons.i_clock .. ' Time of Day', scene.clock.date.time, nil, 0.0, 24.0, '%.2f h', true)
-        scene.clock.date.time = value
-
-        local _, value = self:_inspect_float(icons.i_alarm_clock .. ' Time Scale', scene.clock.time_cycle_scale, nil, 0.0, 1.0, nil, true)
-        scene.clock.time_cycle_scale = value
+        scene.chrono.time = self:_inspect_float(icons.i_clock .. ' Time of Day', scene.chrono.time, nil, 0.0, 24.0, '%.2f h', true)
+        scene.chrono.time_cycle_scale = self:_inspect_float(icons.i_alarm_clock .. ' Time Scale', scene.chrono.time_cycle_scale, nil, 0.0, 1.0, nil, true)
     end
     if ui.CollapsingHeader(icons.i_lamp .. ' Lighting', cpp.ImGuiTreeNodeFlags_DefaultOpen) then
-        local _, value = self:_inspect_vec3_color_rgb(icons.i_sun .. ' Sun Color', scene.lighting.sun_color)
-        scene.lighting.sun_color = value
-
-        local _, value = self:_inspect_vec3_color_rgb(icons.i_lightbulb .. ' Ambient Color', scene.lighting.ambient_color)
-        scene.lighting.ambient_color = value
-
-        local _, value = self:_inspect_float(icons.i_clouds .. ' Atmospheric Turbidity', scene.lighting.sky_turbidity, nil, 1.8, 10.0, nil, true)
-        scene.lighting.sky_turbidity = value
+        scene.chrono.sun_latitude = self:_inspect_float(icons.i_ruler_triangle .. ' Skylight Latitude', scene.chrono.sun_latitude, nil, -90.0, 90.0, '%.2f deg', true)
+        scene.lighting.sun_color = self:_inspect_vec3_color_rgb(icons.i_sun .. ' Skylight Color', scene.lighting.sun_color)
+        scene.lighting.ambient_color = self:_inspect_vec3_color_rgb(icons.i_lightbulb .. ' Ambient Color', scene.lighting.ambient_color)
+        scene.lighting.sky_turbidity = self:_inspect_float(icons.i_clouds .. ' Atmospheric Turbidity', scene.lighting.sky_turbidity, nil, 1.8, 10.0, nil, true)
     end
 end
 
+-- Inspect the selected entity.
 function inspector:_inspect_entity()
     local entity = self.selected_entity
     if not entity or not entity:is_valid() then
@@ -299,12 +240,13 @@ function inspector:_inspect_entity()
 end
 
 function inspector:render()
-    self.properties_changed = false
     self.name_changed = false
     ui.SetNextWindowSize(utils.default_window_size, cpp.ImGuiCond_FirstUseEver)
     if ui.Begin(self.name, self.is_visible) then
-        if self.env_editor then
+        if self.inspector_mode == 'env_editor' then
             self:_inspect_env_editor()
+        elseif self.inspector_mode == 'scene_cfg_editor' then
+            -- TODO: Implement scene settings inspector
         else
             self:_inspect_entity()
         end

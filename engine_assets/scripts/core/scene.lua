@@ -43,15 +43,15 @@ local scene = {
     name = 'Default',
     id = 0,
     lighting = lighting,
-    clock = require 'game_clock'
+    chrono = require 'chrono'
 }
 
 function scene._update()
-    scene.clock:update()
+    scene.chrono:update()
     -- Update scene time and lighting
-    cpp.__lu_scene_set_time(scene.clock.date.time)
-    cpp.__lu_scene_set_sun_dir(scene.clock._sun_dir)
-    cpp.__lu_scene_set_sun_color(scene.lighting.sun_color * scene.clock.daytime_coeff)
+    cpp.__lu_scene_set_time(scene.chrono.time)
+    cpp.__lu_scene_set_sun_dir(scene.chrono._sun_dir)
+    cpp.__lu_scene_set_sun_color(scene.lighting.sun_color * scene.chrono.daytime_coeff)
     cpp.__lu_scene_set_ambient_color(scene.lighting.ambient_color)
     cpp.__lu_scene_set_sky_turbidity(scene.lighting.sky_turbidity)
     cpp.__lu_scene_tick()
