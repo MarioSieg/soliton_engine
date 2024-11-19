@@ -14,10 +14,6 @@ namespace soliton {
             std::filesystem::create_directory("config");
             return false;
         }
-        if (std::filesystem::exists(cfg_file)) {
-            log_warn("Config file '{}' already exists, not overwriting", cfg_file);
-            return true;
-        }
         std::lock_guard lock {detail::sv_mutex};
         CSimpleIniA ini {};
         for (const auto& [name, value] : sv_registry) {
@@ -82,12 +78,21 @@ namespace soliton {
                     continue;
                 }
 
-                float float_r = 0.0f;
-                auto floatResult = std::from_chars(value.data(), value.data() + value.size(), float_r);
-                if (floatResult.ec == std::errc() && floatResult.ptr == value.data() + value.size()) {
-                    sv_registry[key.pItem] = float_r;
-                    continue;
-                }
+                #if COMPILER_CLANG && PLATFORM_OSX // Apple clang does not support from_chars for floats, use std::stof instead
+                    char* end = nullptr;
+                    float float_r = std::strtof(value.c_str(), &end);
+                    if (end == value.data() + value.size()) {
+                        sv_registry[key.pItem] = float_r;
+                        continue;
+                    }
+                #else
+                    float float_r = 0.0f;
+                    auto floatResult = std::from_chars(value.data(), value.data() + value.size(), float_r);
+                    if (floatResult.ec == std::errc() && floatResult.ptr == value.data() + value.size()) {
+                        sv_registry[key.pItem] = float_r;
+                        continue;
+                    }
+                #endif
 
                 sv_registry[key.pItem] = value;
             }

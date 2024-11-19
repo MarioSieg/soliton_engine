@@ -2,10 +2,15 @@
 
 #include "device.hpp"
 
-#include <unordered_set>
 #include <GLFW/glfw3.h>
 
 namespace soliton::vkb {
+    // Beginning with the 1.3.216 Vulkan SDK, the Vulkan Loader is strictly enforcing the new VK_KHR_PORTABILITY_subset extension.
+    static const system_variable<bool> sv_osx_use_vk_portability_enumeration {
+        "renderer.osx_use_vk_portability_enumeration",
+        {true}
+    };
+
     device::device(
         const bool enable_validation,
         const bool require_stencil
@@ -162,7 +167,9 @@ namespace soliton::vkb {
         }
 
         if constexpr (PLATFORM_OSX) {
-            requested_instance_extensions.insert(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+            if (sv_osx_use_vk_portability_enumeration()) {
+                requested_instance_extensions.insert(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+            }
             requested_instance_extensions.insert(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
         }
 
@@ -172,7 +179,9 @@ namespace soliton::vkb {
         instance_create_info.pApplicationInfo = &app_info;
 
         if constexpr (PLATFORM_OSX) { // macOS/iOS - enable MoltenVK portability extension
-            instance_create_info.flags = vk::InstanceCreateFlagBits::eEnumeratePortabilityKHR;
+            if (sv_osx_use_vk_portability_enumeration()) {
+                instance_create_info.flags |= vk::InstanceCreateFlagBits::eEnumeratePortabilityKHR;
+            }
         }
 
         // Setup debug utils messenger create info

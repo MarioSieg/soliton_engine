@@ -12,7 +12,8 @@
 static auto lunam_entry(const int argc, const char** argv, const char** $environ) -> void {
     using namespace soliton;
 
-    bool sv_loaded = detail::load_system_variables();
+    detail::load_system_variables();
+    std::atexit(+[] { detail::save_system_variables(); });
 
     kernel kernel {argc, argv, $environ};
     kernel.install<platform::platform_subsystem>();
@@ -20,12 +21,7 @@ static auto lunam_entry(const int argc, const char** argv, const char** $environ
     kernel.install<audio::audio_subsystem>();
     kernel.install<physics::physics_subsystem>();
     kernel.install<scripting::scripting_subsystem>();
-
-    if (!sv_loaded) detail::save_system_variables();
-
     kernel.run();
-
-    if (!sv_loaded) detail::save_system_variables();
 }
 
 #if PLATFORM_WINDOWS

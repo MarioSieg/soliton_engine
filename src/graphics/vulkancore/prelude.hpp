@@ -3,6 +3,7 @@
 #pragma once
 
 #include "../../core/core.hpp"
+#include "../../core/system_variable.hpp"
 
 // Include GLSL/C++ shader header
 #include "../../../../engine_assets/shaders/include/cpp_shared_structures.h"
