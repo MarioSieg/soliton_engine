@@ -116,7 +116,7 @@ void main() {
   color = postToneMap(color);
 
   outFragColor.rgb = color;
-  const float cutoff = 0.2;
+  const float cutoff = 0.4;
   outFragColor.a = albedo_full.a;
   outFragColor.a = (outFragColor.a - cutoff) / max(fwidth(outFragColor.a), 0.0001) + 0.5;
 }
