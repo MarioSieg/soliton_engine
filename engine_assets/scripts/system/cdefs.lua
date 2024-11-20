@@ -10,7 +10,7 @@ ffi.cdef [[
     uint32_t __lu_ffi_cookie(void);
 
     typedef uint64_t lua_entity_id;
-    typedef int32_t lua_asset_id;
+    typedef uint32_t interop_asset_id;
 
     typedef struct {
         double x;

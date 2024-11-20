@@ -5,16 +5,20 @@ local bit = require 'bit'
 
 local ui = require 'imgui.imgui'
 local icons = require 'imgui.icons'
-local components = require 'components'
 local vec2 = require 'vec2'
 local vec3 = require 'vec3'
 local quat = require 'quat'
 local scene = require 'scene'
+local gmath = require 'gmath'
 local utils = require 'editor.utils'
+local c_transform = require 'components.transform'
+local c_camera = require 'components.camera'
+local c_mesh_renderer = require 'components.mesh_renderer'
 
 local cpp = ffi.C
 local band, bxor = bit.band, bit.bxor
 local rad, deg, inf = math.rad, math.deg, math.huge
+local clamp = gmath.clamp
 local entity_flags = entity_flags
 local render_flags = render_flags
 local color_pick_flags = cpp.ImGuiColorEditFlags_NoAlpha + cpp.ImGuiColorEditFlags_Float + cpp.ImGuiColorEditFlags_InputRGB + cpp.ImGuiColorEditFlags_PickerHueWheel
@@ -117,10 +121,10 @@ function inspector:_component_base_header()
 end
 
 function inspector:_inspect_component_transform()
-    local c_transform = self.selected_entity:get_component(components.transform)
+    local c_transform = self.selected_entity:get_component(c_transform)
     if ui.CollapsingHeader(icons.i_arrows_alt .. ' Transform', inspector_header_flags) then
         if not self:_component_base_header() then
-            self.selected_entity:remove_component(components.transform)
+            self.selected_entity:remove_component(c_transform)
             return
         end
 
@@ -131,7 +135,10 @@ function inspector:_inspect_component_transform()
         ui.PushStyleColor_U32(cpp.ImGuiCol_Text, 0xff8888ff)
         local rx, ry, rz = quat.to_euler(c_transform:get_rotation())
         local rot = self:_inspect_vec3(icons.i_redo_alt .. ' Rotation', vec3(deg(rx), deg(ry), deg(rz)))
-        c_transform:set_rotation(quat.from_euler(rad(rot.x), rad(rot.y), rad(rot.z)))
+        rot.x = rad(clamp(rot.x, -180, 180))
+        rot.y = rad(clamp(rot.y, -180, 180))
+        rot.z = rad(clamp(rot.z, -180, 180))
+        c_transform:set_rotation(quat.normalize(quat.from_euler(rot.x, rot.y, rot.z)))
         ui.PopStyleColor()
 
         ui.PushStyleColor_U32(cpp.ImGuiCol_Text, 0xff88ffff)
@@ -141,10 +148,10 @@ function inspector:_inspect_component_transform()
 end
 
 function inspector:_inspect_component_camera()
-    local c_camera = self.selected_entity:get_component(components.camera)
+    local c_camera = self.selected_entity:get_component(c_camera)
     if ui.CollapsingHeader(icons.i_camera .. ' Camera', inspector_header_flags) then
         if not self:_component_base_header() then
-            self.selected_entity:remove_component(components.camera)
+            self.selected_entity:remove_component(c_camera)
             return
         end
 
@@ -155,10 +162,10 @@ function inspector:_inspect_component_camera()
 end
 
 function inspector:_inspect_component_mesh_renderer()
-    local c_mesh_renderer = self.selected_entity:get_component(components.mesh_renderer)
+    local c_mesh_renderer = self.selected_entity:get_component(c_mesh_renderer)
     if ui.CollapsingHeader(icons.i_cube .. ' Mesh Renderer', inspector_header_flags) then
         if not self:_component_base_header() then
-            self.selected_entity:remove_component(components.mesh_renderer)
+            self.selected_entity:remove_component(c_mesh_renderer)
             return
         end
 
@@ -219,13 +226,13 @@ function inspector:_inspect_entity()
         ui.TextUnformatted('No entity selected')
     else
         self:_entity_base_header(entity)
-        if entity:has_component(components.transform) then
+        if entity:has_component(c_transform) then
             self:_inspect_component_transform()
         end
-        if entity:has_component(components.camera) then
+        if entity:has_component(c_camera) then
             self:_inspect_component_camera()
         end
-        if entity:has_component(components.mesh_renderer) then
+        if entity:has_component(c_mesh_renderer) then
             self:_inspect_component_mesh_renderer()
         end
         ui.Spacing()

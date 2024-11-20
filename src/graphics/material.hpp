@@ -20,13 +20,14 @@ namespace soliton::graphics {
     inline const system_variable<eastl::string> sv_fallback_image_black {"renderer.fallback_texture_b", {"/RES/textures/system/fallback_black.png"}};
 
     using material_key = eastl::string;
+
     struct material_property final {
         constexpr material_property() noexcept = default;
-        constexpr material_property(const std::uint32_t shader_binding, const assetmgr::asset_ref value)
+        constexpr material_property(const std::uint32_t shader_binding, texture* value)
             noexcept : shader_binding{shader_binding}, value{value} {}
 
         std::uint32_t shader_binding = 0;
-        assetmgr::asset_ref value {};
+        texture* value {};
     };
 
     class material : public assetmgr::asset {

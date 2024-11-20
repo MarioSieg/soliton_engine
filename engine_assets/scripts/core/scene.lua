@@ -9,8 +9,10 @@ local cpp = ffi.C
 local bit = require 'bit'
 local entity = require 'entity'
 local vec3 = require 'vec3'
-local scene_import_flags = require 'import_flags'
+local scene_import_flags = require 'detail.import_flags'
 local band = bit.band
+
+local a_texture = require 'assets.texture'
 
 ffi.cdef[[
     typedef int lua_scene_id;
@@ -43,47 +45,32 @@ local scene = {
     name = 'Default',
     id = 0,
     lighting = lighting,
-    chrono = require 'chrono'
+    chrono = require 'detail.chrono'
 }
 
-function scene._update()
-    scene.chrono:update()
-    -- Update scene time and lighting
-    cpp.__lu_scene_set_time(scene.chrono.time)
-    cpp.__lu_scene_set_sun_dir(scene.chrono._sun_dir)
-    cpp.__lu_scene_set_sun_color(scene.lighting.sun_color * scene.chrono.daytime_coeff)
-    cpp.__lu_scene_set_ambient_color(scene.lighting.ambient_color)
-    cpp.__lu_scene_set_sky_turbidity(scene.lighting.sky_turbidity)
-    cpp.__lu_scene_tick()
+--- Loads a texture from the given path.
+--- @param path: string, path to the texture file
+function scene.load_texture(path)
+    return a_texture:load(path)
 end
 
+--- Spawns a new entity in the scene with the given name.
+--- @param name: string, name of the new entity
 function scene.spawn(name)
     return entity:from_native_id(cpp.__lu_scene_spawn_entity(name))
 end
 
+--- Despawns the given entity from the scene.
+--- @param entity: entity, entity to despawn
 function scene.despawn(entity)
     cpp.__lu_scene_despawn_entity(entity.id)
     entity.id = 0
 end
 
+--- Looks up an entity in the scene by its name.
+--- @param name: string, name of the entity to look up
 function scene.lookup_entity(name)
     return entity:from_native_id(cpp.__lu_scene_get_entity_by_name(name))
-end
-
-function scene._entity_query_start()
-    cpp.__lu_scene_full_entity_query_start()
-end
-
-function scene._entity_query_next()
-    return cpp.__lu_scene_full_entity_query_next_table()
-end
-
-function scene._entity_query_lookup(i)
-    return entity:from_native_id(cpp.__lu_scene_full_entity_query_get(i))
-end
-
-function scene._entity_query_end()
-    cpp.__lu_scene_full_entity_query_end()
 end
 
 function scene.set_active_camera_entity(camera)
@@ -139,6 +126,38 @@ function scene.load(file, import_flags)
     local name = file:match('^.+/(.+)$'):match('(.+)%..+') -- extract scene name from file path
     local id = cpp.__lu_scene_import(name, file, band(import_flags, 0xffffffff)) -- create native scene
     setup_scene_class(id, name)
+end
+
+-- Internal use only.
+function scene._update()
+    scene.chrono:update()
+    -- Update scene time and lighting
+    cpp.__lu_scene_set_time(scene.chrono.time)
+    cpp.__lu_scene_set_sun_dir(scene.chrono._sun_dir)
+    cpp.__lu_scene_set_sun_color(scene.lighting.sun_color * scene.chrono.daytime_coeff)
+    cpp.__lu_scene_set_ambient_color(scene.lighting.ambient_color)
+    cpp.__lu_scene_set_sky_turbidity(scene.lighting.sky_turbidity)
+    cpp.__lu_scene_tick()
+end
+
+-- Internal use only.
+function scene._entity_query_start()
+    cpp.__lu_scene_full_entity_query_start()
+end
+
+-- Internal use only.
+function scene._entity_query_next()
+    return cpp.__lu_scene_full_entity_query_next_table()
+end
+
+-- Internal use only.
+function scene._entity_query_lookup(i)
+    return entity:from_native_id(cpp.__lu_scene_full_entity_query_get(i))
+end
+
+-- Internal use only.
+function scene._entity_query_end()
+    cpp.__lu_scene_full_entity_query_end()
 end
 
 return scene

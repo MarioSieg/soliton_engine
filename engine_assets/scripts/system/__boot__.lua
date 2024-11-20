@@ -12,7 +12,6 @@ local max = math.max
 lua_include_dirs = {
     'engine_assets/scripts',
     'engine_assets/scripts/core',
-    'engine_assets/scripts/core/detail',
     'engine_assets/scripts/lib'
 }
 

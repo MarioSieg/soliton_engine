@@ -26,12 +26,12 @@ end
 
 local function magnitude(q)
     local x, y, z, w = q.x, q.y, q.z, q.w
-    return sqrt(x*x + y*y + z*z + w*w)
+    return sqrt(x * x + y * y + z * z + w * w)
 end
 
 local function sqr_magnitude(q)
     local x, y, z, w = q.x, q.y, q.z, q.w
-    return x*x + y*y + z*z + w*w
+    return x * x + y * y + z * z + w * w
 end
 
 local function normalize(q)
@@ -54,10 +54,10 @@ local function from_euler(x, y, z)
     local sp = sin(hy)
     local cy = cos(hz)
     local sy = sin(hz)
-    local rw = (cr * cp * cy) + (sr * sp *sy)
-    local rx = (sr * cp * cy) - (cr * sp *sy)
-    local ry = (cr * sp * cy) + (sr * cp *sy)
-    local rz = (cr * cp * sy) - (sr * sp *cy)
+    local rw = (cr * cp * cy) + (sr * sp * sy)
+    local rx = (sr * cp * cy) - (cr * sp * sy)
+    local ry = (cr * sp * cy) + (sr * cp * sy)
+    local rz = (cr * cp * sy) - (sr * sp * cy)
     return rawnew(rx, ry, rz, rw)
 end
 
@@ -86,7 +86,7 @@ end
 local function dot(q, other)
     local x, y, z, w = q.x, q.y, q.z, q.w
     local ox, oy, oz, ow = other.x, other.y, other.z, other.w
-    return x*ox + y*oy + z*oz + w*ow
+    return x * ox + y * oy + z * oz + w * ow
 end
 
 local function slerp(x, y, i)
@@ -102,7 +102,7 @@ local function is_norm(q)
 end
 
 local function angle(q)
-    local len = q.x*q.x + q.y*q.y + q.z*q.z
+    local len = q.x * q.x + q.y * q.y + q.z * q.z
     if len > 0.0 then
         return 2.0 * acos(min(max(q.w, -1.0), 1.0))
     else
@@ -151,14 +151,17 @@ ffi.metatype('lua_vec4', {
     end,
     __mul = function(x, y)
         if type(y) == 'cdata' and istype('lua_vec4', y) then
-            local xx = x.x*y.w + x.w*y.x + x.y*y.z - x.z*y.y
-            local yy = x.y*y.w + x.w*y.y + x.z*y.x - x.x*y.z
-            local zz = x.z*y.w + x.w*y.z + x.x*y.y - x.y*y.x
-            local ww = x.w*y.w - x.x*y.x - x.y*y.y - x.z*y.z
+            local xx = x.x * y.w + x.w * y.x + x.y * y.z - x.z * y.y
+            local yy = x.y * y.w + x.w * y.y + x.z * y.x - x.x * y.z
+            local zz = x.z * y.w + x.w * y.z + x.x * y.y - x.y * y.x
+            local ww = x.w * y.w - x.x * y.x - x.y * y.y - x.z * y.z
             return rawnew(xx, yy, zz, ww)
         else
-            return rawnew(x.x*y, x.y*y, x.z*y, x.w*y)
+            return rawnew(x.x * y, x.y * y, x.z * y, x.w * y)
         end
+    end,
+    __div = function(x, y)
+        return rawnew(x.x / y, x.y / y, x.z / y, x.w / y)
     end,
     __unm = function(v)
         return rawnew(-v.x, -v.y, -v.z, -v.w)

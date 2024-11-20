@@ -19,8 +19,6 @@ using lua_entity_id = std::uint64_t;
 static_assert(sizeof(flecs::id_t) == sizeof(lua_entity_id));
 static_assert(alignof(flecs::id_t) == alignof(lua_entity_id));
 
-using lua_asset_id = assetmgr::asset_ref;
-
 [[nodiscard]] inline auto resolve_entity(const lua_entity_id id) noexcept -> eastl::optional<flecs::entity> {
     const auto f_id = eastl::bit_cast<flecs::id_t>(id);
     if (f_id == 0) [[unlikely]] {
@@ -162,19 +160,26 @@ struct lua_vec4 {
 };
 static_assert(sizeof(lua_vec4) == sizeof(double) * 4 && std::is_standard_layout_v<lua_vec4>);
 
-#define impl_component_core(name)\
-    LUA_INTEROP_API auto __lu_com_##name##_exists(const lua_entity_id id) -> bool {\
-        const eastl::optional<flecs::entity> ent {resolve_entity(id)};\
-        if (!ent) [[unlikely]] { return false; }\
-        return ent->has<com::name>();\
-    }\
+
+#define get_resource_property(T, getter, fallback) \
+    T* resource = scene_mgr::active().get_asset_registry<T>().interop[id]; \
+    if (resource) [[likely]] \
+        return resource->getter; \
+    return (fallback);
+
+#define impl_component_core(name) \
+    LUA_INTEROP_API auto __lu_com_##name##_exists(const lua_entity_id id) -> bool { \
+        const eastl::optional<flecs::entity> ent {resolve_entity(id)}; \
+        if (!ent) [[unlikely]] { return false; } \
+        return ent->has<com::name>(); \
+    } \
     LUA_INTEROP_API auto __lu_com_##name##_add(const lua_entity_id id) -> void { \
-        eastl::optional<flecs::entity> ent {resolve_entity(id)};\
-        if (!ent) [[unlikely]] { return; }\
-        ent->add<com::name>();\
-    }\
-    LUA_INTEROP_API auto __lu_com_##name##_remove(const lua_entity_id id) -> void {\
-        eastl::optional<flecs::entity> ent {resolve_entity(id)};\
-        if (!ent) [[unlikely]] { return; }\
-        ent->remove<com::name>();\
+        eastl::optional<flecs::entity> ent {resolve_entity(id)}; \
+        if (!ent) [[unlikely]] { return; } \
+        ent->add<com::name>(); \
+    } \
+    LUA_INTEROP_API auto __lu_com_##name##_remove(const lua_entity_id id) -> void { \
+        eastl::optional<flecs::entity> ent {resolve_entity(id)}; \
+        if (!ent) [[unlikely]] { return; } \
+        ent->remove<com::name>(); \
     }

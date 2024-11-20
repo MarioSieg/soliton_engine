@@ -16,13 +16,11 @@ namespace soliton::graphics {
 
     auto material::flush_property_updates(scene& scene) -> void {
         auto& reg = scene.get_asset_registry<graphics::texture>();
-        const auto make_write_tex_info = [&reg](const assetmgr::asset_ref texture) {
-            auto* texture_ptr = reg[texture];
-            panic_assert(texture_ptr != nullptr);
+        const auto make_write_tex_info = [&reg](texture* tex) {
             vk::DescriptorImageInfo info {};
             info.imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-            info.imageView = texture_ptr->image_view();
-            info.sampler = texture_ptr->sampler();
+            info.imageView = tex->image_view();
+            info.sampler = tex->sampler();
             return info;
         };
 
@@ -61,7 +59,8 @@ namespace soliton::graphics {
     auto material::print_properties() const -> void {
         log_info("Name | Shader Binding | Value");
         for (auto&& [key, prop] : properties) {
-            log_info("'{}' : {} -> {:#x}", key, prop.shader_binding, static_cast<std::underlying_type_t<assetmgr::asset_ref>>(prop.value));
+            if (prop.value)
+                log_info("'{}' : {} -> {:#x}", key, prop.shader_binding, prop.value->get_asset_path());
         }
     }
 

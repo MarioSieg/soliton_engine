@@ -9,7 +9,7 @@ local quat = require 'quat'
 local time = require 'time'
 local vec2 = require 'vec2'
 local vec3 = require 'vec3'
-local components = require 'components'
+local c_transform = require 'components.transform'
 
 local abs, rad = math.abs, math.rad
 
@@ -86,7 +86,7 @@ function camera:_compute_rotation()
     self._mouse_angles = self._mouse_angles + delta
     self._mouse_angles.y = gmath.clamp(self._mouse_angles.y, -clamp_y_rad, clamp_y_rad)
     self._rotation = quat.from_euler(self._mouse_angles.y, self._mouse_angles.x, 0)
-    self.target_entity:get_component(components.transform):set_rotation(self._rotation)
+    self.target_entity:get_component(c_transform):set_rotation(self._rotation)
 end
 
 function camera:_compute_position()
@@ -133,7 +133,7 @@ function camera:_compute_position()
     end
 
     self._position = self._position * self.lock_movement_axis -- apply axis lock
-    self.target_entity:get_component(components.transform):set_position(self._position)
+    self.target_entity:get_component(c_transform):set_position(self._position)
 end
 
 return camera

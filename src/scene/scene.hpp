@@ -30,6 +30,10 @@ namespace soliton {
         [[nodiscard]] constexpr auto get_asset_registry() -> assetmgr::asset_registry<T>&;
 
         flecs::entity active_camera {};
+        eastl::vector<graphics::mesh*> meshes {};
+        eastl::vector<graphics::texture*> textures {};
+        eastl::vector<graphics::material*> materials {};
+        eastl::vector<audio::audio_clip*> audio_clips {};
 
     private:
         friend class kernel;

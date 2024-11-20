@@ -14,7 +14,6 @@ local vec3 = require 'vec3'
 local quat = require 'quat'
 local scene = require 'scene'
 local input = require 'input'
-local components = require 'components'
 local json = require 'json'
 local icons = require 'imgui.icons'
 local utils = require 'editor.utils'
@@ -25,8 +24,10 @@ local script_editor = require 'editor.tools.scripteditor'
 local entity_list_view = require 'editor.tools.entity_list_view'
 local inspector = require 'editor.tools.inspector'
 local asset_explorer = require 'editor.tools.asset_explorer'
-local band = bit.band
+local c_camera = require 'components.camera'
+local c_transform = require 'components.transform'
 
+local band = bit.band
 
 local host_info = app.host.graphics_api .. ' | ' .. (app.host.host_string)
 local cpu_name = 'CPU: ' .. app.host.cpu_name
@@ -122,13 +123,13 @@ local editor = {
             prev_project_location = '',
         }
     },
-    camera = require 'editor.camera',
+    editor_camera = require 'editor.camera',
     dock_id = nil,
     active_project = nil,
     show_demo_window = false,
 }
 
-editor.camera._position.y = initial_camera_height -- Lift camera up a bit
+editor.editor_camera._position.y = initial_camera_height -- Lift editor_camera up a bit
 
 for _, tool in ipairs(editor.tools) do tool.is_visible[0] = true end
 
@@ -184,10 +185,10 @@ function editor:load_scene(file)
     else
         scene.new('Untitled scene')
     end
-    local main_camera = scene.spawn('__editor_camera__') -- spawn editor camera
+    local main_camera = scene.spawn('__editor_camera__') -- spawn editor editor_camera
     main_camera:add_flag(entity_flags.hidden + entity_flags.transient) -- hide and don't save
-    main_camera:get_component(components.camera):set_fov(80)
-    self.camera.target_entity = main_camera
+    main_camera:get_component(c_camera):set_fov(80)
+    self.editor_camera.target_entity = main_camera
     scene.set_active_camera_entity(main_camera)
     entity_list_view:build_entity_list()
 end
@@ -197,9 +198,9 @@ local player = require 'editor.player' -- TODO: hacky
 function editor:start_game_mode()
     entity_list_view:build_entity_list()
     app.window.enable_cursor(false)
-    self.camera.enable_movement = false
-    self.camera.enable_mouse_look = false
-    local spawnPos = self.camera._position
+    self.editor_camera.enable_movement = false
+    self.editor_camera.enable_mouse_look = false
+    local spawnPos = self.editor_camera._position
     spawnPos.y = spawnPos.y + 2.0
     player:spawn(spawnPos)
     scene.set_active_camera_entity(player._camera)
@@ -212,11 +213,11 @@ end
 
 function editor:stop_game_mode()
     player:despawn()
-    scene.set_active_camera_entity(self.camera.target_entity)
+    scene.set_active_camera_entity(self.editor_camera.target_entity)
     entity_list_view:build_entity_list()
     app.window.enable_cursor(true)
-    self.camera.enable_movement = true
-    self.camera.enable_mouse_look = true
+    self.editor_camera.enable_movement = true
+    self.editor_camera.enable_mouse_look = true
     self.is_visible = true
 end
 
@@ -577,9 +578,9 @@ function editor:draw_ingame_overlay()
         local time = os.date('*t')
         ui.TextUnformatted(string.format(' | %02d.%02d.%02d %02d:%02d', time.day, time.month, time.year, time.hour, time.min))
         ui.Separator()
-        local camera = scene.get_active_camera_entity()
-        if camera:is_valid() and camera:has_component(components.transform) then
-            local transform = camera:get_component(components.transform)
+        local editor_camera = scene.get_active_camera_entity()
+        if editor_camera:is_valid() and editor_camera:has_component(c_transform) then
+            local transform = editor_camera:get_component(c_transform)
             ui.TextUnformatted(string.format('Pos: %s', transform:get_position()))
             ui.TextUnformatted(string.format('Dir: %s', transform:get_forward_dir()))
         end
@@ -643,16 +644,16 @@ function editor:_update()
     if not self.is_visible then
         return
     end
-    self.camera:_update()
+    self.editor_camera:_update()
 
     local selected = entity_list_view.selected_entity
     if selected ~= nil and entity_list_view.selected_wants_focus and selected:is_valid() then
-        if selected:has_component(components.transform) then
-            local pos = selected:get_component(components.transform):get_position()
+        if selected:has_component(c_transform) then
+            local pos = selected:get_component(c_transform):get_position()
             if pos then
                 pos.z = pos.z - 1.0
-                self.camera._position = pos
-                -- self.camera._rotation = quat.IDENTITY
+                self.editor_camera._position = pos
+                -- self.editor_camera._rotation = quat.IDENTITY
             end
         end
         entity_list_view.selected_wants_focus = false
