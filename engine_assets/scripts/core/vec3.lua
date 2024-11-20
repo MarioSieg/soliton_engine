@@ -10,7 +10,7 @@ local ffi = require 'ffi'
 local bit = require 'bit'
 
 local istype = ffi.istype
-local rawnew = ffi.typeof('lua_vec3')
+local rawnew = ffi.typeof('__vec3')
 local sqrt, cos, sin, atan2, min, max, random = math.sqrt, math.cos, math.sin, math.atan2, math.min, math.max, math.random
 local band, bor, bxor, lshift, rshift = bit.band, bit.bor, bit.bxor, bit.lshift, bit.rshift
 
@@ -367,15 +367,15 @@ local function smooth_damp(current, target, velocity, smooth_t, max_speed, delta
     return rawnew(out_x, out_y, out_z), velocity
 end
 
-ffi.metatype('lua_vec3', {
+ffi.metatype('__vec3', {
     __add = function(x, y)
-        if istype('lua_vec3', x) then
-            if istype('lua_vec3', y) then
+        if istype('__vec3', x) then
+            if istype('__vec3', y) then
                 return new(x.x + y.x, x.y + y.y, x.z + y.z)
             elseif type(y) == 'number' then
                 return new(x.x + y, x.y + y, x.z + y)
             end
-        elseif istype('lua_vec3', y) then
+        elseif istype('__vec3', y) then
             if type(x) == 'number' then
                 return new(x + y.x, x + y.y, x + y.z)
             end
@@ -383,13 +383,13 @@ ffi.metatype('lua_vec3', {
         error('Invalid operands for vec3 addition.')
     end,
     __sub = function(x, y)
-        if istype('lua_vec3', x) then
-            if istype('lua_vec3', y) then
+        if istype('__vec3', x) then
+            if istype('__vec3', y) then
                 return new(x.x - y.x, x.y - y.y, x.z - y.z)
             elseif type(y) == 'number' then
                 return new(x.x - y, x.y - y, x.z - y)
             end
-        elseif istype('lua_vec3', y) then
+        elseif istype('__vec3', y) then
             if type(x) == 'number' then
                 return new(x - y.x, x - y.y, x - y.z)
             end
@@ -397,10 +397,10 @@ ffi.metatype('lua_vec3', {
         error('Invalid operands for vec3 subtraction.')
     end,
     __mul = function(x, y)
-        if istype('lua_vec3', x) then
-            if istype('lua_vec3', y) then
+        if istype('__vec3', x) then
+            if istype('__vec3', y) then
                 return new(x.x * y.x, x.y * y.y, x.z * y.z)
-            elseif istype('lua_vec4', y) then -- quaternion rotation
+            elseif istype('__vec4', y) then -- quaternion rotation
                 local ix = y.w*x.x + y.y*x.z - y.z*x.y
                 local iy = y.w*x.y + y.z*x.x - y.x*x.z
                 local iz = y.w*x.z + y.x*x.y - y.y*x.x
@@ -412,7 +412,7 @@ ffi.metatype('lua_vec3', {
             elseif type(y) == 'number' then
                 return new(x.x * y, x.y * y, x.z * y)
             end
-        elseif istype('lua_vec3', y) then
+        elseif istype('__vec3', y) then
             if type(x) == 'number' then
                 return new(x * y.x, x * y.y, x * y.z)
             end
@@ -420,13 +420,13 @@ ffi.metatype('lua_vec3', {
         error('Invalid operands for vec3 multiplication.')
     end,
     __div = function(x, y)
-        if istype('lua_vec3', x) then
-            if istype('lua_vec3', y) then
+        if istype('__vec3', x) then
+            if istype('__vec3', y) then
                 return new(x.x / y.x, x.y / y.y, x.z / y.z)
             elseif type(y) == 'number' then
                 return new(x.x / y, x.y / y, x.z / y)
             end
-        elseif istype('lua_vec3', y) then
+        elseif istype('__vec3', y) then
             if type(x) == 'number' then
                 return new(x / y.x, x / y.y, x / y.z)
             end
@@ -434,13 +434,13 @@ ffi.metatype('lua_vec3', {
         error('Invalid operands for vec3 division.')
     end,
     __mod = function(x, y)
-        if istype('lua_vec3', x) then
-            if istype('lua_vec3', y) then
+        if istype('__vec3', x) then
+            if istype('__vec3', y) then
                 return new(x.x % y.x, x.y % y.y, x.z % y.z)
             elseif type(y) == 'number' then
                 return new(x.x % y, x.y % y, x.z % y)
             end
-        elseif istype('lua_vec3', y) then
+        elseif istype('__vec3', y) then
             if type(x) == 'number' then
                 return new(x % y.x, x % y.y, x % y.z)
             end
@@ -454,7 +454,7 @@ ffi.metatype('lua_vec3', {
         return magnitude(self)
     end,
     __eq = function(x, y)
-        local is_vec3 = type(y) == 'cdata' and istype('lua_vec3', y)
+        local is_vec3 = type(y) == 'cdata' and istype('__vec3', y)
         return is_vec3 and x.x == y.x and x.y == y.y and x.z == y.z
     end,
     __tostring = function(self)

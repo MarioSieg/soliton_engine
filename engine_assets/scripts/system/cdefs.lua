@@ -9,24 +9,24 @@ ffi.cdef [[
     void __lu_panic(const char* msg);
     uint32_t __lu_ffi_cookie(void);
 
-    typedef uint64_t lua_entity_id;
-    typedef uint32_t interop_asset_id;
+    typedef uint64_t __entity_id;
+    typedef uint32_t __asset_id;
 
     typedef struct {
         double x;
         double y;
-    } lua_vec2;
+    } __vec2;
 
     typedef struct {
         double x;
         double y;
         double z;
-    } lua_vec3;
+    } __vec3;
 
     typedef struct {
         double x;
         double y;
         double z;
         double w;
-    } lua_vec4;
+    } __vec4;
 ]]

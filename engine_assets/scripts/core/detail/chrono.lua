@@ -8,31 +8,33 @@ local debugdraw = require 'debugdraw'
 local rad, sin, cos, tan, atan2, asin, pi = math.rad, math.sin, math.cos, math.tan, math.atan2, math.asin, math.pi
 local clamp = gmath.clamp
 
+seasons = { -- Season names and their index
+    spring = 1,
+    summer = 2,
+    autumn = 3,
+    winter = 4
+}
+
+months = { -- Month names and their index
+    january = 1,
+    february = 2,
+    march = 3,
+    april = 4,
+    may = 5,
+    june = 6,
+    july = 7,
+    august = 8,
+    september = 9,
+    october = 10,
+    november = 11,
+    december = 12
+}
+
 -- Simplified time cycle system:
 -- 24 hour day
 -- 30 days per month (12 months)
 -- 30 * 12 = 360 days per year
 local chrono = {
-    seasons = { -- Season names and their index
-        spring = 1,
-        summer = 2,
-        autumn = 3,
-        winter = 4
-    },
-    months = { -- Month names and their index
-        january = 1,
-        february = 2,
-        march = 3,
-        april = 4,
-        may = 5,
-        june = 6,
-        july = 7,
-        august = 8,
-        september = 9,
-        october = 10,
-        november = 11,
-        december = 12
-    },
     time_cycle_scale = 1.0, -- Time cycle speed multiplier
     date = { -- Current date and time
         day = 1,
@@ -42,9 +44,8 @@ local chrono = {
     time = 4.45, -- Current time of day (0.0 - 24.0)
     sun_latitude = 50.0, -- Latitude of the sun
 
-    daytime_coeff = 0.0, -- 0.0 = night, 1.0 = day
-    debug_draw = false, -- Draw debug arrows for sun and moon
-
+    _debug_draw = false, -- Draw debug arrows for sun and moon
+    _daytime_coeff = 0.0, -- 0.0 = night, 1.0 = day
     _north_dir = vec3.unit_x,
     _sun_dir = -vec3.unit_y,
     _sun_dir_quat = quat.identity,
@@ -73,9 +74,9 @@ function chrono:set_time_scale(real_minutes_per_game_day)
 end
 
 -- Calculate day-night factor based on time of day. 0.0 = night, 1.0 = day
-local function daytime_coeff()
+local function _daytime_coeff()
     local hour_angle = rad(chrono.time / 24 * 360 - 180) -- Angle for the time of day
-    chrono.daytime_coeff = clamp((cos(hour_angle) + 1) / 2, 0, 1) -- Normalized day-night factor
+    chrono._daytime_coeff = clamp((cos(hour_angle) + 1) / 2, 0, 1) -- Normalized day-night factor
 end
 
 local function compute_sun_orbit()
@@ -103,7 +104,7 @@ end
 function chrono:set_time(hour)
     compute_sun_orbit()
     compute_sun_dir(clamp(hour, 0, 24) - 12)
-    daytime_coeff()
+    _daytime_coeff()
 end
 
 local season_map = {
@@ -114,7 +115,7 @@ local season_map = {
 }
 
 function chrono:update()
-    if self.debug_draw then
+    if self._debug_draw then
         debugdraw.draw_arrow_dir(vec3.zero, -self._sun_dir * 2.0, colors.yellow)
     end
     self:set_time(self.time)
@@ -125,7 +126,7 @@ function chrono:update()
     self.date.day = (self.date.day > 30) and 1 or self.date.day
     self.date.year = self.date.year + (self.date.month > 12 and 1 or 0)
     self.date.month = (self.date.month > 12) and 1 or self.date.month
-    self.current_season = self.seasons[season_map[self.date.month]]
+    self.current_season = seasons[season_map[self.date.month]]
 end
 
 function chrono:_serialize()

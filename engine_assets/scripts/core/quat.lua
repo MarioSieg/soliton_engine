@@ -7,7 +7,7 @@
 local ffi = require 'ffi'
 
 local istype = ffi.istype
-local rawnew = ffi.typeof('lua_vec4')
+local rawnew = ffi.typeof('__vec4')
 local sqrt, cos, sin, min, max, acos, abs, atan2 = math.sqrt, math.cos, math.sin, math.min, math.max, math.acos, math.abs, math.atan2
 
 local zero = rawnew(0.0, 0.0, 0.0, 0.0)
@@ -142,7 +142,7 @@ local function clone(q)
     return rawnew(q.x, q.y, q.z, q.w)
 end
 
-ffi.metatype('lua_vec4', {
+ffi.metatype('__vec4', {
     __add = function(x, y)
         return rawnew(x.x + y.x, x.y + y.y, x.z + y.z, x.w + y.w)
     end,
@@ -150,7 +150,7 @@ ffi.metatype('lua_vec4', {
         return rawnew(x.x - y.x, x.y - y.y, x.z - y.z, x.w - y.w)
     end,
     __mul = function(x, y)
-        if type(y) == 'cdata' and istype('lua_vec4', y) then
+        if type(y) == 'cdata' and istype('__vec4', y) then
             local xx = x.x * y.w + x.w * y.x + x.y * y.z - x.z * y.y
             local yy = x.y * y.w + x.w * y.y + x.z * y.x - x.x * y.z
             local zz = x.z * y.w + x.w * y.z + x.x * y.y - x.y * y.x
@@ -170,7 +170,7 @@ ffi.metatype('lua_vec4', {
         return magnitude(self)
     end,
     __eq = function(x, y)
-        local is_vec4 = type(y) == 'cdata' and istype('lua_vec4', y)
+        local is_vec4 = type(y) == 'cdata' and istype('__vec4', y)
         return is_vec4 and x.x == y.x and x.y == y.y and x.z == y.z and x.w == y.w
     end,
     __tostring = function(self)

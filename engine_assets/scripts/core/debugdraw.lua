@@ -10,18 +10,18 @@ local cpp = ffi.C
 
 ffi.cdef [[
     void __lu_dd_begin(void);
-    void __lu_dd_draw_line(lua_vec3 from, lua_vec3 to, lua_vec3 color);
-    void __lu_dd_draw_arrow(lua_vec3 from, lua_vec3 to, lua_vec3 color, double arrowhead_length);
-    void __lu_dd_draw_arrow_dir(lua_vec3 from, lua_vec3 dir, lua_vec3 color, double arrowhead_length);
-    void __lu_dd_draw_transform(lua_vec3 pos, lua_vec4 rot, double axis_len);
-    void __lu_dd_grid(lua_vec3 dims, double step, lua_vec3 color);
+    void __lu_dd_draw_line(__vec3 from, __vec3 to, __vec3 color);
+    void __lu_dd_draw_arrow(__vec3 from, __vec3 to, __vec3 color, double arrowhead_length);
+    void __lu_dd_draw_arrow_dir(__vec3 from, __vec3 dir, __vec3 color, double arrowhead_length);
+    void __lu_dd_draw_transform(__vec3 pos, __vec4 rot, double axis_len);
+    void __lu_dd_grid(__vec3 dims, double step, __vec3 color);
     void __lu_dd_gizmo_enable(bool enable);
-    void __lu_dd_gizmo_manipulator(lua_entity_id id, int op, int mode, bool enable_snap, double snap_x, lua_vec3 color);
+    void __lu_dd_gizmo_manipulator(__entity_id id, int op, int mode, bool enable_snap, double snap_x, __vec3 color);
     void __lu_dd_enable_depth_test(bool enable);
     void __lu_dd_enable_fade(bool enable);
     void __lu_dd_set_fade_distance(double near, double far);
 
-    void __lu_dd_draw_scene_with_aabbs(lua_vec3 color);
+    void __lu_dd_draw_scene_with_aabbs(__vec3 color);
     void __lu_dd_draw_physics_debug(void);
     void __lu_dd_draw_native_log(bool scroll);
     void __lu_dd_draw_native_profiler(void);

@@ -10,14 +10,14 @@ local cpp = ffi.C
 local formats = require 'detail.texture_format'
 
 ffi.cdef [[
-    interop_asset_id __lu_texture_load(const char* path);
-    uint32_t __lu_texture_get_width(interop_asset_id id);
-    uint32_t __lu_texture_get_height(interop_asset_id id);
-    uint32_t __lu_texture_get_depth(interop_asset_id id);
-    uint32_t __lu_texture_get_mip_levels(interop_asset_id id);
-    uint32_t __lu_texture_get_array_size(interop_asset_id id);
-    bool __lu_texture_is_cubemap(interop_asset_id id);
-    uint32_t __lu_texture_get_format(interop_asset_id id);
+    __asset_id __lu_texture_load(const char* path);
+    uint32_t __lu_texture_get_width(__asset_id id);
+    uint32_t __lu_texture_get_height(__asset_id id);
+    uint32_t __lu_texture_get_depth(__asset_id id);
+    uint32_t __lu_texture_get_mip_levels(__asset_id id);
+    uint32_t __lu_texture_get_array_size(__asset_id id);
+    bool __lu_texture_is_cubemap(__asset_id id);
+    uint32_t __lu_texture_get_format(__asset_id id);
 ]]
 
 local invalid_id = 0x7fffffff

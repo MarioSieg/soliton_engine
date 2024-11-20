@@ -9,13 +9,13 @@ local ffi = require 'ffi'
 local cpp = ffi.C
 
 ffi.cdef [[
-    bool __lu_com_character_controller_exists(lua_entity_id id);
-    void __lu_com_character_controller_add(lua_entity_id id);
-    void __lu_com_character_controller_remove(lua_entity_id id);
-    lua_vec3 __lu_com_character_controller_get_linear_velocity(lua_entity_id id);
-    void __lu_com_character_controller_set_linear_velocity(lua_entity_id id, lua_vec3 velocity);
-    int __lu_com_character_controller_get_ground_state(lua_entity_id id);
-    lua_vec3 __lu_com_character_controller_get_ground_normal(lua_entity_id id);
+    bool __lu_com_character_controller_exists(__entity_id id);
+    void __lu_com_character_controller_add(__entity_id id);
+    void __lu_com_character_controller_remove(__entity_id id);
+    __vec3 __lu_com_character_controller_get_linear_velocity(__entity_id id);
+    void __lu_com_character_controller_set_linear_velocity(__entity_id id, __vec3 velocity);
+    int __lu_com_character_controller_get_ground_state(__entity_id id);
+    __vec3 __lu_com_character_controller_get_ground_normal(__entity_id id);
 ]]
 
 ground_state = { -- Keep in sync with cpp++: CharacterBase.h

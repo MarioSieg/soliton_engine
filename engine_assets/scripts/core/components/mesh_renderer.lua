@@ -11,12 +11,12 @@ local band, bor, bxor, bnot = bit.band, bit.bor, bit.bxor, bit.bnot
 local cpp = ffi.C
 
 ffi.cdef [[
-    bool __lu_com_mesh_renderer_exists(lua_entity_id id);
-    void __lu_com_mesh_renderer_add(lua_entity_id id);
-    void __lu_com_mesh_renderer_remove(lua_entity_id id);
+    bool __lu_com_mesh_renderer_exists(__entity_id id);
+    void __lu_com_mesh_renderer_add(__entity_id id);
+    void __lu_com_mesh_renderer_remove(__entity_id id);
 
-    uint32_t __lu_com_mesh_renderer_get_flags(lua_entity_id id);
-    void __lu_com_mesh_renderer_set_flags(lua_entity_id id, uint32_t flags);
+    uint32_t __lu_com_mesh_renderer_get_flags(__entity_id id);
+    void __lu_com_mesh_renderer_set_flags(__entity_id id, uint32_t flags);
 ]]
 
 render_flags = { -- Keep in sync with enum render_flags::$ in components.hpp

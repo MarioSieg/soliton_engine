@@ -13,7 +13,7 @@ ffi.cdef [[
     bool __lu_input_is_key_released(int key_code);
     bool __lu_input_is_mouse_button_pressed(int mb_code);
     bool __lu_input_is_mouse_button_released(int mb_code);
-    lua_vec2 __lu_input_get_mouse_pos(void);
+    __vec2 __lu_input_get_mouse_pos(void);
 ]]
 
 --- input Module

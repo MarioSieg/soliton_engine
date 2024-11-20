@@ -12,13 +12,13 @@ local band, bor, bxor, bnot = bit.band, bit.bor, bit.bxor, bit.bnot
 local cpp = ffi.C
 
 ffi.cdef [[
-    bool __lu_entity_is_valid(lua_entity_id id);
-    const char* __lu_entity_get_name(lua_entity_id id);
-    void __lu_entity_set_name(lua_entity_id id, const char* name);
-    uint32_t __lu_entity_get_flags(lua_entity_id id);
-    void __lu_entity_set_flags(lua_entity_id id, uint32_t flags);
+    bool __lu_entity_is_valid(__entity_id id);
+    const char* __lu_entity_get_name(__entity_id id);
+    void __lu_entity_set_name(__entity_id id, const char* name);
+    uint32_t __lu_entity_get_flags(__entity_id id);
+    void __lu_entity_set_flags(__entity_id id, uint32_t flags);
 
-    void __lu_scene_despawn_entity(lua_entity_id id);
+    void __lu_scene_despawn_entity(__entity_id id);
 ]]
 
 --- entity flags for the entity class.
@@ -142,11 +142,11 @@ end
 -- Internal use only.
 function entity:_serialize()
     local components = {}
-    for _, component in pairs(component_registry) do
+    for name, component in pairs(component_registry) do
         if self:has_component(component) then
             local instance = self:get_component(component)
             if instance and instance['_serialize'] then
-                components[tostring(entity._id)] = instance:_serialize()
+                components[name] = instance:_serialize()
             end
         end
     end

@@ -9,16 +9,16 @@ local ffi = require 'ffi'
 local cpp = ffi.C
 
 ffi.cdef [[
-    bool __lu_com_camera_exists(lua_entity_id id);
-    void __lu_com_camera_add(lua_entity_id id);
-    void __lu_com_camera_remove(lua_entity_id id);
+    bool __lu_com_camera_exists(__entity_id id);
+    void __lu_com_camera_add(__entity_id id);
+    void __lu_com_camera_remove(__entity_id id);
     
-    double __lu_com_camera_get_fov(lua_entity_id id);
-    void __lu_com_camera_set_fov(lua_entity_id id, double fov);
-    double __lu_com_camera_get_near_clip(lua_entity_id id);
-    void __lu_com_camera_set_near_clip(lua_entity_id id, double near);
-    double __lu_com_camera_get_far_clip(lua_entity_id id);
-    void __lu_com_camera_set_far_clip(lua_entity_id id, double far);
+    double __lu_com_camera_get_fov(__entity_id id);
+    void __lu_com_camera_set_fov(__entity_id id, double fov);
+    double __lu_com_camera_get_near_clip(__entity_id id);
+    void __lu_com_camera_set_near_clip(__entity_id id, double near);
+    double __lu_com_camera_get_far_clip(__entity_id id);
+    void __lu_com_camera_set_far_clip(__entity_id id, double far);
 ]]
 
 local camera = {

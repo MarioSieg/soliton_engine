@@ -7,26 +7,27 @@
 
 local ffi = require 'ffi'
 local utility = require 'utility'
+local serializer = require 'detail.serializer'
 
 local cpp = ffi.C
 
 ffi.cdef [[
-    bool __lu_com_transform_exists(lua_entity_id id);
-    void __lu_com_transform_add(lua_entity_id id);
-    void __lu_com_transform_remove(lua_entity_id id);
+    bool __lu_com_transform_exists(__entity_id id);
+    void __lu_com_transform_add(__entity_id id);
+    void __lu_com_transform_remove(__entity_id id);
 
-    void __lu_com_transform_set_pos(lua_entity_id id, double x, double y, double z);
-    lua_vec3 __lu_com_transform_get_pos(lua_entity_id id);
-    void __lu_com_transform_set_rot(lua_entity_id id, double x, double y, double z, double w);
-    lua_vec4 __lu_com_transform_get_rot(lua_entity_id id);
-    void __lu_com_transform_set_scale(lua_entity_id id, double x, double y, double z);
-    lua_vec3 __lu_com_transform_get_scale(lua_entity_id id);
-    lua_vec3 __lu_com_transform_get_forward(lua_entity_id id);
-    lua_vec3 __lu_com_transform_get_backward(lua_entity_id id);
-    lua_vec3 __lu_com_transform_get_up(lua_entity_id id);
-    lua_vec3 __lu_com_transform_get_down(lua_entity_id id);
-    lua_vec3 __lu_com_transform_get_right(lua_entity_id id);
-    lua_vec3 __lu_com_transform_get_left(lua_entity_id id);
+    void __lu_com_transform_set_pos(__entity_id id, double x, double y, double z);
+    __vec3 __lu_com_transform_get_pos(__entity_id id);
+    void __lu_com_transform_set_rot(__entity_id id, double x, double y, double z, double w);
+    __vec4 __lu_com_transform_get_rot(__entity_id id);
+    void __lu_com_transform_set_scale(__entity_id id, double x, double y, double z);
+    __vec3 __lu_com_transform_get_scale(__entity_id id);
+    __vec3 __lu_com_transform_get_forward(__entity_id id);
+    __vec3 __lu_com_transform_get_backward(__entity_id id);
+    __vec3 __lu_com_transform_get_up(__entity_id id);
+    __vec3 __lu_com_transform_get_down(__entity_id id);
+    __vec3 __lu_com_transform_get_right(__entity_id id);
+    __vec3 __lu_com_transform_get_left(__entity_id id);
 ]]
 
 local transform = {
@@ -43,9 +44,9 @@ local transform = {
     _remove = function(entity_id) cpp.__lu_com_transform_remove(entity_id) end,
     _serialize = function(self)
         return {
-            position = utility.serialize_vec3(self:get_position()),
-            rotation = utility.serialize_vec3(self:get_rotation()),
-            scale = utility.serialize_vec3(self:get_scale())
+            position = serializer.serialize(self:get_position()),
+            rotation = serializer.serialize(self:get_rotation()),
+            scale = serializer.serialize(self:get_scale())
         }
     end,
 

@@ -7,7 +7,7 @@
 local ffi = require 'ffi'
 
 local istype = ffi.istype
-local rawnew = ffi.typeof('lua_vec2')
+local rawnew = ffi.typeof('__vec2')
 local sqrt, cos, sin, atan2, min, max = math.sqrt, math.cos, math.sin, math.atan2, math.min, math.max
 
 local zero = rawnew(0.0, 0.0)
@@ -87,15 +87,15 @@ local function clone(v)
 end
 
 
-ffi.metatype('lua_vec2', {
+ffi.metatype('__vec2', {
     __add = function(x, y)
-        if istype('lua_vec2', x) then
-            if istype('lua_vec2', y) then
+        if istype('__vec2', x) then
+            if istype('__vec2', y) then
                 return rawnew(x.x + y.x, x.y + y.y)
             elseif type(y) == 'number' then
                 return rawnew(x.x + y, x.y + y)
             end
-        elseif istype('lua_vec2', y) then
+        elseif istype('__vec2', y) then
             if type(x) == 'number' then
                 return rawnew(x + y.x, x + y.y)
             end
@@ -103,13 +103,13 @@ ffi.metatype('lua_vec2', {
         error('Invalid operands for vec2 addition.')
     end,
     __sub = function(x, y)
-        if istype('lua_vec2', x) then
-            if istype('lua_vec2', y) then
+        if istype('__vec2', x) then
+            if istype('__vec2', y) then
                 return rawnew(x.x - y.x, x.y - y.y)
             elseif type(y) == 'number' then
                 return rawnew(x.x - y, x.y - y)
             end
-        elseif istype('lua_vec2', y) then
+        elseif istype('__vec2', y) then
             if type(x) == 'number' then
                 return rawnew(x - y.x, x - y.y)
             end
@@ -117,13 +117,13 @@ ffi.metatype('lua_vec2', {
         error('Invalid operands for vec2 subtraction.')
     end,
     __mul = function(x, y)
-        if istype('lua_vec2', x) then
-            if istype('lua_vec2', y) then
+        if istype('__vec2', x) then
+            if istype('__vec2', y) then
                 return rawnew(x.x * y.x, x.y * y.y)
             elseif type(y) == 'number' then
                 return rawnew(x.x * y, x.y * y)
             end
-        elseif istype('lua_vec2', y) then
+        elseif istype('__vec2', y) then
             if type(x) == 'number' then
                 return rawnew(x * y.x, x * y.y)
             end
@@ -131,13 +131,13 @@ ffi.metatype('lua_vec2', {
         error('Invalid operands for vec2 multiplication.')
     end,
     __div = function(x, y)
-        if istype('lua_vec2', x) then
-            if istype('lua_vec2', y) then
+        if istype('__vec2', x) then
+            if istype('__vec2', y) then
                 return rawnew(x.x / y.x, x.y / y.y)
             elseif type(y) == 'number' then
                 return rawnew(x.x / y, x.y / y)
             end
-        elseif istype('lua_vec2', y) then
+        elseif istype('__vec2', y) then
             if type(x) == 'number' then
                 return rawnew(x / y.x, x / y.y)
             end
@@ -145,13 +145,13 @@ ffi.metatype('lua_vec2', {
         error('Invalid operands for vec2 division.')
     end,
     __mod = function(x, y)
-        if istype('lua_vec2', x) then
-            if istype('lua_vec2', y) then
+        if istype('__vec2', x) then
+            if istype('__vec2', y) then
                 return rawnew(x.x % y.x, x.y % y.y)
             elseif type(y) == 'number' then
                 return rawnew(x.x % y, x.y % y)
             end
-        elseif istype('lua_vec2', y) then
+        elseif istype('__vec2', y) then
             if type(x) == 'number' then
                 return rawnew(x % y.x, x % y.y)
             end
@@ -165,7 +165,7 @@ ffi.metatype('lua_vec2', {
         return magnitude(self)
     end,
     __eq = function(x, y)
-        local is_vec2 = type(y) == 'cdata' and istype('lua_vec2', y)
+        local is_vec2 = type(y) == 'cdata' and istype('__vec2', y)
         return is_vec2 and x.x == y.x and x.y == y.y
     end,
     __tostring = function(self)

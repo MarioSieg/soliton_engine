@@ -5,8 +5,9 @@ local decoder = (require('lunajson.decoder'))()
 local encoder = (require('lunajson.encoder'))()
 
 local function save(path, data)
+    local json_data = encoder(data)
     local file = io.open(path, 'w')
-    file:write(encoder(data))
+    file:write(json_data)
     file:close()
 end
 
