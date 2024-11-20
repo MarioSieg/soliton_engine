@@ -18,13 +18,18 @@ namespace soliton::assetmgr {
         }
 
         [[nodiscard]] auto insert(eastl::unique_ptr<T>&& asset = nullptr, eastl::string_view path = {}) -> T* {
-            panic_assert(!path.empty());
             if constexpr (std::is_constructible_v<T>) {
                 if (!asset) {
                     asset = eastl::make_unique<T>();
                 }
             }
             panic_assert(asset != nullptr);
+            if (path.empty()) {
+                const uuids::uuid& uuid = asset->get_uuid();
+                const_cast<eastl::string&>(asset->get_asset_path()) // Safe because underlying string is not const
+                    = to_string(uuid).c_str(); // Use UUID as path
+                path = asset->get_asset_path();
+            }
             if (const auto it = m_loaded.find(path); it != m_loaded.end()) [[likely]] {
                 T* const loaded = &*it->second;
                 panic_assert(loaded != nullptr);
