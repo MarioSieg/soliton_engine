@@ -11,6 +11,7 @@ local vec3 = require 'vec3'
 local scene_import_flags = require 'detail.import_flags'
 local json = require 'json'
 local utility = require 'utility'
+local time = require 'time'
 
 local a_texture = require 'assets.texture'
 
@@ -142,8 +143,10 @@ function scene.load(file, import_flags)
 end
 
 function scene.save(file)
+    local now = time.hpc_clock_now()
     local entities = {}
     scene._entity_query_start()
+    local num_entities = 0
     for i = 0, scene._entity_query_next() - 1 do
         local entity = scene._entity_query_lookup(i)
         if entity:is_valid() then
@@ -154,6 +157,7 @@ function scene.save(file)
                 acc = acc + 1
             end
             entities[name] = entity:_serialize()
+            num_entities = num_entities + 1
         end
     end
     scene._entity_query_end()
@@ -161,6 +165,7 @@ function scene.save(file)
     data.entities = entities
     json.save(file, data)
     collectgarbage_full_cycle()
+    print(string.format('Saved scene %s with %d entities to %s in %.2f ms', scene.name, num_entities, file, time.hpc_clock_elapsed_ms(now)))
 end
 
 -- Internal use only.
