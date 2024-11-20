@@ -145,7 +145,7 @@ function entity:_serialize()
     for _, component in pairs(component_registry) do
         if self:has_component(component) then
             local instance = self:get_component(component)
-            if instance then
+            if instance and instance['_serialize'] then
                 table.insert(components, instance:_serialize())
             end
         end
