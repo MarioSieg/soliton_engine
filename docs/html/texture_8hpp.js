@@ -1,5 +1,6 @@
 var texture_8hpp =
 [
-    [ "lu::graphics::texture_allocator", "classlu_1_1graphics_1_1texture__allocator.html", "classlu_1_1graphics_1_1texture__allocator" ],
-    [ "lu::graphics::texture", "classlu_1_1graphics_1_1texture.html", "classlu_1_1graphics_1_1texture" ]
+    [ "soliton::graphics::texture_descriptor", "structsoliton_1_1graphics_1_1texture__descriptor.html", "structsoliton_1_1graphics_1_1texture__descriptor" ],
+    [ "soliton::graphics::texture_data_supplier", "structsoliton_1_1graphics_1_1texture__data__supplier.html", "structsoliton_1_1graphics_1_1texture__data__supplier" ],
+    [ "soliton::graphics::texture", "classsoliton_1_1graphics_1_1texture.html", "classsoliton_1_1graphics_1_1texture" ]
 ];

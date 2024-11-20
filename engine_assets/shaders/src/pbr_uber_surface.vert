@@ -24,10 +24,6 @@ out gl_PerVertex {
     vec4 gl_Position;
 };
 
-layout (std140, set = LU_GLSL_DESCRIPTOR_SET_IDX_PER_FRAME, binding = 0) uniform uniformPerFrameUBO {
-	perFrameData uboPerFrame;
-};
-
 layout (std140, push_constant, std430) uniform PushConstants {
 	mat4 ModelMatrix;
 	mat4 ModelViewProj;

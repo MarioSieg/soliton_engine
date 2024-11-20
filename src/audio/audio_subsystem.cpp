@@ -2,12 +2,12 @@
 
 #include "audio_subsystem.hpp"
 #include "../scene/scene_mgr.hpp"
-#include "../scripting/system_variable.hpp"
+#include "../core/system_variable.hpp"
 
 #include <mimalloc.h>
 
-namespace lu::audio {
-    static const system_variable<std::uint32_t> sv_max_audio_channels {"audio.max_channels", {512}};
+namespace soliton::audio {
+    static const system_variable<std::int64_t> sv_max_audio_channels {"audio.max_channels", {512}};
 
     static auto print_audio_driver_info(FMOD::System* sys, int id) -> void;
     static auto print_speaker_mode_info(FMOD_SPEAKERMODE mode) -> void;
@@ -33,14 +33,10 @@ namespace lu::audio {
         if (int driverID = 0; m_system->getDriver(&driverID) == FMOD_RESULT::FMOD_OK) [[likely]] {
             print_audio_driver_info(m_system, driverID);
         }
-
-        m_test.emplace("/RES/audio/ambience.ogg");
-        m_audio_source.clip = &*m_test;
     }
 
     audio_subsystem::~audio_subsystem() {
         log_info("Shutting down audio engine");
-        m_test.reset();
         fmod_check(m_system->close());
         fmod_check(m_system->release());
     }
@@ -70,10 +66,6 @@ namespace lu::audio {
             &f_for,
             &f_up
         ));
-    }
-
-    auto audio_subsystem::on_start(scene& scene) -> void {
-        m_audio_source.play();
     }
 
     static auto print_audio_driver_info(FMOD::System* const sys, const int id) -> void {

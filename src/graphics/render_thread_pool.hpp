@@ -6,7 +6,7 @@
 #include "vulkancore/context.hpp"
 #include "vulkancore/command_buffer.hpp"
 
-namespace lu::graphics {
+namespace soliton::graphics {
     using render_bucket_callback = auto (
         vkb::command_buffer& cmd,
         const std::int32_t bucket_id,

@@ -2,7 +2,7 @@
 
 #include "deletion_queue.hpp"
 
-namespace lu::vkb {
+namespace soliton::vkb {
     deletion_queue::deletion_queue() {
         m_deleters.reserve(512);
     }

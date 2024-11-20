@@ -9,7 +9,7 @@
 
 #include "../vulkancore/context.hpp"
 
-namespace lu::graphics {
+namespace soliton::graphics {
     // Textures are converted to this format when native format is not supported on the GPU
     static constexpr bimg::TextureFormat::Enum k_fallback_format = bimg::TextureFormat::RGBA8;
 

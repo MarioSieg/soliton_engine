@@ -2,7 +2,7 @@
 
 #include "transform.hpp"
 
-namespace lu::com {
+namespace soliton::com {
     transform::transform() noexcept {
         XMStoreFloat4(&this->position, XMVectorZero());
         XMStoreFloat4(&this->rotation, XMQuaternionIdentity());

@@ -3,7 +3,7 @@
 #include "audio_source.hpp"
 #include "../../audio/audio_subsystem.hpp"
 
-namespace lu::com {
+namespace soliton::com {
     auto audio_source::play() -> void {
         if (!clip) [[unlikely]] {
             log_warn("no audio clip to play");

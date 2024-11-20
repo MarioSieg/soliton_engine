@@ -11,7 +11,7 @@
 #undef False
 #endif
 
-namespace lu::vkb {
+namespace soliton::vkb {
     swapchain::swapchain(vk::Instance instance, vk::PhysicalDevice physical_device, vk::Device logical_device) {
         panic_assert(instance);
         panic_assert(physical_device);

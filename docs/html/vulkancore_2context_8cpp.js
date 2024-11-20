@@ -1,6 +1,6 @@
 var vulkancore_2context_8cpp =
 [
-    [ "cv_enable_vsync", "vulkancore_2context_8cpp.html#a46c92a135fda2880706573bbdde5e449", null ],
-    [ "cv_enable_vulkan_validation_layers", "vulkancore_2context_8cpp.html#afe93a62b151669da13be19b4167ae4f9", null ],
-    [ "s_init", "vulkancore_2context_8cpp.html#a432ef1b139eeed93467e8f85edbfb873", null ]
+    [ "s_init", "vulkancore_2context_8cpp.html#a509038e3f3f88b9d552119f77c4541eb", null ],
+    [ "sv_enable_vsync", "vulkancore_2context_8cpp.html#aca73a50f4dad4975e65bff06b2e03100", null ],
+    [ "sv_enable_vulkan_validation_layers", "vulkancore_2context_8cpp.html#a848b2bbf90e2d91b294e3ab841ae1720", null ]
 ];

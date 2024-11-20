@@ -6,7 +6,7 @@
 
 #include <fmod.hpp>
 
-namespace lu::audio {
+namespace soliton::audio {
     struct audio_clip_descriptor final {
         bool enable_3d = true;
         bool enable_looping = true;

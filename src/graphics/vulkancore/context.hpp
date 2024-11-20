@@ -9,11 +9,11 @@
 
 #include <DirectXMath.h>
 
-namespace lu::graphics {
+namespace soliton::graphics {
     class graphics_subsystem;
 }
 
-namespace lu::vkb {
+namespace soliton::vkb {
     struct context_desc final {
         GLFWwindow* window = nullptr;
         std::uint32_t concurrent_frames = 3;
@@ -75,7 +75,6 @@ namespace lu::vkb {
         auto setup_render_pass() -> void;
         auto setup_frame_buffer() -> void;
         auto create_pipeline_cache() -> void;
-        auto recreate_swapchain() -> void;
         auto create_msaa_target() -> void;
 
         auto destroy_depth_stencil() const -> void;

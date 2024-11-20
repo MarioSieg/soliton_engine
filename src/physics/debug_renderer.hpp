@@ -10,7 +10,7 @@
 #include <Jolt/Physics/PhysicsSystem.h>
 #include <Jolt/Renderer/DebugRenderer.h>
 
-namespace lu::physics {
+namespace soliton::physics {
     class debug_renderer final : public JPH::DebugRenderer {
     public:
         static auto begin() -> void;

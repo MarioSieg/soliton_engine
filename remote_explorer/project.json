@@ -1,0 +1,28 @@
+{
+    "id": "flecs.explorer",
+    "type": "application",
+    "value": {
+        "use": [
+            "flecs",
+            "flecs.components.transform",
+            "flecs.components.graphics",
+            "flecs.components.geometry",
+            "flecs.components.physics",
+            "flecs.components.gui",
+            "flecs.systems.physics",
+            "flecs.systems.transform",
+            "flecs.systems.sokol",
+            "flecs.game"
+        ],
+        "standalone": true
+    },
+    "lang.c": {
+        "${os linux}": {
+            "lib": ["rt", "pthread", "m"]
+        },
+        "${target em}": {
+            "ldflags": ["-sSTACK_SIZE=1000000", "-Wl,-u,ntohs"],
+            "embed": ["etc/assets"]
+        }
+    }
+}

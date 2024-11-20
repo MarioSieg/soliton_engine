@@ -4,14 +4,14 @@
 
 #include "prelude.hpp"
 
-namespace lu::graphics {
+namespace soliton::graphics {
     class mesh;
     class material;
     class pipeline_base;
     class graphics_pipeline;
 }
 
-namespace lu::vkb {
+namespace soliton::vkb {
     template <typename T>
     concept is_push_constant_pod = requires {
         std::is_standard_layout_v<T>;

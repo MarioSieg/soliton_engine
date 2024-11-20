@@ -8,7 +8,7 @@ import shutil
 SHIPPING_BUILD_DIR = 'shipping_build'
 SHIPPING_BUILD_OUTPUT_DIR = SHIPPING_BUILD_DIR + '/final'
 ARTIFACTS_DIR = SHIPPING_BUILD_DIR + '/artifacts'
-LUNAM_ENGINE_BINARY = ARTIFACTS_DIR + '/lunam'
+LUNAM_ENGINE_BINARY = ARTIFACTS_DIR + '/soliton_engine'
 ENGINE_ASSETS_DIR = 'engine_assets'
 COM_C = '/usr/bin/clang'
 COM_CXX = '/usr/bin/clang++'
@@ -23,12 +23,12 @@ def build_lupack_archive_from_dir(src_dir: str, filename: str):
 
 start_time = time.time()
 
-print('########################## Lunam Engine Shipping Tool ##########################')
-print('This tool will create a shipping build of the Lunam Engine.')
+print('########################## Soliton Engine Shipping Tool ##########################')
+print('This tool will create a shipping build of the Soliton Engine.')
 print('Starting the building process...')
 
 if not path.exists('engine_assets'):  # Check that we are in the correct directory
-    print('Error: This script must be run from the root directory of the Lunam Engine project.')
+    print('Error: This script must be run from the root directory of the Soliton Engine project.')
     exit(-1)
 
 if path.exists(SHIPPING_BUILD_DIR):
@@ -59,4 +59,4 @@ build_lupack_archive_from_dir(ENGINE_ASSETS_DIR, SHIPPING_BUILD_OUTPUT_DIR + '/e
 
 # Compose final files
 print('Composing final files...')
-shutil.copy(LUNAM_ENGINE_BINARY, SHIPPING_BUILD_OUTPUT_DIR + '/lunam')
+shutil.copy(LUNAM_ENGINE_BINARY, SHIPPING_BUILD_OUTPUT_DIR + '/soliton_engine')

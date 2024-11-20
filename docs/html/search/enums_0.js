@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['_24_0',['$',['../structlu_1_1com_1_1entity__flags.html#a00bef51a1e4f55fad9950bb2504a700b',1,'lu::com::entity_flags::$'],['../structlu_1_1com_1_1render__flags.html#acb2d8e40a13303c55e85b46059935cc8',1,'lu::com::render_flags::$']]]
+  ['_24_0',['$',['../structsoliton_1_1com_1_1render__flags.html#ae954461d037827f1c1c4794061a8dce1',1,'soliton::com::render_flags::$()'],['../structsoliton_1_1com_1_1entity__flags.html#a687637e3001a73946e77e1392a614047',1,'soliton::com::entity_flags::$()']]]
 ];

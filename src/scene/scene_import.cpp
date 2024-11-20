@@ -11,7 +11,7 @@
 #include <ankerl/unordered_dense.h>
 #include <DirectXMath.h>
 
-namespace lu {
+namespace soliton {
     auto import_from_file(const eastl::string& path, const std::uint32_t load_flags) -> eastl::unique_ptr<scene> {
         log_info("Importing scene from file '{}'", path);
 
@@ -78,9 +78,9 @@ namespace lu {
 
                 auto load_tex = [&, binding = 0u](
                     const std::initializer_list<aiTextureType> types,
-                    const assetmgr::asset_ref fallback
+                    graphics::texture* fallback
                 ) mutable -> graphics::material_property {
-                    panic_assert(fallback != assetmgr::asset_ref_invalid);
+                    panic_assert(fallback != nullptr);
                     for (auto textureType = types.begin(); textureType != types.end(); std::advance(textureType, 1)) {
                         if (!mat->GetTextureCount(*textureType)) [[unlikely]] continue;
                         aiString name {};
@@ -107,11 +107,10 @@ namespace lu {
                     };
                 };
 
-                auto& registry = new_scene->get_asset_registry<graphics::material>();
-                auto [material_ref, material] = new_scene->get_asset_registry<graphics::material>().insert();
+                graphics::material* material = new_scene->get_asset_registry<graphics::material>().insert();
                 material->properties["tex_albedo"]      = load_tex({aiTextureType_DIFFUSE, aiTextureType_BASE_COLOR}, error_texture);
                 material->properties["tex_normal"]      = load_tex({aiTextureType_NORMALS, aiTextureType_NORMAL_CAMERA}, default_texture_b);
-                material->properties["tex_roughness"]   = load_tex({aiTextureType_SPECULAR, aiTextureType_METALNESS, aiTextureType_DIFFUSE_ROUGHNESS, aiTextureType_SHININESS}, default_texture_b);
+                material->properties["tex_roughness"]   = load_tex({aiTextureType_SPECULAR, aiTextureType_METALNESS, aiTextureType_DIFFUSE_ROUGHNESS, aiTextureType_SHININESS}, default_texture_w);
                 material->properties["tex_height"]      = load_tex({aiTextureType_DIFFUSE, aiTextureType_BASE_COLOR}, default_texture_b);
                 material->properties["tex_ao"]          = load_tex({aiTextureType_DIFFUSE, aiTextureType_BASE_COLOR}, default_texture_b);
                 material->properties["tex_emission"]    = load_tex({aiTextureType_EMISSION_COLOR, aiTextureType_EMISSIVE}, default_texture_b);
@@ -121,7 +120,7 @@ namespace lu {
 
                 eastl::span span {&mesh, 1};
                 auto& mesh_registry = new_scene->get_asset_registry<graphics::mesh>();
-                renderer->meshes.emplace_back(mesh_registry.insert(eastl::make_unique<graphics::mesh>(span)).second);
+                renderer->meshes.emplace_back(mesh_registry.insert(eastl::make_unique<graphics::mesh>(span)));
             }
             for (unsigned i = 0; i < node->mNumChildren; ++i) {
                 visitor(node->mChildren[i]);

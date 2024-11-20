@@ -10,7 +10,7 @@
 #include "../temporal_blue_noise.hpp"
 #include "../../scene/components.hpp"
 
-namespace lu::graphics::pipelines {
+namespace soliton::graphics::pipelines {
     class pbr_pipeline final : public graphics_pipeline {
     public:
         explicit pbr_pipeline();
@@ -34,14 +34,16 @@ namespace lu::graphics::pipelines {
         virtual auto on_bind(vkb::command_buffer& cmd) const -> void override;
 
     private:
-        pbr_filter_processor m_pbr_filter_processor {};
+        eastl::optional<pbr_filter_processor> m_pbr_filter_processor {};
         vk::DescriptorSetLayout m_pbr_descriptor_set_layout {};
         vk::DescriptorSet m_pbr_descriptor_set {};
 
-        virtual auto configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> void override;
-        virtual auto configure_pipeline_layout(eastl::vector<vk::DescriptorSetLayout>& layouts, eastl::vector<vk::PushConstantRange>& ranges) -> void override;
-        virtual auto configure_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> void override;
-        virtual auto configure_multisampling(vk::PipelineMultisampleStateCreateInfo& cfg) -> void override;
+        [[nodiscard]] virtual auto pre_configure() -> bool override;
+        [[nodiscard]] virtual auto configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> bool override;
+        [[nodiscard]] virtual auto configure_pipeline_layout(eastl::vector<vk::DescriptorSetLayout>& layouts, eastl::vector<vk::PushConstantRange>& ranges) -> bool override;
+        [[nodiscard]] virtual auto configure_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> bool override;
+        [[nodiscard]] virtual auto configure_multisampling(vk::PipelineMultisampleStateCreateInfo& cfg) -> bool override;
+        [[nodiscard]] virtual auto configure_rasterizer(vk::PipelineRasterizationStateCreateInfo& cfg) -> bool override;
 
         HOTPROC auto render_single_mesh(
             vkb::command_buffer& cmd,

@@ -2,6 +2,6 @@
 
 #include "mesh_renderer.hpp"
 
-namespace lu::com {
+namespace soliton::com {
 
 }

@@ -14,7 +14,7 @@
 
 #include "utils.hpp"
 
-namespace lu {
+namespace soliton {
     /**
      * Bounded single-producer single-consumer wait and lock-free queue.
      * Only a single writer thread can perform enqueue operations

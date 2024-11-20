@@ -4,7 +4,7 @@
 
 #include "core.hpp"
 
-namespace lu {
+namespace soliton {
     class scene;
 
     // Base class for all engine kernel subsystems

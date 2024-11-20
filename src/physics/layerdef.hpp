@@ -4,7 +4,7 @@
 
 #include <Jolt/Jolt.h>
 
-namespace lu::physics::layers {
+namespace soliton::physics::layers {
     constexpr JPH::ObjectLayer k_static {0}; // non moving
     constexpr JPH::ObjectLayer k_dynamic {1}; // moving
     constexpr std::uint32_t k_num {2};

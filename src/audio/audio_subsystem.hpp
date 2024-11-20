@@ -10,7 +10,7 @@
 #include <fmod.hpp>
 #include <fmod_errors.h>
 
-namespace lu::audio {
+namespace soliton::audio {
     #define fmod_check(f) \
         if (const FMOD_RESULT rrr = (f); rrr != FMOD_OK) [[unlikely]] { \
             panic("Audio engine error: {} -> " #f, FMOD_ErrorString(rrr)); \
@@ -24,12 +24,9 @@ namespace lu::audio {
         [[nodiscard]] static auto get_system() noexcept -> FMOD::System* { return m_system; }
 
     private:
-        virtual auto on_start(scene& scene) -> void override;
         virtual auto on_post_tick() -> void override;
         auto set_audio_listener_transform(const com::transform& transform) noexcept -> void;
 
         static inline constinit FMOD::System* m_system = nullptr;
-        eastl::optional<audio_clip> m_test {};
-        com::audio_source m_audio_source {};
     };
 }

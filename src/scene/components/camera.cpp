@@ -3,7 +3,7 @@
 #include "camera.hpp"
 #include "transform.hpp"
 
-namespace lu::com {
+namespace soliton::com {
     camera::camera() noexcept {
         XMStoreFloat2(&viewport, XMVectorZero());
         XMStoreFloat3(&clear_color, XMVectorReplicate(0.05f));

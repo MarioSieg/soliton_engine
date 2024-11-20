@@ -1,2 +1,2 @@
 #!/usr/bin/bash
-./bin/debug/lunam
+./bin/debug/soliton_engine

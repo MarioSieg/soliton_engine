@@ -6,7 +6,7 @@
 #include "../vulkancore/context.hpp"
 #include "../../core/core.hpp"
 
-namespace lu::imgui {
+namespace soliton::imgui {
     class context : public no_copy, public no_move {
     public:
         context();

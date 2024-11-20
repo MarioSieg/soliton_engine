@@ -23,6 +23,8 @@ var dir_aebb8dcc11953d78e620bbef0b9e2183 =
     [ "spsc_queue.hpp", "spsc__queue_8hpp.html", "spsc__queue_8hpp" ],
     [ "stopwatch.hpp", "stopwatch_8hpp.html", "stopwatch_8hpp" ],
     [ "subsystem.hpp", "subsystem_8hpp.html", "subsystem_8hpp" ],
+    [ "system_variable.cpp", "system__variable_8cpp.html", "system__variable_8cpp" ],
+    [ "system_variable.hpp", "system__variable_8hpp.html", "system__variable_8hpp" ],
     [ "thread_signal.hpp", "thread__signal_8hpp.html", "thread__signal_8hpp" ],
     [ "utils.hpp", "utils_8hpp.html", "utils_8hpp" ]
 ];

@@ -8,13 +8,13 @@
 // #include "libs/luv/luv.h" also defined a panic() function which is ambiguous with the one in core.hpp, so:
 extern "C" int luaopen_luv (lua_State *L);
 
-#include "system_variable.hpp"
+#include "../core/system_variable.hpp"
 
 #if USE_MIMALLOC
 #include <mimalloc.h>
 #endif
 
-namespace lu::scripting {
+namespace soliton::scripting {
     template <typename... Ts>
     static auto lua_log_info(const fmt::format_string<Ts...> fmt, Ts&&... args) -> void {
         SPDLOG_LOGGER_INFO(spdlog::get("app"), "[Lua]: {}", fmt::format(fmt, std::forward<Ts>(args)...));
@@ -32,7 +32,6 @@ namespace lu::scripting {
     }
 
     scripting_subsystem::~scripting_subsystem() {
-        detail::disconnect_all_convars();
         lua_host_disconnect();
     }
 

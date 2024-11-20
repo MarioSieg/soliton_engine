@@ -8,7 +8,7 @@
 #include "../core/core.hpp"
 #include "layerdef.hpp"
 
-namespace lu::physics {
+namespace soliton::physics {
     // BroadPhaseLayerInterface implementation
     // This defines a mapping between object and broadphase layers.
     class broad_phase_layer final : public JPH::BroadPhaseLayerInterface {

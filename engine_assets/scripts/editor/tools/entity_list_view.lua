@@ -15,6 +15,7 @@ local entity_list_view = {
     name = icons.i_cubes .. ' Entities',
     is_visible = ffi.new('bool[1]', true),
     selected_entity = nil,
+    selected_mode = 'entity', -- entity, env_editor, etc.
     show_hidden_entities = ffi.new('bool[1]', false),
     selected_wants_focus = false,
     
@@ -120,6 +121,25 @@ function entity_list_view:render()
         local size = ui.ImVec2(0, 0)
         if ui.BeginChild('EntityScrollingRegion', ui.ImVec2(0, -ui.GetFrameHeightWithSpacing()), false, ffi.C.ImGuiWindowFlags_HorizontalScrollbar) then
             ui.PushStyleVar(ffi.C.ImGuiStyleVar_ItemSpacing, ui.ImVec2(4.0, 1.0))
+
+            -- Builtin pseudo-entities
+            ui.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xffe6d8ad)
+            if ui.Selectable(icons.i_clouds_moon .. ' Environment', self.selected_mode == 'env_editor', 0, size) then
+                self.selected_mode = 'env_editor'
+            end
+            ui.PopStyleColor()
+
+            ui.PushStyleColor_U32(ffi.C.ImGuiCol_Text, 0xffbbeebb)
+            if ui.Selectable(icons.i_cogs .. ' Scene Settings', self.selected_mode == 'scene_cfg_editor', 0, size) then
+                self.selected_mode = 'scene_cfg_editor'
+            end
+            ui.PopStyleColor()
+
+            ui.Spacing()
+            ui.Separator()
+            ui.Spacing()
+
+            -- Scene entities
             local clipper = ui.ImGuiListClipper()
             clipper:Begin(#self._entity_list, ui.GetTextLineHeightWithSpacing())
             while clipper:Step() do
@@ -130,18 +150,18 @@ function entity_list_view:render()
                         local name = tuple.name
                         local is_anonymous = tuple.is_anonymous
                         local is_hidden = entity:has_flag(entity_flags.hidden)
-                        local is_static = entity:has_flag(entity_flags.static)
-                        local is_transient = entity:has_flag(entity_flags.transient)
-                        local color = is_hidden and 0xff888888 or is_static and 0xffff8888 or is_transient and 0xff88ff88 or 0xffffffff
+                        local color = is_hidden or 0xffffffff
                         ui.PushStyleColor_U32(ffi.C.ImGuiCol_Text, color)
-                        if ui.Selectable(name, self.selected_entity == entity, 0, size) then
+                        if ui.Selectable(name, self.selected_entity == entity and self.selected_mode == 'entity', 0, size) then
                             self.selected_entity = entity
                             self._selected_entity_idx = i
+                            self.selected_mode = 'entity'
                         end
                         if ui.IsItemHovered() and ui.IsMouseDoubleClicked(0) then
                             self.selected_entity = entity
                             self.selected_wants_focus = true
                             self._selected_entity_idx = i
+                            self.selected_mode = 'entity'
                         end
                         ui.PopStyleColor()
                         if ui.IsItemHovered() then

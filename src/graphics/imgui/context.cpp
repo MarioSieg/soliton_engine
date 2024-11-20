@@ -12,12 +12,12 @@
 #include "../pipeline_cache.hpp"
 #include "../vulkancore/context.hpp"
 #include "../../platform/platform_subsystem.hpp"
-#include "../../scripting/system_variable.hpp"
+#include "../../core/system_variable.hpp"
 
 #include <vk_mem_alloc.h>
 
-namespace lu::imgui {
-    static const system_variable<float> cv_font_size {"editor.font_size", {18.0f}};
+namespace soliton::imgui {
+    static const system_variable<float> sv_font_size {"editor.font_size", {18.0f}};
 
     context::context() {
 #if USE_MIMALLOC
@@ -54,7 +54,6 @@ namespace lu::imgui {
         init_info.Device = device.get_logical_device();
         init_info.QueueFamily = vkb::ctx().get_swapchain().get_queue_node_index();
         init_info.Queue = device.get_graphics_queue();
-        init_info.PipelineCache = graphics::pipeline_cache::get().get_cache();
         init_info.DescriptorPool = m_imgui_descriptor_pool;
         init_info.ImageCount = vkb::ctx().get_concurrent_frame_count();
         init_info.MinImageCount = vkb::ctx().get_concurrent_frame_count();
@@ -65,7 +64,10 @@ namespace lu::imgui {
         };
         panic_assert(ImGui_ImplVulkan_Init(&init_info, vkb::ctx().get_scene_render_pass()));
 
-        const float font_size = cv_font_size();
+        float font_size = sv_font_size();
+        if constexpr (PLATFORM_OSX) {
+            font_size *= 2.0f;
+        }
 
         // add primary text font:
         ImFontConfig config { };

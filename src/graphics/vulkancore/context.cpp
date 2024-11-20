@@ -3,14 +3,14 @@
 #include "context.hpp"
 #include "../shader.hpp"
 
-#include "../../scripting/system_variable.hpp"
+#include "../../core/system_variable.hpp"
 
-namespace lu::vkb {
-    static const system_variable<bool> cv_enable_vulkan_validation_layers {
+namespace soliton::vkb {
+    static const system_variable<bool> sv_enable_vulkan_validation_layers {
         "renderer.enable_vulkan_validation_layers",
         {false}
     };
-    static const system_variable<bool> cv_enable_vsync {
+    static const system_variable<bool> sv_enable_vsync {
         "renderer.force_vsync",
         {false}
     };
@@ -149,7 +149,7 @@ namespace lu::vkb {
         m_width = w;
         m_height = h;
 
-        recreate_swapchain();
+        m_swapchain->create(m_width, m_height, sv_enable_vsync(), false);
 
         destroy_depth_stencil();
         setup_depth_stencil();
@@ -170,10 +170,10 @@ namespace lu::vkb {
     }
 
     auto context::boot_vulkan_core() -> void {
-        m_device.emplace(cv_enable_vulkan_validation_layers());
+        m_device.emplace(sv_enable_vulkan_validation_layers());
         m_swapchain.emplace(m_device->get_instance(), m_device->get_physical_device(), m_device->get_logical_device());
         m_swapchain->init_surface(m_window);
-        recreate_swapchain();
+        m_swapchain->create(m_width, m_height, sv_enable_vsync(), false);
     }
 
     auto context::create_sync_prims() -> void {
@@ -376,10 +376,6 @@ namespace lu::vkb {
         vkcheck(m_device->get_logical_device().createPipelineCache(&pipeline_cache_ci, get_alloc(), &m_pipeline_cache));
     }
 
-    auto context::recreate_swapchain() -> void {
-        m_swapchain->create(m_width, m_height, cv_enable_vsync(), false);
-    }
-
     auto context::create_msaa_target() -> void {
         // Color target:
 
@@ -512,8 +508,10 @@ namespace lu::vkb {
     }
 
     auto context::compute_aligned_dynamic_ubo_size(const std::size_t size) noexcept -> std::size_t {
-        const std::size_t min_align = m_device->get_physical_device_props().limits.minUniformBufferOffsetAlignment;
-        if (!min_align) return size;
-        return (size+min_align-1) & -min_align;
+        const std::size_t min_alin = m_device->get_physical_device_props().limits.minUniformBufferOffsetAlignment;
+        std::size_t dyn_align = size;
+        if (min_alin > 0) dyn_align = (dyn_align + min_alin - 1) & ~(min_alin - 1);
+        panic_assert((dyn_align % min_alin) == 0);
+        return dyn_align;
     }
 }

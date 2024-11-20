@@ -9,7 +9,7 @@
 #include "vulkancore/command_buffer.hpp"
 #include "vulkancore/buffer.hpp"
 
-namespace lu::graphics {
+namespace soliton::graphics {
     class upload_task {
     public:
         virtual ~upload_task() = default;

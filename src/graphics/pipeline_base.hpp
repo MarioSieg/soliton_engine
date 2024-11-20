@@ -7,9 +7,9 @@
 
 #include <ankerl/unordered_dense.h>
 
-#include "shader.hpp"
+#include "shader_compiler.hpp"
 
-namespace lu::graphics {
+namespace soliton::graphics {
     class mesh;
     class material;
 
@@ -24,8 +24,9 @@ namespace lu::graphics {
 
         const eastl::string name;
         const pipeline_type type;
+        std::shared_ptr<shader_cache> shader_cache {};
 
-        auto create(vk::PipelineCache cache) -> void;
+        [[nodiscard]] auto initialize(vk::PipelineCache cache) -> bool;
         [[nodiscard]] auto get_layout() const -> vk::PipelineLayout { return m_layout; }
         [[nodiscard]] auto get_pipeline() const -> vk::Pipeline { return m_pipeline; }
         [[nodiscard]] auto get_num_creations() const -> std::uint32_t { return m_num_creations; }
@@ -33,10 +34,10 @@ namespace lu::graphics {
     protected:
         explicit pipeline_base(eastl::string&& name, pipeline_type type);
 
-        virtual auto pre_configure() -> void;
-        virtual auto post_configure() -> void;
+        [[nodiscard]] virtual auto pre_configure() -> bool;
+        [[nodiscard]] virtual auto post_configure() -> bool;
 
-        virtual auto create(vk::PipelineLayout& out_layout, vk::Pipeline& out_pipeline, vk::PipelineCache cache) -> void = 0;
+        [[nodiscard]] virtual auto create(vk::PipelineLayout& out_layout, vk::Pipeline& out_pipeline, vk::PipelineCache cache) -> bool = 0;
 
     private:
         vk::PipelineLayout m_layout {};

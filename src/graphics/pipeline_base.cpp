@@ -3,7 +3,7 @@
 #include "pipeline_base.hpp"
 #include "vulkancore/context.hpp"
 
-namespace lu::graphics {
+namespace soliton::graphics {
     pipeline_base::~pipeline_base() {
         const vk::Device device = vkb::ctx().get_device();
         if (m_pipeline && m_layout) { // Destroy old pipeline and layout
@@ -14,34 +14,34 @@ namespace lu::graphics {
         }
     }
 
-    auto pipeline_base::create(const vk::PipelineCache cache) -> void {
+    auto pipeline_base::initialize(const vk::PipelineCache cache) -> bool {
         log_info("Creating graphics pipeline '{}' {}st time", name, ++m_num_creations);
         const auto now = eastl::chrono::high_resolution_clock::now();
-        const auto device = vkb::vkdvc();
-        auto prev_pipeline = m_pipeline;
-        auto prev_layout = m_layout;
-        auto restore_state = [&] {
-            m_pipeline = prev_pipeline;
-            m_layout = prev_layout;
-        };
-        pre_configure();
-        create(m_layout, m_pipeline, cache);
-        post_configure();
+        if (!pre_configure()) [[unlikely]] {
+            return false;
+        }
+        if (!create(m_layout, m_pipeline, cache)) [[unlikely]] {
+            return false;
+        }
+        if (!post_configure()) [[unlikely]] {
+            return false;
+        }
         log_info(
             "Created {} pipeline '{}' in {:.03}s",
             type == pipeline_type::graphics ? "graphics" : "compute",
             name,
             eastl::chrono::duration_cast<eastl::chrono::duration<double>>(eastl::chrono::high_resolution_clock::now() - now).count()
         );
-        if (prev_pipeline && prev_layout) { // Destroy old pipeline and layout now that the new one is created
-            device.destroyPipeline(prev_pipeline, vkb::get_alloc());
-            device.destroyPipelineLayout(prev_layout, vkb::get_alloc());
-        }
+        return true;
     }
 
     pipeline_base::pipeline_base(eastl::string&& name, const pipeline_type type) : name{std::move(name)}, type{type} {}
 
-    auto pipeline_base::pre_configure() -> void {}
+    auto pipeline_base::pre_configure() -> bool {
+        return true;
+    }
 
-    auto pipeline_base::post_configure() -> void {}
+    auto pipeline_base::post_configure() -> bool {
+        return true;
+    }
 }

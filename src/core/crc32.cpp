@@ -17,7 +17,7 @@
 #   include <arm_acle.h>
 #endif
 
-namespace lu {
+namespace soliton {
 #if CPU_ARM
     [[nodiscard]] static auto msml__clmul_lo_e(uint64x2_t a, uint64x2_t b, uint64x2_t c) noexcept -> uint64x2_t {
         uint64x2_t r;

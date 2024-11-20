@@ -3,7 +3,7 @@
 #include "temporal_blue_noise.hpp"
 #include "vulkancore/context.hpp"
 
-namespace lu::graphics {
+namespace soliton::graphics {
     namespace blue_noise_256_spp {
         #include "blue_noise_samplers/samplerBlueNoiseErrorDistribution_128x128_OptimizedFor_2d2d2d2d_256spp.inl"
     }

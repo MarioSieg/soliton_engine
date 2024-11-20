@@ -5,7 +5,7 @@
 #include <atomic>
 #include <filesystem>
 
-namespace lu::assetmgr {
+namespace soliton::assetmgr {
     static eastl::optional<asset_accessor> s_primary_accessor {};
     static std::mutex s_mtx {};
     constinit std::atomic_size_t s_asset_requests = 0;

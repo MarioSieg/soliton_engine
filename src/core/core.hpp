@@ -25,6 +25,7 @@
 #include <EASTL/unique_ptr.h>
 #include <EASTL/chrono.h>
 #include <EASTL/queue.h>
+#include <EASTL/map.h>
 #include <EASTL/initializer_list.h>
 #include <EAStdC/EABitTricks.h>
 
@@ -46,18 +47,17 @@
 #include "stopwatch.hpp"
 #include "thread_signal.hpp"
 #include "utils.hpp"
-
 #include "specializations.hpp"
 
 #define USE_MIMALLOC 1
 
-namespace lu {
+namespace soliton {
     [[nodiscard]] consteval auto make_version(const std::uint8_t major, const std::uint8_t minor) -> std::uint32_t { return (static_cast<std::uint32_t>(major)<<8)|minor; }
     [[nodiscard]] consteval auto major_version(const std::uint32_t v) -> std::uint8_t { return (v>>8)&0xff; }
     [[nodiscard]] consteval auto minor_version(const std::uint32_t v) -> std::uint8_t { return v&0xff; }
     [[nodiscard]] consteval auto unpack_version(const std::uint32_t v) -> eastl::array<std::uint8_t, 2> { return {major_version(v), minor_version(v)}; }
 
-    constexpr std::uint32_t k_lunam_engine_version = make_version(0, 4); // current engine version (must be known at compile time and we don't use patches yet)
+    constexpr std::uint32_t k_lunam_engine_version = make_version(0, 5); // current engine version (must be known at compile time and we don't use patches yet)
 
     [[nodiscard]] extern auto get_version_string() -> eastl::string;
 

@@ -7,9 +7,8 @@
 #include <filesystem>
 #include <assimp/scene.h>
 #include <ankerl/unordered_dense.h>
-#include <flecs/addons/http.h>
 
-namespace lu {
+namespace soliton {
     struct proxy final : scene {
         template <typename... Ts>
         explicit proxy(Ts&&... args) : scene(std::forward<Ts>(args)...) {}
@@ -18,10 +17,20 @@ namespace lu {
     extern thread_local std::mt19937 s_rng;
     extern thread_local uuids::uuid_random_generator s_uuid_gen;
 
+    static const system_variable<bool> sv_enable_remote_api {"scene.enable_remote_api", true};
+    static const system_variable<bool> sv_enable_stats_recorder {"scene.enable_stats_recorder", true};
+
     scene::scene(eastl::string&& name) : id{s_uuid_gen()} {
         properties.name = std::move(name);
         log_info("Allocated scene {} {}", uuids::to_string(id), properties.name);
-        set<flecs::Rest>({});
+        if (sv_enable_stats_recorder()) {
+            set<flecs::PipelineStats>({});
+            set<flecs::WorldStats>({});
+            set<flecs::WorldSummary>({});
+        }
+        if (sv_enable_remote_api()) {
+            set<flecs::Rest>({});
+        }
     }
 
     scene::~scene() {

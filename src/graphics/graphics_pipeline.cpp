@@ -7,31 +7,41 @@
 #include "mesh.hpp"
 #include "material.hpp"
 
-namespace lu::graphics {
-    auto graphics_pipeline::create(vk::PipelineLayout& out_layout, vk::Pipeline& out_pipeline, vk::PipelineCache cache) -> void {
+namespace soliton::graphics {
+    auto graphics_pipeline::create(vk::PipelineLayout& out_layout, vk::Pipeline& out_pipeline, vk::PipelineCache cache) -> bool {
         const vk::Device device = vkb::ctx().get_device();
 
         vk::GraphicsPipelineCreateInfo pipeline_info {};
 
         eastl::vector<vk::PipelineShaderStageCreateInfo> shader_stages {};
         eastl::vector<eastl::shared_ptr<shader>> shaders {};
-        configure_shaders(shaders);
+        if (!configure_shaders(shaders)) [[unlikely]] {
+            log_error("Failed to configure shaders for pipeline '{}'", name);
+            return false;
+        }
         panic_assert(!shaders.empty());
         shader_stages.reserve(shaders.size());
         for (auto&& shader : shaders) {
+            panic_assert(shader != nullptr);
             shader_stages.emplace_back(shader->get_stage_info());
         }
         pipeline_info.stageCount = static_cast<std::uint32_t>(shader_stages.size());
         pipeline_info.pStages = shader_stages.data();
 
         vk::PipelineViewportStateCreateInfo viewport_state {};
-        configure_viewport_state(viewport_state);
+        if (!configure_viewport_state(viewport_state)) [[unlikely]] {
+            log_error("Failed to configure viewport state for pipeline '{}'", name);
+            return false;
+        }
         pipeline_info.pViewportState = &viewport_state;
 
         vk::PipelineVertexInputStateCreateInfo vertex_input_info {};
         eastl::vector<vk::VertexInputBindingDescription> vertex_bindings {};
         eastl::vector<vk::VertexInputAttributeDescription> vertex_attributes {};
-        configure_vertex_info(vertex_bindings, vertex_attributes);
+        if (!configure_vertex_info(vertex_bindings, vertex_attributes)) [[unlikely]] {
+            log_error("Failed to configure vertex input info for pipeline '{}'", name);
+            return false;
+        }
         vertex_input_info.vertexBindingDescriptionCount = static_cast<std::uint32_t>(vertex_bindings.size());
         vertex_input_info.pVertexBindingDescriptions = vertex_bindings.data();
         vertex_input_info.vertexAttributeDescriptionCount = static_cast<std::uint32_t>(vertex_attributes.size());
@@ -39,30 +49,48 @@ namespace lu::graphics {
         pipeline_info.pVertexInputState = &vertex_input_info;
 
         vk::PipelineInputAssemblyStateCreateInfo input_assembly_state {};
-        configure_input_assembly(input_assembly_state);
+        if (!configure_input_assembly(input_assembly_state)) [[unlikely]] {
+            log_error("Failed to configure input assembly state for pipeline '{}'", name);
+            return false;
+        }
         pipeline_info.pInputAssemblyState = &input_assembly_state;
 
         vk::PipelineRasterizationStateCreateInfo rasterization_state {};
-        configure_rasterizer(rasterization_state);
+        if (!configure_rasterizer(rasterization_state)) [[unlikely]] {
+            log_error("Failed to configure rasterization state for pipeline '{}'", name);
+            return false;
+        }
         pipeline_info.pRasterizationState = &rasterization_state;
 
         vk::PipelineDynamicStateCreateInfo dynamic_state {};
         eastl::vector<vk::DynamicState> dynamic_states {};
-        configure_dynamic_states(dynamic_states);
+        if (!configure_dynamic_states(dynamic_states)) [[unlikely]] {
+            log_error("Failed to configure dynamic states for pipeline '{}'", name);
+            return false;
+        }
         dynamic_state.dynamicStateCount = static_cast<std::uint32_t>(dynamic_states.size());
         dynamic_state.pDynamicStates = dynamic_states.data();
         pipeline_info.pDynamicState = &dynamic_state;
 
         vk::PipelineMultisampleStateCreateInfo multisample_state {};
-        configure_multisampling(multisample_state);
+        if (!configure_multisampling(multisample_state)) [[unlikely]] {
+            log_error("Failed to configure multisampling for pipeline '{}'", name);
+            return false;
+        }
         pipeline_info.pMultisampleState = &multisample_state;
 
         vk::PipelineDepthStencilStateCreateInfo depth_stencil_state {};
-        configure_depth_stencil(depth_stencil_state);
+        if (!configure_depth_stencil(depth_stencil_state)) [[unlikely]] {
+            log_error("Failed to configure depth stencil state for pipeline '{}'", name);
+            return false;
+        }
         pipeline_info.pDepthStencilState = &depth_stencil_state;
 
         vk::PipelineColorBlendAttachmentState blend_attachment_state {};
-        configure_color_blending(blend_attachment_state);
+        if (!configure_color_blending(blend_attachment_state)) [[unlikely]] {
+            log_error("Failed to configure color blending for pipeline '{}'", name);
+            return false;
+        }
 
         vk::PipelineColorBlendStateCreateInfo color_blend_state {};
         color_blend_state.logicOpEnable = vk::False;
@@ -71,14 +99,20 @@ namespace lu::graphics {
         pipeline_info.pColorBlendState = &color_blend_state;
 
         vk::RenderPass render_pass {};
-        configure_render_pass(render_pass);
+        if (!configure_render_pass(render_pass)) [[unlikely]] {
+            log_error("Failed to configure render pass for pipeline '{}'", name);
+            return false;
+        }
         panic_assert(render_pass);
         pipeline_info.renderPass = render_pass;
 
         // finally, create pipeline layout
         eastl::vector<vk::DescriptorSetLayout> layouts {};
         eastl::vector<vk::PushConstantRange> ranges {};
-        configure_pipeline_layout(layouts, ranges);
+        if (!configure_pipeline_layout(layouts, ranges)) [[unlikely]] {
+            log_error("Failed to configure pipeline layout for pipeline '{}'", name);
+            return false;
+        }
         vk::PipelineLayoutCreateInfo layout_info {};
         layout_info.setLayoutCount = static_cast<std::uint32_t>(layouts.size());
         layout_info.pSetLayouts = layouts.data();
@@ -89,22 +123,25 @@ namespace lu::graphics {
 
         // create pipeline
         vkcheck(device.createGraphicsPipelines(cache, 1, &pipeline_info, vkb::get_alloc(), &out_pipeline));
+        return true;
     }
 
-    auto graphics_pipeline::configure_viewport_state(vk::PipelineViewportStateCreateInfo& cfg) -> void {
+    auto graphics_pipeline::configure_viewport_state(vk::PipelineViewportStateCreateInfo& cfg) -> bool {
         panic_assert(type == pipeline_type::graphics);
         cfg.viewportCount = 1;
         cfg.scissorCount = 1;
         cfg.pViewports = nullptr;
+        return true;
     }
 
-    auto graphics_pipeline::configure_input_assembly(vk::PipelineInputAssemblyStateCreateInfo& cfg) -> void {
+    auto graphics_pipeline::configure_input_assembly(vk::PipelineInputAssemblyStateCreateInfo& cfg) -> bool {
         panic_assert(type == pipeline_type::graphics);
         cfg.topology = vk::PrimitiveTopology::eTriangleList;
         cfg.primitiveRestartEnable = vk::False;
+        return true;
     }
 
-    auto graphics_pipeline::configure_rasterizer(vk::PipelineRasterizationStateCreateInfo& cfg) -> void {
+    auto graphics_pipeline::configure_rasterizer(vk::PipelineRasterizationStateCreateInfo& cfg) -> bool {
         panic_assert(type == pipeline_type::graphics);
         cfg.polygonMode = vk::PolygonMode::eFill;
         cfg.cullMode = vk::CullModeFlagBits::eBack;
@@ -113,15 +150,17 @@ namespace lu::graphics {
         cfg.rasterizerDiscardEnable = vk::False;
         cfg.depthBiasEnable = vk::False;
         cfg.lineWidth = 1.0f;
+        return true;
     }
 
-    auto graphics_pipeline::configure_dynamic_states(eastl::vector<vk::DynamicState>& states) -> void {
+    auto graphics_pipeline::configure_dynamic_states(eastl::vector<vk::DynamicState>& states) -> bool {
         panic_assert(type == pipeline_type::graphics);
         states.emplace_back(vk::DynamicState::eViewport);
         states.emplace_back(vk::DynamicState::eScissor);
+        return true;
     }
 
-    auto graphics_pipeline::configure_depth_stencil(vk::PipelineDepthStencilStateCreateInfo& cfg) -> void {
+    auto graphics_pipeline::configure_depth_stencil(vk::PipelineDepthStencilStateCreateInfo& cfg) -> bool {
         panic_assert(type == pipeline_type::graphics);
         cfg.depthTestEnable = vk::True;
         cfg.depthWriteEnable = vk::True;
@@ -132,15 +171,17 @@ namespace lu::graphics {
         cfg.back.compareOp = vk::CompareOp::eAlways;
         cfg.stencilTestEnable = vk::False;
         cfg.front = cfg.back;
+        return true;
     }
 
-    auto graphics_pipeline::configure_multisampling(vk::PipelineMultisampleStateCreateInfo& cfg) -> void {
+    auto graphics_pipeline::configure_multisampling(vk::PipelineMultisampleStateCreateInfo& cfg) -> bool {
         panic_assert(type == pipeline_type::graphics);
         cfg.rasterizationSamples = vkb::ctx().get_msaa_samples();
         cfg.alphaToCoverageEnable = vk::False;
+        return true;
     }
 
-    auto graphics_pipeline::configure_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> void {
+    auto graphics_pipeline::configure_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> bool {
         panic_assert(type == pipeline_type::graphics);
         cfg.colorWriteMask = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA;
         cfg.blendEnable = vk::False;
@@ -150,16 +191,19 @@ namespace lu::graphics {
         cfg.srcAlphaBlendFactor = vk::BlendFactor::eOne;
         cfg.dstAlphaBlendFactor = vk::BlendFactor::eZero;
         cfg.alphaBlendOp = vk::BlendOp::eAdd;
+        return true;
     }
 
-    auto graphics_pipeline::configure_render_pass(vk::RenderPass& pass) -> void {
+    auto graphics_pipeline::configure_render_pass(vk::RenderPass& pass) -> bool {
         panic_assert(type == pipeline_type::graphics);
         pass = vkb::ctx().get_scene_render_pass();
+        return true;
     }
 
-    auto graphics_pipeline::configure_vertex_info(eastl::vector<vk::VertexInputBindingDescription>& cfg, eastl::vector<vk::VertexInputAttributeDescription>& bindings) -> void {
+    auto graphics_pipeline::configure_vertex_info(eastl::vector<vk::VertexInputBindingDescription>& cfg, eastl::vector<vk::VertexInputAttributeDescription>& bindings) -> bool {
         cfg.insert(cfg.end(), k_vertex_binding_desc.begin(), k_vertex_binding_desc.end());
         bindings.insert(bindings.end(), k_vertex_attrib_desc.begin(), k_vertex_attrib_desc.end());
+        return true;
     }
 
     auto graphics_pipeline::configure_enable_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> void {

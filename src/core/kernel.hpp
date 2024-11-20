@@ -4,7 +4,7 @@
 
 #include "subsystem.hpp"
 
-namespace lu {
+namespace soliton {
     template <typename T, typename... Ar>
     concept is_subsystem = std::conjunction_v<std::is_base_of<subsystem, T>, std::is_constructible<T, Ar...>>;
 
@@ -36,9 +36,6 @@ namespace lu {
 
         [[nodiscard]] auto get_subsystems() const noexcept -> eastl::span<const eastl::shared_ptr<subsystem>> { return m_subsystems; }
         [[nodiscard]] auto get_boot_stamp() const noexcept -> eastl::chrono::high_resolution_clock::time_point { return m_boot_stamp; }
-
-        static inline const eastl::string config_dir = "config/";
-        static inline const eastl::string log_dir = "log";
 
     private:
         [[nodiscard]] HOTPROC auto tick() -> bool;

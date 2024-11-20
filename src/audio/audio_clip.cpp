@@ -3,7 +3,7 @@
 #include "audio_clip.hpp"
 #include "audio_subsystem.hpp"
 
-namespace lu::audio {
+namespace soliton::audio {
     audio_clip::audio_clip(eastl::string&& asset_path, const audio_clip_descriptor& desc) : assetmgr::asset{assetmgr::asset_source::filesystem, eastl::move(asset_path)} {
         log_info("Loading audio clip '{}'", get_asset_path());
         eastl::vector<std::byte> buf {};

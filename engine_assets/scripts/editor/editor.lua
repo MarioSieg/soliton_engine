@@ -3,8 +3,8 @@
 -- The ImGui LuaJIT bindings are useable but somewhat dirty, which makes this file a bit messy - but hey it works!
 
 local ffi = require 'ffi'
+local jit = require 'jit'
 local bit = require 'bit'
-local band = bit.band
 local ui = require 'imgui.imgui'
 local style = require 'imgui.style'
 local app = require 'app'
@@ -14,7 +14,6 @@ local vec3 = require 'vec3'
 local quat = require 'quat'
 local scene = require 'scene'
 local input = require 'input'
-local components = require 'components'
 local json = require 'json'
 local icons = require 'imgui.icons'
 local utils = require 'editor.utils'
@@ -25,18 +24,10 @@ local script_editor = require 'editor.tools.scripteditor'
 local entity_list_view = require 'editor.tools.entity_list_view'
 local inspector = require 'editor.tools.inspector'
 local asset_explorer = require 'editor.tools.asset_explorer'
-local sqlite = require 'sqlite.db'
+local c_camera = require 'components.camera'
+local c_transform = require 'components.transform'
 
-local db = sqlite {
-    uri = 'engine_assets/lunam.db',
-    projects = {
-        id = 'INTEGER PRIMARY KEY',
-        name = 'TEXT',
-        path = 'TEXT',
-        created_at = 'TEXT',
-        updated_at = 'TEXT',
-    },
-}
+local band = bit.band
 
 local host_info = app.host.graphics_api .. ' | ' .. (app.host.host_string)
 local cpu_name = 'CPU: ' .. app.host.cpu_name
@@ -63,7 +54,6 @@ local material_filter = utils.build_filter_string(utils.material_file_exts)
 local sound_filter = utils.build_filter_string(utils.sound_file_exts)
 local icons_filter = utils.build_filter_string(utils.icons_file_exts)
 local xaml_filter = utils.build_filter_string(utils.xaml_file_exts)
-local config_file_name = 'config/editor.json'
 local component_window_size = ui.ImVec2(utils.default_window_size.x * 0.5, utils.default_window_size.y * 0.5)
 local selected_component = nil
 local overlay_flags = ffi.C.ImGuiWindowFlags_NoDecoration
@@ -114,7 +104,7 @@ local editor = {
     },
     gizmos = {
         show_grid = true,
-        show_center_axis = true,
+        show_center_axis = false,
         grid_step = 1.0,
         grid_dims = vec3(256, 0, 256),
         grid_color = vec3(0.7, 0.7, 0.7),
@@ -133,13 +123,13 @@ local editor = {
             prev_project_location = '',
         }
     },
-    camera = require 'editor.camera',
+    editor_camera = require 'editor.camera',
     dock_id = nil,
     active_project = nil,
     show_demo_window = false,
 }
 
-editor.camera._position.y = initial_camera_height -- Lift camera up a bit
+editor.editor_camera._position.y = initial_camera_height -- Lift editor_camera up a bit
 
 for _, tool in ipairs(editor.tools) do tool.is_visible[0] = true end
 
@@ -195,10 +185,10 @@ function editor:load_scene(file)
     else
         scene.new('Untitled scene')
     end
-    local main_camera = scene.spawn('__editor_camera__') -- spawn editor camera
+    local main_camera = scene.spawn('__editor_camera__') -- spawn editor editor_camera
     main_camera:add_flag(entity_flags.hidden + entity_flags.transient) -- hide and don't save
-    main_camera:get_component(components.camera):set_fov(80)
-    self.camera.target_entity = main_camera
+    main_camera:get_component(c_camera):set_fov(80)
+    self.editor_camera.target_entity = main_camera
     scene.set_active_camera_entity(main_camera)
     entity_list_view:build_entity_list()
 end
@@ -208,9 +198,9 @@ local player = require 'editor.player' -- TODO: hacky
 function editor:start_game_mode()
     entity_list_view:build_entity_list()
     app.window.enable_cursor(false)
-    self.camera.enable_movement = false
-    self.camera.enable_mouse_look = false
-    local spawnPos = self.camera._position
+    self.editor_camera.enable_movement = false
+    self.editor_camera.enable_mouse_look = false
+    local spawnPos = self.editor_camera._position
     spawnPos.y = spawnPos.y + 2.0
     player:spawn(spawnPos)
     scene.set_active_camera_entity(player._camera)
@@ -223,11 +213,11 @@ end
 
 function editor:stop_game_mode()
     player:despawn()
-    scene.set_active_camera_entity(self.camera.target_entity)
+    scene.set_active_camera_entity(self.editor_camera.target_entity)
     entity_list_view:build_entity_list()
     app.window.enable_cursor(true)
-    self.camera.enable_movement = true
-    self.camera.enable_mouse_look = true
+    self.editor_camera.enable_movement = true
+    self.editor_camera.enable_mouse_look = true
     self.is_visible = true
 end
 
@@ -251,7 +241,7 @@ function editor:draw_main_menu_bar()
                 ui.PopID()
             end
             if ui.MenuItem(icons.i_folder_open .. ' Open project...') then
-                local selected_file = app.utils.open_file_dialog('Lunam Projects', 'lupro', self.serialized_config.general.prev_project_location)
+                local selected_file = app.utils.open_file_dialog('Soliton Projects', 'lupro', self.serialized_config.general.prev_project_location)
                 if selected_file and lfs.attributes(selected_file) then
                     self.serialized_config.general.prev_project_location = selected_file:match("(.*[/\\])")
                     local proj = project:open(selected_file)
@@ -303,48 +293,70 @@ function editor:draw_main_menu_bar()
             if ui.MenuItem(icons.i_arrow_up .. ' Show Center Axis', nil, self.gizmos.show_center_axis) then
                 self.gizmos.show_center_axis = not self.gizmos.show_center_axis
             end
+            if ui.MenuItem(icons.i_sun .. ' Show Skylight Vectors', nil, scene.chrono.debug_draw) then
+                scene.chrono.debug_draw = not scene.chrono.debug_draw
+            end
+            ui.EndMenu()
+        end
+        if ui.BeginMenu('Remote') then
+            if ui.MenuItem(icons.i_server .. ' Start Server') then
+                local script = 'remote_explorer.sh'
+                if lfs.attributes(script) then
+                    pcall(os.execute('bash ' .. '"' .. script .. '" &'))
+                else
+                    eprint('Server host script not found: ' .. script)
+                end
+            end
+            if ui.MenuItem(icons.i_sitemap .. ' Open Dashboard') then
+                local entry = 'http://0.0.0.0:8000/'
+                if jit.os == 'Windows' then
+                    pcall(os.execute('start "" ' .. '"' .. entry .. '"'))
+                else
+                    pcall(os.execute('open ' .. '"' .. entry .. '"'))
+                end
+            end
             ui.EndMenu()
         end
         if ui.BeginMenu('Help') then
             if ui.MenuItem(icons.i_book_open .. ' Open Lua API Documentation') then
-                local INDEX = 'docs/lua/index.html'
-                if lfs.attributes(INDEX) then
+                local entry = 'docs/lua/index.html'
+                if lfs.attributes(entry) then
                     if jit.os == 'Windows' then
-                        pcall(os.execute('start "" ' .. '"' .. INDEX .. '"'))
+                        pcall(os.execute('start "" ' .. '"' .. entry .. '"'))
                     else
-                        pcall(os.execute('open ' .. '"' .. INDEX .. '"'))
+                        pcall(os.execute('open ' .. '"' .. entry .. '"'))
                     end
                 else
-                    eprint('Lua API documentation not found: ' .. INDEX)
+                    eprint('Lua API documentation not found: ' .. entry)
                 end
             end
             if ui.MenuItem(icons.i_book_open .. ' Open C++ SDK Documentation') then
-                local INDEX = 'docs/html/index.html'
-                if lfs.attributes(INDEX) then
+                local entry = 'docs/html/index.html'
+                if lfs.attributes(entry) then
                     if jit.os == 'Windows' then
-                        pcall(os.execute('start "" ' .. '"' .. INDEX .. '"'))
+                        pcall(os.execute('start "" ' .. '"' .. entry .. '"'))
                     else
-                        pcall(os.execute('open ' .. '"' .. INDEX .. '"'))
+                        pcall(os.execute('open ' .. '"' .. entry .. '"'))
                     end
                 else
-                    eprint('C++ SDK documentation not found: ' .. INDEX)
+                    eprint('C++ SDK documentation not found: ' .. entry)
                 end
             end
             if jit.os ~= 'Windows' then -- Currently only POSIX support
                 if ui.MenuItem(icons.i_cogs .. ' Regenerate Lua API Documentation') then
-                    local GENERATOR = 'gen_lua_docs.sh'
-                    if lfs.attributes(GENERATOR) then
-                        pcall(os.execute('bash ' .. '"' .. GENERATOR .. '" &'))
+                    local script = 'gen_lua_docs.sh'
+                    if lfs.attributes(script) then
+                        pcall(os.execute('bash ' .. '"' .. script .. '" &'))
                     else
-                        eprint('Lua API documentation generator not found: ' .. GENERATOR)
+                        eprint('Lua API documentation generator not found: ' .. script)
                     end
                 end
                 if ui.MenuItem(icons.i_cogs .. ' Regenerate C++ API Documentation') then
-                    local GENERATOR = 'gen_cpp_docs.sh'
-                    if lfs.attributes(GENERATOR) then
-                        pcall(os.execute('bash ' .. '"' .. GENERATOR .. '" &'))
+                    local script = 'gen_cpp_docs.sh'
+                    if lfs.attributes(script) then
+                        pcall(os.execute('bash ' .. '"' .. script .. '" &'))
                     else
-                        eprint('C++ SDK documentation generator not found: ' .. GENERATOR)
+                        eprint('C++ SDK documentation generator not found: ' .. script)
                     end
                 end
             end
@@ -511,7 +523,6 @@ function editor:draw_pending_popups()
         if ui.Button(icons.i_plus_circle .. ' Add') then
             if inspector.selected_entity ~= nil and inspector.selected_entity:is_valid() and selected_component ~= nil and selected_component.component ~= nil then
                 inspector.selected_entity:get_component(selected_component.component)
-                inspector.properties_changed = true
             end
             selected_component = nil
             ui.CloseCurrentPopup()
@@ -567,14 +578,14 @@ function editor:draw_ingame_overlay()
         local time = os.date('*t')
         ui.TextUnformatted(string.format(' | %02d.%02d.%02d %02d:%02d', time.day, time.month, time.year, time.hour, time.min))
         ui.Separator()
-        local camera = scene.get_active_camera_entity()
-        if camera:is_valid() and camera:has_component(components.transform) then
-            local transform = camera:get_component(components.transform)
+        local editor_camera = scene.get_active_camera_entity()
+        if editor_camera:is_valid() and editor_camera:has_component(c_transform) then
+            local transform = editor_camera:get_component(c_transform)
             ui.TextUnformatted(string.format('Pos: %s', transform:get_position()))
             ui.TextUnformatted(string.format('Dir: %s', transform:get_forward_dir()))
         end
         ui.Separator()
-        ui.TextUnformatted(string.format('Scene Date: %s', scene.time_cycle:get_date_time_string()))
+        ui.TextUnformatted(string.format('Scene Date: %s', scene.chrono:get_date_time_string()))
         ui.Separator()
         ui.TextUnformatted(host_info)
         ui.TextUnformatted(cpu_name)
@@ -633,19 +644,21 @@ function editor:_update()
     if not self.is_visible then
         return
     end
-    self.camera:_update()
+    self.editor_camera:_update()
+
     local selected = entity_list_view.selected_entity
     if selected ~= nil and entity_list_view.selected_wants_focus and selected:is_valid() then
-        if selected:has_component(components.transform) then
-            local pos = selected:get_component(components.transform):get_position()
+        if selected:has_component(c_transform) then
+            local pos = selected:get_component(c_transform):get_position()
             if pos then
                 pos.z = pos.z - 1.0
-                self.camera._position = pos
-                -- self.camera._rotation = quat.IDENTITY
+                self.editor_camera._position = pos
+                -- self.editor_camera._rotation = quat.IDENTITY
             end
         end
         entity_list_view.selected_wants_focus = false
     end
+    inspector.inspector_mode = entity_list_view.selected_mode
     inspector.selected_entity = selected
     if inspector.name_changed then
         entity_list_view:update_name_of_active_entity()
@@ -655,28 +668,8 @@ function editor:_update()
     self:draw_pending_popups()
 end
 
-function editor:deserialize_config() -- TODO: Save config on exit
-    if lfs.attributes(config_file_name) then
-        self.serialized_config = json.deserialize_from_file(config_file_name)
-    else
-        print('Creating new editor config file: '..config_file_name)
-        self:serialize_config()
-    end
-    if not self.serialized_config.general.prev_project_location or not lfs.attributes(self.serialized_config.general.prev_project_location) then
-        self.serialized_config.general.prev_project_location = default_project_location
-    end
-    if not self.serialized_config.general.prev_scene_location or not lfs.attributes(self.serialized_config.general.prev_scene_location) then
-        self.serialized_config.general.prev_scene_location = default_project_location
-    end
-end
-
-function editor:serialize_config()
-    json.serialize_to_file(config_file_name, self.serialized_config)
-end
-
 style.setup()
 
-editor:deserialize_config()
 editor:load_scene()
 
 return editor

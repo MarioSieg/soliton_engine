@@ -10,7 +10,7 @@
 #include "utils.hpp"
 #include "move_copy_base.hpp"
 
-namespace lu {
+namespace soliton {
     class thread_sig final : public no_copy, public no_move {
     public:
         static_assert(std::atomic_int32_t::is_always_lock_free);

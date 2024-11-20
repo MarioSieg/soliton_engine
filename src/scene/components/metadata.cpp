@@ -2,6 +2,6 @@
 
 #include "metadata.hpp"
 
-namespace lu::com {
+namespace soliton::com {
 
 }

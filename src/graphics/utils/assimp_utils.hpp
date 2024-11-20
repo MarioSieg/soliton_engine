@@ -11,7 +11,7 @@
 
 #include <EASTL/vector.h>
 
-namespace lu::graphics {
+namespace soliton::graphics {
     class assimp_logger final : public Assimp::LogStream {
         auto write(const char* message) -> void override;
     };

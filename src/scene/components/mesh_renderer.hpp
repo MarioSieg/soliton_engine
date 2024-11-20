@@ -4,13 +4,13 @@
 
 #include "../base.hpp"
 
-namespace lu::graphics {
+namespace soliton::graphics {
     class mesh;
     class texture;
     class material;
 }
 
-namespace lu::com {
+namespace soliton::com {
     struct render_flags final {
         enum $ : std::uint32_t {
             none = 0,

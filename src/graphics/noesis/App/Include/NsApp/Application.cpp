@@ -126,7 +126,7 @@ namespace NoesisApp
 
     auto Application::Resize() -> void
     {
-        this->m_main_window->Resize(lu::vkb::ctx().get_width(), lu::vkb::ctx().get_height());
+        this->m_main_window->Resize(soliton::vkb::ctx().get_width(), soliton::vkb::ctx().get_height());
     }
 
     Application::~Application()

@@ -4,7 +4,7 @@
 
 #include "../base.hpp"
 
-namespace lu::com {
+namespace soliton::com {
     struct transform final {
         XMFLOAT4 position; // only xyz is used, w is padding for SIMD
         XMFLOAT4 rotation;

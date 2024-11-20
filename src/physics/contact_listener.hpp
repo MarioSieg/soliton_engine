@@ -8,7 +8,7 @@
 #include "../core/core.hpp"
 #include "layerdef.hpp"
 
-namespace lu::physics {
+namespace soliton::physics {
     class contact_listener final : public JPH::ContactListener {
         virtual auto OnContactAdded(
             const JPH::Body& body1,

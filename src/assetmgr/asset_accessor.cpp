@@ -14,7 +14,7 @@
 #define ASSETSYS_FREE(ctx, ptr) (mi_free(ptr))
 #include <assetsys.h>
 
-namespace lu::assetmgr {
+namespace soliton::assetmgr {
     extern constinit std::atomic_size_t s_asset_requests;
     extern constinit std::atomic_size_t s_asset_requests_failed;
     extern constinit std::atomic_size_t s_total_bytes_loaded;

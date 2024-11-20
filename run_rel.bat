@@ -1,4 +1,4 @@
 @echo off
 pushd %~dp0
-"bin/release/lunam.exe"
+"bin/release/soliton_engine.exe"
 popd

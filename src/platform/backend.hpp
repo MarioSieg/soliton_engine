@@ -4,7 +4,7 @@
 
 #include <GLFW/glfw3.h>
 
-namespace lu::platform::backend {
+namespace soliton::platform::backend {
     extern auto is_online() noexcept -> bool;
     extern auto init() -> void;
     extern auto shutdown() -> void;

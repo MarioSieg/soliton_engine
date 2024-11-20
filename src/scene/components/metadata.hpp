@@ -4,7 +4,7 @@
 
 #include "../base.hpp"
 
-namespace lu::com {
+namespace soliton::com {
     struct entity_flags final {
         enum $ : std::uint32_t {
             none = 0,

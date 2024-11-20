@@ -1,8 +1,11 @@
 -- Copyright (c) 2022-2023 Mario 'Neo' Sieg. All Rights Reserved.
 
-local components = require 'components'
 local icons = require 'imgui.icons'
 local ui = require 'imgui.imgui'
+local c_transform = require 'components.transform'
+local c_camera = require 'components.camera'
+local c_character_controller = require 'components.character_controller'
+local c_mesh_renderer = require 'components.mesh_renderer'
 
 local function new_identity_map(list)
     local set = {}
@@ -29,49 +32,49 @@ local utils = {}
 -- Components that can be added to entities sorted by category
 utils.editor_components = {
     [icons.i_toolbox .. ' Core'] = {
-        [components.transform._id] = {
+        [c_transform._id] = {
             full_name = icons.i_arrows_alt .. ' Transform',
-            component = components.transform,
+            component = c_transform,
         },
-        [components.camera._id] = {
+        [c_camera._id] = {
             full_name = icons.i_camera .. ' Camera',
-            component = components.camera
+            component = c_camera
         },
-        [components.camera._id + 1] = {
+        [c_camera._id + 1] = {
             full_name = icons.i_code .. ' Script',
-            component = components.camera
+            component = c_camera
         }
     },
     [icons.i_paint_brush .. ' Rendering'] = {
-        [components.mesh_renderer._id] = {
+        [c_mesh_renderer._id] = {
             full_name = icons.i_cube .. ' Mesh Renderer',
-            component = components.mesh_renderer
+            component = c_mesh_renderer
         },
-        [components.mesh_renderer._id + 1] = {
+        [c_mesh_renderer._id + 1] = {
             full_name = icons.i_lightbulb_on .. ' Light',
-            component = components.mesh_renderer
+            component = c_mesh_renderer
         },
-        [components.mesh_renderer._id + 2] = {
+        [c_mesh_renderer._id + 2] = {
             full_name = icons.i_star_shooting .. ' Particle System',
-            component = components.mesh_renderer
+            component = c_mesh_renderer
         },
-        [components.mesh_renderer._id + 3] = {
+        [c_mesh_renderer._id + 3] = {
             full_name = icons.i_skeleton .. ' Animator',
-            component = components.mesh_renderer
+            component = c_mesh_renderer
         },
     },
     [icons.i_basketball_ball .. ' Physics'] = {
-        [components.character_controller._id] = {
+        [c_character_controller._id] = {
             full_name = icons.i_person_sign .. ' Character Controller',
-            component = components.character_controller
+            component = c_character_controller
         },
-        [components.character_controller._id + 1] = {
+        [c_character_controller._id + 1] = {
             full_name = icons.i_box_fragile .. ' Collider',
-            component = components.character_controller
+            component = c_character_controller
         },
-        [components.character_controller._id + 2] = {
+        [c_character_controller._id + 2] = {
             full_name = icons.i_truck_moving .. ' Rigid Body',
-            component = components.character_controller
+            component = c_character_controller
         }
     }
 }

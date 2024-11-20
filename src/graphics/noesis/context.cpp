@@ -29,11 +29,10 @@
 #include "../vulkancore/context.hpp"
 #include "../imgui/imgui.h"
 
-#include "../../scripting/system_variable.hpp"
+#include "../../core/system_variable.hpp"
 #include "../../platform/platform_subsystem.hpp"
 
-using lu::scripting::scripting_subsystem;
-using lu::platform::platform_subsystem;
+using soliton::platform::platform_subsystem;
 
 #include "UI/App.xaml.h"
 #include "UI/MainWindow.xaml.h"
@@ -79,15 +78,15 @@ extern "C" void NsShutdownPackages_NoesisApp() {
 }
 
 namespace noesis {
-    static const system_variable<eastl::string> cv_license {"ui.license.id", eastl::monostate{} };
-    static const system_variable<eastl::string> cv_key {"ui.license.key", eastl::monostate{} };
-    static const system_variable<eastl::string> cv_xaml_root {"ui.xaml_root_path", {"assets/ui"} };
-    static const system_variable<eastl::string> cv_font_root {"ui.font_root_path", {"assets/ui"} };
-    static const system_variable<eastl::string> cv_texture_root {"ui.texture_root_path", {"assets/ui"} };
-    static const system_variable<eastl::string> cv_default_font {"ui.default_font.family", {"Fonts/#PT Root UI"} };
-    static const system_variable<float> cv_default_font_size {"ui.default_font.size", {15.0f} };
-    static const system_variable<std::int32_t> cv_default_font_weight {"ui.default_font.weight", {Noesis::FontWeight_Normal} };
-    static const system_variable<std::int32_t> cv_default_font_stretch {"ui.default_font.stretch", {Noesis::FontStretch_Normal} };
+    static const soliton::system_variable<eastl::string> sv_license {"ui.license.id", eastl::monostate{} };
+    static const soliton::system_variable<eastl::string> sv_key {"ui.license.key", eastl::monostate{} };
+    static const soliton::system_variable<eastl::string> sv_xaml_root {"ui.xaml_root_path", {"assets/ui"} };
+    static const soliton::system_variable<eastl::string> sv_font_root {"ui.font_root_path", {"assets/ui"} };
+    static const soliton::system_variable<eastl::string> sv_texture_root {"ui.texture_root_path", {"assets/ui"} };
+    static const soliton::system_variable<eastl::string> sv_default_font {"ui.default_font.family", {"Fonts/#PT Root UI"} };
+    static const soliton::system_variable<float> sv_default_font_size {"ui.default_font.size", {15.0f} };
+    static const soliton::system_variable<std::int64_t> sv_default_font_weight {"ui.default_font.weight", {Noesis::FontWeight_Normal} };
+    static const soliton::system_variable<std::int64_t> sv_default_font_stretch {"ui.default_font.stretch", {Noesis::FontStretch_Normal} };
 
     static constinit Noesis::IView* s_event_proxy;
 
@@ -248,8 +247,8 @@ namespace noesis {
                 default: log_info("{}:{} [GUI] {}", file_name, line, msg); break;
             }
         });
-        static const eastl::string user_name {cv_license()};
-        static const eastl::string license_key {cv_key()};
+        static const eastl::string user_name {sv_license()};
+        static const eastl::string license_key {sv_key()};
         Noesis::GUI::SetLicense(
             user_name.c_str(),
             license_key.c_str()
@@ -269,34 +268,34 @@ namespace noesis {
         Noesis::RegisterComponent<Noesis::EnumConverter<Menu3D::State>>();
         Noesis::RegisterComponent<Menu3D::MultiplierConverter>();
 
-        static const eastl::string xaml_root = cv_xaml_root();
-        static const eastl::string font_root = cv_font_root();
-        static const eastl::string texture_root = cv_texture_root();
+        static const eastl::string xaml_root = sv_xaml_root();
+        static const eastl::string font_root = sv_font_root();
+        static const eastl::string texture_root = sv_texture_root();
         Noesis::GUI::SetXamlProvider(Noesis::MakePtr<NoesisApp::LocalXamlProvider>(xaml_root.c_str()));
         Noesis::GUI::SetFontProvider(Noesis::MakePtr<NoesisApp::LocalFontProvider>(font_root.c_str()));
         Noesis::GUI::SetTextureProvider(Noesis::MakePtr<NoesisApp::LocalTextureProvider>(texture_root.c_str()));
-        static const eastl::string default_font = cv_default_font();
+        static const eastl::string default_font = sv_default_font();
         const char* fonts[] = { default_font.c_str() };
         Noesis::GUI::SetFontFallbacks(fonts, 1);
         Noesis::GUI::SetFontDefaultProperties(
-            cv_default_font_size(),
-            static_cast<Noesis::FontWeight>(cv_default_font_weight()),
-            static_cast<Noesis::FontStretch>(cv_default_font_stretch()),
+            sv_default_font_size(),
+            static_cast<Noesis::FontWeight>(sv_default_font_weight()),
+            static_cast<Noesis::FontStretch>(sv_default_font_stretch()),
             Noesis::FontStyle_Normal
         );
         NoesisApp::SetThemeProviders();
         Noesis::GUI::LoadApplicationResources(NoesisApp::Theme::DarkBlue());
 
         const NoesisApp::VKFactory::InstanceInfo instance_info {
-            .instance = lu::vkb::ctx().get_device().get_instance(),
-            .physicalDevice = lu::vkb::ctx().get_device().get_physical_device(),
-            .device = lu::vkb::ctx().get_device().get_logical_device(),
-            .pipelineCache = lu::vkb::ctx().get_pipeline_cache(),
-            .queueFamilyIndex = lu::vkb::ctx().get_device().get_graphics_queue_idx(),
+            .instance = soliton::vkb::ctx().get_device().get_instance(),
+            .physicalDevice = soliton::vkb::ctx().get_device().get_physical_device(),
+            .device = soliton::vkb::ctx().get_device().get_logical_device(),
+            .pipelineCache = soliton::vkb::ctx().get_pipeline_cache(),
+            .queueFamilyIndex = soliton::vkb::ctx().get_device().get_graphics_queue_idx(),
             .vkGetInstanceProcAddr = &vkGetInstanceProcAddr,
             .stereoSupport = false,
             .QueueSubmit = +[](const VkCommandBuffer cmd) noexcept -> void {
-                //lu::vkb::ctx().flush_command_buffer<vk::QueueFlagBits::eGraphics, false>(cmd);
+                //soliton::vkb::ctx().flush_command_buffer<vk::QueueFlagBits::eGraphics, false>(cmd);
             }
         };
         m_device = NoesisApp::VKFactory::CreateDevice(false, instance_info);
@@ -317,8 +316,8 @@ namespace noesis {
         m_app->GetMainWindow()->GetView()->GetRenderer()->UpdateRenderTree();
         const NoesisApp::VKFactory::RecordingInfo recording_info {
             .commandBuffer = cmd,
-            .frameNumber = lu::vkb::ctx().get_image_index(),
-            .safeFrameNumber = lu::vkb::ctx().get_image_index()
+            .frameNumber = soliton::vkb::ctx().get_image_index(),
+            .safeFrameNumber = soliton::vkb::ctx().get_image_index()
         };
         NoesisApp::VKFactory::SetCommandBuffer(m_device, recording_info);
         m_app->GetMainWindow()->GetView()->GetRenderer()->RenderOffscreen();
@@ -342,7 +341,7 @@ namespace noesis {
     auto context::render_onscreen(const vk::RenderPass pass) -> void {
         if (!m_app) [[unlikely]]
             return;
-        NoesisApp::VKFactory::SetRenderPass(m_device, pass, static_cast<std::uint32_t>(lu::vkb::ctx().get_msaa_samples()));
+        NoesisApp::VKFactory::SetRenderPass(m_device, pass, static_cast<std::uint32_t>(soliton::vkb::ctx().get_msaa_samples()));
         m_app->GetMainWindow()->GetView()->GetRenderer()->Render();
     }
 
@@ -351,7 +350,7 @@ namespace noesis {
             m_app.Reset();
             m_app = Noesis::DynamicPtrCast<NoesisApp::Application>(Noesis::GUI::LoadXaml(m_xaml_path.c_str()));
             panic_assert(m_app);
-            m_app->Init(m_device, m_xaml_path.c_str(), lu::vkb::ctx().get_width(), lu::vkb::ctx().get_height(), render_wireframe);
+            m_app->Init(m_device, m_xaml_path.c_str(), soliton::vkb::ctx().get_width(), soliton::vkb::ctx().get_height(), render_wireframe);
             s_event_proxy = m_app->GetMainWindow()->GetView();
         }
     }

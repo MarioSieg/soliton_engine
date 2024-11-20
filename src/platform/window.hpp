@@ -6,7 +6,7 @@
 
 #include <GLFW/glfw3.h>
 
-namespace lu::platform {
+namespace soliton::platform {
     class window final : public no_copy, public no_move {
     public:
         window(
@@ -23,6 +23,7 @@ namespace lu::platform {
         multicast_delegate<GLFWmousebuttonfun> mouse_button_callbacks {};
         multicast_delegate<GLFWcursorenterfun> cursor_enter_callbacks {};
         multicast_delegate<GLFWframebuffersizefun> framebuffer_size_callbacks {};
+        void* usr {};
 
         auto maximize() -> void;
         auto minimize() -> void;

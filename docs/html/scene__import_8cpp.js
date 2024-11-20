@@ -1,5 +1,4 @@
 var scene__import_8cpp =
 [
-    [ "lunam_io_stream", "classlunam__io__stream.html", "classlunam__io__stream" ],
-    [ "lunam_assimp_io_system", "classlunam__assimp__io__system.html", "classlunam__assimp__io__system" ]
+    [ "import_from_file", "scene__import_8cpp.html#a26f2bcd46a7eb11bd4b6deaed5568061", null ]
 ];

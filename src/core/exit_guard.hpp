@@ -4,7 +4,7 @@
 
 #include <functional>
 
-namespace lu {
+namespace soliton {
     template <typename F>
     class exit_guard final {
     public:

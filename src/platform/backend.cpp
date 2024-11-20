@@ -11,7 +11,7 @@
 #   include <mimalloc.h>
 #endif
 
-namespace lu::platform::backend {
+namespace soliton::platform::backend {
     static constinit bool s_is_initialized;
     static constinit bool s_is_nfd_online;
 

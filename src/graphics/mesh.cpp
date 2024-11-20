@@ -10,7 +10,7 @@
 #include "material.hpp"
 #include "utils/assimp_utils.hpp"
 
-namespace lu::graphics {
+namespace soliton::graphics {
 	using namespace DirectX;
 
 	static auto compute_aabb(BoundingBox& aabb, const eastl::span<const vertex> vertices) noexcept -> void {
@@ -125,6 +125,10 @@ namespace lu::graphics {
 		create_from_assimp(meshes, create_collider_mesh);
     }
 
+	mesh::mesh(const eastl::span<const vertex> vertices, const eastl::span<const index> indices, const bool create_collider_mesh) : asset{assetmgr::asset_source::memory} {
+		create_from_data(vertices, indices, create_collider_mesh);
+	}
+
     auto mesh::create_from_assimp(const eastl::span<const aiMesh*> meshes, const bool create_collider_mesh) -> void {
 		std::size_t num_vertices = 0, num_indices = 0;
 		for (const aiMesh* mesh : meshes) {
@@ -145,13 +149,33 @@ namespace lu::graphics {
 		compute_aabb(m_aabb, vertices);
 		create_buffers(vertices, indices);
 		m_approx_byte_size = sizeof(*this)
-			+ m_vertex_buffer->get_size()
-			+ m_index_buffer->get_size()
-			+ m_primitives.size() * sizeof(primitive);
+			+ m_vertex_buffer->get_size() * sizeof(vertices[0])
+			+ m_index_buffer->get_size() * sizeof(indices[0])
+			+ m_primitives.size() * sizeof(m_primitives[0]);
         if (create_collider_mesh) {
             m_collision_mesh.emplace(physics::collider::new_mesh(vertices, indices));
         }
     }
+
+	auto mesh::create_from_data(eastl::span<const vertex> vertices, eastl::span<const index> indices, const bool create_collider_mesh) -> void {
+		m_primitives.shrink_to_fit();
+		m_primitives.emplace_back(primitive {
+			.vertex_start = 0,
+			.index_start = 0,
+			.vertex_count = static_cast<std::uint32_t>(vertices.size()),
+			.index_count = static_cast<std::uint32_t>(indices.size())
+		});
+		compute_aabb(m_aabb, vertices);
+		m_primitives[0].aabb = m_aabb;
+		create_buffers(vertices, indices);
+		m_approx_byte_size = sizeof(*this)
+			+ m_vertex_buffer->get_size() * sizeof(vertices[0])
+			+ m_index_buffer->get_size() * sizeof(indices[0])
+			+ m_primitives.size() * sizeof(m_primitives[0]);
+		if (create_collider_mesh) {
+			m_collision_mesh.emplace(physics::collider::new_mesh(vertices, indices));
+		}
+	}
 
     auto mesh::create_buffers(const eastl::span<const vertex> vertices, const eastl::span<const index> indices) -> void {
     	panic_assert(indices.size() <= eastl::numeric_limits<index>::max());

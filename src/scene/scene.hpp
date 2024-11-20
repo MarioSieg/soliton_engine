@@ -13,7 +13,7 @@
 #include "../graphics/material.hpp"
 #include "../audio/audio_clip.hpp"
 
-namespace lu {
+namespace soliton {
     class scene : public flecs::world, public no_copy, public no_move {
     public:
         explicit scene(eastl::string&& name = {});
@@ -30,6 +30,10 @@ namespace lu {
         [[nodiscard]] constexpr auto get_asset_registry() -> assetmgr::asset_registry<T>&;
 
         flecs::entity active_camera {};
+        eastl::vector<graphics::mesh*> meshes {};
+        eastl::vector<graphics::texture*> textures {};
+        eastl::vector<graphics::material*> materials {};
+        eastl::vector<audio::audio_clip*> audio_clips {};
 
     private:
         friend class kernel;

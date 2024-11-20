@@ -3,6 +3,7 @@
 #pragma once
 
 #include "../../core/core.hpp"
+#include "../../core/system_variable.hpp"
 
 // Include GLSL/C++ shader header
 #include "../../../../engine_assets/shaders/include/cpp_shared_structures.h"
@@ -25,7 +26,10 @@
 #   include <vulkan/vulkan_beta.h>
 #endif
 
-namespace lu::vkb {
+#include <spirv_reflect.h>
+
+
+namespace soliton::vkb {
     extern auto dump_physical_device_props(const vk::PhysicalDeviceProperties& props) -> void;
 
 #if USE_MIMALLOC

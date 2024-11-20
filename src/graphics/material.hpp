@@ -5,24 +5,29 @@
 #include "vulkancore/prelude.hpp"
 #include "vulkancore/descriptor.hpp"
 #include "../assetmgr/assetmgr.hpp"
-#include "../scripting/system_variable.hpp"
+#include "../core/system_variable.hpp"
 
 
 #include "texture.hpp"
 
-namespace lu::graphics {
-    static const system_variable<eastl::string> sv_error_texture {"renderer.error_texture", {"/RES/textures/system/error.png"}};
-    static const system_variable<eastl::string> sv_fallback_image_white {"renderer.fallback_texture_w", {"/RES/textures/system/fallback_white.png"}};
-    static const system_variable<eastl::string> sv_fallback_image_black {"renderer.fallback_texture_b", {"/RES/textures/system/fallback_black.png"}};
+namespace soliton {
+    class scene;
+}
+
+namespace soliton::graphics {
+    inline const system_variable<eastl::string> sv_error_texture {"renderer.error_texture", {"/RES/textures/system/error.png"}};
+    inline const system_variable<eastl::string> sv_fallback_image_white {"renderer.fallback_texture_w", {"/RES/textures/system/fallback_white.png"}};
+    inline const system_variable<eastl::string> sv_fallback_image_black {"renderer.fallback_texture_b", {"/RES/textures/system/fallback_black.png"}};
 
     using material_key = eastl::string;
+
     struct material_property final {
         constexpr material_property() noexcept = default;
-        constexpr material_property(const std::uint32_t shader_binding, const assetmgr::asset_ref value)
+        constexpr material_property(const std::uint32_t shader_binding, texture* value)
             noexcept : shader_binding{shader_binding}, value{value} {}
 
         std::uint32_t shader_binding = 0;
-        assetmgr::asset_ref value {};
+        texture* value {};
     };
 
     class material : public assetmgr::asset {

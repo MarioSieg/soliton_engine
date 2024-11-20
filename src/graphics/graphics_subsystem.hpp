@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include <optional>
-
 #include "../core/subsystem.hpp"
 #include "../scene/scene.hpp"
 
@@ -17,11 +15,11 @@
 #include "texture.hpp"
 #include "utils/debugdraw.hpp"
 #include "shared_buffers.hpp"
-
+#include "pipeline_cache.hpp"
 #include "imgui/context.hpp"
 #include "noesis/context.hpp"
 
-namespace lu::graphics {
+namespace soliton::graphics {
     class graphics_subsystem final : public subsystem {
     public:
         graphics_subsystem();
@@ -30,7 +28,6 @@ namespace lu::graphics {
         HOTPROC auto on_pre_tick() -> bool override;
         HOTPROC auto on_post_tick() -> void override;
         auto on_resize() -> void override;
-        auto on_prepare() -> void override;
         auto on_start(scene& scene) -> void override;
 
         [[nodiscard]] auto get_render_thread_pool() const noexcept -> const render_thread_pool& { return *m_render_thread_pool; }
@@ -65,8 +62,9 @@ namespace lu::graphics {
 
     private:
         friend class graphics_pipeline;
-        static auto reload_pipelines() -> void;
+
         auto render_uis() -> void;
+        auto load_all_pipelines(bool force_success) -> void;
         auto update_shared_buffers_per_frame() const -> void;
         static auto update_main_camera(float width, float height) -> void;
         HOTPROC auto render_scene_bucket(
@@ -81,7 +79,9 @@ namespace lu::graphics {
         static inline XMFLOAT4A s_clear_color;
         static inline BoundingFrustum s_frustum;
         static inline com::transform s_camera_transform;
+        static inline float s_camera_fov;
         static inline constinit graphics_subsystem* s_instance;
+        eastl::optional<pipeline_cache> m_pipeline_cache {};
         eastl::optional<vkb::command_buffer> m_cmd {};
         vk::CommandBufferInheritanceInfo m_inheritance_info {};
         eastl::optional<render_thread_pool> m_render_thread_pool {};
@@ -90,10 +90,5 @@ namespace lu::graphics {
         eastl::optional<imgui::context> m_imgui_context {};
         eastl::optional<noesis::context> m_noesis_context {};
         bool m_reload_pipelines_next_frame {};
-
-        struct {
-            flecs::query<const com::transform, const com::mesh_renderer> query {};
-            scene* scene {};
-        } m_render_query {};
     };
 }

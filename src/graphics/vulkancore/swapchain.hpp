@@ -5,7 +5,7 @@
 #include "prelude.hpp"
 #include <GLFW/glfw3.h>
 
-namespace lu::vkb {
+namespace soliton::vkb {
     class swapchain final : public no_copy, public no_move {
     public:
         struct buffer final {

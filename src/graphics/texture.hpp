@@ -5,7 +5,7 @@
 #include "../assetmgr/assetmgr.hpp"
 #include "vulkancore/buffer.hpp"
 
-namespace lu::graphics {
+namespace soliton::graphics {
     struct texture_descriptor final {
         enum class mipmap_creation_mode {
             no_mips,
@@ -76,6 +76,11 @@ namespace lu::graphics {
         [[nodiscard]] auto flags() const noexcept -> vk::ImageCreateFlags { return m_desc.flags; }
         [[nodiscard]] auto tiling() const noexcept -> vk::ImageTiling { return m_desc.tiling; }
         [[nodiscard]] auto sampler() const noexcept -> const vk::Sampler& { return m_sampler; }
+        [[nodiscard]] auto format_int() const noexcept -> std::uint32_t {
+            static_assert(sizeof(vk::Format) == sizeof(std::uint32_t));
+            return static_cast<std::uint32_t>(m_desc.format);
+        }
+
 
     protected:
         auto create(const texture_descriptor& desc, const eastl::optional<texture_data_supplier>& data) -> void;

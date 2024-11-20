@@ -34,11 +34,9 @@
 #include <Jolt/Physics/Collision/Shape/ScaledShape.h>
 
 #include "../graphics/graphics_subsystem.hpp"
-#include "../scripting/system_variable.hpp"
+#include "../core/system_variable.hpp"
 
-namespace lu::physics {
-    using scripting::scripting_subsystem;
-
+namespace soliton::physics {
     static auto trace_proc(const char* msg, ...) -> void {
         va_list list;
         va_start(list, msg);
@@ -48,12 +46,12 @@ namespace lu::physics {
         log_info("[Physics]: {}", tmp.data());
     }
 
-    static const system_variable<std::uint64_t> cv_tmp_allocator_buffer_size {"physics.temp_allocator_buffer_size", {32ull << 20}};
-    static const system_variable<std::uint32_t> cv_num_physics_threads {"cpu.physics_threads", {1u}};
-    static const system_variable<std::uint32_t> cv_max_rigid_bodies {"physics.max_rigid_bodies", {0x1000u}};
-    static const system_variable<std::uint32_t> cv_num_mutexes {"physics.mutex_count", {0x1000u}};
-    static const system_variable<std::uint32_t> cv_max_body_pairs {"physics.max_body_pairs", {0x1000u}};
-    static const system_variable<std::uint32_t> cv_max_contacts {"physics.max_contacts", {0x1000u}};
+    static const system_variable<std::int64_t> sv_tmp_allocator_buffer_size {"physics.temp_allocator_buffer_size", {32ll << 20}};
+    static const system_variable<std::int64_t> sv_num_physics_threads {"cpu.physics_threads", {1}};
+    static const system_variable<std::int64_t> sv_max_rigid_bodies {"physics.max_rigid_bodies", {0x1000}};
+    static const system_variable<std::int64_t> sv_num_mutexes {"physics.mutex_count", {0x1000}};
+    static const system_variable<std::int64_t> sv_max_body_pairs {"physics.max_body_pairs", {0x1000}};
+    static const system_variable<std::int64_t> sv_max_contacts {"physics.max_contacts", {0x1000}};
 
     physics_subsystem::physics_subsystem() : subsystem{"Physics"} {
 #if USE_MIMALLOC
@@ -78,21 +76,21 @@ namespace lu::physics {
         JPH::Trace = &trace_proc;
         JPH::Factory::sInstance = new JPH::Factory();
         JPH::RegisterTypes();
-        m_temp_allocator = eastl::make_unique<JPH::TempAllocatorImpl>(cv_tmp_allocator_buffer_size());
+        m_temp_allocator = eastl::make_unique<JPH::TempAllocatorImpl>(sv_tmp_allocator_buffer_size());
         m_job_system = eastl::make_unique<JPH::JobSystemThreadPool>(
         	JPH::cMaxPhysicsJobs,
         	JPH::cMaxPhysicsBarriers,
-            cv_num_physics_threads()
+            sv_num_physics_threads()
         );
     	m_broad_phase = eastl::make_unique<broad_phase_layer>();
 		m_broad_phase_filter = eastl::make_unique<broad_phase_layer_filter>();
     	m_object_layer_pair_filter = eastl::make_unique<object_layer_filter>();
     	m_contact_listener = eastl::make_unique<contact_listener>();
     	m_physics_system.Init(
-            cv_max_rigid_bodies(),
-            cv_num_mutexes(),
-            cv_max_body_pairs(),
-            cv_max_contacts(),
+            sv_max_rigid_bodies(),
+            sv_num_mutexes(),
+            sv_max_body_pairs(),
+            sv_max_contacts(),
     		*m_broad_phase,
     		*m_broad_phase_filter,
     		*m_object_layer_pair_filter
@@ -143,6 +141,7 @@ namespace lu::physics {
 		});
 
     	scene.observer<com::character_controller>().event(flecs::OnRemove).each([&](com::character_controller& cc) {
+    		if (!cc.phys_character) return;
 			cc.phys_character->RemoveFromPhysicsSystem();
     		cc.phys_character = nullptr;
 		});

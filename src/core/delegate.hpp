@@ -4,7 +4,7 @@
 
 #include "utils.hpp"
 
-namespace lu {
+namespace soliton {
     [[noreturn]] extern auto panic_impl(eastl::string&& message) -> void;
 
     template <typename T>
@@ -23,7 +23,7 @@ namespace lu {
         inline auto operator () (Args&&... args) noexcept(std::is_nothrow_invocable_v<T, Args...>) -> void {
             ++m_invocations;
             for (auto&& f : m_delegates)
-                eastl::invoke(f, std::forward<Args>(args)...);
+               if (f) eastl::invoke(f, std::forward<Args>(args)...);
         }
 
         inline auto clear() noexcept -> void {
@@ -33,13 +33,13 @@ namespace lu {
         }
 
         [[nodiscard]] inline auto empty() const noexcept -> bool { return m_delegates.empty(); }
-        [[nodiscard]] inline auto listeners() const noexcept -> const eastl::list<T>& { return m_delegates; }
+        [[nodiscard]] inline auto listeners() const noexcept -> const eastl::vector<T>& { return m_delegates; }
         [[nodiscard]] inline auto invocations() const noexcept -> std::uint64_t { return m_invocations; }
         [[nodiscard]] inline auto is_locked() const noexcept -> bool { return m_is_locked; }
         inline auto set_locked(const bool locked) noexcept -> void { m_is_locked = locked; }
 
     private:
-        eastl::list<T> m_delegates {};
+        eastl::vector<T> m_delegates {};
         std::uint64_t m_invocations {};
         bool m_is_locked {};
     };

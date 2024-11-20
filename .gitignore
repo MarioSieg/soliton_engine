@@ -12,7 +12,7 @@ _deps
 /.idea
 /bin
 /shipping_build
-lunam.exe
+soliton_engine.exe
 /media/shaders/
 /log
 /.vscode
@@ -28,3 +28,4 @@ extern/Simd/src/Simd/SimdVersion.h
 /license_server/.venv
 /license_server/__pycache__
 /engine_assets/scenes/
+/config/engine.ini

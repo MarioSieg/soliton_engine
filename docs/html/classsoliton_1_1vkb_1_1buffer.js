@@ -1,0 +1,26 @@
+var classsoliton_1_1vkb_1_1buffer =
+[
+    [ "buffer", "classsoliton_1_1vkb_1_1buffer.html#a2cd910136d9ea6f851ab23b2d0beae10", null ],
+    [ "~buffer", "classsoliton_1_1vkb_1_1buffer.html#adc0ec3c6ffeed367968f710b2700006b", null ],
+    [ "get_allocation", "classsoliton_1_1vkb_1_1buffer.html#a45da769b836ef01e500d6a96789df15e", null ],
+    [ "get_allocator", "classsoliton_1_1vkb_1_1buffer.html#a26cb27d8056e67e395e118c9295bc025", null ],
+    [ "get_buffer", "classsoliton_1_1vkb_1_1buffer.html#aaeb661ee917df727f3500ae8bc3ff429", null ],
+    [ "get_device_address", "classsoliton_1_1vkb_1_1buffer.html#a96a1b79c656c4988cb1849692f67a037", null ],
+    [ "get_mapped_ptr", "classsoliton_1_1vkb_1_1buffer.html#ad339e453fc0e974db8643337bf0a2273", null ],
+    [ "get_memory", "classsoliton_1_1vkb_1_1buffer.html#a20001121f5fed1535e0d5d9da2c6f28b", null ],
+    [ "get_memory_properties", "classsoliton_1_1vkb_1_1buffer.html#a58cff49ae5332ed8d2d4808c86f9e054", null ],
+    [ "get_memory_usage", "classsoliton_1_1vkb_1_1buffer.html#ab06689993e5dfd7816278db5497bb9f8", null ],
+    [ "get_size", "classsoliton_1_1vkb_1_1buffer.html#abc285dc307a825eefb62ed74649d26b2", null ],
+    [ "get_usage", "classsoliton_1_1vkb_1_1buffer.html#ac5c9089ac743ff658ec547f23cd12d01", null ],
+    [ "upload_data", "classsoliton_1_1vkb_1_1buffer.html#ae51e8e02527f2bc02cfb7ab2b58b7c1f", null ],
+    [ "m_allocation", "classsoliton_1_1vkb_1_1buffer.html#aea6f8fd332dc3eff07033b02c2e6693d", null ],
+    [ "m_allocator", "classsoliton_1_1vkb_1_1buffer.html#a6e7114a22a7e0f98ea23bc479cb1803d", null ],
+    [ "m_buffer", "classsoliton_1_1vkb_1_1buffer.html#ab177d5f77cfe1ade1f20de94e317bfde", null ],
+    [ "m_device_address", "classsoliton_1_1vkb_1_1buffer.html#a7e44306ac371f7e6334dc599e3cfbdb5", null ],
+    [ "m_mapped", "classsoliton_1_1vkb_1_1buffer.html#a02e3ede9596f1edcb13df75eae52fbad", null ],
+    [ "m_memory", "classsoliton_1_1vkb_1_1buffer.html#a0540d17e806169eb9eace9e984f03ed9", null ],
+    [ "m_memory_properties", "classsoliton_1_1vkb_1_1buffer.html#a025bb6a8caec0f7fce1dbddfe4660a05", null ],
+    [ "m_memory_usage", "classsoliton_1_1vkb_1_1buffer.html#a89877837ce2019bf3805946c65ec378b", null ],
+    [ "m_size", "classsoliton_1_1vkb_1_1buffer.html#a55f3cc52a39b120c739c05e64ff73c58", null ],
+    [ "m_usage", "classsoliton_1_1vkb_1_1buffer.html#ab96d01b8a96217a99491c51e8109bfdd", null ]
+];

@@ -8,7 +8,7 @@
 #include <EASTL/span.h>
 #include <EASTL/string.h>
 
-namespace lu {
+namespace soliton {
     class buffered_sink final : public spdlog::sinks::base_sink<std::mutex> {
     public:
         explicit buffered_sink(const std::size_t cap) { m_history.reserve(cap); }

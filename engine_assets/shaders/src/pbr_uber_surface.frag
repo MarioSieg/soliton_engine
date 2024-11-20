@@ -17,10 +17,6 @@ layout (location = 7) in mat3 inTBN;
 
 layout (location = 0) out vec4 outFragColor;
 
-layout (std140, set = LU_GLSL_DESCRIPTOR_SET_IDX_PER_FRAME, binding = 0) uniform uniformPerFrameUBO {
-  perFrameData uboPerFrame;
-};
-
 layout (set = LU_GLSL_DESCRIPTOR_SET_IDX_PER_MATERIAL, binding = 0) uniform sampler2D sAlbedoMap;
 layout (set = LU_GLSL_DESCRIPTOR_SET_IDX_PER_MATERIAL, binding = 1) uniform sampler2D sNormalMap;
 layout (set = LU_GLSL_DESCRIPTOR_SET_IDX_PER_MATERIAL, binding = 2) uniform sampler2D sRoughnessMap;
@@ -46,7 +42,8 @@ vec3 calculateNormal(vec2 uv)
 
 void main() {
   const vec2 uv = inUV;
-  const vec3 albedo = texture(sAlbedoMap, uv).rgb;
+  const vec4 albedo_full = texture(sAlbedoMap, uv);
+  const vec3 albedo = albedo_full.rgb;
   const vec2 metallic_roughness = texture(sRoughnessMap, uv).rg;
   const float metallic = metallic_roughness.r;
   const float roughness = metallic_roughness.g;
@@ -118,6 +115,8 @@ void main() {
   // Tone mapping
   color = postToneMap(color);
 
-  outFragColor.rgb = color;
-  outFragColor.a = 1.0;
+  outFragColor = vec4(color, 1.0);
+  //const float cutoff = 0.4;
+  //outFragColor.a = albedo_full.a;
+  //outFragColor.a = (outFragColor.a - cutoff) / max(fwidth(outFragColor.a), 0.0001) + 0.5;
 }

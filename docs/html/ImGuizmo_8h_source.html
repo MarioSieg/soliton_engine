@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.4"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lunam Engine: src/graphics/imgui/ImGuizmo.h Source File</title>
+<title>Soliton Engine: src/graphics/imgui/ImGuizmo.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -27,7 +27,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Lunam Engine
+   <div id="projectname">Soliton Engine
    </div>
    <div id="projectbrief">Realtime Simulation Engine</div>
   </td>
@@ -218,7 +218,7 @@ $(document).ready(function(){initNavTree('ImGuizmo_8h_source.html',''); initResi
 <div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>   <span class="comment">// globals are not shared between them.</span></div>
 <div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>   <span class="comment">// More details at https://stackoverflow.com/questions/19373061/what-happens-to-global-and-static-variables-in-a-shared-library-when-it-is-dynam</span></div>
 <div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>   <span class="comment">// expose method to set imgui context</span></div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>   <a class="code hl_define" href="ImGuizmo_8h.html#a43829975e84e45d1149597467a14bbf5">IMGUI_API</a> <span class="keywordtype">void</span> SetImGuiContext(ImGuiContext* <a class="code hl_function" href="namespacelu_1_1vkb.html#a0ab9f4a727d5dee80526e81c2dd43e19">ctx</a>);</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>   <a class="code hl_define" href="ImGuizmo_8h.html#a43829975e84e45d1149597467a14bbf5">IMGUI_API</a> <span class="keywordtype">void</span> SetImGuiContext(ImGuiContext* <a class="code hl_function" href="namespacesoliton_1_1vkb.html#a6840e8a759bb21f73d30748a4a276c9e">ctx</a>);</div>
 <div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span> </div>
 <div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>   <span class="comment">// return true if mouse cursor is over any gizmo control (axis, plan or screen component)</span></div>
 <div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>   <a class="code hl_define" href="ImGuizmo_8h.html#a43829975e84e45d1149597467a14bbf5">IMGUI_API</a> <span class="keywordtype">bool</span> IsOver();</div>
@@ -310,17 +310,17 @@ $(document).ready(function(){initNavTree('ImGuizmo_8h_source.html',''); initResi
 <div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span> </div>
 <div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>   <span class="comment">// return true if the cursor is over the operation&#39;s gizmo</span></div>
 <div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>   <a class="code hl_define" href="ImGuizmo_8h.html#a43829975e84e45d1149597467a14bbf5">IMGUI_API</a> <span class="keywordtype">bool</span> IsOver(OPERATION op);</div>
-<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>   <a class="code hl_define" href="ImGuizmo_8h.html#a43829975e84e45d1149597467a14bbf5">IMGUI_API</a> <span class="keywordtype">void</span> SetGizmoSizeClipSpace(<span class="keywordtype">float</span> value);</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>   <a class="code hl_define" href="ImGuizmo_8h.html#a43829975e84e45d1149597467a14bbf5">IMGUI_API</a> <span class="keywordtype">void</span> SetGizmoSizeClipSpace(<span class="keywordtype">float</span> <a class="code hl_typedef" href="namespacesoliton_1_1detail.html#a4a2ced3854ab1a692592f1734ddf0726">value</a>);</div>
 <div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span> </div>
 <div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>   <span class="comment">// Allow axis to flip</span></div>
 <div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>   <span class="comment">// When true (default), the guizmo axis flip for better visibility</span></div>
 <div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>   <span class="comment">// When false, they always stay along the positive world/local axis</span></div>
-<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>   <a class="code hl_define" href="ImGuizmo_8h.html#a43829975e84e45d1149597467a14bbf5">IMGUI_API</a> <span class="keywordtype">void</span> AllowAxisFlip(<span class="keywordtype">bool</span> value);</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>   <a class="code hl_define" href="ImGuizmo_8h.html#a43829975e84e45d1149597467a14bbf5">IMGUI_API</a> <span class="keywordtype">void</span> AllowAxisFlip(<span class="keywordtype">bool</span> <a class="code hl_typedef" href="namespacesoliton_1_1detail.html#a4a2ced3854ab1a692592f1734ddf0726">value</a>);</div>
 <div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span> </div>
 <div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>   <span class="comment">// Configure the limit where axis are hidden</span></div>
-<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>   <a class="code hl_define" href="ImGuizmo_8h.html#a43829975e84e45d1149597467a14bbf5">IMGUI_API</a> <span class="keywordtype">void</span> SetAxisLimit(<span class="keywordtype">float</span> value);</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>   <a class="code hl_define" href="ImGuizmo_8h.html#a43829975e84e45d1149597467a14bbf5">IMGUI_API</a> <span class="keywordtype">void</span> SetAxisLimit(<span class="keywordtype">float</span> <a class="code hl_typedef" href="namespacesoliton_1_1detail.html#a4a2ced3854ab1a692592f1734ddf0726">value</a>);</div>
 <div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>   <span class="comment">// Configure the limit where planes are hiden</span></div>
-<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>   <a class="code hl_define" href="ImGuizmo_8h.html#a43829975e84e45d1149597467a14bbf5">IMGUI_API</a> <span class="keywordtype">void</span> SetPlaneLimit(<span class="keywordtype">float</span> value);</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>   <a class="code hl_define" href="ImGuizmo_8h.html#a43829975e84e45d1149597467a14bbf5">IMGUI_API</a> <span class="keywordtype">void</span> SetPlaneLimit(<span class="keywordtype">float</span> <a class="code hl_typedef" href="namespacesoliton_1_1detail.html#a4a2ced3854ab1a692592f1734ddf0726">value</a>);</div>
 <div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span> </div>
 <div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>   <span class="keyword">enum</span> COLOR</div>
 <div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>   {</div>
@@ -362,7 +362,8 @@ $(document).ready(function(){initNavTree('ImGuizmo_8h_source.html',''); initResi
 <div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>}</div>
 <div class="ttc" id="aImGuizmo_8h_html_a43829975e84e45d1149597467a14bbf5"><div class="ttname"><a href="ImGuizmo_8h.html#a43829975e84e45d1149597467a14bbf5">IMGUI_API</a></div><div class="ttdeci">#define IMGUI_API</div><div class="ttdef"><b>Definition:</b> ImGuizmo.h:111</div></div>
 <div class="ttc" id="aimconfig_8h_html"><div class="ttname"><a href="imconfig_8h.html">imconfig.h</a></div></div>
-<div class="ttc" id="anamespacelu_1_1vkb_html_a0ab9f4a727d5dee80526e81c2dd43e19"><div class="ttname"><a href="namespacelu_1_1vkb.html#a0ab9f4a727d5dee80526e81c2dd43e19">lu::vkb::ctx</a></div><div class="ttdeci">auto ctx() noexcept -&gt; context &amp;</div><div class="ttdef"><b>Definition:</b> context.hpp:197</div></div>
+<div class="ttc" id="anamespacesoliton_1_1detail_html_a4a2ced3854ab1a692592f1734ddf0726"><div class="ttname"><a href="namespacesoliton_1_1detail.html#a4a2ced3854ab1a692592f1734ddf0726">soliton::detail::value</a></div><div class="ttdeci">eastl::variant&lt; eastl::monostate, bool, float, std::int64_t, eastl::string &gt; value</div><div class="ttdef"><b>Definition:</b> system_variable.hpp:34</div></div>
+<div class="ttc" id="anamespacesoliton_1_1vkb_html_a6840e8a759bb21f73d30748a4a276c9e"><div class="ttname"><a href="namespacesoliton_1_1vkb.html#a6840e8a759bb21f73d30748a4a276c9e">soliton::vkb::ctx</a></div><div class="ttdeci">auto ctx() noexcept -&gt; context &amp;</div><div class="ttdef"><b>Definition:</b> context.hpp:138</div></div>
 <div class="ttc" id="atransform_8lua_8cpp_html_a536b5df3d99aa841599665038c874866"><div class="ttname"><a href="transform_8lua_8cpp.html#a536b5df3d99aa841599665038c874866">y</a></div><div class="ttdeci">const double const double y</div><div class="ttdef"><b>Definition:</b> transform.lua.cpp:8</div></div>
 <div class="ttc" id="atransform_8lua_8cpp_html_af05596f7370b04043875e02bde7204dc"><div class="ttname"><a href="transform_8lua_8cpp.html#af05596f7370b04043875e02bde7204dc">x</a></div><div class="ttdeci">const double x</div><div class="ttdef"><b>Definition:</b> transform.lua.cpp:8</div></div>
 </div><!-- fragment --></div><!-- contents -->

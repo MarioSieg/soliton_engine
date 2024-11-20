@@ -1,7 +1,7 @@
 var searchData=
 [
   ['eight_5fbyte_5falignment_0',['EIGHT_BYTE_ALIGNMENT',['../sqlite3_8c.html#a83bc0f088f6912fd1df370cbaf25110f',1,'sqlite3.c']]],
-  ['enable_5fsimulated_5fio_5ferrors_1',['enable_simulated_io_errors',['../sqlite3_8c.html#a5e72f503ac96109e9231f75e69e6f714',1,'enable_simulated_io_errors:&#160;sqlite3.c'],['../sqlite3_8c.html#a5e72f503ac96109e9231f75e69e6f714',1,'enable_simulated_io_errors:&#160;sqlite3.c']]],
+  ['enable_5fsimulated_5fio_5ferrors_1',['enable_simulated_io_errors',['../sqlite3_8c.html#a5e72f503ac96109e9231f75e69e6f714',1,'enable_simulated_io_errors():&#160;sqlite3.c'],['../sqlite3_8c.html#a5e72f503ac96109e9231f75e69e6f714',1,'enable_simulated_io_errors():&#160;sqlite3.c']]],
   ['enablelookaside_2',['EnableLookaside',['../sqlite3_8c.html#aa259c3363c0e10091380fbec502b6bdf',1,'sqlite3.c']]],
   ['ename_5fname_3',['ENAME_NAME',['../sqlite3_8c.html#ad36a61085e823014ee327e5692a44e4a',1,'sqlite3.c']]],
   ['ename_5frowid_4',['ENAME_ROWID',['../sqlite3_8c.html#a54af446e687ee86d48dcfc2d5ef7e7ff',1,'sqlite3.c']]],

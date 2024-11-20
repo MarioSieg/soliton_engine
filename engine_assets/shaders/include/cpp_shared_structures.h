@@ -10,7 +10,7 @@
 #define LU_GLSL_DESCRIPTOR_SET_IDX_CUSTOM 2
 
 #ifdef __cplusplus // If included from C++
-namespace lu::graphics::glsl {
+namespace soliton::graphics::glsl {
     using ivec2 = DirectX::XMINT2;
     using ivec3 = DirectX::XMINT3;
     using ivec4 = DirectX::XMINT4;
@@ -27,13 +27,38 @@ namespace lu::graphics::glsl {
     #define gpu_check(strut)
 #endif
 
-// Sun and scene lighting properties. Updated once per frame.
-struct perFrameData {
-    vec4 camPos;
-    vec4 sunDir;
-    vec4 sunColor;
+// sky params
+struct sky_data {
+    vec4 sun_luminance;
+    vec4 sky_luminance_xyz;
+    vec4 sky_luminance;
+    vec4 params;
+    vec4 perez1;
+    vec4 perez2;
+    vec4 perez3;
+    vec4 perez4;
+    vec4 perez5;
 };
-gpu_check(perFrameData)
+
+// Sun and scene lighting properties. Updated once per frame.
+struct per_frame_data {
+    mat4 viewProj;
+    mat4 viewProjInverse;
+    vec4 cameraInfo; // x = fov, y = aspect ratio
+    vec4 camPos; // w unused for now
+    vec4 sunDir; // w unused for now
+    vec4 sunColor; // w unused for now
+    vec4 ambientColor; // w unused for now
+
+    sky_data sky;
+};
+gpu_check(per_frame_data)
+
+#ifndef __cplusplus
+layout (std140, set = LU_GLSL_DESCRIPTOR_SET_IDX_PER_FRAME, binding = 0) uniform uniformPerFrameUBO {
+    per_frame_data uboPerFrame;
+};
+#endif
 
 #ifdef __cplusplus // If included from C++
 }

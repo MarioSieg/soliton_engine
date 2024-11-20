@@ -11,7 +11,7 @@
 #define log_critical SPDLOG_CRITICAL
 #define print_sep() log_info("------------------------------------------------------------")
 
-namespace lu {
+namespace soliton {
     [[noreturn]] extern auto panic_impl(std::string&& message) -> void;
 
     template <typename... Args>
@@ -22,7 +22,7 @@ namespace lu {
     #define panic_assert(expr) \
         do { \
             if (!(expr)) [[unlikely]] { \
-                ::lu::panic("Assertion failed: {} in {}:{}", #expr, __FILE__, __LINE__); \
+                ::soliton::panic("Assertion failed: {} in {}:{}", #expr, __FILE__, __LINE__); \
             } \
         } while (false)
 

@@ -1,4 +1,4 @@
 @echo off
 pushd %~dp0
-"bin/debug/lunam.exe"
+"bin/debug/soliton_engine.exe"
 popd

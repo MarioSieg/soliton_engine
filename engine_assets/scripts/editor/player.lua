@@ -1,7 +1,9 @@
 -- Copyright (c) 2022-2023 Mario 'Neo' Sieg. All Rights Reserved.
 
 local scene = require 'scene'
-local components = require 'components'
+local c_camera = require 'components.camera'
+local c_transform = require 'components.transform'
+local c_controller = require 'components.character_controller'
 local input = require 'input'
 local gmath = require 'gmath'
 local vec2 = require 'vec2'
@@ -45,18 +47,18 @@ function player:spawn(spawn_pos)
 
     self._controller = scene.spawn('player_controller')
     self._controller:add_flag(entity_flags.transient)
-    self._controller:get_component(components.character_controller)
-    self._controller:get_component(components.transform):set_position(spawn_pos)
+    self._controller:get_component(c_controller)
+    self._controller:get_component(c_transform):set_position(spawn_pos)
 
     self._camera = scene.spawn('player_camera')
     self._camera:add_flag(entity_flags.transient)
-    self._camera:get_component(components.transform)
-    self._camera:get_component(components.camera):set_fov(self.camera_fov)
+    self._camera:get_component(c_transform)
+    self._camera:get_component(c_camera):set_fov(self.camera_fov)
 end
 
 function player:_update_camera()
-    local transform = self._camera:get_component(components.transform)
-    local fixed_pos = self._controller:get_component(components.transform):get_position()
+    local transform = self._camera:get_component(c_transform)
+    local fixed_pos = self._controller:get_component(c_transform):get_position()
     fixed_pos.y = fixed_pos.y + 1.35 * 0.5 -- _camera height
     transform:set_position(fixed_pos) -- sync pos
 
@@ -81,7 +83,7 @@ function player:_update_camera()
     local rot = quat.from_euler(self._mouse_angles.y, self._mouse_angles.x, 0.0)
 
     if self._movement_state ~= movement_state.idle and not self._is_flying and self.enable_view_bob then
-        local abs_velocity = #self._controller:get_component(components.character_controller):get_linear_velocity()
+        local abs_velocity = #self._controller:get_component(c_controller):get_linear_velocity()
         local x = math.sin(time.time * self.view_bob_speed) * abs_velocity * self.view_bob_scale / 100.0
         local y = math.sin(2.0 * time.time * self.view_bob_speed) * abs_velocity * self.view_bob_scale / 400.0
         rot = rot * quat.from_euler(y, x, 0)
@@ -91,8 +93,8 @@ function player:_update_camera()
 end
 
 function player:_update_movement()
-    local cam_transform = self._camera:get_component(components.transform)
-    local controller = self._controller:get_component(components.character_controller)
+    local cam_transform = self._camera:get_component(c_transform)
+    local controller = self._controller:get_component(c_controller)
     local is_running = self.can_run and input.is_key_pressed(input.keys.w) and input.is_key_pressed(input.keys.left_shift)
     local speed = is_running and self.run_speed or self.walk_speed
 
