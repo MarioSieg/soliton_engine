@@ -6,6 +6,8 @@
 ------------------------------------------------------------------------------
 
 local ffi = require 'ffi'
+local utility = require 'utility'
+
 local cpp = ffi.C
 
 ffi.cdef [[
@@ -39,6 +41,13 @@ local transform = {
     end,
     _exists = function(entity_id) return cpp.__lu_com_transform_exists(entity_id) end,
     _remove = function(entity_id) cpp.__lu_com_transform_remove(entity_id) end,
+    _serialize = function(self)
+        return {
+            position = utility.serialize_vec3(self:get_position()),
+            rotation = utility.serialize_vec3(self:get_rotation()),
+            scale = utility.serialize_vec3(self:get_scale())
+        }
+    end,
 
     set_position = function(self, pos) cpp.__lu_com_transform_set_pos(self._entity_id, pos.x, pos.y, pos.z) end,
     get_position = function(self) return cpp.__lu_com_transform_get_pos(self._entity_id) end,

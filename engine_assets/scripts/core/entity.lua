@@ -7,6 +7,7 @@
 
 local ffi = require 'ffi'
 local bit = require 'bit'
+local component_registry = require 'components._registry'
 local band, bor, bxor, bnot = bit.band, bit.bor, bit.bxor, bit.bnot
 local cpp = ffi.C
 
@@ -136,6 +137,24 @@ end
 --- @see scene.despawn
 function entity:despawn()
     cpp.__lu_scene_despawn_entity(self._id)
+end
+
+-- Internal use only.
+function entity:_serialize()
+    local components = {}
+    for _, component in pairs(component_registry) do
+        if self:has_component(component) then
+            local instance = self:get_component(component)
+            if instance then
+                table.insert(components, instance:_serialize())
+            end
+        end
+    end
+    return {
+        name = self:get_name(),
+        flags = self:get_flags(),
+        components = components
+    }
 end
 
 --- Checks if the entity is equal to another entity by comparing their ids.

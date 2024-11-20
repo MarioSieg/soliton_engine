@@ -40,9 +40,10 @@ local chrono = {
         year = 2024,
     },
     time = 4.45, -- Current time of day (0.0 - 24.0)
-    debug_draw = false, -- Draw debug arrows for sun and moon
     sun_latitude = 50.0, -- Latitude of the sun
+
     daytime_coeff = 0.0, -- 0.0 = night, 1.0 = day
+    debug_draw = false, -- Draw debug arrows for sun and moon
 
     _north_dir = vec3.unit_x,
     _sun_dir = -vec3.unit_y,
@@ -125,6 +126,15 @@ function chrono:update()
     self.date.year = self.date.year + (self.date.month > 12 and 1 or 0)
     self.date.month = (self.date.month > 12) and 1 or self.date.month
     self.current_season = self.seasons[season_map[self.date.month]]
+end
+
+function chrono:_serialize()
+    return {
+        date = self.date,
+        time = self.time,
+        sun_latitude = self.sun_latitude,
+        time_cycle_scale = self.time_cycle_scale
+    }
 end
 
 chrono:set_time_scale(60)

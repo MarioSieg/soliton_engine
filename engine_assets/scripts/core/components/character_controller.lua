@@ -37,6 +37,9 @@ local character_controller = {
     end,
     _exists = function(entity_id) return cpp.__lu_com_character_controller_exists(entity_id) end,
     _remove = function(entity_id) cpp.__lu_com_character_controller_remove(entity_id) end,
+    _serialize = function(self)
+        return {}
+    end,
 
     get_linear_velocity = function(self) return cpp.__lu_com_character_controller_get_linear_velocity(self._entity_id) end,
     set_linear_velocity = function(self, velocity) cpp.__lu_com_character_controller_set_linear_velocity(self._entity_id, velocity) end,

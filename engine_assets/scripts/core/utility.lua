@@ -83,4 +83,8 @@ function utils.ring_buffer:max()
     return max
 end
 
+function utils.serialize_vec3(v)
+    return { x = v.x, y = v.y, z = v.z }
+end
+
 return utils

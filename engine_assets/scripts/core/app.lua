@@ -39,6 +39,7 @@ ffi.cdef [[
     const char* __lu_app_host_get_gpu_name(void);
     const char* __lu_app_host_get_gapi_name(void);
     const char* __lu_app_open_file_dialog(const char *file_type, const char* filters, const char* default_path);
+    const char* __lu_app_save_file_dialog(const char *file_type, const char* filters, const char* default_path, const char* default_name);
     const char* __lu_app_open_folder_dialog(const char* default_path);
     uint32_t __lu_app_host_get_num_cpus(void);
     uint32_t __lu_app_get_subsystem_names(const char **data, int size);
@@ -250,6 +251,14 @@ end
 --- @tparam string default_path Default path to open the file dialog
 function app.utils.open_file_dialog(file_types, filters, default_path)
     return ffi.string(cpp.__lu_app_open_file_dialog(file_types, filters or '', default_path or ''))
+end
+
+--- Save native file dialog
+--- @tparam string file_types File types to save
+--- @tparam string filters filters for the file dialog
+--- @tparam string default_path Default path to save the file dialog
+function app.utils.save_file_dialog(file_types, filters, default_path, default_name)
+    return ffi.string(cpp.__lu_app_save_file_dialog(file_types, filters or '', default_path or '', default_name or ''))
 end
 
 --- Open native folder dialog

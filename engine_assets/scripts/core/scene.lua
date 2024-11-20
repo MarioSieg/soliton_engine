@@ -5,15 +5,18 @@
 ------------------------------------------------------------------------------
 
 local ffi = require 'ffi'
-local cpp = ffi.C
 local bit = require 'bit'
 local entity = require 'entity'
 local vec3 = require 'vec3'
 local scene_import_flags = require 'detail.import_flags'
-local band = bit.band
+local json = require 'json'
+local utility = require 'utility'
 
 local a_texture = require 'assets.texture'
 
+local band = bit.band
+
+local cpp = ffi.C
 ffi.cdef[[
     typedef int lua_scene_id;
     lua_scene_id __lu_scene_create(const char* name);
@@ -35,10 +38,20 @@ ffi.cdef[[
     void __lu_scene_set_sky_turbidity(double turbidity);
 ]]
 
+local k_scene_storage_version = 1
+
 local lighting = {
     sun_color = vec3.one,
     ambient_color = vec3.one * 0.1,
-    sky_turbidity = 2.2
+    sky_turbidity = 2.2,
+
+    _serialize = function(self)
+        return {
+            sun_color = utility.serialize_vec3(self.sun_color),
+            ambient_color = utility.serialize_vec3(self.ambient_color),
+            sky_turbidity = self.sky_turbidity
+        }
+    end
 }
 
 local scene = {
@@ -126,6 +139,36 @@ function scene.load(file, import_flags)
     local name = file:match('^.+/(.+)$'):match('(.+)%..+') -- extract scene name from file path
     local id = cpp.__lu_scene_import(name, file, band(import_flags, 0xffffffff)) -- create native scene
     setup_scene_class(id, name)
+end
+
+function scene.save(file)
+    local entities = {}
+    scene._entity_query_start()
+    for i = 0, scene._entity_query_next() - 1 do
+        local entity = scene._entity_query_lookup(i)
+        if entity:is_valid() then
+            table.insert(entities, entity:_serialize())
+        end
+    end
+    scene._entity_query_end()
+    local data = scene._serialize()
+    data.entities = entities
+    json.save(file, data)
+    collectgarbage_full_cycle()
+end
+
+-- Internal use only.
+function scene._serialize()
+    return {
+        header = {
+            version = k_scene_storage_version,
+            name = scene.name,
+            id = scene.id,
+            lighting = scene.lighting:_serialize(),
+            chrono = scene.chrono:_serialize(),
+            date = os.date('%Y-%m-%d %H:%M:%S'),
+        }
+    }
 end
 
 -- Internal use only.

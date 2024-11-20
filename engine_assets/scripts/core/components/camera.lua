@@ -33,6 +33,13 @@ local camera = {
     end,
     _exists = function(entity_id) return cpp.__lu_com_camera_exists(entity_id) end,
     _remove = function(entity_id) cpp.__lu_com_camera_remove(entity_id) end,
+    _serialize = function(self)
+        return {
+            fov = self:get_fov(),
+            near_clip = self:get_near_clip(),
+            far_clip = self:get_far_clip()
+        }
+    end,
 
     get_fov = function(self) return cpp.__lu_com_camera_get_fov(self._entity_id) end,
     set_fov = function(self, fov) cpp.__lu_com_camera_set_fov(self._entity_id, fov) end,

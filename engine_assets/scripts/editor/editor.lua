@@ -117,12 +117,6 @@ local editor = {
         gizmo_snap_step = ffi.new('float[1]', 0.1),
         active_debug_mode = ffi.new('int[1]', debug_mode.none)
     },
-    serialized_config = {
-        general = {
-            prev_scene_location = '',
-            prev_project_location = '',
-        }
-    },
     editor_camera = require 'editor.camera',
     dock_id = nil,
     active_project = nil,
@@ -241,9 +235,8 @@ function editor:draw_main_menu_bar()
                 ui.PopID()
             end
             if ui.MenuItem(icons.i_folder_open .. ' Open project...') then
-                local selected_file = app.utils.open_file_dialog('Soliton Projects', 'lupro', self.serialized_config.general.prev_project_location)
+                local selected_file = app.utils.open_file_dialog('Soliton Projects', 'lupro', '')
                 if selected_file and lfs.attributes(selected_file) then
-                    self.serialized_config.general.prev_project_location = selected_file:match("(.*[/\\])")
                     local proj = project:open(selected_file)
                     print('Opened project: ' .. proj.full_path)
                     if self.active_project then -- unload previous project
@@ -255,13 +248,18 @@ function editor:draw_main_menu_bar()
                     collectgarbage_full_cycle()
                 end
             end
-            if ui.MenuItem(icons.i_plus_circle .. ' New scene') then
+            if ui.MenuItem(icons.i_file_alt .. ' Empty scene') then
                 self:load_scene(nil)
             end
-            if ui.MenuItem(icons.i_file_import .. ' Open scene') then
-                local selected_file = app.utils.open_file_dialog('3D Scenes', mesh_filter, self.serialized_config.general.prev_scene_location)
+            if ui.MenuItem(icons.i_file_export .. ' Save scene') then
+                local selected_file = app.utils.save_file_dialog('Soliton Scenes', 'soliton', '', 'scene.soliton')
+                if selected_file then
+                    scene.save(selected_file)
+                end
+            end
+            if ui.MenuItem(icons.i_file_import .. ' Import external scene') then
+                local selected_file = app.utils.open_file_dialog('3D Scenes', mesh_filter, '')
                 if selected_file and lfs.attributes(selected_file) then
-                    self.serialized_config.general.prev_scene_location = selected_file:match("(.*[/\\])")
                     self:load_scene(selected_file)
                 end
             end
