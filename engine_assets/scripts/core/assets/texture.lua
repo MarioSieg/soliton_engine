@@ -27,15 +27,15 @@ local texture = {
     _path = '' -- asset path
 }
 
-function texture:id() return self._id end
-function texture:path() return self._path end
-function texture:width() return cpp.__lu_texture_get_width(self._id) end
-function texture:height() return cpp.__lu_texture_get_height(self._id) end
-function texture:depth() return cpp.__lu_texture_get_depth(self._id) end
-function texture:mip_levels() return cpp.__lu_texture_get_mip_levels(self._id) end
-function texture:array_size() return cpp.__lu_texture_get_array_size(self._id) end
+function texture:get_id() return self._id end
+function texture:get_path() return self._path end
+function texture:get_width() return cpp.__lu_texture_get_width(self._id) end
+function texture:get_height() return cpp.__lu_texture_get_height(self._id) end
+function texture:get_depth() return cpp.__lu_texture_get_depth(self._id) end
+function texture:get_mip_levels() return cpp.__lu_texture_get_mip_levels(self._id) end
+function texture:get_array_size() return cpp.__lu_texture_get_array_size(self._id) end
 function texture:is_cubemap() return cpp.__lu_texture_is_cubemap(self._id) end
-function texture:format() return formats.formats_by_id[cpp.__lu_texture_get_format(self._id)] end
+function texture:get_format() return formats.formats_by_id[cpp.__lu_texture_get_format(self._id)] end
 function texture:__tostring() return string.format('texture: %s', self._path) end
 
 function texture:load(path)

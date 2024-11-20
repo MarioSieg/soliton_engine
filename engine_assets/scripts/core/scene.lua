@@ -147,7 +147,13 @@ function scene.save(file)
     for i = 0, scene._entity_query_next() - 1 do
         local entity = scene._entity_query_lookup(i)
         if entity:is_valid() then
-            table.insert(entities, entity:_serialize())
+            local name = entity:get_name()
+            local acc = 2
+            while entities[name] do -- Already set, append a number
+                name = name .. '_' .. acc
+                acc = acc + 1
+            end
+            entities[name] = entity:_serialize()
         end
     end
     scene._entity_query_end()
