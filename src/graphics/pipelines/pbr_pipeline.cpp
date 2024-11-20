@@ -111,19 +111,20 @@ namespace soliton::graphics::pipelines {
 
     auto pbr_pipeline::configure_color_blending(vk::PipelineColorBlendAttachmentState& cfg) -> bool {
         graphics_pipeline::configure_enable_color_blending(cfg);
+        cfg.blendEnable = vk::False;
         return true;
     }
 
     auto pbr_pipeline::configure_multisampling(vk::PipelineMultisampleStateCreateInfo& cfg) -> bool {
         panic_assert(type == pipeline_type::graphics);
         cfg.rasterizationSamples = vkb::ctx().get_msaa_samples();
-        cfg.alphaToCoverageEnable = vk::True; // TODO Custom alpha pipeline
+        //cfg.alphaToCoverageEnable = vk::True; // TODO Custom alpha pipeline
         return true;
     }
 
     auto pbr_pipeline::configure_rasterizer(vk::PipelineRasterizationStateCreateInfo& cfg) -> bool {
         if (!graphics_pipeline::configure_rasterizer(cfg)) return false;
-        cfg.cullMode = vk::CullModeFlagBits::eNone;// TODO Custom alpha pipeline
+        cfg.cullMode = vk::CullModeFlagBits::eBack;
         return true;
     }
 
@@ -132,19 +133,19 @@ namespace soliton::graphics::pipelines {
         vkb::descriptor_factory df {vkb::ctx().descriptor_factory_begin()};
         eastl::array<vk::DescriptorImageInfo, 3> infos {
             vk::DescriptorImageInfo {
-                .imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal,
-                .imageView = m_pbr_filter_processor->brdf_lut().image_view(),
                 .sampler = m_pbr_filter_processor->brdf_lut().sampler(),
+                .imageView = m_pbr_filter_processor->brdf_lut().image_view(),
+                .imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal,
             },
             vk::DescriptorImageInfo {
-                .imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal,
-                .imageView = m_pbr_filter_processor->irradiance_cube().image_view(),
                 .sampler = m_pbr_filter_processor->irradiance_cube().sampler(),
+                .imageView = m_pbr_filter_processor->irradiance_cube().image_view(),
+                .imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal,
             },
             vk::DescriptorImageInfo {
-                .imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal,
-                .imageView = m_pbr_filter_processor->prefiltered_cube().image_view(),
                 .sampler = m_pbr_filter_processor->prefiltered_cube().sampler(),
+                .imageView = m_pbr_filter_processor->prefiltered_cube().image_view(),
+                .imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal,
             }
         };
 
