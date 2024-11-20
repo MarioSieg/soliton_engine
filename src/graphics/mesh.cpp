@@ -76,7 +76,7 @@ namespace soliton::graphics {
         Assimp::DefaultLogger::get()->attachStream(new assimp_logger {}, Assimp::Logger::Info | Assimp::Logger::Err | Assimp::Logger::Warn);
 
         eastl::vector<std::byte> blob {};
-        assetmgr::with_primary_accessor_lock([&](assetmgr::asset_accessor &accessor) {
+        assetmgr::with_primary_accessor_lock([&](assetmgr::asset_accessor& accessor) {
             if (!accessor.load_bin_file(get_asset_path().c_str(), blob)) {
                 panic("Failed to load mesh from file '{}'", get_asset_path());
             }
