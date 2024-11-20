@@ -11,8 +11,9 @@ local entity = require 'entity'
 local vec3 = require 'vec3'
 local scene_import_flags = require 'detail.import_flags'
 local json = require 'json'
-local serializer = require 'detail.serializer'
 local time = require 'time'
+local serializer = require 'detail.serializer'
+local deserializer = require 'detail.deserializer'
 
 local a_texture = require 'assets.texture'
 
@@ -110,13 +111,13 @@ function scene.new(name)
     setup_scene_class(id, name)
 end
 
---- Loads a scene from a given file and makes it the active scene.
+--- Imports a scene from a given file and makes it the active scene.
 --- The file can be a 3d mesh file like .gltf, .fbx, .obj etc.. or a .soliton_engine file.
 --- Importing an external file which is not .soliton_engine will take much longer, because conversion is required.
 --- @param file: string, path to the file to load
 --- @param import_scale: number, scale factor to apply to the imported scene. Only applies if the scene is not a .soliton_engine file
 --- @param import_flags: number, flags to control the import process. Only applies if the scene is not a .soliton_engine file
-function scene.load(file, import_flags)
+function scene.import_external(file, import_flags)
     if not file or type(file) ~= 'string' then
         eprint('scene name or source file must be provided')
         return false
@@ -154,8 +155,11 @@ local function serialize_scene_entities()
     return entities, num_entities
 end
 
+--- Saves the active scene to a SOLITON scene file.
 function scene.save(file)
+    assert(file and type(file) == 'string')
     local now = time.hpc_clock_now()
+
     local entities, num_entities = serialize_scene_entities()
     local data = {
         header = {
@@ -167,8 +171,37 @@ function scene.save(file)
         entities = entities
     }
     json.save(file, data)
+
     collectgarbage_full_cycle() -- GC to remove all the serialization trash
     print(string.format('Saved scene \'%s\' with %d entities to %s in %.2f ms', scene.name, num_entities, file, time.hpc_clock_elapsed_ms(now)))
+end
+
+--- Loads a SOLITON scene file and makes it the active scene.
+function scene.load(file)
+    local now = time.hpc_clock_now()
+    assert(file and type(file) == 'string')
+
+    local data = json.load(file)
+    local header_data = data.header
+    assert(header_data, 'scene file header is missing')
+    assert(header_data.format_version <= scene_format_version, 'scene file format version mismatch')
+    assert(header_data.engine_version <= app.engine_version_packed(), 'scene file engine version mismatch')
+
+    local scene_data = data.scene
+    assert(scene_data, 'scene data is missing')
+    local name = scene_data.name
+    assert(name and type(name) == 'string', 'scene name is missing or invalid')
+    scene.new(name) -- create new scene
+    deserializer.deserializer_copy_fields(scene.lighting, scene_data.lighting)
+    deserializer.deserializer_copy_fields(scene.chrono, scene_data.chrono)
+
+    local entities = data.entities
+    for ent_name, ent_data in pairs(entities) do
+        local ent = scene.spawn(ent_name)
+    end
+
+    collectgarbage_full_cycle() -- GC to remove all the serialization trash
+    print(string.format('Loaded scene \'%s\' with %d entities to %s in %.2f ms', scene.name, #entities, file, time.hpc_clock_elapsed_ms(now)))
 end
 
 -- Internal use only.

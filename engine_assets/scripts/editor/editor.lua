@@ -172,12 +172,16 @@ function editor:reset_ui_layout()
     end
 end
 
-function editor:load_scene(file)
+function editor:load_scene(file, import)
     entity_list_view.selected_entity = nil
     if file then
-        scene.load(file)
+        if import then
+            scene.import_external(file)
+        else
+            scene.load(file)
+        end
     else
-        scene.new('Untitled scene')
+        scene.new('Untitled Scene')
     end
     local main_camera = scene.spawn('__editor_camera__') -- spawn editor editor_camera
     main_camera:add_flag(entity_flags.hidden + entity_flags.transient) -- hide and don't save
@@ -248,19 +252,25 @@ function editor:draw_main_menu_bar()
                     collectgarbage_full_cycle()
                 end
             end
-            if ui.MenuItem(icons.i_file_alt .. ' Empty scene') then
-                self:load_scene(nil)
+            if ui.MenuItem(icons.i_file_alt .. ' New Scene') then
+                self:load_scene(nil, false)
             end
-            if ui.MenuItem(icons.i_file_export .. ' Save scene') then
+            if ui.MenuItem(icons.i_file_export .. ' Save Scene') then
                 local selected_file = app.utils.save_file_dialog('Soliton Scenes', 'soliton', '', 'scene.soliton')
                 if selected_file then
                     scene.save(selected_file)
                 end
             end
-            if ui.MenuItem(icons.i_file_import .. ' Import external scene') then
+            if ui.MenuItem(icons.i_file_import .. ' Open Scene') then
+                local selected_file = app.utils.open_file_dialog('Soliton Scenes', 'soliton', '')
+                if selected_file and lfs.attributes(selected_file) then
+                    self:load_scene(selected_file, false)
+                end
+            end
+            if ui.MenuItem(icons.i_file_download .. ' Import Scene from Mesh') then
                 local selected_file = app.utils.open_file_dialog('3D Scenes', mesh_filter, '')
                 if selected_file and lfs.attributes(selected_file) then
-                    self:load_scene(selected_file)
+                    self:load_scene(selected_file, true)
                 end
             end
             if ui.MenuItem(icons.i_portal_exit .. ' Exit') then
@@ -668,6 +678,6 @@ end
 
 style.setup()
 
-editor:load_scene()
+editor:load_scene(nil, false)
 
 return editor

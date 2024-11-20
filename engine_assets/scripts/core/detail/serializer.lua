@@ -5,9 +5,8 @@
 -- It also serializes vec2, vec3, and vec4 types into tables with x, y, z, and w fields.
 -- Tables can implement the _serialize method to customize their serialization.
 
--- Because these types have special metatables, we need to serialize them manually.
 local ffi = require 'ffi'
-local istype = ffi.istype
+local istype = ffi.istype -- Because vec2,3,4 types have special metatables, we need to serialize them manually.
 
 local serializer = {}
 
