@@ -101,7 +101,8 @@ namespace soliton::vkb {
 
     auto command_buffer::bind_mesh_buffers(const graphics::mesh& mesh) -> void {
         constexpr vk::DeviceSize offsets = 0;
-        m_cmd.bindIndexBuffer(mesh.get_index_buffer().get_buffer(), 0, mesh.is_index_32bit() ? vk::IndexType::eUint32 : vk::IndexType::eUint16);
+        m_cmd.bindIndexBuffer(mesh.get_index_buffer().get_buffer(), 0,
+                              mesh.has_32bit_indices() ? vk::IndexType::eUint32 : vk::IndexType::eUint16);
         m_cmd.bindVertexBuffers(0, 1, &mesh.get_vertex_buffer().get_buffer(), &offsets);
     }
 

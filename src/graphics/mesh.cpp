@@ -69,7 +69,7 @@ namespace soliton::graphics {
 		compute_aabb(prim_info.aabb, {vertices.data() + prim_info.vertex_start, prim_info.vertex_count});
 	}
 
-	mesh::mesh(eastl::string&& path, const bool create_collider_mesh) : asset{assetmgr::asset_source::filesystem, std::move(path)} {
+	mesh::mesh(eastl::string&& path, const bool create_collider_mesh, const std::uint32_t import_flags) : asset{assetmgr::asset_source::filesystem, std::move(path)} {
         log_info("Loading mesh from file '{}'", get_asset_path());
 
         Assimp::DefaultLogger::create("", Assimp::Logger::NORMAL);
@@ -83,15 +83,14 @@ namespace soliton::graphics {
         });
 
         Assimp::Importer importer {};
-        const auto load_flags = k_import_flags;
         importer.SetIOHandler(new graphics::lunam_assimp_io_system {});
-        panic_assert(importer.ValidateFlags(load_flags));
+        panic_assert(importer.ValidateFlags(import_flags));
         eastl::string hint {};
         auto a_path {std::filesystem::path{get_asset_path().c_str()}};
         if (a_path.has_extension()) {
             hint = a_path.extension().string().c_str();
         }
-        const aiScene* scene = importer.ReadFileFromMemory(blob.data(), blob.size(), load_flags, hint.empty() ? nullptr : hint.c_str());
+        const aiScene* scene = importer.ReadFileFromMemory(blob.data(), blob.size(), import_flags, hint.empty() ? nullptr : hint.c_str());
         if (!scene || !scene->mNumMeshes) [[unlikely]] {
             panic("Failed to load scene from file '{}': {}", get_asset_path(), importer.GetErrorString());
         }

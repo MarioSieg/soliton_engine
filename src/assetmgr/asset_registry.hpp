@@ -40,7 +40,8 @@ namespace soliton::assetmgr {
             return p;
         }
 
-        [[nodiscard]] auto load(eastl::string&& path) -> T* {
+        template <typename... Args> requires std::is_constructible_v<T, eastl::string&&, Args...>
+        [[nodiscard]] auto load(eastl::string&& path, Args&&... args) -> T* {
             if (path.empty()) {
                 log_error("Cannot load asset with empty path");
                 return nullptr;
@@ -49,7 +50,7 @@ namespace soliton::assetmgr {
                 return &*it->second;
             }
             eastl::string_view path_view { path };
-            auto asset = eastl::make_unique<T>(eastl::move(path));
+            auto asset = eastl::make_unique<T>(eastl::move(path), eastl::forward<Args>(args)...);
             if (!asset) [[unlikely]] {
                 log_error("Failed to load asset from path: {}", path_view);
                 return nullptr;
@@ -82,8 +83,9 @@ namespace soliton::assetmgr {
         public:
             explicit constexpr lua_interop(asset_registry& host) : host{host} {}
 
-            [[nodiscard]] auto load(eastl::string&& path) -> interop_asset_id {
-                T* asset = host.load(eastl::move(path));
+            template <typename... Args> requires std::is_constructible_v<T, eastl::string&&, Args...>
+            [[nodiscard]] auto load(eastl::string&& path, Args&&... args) -> interop_asset_id {
+                T* asset = host.load(eastl::move(path), eastl::forward<Args>(args)...);
                 if (!asset) [[unlikely]] {
                     return invalid_asset_id;
                 }

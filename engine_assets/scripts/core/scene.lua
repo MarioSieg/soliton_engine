@@ -9,13 +9,14 @@ local bit = require 'bit'
 local app = require 'app'
 local entity = require 'entity'
 local vec3 = require 'vec3'
-local scene_import_flags = require 'detail.import_flags'
+local mesh_import_flags = require 'detail.import_flags'
 local json = require 'json'
 local time = require 'time'
 local serializer = require 'detail.serializer'
 local deserializer = require 'detail.deserializer'
 
 local a_texture = require 'assets.texture'
+local a_mesh = require 'assets.mesh'
 
 local band = bit.band
 
@@ -58,6 +59,13 @@ local scene = {
 --- @param path: string, path to the texture file
 function scene.load_texture(path)
     return a_texture:load(path)
+end
+
+--- Loads a mesh from the given path.
+--- @param path: string, path to the mesh file
+--- @param import_flags: number, flags to control the import process
+function scene.load_mesh(path, import_flags)
+    return a_mesh:load(path, import_flags)
 end
 
 --- Spawns a new entity in the scene with the given name.
@@ -123,7 +131,7 @@ function scene.import_external(file, import_flags)
         return false
     end
     if not import_flags or type(import_flags) ~= 'number' then
-        import_flags = scene_import_flags.default
+        import_flags = mesh_import_flags.default
     end
     if not lfs.attributes(file) then
         eprint(string.format('scene file does not exist: %s', file))
