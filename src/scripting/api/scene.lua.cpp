@@ -88,6 +88,10 @@ LUA_INTEROP_API auto __lu_scene_full_entity_query_end() -> void {
     }
 }
 
+LUA_INTEROP_API auto __lu_scene_get_remote_explorer_port() -> std::uint16_t {
+    return scene_mgr::active().remote_explorer_port;
+}
+
 LUA_INTEROP_API auto __lu_scene_set_time(const double time) -> void {
     scene_mgr::active().properties.environment.time = time;
 }

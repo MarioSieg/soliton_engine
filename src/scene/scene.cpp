@@ -19,6 +19,7 @@ namespace soliton {
 
     static const system_variable<bool> sv_enable_remote_api {"scene.enable_remote_api", true};
     static const system_variable<bool> sv_enable_stats_recorder {"scene.enable_stats_recorder", true};
+    static const system_variable<std::int64_t> sv_remote_explorer_port {"scene.remote_explorer_port", 27751};
 
     scene::scene(eastl::string&& name) : id{s_uuid_gen()} {
         properties.name = std::move(name);
@@ -27,9 +28,12 @@ namespace soliton {
             set<flecs::PipelineStats>({});
             set<flecs::WorldStats>({});
             set<flecs::WorldSummary>({});
+            log_info("Stats recorder enabled");
         }
         if (sv_enable_remote_api()) {
-            set<flecs::Rest>({});
+            remote_explorer_port = sv_remote_explorer_port();
+            set<flecs::Rest>({.port = remote_explorer_port});
+            log_info("Remote explorer API enabled on port {}", remote_explorer_port);
         }
     }
 

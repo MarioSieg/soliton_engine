@@ -33,6 +33,7 @@ ffi.cdef[[
     int32_t __lu_scene_full_entity_query_next_table(void);
     __entity_id __lu_scene_full_entity_query_get(int32_t i);
     void __lu_scene_full_entity_query_end(void);
+    uint16_t __lu_scene_get_remote_explorer_port(void);
     void __lu_scene_set_active_camera_entity(__entity_id id);
     __entity_id __lu_scene_get_active_camera_entity(void);
     void __lu_scene_set_time(double time);
@@ -210,6 +211,11 @@ function scene.load(file)
 
     collectgarbage_full_cycle() -- GC to remove all the serialization trash
     print(string.format('Loaded scene \'%s\' with %d entities to %s in %.2f ms', scene.name, #entities, file, time.hpc_clock_elapsed_ms(now)))
+end
+
+--- Returns the port number of the remote explorer server, if enabled.
+function scene.get_remote_explorer_port()
+    return cpp.__lu_scene_get_remote_explorer_port()
 end
 
 -- Internal use only.

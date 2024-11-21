@@ -159,10 +159,10 @@ namespace soliton::graphics {
 	auto mesh::create_from_data(eastl::span<const vertex> vertices, eastl::span<const index> indices, const bool create_collider_mesh) -> void {
 		m_primitives.shrink_to_fit();
 		m_primitives.emplace_back(primitive {
-			.vertex_start = 0,
 			.index_start = 0,
+			.index_count = static_cast<std::uint32_t>(indices.size()),
+			.vertex_start = 0,
 			.vertex_count = static_cast<std::uint32_t>(vertices.size()),
-			.index_count = static_cast<std::uint32_t>(indices.size())
 		});
 		compute_aabb(m_aabb, vertices);
 		m_primitives[0].aabb = m_aabb;
