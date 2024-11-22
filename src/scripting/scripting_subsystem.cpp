@@ -15,6 +15,8 @@ extern "C" int luaopen_luv (lua_State *L);
 #endif
 
 namespace soliton::scripting {
+    static const soliton::system_variable<bool> sv_override_alloc {"scripting.override_alloc", true};
+
     template <typename... Ts>
     static auto lua_log_info(const fmt::format_string<Ts...> fmt, Ts&&... args) -> void {
         SPDLOG_LOGGER_INFO(spdlog::get("app"), "[Lua]: {}", fmt::format(fmt, std::forward<Ts>(args)...));
@@ -76,8 +78,7 @@ namespace soliton::scripting {
 
         // init lua
         panic_assert(m_L == nullptr);
-#if USE_MIMALLOC
-        if constexpr (use_mimalloc) {
+        if (sv_override_alloc() && USE_MIMALLOC) {
             /*
              * LuaJIT requires that allocated memory is in the first 47 bits of address space.
              * System malloc/mimalloc has no such guarantee of this, and hence can't (in general) be used.
@@ -87,12 +88,12 @@ namespace soliton::scripting {
              * And do some performance testing, because it's unlikely it'll be better/faster/smaller than the built-in allocator.
              *
              */
-            m_L = lua_newstate(+[]([[maybe_unused]] void* ud, void* ptr, [[maybe_unused]] std::size_t osize, const std::size_t nsize) noexcept -> void* {
-                return mi_realloc(ptr, nsize);
-            }, nullptr);
-        } else
-#endif
-        {
+            #if USE_MIMALLOC
+                m_L = lua_newstate(+[]([[maybe_unused]] void* ud, void* ptr, [[maybe_unused]] std::size_t osize, const std::size_t nsize) noexcept -> void* {
+                    return mi_realloc(ptr, nsize);
+                }, nullptr);
+            #endif
+        } else {
             m_L = luaL_newstate();
         }
         panic_assert(m_L != nullptr);

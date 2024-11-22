@@ -175,7 +175,6 @@ namespace soliton::platform {
 
     auto window::set_icon(const eastl::string& texture_path) -> void {
         if constexpr (PLATFORM_OSX) { // Cocoa - regular windows do not have icons on macOS
-            log_warn("Setting window icon is not supported on macOS");
             return;
         }
 

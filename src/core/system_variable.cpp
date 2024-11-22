@@ -24,7 +24,7 @@ namespace soliton {
             }
             const eastl::string& key = name;
             const eastl::string section = key.substr(0, key.find('.'));
-            if (eastl::holds_alternative<bool>(value)) { // ugly but im foo lazy to lookup the variant visitor pattern rn
+            if (eastl::holds_alternative<bool>(value)) {
                 ini.SetBoolValue(section.c_str(), key.c_str(), eastl::get<bool>(value));
             } else if (eastl::holds_alternative<float>(value)) {
                 ini.SetDoubleValue(section.c_str(), key.c_str(), eastl::get<float>(value));

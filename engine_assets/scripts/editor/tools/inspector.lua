@@ -35,10 +35,13 @@ local inspector = {
     name_changed = false,
 
     _tmp_text = ffi.new('char[?]', 1 + max_name_text_len), -- +1 for null terminator
-    _tmp_float = ffi.new('float[1]'),
-    _tmp_vec2 = ffi.new('float[2]'),
-    _tmp_vec3 = ffi.new('float[3]'),
+    _tmp_f64 = ffi.new('double[1]'),
+    _tmp_vec2 = ffi.new('double[2]'),
+    _tmp_vec3 = ffi.new('double[3]'),
+    _tmp_rgb = ffi.new('float[3]'),
     _tmp_boolean = ffi.new('bool[1]'),
+    _tmp_min = ffi.new('double[1]'),
+    _tmp_max = ffi.new('double[1]'),
 }
 
 -- The inspect functions are used to display and edit the values of the selected entity and its components.
@@ -65,53 +68,59 @@ function inspector:_inspect_bit_flags(name, flags, flag)
     return flags
 end
 
-local function sanitize_f32(x)
-    if x ~= x then return 0.0 end
-    if x == inf or x == -inf then return 0.0 end
+local function sanitize_f64(x)
+    if x ~= x then return 0.0 end -- NaN
+    if x == inf or x == -inf then return 0.0 end -- Inf
     return x
 end
 
 function inspector:_inspect_float(name, x, step, min, max, fmt, slider)
-    self._tmp_float[0] = sanitize_f32(x)
+    self._tmp_f64[0] = sanitize_f64(x)
+    self._tmp_min[0] = min or -inf
+    self._tmp_max[0] = max or inf
     if slider then -- Use slider or drag input
-        ui.SliderFloat(name, self._tmp_float, min or -inf, max or inf, fmt or '%.3f')
+        ui.SliderScalar(name, ffi.C.ImGuiDataType_Double, self._tmp_f64, self._tmp_min, self._tmp_max, fmt or '%.3f')
     else
-        ui.DragFloat(name, self._tmp_float, step or 0.1, min or -inf, max or inf, fmt or '%.3f')
+        ui.DragScalar(name,  ffi.C.ImGuiDataType_Double, self._tmp_f64, step or 0.1, self._tmp_min, self._tmp_max,fmt or '%.3f')
     end
-    return sanitize_f32(self._tmp_float[0])
+    return sanitize_f64(self._tmp_f64[0])
 end
 
 function inspector:_inspect_vec2(name, v2, step, min, max, fmt)
-    self._tmp_vec2[0] = sanitize_f32(v2.x)
-    self._tmp_vec2[1] = sanitize_f32(v2.y)
-    ui.DragFloat2(name, self._tmp_vec2, step or 0.1, min or -inf, max or inf, fmt or '%.3f')
+    self._tmp_vec2[0] = sanitize_f64(v2.x)
+    self._tmp_vec2[1] = sanitize_f64(v2.y)
+    self._tmp_min[0] = min or -inf
+    self._tmp_max[0] = max or inf
+    ui.DragScalarN(name,  ffi.C.ImGuiDataType_Double, self._tmp_vec2, 2, step or 0.1, self._tmp_min, self._tmp_max, fmt or '%.3f')
     return vec2(
-        sanitize_f32(self._tmp_vec2[0]),
-        sanitize_f32(self._tmp_vec2[1])
+        sanitize_f64(self._tmp_vec2[0]),
+        sanitize_f64(self._tmp_vec2[1])
     )
 end
 
 function inspector:_inspect_vec3(name, v3, step, min, max, fmt)
-    self._tmp_vec3[0] = sanitize_f32(v3.x)
-    self._tmp_vec3[1] = sanitize_f32(v3.y)
-    self._tmp_vec3[2] = sanitize_f32(v3.z)
-    ui.DragFloat3(name, self._tmp_vec3, step or 0.1, min or -inf, max or inf, fmt or '%.3f')
+    self._tmp_vec3[0] = sanitize_f64(v3.x)
+    self._tmp_vec3[1] = sanitize_f64(v3.y)
+    self._tmp_vec3[2] = sanitize_f64(v3.z)
+    self._tmp_min[0] = min or -inf
+    self._tmp_max[0] = max or inf
+    ui.DragScalarN(name, ffi.C.ImGuiDataType_Double, self._tmp_vec3, 3, step or 0.1, self._tmp_min, self._tmp_max, fmt or '%.3f')
     return vec3(
-        sanitize_f32(self._tmp_vec3[0]),
-        sanitize_f32(self._tmp_vec3[1]),
-        sanitize_f32(self._tmp_vec3[2])
+        sanitize_f64(self._tmp_vec3[0]),
+        sanitize_f64(self._tmp_vec3[1]),
+        sanitize_f64(self._tmp_vec3[2])
     )
 end
 
 function inspector:_inspect_vec3_color_rgb(name, v3)
-    self._tmp_vec3[0] = sanitize_f32(v3.x)
-    self._tmp_vec3[1] = sanitize_f32(v3.y)
-    self._tmp_vec3[2] = sanitize_f32(v3.z)
-    ui.ColorEdit3(name, self._tmp_vec3, color_pick_flags)
+    self._tmp_rgb[0] = sanitize_f64(v3.x)
+    self._tmp_rgb[1] = sanitize_f64(v3.y)
+    self._tmp_rgb[2] = sanitize_f64(v3.z)
+    ui.ColorEdit3(name, self._tmp_rgb, color_pick_flags)
     return vec3(
-        sanitize_f32(self._tmp_vec3[0]),
-        sanitize_f32(self._tmp_vec3[1]),
-        sanitize_f32(self._tmp_vec3[2])
+        sanitize_f64(self._tmp_rgb[0]),
+        sanitize_f64(self._tmp_rgb[1]),
+        sanitize_f64(self._tmp_rgb[2])
     )
 end
 
