@@ -9,11 +9,12 @@ local bit = require 'bit'
 local app = require 'app'
 local entity = require 'entity'
 local vec3 = require 'vec3'
-local mesh_import_flags = require 'detail.import_flags'
 local json = require 'json'
 local time = require 'time'
 local serializer = require 'detail.serializer'
 local deserializer = require 'detail.deserializer'
+local mesh_import_flags = require 'detail.import_flags'
+local component_registry = require 'components._registry'
 
 local a_texture = require 'assets.texture'
 local a_mesh = require 'assets.mesh'
@@ -201,12 +202,22 @@ function scene.load(file)
     local name = scene_data.name
     assert(name and type(name) == 'string', 'scene name is missing or invalid')
     scene.new(name) -- create new scene
-    deserializer.deserializer_copy_fields(scene.lighting, scene_data.lighting)
-    deserializer.deserializer_copy_fields(scene.chrono, scene_data.chrono)
+    deserializer.copy_fields(scene.lighting, scene_data.lighting)
+    deserializer.copy_fields(scene.chrono, scene_data.chrono)
 
     local entities = data.entities
-    for ent_name, ent_data in pairs(entities) do
+    for ent_name, ent_data in pairs(entities) do -- Load and create entities with components
         local ent = scene.spawn(ent_name)
+        local components = ent_data.components
+        for comp_name, comp_data in pairs(components) do
+            local c_component = component_registry[comp_name]
+            if c_component then
+                local comp = ent:get_component(c_component)
+                comp:_deserialize(comp_data)
+            else
+                eprint(string.format('Unknown component \'%s\'', comp_name))
+            end
+        end
     end
 
     collectgarbage_full_cycle() -- GC to remove all the serialization trash

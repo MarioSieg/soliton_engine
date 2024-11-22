@@ -65,37 +65,54 @@ function inspector:_inspect_bit_flags(name, flags, flag)
     return flags
 end
 
+local function sanitize_f32(x)
+    if x ~= x then return 0.0 end
+    if x == inf or x == -inf then return 0.0 end
+    return x
+end
+
 function inspector:_inspect_float(name, x, step, min, max, fmt, slider)
-    self._tmp_float[0] = x
+    self._tmp_float[0] = sanitize_f32(x)
     if slider then -- Use slider or drag input
         ui.SliderFloat(name, self._tmp_float, min or -inf, max or inf, fmt or '%.3f')
     else
         ui.DragFloat(name, self._tmp_float, step or 0.1, min or -inf, max or inf, fmt or '%.3f')
     end
-    return self._tmp_float[0]
+    return sanitize_f32(self._tmp_float[0])
 end
 
 function inspector:_inspect_vec2(name, v2, step, min, max, fmt)
-    self._tmp_vec2[0] = v2.x
-    self._tmp_vec2[1] = v2.y
+    self._tmp_vec2[0] = sanitize_f32(v2.x)
+    self._tmp_vec2[1] = sanitize_f32(v2.y)
     ui.DragFloat2(name, self._tmp_vec2, step or 0.1, min or -inf, max or inf, fmt or '%.3f')
-    return vec2(self._tmp_vec2[0], self._tmp_vec2[1])
+    return vec2(
+        sanitize_f32(self._tmp_vec2[0]),
+        sanitize_f32(self._tmp_vec2[1])
+    )
 end
 
 function inspector:_inspect_vec3(name, v3, step, min, max, fmt)
-    self._tmp_vec3[0] = v3.x
-    self._tmp_vec3[1] = v3.y
-    self._tmp_vec3[2] = v3.z
+    self._tmp_vec3[0] = sanitize_f32(v3.x)
+    self._tmp_vec3[1] = sanitize_f32(v3.y)
+    self._tmp_vec3[2] = sanitize_f32(v3.z)
     ui.DragFloat3(name, self._tmp_vec3, step or 0.1, min or -inf, max or inf, fmt or '%.3f')
-    return vec3(self._tmp_vec3[0], self._tmp_vec3[1], self._tmp_vec3[2])
+    return vec3(
+        sanitize_f32(self._tmp_vec3[0]),
+        sanitize_f32(self._tmp_vec3[1]),
+        sanitize_f32(self._tmp_vec3[2])
+    )
 end
 
 function inspector:_inspect_vec3_color_rgb(name, v3)
-    self._tmp_vec3[0] = v3.x
-    self._tmp_vec3[1] = v3.y
-    self._tmp_vec3[2] = v3.z
+    self._tmp_vec3[0] = sanitize_f32(v3.x)
+    self._tmp_vec3[1] = sanitize_f32(v3.y)
+    self._tmp_vec3[2] = sanitize_f32(v3.z)
     ui.ColorEdit3(name, self._tmp_vec3, color_pick_flags)
-    return vec3(self._tmp_vec3[0], self._tmp_vec3[1], self._tmp_vec3[2])
+    return vec3(
+        sanitize_f32(self._tmp_vec3[0]),
+        sanitize_f32(self._tmp_vec3[1]),
+        sanitize_f32(self._tmp_vec3[2])
+    )
 end
 
 function inspector:_component_base_header()
@@ -132,14 +149,15 @@ function inspector:_inspect_component_transform()
         c_transform:set_position(self:_inspect_vec3(icons.i_arrows_alt .. ' Position', c_transform:get_position()))
         ui.PopStyleColor()
 
-        ui.PushStyleColor_U32(cpp.ImGuiCol_Text, 0xff8888ff)
-        local rx, ry, rz = quat.to_euler(c_transform:get_rotation())
-        local rot = self:_inspect_vec3(icons.i_redo_alt .. ' Rotation', vec3(deg(rx), deg(ry), deg(rz)))
-        rot.x = rad(clamp(rot.x, -180, 180))
-        rot.y = rad(clamp(rot.y, -180, 180))
-        rot.z = rad(clamp(rot.z, -180, 180))
-        c_transform:set_rotation(quat.normalize(quat.from_euler(rot.x, rot.y, rot.z)))
-        ui.PopStyleColor()
+        -- TODO: Implement correct rotation quaternion inspector
+        --ui.PushStyleColor_U32(cpp.ImGuiCol_Text, 0xff8888ff)
+        --local rx, ry, rz = quat.to_euler(c_transform:get_rotation())
+        --local rot = self:_inspect_vec3(icons.i_redo_alt .. ' Rotation', vec3(deg(rx), deg(ry), deg(rz)))
+        --rot.x = rad(clamp(rot.x, -180, 180))
+        --rot.y = rad(clamp(rot.y, -180, 180))
+        --rot.z = rad(clamp(rot.z, -180, 180))
+        --c_transform:set_rotation(quat.normalize(quat.from_euler(rot.x, rot.y, rot.z)))
+        --ui.PopStyleColor()
 
         ui.PushStyleColor_U32(cpp.ImGuiCol_Text, 0xff88ffff)
         c_transform:set_scale(self:_inspect_vec3(icons.i_expand_arrows .. ' Scale', c_transform:get_scale()))

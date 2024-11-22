@@ -10,19 +10,18 @@ local istype = ffi.istype -- Because vec2,3,4 types have special metatables, we 
 local deserializer = {}
 
 -- Copy fields from src to dst, if they are present in dst and src and of the same type.
-function deserializer.deserializer_copy_fields(dst, src)
+function deserializer.copy_fields(dst, src)
     for k, source in pairs(src) do
         local val = dst[k] -- Cache value to avoid multiple lookups
         if not val then goto continue end -- Skip fields that are not present in dst
 
         if type(val) == type(source) then -- Check if the types are convertable
             if type(source) == 'table' then -- Recursively copy tables
-                deserializer.deserializer_copy_fields(val, source)
+                deserializer.copy_fields(val, source)
             elseif type(source) == 'number' or type(source) == 'string' or type(source) == 'boolean' then -- Directly copy these types
                 dst[k] = source
             end
-
-        -- Vectors are CDatas in dst, not tables, so we need to construct new instances
+        -- Vectors are special cdata in dst, not tables, so we need to construct new instances of vec2,3,4
         elseif istype('__vec2', val) then -- Construct proper vec2 instance
             dst[k] = vec2(source.x, source.y)
         elseif istype('__vec3', val) then -- Construct proper vec3 instance

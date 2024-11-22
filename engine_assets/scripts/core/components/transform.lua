@@ -6,8 +6,9 @@
 ------------------------------------------------------------------------------
 
 local ffi = require 'ffi'
-local utility = require 'utility'
 local serializer = require 'detail.serializer'
+local vec3 = require 'vec3'
+local quat = require 'quat'
 
 local cpp = ffi.C
 
@@ -49,6 +50,12 @@ local transform = {
             scale = serializer.serialize(self:get_scale())
         }
     end,
+    _deserialize = function(self, data)
+        self:set_position(vec3(data.position.x, data.position.y, data.position.z))
+        self:set_rotation(quat(data.rotation.x, data.rotation.y, data.rotation.z, data.rotation.w))
+        self:set_scale(vec3(data.scale.x, data.scale.y, data.scale.z))
+    end,
+
 
     set_position = function(self, pos) cpp.__lu_com_transform_set_pos(self._entity_id, pos.x, pos.y, pos.z) end,
     get_position = function(self) return cpp.__lu_com_transform_get_pos(self._entity_id) end,
