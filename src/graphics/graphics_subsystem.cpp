@@ -20,6 +20,7 @@ namespace soliton::graphics {
     using platform::platform_subsystem;
     using vkb::context;
 
+    static const system_variable<bool> sv_auto_shader_recompile {"renderer.auto_shader_recompile", {true}};
     static const system_variable<eastl::string> sv_shader_dir {"renderer.shader_dir", {"engine_assets/shaders"}};
     static const system_variable<std::int64_t> sv_concurrent_frames {"renderer.concurrent_frames", {3}};
     static const system_variable<std::int64_t> sv_msaa_samples {"renderer.msaa_samples", {4}};
@@ -53,6 +54,16 @@ namespace soliton::graphics {
         //m_noesis_context.emplace();
 
         //m_noesis_context->load_ui_from_xaml("App.xaml");
+
+        if (sv_auto_shader_recompile()) {
+            m_shader_reload_watcher.emplace();
+            m_shader_reload_watcher->add_watch(sv_shader_dir(), true);
+            fs_watchdog::event callback = [this](eastl::string&& dir, eastl::string&& filename, eastl::string&& old_filename) -> void {
+                m_reload_pipelines_next_frame = true; // Some file got modified, so we will reload
+            };
+            m_shader_reload_watcher->on_any_event += eastl::move(callback);
+            m_shader_reload_watcher->start_watching_async();
+        }
     }
 
     graphics_subsystem::~graphics_subsystem() {

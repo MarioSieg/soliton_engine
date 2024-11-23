@@ -148,6 +148,10 @@ add_subdirectory(extern/simpleini)
 target_include_directories(soliton_engine PRIVATE extern/simpleini)
 target_link_libraries(soliton_engine SimpleIni)
 
+add_subdirectory(extern/efsw)
+target_include_directories(soliton_engine PRIVATE extern/efsw/include)
+target_link_libraries(soliton_engine efsw-static)
+
 ##################################################################################################
 # Libraries, which sadly requires C++ exceptions and have no way to disable them
 ##################################################################################################
