@@ -38,7 +38,7 @@ local entity = {
 
 --- Creates a new entity from an entity id.
 --- @tparam number id The valid entity id
-function entity:from_native_id(id)
+function entity:from_id(id)
     local o = {}
     setmetatable(o, { __index = self })
     o._id = id

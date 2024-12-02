@@ -36,15 +36,20 @@ function mesh:get_max_bound() return cpp.__lu_mesh_get_max_bound(self._id) end
 function mesh:has_32_bit_indices() return cpp.__lu_mesh_has_32_bit_indices(self._id) end
 function mesh:__tostring() return string.format('mesh: %s', self._path) end
 
-function mesh:load(path, import_flags)
-    assert(type(path) == 'string' and path ~= '')
-    local id = cpp.__lu_mesh_load(path, import_flags or mesh_import_flags.default)
-    if id == invalid_id then return nil end
+function mesh:from_id(id, path)
+    assert(type(id) == 'number' and id ~= invalid_id)
     local o = {}
     setmetatable(o, { __index = self })
     o._id = id
     o._path = path
     return o
+end
+
+function mesh:load(path, import_flags)
+    assert(type(path) == 'string' and path ~= '')
+    local id = cpp.__lu_mesh_load(path, import_flags or mesh_import_flags.default)
+    if id == invalid_id then return nil end
+    return self:from_id(id, path)
 end
 
 return mesh

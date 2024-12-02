@@ -146,10 +146,6 @@ namespace soliton::scripting {
         m_on_tick = luabridge::getGlobal(m_L, k_tick_hook);
         panic_assert(m_on_tick && m_on_tick->isFunction());
 
-        // init config table
-        m_config_table = luabridge::getGlobal(m_L, k_engine_config_tab);
-        panic_assert(m_config_table && m_config_table->isTable());
-
         m_is_lua_host_online = true;
         log_info("Lua host connected");
     }
@@ -160,7 +156,6 @@ namespace soliton::scripting {
             log_warn("Lua host is already offline");
             return;
         }
-        m_config_table.reset();
         m_on_tick.reset();
         m_on_start.reset();
         spdlog::get("app")->flush();

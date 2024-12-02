@@ -7,6 +7,8 @@
 
 local ffi = require 'ffi'
 local bit = require 'bit'
+local a_mesh = require 'assets.mesh'
+
 local band, bor, bxor, bnot = bit.band, bit.bor, bit.bxor, bit.bnot
 local cpp = ffi.C
 

@@ -38,15 +38,20 @@ function texture:is_cubemap() return cpp.__lu_texture_is_cubemap(self._id) end
 function texture:get_format() return formats.formats_by_id[cpp.__lu_texture_get_format(self._id)] end
 function texture:__tostring() return string.format('texture: %s', self._path) end
 
-function texture:load(path)
-    assert(type(path) == 'string' and path ~= '')
-    local id = cpp.__lu_texture_load(path)
-    if id == invalid_id then return nil end
+function texture:from_id(id, path)
+    assert(type(id) == 'number' and id ~= invalid_id)
     local o = {}
     setmetatable(o, { __index = self })
     o._id = id
     o._path = path
     return o
+end
+
+function texture:load(path)
+    assert(type(path) == 'string' and path ~= '')
+    local id = cpp.__lu_texture_load(path)
+    if id == invalid_id then return nil end
+    return self:from_id(id, path)
 end
 
 return texture

@@ -73,7 +73,7 @@ end
 --- Spawns a new entity in the scene with the given name.
 --- @param name: string, name of the new entity
 function scene.spawn(name)
-    return entity:from_native_id(cpp.__lu_scene_spawn_entity(name))
+    return entity:from_id(cpp.__lu_scene_spawn_entity(name))
 end
 
 --- Despawns the given entity from the scene.
@@ -86,7 +86,7 @@ end
 --- Looks up an entity in the scene by its name.
 --- @param name: string, name of the entity to look up
 function scene.lookup_entity(name)
-    return entity:from_native_id(cpp.__lu_scene_get_entity_by_name(name))
+    return entity:from_id(cpp.__lu_scene_get_entity_by_name(name))
 end
 
 function scene.set_active_camera_entity(camera)
@@ -95,7 +95,7 @@ function scene.set_active_camera_entity(camera)
 end
 
 function scene.get_active_camera_entity()
-    return entity:from_native_id(cpp.__lu_scene_get_active_camera_entity())
+    return entity:from_id(cpp.__lu_scene_get_active_camera_entity())
 end
 
 local function setup_scene_class(id, name)
@@ -253,7 +253,7 @@ end
 
 -- Internal use only.
 function scene._entity_query_lookup(i)
-    return entity:from_native_id(cpp.__lu_scene_full_entity_query_get(i))
+    return entity:from_id(cpp.__lu_scene_full_entity_query_get(i))
 end
 
 -- Internal use only.
