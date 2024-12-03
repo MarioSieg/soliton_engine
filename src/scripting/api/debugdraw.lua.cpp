@@ -3,10 +3,8 @@
 #include "_prelude.hpp"
 #include "../../core/buffered_sink.hpp"
 #include "../../graphics/graphics_subsystem.hpp"
-#include "../../graphics/imgui/ImGuiProfilerRenderer.h"
-#include "../../graphics/imgui/ImGuizmo.h"
 #include "../../physics/physics_subsystem.hpp"
-
+#include <imguizmo/ImGuizmo.h>
 
 using graphics::graphics_subsystem;
 

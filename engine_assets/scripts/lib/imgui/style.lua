@@ -7,18 +7,29 @@ function style.setup()
     local style = ui.GetStyle()
     local colors = style.Colors
 
-    style.WindowPadding = ui.ImVec2(15, 15)
-    style.WindowRounding = 5.0
-    style.FramePadding = ui.ImVec2(5, 5)
-    style.FrameRounding = 4.0
-    style.ItemSpacing = ui.ImVec2(12, 8)
-    style.ItemInnerSpacing = ui.ImVec2(8, 6)
-    style.IndentSpacing = 25.0
-    style.ScrollbarSize = 15.0
-    style.ScrollbarRounding = 9.0
-    style.GrabMinSize = 5.0
-    style.GrabRounding = 3.0
-    
+    style.WindowPadding     = ui.ImVec2(15, 15)
+    style.FramePadding      = ui.ImVec2(5, 5)
+    style.CellPadding       = ui.ImVec2(6, 6)
+    style.ItemSpacing       = ui.ImVec2(12, 8)
+    style.ItemInnerSpacing  = ui.ImVec2(8, 6)
+    style.TouchExtraPadding = ui.ImVec2(0, 0)
+    style.IndentSpacing     = 25
+    style.ScrollbarSize     = 15
+    style.GrabMinSize       = 10
+    style.WindowBorderSize  = 1
+    style.ChildBorderSize   = 1
+    style.PopupBorderSize   = 1
+    style.FrameBorderSize   = 1
+    style.TabBorderSize     = 1
+    style.WindowRounding    = 7+2
+    style.ChildRounding     = 4+2
+    style.FrameRounding     = 3+2
+    style.PopupRounding     = 4+2
+    style.ScrollbarRounding = 9+2
+    style.GrabRounding      = 3+2
+    style.TabRounding       = 4+2
+    style.LogSliderDeadzone = 4
+
     colors[ffi.C.ImGuiCol_Text] = ui.ImVec4(0.80, 0.80, 0.83, 1.00)
     colors[ffi.C.ImGuiCol_TextDisabled] = ui.ImVec4(0.24, 0.23, 0.29, 1.00)
     colors[ffi.C.ImGuiCol_WindowBg] = ui.ImVec4(0.06, 0.05, 0.07, 1.00)
@@ -53,6 +64,11 @@ function style.setup()
     colors[ffi.C.ImGuiCol_PlotHistogram] = ui.ImVec4(0.40, 0.39, 0.38, 0.63)
     colors[ffi.C.ImGuiCol_PlotHistogramHovered] = ui.ImVec4(0.25, 1.00, 0.00, 1.00)
     colors[ffi.C.ImGuiCol_TextSelectedBg] = ui.ImVec4(0.25, 1.00, 0.00, 0.43)
+    colors[ffi.C.ImGuiCol_Tab] = colors[ffi.C.ImGuiCol_Button]
+    colors[ffi.C.ImGuiCol_TabSelected] = colors[ffi.C.ImGuiCol_ButtonHovered]
+    colors[ffi.C.ImGuiCol_TabHovered] = colors[ffi.C.ImGuiCol_ButtonActive]
+    colors[ffi.C.ImGuiCol_TabDimmed] = colors[ffi.C.ImGuiCol_Button]
+    colors[ffi.C.ImGuiCol_TabDimmedSelected] = colors[ffi.C.ImGuiCol_Button]
 end
 
 return style

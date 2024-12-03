@@ -6,7 +6,7 @@
 #include "../../scene/scene_mgr.hpp"
 
 #if PLATFORM_WINDOWS
-#define LUA_INTEROP_API [[maybe_unused]] extern "C" __cdecl __declspec(dllexport)
+#define LUA_INTEROP_API extern "C" __cdecl __declspec(dllexport)
 #elif PLATFORM_LINUX
 #define LUA_INTEROP_API extern "C" __attribute__((visibility("default"), unused))
 #else

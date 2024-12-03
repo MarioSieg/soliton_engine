@@ -624,7 +624,7 @@ function editor:draw_ingame_overlay()
 end
 
 function editor:draw_tools()
-    self.dock_id = ui.DockSpaceOverViewport(ui.GetMainViewport(), ffi.C.ImGuiDockNodeFlags_PassthruCentralNode)
+    self.dock_id = ui.DockSpaceOverViewport(0, ui.GetMainViewport(), ffi.C.ImGuiDockNodeFlags_PassthruCentralNode)
     if restore_layout_guard then
         restore_layout_guard = false
         self:reset_ui_layout()

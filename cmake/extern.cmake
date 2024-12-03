@@ -152,8 +152,19 @@ add_subdirectory(extern/efsw)
 target_include_directories(soliton_engine PRIVATE extern/efsw/include)
 target_link_libraries(soliton_engine efsw-static)
 
+add_subdirectory(extern/regex)
+target_include_directories(soliton_engine PRIVATE extern/regex/include)
+target_link_libraries(soliton_engine boost_regex)
+
+target_include_directories(soliton_engine PRIVATE src/graphics/imgui/imgui_collections)
+target_include_directories(soliton_engine PRIVATE src/graphics/imgui/imgui_collections/imgui)
+target_include_directories(soliton_engine PRIVATE src/graphics/imgui/imgui_collections/cimgui)
+target_include_directories(soliton_engine PRIVATE src/graphics/imgui/imgui_collections/implot)
+target_include_directories(soliton_engine PRIVATE src/graphics/imgui/imgui_collections/cimplot)
+target_include_directories(soliton_engine PRIVATE src/graphics/imgui/imgui_collections/imtexteditor)
+
 ##################################################################################################
-# Libraries, which sadly requires C++ exceptions and have no way to disable them
+# Libraries, which requires C++ exceptions and have no way to disable them
 ##################################################################################################
 
 add_subdirectory(extern/Simd/prj/cmake)
