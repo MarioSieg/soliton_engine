@@ -383,7 +383,7 @@ function editor:draw_main_menu_bar()
         ui.PushStyleColor_U32(ffi.C.ImGuiCol_Button, 0)
         ui.PushStyleColor_U32(ffi.C.ImGuiCol_BorderShadow, 0)
         ui.PushStyleColor_U32(ffi.C.ImGuiCol_Border, 0)
-        if ui.SmallButton(self.gizmos.gizmo_mode == debugdraw.gizmo_mode.local_space and icons.i_house or icons.i_globe) then
+        if ui.Button(self.gizmos.gizmo_mode == debugdraw.gizmo_mode.local_space and icons.i_house or icons.i_globe) then
             self.gizmos.gizmo_mode = band(self.gizmos.gizmo_mode + 1, 1)
         end
         ui.PopStyleColor(3)
@@ -418,7 +418,7 @@ function editor:draw_main_menu_bar()
         ui.PushStyleColor_U32(ffi.C.ImGuiCol_Button, 0)
         ui.PushStyleColor_U32(ffi.C.ImGuiCol_BorderShadow, 0)
         ui.PushStyleColor_U32(ffi.C.ImGuiCol_Border, 0)
-        if ui.SmallButton(self.is_ingame and (icons.i_stop_circle .. ' Stop') or (icons.i_play_circle .. ' Play')) then
+        if ui.Button(self.is_ingame and (icons.i_stop_circle .. ' Stop') or (icons.i_play_circle .. ' Play')) then
             self:toggle_game_mode()
         end
         if ui.IsItemHovered() then

@@ -7,12 +7,15 @@ function style.setup()
     local style = ui.GetStyle()
     local colors = style.Colors
 
-    style.WindowPadding     = ui.ImVec2(15, 15)
-    style.FramePadding      = ui.ImVec2(5, 5)
-    style.CellPadding       = ui.ImVec2(6, 6)
-    style.ItemSpacing       = ui.ImVec2(12, 8)
-    style.ItemInnerSpacing  = ui.ImVec2(8, 6)
-    style.TouchExtraPadding = ui.ImVec2(0, 0)
+    local scale = 0.5
+    local round_factor = 2
+
+    style.WindowPadding     = ui.ImVec2(15*scale, 15*scale)
+    style.FramePadding      = ui.ImVec2(9*scale, 9*scale)
+    style.CellPadding       = ui.ImVec2(7*scale, 7*scale)
+    style.ItemSpacing       = ui.ImVec2(12*scale, 8*scale)
+    style.ItemInnerSpacing  = ui.ImVec2(8*scale, 6*scale)
+    style.TouchExtraPadding = ui.ImVec2(0*scale, 0*scale)
     style.IndentSpacing     = 25
     style.ScrollbarSize     = 15
     style.GrabMinSize       = 10
@@ -21,13 +24,13 @@ function style.setup()
     style.PopupBorderSize   = 1
     style.FrameBorderSize   = 1
     style.TabBorderSize     = 1
-    style.WindowRounding    = 7+2
-    style.ChildRounding     = 4+2
-    style.FrameRounding     = 3+2
-    style.PopupRounding     = 4+2
-    style.ScrollbarRounding = 9+2
-    style.GrabRounding      = 3+2
-    style.TabRounding       = 4+2
+    style.WindowRounding    = 7*round_factor
+    style.ChildRounding     = 4*round_factor
+    style.FrameRounding     = 3*round_factor
+    style.PopupRounding     = 4*round_factor
+    style.ScrollbarRounding = 9*round_factor
+    style.GrabRounding      = 3*round_factor
+    style.TabRounding       = 4*round_factor
     style.LogSliderDeadzone = 4
 
     colors[ffi.C.ImGuiCol_Text] = ui.ImVec4(0.80, 0.80, 0.83, 1.00)
