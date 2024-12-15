@@ -88,7 +88,7 @@ namespace noesis {
     static const soliton::system_variable<std::int64_t> sv_default_font_weight {"ui.default_font.weight", {Noesis::FontWeight_Normal} };
     static const soliton::system_variable<std::int64_t> sv_default_font_stretch {"ui.default_font.stretch", {Noesis::FontStretch_Normal} };
 
-    static constinit Noesis::IView* s_event_proxy;
+    static Noesis::IView* s_event_proxy;
 
     [[nodiscard]] static auto is_ui_active(GLFWwindow* const window) noexcept -> bool {
         return glfwGetWindowAttrib(window, GLFW_FOCUSED) == GLFW_TRUE

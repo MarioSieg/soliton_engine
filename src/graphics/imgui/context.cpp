@@ -83,8 +83,8 @@ namespace soliton::imgui {
         config.MergeMode = true;
         config.DstFont = primaryFont;
         struct font_range final {
-            std::span<const std::uint8_t> data {};
-            std::array<char16_t, 3> ranges {};
+            eastl::span<const std::uint8_t> data {};
+            eastl::array<char16_t, 3> ranges {};
         };
 
         // Compute DPI scaling

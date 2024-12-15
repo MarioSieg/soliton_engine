@@ -15,9 +15,9 @@
 #include <assetsys.h>
 
 namespace soliton::assetmgr {
-    extern constinit std::atomic_size_t s_asset_requests;
-    extern constinit std::atomic_size_t s_asset_requests_failed;
-    extern constinit std::atomic_size_t s_total_bytes_loaded;
+    extern std::atomic_size_t s_asset_requests;
+    extern std::atomic_size_t s_asset_requests_failed;
+    extern std::atomic_size_t s_total_bytes_loaded;
 
     [[nodiscard]] static constexpr auto asset_sys_err_info(const assetsys_error_t error) noexcept -> const char* {
         switch (error) {

@@ -48,7 +48,7 @@ namespace soliton::vkb {
     }();
 #endif
 
-    [[nodiscard]] consteval auto get_alloc() noexcept -> const vk::AllocationCallbacks* {
+    [[nodiscard]] constexpr auto get_alloc() noexcept -> const vk::AllocationCallbacks* {
 #if USE_MIMALLOC
         return &s_vk_alloc;
 #else

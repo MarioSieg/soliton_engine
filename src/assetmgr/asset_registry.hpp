@@ -10,7 +10,7 @@ namespace soliton::assetmgr {
     using interop_asset_id = std::uint32_t; /* Asset ID represented in LUA */
     constexpr interop_asset_id invalid_asset_id = 0x7fffffffu;
 
-    template <typename  T> requires is_asset<T>
+    template <typename T>
     class asset_registry final {
     public:
         explicit asset_registry(std::size_t capacity = 32) {
@@ -40,7 +40,7 @@ namespace soliton::assetmgr {
             return p;
         }
 
-        template <typename... Args> requires std::is_constructible_v<T, eastl::string&&, Args...>
+        template <typename... Args>
         [[nodiscard]] auto load(eastl::string&& path, Args&&... args) -> T* {
             if (path.empty()) {
                 log_error("Cannot load asset with empty path");
@@ -83,7 +83,7 @@ namespace soliton::assetmgr {
         public:
             explicit constexpr lua_interop(asset_registry& host) : host{host} {}
 
-            template <typename... Args> requires std::is_constructible_v<T, eastl::string&&, Args...>
+            template <typename... Args>
             [[nodiscard]] auto load(eastl::string&& path, Args&&... args) -> interop_asset_id {
                 T* asset = host.load(eastl::move(path), eastl::forward<Args>(args)...);
                 if (!asset) [[unlikely]] {

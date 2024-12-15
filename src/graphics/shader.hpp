@@ -40,10 +40,10 @@ namespace soliton::graphics {
         shader_variant() = default;
         eastl::string m_path {};
         shader_stage m_stage {};
-        bool m_keep_assembly : 1 {};
-        bool m_keep_source : 1 {};
-        bool m_keep_bytecode : 1 {};
-        bool m_reflect : 1 {};
+        bool m_keep_assembly {};
+        bool m_keep_source {};
+        bool m_keep_bytecode {};
+        bool m_reflect {};
         eastl::string m_entry_point {"main"};
         ankerl::unordered_dense::map<eastl::string, std::int32_t> m_macro_values {};
         ankerl::unordered_dense::set<eastl::string> m_macros {};

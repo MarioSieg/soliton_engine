@@ -492,7 +492,7 @@ namespace soliton::vkb {
         (*cmd).endRenderPass();
     }
 
-    static constinit std::atomic_bool s_init;
+    static std::atomic_bool s_init;
 
     auto context::create(const context_desc& desc) -> void {
         if (s_init.load()) return;

@@ -164,12 +164,12 @@ namespace soliton::graphics {
         return align > alignof(std::max_align_t) ? mi_realloc_aligned(p, size, align) : mi_realloc(p, size);
     }
 
-    constinit texture_allocator s_texture_allocator {};
+    texture_allocator s_texture_allocator {};
 #else
     static bx::DefaultAllocator s_def_texture_allocator {};
 #endif
 
-    [[nodiscard]] consteval auto get_tex_alloc() noexcept -> bx::AllocatorI* {
+    [[nodiscard]] constexpr auto get_tex_alloc() noexcept -> bx::AllocatorI* {
 #if USE_MIMALLOC
         return &s_texture_allocator;
 #else

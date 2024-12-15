@@ -72,7 +72,7 @@ namespace soliton::vkb {
     }
 
     auto device::is_instance_extension_supported(const char* extension) const -> bool {
-        return std::ranges::find(m_supported_instance_extensions, extension) != m_supported_instance_extensions.end();
+        return std::find(m_supported_instance_extensions.begin(), m_supported_instance_extensions.end(), extension) != m_supported_instance_extensions.end();
     }
 
     auto device::get_mem_type_idx(
@@ -187,7 +187,7 @@ namespace soliton::vkb {
         // Setup debug utils messenger create info
         if (m_enable_validation) {
             log_info("Enabling Vulkan validation layers...");
-            if (std::ranges::find(m_supported_instance_extensions, VK_EXT_DEBUG_UTILS_EXTENSION_NAME) != m_supported_instance_extensions.end()) {
+            if (std::find(m_supported_instance_extensions.begin(), m_supported_instance_extensions.end(), VK_EXT_DEBUG_UTILS_EXTENSION_NAME) != m_supported_instance_extensions.end()) {
                 log_info("Enabling Vulkan debug utils extension...");
                 m_debug_utils_messenger_ci.messageSeverity = vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning | vk::DebugUtilsMessageSeverityFlagBitsEXT::eError | vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose;
                 m_debug_utils_messenger_ci.messageType = vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral | vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation | vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance;
@@ -206,7 +206,7 @@ namespace soliton::vkb {
             enabled_instance_extensions.reserve(requested_instance_extensions.size());
             for (const auto& ext : requested_instance_extensions) {
                 log_info("Enabling instance extension: {}", ext);
-                if (std::ranges::find(m_supported_instance_extensions, ext) == m_supported_instance_extensions.end()) [[unlikely]] {
+                if (std::find(m_supported_instance_extensions.begin(), m_supported_instance_extensions.end(), ext) == m_supported_instance_extensions.end()) [[unlikely]] {
                     panic("Instance extension {} not supported", ext);
                 }
                 enabled_instance_extensions.emplace_back(ext.c_str());
@@ -396,7 +396,7 @@ namespace soliton::vkb {
 
         if (!enabled_extensions.empty()) [[likely]] {
             const auto extension_supported = [this](const char* ext) -> bool {
-                return std::ranges::any_of(m_supported_device_extensions, [ext](const vk::ExtensionProperties& extension) {
+                return std::any_of(m_supported_device_extensions.begin(), m_supported_device_extensions.end(), [ext](const vk::ExtensionProperties& extension) {
                     return std::strcmp(extension.extensionName, ext) == 0;
                 });
             };

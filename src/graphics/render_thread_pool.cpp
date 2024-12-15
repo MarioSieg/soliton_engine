@@ -42,7 +42,7 @@ namespace soliton::graphics {
         }
 
         // start thread
-        m_thread = std::thread { [=, this] () -> void { thread_routine(); }};
+        m_thread = std::thread { [&] () -> void { thread_routine(); }};
     }
 
     render_thread::~render_thread() {

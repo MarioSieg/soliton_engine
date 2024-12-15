@@ -76,14 +76,14 @@ namespace soliton::graphics {
         eastl::optional<imgui::context> m_imgui_context {};
         eastl::optional<noesis::context> m_noesis_context {};
 
-        static inline constinit XMFLOAT4X4A s_view_mtx;
-        static inline constinit XMFLOAT4X4A s_proj_mtx;
-        static inline constinit XMFLOAT4X4A s_view_proj_mtx;
+        static inline XMFLOAT4X4A s_view_mtx;
+        static inline XMFLOAT4X4A s_proj_mtx;
+        static inline XMFLOAT4X4A s_view_proj_mtx;
         static inline XMFLOAT4A s_clear_color;
         static inline BoundingFrustum s_frustum;
         static inline com::transform s_camera_transform;
         static inline float s_camera_fov;
-        static inline constinit graphics_subsystem* s_instance;
+        static inline graphics_subsystem* s_instance;
 
         auto render_uis() -> void;
         auto load_all_pipelines(bool force_success) -> void;

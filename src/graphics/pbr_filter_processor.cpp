@@ -221,8 +221,8 @@ namespace soliton::graphics {
 
         struct {
             glm::mat4 mvp {};
-            float delta_phi = (2.0f * std::numbers::pi_v<float>) / 180.0f;
-            float delta_theta = (0.5f * std::numbers::pi_v<float>) / 64.0f;
+            float delta_phi = (2.0f * M_PI) / 180.0f;
+            float delta_theta = (0.5f * M_PI) / 64.0f;
         } push_block {};
         static_assert(sizeof(push_block) == sizeof(float)*(16+2));
         vk::PushConstantRange range { vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0, sizeof(push_block) };
@@ -345,7 +345,7 @@ namespace soliton::graphics {
                     h
                 );
                 cmd.begin_render_pass(render_pass_bi, vk::SubpassContents::eInline);
-                push_block.mvp = glm::perspective(std::numbers::pi_v<float> / 2.0f, 1.0f, 0.1f, 512.0f) * k_cube_matrices[f];
+                push_block.mvp = glm::perspective(static_cast<float>(M_PI) / 2.0f, 1.0f, 0.1f, 512.0f) * k_cube_matrices[f];
                 (*cmd).pushConstants(pipeline_layout, vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0, sizeof(push_block), &push_block);
                 (*cmd).bindPipeline(vk::PipelineBindPoint::eGraphics, shader_pipeline);
                 (*cmd).bindDescriptorSets(
@@ -711,7 +711,7 @@ namespace soliton::graphics {
                     h
                 );
                 cmd.begin_render_pass(render_pass_bi, vk::SubpassContents::eInline);
-                push_block.mvp = glm::perspective(std::numbers::pi_v<float> / 2.0f, 1.0f, 0.1f, 512.0f) * k_cube_matrices[f];
+                push_block.mvp = glm::perspective(static_cast<float>(M_PI) / 2.0f, 1.0f, 0.1f, 512.0f) * k_cube_matrices[f];
                 (*cmd).pushConstants(pipeline_layout, vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0, sizeof(push_block), &push_block);
                 (*cmd).bindPipeline(vk::PipelineBindPoint::eGraphics, shader_pipeline);
                 (*cmd).bindDescriptorSets(

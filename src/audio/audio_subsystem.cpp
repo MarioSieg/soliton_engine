@@ -50,7 +50,7 @@ namespace soliton::audio {
 
     auto audio_subsystem::set_audio_listener_transform(const com::transform& transform) noexcept -> void {
         static_assert(sizeof(FMOD_VECTOR) == sizeof(XMFLOAT3));
-        static constinit XMVECTOR prev_position {};
+        static XMVECTOR prev_position {};
         FMOD_VECTOR f_pos, f_vel, f_for, f_up;
         XMVECTOR position { XMLoadFloat4(&transform.position) };
         XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&f_pos), position);

@@ -12,8 +12,8 @@
 #endif
 
 namespace soliton::platform::backend {
-    static constinit bool s_is_initialized;
-    static constinit bool s_is_nfd_online;
+    static bool s_is_initialized;
+    static bool s_is_nfd_online;
 
     auto is_online() noexcept -> bool {
         return s_is_initialized;

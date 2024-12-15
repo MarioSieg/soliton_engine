@@ -22,8 +22,8 @@ namespace soliton {
     using namespace std::filesystem;
     using namespace eastl::chrono;
 
-    static constinit double g_delta_time, g_time;
-    static constinit bool g_kernel_online = true;
+    static double g_delta_time, g_time;
+    static bool g_kernel_online = true;
 
 #if PLATFORM_WINDOWS
 #define WIN32_LEAN_AND_MEAN
@@ -59,7 +59,7 @@ static auto redirect_io() -> void {
 #include <pthread.h>
 #endif
 
-    static constinit kernel* g_kernel = nullptr;
+    static kernel* g_kernel = nullptr;
 
     kernel::kernel(const int argc, const char** argv, const char** $environ) {
         panic_assert(g_kernel == nullptr);

@@ -106,7 +106,7 @@ namespace soliton::vkb {
         };
 
         for (const vk::SurfaceFormatKHR& format : formats) {
-            if (std::ranges::find(preferred_image_formats_hdr, format.format) != preferred_image_formats_hdr.end()) {
+            if (std::find(preferred_image_formats_hdr.begin(), preferred_image_formats_hdr.end(), format.format) != preferred_image_formats_hdr.end()) {
                 selected_format = format;
                 log_info("HDR swapchain surface initialized: {}", string_VkFormat(static_cast<VkFormat>(selected_format.format)));
                 break;
@@ -114,7 +114,7 @@ namespace soliton::vkb {
         }
 
         for (const vk::SurfaceFormatKHR& format : formats) {
-            if (std::ranges::find(preferred_image_formats_ldr, format.format) != preferred_image_formats_ldr.end()) {
+            if (std::find(preferred_image_formats_ldr.begin(), preferred_image_formats_ldr.end(), format.format) != preferred_image_formats_ldr.end()) {
                 selected_format = format;
                 log_info("LDR swapchain surface initialized: {}", string_VkFormat(static_cast<VkFormat>(selected_format.format)));
                 break;

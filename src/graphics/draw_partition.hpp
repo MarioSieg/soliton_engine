@@ -18,7 +18,7 @@ namespace soliton::graphics {
         return {begin, end};
     }
 
-    template <typename F> requires std::is_invocable_r_v<void, F, std::size_t, const com::transform&, const com::mesh_renderer&>
+    template <typename F>
     inline auto partitioned_draw(
         const std::int32_t bucket_id,
         const std::int32_t num_threads,

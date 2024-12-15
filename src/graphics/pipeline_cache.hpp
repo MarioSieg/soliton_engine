@@ -18,7 +18,7 @@ namespace soliton::graphics {
 
         [[nodiscard]] auto get_pipelines() const -> const ankerl::unordered_dense::map<eastl::string, eastl::unique_ptr<pipeline_base>>& { return m_pipelines; }
 
-        template <typename T> requires std::is_base_of_v<pipeline_base, T>
+        template <typename T>
         [[nodiscard]] auto get_pipeline(eastl::string&& name) const -> T& {
             if (!m_pipelines.contains(name)) [[unlikely]] {
                 log_error("Pipeline not found in registry: '{}'", name);
@@ -32,7 +32,7 @@ namespace soliton::graphics {
             return *ptr;
         }
 
-        template <typename T> requires std::is_base_of_v<pipeline_base, T>
+        template <typename T>
         auto register_pipeline(bool force_success) -> bool {
             auto instance = eastl::make_unique<T>();
             auto name = instance->name;

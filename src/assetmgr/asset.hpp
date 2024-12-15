@@ -37,7 +37,4 @@ namespace soliton::assetmgr {
     protected:
         std::size_t m_approx_byte_size = 0;
     };
-
-    template<typename T>
-    concept is_asset = std::is_base_of_v<asset, T>;
 }

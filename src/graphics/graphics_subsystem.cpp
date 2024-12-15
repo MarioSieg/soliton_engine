@@ -26,8 +26,8 @@ namespace soliton::graphics {
     static const system_variable<std::int64_t> sv_msaa_samples {"renderer.msaa_samples", {4}};
     static const system_variable<std::int64_t> sv_max_render_threads {"cpu.render_threads", {2}};
 
-    static constinit std::uint32_t s_num_draw_calls_prev = 0;
-    static constinit std::uint32_t s_num_draw_verts_prev = 0;
+    static std::uint32_t s_num_draw_calls_prev = 0;
+    static std::uint32_t s_num_draw_verts_prev = 0;
 
     graphics_subsystem::graphics_subsystem() : subsystem{"Graphics"} {
         log_info("Initializing graphics subsystem");
