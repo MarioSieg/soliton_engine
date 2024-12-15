@@ -18,7 +18,6 @@
 #include "shared_buffers.hpp"
 #include "pipeline_cache.hpp"
 #include "imgui/context.hpp"
-#include "noesis/context.hpp"
 
 namespace soliton::graphics {
     class graphics_subsystem final : public subsystem {
@@ -42,8 +41,6 @@ namespace soliton::graphics {
         }
 
         [[nodiscard]] auto get_debug_draw_opt() noexcept -> eastl::optional<debugdraw>& { return m_debugdraw; }
-        [[nodiscard]] auto get_noesis_context() noexcept -> noesis::context& { return *m_noesis_context; }
-        [[nodiscard]] auto get_imgui_context() noexcept -> imgui::context& { return *m_imgui_context; }
         [[nodiscard]] static auto get() noexcept -> graphics_subsystem& {
             panic_assert(s_instance != nullptr);
             return *s_instance;
@@ -74,7 +71,6 @@ namespace soliton::graphics {
         eastl::vector<eastl::pair<eastl::span<const com::transform>, eastl::span<const com::mesh_renderer>>> m_render_data {};
         eastl::optional<debugdraw> m_debugdraw {};
         eastl::optional<imgui::context> m_imgui_context {};
-        eastl::optional<noesis::context> m_noesis_context {};
 
         static inline XMFLOAT4X4A s_view_mtx;
         static inline XMFLOAT4X4A s_proj_mtx;

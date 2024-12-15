@@ -72,7 +72,6 @@ namespace soliton::graphics {
         shared_buffers::get().reset();
 
         m_imgui_context.reset();
-        m_noesis_context.reset();
 
         m_pipeline_cache.reset();
         m_render_thread_pool.reset();
@@ -227,7 +226,6 @@ namespace soliton::graphics {
 
     auto graphics_subsystem::render_uis() -> void {
         m_cmd->begin();
-        m_noesis_context->render_offscreen(*m_cmd);
 
         auto w = static_cast<float>(vkb::ctx().get_width());
         auto h = static_cast<float>(vkb::ctx().get_height());
@@ -237,7 +235,6 @@ namespace soliton::graphics {
         m_cmd->set_scissor(w, h);
 
         vkb::ctx().begin_render_pass(*m_cmd, vkb::ctx().get_ui_render_pass(), vk::SubpassContents::eInline); // TODO refractor
-        m_noesis_context->render_onscreen(vkb::ctx().get_ui_render_pass());
         m_imgui_context->submit_imgui(*m_cmd);
         m_cmd->end_render_pass();
         m_cmd->end();
