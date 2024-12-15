@@ -1,9 +1,9 @@
 // Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "system_variable.hpp"
+#include <fast_float/fast_float.h>
 
 #include <filesystem>
-#include <charconv>
 #include <SimpleIni.h>
 
 namespace soliton {
@@ -74,27 +74,18 @@ namespace soliton {
                 }
 
                 std::int64_t intValue = 0;
-                auto int_r = std::from_chars(value.data(), value.data() + value.size(), intValue);
+                auto int_r = fast_float::from_chars(value.data(), value.data() + value.size(), intValue);
                 if (int_r.ec == std::errc() && int_r.ptr == value.data() + value.size()) {
                     sv_registry[key.pItem] = intValue;
                     continue;
                 }
 
-                #if COMPILER_CLANG && PLATFORM_OSX // Apple clang does not support from_chars for floats, use std::stof instead
-                    char* end = nullptr;
-                    float float_r = std::strtof(value.c_str(), &end);
-                    if (end == value.data() + value.size()) {
-                        sv_registry[key.pItem] = float_r;
-                        continue;
-                    }
-                #else
-                    float float_r = 0.0f;
-                    auto floatResult = std::from_chars(value.data(), value.data() + value.size(), float_r);
-                    if (floatResult.ec == std::errc() && floatResult.ptr == value.data() + value.size()) {
-                        sv_registry[key.pItem] = float_r;
-                        continue;
-                    }
-                #endif
+                float float_r = 0.0f;
+                auto floatResult = fast_float::from_chars(value.data(), value.data() + value.size(), float_r);
+                if (floatResult.ec == std::errc() && floatResult.ptr == value.data() + value.size()) {
+                    sv_registry[key.pItem] = float_r;
+                    continue;
+                }
 
                 sv_registry[key.pItem] = value;
             }
