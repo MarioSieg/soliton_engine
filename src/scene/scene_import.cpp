@@ -26,7 +26,7 @@ namespace soliton {
         //importer.SetIOHandler(new graphics::lunam_assimp_io_system {});
         panic_assert(importer.ValidateFlags(load_flags));
         const aiScene* scene = importer.ReadFile(path.c_str(), load_flags);
-        if (!scene || !scene->mNumMeshes) [[unlikely]] {
+        if (!scene || !scene->mNumMeshes) {
             panic("Failed to load scene from file '{}': {}", path, importer.GetErrorString());
         }
 
@@ -38,7 +38,7 @@ namespace soliton {
 
         std::uint32_t num_nodes = 0;
         eastl::function<auto (aiNode*) -> void> visitor = [&](aiNode* node) -> void {
-            if (!node) [[unlikely]] {
+            if (!node) {
                 return;
             }
             if (node->mParent) {
@@ -82,14 +82,14 @@ namespace soliton {
                 ) mutable -> graphics::material_property {
                     panic_assert(fallback != nullptr);
                     for (auto textureType = types.begin(); textureType != types.end(); std::advance(textureType, 1)) {
-                        if (!mat->GetTextureCount(*textureType)) [[unlikely]] continue;
+                        if (!mat->GetTextureCount(*textureType)) continue;
                         aiString name {};
                         if (mat->Get(AI_MATKEY_TEXTURE(*textureType, 0), name) != AI_SUCCESS) {
                             continue;
                         }
                         std::filesystem::path tex_path = "/";
                         tex_path += std::filesystem::relative((asset_root + name.C_Str()).c_str()).string().c_str();
-                        if (!tex_path.has_extension()) [[unlikely]] {
+                        if (!tex_path.has_extension()) {
                             continue;
                         }
                         eastl::string path = tex_path.c_str();

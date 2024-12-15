@@ -14,7 +14,7 @@ namespace soliton::assetmgr {
     static std::atomic_bool s_is_initialized = false;
 
     auto init() -> void {
-        if (s_is_initialized.load(std::memory_order_relaxed)) [[unlikely]] {
+        if (s_is_initialized.load(std::memory_order_relaxed)) {
             log_error("Asset manager already initialized");
             return;
         }

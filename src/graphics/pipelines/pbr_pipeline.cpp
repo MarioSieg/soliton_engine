@@ -36,23 +36,23 @@ namespace soliton::graphics::pipelines {
         FXMMATRIX view_proj_mtx,
         CXMMATRIX view_mtx
     ) const noexcept -> void {
-        if (renderer.meshes.empty() || renderer.materials.empty()) [[unlikely]] // No mesh or material
+        if (renderer.meshes.empty() || renderer.materials.empty()) // No mesh or material
             return;
 
-        if (renderer.flags & com::render_flags::skip_rendering) [[unlikely]] // Skip rendering
+        if (renderer.flags & com::render_flags::skip_rendering) // Skip rendering
             return;
 
         const XMMATRIX model_mtx = transform.compute_matrix();
 
         for (const mesh* const mesh : renderer.meshes) {
             // Skip mesh if it's null
-            if (!mesh) [[unlikely]] continue;
+            if (!mesh) continue;
 
             // Perform CPU frustum culling
             BoundingOrientedBox obb {};
             obb.CreateFromBoundingBox(obb, mesh->get_aabb());
             obb.Transform(obb, model_mtx);
-            if ((renderer.flags & com::render_flags::skip_frustum_culling) == 0) [[likely]] {
+            if ((renderer.flags & com::render_flags::skip_frustum_culling) == 0) {
                 if (frustum.Contains(obb) == ContainmentType::DISJOINT) {
                     continue;
                 }
@@ -86,7 +86,7 @@ namespace soliton::graphics::pipelines {
     auto pbr_pipeline::configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> bool {
         auto vs = shader_cache->get_shader({"pbr_uber_surface.vert", shader_stage::vertex});
         auto fs = shader_cache->get_shader({"pbr_uber_surface.frag", shader_stage::fragment});
-        if (!vs || !fs) [[unlikely]] return false;
+        if (!vs || !fs) return false;
         cfg.emplace_back(vs);
         cfg.emplace_back(fs);
         return true;

@@ -198,7 +198,7 @@ static auto redirect_io() -> void {
         g_time += g_delta_time;
         for (auto&& sys : m_subsystems) {
             const stopwatch clock {};
-            if (!sys->on_pre_tick()) [[unlikely]] return false;
+            if (!sys->on_pre_tick()) return false;
             sys->m_prev_pre_tick_time = clock.elapsed<nanoseconds>();
         }
         for (auto&& sys : m_subsystems) {

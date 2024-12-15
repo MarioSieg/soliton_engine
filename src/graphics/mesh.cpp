@@ -48,12 +48,12 @@ namespace soliton::graphics {
 			}
 			vertices.emplace_back(v);
 		}
-        if (mesh->mNumFaces == 0) [[unlikely]] {
+        if (mesh->mNumFaces == 0) {
             log_error("Mesh '{}' has no faces - no index buffer will be generated", mesh->mName.C_Str());
         }
 		for (unsigned i = 0; i < mesh->mNumFaces; ++i) {
 			const aiFace face = mesh->mFaces[i];
-			if (face.mNumIndices == 3) [[likely]] {
+			if (face.mNumIndices == 3) {
 				for (unsigned j = 0; j < 3; ++j) {
 					indices.emplace_back(face.mIndices[j]);
 				}
@@ -91,12 +91,12 @@ namespace soliton::graphics {
             hint = a_path.extension().string().c_str();
         }
         const aiScene* scene = importer.ReadFileFromMemory(blob.data(), blob.size(), import_flags, hint.empty() ? nullptr : hint.c_str());
-        if (!scene || !scene->mNumMeshes) [[unlikely]] {
+        if (!scene || !scene->mNumMeshes) {
             panic("Failed to load scene from file '{}': {}", get_asset_path(), importer.GetErrorString());
         }
 
 		const aiNode* node = scene->mRootNode;
-        if (!node || node->mNumMeshes == 0) [[unlikely]] { // search for other nodes with meshes
+        if (!node || node->mNumMeshes == 0) { // search for other nodes with meshes
             eastl::function<auto(const aiNode*) -> const aiNode*> search_for_meshes = [&search_for_meshes](const aiNode* const node) -> const aiNode* {
                 for (unsigned i = 0; i < node->mNumChildren; ++i) {
                     auto* local_node = node->mChildren[i];
@@ -110,7 +110,7 @@ namespace soliton::graphics {
             node = search_for_meshes(node);
         }
 
-        if (!node || node->mNumMeshes == 0) [[unlikely]] {
+        if (!node || node->mNumMeshes == 0) {
             panic("Scene has no root node and no meshes");
         }
 

@@ -34,7 +34,7 @@ namespace soliton {
                 ini.SetValue(section.c_str(), key.c_str(), eastl::get<eastl::string>(value).c_str());
             }
         }
-        if (ini.SaveFile(cfg_file) >= 0) [[likely]] {
+        if (ini.SaveFile(cfg_file) >= 0) {
             log_info("Saved {} system variables to '{}'", sv_registry.size(), cfg_file);
             return true;
         } else {
@@ -44,11 +44,11 @@ namespace soliton {
     }
 
     auto detail::load_system_variables() -> bool {
-        if (!std::filesystem::exists("config")) [[unlikely]] {
+        if (!std::filesystem::exists("config")) {
             std::filesystem::create_directory("config");
             return false;
         }
-        if (!std::filesystem::exists(cfg_file)) [[unlikely]] {
+        if (!std::filesystem::exists(cfg_file)) {
             log_warn("Config file '{}' not found, creating default", cfg_file);
             return false;
         }

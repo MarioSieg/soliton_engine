@@ -47,7 +47,7 @@ namespace soliton::vkb {
         const VkDebugUtilsMessengerCallbackDataEXT* data,
         void* usr
     ) -> VkBool32 {
-        if (!data->pMessageIdName || !data->pMessage) [[unlikely]] {
+        if (!data->pMessageIdName || !data->pMessage) {
             return vk::False;
         }
         if (severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT) {
@@ -115,7 +115,7 @@ namespace soliton::vkb {
         is_generally_supported = m_physical_device.getImageFormatProperties2(&info, &props) == vk::Result::eSuccess;
 
         // check if format supports color writing for mipmap generation
-        if (is_generally_supported) [[likely]] {
+        if (is_generally_supported) {
             vk::FormatProperties format_props {};
             m_physical_device.getFormatProperties(format, &format_props);
             is_mipgen_supported = static_cast<bool>(format_props.optimalTilingFeatures & vk::FormatFeatureFlagBits::eColorAttachment);
@@ -139,13 +139,13 @@ namespace soliton::vkb {
             VK_KHR_SURFACE_EXTENSION_NAME,
         };
 
-        if (!glfwVulkanSupported()) [[unlikely]] {
+        if (!glfwVulkanSupported()) {
             panic("GLFW does not support Vulkan");
         }
 
         std::uint32_t glfw_extension_count = 0;
         const char** glfw_extensions = glfwGetRequiredInstanceExtensions(&glfw_extension_count);
-        if (!glfw_extension_count || glfw_extensions == nullptr) [[unlikely]] {
+        if (!glfw_extension_count || glfw_extensions == nullptr) {
             panic("GLFW failed to retrieve required Vulkan instance extensions");
         }
         for (std::uint32_t i = 0; i < glfw_extension_count; ++i) {
@@ -156,7 +156,7 @@ namespace soliton::vkb {
         // Enumerate supported instance extensions
         std::uint32_t ext_count = 0;
         vkcheck(vk::enumerateInstanceExtensionProperties(nullptr, &ext_count, nullptr));
-        if (ext_count) [[likely]] {
+        if (ext_count) {
             eastl::vector<vk::ExtensionProperties> extensions {ext_count};
             if (vk::enumerateInstanceExtensionProperties(nullptr, &ext_count, extensions.data()) == vk::Result::eSuccess) {
                 for (vk::ExtensionProperties& extension : extensions) {
@@ -202,11 +202,11 @@ namespace soliton::vkb {
 
         // Setup enabled instance extensions
         eastl::vector<const char*> enabled_instance_extensions {};
-        if (!requested_instance_extensions.empty()) [[likely]] {
+        if (!requested_instance_extensions.empty()) {
             enabled_instance_extensions.reserve(requested_instance_extensions.size());
             for (const auto& ext : requested_instance_extensions) {
                 log_info("Enabling instance extension: {}", ext);
-                if (std::find(m_supported_instance_extensions.begin(), m_supported_instance_extensions.end(), ext) == m_supported_instance_extensions.end()) [[unlikely]] {
+                if (std::find(m_supported_instance_extensions.begin(), m_supported_instance_extensions.end(), ext) == m_supported_instance_extensions.end()) {
                     panic("Instance extension {} not supported", ext);
                 }
                 enabled_instance_extensions.emplace_back(ext.c_str());
@@ -237,7 +237,7 @@ namespace soliton::vkb {
                     break;
                 }
             }
-            if (validationLayerPresent) [[likely]] {
+            if (validationLayerPresent) {
                 instance_create_info.ppEnabledLayerNames = &k_validation_layer;
                 instance_create_info.enabledLayerCount = 1;
             } else {
@@ -286,7 +286,7 @@ namespace soliton::vkb {
         m_physical_device.getMemoryProperties(&m_memory_properties);
         std::uint32_t num_ext = 0;
         vkcheck(m_physical_device.enumerateDeviceExtensionProperties(nullptr, &num_ext, nullptr));
-        if (num_ext > 0) [[likely]] {
+        if (num_ext > 0) {
             m_supported_device_extensions.resize(num_ext);
             if (m_physical_device.enumerateDeviceExtensionProperties(nullptr, &num_ext, m_supported_device_extensions.data()) == vk::Result::eSuccess) {
                 for (const vk::ExtensionProperties& extension : m_supported_device_extensions) {
@@ -394,7 +394,7 @@ namespace soliton::vkb {
             device_create_info.pNext = &physical_device_features2;
         }
 
-        if (!enabled_extensions.empty()) [[likely]] {
+        if (!enabled_extensions.empty()) {
             const auto extension_supported = [this](const char* ext) -> bool {
                 return std::any_of(m_supported_device_extensions.begin(), m_supported_device_extensions.end(), [ext](const vk::ExtensionProperties& extension) {
                     return std::strcmp(extension.extensionName, ext) == 0;

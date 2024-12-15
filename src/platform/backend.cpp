@@ -42,14 +42,14 @@ namespace soliton::platform::backend {
 #endif
 
         const bool glfw_online = glfwInit() == GLFW_TRUE;
-        if (!glfw_online) [[unlikely]] {
+        if (!glfw_online) {
             const char* desc = nullptr;
             glfwGetError(&desc);
             if (desc) log_error("Failed to initialize GLFW: {}", desc);
             panic_assert(glfw_online);
         }
 
-        if (NFD_Init() != NFD_OKAY) [[unlikely]] {
+        if (NFD_Init() != NFD_OKAY) {
             log_error("Failed to initialize file dialog system: {}", NFD_GetError());
             s_is_nfd_online = false;
         } else {

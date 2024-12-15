@@ -104,7 +104,7 @@ namespace soliton::graphics {
         if (!main_cam.is_valid()
             || !main_cam.is_alive()
             || !main_cam.has<const com::camera>()
-            || !main_cam.has<const com::transform>()) [[unlikely]] {
+            || !main_cam.has<const com::transform>()) {
                 log_error("No camera found in scene");
                 return;
             }
@@ -168,7 +168,7 @@ namespace soliton::graphics {
         auto& num_draw_verts = const_cast<std::atomic_uint32_t&>(vkb::command_buffer::get_total_draw_verts());
         s_num_draw_verts_prev = num_draw_calls.exchange(0, std::memory_order_relaxed);
         s_num_draw_calls_prev = num_draw_verts.exchange(0, std::memory_order_relaxed);
-        if (m_reload_pipelines_next_frame) [[unlikely]] {
+        if (m_reload_pipelines_next_frame) {
             vkcheck(vkb::vkdvc().waitIdle());
             load_all_pipelines(false);
             vkcheck(vkb::vkdvc().waitIdle());
@@ -200,7 +200,7 @@ namespace soliton::graphics {
             const std::size_t n = it.count;
             m_render_data.emplace_back(eastl::span{transforms, n}, eastl::span{renderers, n});
         }
-        if (m_cmd) [[likely]] { // TODO: refractor
+        if (m_cmd) { // TODO: refractor
             m_render_thread_pool->begin_frame(&m_inheritance_info);
             m_render_thread_pool->process_frame(*m_cmd);
             scene.readonly_end();

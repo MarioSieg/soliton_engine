@@ -185,7 +185,7 @@ namespace soliton::platform {
             success = acc.load_bin_file(texture_path.c_str(), pixel_buf);
         });
 
-        if (!success) [[unlikely]] {
+        if (!success) {
             log_error("Failed to load window icon: '{}'", texture_path);
             return;
         }
@@ -200,7 +200,7 @@ namespace soliton::platform {
             STBI_rgb_alpha
         );
 
-        if (!pixels) [[unlikely]] {
+        if (!pixels) {
             log_error("Failed to load window icon: '{}'", texture_path);
             return;
         }
@@ -251,13 +251,13 @@ namespace soliton::platform {
         if (m_is_fullscreen) return;
 
         GLFWmonitor* const primary_mon = glfwGetPrimaryMonitor();
-        if (!primary_mon) [[unlikely]] {
+        if (!primary_mon) {
             log_warn("Failed to fetch primary monitor");
             return;
         }
 
         const GLFWvidmode* primary_mode = glfwGetVideoMode(primary_mon);
-        if (!primary_mode) [[unlikely]] {
+        if (!primary_mode) {
             log_warn("Failed to fetch primary video mode");
             return;
         }

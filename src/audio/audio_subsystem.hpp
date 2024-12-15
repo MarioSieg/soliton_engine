@@ -12,7 +12,7 @@
 
 namespace soliton::audio {
     #define fmod_check(f) \
-        if (const FMOD_RESULT rrr = (f); rrr != FMOD_OK) [[unlikely]] { \
+        if (const FMOD_RESULT rrr = (f); rrr != FMOD_OK) { \
             panic("Audio engine error: {} -> " #f, FMOD_ErrorString(rrr)); \
         }
 

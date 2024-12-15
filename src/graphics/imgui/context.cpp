@@ -123,7 +123,7 @@ namespace soliton::imgui {
     }
 
     auto context::submit_imgui(vk::CommandBuffer cmd_buf) -> void {
-        if (auto* dd = ImGui::GetDrawData()) [[likely]] {
+        if (auto* dd = ImGui::GetDrawData()) {
             ImGui_ImplVulkan_RenderDrawData(dd, cmd_buf);
         }
     }

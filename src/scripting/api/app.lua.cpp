@@ -142,7 +142,7 @@ LUA_INTEROP_API auto __lu_app_open_file_dialog(const char *file_type, const char
     nfdchar_t *out;
     const nfdfilteritem_t filter = {file_type, filters};
     const nfdresult_t result = NFD_OpenDialog(&out, &filter, 1, default_path);
-    if (result == NFD_OKAY) [[likely]] {
+    if (result == NFD_OKAY) {
         s_tmp_proxy = out;
         NFD_FreePath(out);
         std::replace(s_tmp_proxy.begin(), s_tmp_proxy.end(), '\\', '/');
@@ -155,7 +155,7 @@ LUA_INTEROP_API auto __lu_app_save_file_dialog(const char *file_type, const char
     nfdchar_t *out;
     const nfdfilteritem_t filter = {file_type, filters};
     const nfdresult_t result = NFD_SaveDialog(&out, &filter, 1, default_path, default_name);
-    if (result == NFD_OKAY) [[likely]] {
+    if (result == NFD_OKAY) {
         s_tmp_proxy = out;
         NFD_FreePath(out);
         std::replace(s_tmp_proxy.begin(), s_tmp_proxy.end(), '\\', '/');
@@ -167,7 +167,7 @@ LUA_INTEROP_API auto __lu_app_save_file_dialog(const char *file_type, const char
 LUA_INTEROP_API auto __lu_app_open_folder_dialog(const char* default_path) -> const char* {
     nfdchar_t *out;
     const nfdresult_t result = NFD_PickFolder(&out, default_path);
-    if (result == NFD_OKAY) [[likely]] {
+    if (result == NFD_OKAY) {
         s_tmp_proxy = out;
         NFD_FreePath(out);
         std::replace(s_tmp_proxy.begin(), s_tmp_proxy.end(), '\\', '/');

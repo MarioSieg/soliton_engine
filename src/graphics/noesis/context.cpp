@@ -312,7 +312,7 @@ namespace noesis {
     }
 
     auto context::render_offscreen(const vk::CommandBuffer cmd) -> void {
-        if (!m_app) [[unlikely]] return;
+        if (!m_app) return;
         m_app->GetMainWindow()->GetView()->GetRenderer()->UpdateRenderTree();
         const NoesisApp::VKFactory::RecordingInfo recording_info {
             .commandBuffer = cmd,
@@ -346,7 +346,7 @@ namespace noesis {
     }
 
     auto context::reload_ui(const bool render_wireframe) -> void {
-        if (!m_xaml_path.empty()) [[likely]] {
+        if (!m_xaml_path.empty()) {
             m_app.Reset();
             m_app = Noesis::DynamicPtrCast<NoesisApp::Application>(Noesis::GUI::LoadXaml(m_xaml_path.c_str()));
             panic_assert(m_app);

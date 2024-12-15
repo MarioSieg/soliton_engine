@@ -22,7 +22,7 @@ LUA_INTEROP_API auto __lu_mesh_get_index_count(const assetmgr::interop_asset_id 
 
 LUA_INTEROP_API auto __lu_mesh_get_min_bound(const assetmgr::interop_asset_id id) -> lua_vec3 {
     const mesh* resource = scene_mgr::active().get_asset_registry<mesh>().interop[id];
-    if (!resource) [[unlikely]] return {};
+    if (!resource) return {};
     XMVECTOR center = XMLoadFloat3(&resource->get_aabb().Center);
     XMVECTOR extents = XMLoadFloat3(&resource->get_aabb().Extents);
     XMFLOAT3A r;
@@ -32,7 +32,7 @@ LUA_INTEROP_API auto __lu_mesh_get_min_bound(const assetmgr::interop_asset_id id
 
 LUA_INTEROP_API auto __lu_mesh_get_max_bound(const assetmgr::interop_asset_id id) -> lua_vec3 {
     const mesh* resource = scene_mgr::active().get_asset_registry<mesh>().interop[id];
-    if (!resource) [[unlikely]] return {};
+    if (!resource) return {};
     XMVECTOR center = XMLoadFloat3(&resource->get_aabb().Center);
     XMVECTOR extents = XMLoadFloat3(&resource->get_aabb().Extents);
     XMFLOAT3A r;

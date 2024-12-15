@@ -42,9 +42,9 @@ namespace soliton {
         [[nodiscard]] auto operator()() const -> T {
             std::lock_guard lock {detail::sv_mutex};
             auto& reg = detail::sv_registry;
-            if (reg.contains(m_name)) [[likely]] { // If the variable is already registered, return it.
+            if (reg.contains(m_name)) { // If the variable is already registered, return it.
                 detail::value& val = reg[m_name];
-                if (eastl::holds_alternative<T>(val)) [[likely]] {
+                if (eastl::holds_alternative<T>(val)) {
                     return eastl::get<T>(val);
                 } else {
                     panic("System variable '{}' is not of type '{}'", m_name, sv_supported_type_name<T>::value);

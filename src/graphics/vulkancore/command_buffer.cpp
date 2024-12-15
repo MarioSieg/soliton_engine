@@ -119,7 +119,7 @@ namespace soliton::vkb {
 
     auto command_buffer::draw_mesh_with_materials(const graphics::mesh& mesh, const eastl::span<graphics::material* const> mats) -> void {
         bind_mesh_buffers(mesh);
-        if (mesh.get_primitives().size() > mats.size()) [[unlikely]] {
+        if (mesh.get_primitives().size() > mats.size()) {
             log_error("Not enough materials for mesh");
             return;
         }

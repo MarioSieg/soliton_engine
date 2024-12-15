@@ -38,14 +38,14 @@ namespace soliton::scripting {
     }
 
     auto scripting_subsystem::on_start(scene&) -> void {
-        if (const luabridge::LuaResult r = (*m_on_start)(); r.hasFailed()) [[unlikely]] {
+        if (const luabridge::LuaResult r = (*m_on_start)(); r.hasFailed()) {
             lua_log_error("{}: Error in {}: {}", k_boot_script, k_start_hook, r.errorMessage());
         }
     }
 
     HOTPROC void scripting_subsystem::on_tick() {
         panic_assert(m_is_lua_host_online);
-        if (const luabridge::LuaResult r = (*m_on_tick)(); r.hasFailed()) [[unlikely]] {
+        if (const luabridge::LuaResult r = (*m_on_tick)(); r.hasFailed()) {
             lua_log_error("{}: Error in {}: {}", k_boot_script, k_tick_hook, r.errorMessage());
         }
     }
@@ -60,7 +60,7 @@ namespace soliton::scripting {
                 lua_log_error("Failed to load script file '{}'", full_path);
             }
         });
-        if (luaL_dostring(m_L, lua_source_code.c_str()) != LUA_OK) [[unlikely]] {
+        if (luaL_dostring(m_L, lua_source_code.c_str()) != LUA_OK) {
             lua_log_error("script error in {}: {}", full_path, lua_tostring(m_L, -1));
             lua_pop(m_L, 1);
             return false;
@@ -71,7 +71,7 @@ namespace soliton::scripting {
     auto scripting_subsystem::lua_host_connect() -> void {
         log_info("Connecting to Lua host");
 
-        if (m_is_lua_host_online) [[unlikely]] {
+        if (m_is_lua_host_online) {
             log_warn("Lua host is already online");
             return;
         }
@@ -152,7 +152,7 @@ namespace soliton::scripting {
 
     auto scripting_subsystem::lua_host_disconnect() -> void {
         log_info("Shutting down Lua host");
-        if (!m_is_lua_host_online) [[unlikely]] {
+        if (!m_is_lua_host_online) {
             log_warn("Lua host is already offline");
             return;
         }

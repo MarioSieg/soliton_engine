@@ -20,7 +20,7 @@ namespace soliton::graphics {
 
         template <typename T>
         [[nodiscard]] auto get_pipeline(eastl::string&& name) const -> T& {
-            if (!m_pipelines.contains(name)) [[unlikely]] {
+            if (!m_pipelines.contains(name)) {
                 log_error("Pipeline not found in registry: '{}'", name);
                 for (const auto& [key, value] : m_pipelines) {
                     log_error("Available pipeline: '{}'", key);
