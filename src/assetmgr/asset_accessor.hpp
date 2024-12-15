@@ -3,6 +3,7 @@
 #pragma once
 
 #include <atomic>
+#include <cstdint>
 #include <cstddef>
 
 #include <EASTL/vector.h>
