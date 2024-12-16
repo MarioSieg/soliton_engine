@@ -36,6 +36,17 @@ namespace engine
     {
     }
 
+    VulkanContext* getContext()
+    {
+        static std::unique_ptr<VulkanContext> ctx;
+        return &*ctx;
+    }
+
+    VkDevice getDevice()
+    {
+        return getContext()->getDevice();
+    }
+
     bool VulkanContext::init()
     {
         m_window = nullptr;
@@ -121,7 +132,7 @@ namespace engine
 
     bool VulkanContext::release()
     {
-        destroyBuiltinAsset();
+        //destroyBuiltinAsset();
 
 
         m_lru                  = nullptr;

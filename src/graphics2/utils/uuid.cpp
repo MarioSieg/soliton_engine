@@ -9,7 +9,10 @@ namespace engine
 {
 	UUID buildUUID()
 	{
-		return uuids::to_string(uuids::uuid_system_generator{}());
+		static std::random_device randomDevice;
+		static std::mt19937 engine(randomDevice());
+		static uuids::uuid_random_generator gen{engine};
+		return uuids::to_string(gen());
 	}
 
     // Simple random machine 64 bit uuid generator.

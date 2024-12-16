@@ -8,6 +8,7 @@
 #include <functional>
 #include <string>
 #include <algorithm>
+#include <mutex>
 
 // Simple cVar system.
 
@@ -289,7 +290,7 @@ namespace engine
 			BaseType defaultValue,
 			BaseType currentValue)
 		{
-			std::unique_lock<std::shared_mutex> lock(m_lockMutex);
+			std::lock_guard<std::shared_mutex> lock(m_lockMutex);
 			CVarParameter* param = initCVar(name, description);
 			if (!param) 
 			{

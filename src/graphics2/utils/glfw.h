@@ -3,6 +3,7 @@
 #include <vulkan/vulkan.h>
 #include <GLFW/glfw3.h>
 #include <cstdint>
+#include <string>
 
 #include "math.h"
 #include "delegate.h"
