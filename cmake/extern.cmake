@@ -164,6 +164,32 @@ target_include_directories(soliton_engine PRIVATE src/graphics/imgui/imgui_colle
 add_subdirectory(extern/fast_float)
 target_include_directories(soliton_engine PRIVATE extern/fast_float/include)
 
+add_subdirectory(extern/utfcpp)
+target_include_directories(soliton_engine PRIVATE extern/utfcpp/source)
+
+add_subdirectory(extern/nameof)
+target_include_directories(soliton_engine PRIVATE extern/nameof/include)
+
+add_subdirectory(extern/cereal)
+target_include_directories(soliton_engine PRIVATE extern/cereal/include)
+
+add_subdirectory(extern/lz4/build/cmake)
+target_include_directories(soliton_engine PRIVATE extern/lz4/lib)
+target_link_libraries(soliton_engine lz4)
+
+# Allow to include GLSL common headers
+target_include_directories(soliton_engine PRIVATE engine_assets/shaders2)
+
+add_subdirectory(extern/json)
+target_include_directories(soliton_engine PRIVATE extern/json/single_include/nlohmann)
+
+add_subdirectory(extern/tinygltf)
+target_include_directories(soliton_engine PRIVATE extern/tinygltf)
+
+add_subdirectory(extern/inipp)
+target_include_directories(soliton_engine PRIVATE extern/inipp)
+
+
 ##################################################################################################
 # Libraries, which requires C++ exceptions and have no way to disable them
 ##################################################################################################
@@ -180,4 +206,11 @@ target_include_directories(soliton_engine PRIVATE extern/assimp/include)
 target_link_libraries(soliton_engine assimp)
 if (NOT WIN32)
     target_compile_options(assimp PRIVATE -fexceptions) # Assimp uses exceptions
+endif()
+
+add_subdirectory(extern/rttr)
+target_include_directories(soliton_engine PRIVATE extern/rttr/src)
+target_link_libraries(soliton_engine rttr_core)
+if (NOT WIN32)
+    target_compile_options(rttr_core PRIVATE -fexceptions) # rttr uses exceptions
 endif()
