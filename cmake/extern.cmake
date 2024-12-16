@@ -2,13 +2,11 @@ if (WIN32)
     target_link_libraries(soliton_engine ${CMAKE_CURRENT_SOURCE_DIR}/lib/amd64/windows/libluajit.lib)
 elseif(APPLE)
     target_link_libraries(soliton_engine ${CMAKE_CURRENT_SOURCE_DIR}/lib/arm64/osx/libluajit.a)
-    target_link_libraries(soliton_engine ${CMAKE_CURRENT_SOURCE_DIR}/lib/arm64/osx/Noesis.dylib)
     target_link_libraries(soliton_engine ${CMAKE_CURRENT_SOURCE_DIR}/lib/arm64/osx/libfmod.dylib)
     target_link_libraries(soliton_engine /Users/mariosieg/VulkanSDK/1.3.296.0/macOS/lib/libvulkan.1.dylib)
     target_include_directories(soliton_engine PRIVATE extern/fmod/osx/api/core/inc)
 else()
     target_link_libraries(soliton_engine ${CMAKE_CURRENT_SOURCE_DIR}/lib/amd64/linux/libluajit.a)
-    target_link_libraries(soliton_engine ${CMAKE_CURRENT_SOURCE_DIR}/lib/amd64/linux/libNoesis.so)
     target_link_libraries(soliton_engine ${CMAKE_CURRENT_SOURCE_DIR}/lib/amd64/linux/libfmod.so)
     target_include_directories(soliton_engine PRIVATE extern/fmod/linux/api/core/inc)
     target_link_libraries(soliton_engine tbb)
@@ -162,6 +160,9 @@ target_include_directories(soliton_engine PRIVATE src/graphics/imgui/imgui_colle
 target_include_directories(soliton_engine PRIVATE src/graphics/imgui/imgui_collections/implot)
 target_include_directories(soliton_engine PRIVATE src/graphics/imgui/imgui_collections/cimplot)
 target_include_directories(soliton_engine PRIVATE src/graphics/imgui/imgui_collections/imtexteditor)
+
+add_subdirectory(extern/fast_float)
+target_include_directories(soliton_engine PRIVATE extern/fast_float/include)
 
 ##################################################################################################
 # Libraries, which requires C++ exceptions and have no way to disable them

@@ -83,8 +83,8 @@ namespace soliton::imgui {
         config.MergeMode = true;
         config.DstFont = primaryFont;
         struct font_range final {
-            std::span<const std::uint8_t> data {};
-            std::array<char16_t, 3> ranges {};
+            eastl::span<const std::uint8_t> data {};
+            eastl::array<char16_t, 3> ranges {};
         };
 
         // Compute DPI scaling
@@ -123,7 +123,7 @@ namespace soliton::imgui {
     }
 
     auto context::submit_imgui(vk::CommandBuffer cmd_buf) -> void {
-        if (auto* dd = ImGui::GetDrawData()) [[likely]] {
+        if (auto* dd = ImGui::GetDrawData()) {
             ImGui_ImplVulkan_RenderDrawData(dd, cmd_buf);
         }
     }

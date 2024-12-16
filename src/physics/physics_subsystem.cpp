@@ -156,7 +156,7 @@ namespace soliton::physics {
         }
         m_static_bodies.clear();
     	filter.each([&](const com::transform& transform, const com::mesh_renderer& renderer) {
-            if (!renderer.meshes.empty()) [[likely]] {
+            if (!renderer.meshes.empty()) {
                 JPH::BodyCreationSettings ci {};
                 create_static_body(ci, transform, renderer);
                 m_static_bodies.emplace_back(bi.CreateAndAddBody(ci, JPH::EActivation::DontActivate));
@@ -194,12 +194,12 @@ namespace soliton::physics {
     }
 
     auto physics_subsystem::create_static_body(JPH::BodyCreationSettings& ci, const com::transform& transform, const com::mesh_renderer& renderer) -> void {
-        if (renderer.meshes.empty()) [[unlikely]] {
+        if (renderer.meshes.empty()) {
             log_warn("Mesh renderer has no meshes");
             return;
         }
         const auto* const mesh = renderer.meshes.front();
-        if (!mesh->get_collision_mesh()) [[unlikely]] {
+        if (!mesh->get_collision_mesh()) {
             log_warn("Mesh has no collision mesh");
             return;
         }

@@ -42,7 +42,7 @@ namespace soliton::graphics {
         }
 
         // start thread
-        m_thread = std::thread { [=, this] () -> void { thread_routine(); }};
+        m_thread = std::thread { [&] () -> void { thread_routine(); }};
     }
 
     render_thread::~render_thread() {
@@ -86,7 +86,7 @@ namespace soliton::graphics {
 
     auto render_thread::begin_thread_frame() -> bool {
         const std::int32_t signaled = m_shared_ctx.m_sig_render_subset.wait(true, m_num_threads);
-        if (signaled < 0) [[unlikely]] return false;
+        if (signaled < 0) return false;
 
         m_active_command_buffer = &m_command_buffers[vkb::ctx().get_current_concurrent_frame_idx()];
         m_active_command_buffer->reset();
@@ -140,7 +140,7 @@ namespace soliton::graphics {
     }
 
     auto render_thread_pool::begin_frame(const vk::CommandBufferInheritanceInfo* inheritance_info) -> void {
-        if (!m_num_threads) [[unlikely]] {
+        if (!m_num_threads) {
             return;
         }
         m_shared_ctx.inheritance_info = inheritance_info;
@@ -149,7 +149,7 @@ namespace soliton::graphics {
     }
 
     auto render_thread_pool::process_frame(vkb::command_buffer& primary_cmd) -> void {
-        if (!m_num_threads) [[unlikely]] return;
+        if (!m_num_threads) return;
         m_shared_ctx.m_sig_execute_command_buffers.wait(true, 1);
         auto* secondary_command_buffers = static_cast<vk::CommandBuffer*>(alloca(m_num_threads * sizeof(vk::CommandBuffer)));
         for (std::int32_t i = 0; i < m_num_threads; ++i) {

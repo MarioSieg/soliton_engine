@@ -44,14 +44,11 @@ namespace soliton::vkb {
     };
 
     template <typename T>
-    concept is_uniform_buffer = requires {
-        std::is_standard_layout_v<T>;
-        sizeof(T) % (4 * sizeof(float)) == 0;
-    };
-
-    template <typename T> requires is_uniform_buffer<T>
     class uniform_buffer : public buffer {
     public:
+        static_assert(std::is_standard_layout_v<T>);
+        static_assert(sizeof(T) % (4 * sizeof(float)) == 0);
+
         template <typename... Args>
         explicit uniform_buffer(
             const vk::BufferUsageFlags buffer_usage = vk::BufferUsageFlagBits::eUniformBuffer,
@@ -78,7 +75,7 @@ namespace soliton::vkb {
         auto set(const T& data) const noexcept -> void {
             *m_aligned_tmp = data;
             const auto offset = m_aligned_size * vkb::ctx().get_current_concurrent_frame_idx();
-            panic_assert((std::bit_cast<std::uintptr_t>(m_mapped) + offset) % vkb::dvc().get_physical_device_props().limits.minUniformBufferOffsetAlignment == 0);
+            panic_assert((reinterpret_cast<std::uintptr_t>(m_mapped) + offset) % vkb::dvc().get_physical_device_props().limits.minUniformBufferOffsetAlignment == 0);
             std::memcpy(static_cast<std::byte*>(m_mapped) + offset, m_aligned_tmp, sizeof(T));
             vmaFlushAllocation(m_allocator, m_allocation, offset, sizeof(T)); // Manual flush
         }

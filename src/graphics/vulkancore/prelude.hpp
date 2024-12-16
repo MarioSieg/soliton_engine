@@ -48,7 +48,7 @@ namespace soliton::vkb {
     }();
 #endif
 
-    [[nodiscard]] consteval auto get_alloc() noexcept -> const vk::AllocationCallbacks* {
+    [[nodiscard]] constexpr auto get_alloc() noexcept -> const vk::AllocationCallbacks* {
 #if USE_MIMALLOC
         return &s_vk_alloc;
 #else
@@ -58,13 +58,13 @@ namespace soliton::vkb {
 }
 
 #define vkcheck(f) \
-    if (const vk::Result rrr = (f); rrr != vk::Result::eSuccess) [[unlikely]] { \
+    if (const vk::Result rrr = (f); rrr != vk::Result::eSuccess) { \
         log_error("Vulkan error: {} -> " #f, string_VkResult(static_cast<VkResult>(rrr))); \
         panic("Vulkan error: {} -> " #f, string_VkResult(static_cast<VkResult>(rrr))); \
     }
 
 #define vkccheck(f) \
-    if (const VkResult rrr = (f); rrr != VK_SUCCESS) [[unlikely]] { \
+    if (const VkResult rrr = (f); rrr != VK_SUCCESS) { \
         log_error("Vulkan error: {} -> " #f, string_VkResult(rrr)); \
         panic("Vulkan error: {} -> " #f, string_VkResult(rrr)); \
     }

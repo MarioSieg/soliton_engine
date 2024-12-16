@@ -8,8 +8,8 @@
 #include "../material.hpp"
 
 namespace soliton::vkb {
-    static constinit std::atomic_uint32_t s_draw_call_count;
-    static constinit std::atomic_uint32_t s_vertex_count;
+    static std::atomic_uint32_t s_draw_call_count;
+    static std::atomic_uint32_t s_vertex_count;
 
     static auto validate_queue_type(const vk::QueueFlagBits flags) -> void {
         panic_assert(flags == vk::QueueFlagBits::eGraphics || flags == vk::QueueFlagBits::eCompute || flags == vk::QueueFlagBits::eTransfer);
@@ -119,7 +119,7 @@ namespace soliton::vkb {
 
     auto command_buffer::draw_mesh_with_materials(const graphics::mesh& mesh, const eastl::span<graphics::material* const> mats) -> void {
         bind_mesh_buffers(mesh);
-        if (mesh.get_primitives().size() > mats.size()) [[unlikely]] {
+        if (mesh.get_primitives().size() > mats.size()) {
             log_error("Not enough materials for mesh");
             return;
         }

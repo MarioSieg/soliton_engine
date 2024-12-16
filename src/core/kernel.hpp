@@ -5,15 +5,12 @@
 #include "subsystem.hpp"
 
 namespace soliton {
-    template <typename T, typename... Ar>
-    concept is_subsystem = std::conjunction_v<std::is_base_of<subsystem, T>, std::is_constructible<T, Ar...>>;
-
     class kernel final : public no_copy, public no_move {
     public:
         kernel(int argc, const char** argv, const char** $environ);
         ~kernel();
 
-        template <typename T, typename... Ar> requires is_subsystem<T, Ar...>
+        template <typename T, typename... Ar>
         auto install(Ar&&... args) -> eastl::shared_ptr<T> {
             stopwatch clock {};
             auto subsystem = eastl::make_shared<T>(std::forward<Ar>(args)...);

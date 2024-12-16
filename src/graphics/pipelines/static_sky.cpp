@@ -26,7 +26,7 @@ namespace soliton::graphics::pipelines {
     auto static_sky_pipeline::configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> bool {
         auto vs = shader_cache->get_shader(shader_variant{"skybox.vert", shader_stage::vertex});
         auto fs = shader_cache->get_shader(shader_variant{"skybox.frag", shader_stage::fragment});
-        if (!vs || !fs) [[unlikely]] return false;
+        if (!vs || !fs) return false;
         cfg.emplace_back(vs);
         cfg.emplace_back(fs);
         return true;
@@ -45,7 +45,7 @@ namespace soliton::graphics::pipelines {
     }
 
     auto static_sky_pipeline::configure_rasterizer(vk::PipelineRasterizationStateCreateInfo& cfg) -> bool {
-        if (!graphics_pipeline::configure_rasterizer(cfg)) [[unlikely]] return false;
+        if (!graphics_pipeline::configure_rasterizer(cfg)) return false;
         cfg.cullMode = vk::CullModeFlagBits::eBack;
         return true;
     }
@@ -65,7 +65,7 @@ namespace soliton::graphics::pipelines {
     }
 
     auto static_sky_pipeline::configure_depth_stencil(vk::PipelineDepthStencilStateCreateInfo& cfg) -> bool {
-        if (!graphics_pipeline::configure_depth_stencil(cfg)) [[unlikely]] return false;
+        if (!graphics_pipeline::configure_depth_stencil(cfg)) return false;
         cfg.depthTestEnable = vk::False;
         cfg.depthWriteEnable = vk::False;
         return true;

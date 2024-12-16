@@ -21,7 +21,7 @@ namespace soliton {
 
     #define panic_assert(expr) \
         do { \
-            if (!(expr)) [[unlikely]] { \
+            if (!(expr)) { \
                 ::soliton::panic("Assertion failed: {} in {}:{}", #expr, __FILE__, __LINE__); \
             } \
         } while (false)

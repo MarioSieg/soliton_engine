@@ -30,7 +30,7 @@ namespace soliton::scripting {
         static constexpr const char* k_start_hook = "__on_start__";
         static constexpr const char* k_tick_hook = "__on_tick__";
         static constexpr const char* k_engine_config_tab = "engine_cfg";
-        static inline constinit lua_State* m_L = nullptr;
+        static inline lua_State* m_L = nullptr;
         eastl::optional<luabridge::LuaRef> m_on_start {}; // Reference to __boot__.lua's on_start function
         eastl::optional<luabridge::LuaRef> m_on_tick {}; // Reference to __boot__.lua's on_tick function
     };

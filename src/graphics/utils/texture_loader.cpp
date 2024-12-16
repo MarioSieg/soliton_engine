@@ -164,12 +164,12 @@ namespace soliton::graphics {
         return align > alignof(std::max_align_t) ? mi_realloc_aligned(p, size, align) : mi_realloc(p, size);
     }
 
-    constinit texture_allocator s_texture_allocator {};
+    texture_allocator s_texture_allocator {};
 #else
     static bx::DefaultAllocator s_def_texture_allocator {};
 #endif
 
-    [[nodiscard]] consteval auto get_tex_alloc() noexcept -> bx::AllocatorI* {
+    [[nodiscard]] constexpr auto get_tex_alloc() noexcept -> bx::AllocatorI* {
 #if USE_MIMALLOC
         return &s_texture_allocator;
 #else
@@ -196,7 +196,7 @@ namespace soliton::graphics {
             is_cubemap,
             original->m_numMips > 1
         );
-        if (!image) [[unlikely]] {
+        if (!image) {
             log_error("Failed to allocate image for SIMD conversion");
             return false;
         }
@@ -204,7 +204,7 @@ namespace soliton::graphics {
         for (std::uint16_t side = 0; side < sides; ++side) {
             for (std::uint8_t lod = 0, num = original->m_numMips; lod < num; ++lod) {
                 bimg::ImageMip src_mip {};
-                if (bimg::imageGetRawData(*original, side, lod, original->m_data, original->m_size, src_mip)) [[likely]] {
+                if (bimg::imageGetRawData(*original, side, lod, original->m_data, original->m_size, src_mip)) {
                     bimg::ImageMip dst_mip {};
                     bimg::imageGetRawData(*image, side, lod, image->m_data, image->m_size, dst_mip);
                     const std::uint8_t* const src = src_mip.m_data;
@@ -242,13 +242,13 @@ namespace soliton::graphics {
         const auto now = eastl::chrono::high_resolution_clock::now();
         bimg::ImageContainer* original = image;
         if (k_enable_simd_cvt && original->m_format == bimg::TextureFormat::RGB8) { // User faster SIMD for conversion of common formats
-            if (!convert_rgb8_to_rgba8_cpu_simd(image, original, is_cubemap)) [[unlikely]] {
+            if (!convert_rgb8_to_rgba8_cpu_simd(image, original, is_cubemap)) {
                 log_error("Failed to convert image to fallback format using SIMD");
                 return;
             }
         } else {
             image = bimg::imageConvert(get_tex_alloc(), k_fallback_format, *original, true);
-            if (!image) [[unlikely]] {
+            if (!image) {
                 log_error("Failed to convert image to fallback format");
                 return;
             }
@@ -274,9 +274,9 @@ namespace soliton::graphics {
             ? desc.miplevel_count : 1;
         data.mip_copy_regions.reserve(n);
         std::size_t offset = 0;
-        const auto fetch = [&]<const bool is_cube>(const std::uint32_t lod, const std::uint32_t face) -> void {
+        const auto fetch = [&](bool is_cube, const std::uint32_t lod, const std::uint32_t face) -> void {
             bimg::ImageMip mip {};
-            if (!bimg::imageGetRawData(image, is_cube ? face : 0, lod, data.data, data.size, mip)) [[unlikely]] {
+            if (!bimg::imageGetRawData(image, is_cube ? face : 0, lod, data.data, data.size, mip)) {
                 log_warn("Failed to fetch texture raw data for mip level: {}, face: {}", lod, face);
                 return;
             }
@@ -297,17 +297,17 @@ namespace soliton::graphics {
         if (desc.is_cubemap)
             for (std::uint32_t face = 0; face < desc.array_size; ++face)
                 for (std::uint32_t i = 0; i < n; ++i)
-                    fetch.operator()<true>(i, face);
+                    fetch.operator()(true, i, face);
         else
             for (std::uint32_t i = 0; i < n; ++i)
-                fetch.operator()<false>(i, 0);
+                fetch.operator()(false, i, 0);
     }
 
     [[nodiscard]] static auto raw_parse_texture_generic(
         const eastl::span<const std::byte> buf,
         const eastl::function<auto (const texture_descriptor& info, const texture_data_supplier& data) -> void>& callback
     ) -> bool {
-        if (buf.empty() || buf.size() >= eastl::numeric_limits<std::uint32_t>::max()) [[unlikely]] {
+        if (buf.empty() || buf.size() >= eastl::numeric_limits<std::uint32_t>::max()) {
             log_error("Empty buffer, or buffer too large");
             return false;
         }
@@ -317,7 +317,7 @@ namespace soliton::graphics {
             buf.data(),
             static_cast<std::uint32_t>(buf.size())
         );
-        if (!image) [[unlikely]] {
+        if (!image) {
             log_error("Failed to parse image");
             return false;
         }

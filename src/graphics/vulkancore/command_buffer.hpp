@@ -12,14 +12,6 @@ namespace soliton::graphics {
 }
 
 namespace soliton::vkb {
-    template <typename T>
-    concept is_push_constant_pod = requires {
-        std::is_standard_layout_v<T>;
-        std::is_trivial_v<T>;
-        sizeof(T) <= 128; // TODO: Some GPUs have a limit of 256 bytes
-        alignof(T) % 16 == 0;
-    };
-
     class command_buffer final : public no_copy {
     public:
         explicit command_buffer(
@@ -65,8 +57,12 @@ namespace soliton::vkb {
 
         auto push_consts_start() -> void;
         auto push_consts_raw(vk::ShaderStageFlagBits stage, const void* buf, std::size_t size) -> void;
-        template <typename T> requires is_push_constant_pod<T>
+        template <typename T>
         auto push_consts(const vk::ShaderStageFlagBits stage, const T& data) -> void {
+            static_assert(std::is_standard_layout_v<T>);
+            static_assert(std::is_trivial_v<T>);
+            //static_assert(sizeof(T) <= 128);
+            static_assert(alignof(T) % 16 == 0);
             push_consts_raw(stage, &data, sizeof(T));
         }
 

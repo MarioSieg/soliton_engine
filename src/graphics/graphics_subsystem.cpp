@@ -26,8 +26,8 @@ namespace soliton::graphics {
     static const system_variable<std::int64_t> sv_msaa_samples {"renderer.msaa_samples", {4}};
     static const system_variable<std::int64_t> sv_max_render_threads {"cpu.render_threads", {2}};
 
-    static constinit std::uint32_t s_num_draw_calls_prev = 0;
-    static constinit std::uint32_t s_num_draw_verts_prev = 0;
+    static std::uint32_t s_num_draw_calls_prev = 0;
+    static std::uint32_t s_num_draw_verts_prev = 0;
 
     graphics_subsystem::graphics_subsystem() : subsystem{"Graphics"} {
         log_info("Initializing graphics subsystem");
@@ -72,7 +72,6 @@ namespace soliton::graphics {
         shared_buffers::get().reset();
 
         m_imgui_context.reset();
-        m_noesis_context.reset();
 
         m_pipeline_cache.reset();
         m_render_thread_pool.reset();
@@ -104,7 +103,7 @@ namespace soliton::graphics {
         if (!main_cam.is_valid()
             || !main_cam.is_alive()
             || !main_cam.has<const com::camera>()
-            || !main_cam.has<const com::transform>()) [[unlikely]] {
+            || !main_cam.has<const com::transform>()) {
                 log_error("No camera found in scene");
                 return;
             }
@@ -168,7 +167,7 @@ namespace soliton::graphics {
         auto& num_draw_verts = const_cast<std::atomic_uint32_t&>(vkb::command_buffer::get_total_draw_verts());
         s_num_draw_verts_prev = num_draw_calls.exchange(0, std::memory_order_relaxed);
         s_num_draw_calls_prev = num_draw_verts.exchange(0, std::memory_order_relaxed);
-        if (m_reload_pipelines_next_frame) [[unlikely]] {
+        if (m_reload_pipelines_next_frame) {
             vkcheck(vkb::vkdvc().waitIdle());
             load_all_pipelines(false);
             vkcheck(vkb::vkdvc().waitIdle());
@@ -200,7 +199,7 @@ namespace soliton::graphics {
             const std::size_t n = it.count;
             m_render_data.emplace_back(eastl::span{transforms, n}, eastl::span{renderers, n});
         }
-        if (m_cmd) [[likely]] { // TODO: refractor
+        if (m_cmd) { // TODO: refractor
             m_render_thread_pool->begin_frame(&m_inheritance_info);
             m_render_thread_pool->process_frame(*m_cmd);
             scene.readonly_end();
@@ -227,7 +226,6 @@ namespace soliton::graphics {
 
     auto graphics_subsystem::render_uis() -> void {
         m_cmd->begin();
-        m_noesis_context->render_offscreen(*m_cmd);
 
         auto w = static_cast<float>(vkb::ctx().get_width());
         auto h = static_cast<float>(vkb::ctx().get_height());
@@ -237,7 +235,6 @@ namespace soliton::graphics {
         m_cmd->set_scissor(w, h);
 
         vkb::ctx().begin_render_pass(*m_cmd, vkb::ctx().get_ui_render_pass(), vk::SubpassContents::eInline); // TODO refractor
-        m_noesis_context->render_onscreen(vkb::ctx().get_ui_render_pass());
         m_imgui_context->submit_imgui(*m_cmd);
         m_cmd->end_render_pass();
         m_cmd->end();

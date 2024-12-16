@@ -42,7 +42,7 @@ namespace soliton::graphics {
         std::string& out_error
     ) -> bool {
         const shaderc::PreprocessedSourceCompilationResult result = m_compiler.PreprocessGlsl(source, kind, source_name.c_str(), options);
-        if (result.GetCompilationStatus() != shaderc_compilation_status_success) [[unlikely]] {
+        if (result.GetCompilationStatus() != shaderc_compilation_status_success) {
             std::stringstream error {};
             error << source_name << ": " << get_shaderc_err(result.GetCompilationStatus());
             if (const auto msg = result.GetErrorMessage(); !msg.empty()) {
@@ -66,7 +66,7 @@ namespace soliton::graphics {
         std::string& out_error
     ) -> bool {
         const shaderc::AssemblyCompilationResult result = m_compiler.CompileGlslToSpvAssembly( source, kind, source_name.c_str(), options);
-        if (result.GetCompilationStatus() != shaderc_compilation_status_success) [[unlikely]] {
+        if (result.GetCompilationStatus() != shaderc_compilation_status_success) {
             std::stringstream error {};
             error << source_name << ": " << get_shaderc_err(result.GetCompilationStatus());
             if (const auto msg = result.GetErrorMessage(); !msg.empty()) {
@@ -90,7 +90,7 @@ namespace soliton::graphics {
         std::string& out_error
     ) -> bool {
         const shaderc::SpvCompilationResult result = m_compiler.CompileGlslToSpv(source, kind, source_name.c_str(), options);
-        if (result.GetCompilationStatus() != shaderc_compilation_status_success) [[unlikely]] {
+        if (result.GetCompilationStatus() != shaderc_compilation_status_success) {
             std::stringstream error {};
             error << source_name << ": " << get_shaderc_err(result.GetCompilationStatus());
             if (const auto msg = result.GetErrorMessage(); !msg.empty()) {
@@ -137,7 +137,7 @@ namespace soliton::graphics {
         assetmgr::with_primary_accessor_lock([&](assetmgr::asset_accessor &acc) {
             success = acc.load_txt_file(variant.get_path().c_str(), source_code_glsl);
         });
-        if (!success) [[unlikely]] {
+        if (!success) {
             return {nullptr, {fmt::format("Failed to load shader file: {}", variant.get_path()).c_str()}};
         }
 
@@ -166,7 +166,7 @@ namespace soliton::graphics {
         const std::string file_name = std::filesystem::path {variant.get_path().c_str()}.filename().string();
         std::string src = source_code_glsl.c_str();
         std::string error {};
-        if (!preprocess_shader(file_name, kind, src, options, src, error)) [[unlikely]] {
+        if (!preprocess_shader(file_name, kind, src, options, src, error)) {
             return {nullptr, error.c_str()};
         }
 
@@ -174,21 +174,21 @@ namespace soliton::graphics {
         auto shader = eastl::make_shared<proxy>();
 
         eastl::vector<std::uint32_t> bytecode {};
-        if (!compile_file_to_bin(file_name, kind, src, options, bytecode, error) || bytecode.empty()) [[unlikely]] {
+        if (!compile_file_to_bin(file_name, kind, src, options, bytecode, error) || bytecode.empty()) {
             return {nullptr, error.c_str()};
         }
 
         vk::ShaderModuleCreateInfo create_info {};
         create_info.codeSize = bytecode.size() * sizeof(std::uint32_t);
         create_info.pCode = bytecode.data();
-        if (vk::Result::eSuccess != vkb::ctx().get_device().get_logical_device().createShaderModule(&create_info, vkb::get_alloc(), &shader->m_module)) [[unlikely]] {
+        if (vk::Result::eSuccess != vkb::ctx().get_device().get_logical_device().createShaderModule(&create_info, vkb::get_alloc(), &shader->m_module)) {
             return {nullptr, error.c_str()};
         }
 
         if (variant.get_reflect()) {
             SpvReflectShaderModule module;
             SpvReflectResult result = spvReflectCreateShaderModule(bytecode.size() * sizeof(std::uint32_t), bytecode.data(), &module);
-            if (result == SPV_REFLECT_RESULT_SUCCESS) [[likely]] {
+            if (result == SPV_REFLECT_RESULT_SUCCESS) {
                 shader->m_reflection = module;
             } else {
                 log_error("Failed to reflect shader: {}", file_name);
@@ -202,7 +202,7 @@ namespace soliton::graphics {
         }
         if (variant.get_keep_assembly()) {
             eastl::string assembly {};
-            if (!compile_file_to_assembly(file_name, kind, src, options, assembly, error)) [[unlikely]] {
+            if (!compile_file_to_assembly(file_name, kind, src, options, assembly, error)) {
                 return {nullptr, error.c_str()};
             }
             shader->m_assembly = std::move(assembly);
@@ -238,7 +238,7 @@ namespace soliton::graphics {
             m_compiler.emplace();
         }
         auto [shader, error] = m_compiler->compile(eastl::move(variant));
-        if (!shader) [[unlikely]] {
+        if (!shader) {
             log_error("{}", error);
             return nullptr;
         }

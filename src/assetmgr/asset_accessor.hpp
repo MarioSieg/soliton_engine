@@ -3,6 +3,7 @@
 #pragma once
 
 #include <atomic>
+#include <cstdint>
 #include <cstddef>
 
 #include <EASTL/vector.h>
@@ -39,7 +40,7 @@ namespace soliton::assetmgr {
         [[nodiscard]] static auto accessors_online() noexcept -> std::uint32_t { return s_accessors_online.load(std::memory_order_relaxed); }
 
     private:
-        static inline constinit std::atomic_uint32_t s_accessors_online, s_accessor_id_gen;
+        static inline std::atomic_uint32_t s_accessors_online, s_accessor_id_gen;
         const std::uint32_t m_id;
         std::uint32_t m_num_request {};
         std::uint32_t m_num_failed_requests {};
