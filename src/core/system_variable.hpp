@@ -6,15 +6,6 @@
 
 namespace soliton {
     template <typename T>
-    concept sv_supported_type = requires {
-        requires std::is_default_constructible_v<T>;
-        requires std::is_same_v<bool, T> ||
-            std::is_same_v<float, T> ||
-            std::is_same_v<std::int64_t, T> ||
-            std::is_same_v<eastl::string, T>;
-    };
-
-    template <typename T>
     struct sv_supported_type_name {};
 
     template <> struct sv_supported_type_name<bool> { static constexpr const char* value = "bool"; };
@@ -40,7 +31,7 @@ namespace soliton {
 
     // System variable class. Configurable at runtime via INI or command line.
     // Supported types: bool, float, int64_t, string.
-    template <typename T> requires sv_supported_type<T>
+    template <typename T>
     class system_variable final {
     public:
         constexpr system_variable(
@@ -51,9 +42,9 @@ namespace soliton {
         [[nodiscard]] auto operator()() const -> T {
             std::lock_guard lock {detail::sv_mutex};
             auto& reg = detail::sv_registry;
-            if (reg.contains(m_name)) [[likely]] { // If the variable is already registered, return it.
+            if (reg.contains(m_name)) { // If the variable is already registered, return it.
                 detail::value& val = reg[m_name];
-                if (eastl::holds_alternative<T>(val)) [[likely]] {
+                if (eastl::holds_alternative<T>(val)) {
                     return eastl::get<T>(val);
                 } else {
                     panic("System variable '{}' is not of type '{}'", m_name, sv_supported_type_name<T>::value);

@@ -5,7 +5,7 @@
 
 namespace soliton::com {
     auto audio_source::play() -> void {
-        if (!clip) [[unlikely]] {
+        if (!clip) {
             log_warn("no audio clip to play");
             return;
         }

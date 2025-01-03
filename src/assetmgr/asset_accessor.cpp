@@ -15,9 +15,9 @@
 #include <assetsys.h>
 
 namespace soliton::assetmgr {
-    extern constinit std::atomic_size_t s_asset_requests;
-    extern constinit std::atomic_size_t s_asset_requests_failed;
-    extern constinit std::atomic_size_t s_total_bytes_loaded;
+    extern std::atomic_size_t s_asset_requests;
+    extern std::atomic_size_t s_asset_requests_failed;
+    extern std::atomic_size_t s_total_bytes_loaded;
 
     [[nodiscard]] static constexpr auto asset_sys_err_info(const assetsys_error_t error) noexcept -> const char* {
         switch (error) {
@@ -54,7 +54,7 @@ namespace soliton::assetmgr {
             log_info("Mounting asset root '{}' -> '{}", fs.data(), vfs.data());
             if (assetsys_error_t err = assetsys_mount(m_sys, fs.data(), vfs.data()); err != ASSETSYS_SUCCESS) { // Attempt to mount dir first
                 const auto lupack_file = fmt::format("{}.lupack", fs.data());
-                if (err = assetsys_mount(m_sys, lupack_file.c_str(), vfs.data()); err != ASSETSYS_SUCCESS) [[unlikely]] { // Attempt to mount LUPACK file now
+                if (err = assetsys_mount(m_sys, lupack_file.c_str(), vfs.data()); err != ASSETSYS_SUCCESS) { // Attempt to mount LUPACK file now
                     panic("Failed to mount asset root (PFS or VFS) '{}' / '{} to '{}: {}", fs, lupack_file, vfs, asset_sys_err_info(err)); // Panic if both failed
                 }
             }
@@ -116,21 +116,21 @@ namespace soliton::assetmgr {
         ++num_requests;
         s_asset_requests.fetch_add(1, std::memory_order_relaxed);
         const simdutf::encoding_type encoding = simdutf::autodetect_encoding(vpath, std::strlen(vpath));
-        if (encoding != simdutf::encoding_type::UTF8 && encoding != simdutf::encoding_type::unspecified) [[unlikely]] {
+        if (encoding != simdutf::encoding_type::UTF8 && encoding != simdutf::encoding_type::unspecified) {
             log_error("File '{}' is not UTF-8 encoded", vpath);
             s_asset_requests_failed.fetch_add(1, std::memory_order_relaxed);
             ++num_failed_requests;
             return false;
         }
         assetsys_file_t info {};
-        if (const assetsys_error_t err = assetsys_file(m_sys, vpath, &info); err != ASSETSYS_SUCCESS) [[unlikely]] {
+        if (const assetsys_error_t err = assetsys_file(m_sys, vpath, &info); err != ASSETSYS_SUCCESS) {
             log_error("Failed to load file '{}': {}", vpath, asset_sys_err_info(err));
             s_asset_requests_failed.fetch_add(1, std::memory_order_relaxed);
             ++num_failed_requests;
             return false;
         }
         const int size = assetsys_file_size(m_sys, info);
-        if (!size) [[unlikely]] {
+        if (!size) {
             log_error("File '{}' is empty", vpath);
             s_asset_requests_failed.fetch_add(1, std::memory_order_relaxed);
             ++num_failed_requests;
@@ -141,7 +141,7 @@ namespace soliton::assetmgr {
         s_total_bytes_loaded.fetch_add(size, std::memory_order_relaxed);
         int loaded_size = 0;
         if (const assetsys_error_t err = assetsys_file_load(m_sys, info, &loaded_size, dat.data(), size);
-                err != ASSETSYS_SUCCESS || loaded_size != size) [[unlikely]] {
+                err != ASSETSYS_SUCCESS || loaded_size != size) {
             log_error("Failed to read file '{}': {}", vpath, asset_sys_err_info(err));
             s_asset_requests_failed.fetch_add(1, std::memory_order_relaxed);
             ++num_failed_requests;

@@ -12,6 +12,7 @@ namespace soliton::platform {
     static const system_variable<std::int64_t> sv_default_height {"window.default_height", {1080}};
     static const system_variable<std::int64_t> sv_min_width {"window.min_width", {640}};
     static const system_variable<std::int64_t> sv_min_height {"window.min_height", {480}};
+    static const system_variable<bool> sv_fullscreen {"window.fullscreen", true};
     static const system_variable<eastl::string> sv_window_icon {"window.icon", {"/RES/icons/logo.png"}};
 
     static auto proxy_resize_hook(GLFWwindow* const window, const int w, const int h) -> void {
@@ -46,6 +47,9 @@ namespace soliton::platform {
     }
 
     void platform_subsystem::on_start(scene&) {
+        if (sv_fullscreen()) {
+            m_main_window->enter_fullscreen();
+        }
         m_main_window->show();
         m_main_window->focus();
     }

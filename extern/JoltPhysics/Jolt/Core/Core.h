@@ -6,7 +6,7 @@
 
 // Jolt library version
 #define JPH_VERSION_MAJOR 5
-#define JPH_VERSION_MINOR 1
+#define JPH_VERSION_MINOR 2
 #define JPH_VERSION_PATCH 1
 
 // Determine which features the library was compiled with
@@ -308,6 +308,7 @@
 	JPH_CLANG_SUPPRESS_WARNING("-Wgnu-zero-variadic-macro-arguments")							\
 	JPH_CLANG_SUPPRESS_WARNING("-Wdocumentation-unknown-command")								\
 	JPH_CLANG_SUPPRESS_WARNING("-Wctad-maybe-unsupported")										\
+	JPH_CLANG_SUPPRESS_WARNING("-Wswitch-default")												\
 	JPH_CLANG_13_PLUS_SUPPRESS_WARNING("-Wdeprecated-copy")										\
 	JPH_CLANG_13_PLUS_SUPPRESS_WARNING("-Wdeprecated-copy-with-dtor")							\
 	JPH_CLANG_16_PLUS_SUPPRESS_WARNING("-Wunsafe-buffer-usage")									\
@@ -424,7 +425,6 @@ JPH_SUPPRESS_WARNINGS_STD_END
 JPH_NAMESPACE_BEGIN
 
 // Commonly used STL types
-using std::pair;
 using std::min;
 using std::max;
 using std::abs;
@@ -434,17 +434,11 @@ using std::floor;
 using std::trunc;
 using std::round;
 using std::fmod;
-using std::swap;
-using std::size;
-using std::string;
 using std::string_view;
 using std::function;
 using std::numeric_limits;
 using std::isfinite;
 using std::isnan;
-using std::is_trivial;
-using std::is_trivially_constructible;
-using std::is_trivially_destructible;
 using std::ostream;
 using std::istream;
 

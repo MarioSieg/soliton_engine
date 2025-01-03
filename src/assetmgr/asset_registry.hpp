@@ -10,7 +10,7 @@ namespace soliton::assetmgr {
     using interop_asset_id = std::uint32_t; /* Asset ID represented in LUA */
     constexpr interop_asset_id invalid_asset_id = 0x7fffffffu;
 
-    template <typename  T> requires is_asset<T>
+    template <typename T>
     class asset_registry final {
     public:
         explicit asset_registry(std::size_t capacity = 32) {
@@ -30,7 +30,7 @@ namespace soliton::assetmgr {
                     = to_string(uuid).c_str(); // Use UUID as path
                 path = asset->get_asset_path();
             }
-            if (const auto it = m_loaded.find(path); it != m_loaded.end()) [[likely]] {
+            if (const auto it = m_loaded.find(path); it != m_loaded.end()) {
                 T* const loaded = &*it->second;
                 panic_assert(loaded != nullptr);
                 return loaded;
@@ -40,17 +40,18 @@ namespace soliton::assetmgr {
             return p;
         }
 
-        [[nodiscard]] auto load(eastl::string&& path) -> T* {
+        template <typename... Args>
+        [[nodiscard]] auto load(eastl::string&& path, Args&&... args) -> T* {
             if (path.empty()) {
                 log_error("Cannot load asset with empty path");
                 return nullptr;
             }
-            if (const auto it = m_loaded.find(path); it != m_loaded.end()) [[likely]] {
+            if (const auto it = m_loaded.find(path); it != m_loaded.end()) {
                 return &*it->second;
             }
             eastl::string_view path_view { path };
-            auto asset = eastl::make_unique<T>(eastl::move(path));
-            if (!asset) [[unlikely]] {
+            auto asset = eastl::make_unique<T>(eastl::move(path), eastl::forward<Args>(args)...);
+            if (!asset) {
                 log_error("Failed to load asset from path: {}", path_view);
                 return nullptr;
             }
@@ -65,7 +66,7 @@ namespace soliton::assetmgr {
         }
 
         [[nodiscard]] auto operator[](const eastl::string_view path) const -> T* {
-            if (const auto it = m_loaded.find(path); it != m_loaded.end()) [[likely]] {
+            if (const auto it = m_loaded.find(path); it != m_loaded.end()) {
                 return &*m_loaded[it->second];
             }
             return nullptr;
@@ -82,9 +83,10 @@ namespace soliton::assetmgr {
         public:
             explicit constexpr lua_interop(asset_registry& host) : host{host} {}
 
-            [[nodiscard]] auto load(eastl::string&& path) -> interop_asset_id {
-                T* asset = host.load(eastl::move(path));
-                if (!asset) [[unlikely]] {
+            template <typename... Args>
+            [[nodiscard]] auto load(eastl::string&& path, Args&&... args) -> interop_asset_id {
+                T* asset = host.load(eastl::move(path), eastl::forward<Args>(args)...);
+                if (!asset) {
                     return invalid_asset_id;
                 }
                 std::size_t id = all.size();
@@ -94,7 +96,7 @@ namespace soliton::assetmgr {
             }
 
             [[nodiscard]] auto operator[](const interop_asset_id id) const -> T* {
-                if (id >= all.size()) [[unlikely]] {
+                if (id >= all.size()) {
                     log_warn("Asset ID {} is out of bounds", id);
                     return nullptr;
                 }

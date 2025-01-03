@@ -50,7 +50,7 @@ namespace soliton::physics {
             shape_type::mesh,
             new JPH::MeshShape{JPH::MeshShapeSettings{verts, triangles}, result}
         };
-        if (!result.IsValid()) [[unlikely]] {
+        if (!result.IsValid()) {
             if (result.HasError()) {
                 log_error("Failed to create mesh collider: {}", result.GetError());
             }

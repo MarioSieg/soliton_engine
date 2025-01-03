@@ -6,7 +6,7 @@ local ffi = require 'ffi'
 local jit = require 'jit'
 local bit = require 'bit'
 local ui = require 'imgui.imgui'
-local style = require 'imgui.style'
+local style = require 'editor.style'
 local app = require 'app'
 local time = require 'time'
 local debugdraw = require 'debugdraw'
@@ -117,12 +117,6 @@ local editor = {
         gizmo_snap_step = ffi.new('float[1]', 0.1),
         active_debug_mode = ffi.new('int[1]', debug_mode.none)
     },
-    serialized_config = {
-        general = {
-            prev_scene_location = '',
-            prev_project_location = '',
-        }
-    },
     editor_camera = require 'editor.camera',
     dock_id = nil,
     active_project = nil,
@@ -178,12 +172,16 @@ function editor:reset_ui_layout()
     end
 end
 
-function editor:load_scene(file)
+function editor:load_scene(file, import)
     entity_list_view.selected_entity = nil
     if file then
-        scene.load(file)
+        if import then
+            scene.import_external(file)
+        else
+            scene.load(file)
+        end
     else
-        scene.new('Untitled scene')
+        scene.new('Untitled Scene')
     end
     local main_camera = scene.spawn('__editor_camera__') -- spawn editor editor_camera
     main_camera:add_flag(entity_flags.hidden + entity_flags.transient) -- hide and don't save
@@ -241,9 +239,8 @@ function editor:draw_main_menu_bar()
                 ui.PopID()
             end
             if ui.MenuItem(icons.i_folder_open .. ' Open project...') then
-                local selected_file = app.utils.open_file_dialog('Soliton Projects', 'lupro', self.serialized_config.general.prev_project_location)
+                local selected_file = app.utils.open_file_dialog('Soliton Projects', 'lupro', '')
                 if selected_file and lfs.attributes(selected_file) then
-                    self.serialized_config.general.prev_project_location = selected_file:match("(.*[/\\])")
                     local proj = project:open(selected_file)
                     print('Opened project: ' .. proj.full_path)
                     if self.active_project then -- unload previous project
@@ -255,14 +252,25 @@ function editor:draw_main_menu_bar()
                     collectgarbage_full_cycle()
                 end
             end
-            if ui.MenuItem(icons.i_plus_circle .. ' New scene') then
-                self:load_scene(nil)
+            if ui.MenuItem(icons.i_file_alt .. ' New Scene') then
+                self:load_scene(nil, false)
             end
-            if ui.MenuItem(icons.i_file_import .. ' Open scene') then
-                local selected_file = app.utils.open_file_dialog('3D Scenes', mesh_filter, self.serialized_config.general.prev_scene_location)
+            if ui.MenuItem(icons.i_file_export .. ' Save Scene') then
+                local selected_file = app.utils.save_file_dialog('Soliton Scenes', 'soliton', '', 'scene.soliton')
+                if selected_file then
+                    scene.save(selected_file)
+                end
+            end
+            if ui.MenuItem(icons.i_file_import .. ' Open Scene') then
+                local selected_file = app.utils.open_file_dialog('Soliton Scenes', 'soliton', '')
                 if selected_file and lfs.attributes(selected_file) then
-                    self.serialized_config.general.prev_scene_location = selected_file:match("(.*[/\\])")
-                    self:load_scene(selected_file)
+                    self:load_scene(selected_file, false)
+                end
+            end
+            if ui.MenuItem(icons.i_file_download .. ' Import Scene from Mesh') then
+                local selected_file = app.utils.open_file_dialog('3D Scenes', mesh_filter, '')
+                if selected_file and lfs.attributes(selected_file) then
+                    self:load_scene(selected_file, true)
                 end
             end
             if ui.MenuItem(icons.i_portal_exit .. ' Exit') then
@@ -375,7 +383,7 @@ function editor:draw_main_menu_bar()
         ui.PushStyleColor_U32(ffi.C.ImGuiCol_Button, 0)
         ui.PushStyleColor_U32(ffi.C.ImGuiCol_BorderShadow, 0)
         ui.PushStyleColor_U32(ffi.C.ImGuiCol_Border, 0)
-        if ui.SmallButton(self.gizmos.gizmo_mode == debugdraw.gizmo_mode.local_space and icons.i_house or icons.i_globe) then
+        if ui.Button(self.gizmos.gizmo_mode == debugdraw.gizmo_mode.local_space and icons.i_house or icons.i_globe) then
             self.gizmos.gizmo_mode = band(self.gizmos.gizmo_mode + 1, 1)
         end
         ui.PopStyleColor(3)
@@ -410,7 +418,7 @@ function editor:draw_main_menu_bar()
         ui.PushStyleColor_U32(ffi.C.ImGuiCol_Button, 0)
         ui.PushStyleColor_U32(ffi.C.ImGuiCol_BorderShadow, 0)
         ui.PushStyleColor_U32(ffi.C.ImGuiCol_Border, 0)
-        if ui.SmallButton(self.is_ingame and (icons.i_stop_circle .. ' Stop') or (icons.i_play_circle .. ' Play')) then
+        if ui.Button(self.is_ingame and (icons.i_stop_circle .. ' Stop') or (icons.i_play_circle .. ' Play')) then
             self:toggle_game_mode()
         end
         if ui.IsItemHovered() then
@@ -616,7 +624,7 @@ function editor:draw_ingame_overlay()
 end
 
 function editor:draw_tools()
-    self.dock_id = ui.DockSpaceOverViewport(ui.GetMainViewport(), ffi.C.ImGuiDockNodeFlags_PassthruCentralNode)
+    self.dock_id = ui.DockSpaceOverViewport(0, ui.GetMainViewport(), ffi.C.ImGuiDockNodeFlags_PassthruCentralNode)
     if restore_layout_guard then
         restore_layout_guard = false
         self:reset_ui_layout()
@@ -670,6 +678,6 @@ end
 
 style.setup()
 
-editor:load_scene()
+editor:load_scene(nil, false)
 
 return editor

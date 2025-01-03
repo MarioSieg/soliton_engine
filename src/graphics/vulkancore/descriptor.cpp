@@ -39,7 +39,7 @@ namespace soliton::vkb {
             m_used_pools.emplace_back(m_current_pool);
             alloc_info.descriptorPool = m_current_pool;
             result = vkb::vkdvc().allocateDescriptorSets(&alloc_info, &set);
-            if (result == vk::Result::eSuccess) [[likely]] {
+            if (result == vk::Result::eSuccess) {
                 return true;
             }
         }
@@ -158,7 +158,7 @@ namespace soliton::vkb {
         layout_info.bindingCount = static_cast<std::uint32_t>(m_bindings.size());
         layout_info.pBindings = m_bindings.data();
         ret_layout = m_cache->create_layout(layout_info);
-        if (!m_allocator->allocate(ret_set, ret_layout)) [[unlikely]] {
+        if (!m_allocator->allocate(ret_set, ret_layout)) {
             return false;
         }
         eastl::fixed_vector<vk::WriteDescriptorSet, 16> writes {};

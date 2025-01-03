@@ -8,13 +8,13 @@
 namespace soliton::assetmgr {
     static eastl::optional<asset_accessor> s_primary_accessor {};
     static std::mutex s_mtx {};
-    constinit std::atomic_size_t s_asset_requests = 0;
-    constinit std::atomic_size_t s_asset_requests_failed = 0;
-    constinit std::atomic_size_t s_total_bytes_loaded = 0;
-    static constinit std::atomic_bool s_is_initialized = false;
+    std::atomic_size_t s_asset_requests = 0;
+    std::atomic_size_t s_asset_requests_failed = 0;
+    std::atomic_size_t s_total_bytes_loaded = 0;
+    static std::atomic_bool s_is_initialized = false;
 
     auto init() -> void {
-        if (s_is_initialized.load(std::memory_order_relaxed)) [[unlikely]] {
+        if (s_is_initialized.load(std::memory_order_relaxed)) {
             log_error("Asset manager already initialized");
             return;
         }

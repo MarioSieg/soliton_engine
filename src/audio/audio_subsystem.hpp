@@ -12,7 +12,7 @@
 
 namespace soliton::audio {
     #define fmod_check(f) \
-        if (const FMOD_RESULT rrr = (f); rrr != FMOD_OK) [[unlikely]] { \
+        if (const FMOD_RESULT rrr = (f); rrr != FMOD_OK) { \
             panic("Audio engine error: {} -> " #f, FMOD_ErrorString(rrr)); \
         }
 
@@ -27,6 +27,6 @@ namespace soliton::audio {
         virtual auto on_post_tick() -> void override;
         auto set_audio_listener_transform(const com::transform& transform) noexcept -> void;
 
-        static inline constinit FMOD::System* m_system = nullptr;
+        static inline FMOD::System* m_system = nullptr;
     };
 }

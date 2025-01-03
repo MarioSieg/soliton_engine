@@ -15,6 +15,13 @@ lua_include_dirs = {
     'engine_assets/scripts/lib'
 }
 
+-- Some Lua config vars, maybe move to a config file later or to engine.ini
+local enable_jit = true -- Enable JIT
+local enable_jit_disasm = false -- Enable JIT disassembly into jit.log file
+local enable_variable_gc_stepping = false -- Enable variable GC stepping
+local gc_target_fps = 144 -- Target FPS for GC stepping
+local gc_time_stepping_step_limit = 0.001 -- Maximum time per frame for GC stepping
+
 jit.off()
 for _, path in ipairs(lua_include_dirs) do
     package.path = string.format('%s;%s/?.lua', package.path, path)
@@ -29,16 +36,17 @@ function panic(msg)
 end
 
 require 'system.extensions'
-require 'config.engine'
-if engine_cfg['system']['enable_jit'] == true then
+
+if enable_jit == true then
     jit.on() -- Enable JIT
     jit.opt.start('+fma') -- enable FMA for better performance
-    if engine_cfg['system']['enable_jit_disasm'] then
+    if enable_jit_disasm then
         require('jit.dump').on('m', 'jit.log')
     end
 else
     print('! JIT is disabled')
 end
+
 print(string.format('%s %s %s', jit.version, jit.os, jit.arch))
 print('JIT active ->')
 print(jit.status())
@@ -89,18 +97,17 @@ end
 
 local clock = os.clock
 local gc_clock = clock()
-local cfg = engine_cfg['system']
 
 function __on_tick__()
     invoke_hooks(hooks, tick_hook_id)
-    if cfg['auto_gc_time_stepping'] then
+    if enable_variable_gc_stepping then
         local diff = clock() - gc_clock
-        local target = 1.0 / max(cfg['target_fps'], 1.0)
+        local target = 1.0 / max(gc_target_fps, 1.0)
         local delta = target - diff
-        local lim = cfg['auto_gc_time_stepping_step_limit']
+        local lim = gc_time_stepping_step_limit
         if delta > lim then
             local done = false
-            -- -- until garbage is all collected or further collection would exceed the threshold
+            -- until garbage is all collected or further collection would exceed the threshold
             while not done and target - diff > lim do
                 done = collectgarbage('step', 1)
                 diff = clock() - gc_clock

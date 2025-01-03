@@ -26,12 +26,9 @@ execute_process(
 	OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET
 )
 
-# read version(100) from bgfx.idl
-file(READ "${BGFX_DIR}/scripts/bgfx.idl" BGFX_IDL)
-string(REGEX MATCH "version\\(([^\)]+)\\)" BGFX_API_VERSION ${BGFX_IDL})
-set(BGFX_API_VERSION ${CMAKE_MATCH_1})
-set(BGFX_REV_NUMBER ${GIT_REV_COUNT})
-set(BGFX_REV ${GIT_REV})
+set(BGFX_API_VERSION 1)
+set(BGFX_REV_NUMBER 1)
+set(BGFX_REV 1)
 
 # set project specific versions
 set(PROJECT_VERSION 1.${BGFX_API_VERSION}.${BGFX_REV_NUMBER})

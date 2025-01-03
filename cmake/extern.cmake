@@ -2,13 +2,11 @@ if (WIN32)
     target_link_libraries(soliton_engine ${CMAKE_CURRENT_SOURCE_DIR}/lib/amd64/windows/libluajit.lib)
 elseif(APPLE)
     target_link_libraries(soliton_engine ${CMAKE_CURRENT_SOURCE_DIR}/lib/arm64/osx/libluajit.a)
-    target_link_libraries(soliton_engine ${CMAKE_CURRENT_SOURCE_DIR}/lib/arm64/osx/Noesis.dylib)
     target_link_libraries(soliton_engine ${CMAKE_CURRENT_SOURCE_DIR}/lib/arm64/osx/libfmod.dylib)
-    target_link_libraries(soliton_engine /Users/mario/VulkanSDK/1.3.296.0/macOS/lib/libvulkan.1.dylib)
+    target_link_libraries(soliton_engine /Users/mariosieg/VulkanSDK/1.3.296.0/macOS/lib/libvulkan.1.dylib)
     target_include_directories(soliton_engine PRIVATE extern/fmod/osx/api/core/inc)
 else()
     target_link_libraries(soliton_engine ${CMAKE_CURRENT_SOURCE_DIR}/lib/amd64/linux/libluajit.a)
-    target_link_libraries(soliton_engine ${CMAKE_CURRENT_SOURCE_DIR}/lib/amd64/linux/libNoesis.so)
     target_link_libraries(soliton_engine ${CMAKE_CURRENT_SOURCE_DIR}/lib/amd64/linux/libfmod.so)
     target_include_directories(soliton_engine PRIVATE extern/fmod/linux/api/core/inc)
     target_link_libraries(soliton_engine tbb)
@@ -148,8 +146,26 @@ add_subdirectory(extern/simpleini)
 target_include_directories(soliton_engine PRIVATE extern/simpleini)
 target_link_libraries(soliton_engine SimpleIni)
 
+add_subdirectory(extern/efsw)
+target_include_directories(soliton_engine PRIVATE extern/efsw/include)
+target_link_libraries(soliton_engine efsw-static)
+
+add_subdirectory(extern/regex)
+target_include_directories(soliton_engine PRIVATE extern/regex/include)
+target_link_libraries(soliton_engine boost_regex)
+
+target_include_directories(soliton_engine PRIVATE src/graphics/imgui/imgui_collections)
+target_include_directories(soliton_engine PRIVATE src/graphics/imgui/imgui_collections/imgui)
+target_include_directories(soliton_engine PRIVATE src/graphics/imgui/imgui_collections/cimgui)
+target_include_directories(soliton_engine PRIVATE src/graphics/imgui/imgui_collections/implot)
+target_include_directories(soliton_engine PRIVATE src/graphics/imgui/imgui_collections/cimplot)
+target_include_directories(soliton_engine PRIVATE src/graphics/imgui/imgui_collections/imtexteditor)
+
+add_subdirectory(extern/fast_float)
+target_include_directories(soliton_engine PRIVATE extern/fast_float/include)
+
 ##################################################################################################
-# Libraries, which sadly requires C++ exceptions and have no way to disable them
+# Libraries, which requires C++ exceptions and have no way to disable them
 ##################################################################################################
 
 add_subdirectory(extern/Simd/prj/cmake)

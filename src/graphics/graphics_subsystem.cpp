@@ -20,13 +20,14 @@ namespace soliton::graphics {
     using platform::platform_subsystem;
     using vkb::context;
 
+    static const system_variable<bool> sv_auto_shader_recompile {"renderer.auto_shader_recompile", {true}};
     static const system_variable<eastl::string> sv_shader_dir {"renderer.shader_dir", {"engine_assets/shaders"}};
     static const system_variable<std::int64_t> sv_concurrent_frames {"renderer.concurrent_frames", {3}};
     static const system_variable<std::int64_t> sv_msaa_samples {"renderer.msaa_samples", {4}};
     static const system_variable<std::int64_t> sv_max_render_threads {"cpu.render_threads", {2}};
 
-    static constinit std::uint32_t s_num_draw_calls_prev = 0;
-    static constinit std::uint32_t s_num_draw_verts_prev = 0;
+    static std::uint32_t s_num_draw_calls_prev = 0;
+    static std::uint32_t s_num_draw_verts_prev = 0;
 
     graphics_subsystem::graphics_subsystem() : subsystem{"Graphics"} {
         log_info("Initializing graphics subsystem");
@@ -53,6 +54,16 @@ namespace soliton::graphics {
         //m_noesis_context.emplace();
 
         //m_noesis_context->load_ui_from_xaml("App.xaml");
+
+        if (sv_auto_shader_recompile()) {
+            m_shader_reload_watcher.emplace();
+            m_shader_reload_watcher->add_watch(sv_shader_dir(), true);
+            fs_watchdog::event callback = [this](eastl::string&& dir, eastl::string&& filename, eastl::string&& old_filename) -> void {
+                m_reload_pipelines_next_frame = true; // Some file got modified, so we will reload
+            };
+            m_shader_reload_watcher->on_any_event += eastl::move(callback);
+            m_shader_reload_watcher->start_watching_async();
+        }
     }
 
     graphics_subsystem::~graphics_subsystem() {
@@ -61,7 +72,6 @@ namespace soliton::graphics {
         shared_buffers::get().reset();
 
         m_imgui_context.reset();
-        m_noesis_context.reset();
 
         m_pipeline_cache.reset();
         m_render_thread_pool.reset();
@@ -93,7 +103,7 @@ namespace soliton::graphics {
         if (!main_cam.is_valid()
             || !main_cam.is_alive()
             || !main_cam.has<const com::camera>()
-            || !main_cam.has<const com::transform>()) [[unlikely]] {
+            || !main_cam.has<const com::transform>()) {
                 log_error("No camera found in scene");
                 return;
             }
@@ -157,7 +167,7 @@ namespace soliton::graphics {
         auto& num_draw_verts = const_cast<std::atomic_uint32_t&>(vkb::command_buffer::get_total_draw_verts());
         s_num_draw_verts_prev = num_draw_calls.exchange(0, std::memory_order_relaxed);
         s_num_draw_calls_prev = num_draw_verts.exchange(0, std::memory_order_relaxed);
-        if (m_reload_pipelines_next_frame) [[unlikely]] {
+        if (m_reload_pipelines_next_frame) {
             vkcheck(vkb::vkdvc().waitIdle());
             load_all_pipelines(false);
             vkcheck(vkb::vkdvc().waitIdle());
@@ -189,7 +199,7 @@ namespace soliton::graphics {
             const std::size_t n = it.count;
             m_render_data.emplace_back(eastl::span{transforms, n}, eastl::span{renderers, n});
         }
-        if (m_cmd) [[likely]] { // TODO: refractor
+        if (m_cmd) { // TODO: refractor
             m_render_thread_pool->begin_frame(&m_inheritance_info);
             m_render_thread_pool->process_frame(*m_cmd);
             scene.readonly_end();
@@ -216,7 +226,6 @@ namespace soliton::graphics {
 
     auto graphics_subsystem::render_uis() -> void {
         m_cmd->begin();
-        m_noesis_context->render_offscreen(*m_cmd);
 
         auto w = static_cast<float>(vkb::ctx().get_width());
         auto h = static_cast<float>(vkb::ctx().get_height());
@@ -226,7 +235,6 @@ namespace soliton::graphics {
         m_cmd->set_scissor(w, h);
 
         vkb::ctx().begin_render_pass(*m_cmd, vkb::ctx().get_ui_render_pass(), vk::SubpassContents::eInline); // TODO refractor
-        m_noesis_context->render_onscreen(vkb::ctx().get_ui_render_pass());
         m_imgui_context->submit_imgui(*m_cmd);
         m_cmd->end_render_pass();
         m_cmd->end();

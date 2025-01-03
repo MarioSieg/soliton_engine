@@ -73,7 +73,7 @@ namespace soliton {
 
     private:
         friend class kernel;
-        static inline constinit std::atomic_uint32_t s_id_gen = 1;
+        static inline std::atomic_uint32_t s_id_gen = 1;
         eastl::chrono::nanoseconds m_boot_time {};
         eastl::chrono::nanoseconds m_prepare_time {};
         eastl::chrono::nanoseconds m_prev_resize_time {};

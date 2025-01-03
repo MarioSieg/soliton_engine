@@ -145,7 +145,7 @@ namespace soliton::graphics {
         const bool result = raw_parse_texture(buf, [&](const texture_descriptor& info, const texture_data_supplier& data) {
             create(info, data);
         });
-        if (!result) [[unlikely]] {
+        if (!result) {
             panic("Failed to parse texture from raw memory");
         }
     }

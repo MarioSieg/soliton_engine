@@ -7,17 +7,18 @@
 
 local ffi = require 'ffi'
 local bit = require 'bit'
+local component_registry = require 'components._registry'
 local band, bor, bxor, bnot = bit.band, bit.bor, bit.bxor, bit.bnot
 local cpp = ffi.C
 
 ffi.cdef [[
-    bool __lu_entity_is_valid(lua_entity_id id);
-    const char* __lu_entity_get_name(lua_entity_id id);
-    void __lu_entity_set_name(lua_entity_id id, const char* name);
-    uint32_t __lu_entity_get_flags(lua_entity_id id);
-    void __lu_entity_set_flags(lua_entity_id id, uint32_t flags);
+    bool __lu_entity_is_valid(__entity_id id);
+    const char* __lu_entity_get_name(__entity_id id);
+    void __lu_entity_set_name(__entity_id id, const char* name);
+    uint32_t __lu_entity_get_flags(__entity_id id);
+    void __lu_entity_set_flags(__entity_id id, uint32_t flags);
 
-    void __lu_scene_despawn_entity(lua_entity_id id);
+    void __lu_scene_despawn_entity(__entity_id id);
 ]]
 
 --- entity flags for the entity class.
@@ -37,7 +38,7 @@ local entity = {
 
 --- Creates a new entity from an entity id.
 --- @tparam number id The valid entity id
-function entity:from_native_id(id)
+function entity:from_id(id)
     local o = {}
     setmetatable(o, { __index = self })
     o._id = id
@@ -136,6 +137,24 @@ end
 --- @see scene.despawn
 function entity:despawn()
     cpp.__lu_scene_despawn_entity(self._id)
+end
+
+-- Internal use only.
+function entity:_serialize()
+    local components = {}
+    for name, component in pairs(component_registry) do
+        if self:has_component(component) then
+            local instance = self:get_component(component)
+            if instance and instance['_serialize'] then
+                components[name] = instance:_serialize()
+            end
+        end
+    end
+    return {
+        name = self:get_name(),
+        flags = self:get_flags(),
+        components = components
+    }
 end
 
 --- Checks if the entity is equal to another entity by comparing their ids.

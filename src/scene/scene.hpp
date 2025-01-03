@@ -20,6 +20,7 @@ namespace soliton {
         virtual ~scene() override;
 
         const uuids::uuid id;
+        std::uint16_t remote_explorer_port = 27751;
         scene_properties properties {};
 
         auto spawn(const char* name) const -> flecs::entity;

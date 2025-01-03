@@ -21,7 +21,7 @@ namespace soliton {
             return eastl::chrono::duration_cast<Dur>(Clock::now() - m_stamp);
         }
 
-        template <typename S = float> requires std::is_floating_point_v<S>
+        template <typename S = float>
         [[nodiscard]] inline auto elapsed_secs() const -> S {
             return eastl::chrono::duration_cast<eastl::chrono::duration<S>>(elapsed<>()).count();
         }

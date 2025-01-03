@@ -1,0 +1,37 @@
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)")
+    set(IS_AMD64 TRUE)
+else()
+    set(IS_AMD64 FALSE)
+endif()
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64)|(arm64)")
+    set(IS_ARM64 TRUE)
+else()
+    set(IS_ARM64 FALSE)
+endif()
+
+if (${IS_AMD64})
+    add_compile_options(-msse2 -msse3 -mssse3 -msse4.1 -msse4.2 -mpclmul)
+elseif (${IS_ARM64})
+    add_compile_options(-march=armv8-a+crypto)
+endif()
+
+# General compiler flags
+add_compile_options(-fno-exceptions -frtti)
+add_compile_options(-fvisibility=hidden)
+add_compile_options(-Wno-defaulted-function-deleted -Wno-error)
+add_link_options(-rdynamic)
+
+# Debug/Release specific compiler flags
+if (CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+    add_compile_options(-Ofast)
+    add_compile_options(-flto=thin)
+    add_link_options(-flto=thin)
+
+    if (NOT APPLE)
+        add_link_options(-fuse-ld=lld)
+        add_link_options("-Wl,--thinlto-cache-dir=${PROJECT_BINARY_DIR}/LTO.cache")
+        add_link_options("-Wl,--thinlto-jobs=64")
+    endif()
+else()
+    add_compile_options(-O0 -gdwarf-4)
+endif()

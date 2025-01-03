@@ -3,6 +3,7 @@
 #pragma once
 
 #include "../core/subsystem.hpp"
+#include "../core/fs_watchdog.hpp"
 #include "../scene/scene.hpp"
 
 #include "vulkancore/context.hpp"
@@ -17,7 +18,6 @@
 #include "shared_buffers.hpp"
 #include "pipeline_cache.hpp"
 #include "imgui/context.hpp"
-#include "noesis/context.hpp"
 
 namespace soliton::graphics {
     class graphics_subsystem final : public subsystem {
@@ -41,8 +41,6 @@ namespace soliton::graphics {
         }
 
         [[nodiscard]] auto get_debug_draw_opt() noexcept -> eastl::optional<debugdraw>& { return m_debugdraw; }
-        [[nodiscard]] auto get_noesis_context() noexcept -> noesis::context& { return *m_noesis_context; }
-        [[nodiscard]] auto get_imgui_context() noexcept -> imgui::context& { return *m_imgui_context; }
         [[nodiscard]] static auto get() noexcept -> graphics_subsystem& {
             panic_assert(s_instance != nullptr);
             return *s_instance;
@@ -63,6 +61,26 @@ namespace soliton::graphics {
     private:
         friend class graphics_pipeline;
 
+        eastl::optional<fs_watchdog> m_shader_reload_watcher {};
+        bool m_reload_pipelines_next_frame {};
+
+        eastl::optional<pipeline_cache> m_pipeline_cache {};
+        eastl::optional<vkb::command_buffer> m_cmd {};
+        vk::CommandBufferInheritanceInfo m_inheritance_info {};
+        eastl::optional<render_thread_pool> m_render_thread_pool {};
+        eastl::vector<eastl::pair<eastl::span<const com::transform>, eastl::span<const com::mesh_renderer>>> m_render_data {};
+        eastl::optional<debugdraw> m_debugdraw {};
+        eastl::optional<imgui::context> m_imgui_context {};
+
+        static inline XMFLOAT4X4A s_view_mtx;
+        static inline XMFLOAT4X4A s_proj_mtx;
+        static inline XMFLOAT4X4A s_view_proj_mtx;
+        static inline XMFLOAT4A s_clear_color;
+        static inline BoundingFrustum s_frustum;
+        static inline com::transform s_camera_transform;
+        static inline float s_camera_fov;
+        static inline graphics_subsystem* s_instance;
+
         auto render_uis() -> void;
         auto load_all_pipelines(bool force_success) -> void;
         auto update_shared_buffers_per_frame() const -> void;
@@ -72,23 +90,5 @@ namespace soliton::graphics {
             std::int32_t bucket_id,
             std::int32_t num_threads
         ) const -> void;
-
-        static inline constinit XMFLOAT4X4A s_view_mtx;
-        static inline constinit XMFLOAT4X4A s_proj_mtx;
-        static inline constinit XMFLOAT4X4A s_view_proj_mtx;
-        static inline XMFLOAT4A s_clear_color;
-        static inline BoundingFrustum s_frustum;
-        static inline com::transform s_camera_transform;
-        static inline float s_camera_fov;
-        static inline constinit graphics_subsystem* s_instance;
-        eastl::optional<pipeline_cache> m_pipeline_cache {};
-        eastl::optional<vkb::command_buffer> m_cmd {};
-        vk::CommandBufferInheritanceInfo m_inheritance_info {};
-        eastl::optional<render_thread_pool> m_render_thread_pool {};
-        eastl::vector<eastl::pair<eastl::span<const com::transform>, eastl::span<const com::mesh_renderer>>> m_render_data {};
-        eastl::optional<debugdraw> m_debugdraw {};
-        eastl::optional<imgui::context> m_imgui_context {};
-        eastl::optional<noesis::context> m_noesis_context {};
-        bool m_reload_pipelines_next_frame {};
     };
 }

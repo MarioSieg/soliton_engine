@@ -34,19 +34,19 @@ namespace soliton::graphics {
     auto lunam_io_stream::Seek(const std::size_t offset, const aiOrigin origin) -> aiReturn {
         switch (origin) {
             case aiOrigin_SET:
-                if (offset < m_stream.size()) [[likely]] {
+                if (offset < m_stream.size()) {
                     pos = offset;
                     return aiReturn_SUCCESS;
                 }
                 return aiReturn_FAILURE;
             case aiOrigin_CUR:
-                if (pos + offset < m_stream.size()) [[likely]] {
+                if (pos + offset < m_stream.size()) {
                     pos += offset;
                     return aiReturn_SUCCESS;
                 }
                 return aiReturn_FAILURE;
             case aiOrigin_END:
-                if (offset < m_stream.size()) [[likely]] {
+                if (offset < m_stream.size()) {
                     pos = m_stream.size() - offset;
                     return aiReturn_SUCCESS;
                 }
@@ -86,7 +86,7 @@ namespace soliton::graphics {
         assetmgr::with_primary_accessor_lock([&](assetmgr::asset_accessor& accessor) {
             status = accessor.load_bin_file(abs_path.c_str(), data);
         });
-        if (!status) [[unlikely]] {
+        if (!status) {
             log_error("Failed to open file '{}'", abs_path);
         }
         return status ? new lunam_io_stream{std::move(data)} : nullptr;

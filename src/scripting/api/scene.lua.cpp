@@ -35,7 +35,7 @@ LUA_INTEROP_API auto __lu_scene_despawn_entity(const lua_entity_id id) -> void {
 
 LUA_INTEROP_API auto __lu_scene_get_entity_by_name(const char* const name) -> lua_entity_id {
     const flecs::entity entity = scene_mgr::active().lookup(name);
-    if (!entity) [[unlikely]] {
+    if (!entity) {
         return 0;
     }
     return eastl::bit_cast<lua_entity_id>(entity.raw_id());
@@ -86,6 +86,10 @@ LUA_INTEROP_API auto __lu_scene_full_entity_query_end() -> void {
     if (ctx) {
         ctx.reset();
     }
+}
+
+LUA_INTEROP_API auto __lu_scene_get_remote_explorer_port() -> std::uint16_t {
+    return scene_mgr::active().remote_explorer_port;
 }
 
 LUA_INTEROP_API auto __lu_scene_set_time(const double time) -> void {

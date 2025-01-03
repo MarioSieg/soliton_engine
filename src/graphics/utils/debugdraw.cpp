@@ -888,7 +888,7 @@ namespace soliton::graphics {
             uniform_data uniform_data {};
             XMStoreFloat4x4A(&uniform_data.view_proj, view_proj);
             m_uniform->set(uniform_data);
-            if (m_vertices.size() > k_max_vertices) [[unlikely]] {
+            if (m_vertices.size() > k_max_vertices) {
                 log_error("Too many vertices: {}, max: {}", m_vertices.size(), k_max_vertices);
             } else {
                 auto* vptr = static_cast<std::uint8_t*>(m_vertex_buffer->get_mapped_ptr());

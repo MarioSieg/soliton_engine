@@ -369,8 +369,6 @@ void CharacterBaseTest::Initialize()
 
 				triangles.push_back(Triangle(s2, b2, rs2));
 				triangles.push_back(Triangle(rs2, b2, rb2));
-
-				p1 = p2;
 			}
 
 			MeshShapeSettings mesh(triangles);
@@ -416,7 +414,6 @@ void CharacterBaseTest::Initialize()
 				triangles.push_back(Triangle(b1, s2, b2));
 				triangles.push_back(Triangle(s1, p1, p2));
 				triangles.push_back(Triangle(s1, p2, s2));
-				p1 = p2;
 			}
 
 			MeshShapeSettings mesh(triangles);
@@ -637,33 +634,34 @@ void CharacterBaseTest::PrePhysicsUpdate(const PreUpdateParams &inParams)
 
 	// Animate character virtual
 	for (CharacterVirtual *character : { mAnimatedCharacterVirtual, mAnimatedCharacterVirtualWithInnerBody })
-	{
-	#ifdef JPH_DEBUG_RENDERER
-		character->GetShape()->Draw(mDebugRenderer, character->GetCenterOfMassTransform(), Vec3::sReplicate(1.0f), Color::sOrange, false, true);
-	#else
-		mDebugRenderer->DrawCapsule(character->GetCenterOfMassTransform(), 0.5f * cCharacterHeightStanding, cCharacterRadiusStanding + character->GetCharacterPadding(), Color::sOrange, DebugRenderer::ECastShadow::Off, DebugRenderer::EDrawMode::Wireframe);
-	#endif // JPH_DEBUG_RENDERER
+		if (character != nullptr)
+		{
+		#ifdef JPH_DEBUG_RENDERER
+			character->GetShape()->Draw(mDebugRenderer, character->GetCenterOfMassTransform(), Vec3::sReplicate(1.0f), Color::sOrange, false, true);
+		#else
+			mDebugRenderer->DrawCapsule(character->GetCenterOfMassTransform(), 0.5f * cCharacterHeightStanding, cCharacterRadiusStanding + character->GetCharacterPadding(), Color::sOrange, DebugRenderer::ECastShadow::Off, DebugRenderer::EDrawMode::Wireframe);
+		#endif // JPH_DEBUG_RENDERER
 
-		// Update velocity and apply gravity
-		Vec3 velocity;
-		if (character->GetGroundState() == CharacterVirtual::EGroundState::OnGround)
-			velocity = Vec3::sZero();
-		else
-			velocity = character->GetLinearVelocity() * mAnimatedCharacter->GetUp() + mPhysicsSystem->GetGravity() * inParams.mDeltaTime;
-		velocity += Sin(mTime) * cCharacterVelocity;
-		character->SetLinearVelocity(velocity);
+			// Update velocity and apply gravity
+			Vec3 velocity;
+			if (character->GetGroundState() == CharacterVirtual::EGroundState::OnGround)
+				velocity = Vec3::sZero();
+			else
+				velocity = character->GetLinearVelocity() * mAnimatedCharacter->GetUp() + mPhysicsSystem->GetGravity() * inParams.mDeltaTime;
+			velocity += Sin(mTime) * cCharacterVelocity;
+			character->SetLinearVelocity(velocity);
 
-		// Move character
-		CharacterVirtual::ExtendedUpdateSettings update_settings;
-		character->ExtendedUpdate(inParams.mDeltaTime,
-			mPhysicsSystem->GetGravity(),
-			update_settings,
-			mPhysicsSystem->GetDefaultBroadPhaseLayerFilter(Layers::MOVING),
-			mPhysicsSystem->GetDefaultLayerFilter(Layers::MOVING),
-			{ },
-			{ },
-			*mTempAllocator);
-	}
+			// Move character
+			CharacterVirtual::ExtendedUpdateSettings update_settings;
+			character->ExtendedUpdate(inParams.mDeltaTime,
+				mPhysicsSystem->GetGravity(),
+				update_settings,
+				mPhysicsSystem->GetDefaultBroadPhaseLayerFilter(Layers::MOVING),
+				mPhysicsSystem->GetDefaultLayerFilter(Layers::MOVING),
+				{ },
+				{ },
+				*mTempAllocator);
+		}
 
 	// Reset ramp blocks
 	mRampBlocksTimeLeft -= inParams.mDeltaTime;

@@ -1,12 +1,12 @@
 // Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "_prelude.hpp"
-#include "../../graphics/imgui/text_editor.hpp"
+#include <imtexteditor/TextEditor.h>
 
 [[nodiscard]] static auto get_editor() -> TextEditor& { // lazy init
     static const eastl::unique_ptr<TextEditor> g_editor = [] {
         auto editor = eastl::make_unique<TextEditor>();
-        editor->SetLanguageDefinition(TextEditor::LanguageDefinition::Lua());
+        editor->SetLanguageDefinition(TextEditor::LanguageDefinitionId::Lua);
         return editor;
     }();
     return *g_editor;
@@ -15,7 +15,7 @@ static eastl::string g_editor_text;
 
 LUA_INTEROP_API auto __lu_script_editor_render(const char* title) -> void {
     title = title ? title : "Script Editor";
-    get_editor().Render(title, {}, true);
+    get_editor().Render(title, false, {}, true);
 }
 
 LUA_INTEROP_API auto __lu_script_editor_set_text(const char* text) -> void {
@@ -46,9 +46,9 @@ LUA_INTEROP_API auto __lu_script_editor_undo() -> void {
 }
 
 LUA_INTEROP_API auto __lu_script_editor_set_readonly(const bool readonly) -> void {
-    get_editor().SetReadOnly(readonly);
+    get_editor().SetReadOnlyEnabled(readonly);
 }
 
 LUA_INTEROP_API auto __lu_script_editor_has_text_changed() -> bool {
-    return get_editor().IsTextChanged();
+    return false; // TODO
 }

@@ -2,19 +2,16 @@
 
 #include "context.hpp"
 
-#include "imgui_impl_vulkan.h"
-#include "imgui_impl_glfw.h"
-#include "font_awesome.ttf.inl"
-#include "jetbrains_mono.ttf.inl"
-#include "font_awesome_pro_5.hpp"
-#include "text_editor.hpp"
-#include "implot.h"
+#include "backends/imgui_impl_vulkan.h"
+#include "backends/imgui_impl_glfw.h"
+#include "data/font_awesome.ttf.inl"
+#include "data/jetbrains_mono.ttf.inl"
+#include "data/font_awesome_pro_5.hpp"
+#include <implot.h>
 #include "../pipeline_cache.hpp"
 #include "../vulkancore/context.hpp"
 #include "../../platform/platform_subsystem.hpp"
 #include "../../core/system_variable.hpp"
-
-#include <vk_mem_alloc.h>
 
 namespace soliton::imgui {
     static const system_variable<float> sv_font_size {"editor.font_size", {18.0f}};
@@ -59,10 +56,11 @@ namespace soliton::imgui {
         init_info.MinImageCount = vkb::ctx().get_concurrent_frame_count();
         init_info.MSAASamples = static_cast<VkSampleCountFlagBits>(vkb::ctx().get_msaa_samples());
         init_info.Allocator = reinterpret_cast<const VkAllocationCallbacks*>(vkb::get_alloc());
+        init_info.RenderPass = vkb::ctx().get_scene_render_pass();
         init_info.CheckVkResultFn = [](const VkResult result) {
             vkccheck(result);
         };
-        panic_assert(ImGui_ImplVulkan_Init(&init_info, vkb::ctx().get_scene_render_pass()));
+        panic_assert(ImGui_ImplVulkan_Init(&init_info));
 
         float font_size = sv_font_size();
         if constexpr (PLATFORM_OSX) {
@@ -85,8 +83,8 @@ namespace soliton::imgui {
         config.MergeMode = true;
         config.DstFont = primaryFont;
         struct font_range final {
-            std::span<const std::uint8_t> data {};
-            std::array<char16_t, 3> ranges {};
+            eastl::span<const std::uint8_t> data {};
+            eastl::array<char16_t, 3> ranges {};
         };
 
         // Compute DPI scaling
@@ -125,7 +123,7 @@ namespace soliton::imgui {
     }
 
     auto context::submit_imgui(vk::CommandBuffer cmd_buf) -> void {
-        if (auto* dd = ImGui::GetDrawData()) [[likely]] {
+        if (auto* dd = ImGui::GetDrawData()) {
             ImGui_ImplVulkan_RenderDrawData(dd, cmd_buf);
         }
     }

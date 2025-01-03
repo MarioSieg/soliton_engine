@@ -6,7 +6,7 @@
 #include "../../scene/scene_mgr.hpp"
 
 #if PLATFORM_WINDOWS
-#define LUA_INTEROP_API [[maybe_unused]] extern "C" __cdecl __declspec(dllexport)
+#define LUA_INTEROP_API extern "C" __cdecl __declspec(dllexport)
 #elif PLATFORM_LINUX
 #define LUA_INTEROP_API extern "C" __attribute__((visibility("default"), unused))
 #else
@@ -21,16 +21,16 @@ static_assert(alignof(flecs::id_t) == alignof(lua_entity_id));
 
 [[nodiscard]] inline auto resolve_entity(const lua_entity_id id) noexcept -> eastl::optional<flecs::entity> {
     const auto f_id = eastl::bit_cast<flecs::id_t>(id);
-    if (f_id == 0) [[unlikely]] {
+    if (f_id == 0) {
         log_warn("Entity ID is null");
         return eastl::nullopt;
     }
     const flecs::entity ent {scene_mgr::active(), f_id};
-    if (!ent.is_valid()) [[unlikely]] {
+    if (!ent.is_valid()) {
         log_warn("Entity ID is invalid");
         return eastl::nullopt;
     }
-    if (!ent.is_alive()) [[unlikely]] {
+    if (!ent.is_alive()) {
         log_warn("Entity ID is not alive");
         return eastl::nullopt;
     }
@@ -41,8 +41,8 @@ static_assert(alignof(flecs::id_t) == alignof(lua_entity_id));
 // Only a proxy type holding the data and allowing implicit conversions to other vector types.
 // Note that each conversion will result in a cast or vector cast.
 struct lua_vec2 {
-    double x;
-    double y;
+    double x {};
+    double y {};
 
     constexpr lua_vec2() noexcept = default;
     constexpr lua_vec2(const double x, const double y) noexcept : x{x}, y{y} {}
@@ -68,9 +68,9 @@ static_assert(sizeof(lua_vec2) == sizeof(double) * 2 && std::is_standard_layout_
 // Only a proxy type holding the data and allowing implicit conversions to other vector types.
 // Note that each conversion will result in a cast or vector cast.
 struct lua_vec3 {
-    double x;
-    double y;
-    double z;
+    double x {};
+    double y {};
+    double z {};
 
     constexpr lua_vec3() noexcept = default;
     constexpr lua_vec3(const double x, const double y, const double z) noexcept
@@ -131,10 +131,10 @@ static_assert(sizeof(lua_vec3) == sizeof(double) * 3 && std::is_standard_layout_
 // Only a proxy type holding the data and allowing implicit conversions to other vector types.
 // Note that each conversion will result in a cast or vector cast.
 struct lua_vec4 {
-    double x;
-    double y;
-    double z;
-    double w;
+    double x {};
+    double y {};
+    double z {};
+    double w {};
 
     constexpr lua_vec4() noexcept = default;
     constexpr lua_vec4(const double x, const double y, const double z, const double w) noexcept
@@ -163,23 +163,23 @@ static_assert(sizeof(lua_vec4) == sizeof(double) * 4 && std::is_standard_layout_
 
 #define get_resource_property(T, getter, fallback) \
     T* resource = scene_mgr::active().get_asset_registry<T>().interop[id]; \
-    if (resource) [[likely]] \
+    if (resource) \
         return resource->getter; \
     return (fallback);
 
 #define impl_component_core(name) \
     LUA_INTEROP_API auto __lu_com_##name##_exists(const lua_entity_id id) -> bool { \
         const eastl::optional<flecs::entity> ent {resolve_entity(id)}; \
-        if (!ent) [[unlikely]] { return false; } \
+        if (!ent) { return false; } \
         return ent->has<com::name>(); \
     } \
     LUA_INTEROP_API auto __lu_com_##name##_add(const lua_entity_id id) -> void { \
         eastl::optional<flecs::entity> ent {resolve_entity(id)}; \
-        if (!ent) [[unlikely]] { return; } \
+        if (!ent) { return; } \
         ent->add<com::name>(); \
     } \
     LUA_INTEROP_API auto __lu_com_##name##_remove(const lua_entity_id id) -> void { \
         eastl::optional<flecs::entity> ent {resolve_entity(id)}; \
-        if (!ent) [[unlikely]] { return; } \
+        if (!ent) { return; } \
         ent->remove<com::name>(); \
     }

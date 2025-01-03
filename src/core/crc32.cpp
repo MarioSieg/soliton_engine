@@ -61,7 +61,7 @@ namespace soliton {
 #endif
 
     auto crc32(const void* const buffer, std::size_t size) noexcept -> std::uint32_t {
-        if (!buffer || !size) [[unlikely]] return 0;
+        if (!buffer || !size) return 0;
         const auto* buf = static_cast<const std::uint8_t*>(buffer);
         #if CPU_ARM
             std::uint32_t crc = ~0;

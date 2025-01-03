@@ -48,12 +48,12 @@ namespace soliton::graphics {
 			}
 			vertices.emplace_back(v);
 		}
-        if (mesh->mNumFaces == 0) [[unlikely]] {
+        if (mesh->mNumFaces == 0) {
             log_error("Mesh '{}' has no faces - no index buffer will be generated", mesh->mName.C_Str());
         }
 		for (unsigned i = 0; i < mesh->mNumFaces; ++i) {
 			const aiFace face = mesh->mFaces[i];
-			if (face.mNumIndices == 3) [[likely]] {
+			if (face.mNumIndices == 3) {
 				for (unsigned j = 0; j < 3; ++j) {
 					indices.emplace_back(face.mIndices[j]);
 				}
@@ -69,35 +69,34 @@ namespace soliton::graphics {
 		compute_aabb(prim_info.aabb, {vertices.data() + prim_info.vertex_start, prim_info.vertex_count});
 	}
 
-	mesh::mesh(eastl::string&& path, const bool create_collider_mesh) : asset{assetmgr::asset_source::filesystem, std::move(path)} {
+	mesh::mesh(eastl::string&& path, const bool create_collider_mesh, const std::uint32_t import_flags) : asset{assetmgr::asset_source::filesystem, std::move(path)} {
         log_info("Loading mesh from file '{}'", get_asset_path());
 
         Assimp::DefaultLogger::create("", Assimp::Logger::NORMAL);
         Assimp::DefaultLogger::get()->attachStream(new assimp_logger {}, Assimp::Logger::Info | Assimp::Logger::Err | Assimp::Logger::Warn);
 
         eastl::vector<std::byte> blob {};
-        assetmgr::with_primary_accessor_lock([&](assetmgr::asset_accessor &accessor) {
+        assetmgr::with_primary_accessor_lock([&](assetmgr::asset_accessor& accessor) {
             if (!accessor.load_bin_file(get_asset_path().c_str(), blob)) {
                 panic("Failed to load mesh from file '{}'", get_asset_path());
             }
         });
 
         Assimp::Importer importer {};
-        const auto load_flags = k_import_flags;
         importer.SetIOHandler(new graphics::lunam_assimp_io_system {});
-        panic_assert(importer.ValidateFlags(load_flags));
+        panic_assert(importer.ValidateFlags(import_flags));
         eastl::string hint {};
         auto a_path {std::filesystem::path{get_asset_path().c_str()}};
         if (a_path.has_extension()) {
             hint = a_path.extension().string().c_str();
         }
-        const aiScene* scene = importer.ReadFileFromMemory(blob.data(), blob.size(), load_flags, hint.empty() ? nullptr : hint.c_str());
-        if (!scene || !scene->mNumMeshes) [[unlikely]] {
+        const aiScene* scene = importer.ReadFileFromMemory(blob.data(), blob.size(), import_flags, hint.empty() ? nullptr : hint.c_str());
+        if (!scene || !scene->mNumMeshes) {
             panic("Failed to load scene from file '{}': {}", get_asset_path(), importer.GetErrorString());
         }
 
 		const aiNode* node = scene->mRootNode;
-        if (!node || node->mNumMeshes == 0) [[unlikely]] { // search for other nodes with meshes
+        if (!node || node->mNumMeshes == 0) { // search for other nodes with meshes
             eastl::function<auto(const aiNode*) -> const aiNode*> search_for_meshes = [&search_for_meshes](const aiNode* const node) -> const aiNode* {
                 for (unsigned i = 0; i < node->mNumChildren; ++i) {
                     auto* local_node = node->mChildren[i];
@@ -111,7 +110,7 @@ namespace soliton::graphics {
             node = search_for_meshes(node);
         }
 
-        if (!node || node->mNumMeshes == 0) [[unlikely]] {
+        if (!node || node->mNumMeshes == 0) {
             panic("Scene has no root node and no meshes");
         }
 
@@ -160,10 +159,10 @@ namespace soliton::graphics {
 	auto mesh::create_from_data(eastl::span<const vertex> vertices, eastl::span<const index> indices, const bool create_collider_mesh) -> void {
 		m_primitives.shrink_to_fit();
 		m_primitives.emplace_back(primitive {
-			.vertex_start = 0,
 			.index_start = 0,
+			.index_count = static_cast<std::uint32_t>(indices.size()),
+			.vertex_start = 0,
 			.vertex_count = static_cast<std::uint32_t>(vertices.size()),
-			.index_count = static_cast<std::uint32_t>(indices.size())
 		});
 		compute_aabb(m_aabb, vertices);
 		m_primitives[0].aabb = m_aabb;

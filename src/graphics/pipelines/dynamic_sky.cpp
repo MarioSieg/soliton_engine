@@ -144,7 +144,7 @@ namespace soliton::graphics::pipelines {
     auto dynamic_sky_pipeline::configure_shaders(eastl::vector<eastl::shared_ptr<shader>>& cfg) -> bool {
         auto vs = shader_cache->get_shader(shader_variant{"dynamic_sky.vert", shader_stage::vertex});
         auto fs = shader_cache->get_shader(shader_variant{"dynamic_sky.frag", shader_stage::fragment});
-        if (!vs || !fs) [[unlikely]] return false;
+        if (!vs || !fs) return false;
         cfg.emplace_back(vs);
         cfg.emplace_back(fs);
         return true;

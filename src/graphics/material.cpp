@@ -31,7 +31,8 @@ namespace soliton::graphics {
             image_infos.emplace_back(make_write_tex_info(prop.value));
         }
 
-        for (std::size_t i = 0; auto&& [_, prop] : properties) {
+        std::size_t i = 0;
+        for (auto&& [_, prop] : properties) {
             factory.bind_images(
                 prop.shader_binding,
                 1,

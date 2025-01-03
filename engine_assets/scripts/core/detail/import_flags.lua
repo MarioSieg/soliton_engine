@@ -10,9 +10,8 @@ local function bit_flag_union(flags)
     return band(result, 0xffffffff)
 end
 
---- scene import flags for post processing.
---- Only applies if the scene is not a .soliton_engine file.
-local scene_import_flags = {
+--- Mesh and external 3D scene import flags for post processing.
+local mesh_import_flags = {
     none = 0x0,
     calc_tangent_space = 0x1,
     join_identical_vertices = 0x2,
@@ -48,32 +47,32 @@ local scene_import_flags = {
     gen_bounding_boxes = 0x80000000,
 }
 
-scene_import_flags.preset_realtime_quality = bit_flag_union({
-    scene_import_flags.calc_tangent_space,
-    scene_import_flags.gen_smooth_normals,
-    scene_import_flags.join_identical_vertices,
-    scene_import_flags.improve_cache_locality,
-    scene_import_flags.limit_bone_weights,
-    scene_import_flags.remove_redundant_materials,
-    scene_import_flags.triangulate,
-    scene_import_flags.gen_uv_coords,
-    scene_import_flags.sort_by_ptype,
-    scene_import_flags.find_degenerates,
-    scene_import_flags.find_invalid_data,
-    scene_import_flags.find_instances,
-    scene_import_flags.optimize_meshes,
-    -- scene_import_flags.optimize_graph
+mesh_import_flags.preset_realtime_quality = bit_flag_union({
+    mesh_import_flags.calc_tangent_space,
+    mesh_import_flags.gen_smooth_normals,
+    mesh_import_flags.join_identical_vertices,
+    mesh_import_flags.improve_cache_locality,
+    mesh_import_flags.limit_bone_weights,
+    mesh_import_flags.remove_redundant_materials,
+    mesh_import_flags.triangulate,
+    mesh_import_flags.gen_uv_coords,
+    mesh_import_flags.sort_by_ptype,
+    mesh_import_flags.find_degenerates,
+    mesh_import_flags.find_invalid_data,
+    mesh_import_flags.find_instances,
+    mesh_import_flags.optimize_meshes,
+    -- mesh_import_flags.optimize_graph
 })
 
-scene_import_flags.preset_convert_to_lh = bit_flag_union({
-    scene_import_flags.make_left_handed,
-    scene_import_flags.flip_uvs,
-    scene_import_flags.flip_winding_order
+mesh_import_flags.preset_convert_to_lh = bit_flag_union({
+    mesh_import_flags.make_left_handed,
+    mesh_import_flags.flip_uvs,
+    mesh_import_flags.flip_winding_order
 })
 
-scene_import_flags.default = bit_flag_union({
-    scene_import_flags.preset_realtime_quality,
-    scene_import_flags.preset_convert_to_lh
+mesh_import_flags.default = bit_flag_union({
+    mesh_import_flags.preset_realtime_quality,
+    mesh_import_flags.preset_convert_to_lh
 })
 
-return scene_import_flags
+return mesh_import_flags

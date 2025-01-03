@@ -59,7 +59,7 @@ JPH_IMPLEMENT_SERIALIZABLE_VIRTUAL(MeshShapeSettings)
 
 // Codecs this mesh shape is using
 using TriangleCodec = TriangleCodecIndexed8BitPackSOA4Flags;
-using NodeCodec = NodeCodecQuadTreeHalfFloat<1>;
+using NodeCodec = NodeCodecQuadTreeHalfFloat;
 
 // Get header for tree
 static JPH_INLINE const NodeCodec::Header *sGetNodeHeader(const ByteBuffer &inTree)
@@ -93,7 +93,7 @@ void MeshShapeSettings::Sanitize()
 {
 	// Remove degenerate and duplicate triangles
 	UnorderedSet<IndexedTriangle> triangles;
-	triangles.reserve(mIndexedTriangles.size());
+	triangles.reserve(UnorderedSet<IndexedTriangle>::size_type(mIndexedTriangles.size()));
 	TriangleCodec::ValidationContext validation_ctx(mIndexedTriangles, mTriangleVertices);
 	for (int t = (int)mIndexedTriangles.size() - 1; t >= 0; --t)
 	{
@@ -195,20 +195,16 @@ MeshShape::MeshShape(const MeshShapeSettings &inSettings, ShapeResult &outResult
 	// Build tree
 	AABBTreeBuilder builder(splitter, inSettings.mMaxTrianglesPerLeaf);
 	AABBTreeBuilderStats builder_stats;
-	AABBTreeBuilder::Node *root = builder.Build(builder_stats);
+	const AABBTreeBuilder::Node *root = builder.Build(builder_stats);
 
 	// Convert to buffer
 	AABBTreeToBuffer<TriangleCodec, NodeCodec> buffer;
 	const char *error = nullptr;
-	if (!buffer.Convert(inSettings.mTriangleVertices, root, inSettings.mPerTriangleUserData, error))
+	if (!buffer.Convert(builder.GetTriangles(), builder.GetNodes(), inSettings.mTriangleVertices, root, inSettings.mPerTriangleUserData, error))
 	{
 		outResult.SetError(error);
-		delete root;
 		return;
 	}
-
-	// Kill tree
-	delete root;
 
 	// Move data to this class
 	mTree.swap(buffer.GetBuffer());
@@ -248,11 +244,15 @@ void MeshShape::sFindActiveEdges(const MeshShapeSettings &inSettings, IndexedTri
 			return mIdx1 == inRHS.mIdx1 && mIdx2 == inRHS.mIdx2;
 		}
 
+		uint64	GetHash() const
+		{
+			static_assert(sizeof(*this) == 2 * sizeof(int), "No padding expected");
+			return HashBytes(this, sizeof(*this));
+		}
+
 		int		mIdx1;
 		int		mIdx2;
 	};
-
-	JPH_MAKE_HASH_STRUCT(Edge, EdgeHash, t.mIdx1, t.mIdx2)
 
 	// A struct to hold the triangles that are connected to an edge
 	struct TriangleIndices
@@ -262,16 +262,17 @@ void MeshShape::sFindActiveEdges(const MeshShapeSettings &inSettings, IndexedTri
 	};
 
 	// Build a list of edge to triangles
-	using EdgeToTriangle = UnorderedMap<Edge, TriangleIndices, EdgeHash>;
+	using EdgeToTriangle = UnorderedMap<Edge, TriangleIndices>;
 	EdgeToTriangle edge_to_triangle;
-	edge_to_triangle.reserve(ioIndices.size() * 3);
+	edge_to_triangle.reserve(EdgeToTriangle::size_type(ioIndices.size() * 3));
 	for (uint triangle_idx = 0; triangle_idx < ioIndices.size(); ++triangle_idx)
 	{
 		IndexedTriangle &triangle = ioIndices[triangle_idx];
 		for (uint edge_idx = 0; edge_idx < 3; ++edge_idx)
 		{
 			Edge edge(triangle.mIdx[edge_idx], triangle.mIdx[(edge_idx + 1) % 3]);
-			TriangleIndices &indices = edge_to_triangle[edge];
+			EdgeToTriangle::iterator edge_to_triangle_it = edge_to_triangle.try_emplace(edge, TriangleIndices()).first;
+			TriangleIndices &indices = edge_to_triangle_it->second;
 			if (indices.mNumTriangles < 2)
 			{
 				// Store index of triangle that connects to this edge
@@ -359,7 +360,7 @@ void MeshShape::DecodeSubShapeID(const SubShapeID &inSubShapeID, const void *&ou
 {
 	// Get block
 	SubShapeID triangle_idx_subshape_id;
-	uint32 block_id = inSubShapeID.PopID(NodeCodec::DecodingContext::sTriangleBlockIDBits(mTree), triangle_idx_subshape_id);
+	uint32 block_id = inSubShapeID.PopID(NodeCodec::DecodingContext::sTriangleBlockIDBits(sGetNodeHeader(mTree)), triangle_idx_subshape_id);
 	outTriangleBlock = NodeCodec::DecodingContext::sGetTriangleBlockStart(&mTree[0], block_id);
 
 	// Fetch the triangle index
@@ -419,7 +420,7 @@ void MeshShape::GetSupportingFace(const SubShapeID &inSubShapeID, Vec3Arg inDire
 
 	// Flip triangle if scaled inside out
 	if (ScaleHelpers::IsInsideOut(inScale))
-		swap(outVertices[1], outVertices[2]);
+		std::swap(outVertices[1], outVertices[2]);
 
 	// Calculate transform with scale
 	Mat44 transform = inCenterOfMassTransform.PreScaled(inScale);
@@ -437,7 +438,7 @@ AABox MeshShape::GetLocalBounds() const
 
 uint MeshShape::GetSubShapeIDBitsRecursive() const
 {
-	return NodeCodec::DecodingContext::sTriangleBlockIDBits(mTree) + NumTriangleBits;
+	return NodeCodec::DecodingContext::sTriangleBlockIDBits(sGetNodeHeader(mTree)) + NumTriangleBits;
 }
 
 template <class Visitor>
@@ -511,7 +512,7 @@ JPH_INLINE void MeshShape::WalkTreePerTriangle(const SubShapeIDCreator &inSubSha
 		uint				mTriangleBlockIDBits;
 	};
 
-	ChainedVisitor visitor(ioVisitor, inSubShapeIDCreator2, NodeCodec::DecodingContext::sTriangleBlockIDBits(mTree));
+	ChainedVisitor visitor(ioVisitor, inSubShapeIDCreator2, NodeCodec::DecodingContext::sTriangleBlockIDBits(sGetNodeHeader(mTree)));
 	WalkTree(visitor);
 }
 
@@ -713,7 +714,7 @@ bool MeshShape::CastRay(const RayCast &inRay, const SubShapeIDCreator &inSubShap
 	visitor.mRayOrigin = inRay.mOrigin;
 	visitor.mRayDirection = inRay.mDirection;
 	visitor.mRayInvDirection.Set(inRay.mDirection);
-	visitor.mTriangleBlockIDBits = NodeCodec::DecodingContext::sTriangleBlockIDBits(mTree);
+	visitor.mTriangleBlockIDBits = NodeCodec::DecodingContext::sTriangleBlockIDBits(sGetNodeHeader(mTree));
 	visitor.mSubShapeIDCreator = inSubShapeIDCreator;
 	WalkTree(visitor);
 

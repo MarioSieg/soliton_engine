@@ -15,6 +15,8 @@ extern "C" int luaopen_luv (lua_State *L);
 #endif
 
 namespace soliton::scripting {
+    static const soliton::system_variable<bool> sv_override_alloc {"scripting.override_alloc", true};
+
     template <typename... Ts>
     static auto lua_log_info(const fmt::format_string<Ts...> fmt, Ts&&... args) -> void {
         SPDLOG_LOGGER_INFO(spdlog::get("app"), "[Lua]: {}", fmt::format(fmt, std::forward<Ts>(args)...));
@@ -36,14 +38,14 @@ namespace soliton::scripting {
     }
 
     auto scripting_subsystem::on_start(scene&) -> void {
-        if (const luabridge::LuaResult r = (*m_on_start)(); r.hasFailed()) [[unlikely]] {
+        if (const luabridge::LuaResult r = (*m_on_start)(); r.hasFailed()) {
             lua_log_error("{}: Error in {}: {}", k_boot_script, k_start_hook, r.errorMessage());
         }
     }
 
     HOTPROC void scripting_subsystem::on_tick() {
         panic_assert(m_is_lua_host_online);
-        if (const luabridge::LuaResult r = (*m_on_tick)(); r.hasFailed()) [[unlikely]] {
+        if (const luabridge::LuaResult r = (*m_on_tick)(); r.hasFailed()) {
             lua_log_error("{}: Error in {}: {}", k_boot_script, k_tick_hook, r.errorMessage());
         }
     }
@@ -58,7 +60,7 @@ namespace soliton::scripting {
                 lua_log_error("Failed to load script file '{}'", full_path);
             }
         });
-        if (luaL_dostring(m_L, lua_source_code.c_str()) != LUA_OK) [[unlikely]] {
+        if (luaL_dostring(m_L, lua_source_code.c_str()) != LUA_OK) {
             lua_log_error("script error in {}: {}", full_path, lua_tostring(m_L, -1));
             lua_pop(m_L, 1);
             return false;
@@ -69,15 +71,14 @@ namespace soliton::scripting {
     auto scripting_subsystem::lua_host_connect() -> void {
         log_info("Connecting to Lua host");
 
-        if (m_is_lua_host_online) [[unlikely]] {
+        if (m_is_lua_host_online) {
             log_warn("Lua host is already online");
             return;
         }
 
         // init lua
         panic_assert(m_L == nullptr);
-#if USE_MIMALLOC
-        if constexpr (use_mimalloc) {
+        if (sv_override_alloc() && USE_MIMALLOC) {
             /*
              * LuaJIT requires that allocated memory is in the first 47 bits of address space.
              * System malloc/mimalloc has no such guarantee of this, and hence can't (in general) be used.
@@ -87,12 +88,12 @@ namespace soliton::scripting {
              * And do some performance testing, because it's unlikely it'll be better/faster/smaller than the built-in allocator.
              *
              */
-            m_L = lua_newstate(+[]([[maybe_unused]] void* ud, void* ptr, [[maybe_unused]] std::size_t osize, const std::size_t nsize) noexcept -> void* {
-                return mi_realloc(ptr, nsize);
-            }, nullptr);
-        } else
-#endif
-        {
+            #if USE_MIMALLOC
+                m_L = lua_newstate(+[]([[maybe_unused]] void* ud, void* ptr, [[maybe_unused]] std::size_t osize, const std::size_t nsize) noexcept -> void* {
+                    return mi_realloc(ptr, nsize);
+                }, nullptr);
+            #endif
+        } else {
             m_L = luaL_newstate();
         }
         panic_assert(m_L != nullptr);
@@ -145,21 +146,16 @@ namespace soliton::scripting {
         m_on_tick = luabridge::getGlobal(m_L, k_tick_hook);
         panic_assert(m_on_tick && m_on_tick->isFunction());
 
-        // init config table
-        m_config_table = luabridge::getGlobal(m_L, k_engine_config_tab);
-        panic_assert(m_config_table && m_config_table->isTable());
-
         m_is_lua_host_online = true;
         log_info("Lua host connected");
     }
 
     auto scripting_subsystem::lua_host_disconnect() -> void {
         log_info("Shutting down Lua host");
-        if (!m_is_lua_host_online) [[unlikely]] {
+        if (!m_is_lua_host_online) {
             log_warn("Lua host is already offline");
             return;
         }
-        m_config_table.reset();
         m_on_tick.reset();
         m_on_start.reset();
         spdlog::get("app")->flush();

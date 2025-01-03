@@ -87,7 +87,7 @@ PROJECT(Assimp VERSION 5.4.3)
 
 OPTION( BUILD_SHARED_LIBS
   "Build package with shared libraries."
-  ON
+  OFF
 )
 OPTION( ASSIMP_BUILD_FRAMEWORK
   "Build package as Mac OS X Framework bundle."
@@ -127,11 +127,11 @@ OPTION ( ASSIMP_COVERALLS
 )
 OPTION( ASSIMP_INSTALL
   "Disable this if you want to use assimp as a submodule."
-  ON
+  OFF
 )
 OPTION ( ASSIMP_WARNINGS_AS_ERRORS
   "Treat all warnings as errors."
-  ON
+        OFF
 )
 OPTION ( ASSIMP_ASAN
   "Enable AddressSanitizer."
@@ -147,7 +147,7 @@ OPTION ( ASSIMP_BUILD_DOCS
 )
 OPTION( ASSIMP_INJECT_DEBUG_POSTFIX
   "Inject debug postfix in .a/.so/.dll lib names"
-  ON
+        OFF
 )
 
 OPTION ( ASSIMP_IGNORE_GIT_HASH
@@ -289,7 +289,7 @@ IF ((CMAKE_C_COMPILER_ID MATCHES "GNU") AND NOT MINGW AND NOT HAIKU)
     SET(CMAKE_POSITION_INDEPENDENT_CODE ON)
   ENDIF()
 
-  IF(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 13)
+  IF(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 13 AND CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     MESSAGE(STATUS "GCC13 detected disabling \"-Wdangling-reference\" in Cpp files as it appears to be a false positive")
     ADD_COMPILE_OPTIONS("$<$<COMPILE_LANGUAGE:CXX>:-Wno-dangling-reference>")
   ENDIF()

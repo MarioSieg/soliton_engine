@@ -16,7 +16,6 @@ local entity_list_view = {
     is_visible = ffi.new('bool[1]', true),
     selected_entity = nil,
     selected_mode = 'entity', -- entity, env_editor, etc.
-    show_hidden_entities = ffi.new('bool[1]', false),
     selected_wants_focus = false,
     
     _entity_list = {},
@@ -41,7 +40,7 @@ function entity_list_view:build_entity_list()
     for i = 0, scene._entity_query_next() - 1 do
         local entity = scene._entity_query_lookup(i)
         if entity:is_valid() then
-            if not self.show_hidden_entities[0] and entity:has_flag(entity_flags.hidden) then
+            if entity:has_flag(entity_flags.hidden) then
                 goto continue
             end
             local name = entity:get_name()
@@ -106,17 +105,6 @@ function entity_list_view:render()
         if ui.Button(icons.i_redo_alt) then
             self:build_entity_list()
         end
-        ui.SameLine()
-        if ui.Checkbox((self.show_hidden_entities[0] and icons.i_eye or icons.i_eye_slash), self.show_hidden_entities) then
-            self:build_entity_list()
-        end
-        if ui.IsItemHovered() then
-            ui.SetTooltip('Show hidden entities')
-        end
-        ui.SameLine()
-        ui.Spacing()
-        ui.SameLine()
-        ui.Text('Entities: ' .. #self._entity_list)
         ui.Separator()
         local size = ui.ImVec2(0, 0)
         if ui.BeginChild('EntityScrollingRegion', ui.ImVec2(0, -ui.GetFrameHeightWithSpacing()), false, ffi.C.ImGuiWindowFlags_HorizontalScrollbar) then

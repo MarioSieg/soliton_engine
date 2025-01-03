@@ -1,11 +1,11 @@
 local setmetatable, tonumber, tostring =
-      setmetatable, tonumber, tostring
+setmetatable, tonumber, tostring
 local floor, inf =
-      math.floor, math.huge
+math.floor, math.huge
 local mininteger, tointeger =
-      math.mininteger or nil, math.tointeger or nil
+math.mininteger or nil, math.tointeger or nil
 local byte, char, find, gsub, match, sub =
-      string.byte, string.char, string.find, string.gsub, string.match, string.sub
+string.byte, string.char, string.find, string.gsub, string.match, string.sub
 
 local function _decode_error(pos, errmsg)
 	error("parse error at " .. pos .. ": " .. errmsg, 2)
@@ -230,9 +230,9 @@ local function newdecoder()
 		if ch == 'u' then
 			local c1, c2, c3, c4, rest = byte(ucode, 1, 5)
 			ucode = f_str_hextbl[c1-47] * 0x1000 +
-			        f_str_hextbl[c2-47] * 0x100 +
-			        f_str_hextbl[c3-47] * 0x10 +
-			        f_str_hextbl[c4-47]
+					f_str_hextbl[c2-47] * 0x100 +
+					f_str_hextbl[c3-47] * 0x10 +
+					f_str_hextbl[c4-47]
 			if ucode ~= inf then
 				if ucode < 0x80 then  -- 1byte
 					if rest then
@@ -273,8 +273,8 @@ local function newdecoder()
 				else  -- surrogate pair 2nd
 					if f_str_surrogate_prev ~= 0 then
 						ucode = 0x10000 +
-						        (f_str_surrogate_prev - 0xD800) * 0x400 +
-						        (ucode - 0xDC00)
+								(f_str_surrogate_prev - 0xD800) * 0x400 +
+								(ucode - 0xDC00)
 						f_str_surrogate_prev = 0
 						c1 = floor(ucode / 0x40000)
 						ucode = ucode - c1 * 0x40000
@@ -463,25 +463,25 @@ local function newdecoder()
 		Nil key means the end of json.
 	--]]
 	dispatcher = { [0] =
-		f_err, f_err, f_err, f_err, f_err, f_err, f_err, f_err,
-		f_err, f_err, f_err, f_err, f_err, f_err, f_err, f_err,
-		f_err, f_err, f_err, f_err, f_err, f_err, f_err, f_err,
-		f_err, f_err, f_err, f_err, f_err, f_err, f_err, f_err,
-		f_err, f_err, f_str, f_err, f_err, f_err, f_err, f_err,
-		f_err, f_err, f_err, f_err, f_err, f_mns, f_err, f_err,
-		f_zro, f_num, f_num, f_num, f_num, f_num, f_num, f_num,
-		f_num, f_num, f_err, f_err, f_err, f_err, f_err, f_err,
-		f_err, f_err, f_err, f_err, f_err, f_err, f_err, f_err,
-		f_err, f_err, f_err, f_err, f_err, f_err, f_err, f_err,
-		f_err, f_err, f_err, f_err, f_err, f_err, f_err, f_err,
-		f_err, f_err, f_err, f_ary, f_err, f_err, f_err, f_err,
-		f_err, f_err, f_err, f_err, f_err, f_err, f_fls, f_err,
-		f_err, f_err, f_err, f_err, f_err, f_err, f_nul, f_err,
-		f_err, f_err, f_err, f_err, f_tru, f_err, f_err, f_err,
-		f_err, f_err, f_err, f_obj, f_err, f_err, f_err, f_err,
-		__index = function()
-			decode_error("unexpected termination")
-		end
+				   f_err, f_err, f_err, f_err, f_err, f_err, f_err, f_err,
+				   f_err, f_err, f_err, f_err, f_err, f_err, f_err, f_err,
+				   f_err, f_err, f_err, f_err, f_err, f_err, f_err, f_err,
+				   f_err, f_err, f_err, f_err, f_err, f_err, f_err, f_err,
+				   f_err, f_err, f_str, f_err, f_err, f_err, f_err, f_err,
+				   f_err, f_err, f_err, f_err, f_err, f_mns, f_err, f_err,
+				   f_zro, f_num, f_num, f_num, f_num, f_num, f_num, f_num,
+				   f_num, f_num, f_err, f_err, f_err, f_err, f_err, f_err,
+				   f_err, f_err, f_err, f_err, f_err, f_err, f_err, f_err,
+				   f_err, f_err, f_err, f_err, f_err, f_err, f_err, f_err,
+				   f_err, f_err, f_err, f_err, f_err, f_err, f_err, f_err,
+				   f_err, f_err, f_err, f_ary, f_err, f_err, f_err, f_err,
+				   f_err, f_err, f_err, f_err, f_err, f_err, f_fls, f_err,
+				   f_err, f_err, f_err, f_err, f_err, f_err, f_nul, f_err,
+				   f_err, f_err, f_err, f_err, f_tru, f_err, f_err, f_err,
+				   f_err, f_err, f_err, f_obj, f_err, f_err, f_err, f_err,
+				   __index = function()
+					   decode_error("unexpected termination")
+				   end
 	}
 	setmetatable(dispatcher, dispatcher)
 

@@ -15,7 +15,7 @@ namespace soliton::graphics {
 
         eastl::vector<vk::PipelineShaderStageCreateInfo> shader_stages {};
         eastl::vector<eastl::shared_ptr<shader>> shaders {};
-        if (!configure_shaders(shaders)) [[unlikely]] {
+        if (!configure_shaders(shaders)) {
             log_error("Failed to configure shaders for pipeline '{}'", name);
             return false;
         }
@@ -29,7 +29,7 @@ namespace soliton::graphics {
         pipeline_info.pStages = shader_stages.data();
 
         vk::PipelineViewportStateCreateInfo viewport_state {};
-        if (!configure_viewport_state(viewport_state)) [[unlikely]] {
+        if (!configure_viewport_state(viewport_state)) {
             log_error("Failed to configure viewport state for pipeline '{}'", name);
             return false;
         }
@@ -38,7 +38,7 @@ namespace soliton::graphics {
         vk::PipelineVertexInputStateCreateInfo vertex_input_info {};
         eastl::vector<vk::VertexInputBindingDescription> vertex_bindings {};
         eastl::vector<vk::VertexInputAttributeDescription> vertex_attributes {};
-        if (!configure_vertex_info(vertex_bindings, vertex_attributes)) [[unlikely]] {
+        if (!configure_vertex_info(vertex_bindings, vertex_attributes)) {
             log_error("Failed to configure vertex input info for pipeline '{}'", name);
             return false;
         }
@@ -49,14 +49,14 @@ namespace soliton::graphics {
         pipeline_info.pVertexInputState = &vertex_input_info;
 
         vk::PipelineInputAssemblyStateCreateInfo input_assembly_state {};
-        if (!configure_input_assembly(input_assembly_state)) [[unlikely]] {
+        if (!configure_input_assembly(input_assembly_state)) {
             log_error("Failed to configure input assembly state for pipeline '{}'", name);
             return false;
         }
         pipeline_info.pInputAssemblyState = &input_assembly_state;
 
         vk::PipelineRasterizationStateCreateInfo rasterization_state {};
-        if (!configure_rasterizer(rasterization_state)) [[unlikely]] {
+        if (!configure_rasterizer(rasterization_state)) {
             log_error("Failed to configure rasterization state for pipeline '{}'", name);
             return false;
         }
@@ -64,7 +64,7 @@ namespace soliton::graphics {
 
         vk::PipelineDynamicStateCreateInfo dynamic_state {};
         eastl::vector<vk::DynamicState> dynamic_states {};
-        if (!configure_dynamic_states(dynamic_states)) [[unlikely]] {
+        if (!configure_dynamic_states(dynamic_states)) {
             log_error("Failed to configure dynamic states for pipeline '{}'", name);
             return false;
         }
@@ -73,21 +73,21 @@ namespace soliton::graphics {
         pipeline_info.pDynamicState = &dynamic_state;
 
         vk::PipelineMultisampleStateCreateInfo multisample_state {};
-        if (!configure_multisampling(multisample_state)) [[unlikely]] {
+        if (!configure_multisampling(multisample_state)) {
             log_error("Failed to configure multisampling for pipeline '{}'", name);
             return false;
         }
         pipeline_info.pMultisampleState = &multisample_state;
 
         vk::PipelineDepthStencilStateCreateInfo depth_stencil_state {};
-        if (!configure_depth_stencil(depth_stencil_state)) [[unlikely]] {
+        if (!configure_depth_stencil(depth_stencil_state)) {
             log_error("Failed to configure depth stencil state for pipeline '{}'", name);
             return false;
         }
         pipeline_info.pDepthStencilState = &depth_stencil_state;
 
         vk::PipelineColorBlendAttachmentState blend_attachment_state {};
-        if (!configure_color_blending(blend_attachment_state)) [[unlikely]] {
+        if (!configure_color_blending(blend_attachment_state)) {
             log_error("Failed to configure color blending for pipeline '{}'", name);
             return false;
         }
@@ -99,7 +99,7 @@ namespace soliton::graphics {
         pipeline_info.pColorBlendState = &color_blend_state;
 
         vk::RenderPass render_pass {};
-        if (!configure_render_pass(render_pass)) [[unlikely]] {
+        if (!configure_render_pass(render_pass)) {
             log_error("Failed to configure render pass for pipeline '{}'", name);
             return false;
         }
@@ -109,7 +109,7 @@ namespace soliton::graphics {
         // finally, create pipeline layout
         eastl::vector<vk::DescriptorSetLayout> layouts {};
         eastl::vector<vk::PushConstantRange> ranges {};
-        if (!configure_pipeline_layout(layouts, ranges)) [[unlikely]] {
+        if (!configure_pipeline_layout(layouts, ranges)) {
             log_error("Failed to configure pipeline layout for pipeline '{}'", name);
             return false;
         }

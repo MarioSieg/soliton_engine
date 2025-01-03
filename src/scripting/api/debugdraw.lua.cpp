@@ -3,10 +3,8 @@
 #include "_prelude.hpp"
 #include "../../core/buffered_sink.hpp"
 #include "../../graphics/graphics_subsystem.hpp"
-#include "../../graphics/imgui/ImGuiProfilerRenderer.h"
-#include "../../graphics/imgui/ImGuizmo.h"
 #include "../../physics/physics_subsystem.hpp"
-
+#include <imguizmo/ImGuizmo.h>
 
 using graphics::graphics_subsystem;
 
@@ -55,7 +53,7 @@ LUA_INTEROP_API auto __lu_dd_gizmo_enable(const bool enable) -> void {
 
 LUA_INTEROP_API auto __lu_dd_gizmo_manipulator(const lua_entity_id id, const int op, const int mode, const bool enable_snap, const double snap_x, const lua_vec3 color) -> void {
     const flecs::entity ent {scene_mgr::active(), eastl::bit_cast<flecs::id_t>(id)};
-    if (!ent.has<const com::transform>()) [[unlikely]] {
+    if (!ent.has<const com::transform>()) {
         return;
     }
     auto* transform = ent.get_mut<com::transform>();
@@ -81,7 +79,7 @@ LUA_INTEROP_API auto __lu_dd_gizmo_manipulator(const lua_entity_id id, const int
     XMStoreFloat4(&transform->scale, scale);
     if (const auto* const renderer = ent.get<com::mesh_renderer>(); renderer) {
         for (const auto* const mesh : renderer->meshes) {
-            if (mesh) [[likely]] {
+            if (mesh) {
                 BoundingOrientedBox obb {};
                 BoundingOrientedBox::CreateFromBoundingBox(obb, mesh->get_aabb());
                 const XMMATRIX model = XMLoadFloat4x4A(&model_mtx);
@@ -109,7 +107,7 @@ LUA_INTEROP_API auto __lu_dd_draw_scene_with_aabbs(const lua_vec3 color) -> void
     dd().begin_batch();
     scene_mgr::active().each([&ccolor](const com::transform& transform, const com::mesh_renderer& renderer) {
         for (const auto* mesh : renderer.meshes) {
-           if (mesh) [[likely]] {
+           if (mesh) {
                BoundingOrientedBox obb {};
                BoundingOrientedBox::CreateFromBoundingBox(obb, mesh->get_aabb());
                const XMMATRIX model = transform.compute_matrix();
@@ -140,12 +138,12 @@ LUA_INTEROP_API auto __lu_dd_draw_physics_debug() -> void {
 LUA_INTEROP_API auto __lu_dd_draw_native_log(const bool scroll) -> void {
     std::shared_ptr<spdlog::logger> logger = spdlog::get("engine");
     const auto& sinks = logger->sinks();
-    if (sinks.empty()) [[unlikely]] {
+    if (sinks.empty()) {
         return;
     }
     const auto& sink = sinks.front();
     auto* buffered = static_cast<buffered_sink*>(&*sink);
-    if (!buffered) [[unlikely]] {
+    if (!buffered) {
         return;
     }
     const eastl::span<const eastl::pair<spdlog::level::level_enum, eastl::string>> logs = buffered->get();

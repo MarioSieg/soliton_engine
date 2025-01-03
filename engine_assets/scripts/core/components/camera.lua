@@ -9,16 +9,16 @@ local ffi = require 'ffi'
 local cpp = ffi.C
 
 ffi.cdef [[
-    bool __lu_com_camera_exists(lua_entity_id id);
-    void __lu_com_camera_add(lua_entity_id id);
-    void __lu_com_camera_remove(lua_entity_id id);
+    bool __lu_com_camera_exists(__entity_id id);
+    void __lu_com_camera_add(__entity_id id);
+    void __lu_com_camera_remove(__entity_id id);
     
-    double __lu_com_camera_get_fov(lua_entity_id id);
-    void __lu_com_camera_set_fov(lua_entity_id id, double fov);
-    double __lu_com_camera_get_near_clip(lua_entity_id id);
-    void __lu_com_camera_set_near_clip(lua_entity_id id, double near);
-    double __lu_com_camera_get_far_clip(lua_entity_id id);
-    void __lu_com_camera_set_far_clip(lua_entity_id id, double far);
+    double __lu_com_camera_get_fov(__entity_id id);
+    void __lu_com_camera_set_fov(__entity_id id, double fov);
+    double __lu_com_camera_get_near_clip(__entity_id id);
+    void __lu_com_camera_set_near_clip(__entity_id id, double near);
+    double __lu_com_camera_get_far_clip(__entity_id id);
+    void __lu_com_camera_set_far_clip(__entity_id id, double far);
 ]]
 
 local camera = {
@@ -33,6 +33,13 @@ local camera = {
     end,
     _exists = function(entity_id) return cpp.__lu_com_camera_exists(entity_id) end,
     _remove = function(entity_id) cpp.__lu_com_camera_remove(entity_id) end,
+    _serialize = function(self)
+        return {
+            fov = self:get_fov(),
+            near_clip = self:get_near_clip(),
+            far_clip = self:get_far_clip()
+        }
+    end,
 
     get_fov = function(self) return cpp.__lu_com_camera_get_fov(self._entity_id) end,
     set_fov = function(self, fov) cpp.__lu_com_camera_set_fov(self._entity_id, fov) end,

@@ -86,7 +86,7 @@ namespace soliton::vkb {
         // Get the next swap chain image from the implementation
         // Note that the implementation is free to return the images in any order, so we must use the acquire function and can't just cycle through the images/imageIndex on our own
         vk::Result result = m_swapchain->acquire_next_image(m_semaphores.present_complete[m_current_concurrent_frame_idx], m_image_index);
-        if (result == vk::Result::eErrorOutOfDateKHR || result == vk::Result::eSuboptimalKHR) [[unlikely]] {
+        if (result == vk::Result::eErrorOutOfDateKHR || result == vk::Result::eSuboptimalKHR) {
             if (result == vk::Result::eErrorOutOfDateKHR) {
                 on_resize();
                 return eastl::nullopt; // Skip rendering this frame
@@ -132,7 +132,7 @@ namespace soliton::vkb {
         present_info.waitSemaphoreCount = 1;
         present_info.pWaitSemaphores = &m_semaphores.render_complete[m_current_concurrent_frame_idx];
         vk::Result result = m_device->get_graphics_queue().presentKHR(&present_info);
-        if (result == vk::Result::eErrorOutOfDateKHR || result == vk::Result::eSuboptimalKHR) [[unlikely]] {
+        if (result == vk::Result::eErrorOutOfDateKHR || result == vk::Result::eSuboptimalKHR) {
             on_resize();
         } else {
             vkcheck(result);
@@ -492,7 +492,7 @@ namespace soliton::vkb {
         (*cmd).endRenderPass();
     }
 
-    static constinit std::atomic_bool s_init;
+    static std::atomic_bool s_init;
 
     auto context::create(const context_desc& desc) -> void {
         if (s_init.load()) return;

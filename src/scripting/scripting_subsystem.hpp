@@ -11,8 +11,6 @@
 namespace soliton::scripting {
     class scripting_subsystem final : public subsystem {
     public:
-        static constexpr bool use_mimalloc = false; // use mimalloc over LuaJIT's allocator
-
         scripting_subsystem();
         ~scripting_subsystem() override;
 
@@ -21,10 +19,6 @@ namespace soliton::scripting {
         [[nodiscard]] auto is_lua_host_online() const noexcept -> bool { return m_is_lua_host_online; }
 
         [[nodiscard]] static auto get_lua_state() noexcept -> lua_State* { return m_L; }
-        // get global engine config table which is filled in from Lua (scripts/config/engine.lua)
-        [[nodiscard]] static auto cfg() noexcept -> const luabridge::LuaRef* {
-            return m_config_table ? &*m_config_table : nullptr;
-        }
 
         static auto exec_file(const eastl::string& file) -> bool;
 
@@ -36,8 +30,7 @@ namespace soliton::scripting {
         static constexpr const char* k_start_hook = "__on_start__";
         static constexpr const char* k_tick_hook = "__on_tick__";
         static constexpr const char* k_engine_config_tab = "engine_cfg";
-        static inline constinit lua_State* m_L = nullptr;
-        static inline eastl::optional<luabridge::LuaRef> m_config_table {};
+        static inline lua_State* m_L = nullptr;
         eastl::optional<luabridge::LuaRef> m_on_start {}; // Reference to __boot__.lua's on_start function
         eastl::optional<luabridge::LuaRef> m_on_tick {}; // Reference to __boot__.lua's on_tick function
     };

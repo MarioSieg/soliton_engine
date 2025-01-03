@@ -24,13 +24,13 @@ namespace soliton::audio {
         );
         fmod_check(FMOD::System_Create(&m_system, FMOD_VERSION));
         fmod_check(m_system->init(sv_max_audio_channels(), FMOD_INIT_NORMAL, nullptr));
-        if (unsigned version = 0; m_system->getVersion(&version) == FMOD_RESULT::FMOD_OK) [[likely]] {
+        if (unsigned version = 0; m_system->getVersion(&version) == FMOD_RESULT::FMOD_OK) {
             log_info("Runtime Audio system version: {:#x}", version);
         }
-        if (FMOD_OUTPUTTYPE type {}; m_system->getOutput(&type) == FMOD_RESULT::FMOD_OK) [[likely]] {
+        if (FMOD_OUTPUTTYPE type {}; m_system->getOutput(&type) == FMOD_RESULT::FMOD_OK) {
             print_audio_interface_info(type);
         }
-        if (int driverID = 0; m_system->getDriver(&driverID) == FMOD_RESULT::FMOD_OK) [[likely]] {
+        if (int driverID = 0; m_system->getDriver(&driverID) == FMOD_RESULT::FMOD_OK) {
             print_audio_driver_info(m_system, driverID);
         }
     }
@@ -50,7 +50,7 @@ namespace soliton::audio {
 
     auto audio_subsystem::set_audio_listener_transform(const com::transform& transform) noexcept -> void {
         static_assert(sizeof(FMOD_VECTOR) == sizeof(XMFLOAT3));
-        static constinit XMVECTOR prev_position {};
+        static XMVECTOR prev_position {};
         FMOD_VECTOR f_pos, f_vel, f_for, f_up;
         XMVECTOR position { XMLoadFloat4(&transform.position) };
         XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&f_pos), position);
@@ -69,7 +69,7 @@ namespace soliton::audio {
     }
 
     static auto print_audio_driver_info(FMOD::System* const sys, const int id) -> void {
-        if (!sys) [[unlikely]] return;
+        if (!sys) return;
         eastl::array<char, 4096> name_buf {};
         FMOD_GUID guid {};
         int rate {};
@@ -84,7 +84,7 @@ namespace soliton::audio {
             &mode,
             &channels
         );
-        if(result != FMOD_RESULT::FMOD_OK) [[unlikely]] return;
+        if(result != FMOD_RESULT::FMOD_OK) return;
         log_info("Audio device: {}", name_buf.data());
         auto buf {eastl::bit_cast<eastl::array<std::uint64_t, 2>>(guid)};
         log_info("UUID: {:X}{:X}", buf[0], buf[1]);

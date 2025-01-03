@@ -63,7 +63,7 @@ namespace soliton::vkb {
         static auto shutdown() -> void;
 
     private:
-        inline static constinit context* s_instance {};
+        inline static context* s_instance {};
 
         friend auto ctx() noexcept -> context&;
 

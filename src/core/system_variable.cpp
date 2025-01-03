@@ -1,9 +1,9 @@
 // Copyright (c) 2024 Mario "Neo" Sieg. All Rights Reserved.
 
 #include "system_variable.hpp"
+#include <fast_float/fast_float.h>
 
 #include <filesystem>
-#include <charconv>
 #include <SimpleIni.h>
 
 namespace soliton {
@@ -24,7 +24,7 @@ namespace soliton {
             }
             const eastl::string& key = name;
             const eastl::string section = key.substr(0, key.find('.'));
-            if (eastl::holds_alternative<bool>(value)) { // ugly but im foo lazy to lookup the variant visitor pattern rn
+            if (eastl::holds_alternative<bool>(value)) {
                 ini.SetBoolValue(section.c_str(), key.c_str(), eastl::get<bool>(value));
             } else if (eastl::holds_alternative<float>(value)) {
                 ini.SetDoubleValue(section.c_str(), key.c_str(), eastl::get<float>(value));
@@ -34,7 +34,7 @@ namespace soliton {
                 ini.SetValue(section.c_str(), key.c_str(), eastl::get<eastl::string>(value).c_str());
             }
         }
-        if (ini.SaveFile(cfg_file) >= 0) [[likely]] {
+        if (ini.SaveFile(cfg_file) >= 0) {
             log_info("Saved {} system variables to '{}'", sv_registry.size(), cfg_file);
             return true;
         } else {
@@ -44,11 +44,11 @@ namespace soliton {
     }
 
     auto detail::load_system_variables() -> bool {
-        if (!std::filesystem::exists("config")) [[unlikely]] {
+        if (!std::filesystem::exists("config")) {
             std::filesystem::create_directory("config");
             return false;
         }
-        if (!std::filesystem::exists(cfg_file)) [[unlikely]] {
+        if (!std::filesystem::exists(cfg_file)) {
             log_warn("Config file '{}' not found, creating default", cfg_file);
             return false;
         }
@@ -74,27 +74,18 @@ namespace soliton {
                 }
 
                 std::int64_t intValue = 0;
-                auto int_r = std::from_chars(value.data(), value.data() + value.size(), intValue);
+                auto int_r = fast_float::from_chars(value.data(), value.data() + value.size(), intValue);
                 if (int_r.ec == std::errc() && int_r.ptr == value.data() + value.size()) {
                     sv_registry[key.pItem] = intValue;
                     continue;
                 }
 
-                #if COMPILER_CLANG && PLATFORM_OSX // Apple clang does not support from_chars for floats, use std::stof instead
-                    char* end = nullptr;
-                    float float_r = std::strtof(value.c_str(), &end);
-                    if (end == value.data() + value.size()) {
-                        sv_registry[key.pItem] = float_r;
-                        continue;
-                    }
-                #else
-                    float float_r = 0.0f;
-                    auto floatResult = std::from_chars(value.data(), value.data() + value.size(), float_r);
-                    if (floatResult.ec == std::errc() && floatResult.ptr == value.data() + value.size()) {
-                        sv_registry[key.pItem] = float_r;
-                        continue;
-                    }
-                #endif
+                float float_r = 0.0f;
+                auto floatResult = fast_float::from_chars(value.data(), value.data() + value.size(), float_r);
+                if (floatResult.ec == std::errc() && floatResult.ptr == value.data() + value.size()) {
+                    sv_registry[key.pItem] = float_r;
+                    continue;
+                }
 
                 sv_registry[key.pItem] = value;
             }

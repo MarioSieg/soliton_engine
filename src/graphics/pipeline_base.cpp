@@ -17,13 +17,13 @@ namespace soliton::graphics {
     auto pipeline_base::initialize(const vk::PipelineCache cache) -> bool {
         log_info("Creating graphics pipeline '{}' {}st time", name, ++m_num_creations);
         const auto now = eastl::chrono::high_resolution_clock::now();
-        if (!pre_configure()) [[unlikely]] {
+        if (!pre_configure()) {
             return false;
         }
-        if (!create(m_layout, m_pipeline, cache)) [[unlikely]] {
+        if (!create(m_layout, m_pipeline, cache)) {
             return false;
         }
-        if (!post_configure()) [[unlikely]] {
+        if (!post_configure()) {
             return false;
         }
         log_info(
